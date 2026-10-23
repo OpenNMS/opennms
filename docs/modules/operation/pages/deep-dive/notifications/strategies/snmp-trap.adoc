@@ -1,0 +1,120 @@
+
+= SNMP Trap Notifications
+:description: How the SNMP trap notification strategy in {page-component-title} forwards a notice to another management system as an SNMP trap.
+
+The SNMP trap notification strategy sends a notice as an SNMPv1 or SNMPv2c trap, which lets another management system receive {page-component-title} notifications.
+
+The strategy class is `org.opennms.netmgt.notifd.SnmpTrapNotificationStrategy`.
+
+== Arguments
+
+Each switch receives its value from the notification parameter with the same name; the `<substitution>` element is not used.
+You can define any or none of these parameters, but a parameter only reaches the strategy if the notification command declares the matching switch.
+
+[options="header"]
+[cols="1,3,2"]
+|===
+| Switch
+| Description
+| Default
+
+| `trapVersion`
+| `v1`, `v2c`, or `v2`.
+`v3` is not supported and falls back to `v2c`; any other value fails the notice.
+| `v1`
+
+| `trapHost`
+| Host name or IP address of the trap receiver.
+| `127.0.0.1`
+
+| `trapPort`
+| UDP port of the trap receiver.
+| `162`
+
+| `trapCommunity`
+| Community string.
+| `public`
+
+| `trapEnterprise`
+| Enterprise OID.
+| `.1.3.6.1.4.1.5813`
+
+| `trapGeneric`
+| Generic trap type (SNMPv1 only).
+| `6`
+
+| `trapSpecific`
+| Specific trap type.
+| `1`
+
+| `trapVarbind`
+| Text of the single varbind; it can contain event tokens such as `%nodelabel%` or `%eventUEI%`.
+| `OpenNMS Trap Notification`
+|===
+
+The trap carries one varbind with the OID `.1.3.6.1.4.1.5813.20.1` and the `DisplayString` (octet string) type.
+
+For SNMPv2c, the trap OID is the enterprise OID followed by the specific type.
+If the enterprise OID is one of the standard trap OIDs under `.1.3.6.1.6.3.1.1.5`, it is used as the trap OID as is.
+
+Traps are always sent over UDP.
+Older examples include a `trapTransport` switch; the strategy does not read it.
+
+== Example
+
+This notification sends a trap with the node label in the varbind:
+
+[source, xml]
+----
+<notification name="snmpTrap" status="on">
+  <uei>uei.opennms.org/nodes/nodeDown</uei>
+  <rule>IPADDR IPLIKE *.*.*.*</rule>
+  <destinationPath>trapNotifier</destinationPath>
+  <text-message>All services are down on node %nodeid%.</text-message>
+  <subject>node %nodeid% down.</subject>
+  <numeric-message>111-%noticeid%</numeric-message>
+  <parameter name="trapVersion" value="v1"/>
+  <parameter name="trapHost" value="my-trap-host.mydomain.org"/>
+  <parameter name="trapPort" value="162"/>
+  <parameter name="trapCommunity" value="public"/>
+  <parameter name="trapEnterprise" value=".1.3.6.1.4.1.5813"/>
+  <parameter name="trapGeneric" value="6"/>
+  <parameter name="trapSpecific" value="1"/>
+  <parameter name="trapVarbind" value="Node: %nodelabel%"/>
+</notification>
+----
+
+The notification command declares the switches, and the `trapNotifier` destination path uses the command:
+
+[source, xml]
+----
+<command binary="false">
+  <name>snmpTrap</name>
+  <execute>org.opennms.netmgt.notifd.SnmpTrapNotificationStrategy</execute>
+  <comment>Class for sending notifications as SNMP Traps</comment>
+  <argument streamed="false">
+    <switch>trapVersion</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>trapHost</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>trapPort</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>trapCommunity</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>trapEnterprise</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>trapGeneric</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>trapSpecific</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>trapVarbind</switch>
+  </argument>
+</command>
+----
