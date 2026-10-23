@@ -20,23 +20,36 @@
 /// License.
 ///
 
-
 import { AxiosError, AxiosInstance } from 'axios'
+import { ref } from 'vue'
 import { Router } from 'vue-router'
 
 // When the server session expires, the REST APIs answer 401, and the code of a route that is not
-// loaded yet cannot load (the server sends the login page instead). A full reload of the SPA page then
-// goes through the server's login redirect: the browser keeps the hash route on login.jsp, login.jsp
-// posts it, and the user comes back to the same route after login (see LoginRedirects.java).
+// loaded yet cannot load. A full reload of the SPA page goes through the server's login redirect:
+// the browser keeps the hash route on login.jsp, login.jsp posts it, and the user comes back to the
+// same route after login (see LoginRedirects.java).
+//
+// A reload loses what the user changed on the page and did not save. So reload by itself only
+// during a route change, when the user has not changed anything on the new page yet. At any other
+// time, show SessionExpiredDialog: the user can log in in a new tab and keep the page.
 
 export const SESSION_EXPIRED_RELOAD_KEY = 'onms.sessionExpiredReloadAt'
 
-// If the page loads but the APIs still answer 401 (e.g. an unusual authentication setup), the
-// reload does not help. Do not reload again within this time, so the page cannot reload in a loop.
+// If the page loads but the APIs still answer 401 (e.g. an unusual authentication setup), a reload
+// does not help. Do not reload again within this time, so the page cannot reload in a loop.
 export const RELOAD_GUARD_MS = 60_000
+
+// A 401 this soon after a route change to another page started comes from loading the new page.
+export const NAVIGATION_RELOAD_WINDOW_MS = 5_000
+
+// read by SessionExpiredDialog.vue
+export const sessionExpiredDialogVisible = ref(false)
 
 let reloading = false
 let warned = false
+let lastNavigationAt = 0
+// the target of the route change in progress, if any
+let navigationTarget: string | undefined
 
 const lastReloadAt = (): number => {
   try {
@@ -54,14 +67,18 @@ const recordReload = () => {
   }
 }
 
-// Reload at most once per page load, and not again within RELOAD_GUARD_MS.
-// Returns false if the guard stopped the reload.
-const reloadOnce = (beforeReload?: () => void): boolean => {
+const showSessionExpiredDialog = () => {
+  sessionExpiredDialogVisible.value = true
+}
+
+// Reload at the given route (or the current one), at most once per page load and not again within
+// RELOAD_GUARD_MS. Returns false if it did not reload; the caller then shows the dialog. This also
+// covers a reload that a beforeunload prompt cancelled: the next attempt shows the dialog.
+const reloadAt = (fullPath?: string): boolean => {
   if (reloading) {
     return false
   }
 
-  // Only skip this one: a later expiry, after the guard window, must still reload.
   if (Date.now() - lastReloadAt() < RELOAD_GUARD_MS) {
     if (!warned) {
       warned = true
@@ -72,25 +89,19 @@ const reloadOnce = (beforeReload?: () => void): boolean => {
 
   reloading = true
   recordReload()
-  beforeReload?.()
+  if (fullPath) {
+    window.history.replaceState(window.history.state, '', '#' + fullPath)
+  }
   window.location.reload()
   return true
 }
 
 export const handleSessionExpired = (): void => {
-  reloadOnce()
-}
-
-// The messages for a failed dynamic import differ per browser; Vite adds its own for route CSS.
-const CHUNK_LOAD_ERROR = /Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed|Unable to preload CSS/
-
-// A route whose code cannot load: reload at that route, not at the route the user is leaving.
-export const installChunkLoadRecovery = (router: Pick<Router, 'onError'>): void => {
-  router.onError((error, to) => {
-    if (CHUNK_LOAD_ERROR.test(String(error?.message ?? error))) {
-      reloadOnce(() => window.history.replaceState(window.history.state, '', '#' + to.fullPath))
-    }
-  })
+  const duringNavigation = Date.now() - lastNavigationAt < NAVIGATION_RELOAD_WINDOW_MS
+  if (duringNavigation && reloadAt(navigationTarget)) {
+    return
+  }
+  showSessionExpiredDialog()
 }
 
 export const installSessionExpiryInterceptor = (...instances: AxiosInstance[]): void => {
@@ -102,4 +113,35 @@ export const installSessionExpiryInterceptor = (...instances: AxiosInstance[]): 
       return Promise.reject(error)
     })
   }
+}
+
+// The messages for a failed dynamic import differ per browser; Vite adds its own for route CSS.
+const CHUNK_LOAD_ERROR = /Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed|Unable to preload CSS/
+
+// Track route changes for handleSessionExpired. When the code of a route cannot load, reload at
+// that route, not at the route the user is leaving.
+export const installRouterSessionHandling = (router: Pick<Router, 'beforeEach' | 'afterEach' | 'onError'>): void => {
+  router.beforeEach((to, from) => {
+    // Only a change to another page counts (or the first navigation, from vue-router's START_LOCATION).
+    // A change of the query only keeps the page, e.g. a filter or a tab, and maybe unsaved changes.
+    if (from.matched.length === 0 || to.path !== from.path) {
+      lastNavigationAt = Date.now()
+      navigationTarget = to.fullPath
+    }
+  })
+  router.afterEach(() => {
+    navigationTarget = undefined
+  })
+  router.onError((error, to) => {
+    if (CHUNK_LOAD_ERROR.test(String(error?.message ?? error)) && !reloadAt(to.fullPath)) {
+      showSessionExpiredDialog()
+    }
+  })
+}
+
+// login.jsp is in the web app context, the parent of the SPA's /ui path
+export const loginPageUrl = (): string => {
+  const path = window.location.pathname
+  const ui = path.indexOf('/ui')
+  return (ui >= 0 ? path.substring(0, ui) : '') + '/login.jsp'
 }

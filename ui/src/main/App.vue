@@ -10,6 +10,7 @@
     <div class="main-content" :class="{ 'main-content-fill': fillsLayoutCell }">
       <Spinner />
       <OnmsToastHost />
+      <SessionExpiredDialog />
       <router-view v-slot="{ Component }">
         <keep-alive include="MapKeepAlive">
           <component :is="Component" />
@@ -37,6 +38,7 @@ import Footer from '@/components/Layout/Footer.vue'
 import Menubar from '@/components/Menu/Menubar.vue'
 import SideMenu from '@/components/Menu/SideMenu.vue'
 import Spinner from '@/components/Common/Spinner.vue'
+import SessionExpiredDialog from '@/components/Common/SessionExpiredDialog.vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useInfoStore } from '@/stores/infoStore'
 import { usePluginStore } from '@/stores/pluginStore'
