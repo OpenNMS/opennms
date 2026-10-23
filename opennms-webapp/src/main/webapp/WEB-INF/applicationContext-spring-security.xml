@@ -432,6 +432,9 @@
     <intercept-url pattern="/ui/assets/**" access="hasAnyRole('ROLE_USER')" />
     <intercept-url pattern="/**" access="denyAll"/>
 
+    <!-- Basic auth, as in the main block. Bad credentials also get the plain 401. -->
+    <http-basic entry-point-ref="noStoreUnauthorizedEntryPoint" />
+
     <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
     <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
   </http>
