@@ -264,25 +264,6 @@ public interface ThreshdConfigRestApi {
             @HeaderParam(HttpHeaders.IF_MATCH) String ifMatch,
             @Context SecurityContext securityContext);
 
-    @POST
-    @Path("reload")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Operation(
-            summary = "Ask threshd to reload its daemon configuration",
-            description = """
-        Send a `reloadDaemonConfig` event for `threshd-configuration.xml`. Requires ROLE_ADMIN. The event is
-        asynchronous: a 202 means it was sent, not that threshd has finished reloading.""",
-            operationId = "reloadThreshdConfiguration"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "202", description = "Reload event sent."),
-            @ApiResponse(responseCode = "403", description = "Admin role required.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
-            @ApiResponse(responseCode = "500", description = "The event could not be sent.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string")))
-    })
-    Response reloadThreshdConfiguration(@Context SecurityContext securityContext);
-
     @GET
     @Path("download")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})

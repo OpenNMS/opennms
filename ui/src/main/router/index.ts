@@ -418,6 +418,49 @@ const router = createRouter({
       beforeEnter: requireRole('adminRole', thresholdRoleMsg)
     },
     {
+      // Not '/threshold-config/group/create', so a group named 'create' stays reachable.
+      path: '/threshold-config/create-group',
+      name: 'Threshold Group Create',
+      component: () => import('@/containers/ThresholdGroupEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/group/:name/edit',
+      name: 'Threshold Group Edit',
+      component: () => import('@/containers/ThresholdGroupEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/group/:name/:kind(threshold|expression)/create',
+      name: 'Threshold Definition Create',
+      component: () => import('@/containers/ThresholdDefinitionEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/group/:name/:kind(threshold|expression)/:index(\\d+)/edit',
+      name: 'Threshold Definition Edit',
+      component: () => import('@/containers/ThresholdDefinitionEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/create-package',
+      name: 'Threshold Package Create',
+      component: () => import('@/containers/ThresholdPackageCreate.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/package/:name/service/create',
+      name: 'Threshold Service Create',
+      component: () => import('@/containers/ThresholdServiceEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/package/:name/service/:index(\\d+)/edit',
+      name: 'Threshold Service Edit',
+      component: () => import('@/containers/ThresholdServiceEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
       path: '/mib-compiler',
       name: 'MIB Compiler',
       component: () => import('@/containers/MibCompiler.vue'),

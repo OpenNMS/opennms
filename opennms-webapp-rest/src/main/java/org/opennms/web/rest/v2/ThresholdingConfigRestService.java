@@ -369,21 +369,6 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
         return Response.noContent().build();
     }
 
-    @Override
-    public Response reloadThresholdingConfiguration(final SecurityContext securityContext) {
-        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            return Response.status(Status.FORBIDDEN).entity("Admin role required to reload the thresholding configuration.").build();
-        }
-        try {
-            ThresholdRestSupport.sendReloadEvent(eventProxy, CONFIG_FILE_NAME);
-            return Response.status(Status.ACCEPTED).build();
-        } catch (final Exception e) {
-            LOG.error("Could not send the reload event for {}.", CONFIG_FILE_NAME, e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("Could not send the reload event for " + CONFIG_FILE_NAME + ".").build();
-        }
-    }
-
     // ------------------------------------------------------- download / upload
 
     @Override

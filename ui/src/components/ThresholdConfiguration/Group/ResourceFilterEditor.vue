@@ -1,23 +1,22 @@
 <template>
   <div class="resource-filter-editor">
-    <div class="section-header">
-      <h4>Resource filters</h4>
-      <OnmsIcon
+    <h4 class="section-header">
+      Resource filters
+      <OnmsIconButton
         :icon="InfoIcon"
-        class="info-icon"
-        data-test="resource-filter-info-icon"
-        role="button"
-        tabindex="0"
+        iconSize="1.2em"
+        class="info-icon-button"
+        title="About resource filters"
         aria-label="About resource filters"
+        data-test="resource-filter-info-icon"
         @click="isHelpVisible = true"
-        @keyup.enter="isHelpVisible = true"
       />
-    </div>
+    </h4>
 
     <FormField
       label="Filter operator"
       for="resource-filter-operator"
-      :hint="THRESHOLD_FIELD_HINTS.filterOperator"
+      :info="THRESHOLD_FIELD_HINTS.filterOperator"
     >
       <OnmsSelect
         inputId="resource-filter-operator"
@@ -129,7 +128,7 @@
           @update:modelValue="newFilter.field = String($event ?? '')"
         />
       </FormField>
-      <FormField label="Regular expression" for="resource-filter-new-content" :hint="newFilterErrors.content">
+      <FormField label="Regular expression" for="resource-filter-new-content" :error="newFilterErrors.content">
         <OnmsInputText
           inputId="resource-filter-new-content"
           data-test="resource-filter-new-content"
@@ -160,7 +159,7 @@ import { RESOURCE_FILTER_HELP, THRESHOLD_FIELD_HINTS } from '@/lib/thresholdHelp
 import { FILTER_OPERATOR_OPTIONS, FilterOperator, validateResourceFilter } from '@/lib/thresholdValidator'
 import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
 import type { ResourceFilter } from '@/types/thresholdConfig'
-import { OnmsButton, OnmsColumn, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable } from '@opennms/onms-ui'
 import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 import EditIcon from '@opennms/onms-ui/icons/action/Edit.vue'
 import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
@@ -224,21 +223,17 @@ const onAdd = () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/components/ThresholdConfiguration/Common/info-icon-button' as *;
+
+.info-icon-button {
+  @include info-icon-button;
+}
+
 .resource-filter-editor {
   .section-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-
-    h4 {
-      margin: 0;
-    }
+    margin: 0;
   }
 
-  .info-icon {
-    cursor: pointer;
-    color: var(--p-text-muted-color);
-  }
 
   .order-hint {
     color: var(--p-text-muted-color);

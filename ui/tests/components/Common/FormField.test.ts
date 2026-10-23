@@ -1,5 +1,7 @@
 import FormField from '@/components/Common/FormField.vue'
+import { OnmsMessageDialog, OnmsTooltip } from '@opennms/onms-ui'
 import { mount } from '@vue/test-utils'
+import PrimeVue from 'primevue/config'
 import { describe, expect, it } from 'vitest'
 import { h } from 'vue'
 
@@ -146,5 +148,57 @@ describe('FormField.vue', () => {
   it('still renders the label element when label is provided', () => {
     const wrapper = mount(FormField, { props: { label: 'Name' }})
     expect(wrapper.find('label.form-field__label').text()).toContain('Name')
+  })
+
+  describe('info', () => {
+    const mountWithInfo = (props: Record<string, unknown> = {}) =>
+      mount(FormField, {
+        props: { label: 'Value', for: 'value', info: 'The value to compare against.', ...props },
+        slots: { default: '<input id="value" data-test="control" />' },
+        global: { plugins: [PrimeVue], directives: { 'onms-tooltip': OnmsTooltip }}
+      })
+
+    it('shows no info icon without an info text', () => {
+      const wrapper = mount(FormField, { props: { label: 'Value' }})
+      expect(wrapper.find('[data-test="form-field-info"]').exists()).toBe(false)
+    })
+
+    it('puts the info icon beside the label, not inside it, and not the text below the field', () => {
+      const wrapper = mountWithInfo()
+
+      expect(wrapper.find('.form-field__label-row [data-test="form-field-info"]').exists()).toBe(true)
+      expect(wrapper.find('label [data-test="form-field-info"]').exists()).toBe(false)
+      expect(wrapper.find('label').attributes('for')).toBe('value')
+      expect(wrapper.text()).not.toContain('The value to compare against.')
+    })
+
+    it('shows the text as a tooltip on the info icon', () => {
+      const icon = mountWithInfo().find('[data-test="form-field-info"]')
+
+      // PrimeVue's Tooltip directive stashes its text on the host element.
+      expect((icon.element as never as Record<string, unknown>).$_ptooltipValue).toBe('The value to compare against.')
+    })
+
+    it('makes the icon focusable and labelled with the text, but not a button', () => {
+      const icon = mountWithInfo().find('[data-test="form-field-info"]')
+
+      expect(icon.attributes('tabindex')).toBe('0')
+      expect(icon.attributes('aria-label')).toBe('The value to compare against.')
+      expect(icon.attributes('aria-hidden')).toBe('false')
+      expect(icon.attributes('role')).not.toBe('button')
+    })
+
+    it('opens no dialog on a click', async () => {
+      const wrapper = mountWithInfo()
+
+      await wrapper.find('[data-test="form-field-info"]').trigger('click')
+
+      expect(wrapper.findComponent(OnmsMessageDialog).exists()).toBe(false)
+    })
+
+    it('keeps rendering a hint below the field', () => {
+      const wrapper = mount(FormField, { props: { label: 'Port', hint: 'Default: 10162' }})
+      expect(wrapper.find('.field-hint').text()).toBe('Default: 10162')
+    })
   })
 })

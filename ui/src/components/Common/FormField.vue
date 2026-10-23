@@ -3,6 +3,9 @@
     ref="rootEl"
     class="form-field"
   >
+    <!-- With an info text the label shares its row with an info icon that shows the
+         text as a tooltip. The icon sits outside the <label>, so hovering or
+         clicking it does not focus the control. -->
     <div
       v-if="label || $slots['label-suffix'] || reserveLabelSpace"
       class="form-field__label-row"
@@ -29,6 +32,15 @@
         class="form-field__label"
         aria-hidden="true"
       >&nbsp;</label>
+      <OnmsIcon
+        v-if="label && info"
+        v-onms-tooltip.top="info"
+        :icon="InfoIcon"
+        class="form-field__info-icon"
+        tabindex="0"
+        :title="info"
+        data-test="form-field-info"
+      />
       <slot name="label-suffix" />
     </div>
     <slot
@@ -50,6 +62,8 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { OnmsIcon } from '@opennms/onms-ui'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 
 const props = withDefaults(defineProps<{
   label?: string
@@ -57,6 +71,8 @@ const props = withDefaults(defineProps<{
   required?: boolean
   error?: string
   hint?: string
+  /** Description of the field, shown as a tooltip on an info icon beside the label. */
+  info?: string
   reserveLabelSpace?: boolean
 }>(), {
   label: undefined,
@@ -64,6 +80,7 @@ const props = withDefaults(defineProps<{
   required: false,
   error: undefined,
   hint: undefined,
+  info: undefined,
   reserveLabelSpace: false
 })
 
@@ -147,6 +164,18 @@ watch(errorId, () => nextTick(syncAriaDescribedby))
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--p-text-color);
+}
+
+// Shows help on hover rather than acting on a click. Sized from the label's
+// 0.875rem, so it stays in proportion to the label text.
+.form-field__info-icon {
+  font-size: 1.05rem;
+  cursor: help;
+  color: var(--p-text-muted-color);
+
+  &:hover {
+    color: var(--p-primary-color);
+  }
 }
 
 .form-field__required {
