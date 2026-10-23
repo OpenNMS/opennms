@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
@@ -66,6 +67,8 @@ import org.springframework.context.ApplicationContext;
 @EventListener(name=Telemetryd.NAME, logPrefix=Telemetryd.LOG_PREFIX)
 public class Telemetryd implements SpringServiceDaemon, TelemetryManager {
     private static final Logger LOG = LoggerFactory.getLogger(Telemetryd.class);
+
+    private static final long SHUTDOWN_POLL_MS = 100;
 
     public static final String NAME = "Telemetryd";
 
@@ -234,10 +237,11 @@ public class Telemetryd implements SpringServiceDaemon, TelemetryManager {
      */
     private void waitForStop(List<Future<?>> futures, int maxTime) throws ExecutionException, InterruptedException {
         Objects.requireNonNull(futures);
+        final long startNanos = System.nanoTime();
+        final long deadlineNanos = startNanos + TimeUnit.SECONDS.toNanos(maxTime);
         Object lock = new Object();
         synchronized (lock) {
-            int i = 0;
-            while (i < maxTime) {
+            while (System.nanoTime() < deadlineNanos) {
                 boolean allDone = true;
                 for (Future<?> future : futures) {
                     if (!future.isDone()) {
@@ -252,12 +256,11 @@ public class Telemetryd implements SpringServiceDaemon, TelemetryManager {
                             builder.append(future.get());
                             builder.append(" ");
                         }
-                        LOG.info("Future done time: {}s output: {}", i, builder);
+                        LOG.info("Future done time: {} ms output: {}", (System.nanoTime() - startNanos) / 1_000_000, builder);
                     }
                     return;
                 }
-                lock.wait(1000L);
-                i++;
+                lock.wait(SHUTDOWN_POLL_MS);
             }
             LOG.warn("Fail to wait for stop future. Futures: {} maxTime: {}", futures, maxTime);
         }

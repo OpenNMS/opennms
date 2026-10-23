@@ -129,7 +129,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       })
 
       it('should validate all valid MIB object types', async () => {
-        const types = ['counter', 'counter32', 'counter64', 'gauge', 'gauge32', 'gauge64', 'integer', 'integer32', 'timeticks', 'string', 'octetstring', 'opaque']
+        const types = ['counter', 'counter32', 'counter64', 'gauge', 'gauge32', 'gauge64', 'integer', 'integer32', 'timeticks', 'string', 'octetstring', 'hexstring', 'opaque']
 
         for (const type of types) {
           const xml = `<?xml version="1.0"?>
@@ -587,6 +587,17 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
       expect(result).toBe('')
     })
 
+    it('should validate group with a comma-separated ifType list', () => {
+      const xml = `<group name="testGroup" ifType="6,22">
+        <mibObj oid=".1.3.6.1.2.1.1.1" instance="0" alias="test" type="string"/>
+      </group>`
+      xmlDoc = parser.parseFromString(xml, 'application/xml')
+      const element = xmlDoc.querySelector('group')
+
+      const result = validateGroupElement(element!, 1)
+      expect(result).toBe('')
+    })
+
     it('should reject null or invalid element', () => {
       const result = validateGroupElement(null as any, 1)
       expect(result).toBe('Group 1: invalid element')
@@ -647,7 +658,12 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
         { value: 'some', description: 'non-standard string' },
         { value: 'abc', description: 'alphabetic string' },
         { value: '1.5', description: 'decimal number' },
-        { value: '-1', description: 'negative number' }
+        { value: '-1', description: 'negative number' },
+        { value: '6, 22', description: 'list with a space' },
+        { value: '6,', description: 'list with an empty item' },
+        { value: '6,all', description: 'list with a keyword' },
+        { value: '06', description: 'number with a leading zero' },
+        { value: '6,022', description: 'list item with a leading zero' }
       ]
 
       it.each(invalidIfTypes)(
@@ -852,7 +868,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
         'counter', 'counter32', 'counter64',
         'gauge', 'gauge32', 'gauge64',
         'integer', 'integer32',
-        'timeticks', 'string', 'octetstring', 'opaque'
+        'timeticks', 'string', 'octetstring', 'hexstring', 'opaque'
       ]
 
       it.each(validTypes)(
