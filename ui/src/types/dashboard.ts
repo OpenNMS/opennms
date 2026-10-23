@@ -86,6 +86,8 @@ export type DashboardScope = 'SYSTEM'
 export interface DashboardLayout {
   scope: DashboardScope
   version: number
+  // display name shown in the toolbar and used for exports; absent on older documents
+  name?: string
   refresh: DashboardRefresh
   globalFilter: DashboardFilter
   globalTimeframe: Timeframe

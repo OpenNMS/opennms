@@ -53,6 +53,7 @@ const panel = (id: string, type: string, x: number, y: number, w: number, rows: 
 export const createDefaultLayout = (): DashboardLayout => ({
   scope: 'SYSTEM',
   version: 1,
+  name: 'Home',
   refresh: { seconds: 120, paused: false },
   globalFilter: { surveillanceCategories: [], ipMatch: null },
   globalTimeframe: { preset: TimeframePreset.Last24h, from: null, to: null },
