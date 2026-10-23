@@ -87,7 +87,7 @@ public class MetricFamily {
             case HISTOGRAM:
                 expectedMetricClassType = Histogram.class;
                 break;
-            case UNTYPED:
+            case UNKNOWN:
 	        //treat untyped metrics as gauge
                 expectedMetricClassType = Gauge.class;
                 break;
@@ -131,5 +131,10 @@ public class MetricFamily {
             return Collections.emptyList();
         }
         return metrics;
+    }
+
+    @Override
+    public String toString() {
+        return "MetricFamily [name=" + name + ", help=" + help + ", type=" + type + ", metrics=" + metrics + "]";
     }
 }
