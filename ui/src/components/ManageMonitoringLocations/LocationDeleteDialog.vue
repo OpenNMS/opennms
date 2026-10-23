@@ -105,7 +105,7 @@ const emit = defineEmits<{
 const store = useMonitoringLocationAdminStore()
 const minionStore = useMinionAdminStore()
 
-const applicationsUrl = legacyUrl('admin/applications.htm')
+const applicationsUrl = legacyUrl('ui/index.html#/admin/applications')
 
 const name = computed(() => props.location?.['location-name'] ?? '')
 
