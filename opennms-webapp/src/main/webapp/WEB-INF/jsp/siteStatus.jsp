@@ -38,7 +38,7 @@
 <% Bootstrap.with(pageContext)
           .headTitle("Site Status")
           .breadcrumb("Site Status")
-          .breadcrumb("${e:forHtmlAttribute(view.columnValue)}")
+          .breadcrumb("${view.columnValue}")
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />

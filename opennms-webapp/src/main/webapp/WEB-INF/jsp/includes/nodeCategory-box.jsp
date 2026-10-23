@@ -41,7 +41,7 @@
         <span>
             Surveillance Category Memberships
             <c:if test="${isAdmin == 'true'}">
-                (<a href="<c:url value="admin/categories.htm?edit&amp;node=${param.node}"/>">Edit</a>)
+                (<a href="<c:url value="admin/categories.htm"><c:param name="edit" value=""/><c:param name="node" value="${param.node}"/></c:url>">Edit</a>)
             </c:if>
         </span>
     </div>

@@ -31,12 +31,13 @@
 <%@page language="java"	contentType="text/html" session="true"%>
 <%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%
-  String nodeId = WebSecurityUtils.sanitizeString(request.getParameter("node"));
+  String nodeIdString = request.getParameter("node");
   String nodeLabel = WebSecurityUtils.sanitizeString(request.getParameter("nodelabel"));
 
-  if (nodeId == null) {
+  if (nodeIdString == null) {
     throw new org.opennms.web.servlet.MissingParameterException("node");
   }
+  int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
   if (nodeLabel == null) {
     throw new org.opennms.web.servlet.MissingParameterException("nodelabel");
   }
@@ -77,7 +78,8 @@
         In order to change what interfaces are scheduled for collection, simply click
         the checkbox shown on the collect column, and the change will immediately update the database.
         </p>
-        <p>
+        <%-- The page is an AngularJS app. ng-non-bindable stops AngularJS from evaluating the node label. --%>
+        <p ng-non-bindable>
 	    <strong>Node ID</strong>: <%=nodeId%><br/>
 	    <strong>Node Label</strong>: <%=nodeLabel%><br/>
         </p>

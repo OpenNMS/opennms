@@ -29,6 +29,8 @@
 
 --%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <style>
 .notstyle
 {
@@ -74,10 +76,10 @@ Legend
 <tbody>
 <tr>
 
-<td style="background: #336600 url(images/keyGradient.png) repeat-x" title="${param.normalCaption == null ? 'NORMAL :  Informational message. No action required.' : param.normalCaption}">	</td>
-<td style="background: #999000 url(images/keyGradient.png) repeat-x" title="${param.indetermCaption == null ? 'INDETERMINATE - No severity could be associated.' : param.indetermCaption}">	</td>
-<td style="background: #FFCC00 url(images/keyGradient.png) repeat-x" title="${param.warnCaption == null ? 'WARNING - May require action. Should possibly be logged.' : param.warnCaption}">	</td>
-<td style="background: #CC0000 url(images/keyGradient.png) repeat-x" title="${param.criticalCaption == null ? 'CRITICAL - Numerous devices are affected, fixing the problem is essential.' : param.criticalCaption}">	</td>
+<td style="background: #336600 url(images/keyGradient.png) repeat-x" title="${fn:escapeXml(param.normalCaption == null ? 'NORMAL :  Informational message. No action required.' : param.normalCaption)}">	</td>
+<td style="background: #999000 url(images/keyGradient.png) repeat-x" title="${fn:escapeXml(param.indetermCaption == null ? 'INDETERMINATE - No severity could be associated.' : param.indetermCaption)}">	</td>
+<td style="background: #FFCC00 url(images/keyGradient.png) repeat-x" title="${fn:escapeXml(param.warnCaption == null ? 'WARNING - May require action. Should possibly be logged.' : param.warnCaption)}">	</td>
+<td style="background: #CC0000 url(images/keyGradient.png) repeat-x" title="${fn:escapeXml(param.criticalCaption == null ? 'CRITICAL - Numerous devices are affected, fixing the problem is essential.' : param.criticalCaption)}">	</td>
 </tr>
 </tbody>
 </table>

@@ -54,7 +54,7 @@
 <h1><%=einfe.getElemType(true)%> ID Not Found</h1>
 
 <p>
-  The <%=einfe.getElemType()%> ID <%=einfe.getBadID()%> is invalid. <%=WebSecurityUtils.sanitizeString(einfe.getMessage())%>
+  The <%=einfe.getElemType()%> ID <%=WebSecurityUtils.sanitizeString(einfe.getBadID())%> is invalid. <%=WebSecurityUtils.sanitizeString(einfe.getMessage())%>
   <br/>
   <% if (einfe.getDetailUri() != null) { %>
   <p>

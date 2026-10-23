@@ -104,7 +104,7 @@
             <tr>
               <td width="10%">Current Rule:
               </td>
-              <td align="left"> <%=newRule%>
+              <td align="left"> <%=WebSecurityUtils.sanitizeString(newRule)%>
               </td>
           </table>
         <form method="post" name="addresses" action="admin/notification/noticeWizard/notificationWizard">

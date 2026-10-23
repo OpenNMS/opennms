@@ -276,7 +276,7 @@
   <form class="mb-3" method="post" name="acknowledge" action="notification/acknowledge">
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     <input type="hidden" name="notices" value="<%=notice.getId()%>"/>
-    <input type="hidden" name="redirect" value="<%= request.getServletPath() + "?" + request.getQueryString()%>" />
+    <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString(request.getServletPath() + "?" + request.getQueryString()) %>" />
     <input type="submit" class="btn btn-secondary" value="Acknowledge" />
   </form>
 <% } %>
