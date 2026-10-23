@@ -117,7 +117,7 @@ Collectd does not react to asset changes.
 |===
 
 Use the name in the *Daemon name* column as the `daemonName` parameter of the reload event, or as the argument of the `reload-daemon` command.
-Tab completion does not offer Threshd, but the command accepts it:
+For example, the following command reloads Threshd:
 
 [source, karaf]
 opennms:reload-daemon Threshd
