@@ -291,7 +291,7 @@ Furthermore, some {page-component-title} configuration files allow the use of Me
 The outbound mail credential fields (`user-auth` on a `sendmail-config` in the XML, `authenticateUser`/`authenticatePassword` in the properties file) additionally resolve the `token` context (`${token:<name>}`), which supplies an access token from a xref:operation:deep-dive/admin/configuration/token-authentication.adoc[token authentication] definition.
 This is mainly useful for OAuth2 (XOAUTH2) SMTP authentication.
 * xref:operation:deep-dive/database-reports/template-introduction.adoc[Remote Repository configuration]: remote-repository.xml
-* xref:operation:deep-dive/provisioning/xml-samples.adoc[SNMP configuration], xref:operation:deep-dive/provisioning/snmp-profile.adoc[SNMP profiles]: snmp-config.xml
+* xref:operation:deep-dive/provisioning/xml-samples.adoc[SNMP configuration], xref:operation:deep-dive/provisioning/snmp-profile.adoc[SNMP profiles]: security name, community strings, and passphrases of the SNMP configuration, which is stored in the database (see xref:operation:deep-dive/provisioning/snmp-configuration.adoc#snmp-configuration[SNMP configuration]); these fields resolve only the `scv` scope.
 * xref:reference:ticketing/introduction.adoc[Ticketer configuration]: jira.properties, remedy.properties, tsrm.properties
 * xref:reference:daemons/daemon-config-files/trapd.adoc[Trapd configuration]: trapd-configuration.xml
 * xref:reference:service-assurance/monitors/VmwareMonitor.adoc[VMware monitor], xref:reference:performance-data-collection/collectors/vmware.adoc[VMware collector]: vmware-config.xml
