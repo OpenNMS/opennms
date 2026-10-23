@@ -42,6 +42,9 @@ export const RELOAD_GUARD_MS = 60_000
 // A 401 this soon after a route change to another page started comes from loading the new page.
 export const NAVIGATION_RELOAD_WINDOW_MS = 5_000
 
+// If the page is still here this long after a reload started, a beforeunload prompt cancelled it.
+export const RELOAD_CANCELLED_AFTER_MS = 10_000
+
 // read by SessionExpiredDialog.vue
 export const sessionExpiredDialogVisible = ref(false)
 
@@ -72,11 +75,11 @@ const showSessionExpiredDialog = () => {
 }
 
 // Reload at the given route (or the current one), at most once per page load and not again within
-// RELOAD_GUARD_MS. Returns false if it did not reload; the caller then shows the dialog. This also
-// covers a reload that a beforeunload prompt cancelled: the next attempt shows the dialog.
+// RELOAD_GUARD_MS. Returns true if a reload is running (started now or before): the login page comes
+// next, so no dialog. Returns false if the guard stopped it: the caller then shows the dialog.
 const reloadAt = (fullPath?: string): boolean => {
   if (reloading) {
-    return false
+    return true
   }
 
   if (Date.now() - lastReloadAt() < RELOAD_GUARD_MS) {
@@ -93,10 +96,19 @@ const reloadAt = (fullPath?: string): boolean => {
     window.history.replaceState(window.history.state, '', '#' + fullPath)
   }
   window.location.reload()
+  // Still here later: a beforeunload prompt cancelled the reload. The next 401 then meets the guard
+  // and shows the dialog, instead of waiting for a reload that does not come.
+  window.setTimeout(() => {
+    reloading = false
+  }, RELOAD_CANCELLED_AFTER_MS)
   return true
 }
 
 export const handleSessionExpired = (): void => {
+  // a reload is running: the other requests of the page fail too, but the login page comes next
+  if (reloading) {
+    return
+  }
   const duringNavigation = Date.now() - lastNavigationAt < NAVIGATION_RELOAD_WINDOW_MS
   if (duringNavigation && reloadAt(navigationTarget)) {
     return
@@ -139,9 +151,11 @@ export const installRouterSessionHandling = (router: Pick<Router, 'beforeEach' |
   })
 }
 
+// the last "/ui" path segment: a proxy prefix can contain "/ui" too, e.g. /uim/opennms/ui/
+const SPA_PATH = /^(.*)\/ui(?:\/|$)/
+
 // login.jsp is in the web app context, the parent of the SPA's /ui path
 export const loginPageUrl = (): string => {
-  const path = window.location.pathname
-  const ui = path.indexOf('/ui')
-  return (ui >= 0 ? path.substring(0, ui) : '') + '/login.jsp'
+  const match = SPA_PATH.exec(window.location.pathname)
+  return (match ? match[1] : '') + '/login.jsp'
 }

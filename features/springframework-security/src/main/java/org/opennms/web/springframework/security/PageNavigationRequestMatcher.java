@@ -41,6 +41,11 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * are saved when they accept HTML, accept anything ("*&#47;*" alone) or send no Accept header,
  * for kiosk tools and embedded browsers that request pages that way. "Accept: *&#47;*" with
  * Fetch Metadata is a subresource and is not saved.
+ *
+ * Browsers send Fetch Metadata only to HTTPS and localhost. Over plain HTTP to another host, the
+ * Accept rules apply to all browsers too: an iframe navigation (Accept: text/html) is then saved,
+ * as before NMS-20178. Scripts, stylesheets, images and fonts are still not saved, because of
+ * their Accept header or their file suffix (see LoginModuleUtils).
  */
 public class PageNavigationRequestMatcher implements RequestMatcher {
     @Override

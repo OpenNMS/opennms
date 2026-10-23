@@ -129,13 +129,27 @@ describe('sessionExpiry', () => {
       expect(reload).toHaveBeenCalledTimes(1)
     })
 
-    it('reloads only once for concurrent 401s', async () => {
-      const { router, instance } = await setup()
+    it('reloads only once for concurrent 401s, and shows no dialog while the page reloads', async () => {
+      const { router, instance, sessionExpiredDialogVisible } = await setup()
       router.navigate('/node/2')
 
-      await Promise.allSettled([instance.get('/a'), instance.get('/b')])
+      await Promise.allSettled([instance.get('/a'), instance.get('/b'), instance.get('/c')])
 
       expect(reload).toHaveBeenCalledTimes(1)
+      expect(sessionExpiredDialogVisible.value).toBe(false)
+    })
+
+    it('shows no dialog for 401s at any time while the page reloads', async () => {
+      const { router, instance, NAVIGATION_RELOAD_WINDOW_MS, sessionExpiredDialogVisible } = await setup()
+      router.navigate('/node/2')
+      await instance.get('/a').catch(() => undefined)
+      expect(reload).toHaveBeenCalledTimes(1)
+
+      // the reload has started; a later 401 (outside the navigation window) arrives before login.jsp does
+      vi.setSystemTime(NOW + NAVIGATION_RELOAD_WINDOW_MS + 1)
+      await instance.get('/b').catch(() => undefined)
+
+      expect(sessionExpiredDialogVisible.value).toBe(false)
     })
 
     it('shows the dialog instead when the page was reloaded for this recently', async () => {
@@ -175,12 +189,13 @@ describe('sessionExpiry', () => {
     })
 
     it('shows the dialog when the reload did not happen (e.g. cancelled by a beforeunload prompt)', async () => {
-      const { router, instance, sessionExpiredDialogVisible } = await setup()
+      const { router, instance, RELOAD_CANCELLED_AFTER_MS, sessionExpiredDialogVisible } = await setup()
       router.navigate('/node/2')
       await instance.get('/a').catch(() => undefined)
       expect(reload).toHaveBeenCalledTimes(1)
 
-      // the page is still here
+      // the page is still here long after the reload started
+      vi.advanceTimersByTime(RELOAD_CANCELLED_AFTER_MS + 1)
       router.navigate('/node/3')
       await instance.get('/b').catch(() => undefined)
 
@@ -311,7 +326,11 @@ describe('sessionExpiry', () => {
       for (const [pathname, expected] of [
         ['/opennms/ui/', '/opennms/login.jsp'],
         ['/opennms/ui/index.html', '/opennms/login.jsp'],
-        ['/nms/ui/', '/nms/login.jsp']
+        ['/opennms/ui', '/opennms/login.jsp'],
+        ['/nms/ui/', '/nms/login.jsp'],
+        // a proxy prefix that also contains "/ui"
+        ['/uim/opennms/ui/', '/uim/opennms/login.jsp'],
+        ['/ui/opennms/ui/index.html', '/ui/opennms/login.jsp']
       ]) {
         vi.stubGlobal('location', { reload, pathname } as any)
         expect(loginPageUrl(), pathname).toBe(expected)
