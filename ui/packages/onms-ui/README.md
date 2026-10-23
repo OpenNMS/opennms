@@ -391,6 +391,18 @@ second-to-last path segment), the version handshake, and the dev harness
 real externalized plugin built with the toolchain a third-party author would
 use.
 
+## Chromeless app shell
+
+`useOnmsChromeless()` lets a page or plugin hide the host's menu bar, side
+menu and footer, e.g. for a wall display. `enterChromeless()` turns it on until
+`exitChromeless()` or Escape; `isChromeless` is a readonly ref for a toggle's
+state. Escape is ignored while a dialog or drawer is open, since those close
+on it. The state is module-level, like `useOnmsToast`, so host and plugins
+share it through `window.OnmsUI`.
+
+`useOnmsChromelessHost()` is for the host only: `App.vue` calls it once to
+sync routes marked `meta.chromeless` and install the Escape handler.
+
 ## Sanctioned direct-PrimeVue exceptions
 
 Outside this package, importing `primevue/*` is banned by ESLint

@@ -1,6 +1,9 @@
 <template>
-  <OnmsAppLayout content-layout="full" :class="{ 'app-layout-bounded': fillsLayoutCell }">
-    <template v-slot:header>
+  <OnmsAppLayout
+    content-layout="full"
+    :class="{ 'app-layout-bounded': fillsLayoutCell, 'app-layout-chromeless': chromeless }"
+  >
+    <template v-if="!chromeless" v-slot:header>
       <Menubar />
       <SideMenu
         pushedSelector=".app-layout"
@@ -16,7 +19,7 @@
         </keep-alive>
       </router-view>
     </div>
-    <template v-slot:footer>
+    <template v-if="!chromeless" v-slot:footer>
       <Footer />
     </template>
   </OnmsAppLayout>
@@ -29,7 +32,7 @@
 import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { OnmsToastHost } from '@opennms/onms-ui'
+import { OnmsToastHost, useOnmsChromelessHost } from '@opennms/onms-ui'
 import OnmsAppLayout from '@/components/Layout/OnmsAppLayout.vue'
 import Footer from '@/components/Layout/Footer.vue'
 import Menubar from '@/components/Menu/Menubar.vue'
@@ -50,6 +53,10 @@ const FILL_LAYOUT_CELL_ROUTES = new Set(['Topology'])
 const route = useRoute()
 const fillsLayoutCell = computed<boolean>(() =>
   FILL_LAYOUT_CELL_ROUTES.has(String(route.name ?? '')))
+
+// Full-screen pages such as wall displays: a route's meta.chromeless, or enterChromeless() from
+// useOnmsChromeless in a page or plugin.
+const { isChromeless: chromeless } = useOnmsChromelessHost(() => route.meta.chromeless === true, () => route.path)
 
 const authStore = useAuthStore()
 const infoStore = useInfoStore()
@@ -132,6 +139,10 @@ body.p-overflow-hidden {
 .app-layout {
   padding-top: var(--onms-header-height, 3.75rem);
   padding-left: calc(var(--onms-header-height, 3.75rem) + 0.25rem);
+}
+// Chromeless routes render no Menubar or rail. SideMenu clears its inline padding-left on unmount.
+.app-layout.app-layout-chromeless {
+  padding: 0;
 }
 .main-content {
   table {
