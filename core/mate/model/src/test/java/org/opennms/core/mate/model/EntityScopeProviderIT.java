@@ -71,10 +71,10 @@ public class EntityScopeProviderIT {
     private SessionUtils sessionUtils;
 
     @Autowired
-    private DatabasePopulator populator;
+    protected DatabasePopulator populator;
 
     @Autowired
-    private EntityScopeProvider provider;
+    protected EntityScopeProvider provider;
 
     @Autowired
     private SecureCredentialsVault secureCredentialsVault;
@@ -199,7 +199,7 @@ public class EntityScopeProviderIT {
         node.getMetaData().add(metaData);
         this.populator.getNodeDao().saveOrUpdate(node);
 
-        // get an scope provider
+        // get a scope provider
         final ScopeProvider scope = this.provider.getScopeProviderForNode(this.populator.getNode1().getId());
 
         // this will retrieve the meta-data set before

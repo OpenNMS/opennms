@@ -21,32 +21,11 @@
  */
 package org.opennms.netmgt.collectd;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
-
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-import javax.swing.text.html.parser.Entity;
-
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.FallBackScopeProvider;
-import org.opennms.core.mate.api.FallbackScope;
-import org.opennms.core.mate.api.Scope;
 import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
@@ -90,13 +69,30 @@ import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 /**
  * <p>Collectd class.</p>
@@ -201,6 +197,7 @@ public class Collectd extends AbstractServiceDaemon implements
     private ReadablePollOutagesDao pollOutagesDao;
 
     @Autowired
+    @Qualifier("cachedEntityScopeProvider")
     private EntityScopeProvider entityScopeProvider;
 
     private AtomicInteger sessionID = new AtomicInteger();
