@@ -23,6 +23,7 @@ package org.opennms.netmgt.config.datacollection;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -100,6 +101,20 @@ public class MibObject implements Collectable {
      * object's oid.
      */
     public static final String INSTANCE_IFADDRESS = "ifAddress";
+
+    private static final Pattern INSTANCE_ID_PATTERN = Pattern.compile("\\d+(\\.\\d+)*");
+
+    /**
+     * Tells if an instance is a fixed SNMP instance identifier, such as 0 or 1.5.
+     * The collector appends this OID suffix to the OID of the object.
+     * Other instance values are ifIndex or a resource type name.
+     *
+     * @param instance the instance value of a mibObj
+     * @return true if the instance is a fixed instance identifier
+     */
+    public static boolean isInstanceId(final String instance) {
+        return instance != null && INSTANCE_ID_PATTERN.matcher(instance.trim()).matches();
+    }
 
     /**
      * Constructor
