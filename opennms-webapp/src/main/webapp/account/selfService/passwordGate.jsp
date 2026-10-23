@@ -21,6 +21,16 @@
     License.
 
 --%>
+<%@ page import="org.opennms.web.api.Util" %>
+<%@ page import="org.opennms.web.springframework.security.LoginRedirects" %>
+<%
+  // This page is only for a login with the default admin password (see OpenNMSAuthSuccessHandler).
+  final HttpSession gateSession = request.getSession(false);
+  if (gateSession == null || gateSession.getAttribute(LoginRedirects.PASSWORD_GATE_PENDING_ATTRIBUTE) == null) {
+    response.sendRedirect(Util.calculateUrlBase(request, "index.jsp"));
+    return;
+  }
+%>
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Password Gate" />
   <jsp:param name="quiet" value="true" />

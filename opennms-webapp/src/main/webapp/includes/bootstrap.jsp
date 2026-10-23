@@ -63,7 +63,8 @@
       outage/index.jsp, give the location "outages")
     nomenujs (optional): "true" to omit the Vue menu bundle's modulepreload
       link, for pages that never mount the menu but still use the bundle's
-      stylesheet (also settable as the Bootstrap "nomenujs" flag)
+      stylesheet (also settable as the Bootstrap "nomenujs" flag). Without
+      login, the menu bundle is never loaded.
 --%>
 
 <%@page language="java"
@@ -98,6 +99,11 @@
       }
   }
   final String __menuAssetsVersion = "?v=" + __menuAssetsLastModified;
+
+  // The menu bundle files (/ui-components/assets/**) are for logged-in users only: a request
+  // without login gets a 401 (see applicationContext-spring-security.xml). Pages open to
+  // anonymous users (login.jsp, accessDenied.jsp, logoff.jsp) do not load them.
+  final boolean __menuAssetsAllowed = request.getRemoteUser() != null;
 %>
 <%-- The <html> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
@@ -243,21 +249,22 @@
       document.documentElement.classList.add(theme);
     })();
   </script>
+  <% if (__menuAssetsAllowed) { %>
   <link rel="stylesheet" href="<%= __baseHref %>ui-components/assets/index.css<%= __menuAssetsVersion %>" media="screen" />
   <%-- Start fetching/compiling the menu bundle now rather than when the parser
        reaches its <script type="module"> tag near the end of the body.
 
        Omitted on pages that never mount the menu: the 'nomenujs' include param
-       or Bootstrap flag (login.jsp and the password gate, which still use the
-       stylesheet above). Other 'quiet' pages still get the preload even though
-       they don't run the bundle. The bundle stays anonymously accessible (see
-       the /ui-components/assets/** rule in applicationContext-spring-security.xml)
-       so an unauthenticated request can never cache an auth redirect as
-       text/html under the asset URL and break the menu after login
-       (NMS-20174). Keep the version query in sync with the script tags below. --%>
+       or Bootstrap flag (the password gate, which still uses the stylesheet
+       above). Other 'quiet' pages still get the preload even though they don't
+       run the bundle. Without login, neither is loaded (see __menuAssetsAllowed):
+       the server answers a plain, uncacheable 401, so a browser can never cache
+       an auth redirect as text/html under the asset URL and break the menu after
+       login (NMS-20174). Keep the version query in sync with the script tags below. --%>
   <c:if test='${param.nomenujs != "true" and not __bs_flags.contains("nomenujs")}'>
     <link rel="modulepreload" href="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>" />
   </c:if>
+  <% } %>
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the
@@ -311,7 +318,7 @@
     <c:choose>
       <c:when test="${param.fromVaadin == 'true'}">
         <!-- both superQuiet and fromVaadin are true -->
-        <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
+        <% if (__menuAssetsAllowed && (oldMenuValue == null || !oldMenuValue.equals("true"))) { %>
           <div id="opennms-sidemenu-container"></div>
           <script type="module" src="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>"></script>
         <% } %>
@@ -351,7 +358,7 @@
         <!-- 'quiet' mode, not displaying Vue menus -->
       </c:when>
       <c:otherwise>
-        <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
+        <% if (__menuAssetsAllowed && (oldMenuValue == null || !oldMenuValue.equals("true"))) { %>
           <div id="opennms-sidemenu-container"></div>
           <script type="module" src="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>"></script>
         <% } %>
