@@ -86,8 +86,6 @@
   }
 
   input {
-    /* the menu stylesheet set this font before; it is not loaded without login */
-    font-family: OpenSans, Helvetica, Arial, sans-serif;
     font-size: 12px;
     padding: 10px;
     color: black;

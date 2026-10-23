@@ -104,24 +104,60 @@ public class LoginRedirectsTest {
     }
 
     @Test
+    public void savedRequestPathKeepsEncodedPath() {
+        // the servlet path and path info are decoded; the redirect must use the path as it was sent
+        assertEquals("/graph/a%20b%3Fc%23d.htm?x=1",
+            LoginRedirects.savedRequestPath(saved("/opennms/graph/a%20b%3Fc%23d.htm", "/graph", "/a b?c#d.htm", "x=1")));
+    }
+
+    @Test
+    public void savedRequestPathRemovesPathParameters() {
+        assertEquals("/element/node.jsp?node=1",
+            LoginRedirects.savedRequestPath(saved("/opennms/element/node.jsp;jsessionid=abc123", "/element/node.jsp", null, "node=1")));
+    }
+
+    @Test
+    public void savedRequestPathChecksTheDecodedPath() {
+        // an encoded asset path must still be rejected
+        assertNull(LoginRedirects.savedRequestPath(saved("/opennms/ui/assets/index%2Ejs", "/ui/assets/index.js", null, null)));
+    }
+
+    @Test
+    public void decodedPathJoinsServletPathAndPathInfo() {
+        assertEquals("/graph/results.htm", LoginRedirects.decodedPath("/graph", "/results.htm"));
+        assertEquals("/index.jsp", LoginRedirects.decodedPath("/index.jsp", null));
+        assertEquals("/x", LoginRedirects.decodedPath(null, "/x"));
+        assertEquals("", LoginRedirects.decodedPath(null, null));
+    }
+
+    @Test
+    public void isPasswordGatePending() {
+        assertFalse(LoginRedirects.isPasswordGatePending(null));
+        final MockHttpSession session = new MockHttpSession();
+        assertFalse(LoginRedirects.isPasswordGatePending(session));
+        session.setAttribute(LoginRedirects.PASSWORD_GATE_PENDING_ATTRIBUTE, Boolean.TRUE);
+        assertTrue(LoginRedirects.isPasswordGatePending(session));
+    }
+
+    @Test
     public void buildTargetUrlWithoutSavedRequestUsesDefault() {
         assertEquals("http://localhost:8980/opennms/index.jsp", LoginRedirects.buildTargetUrl(request(), null, "#/node/1"));
     }
 
     @Test
     public void buildTargetUrlAddsFragmentForSpa() {
-        assertEquals("http://localhost:8980/opennms/ui/#/node/1", LoginRedirects.buildTargetUrl(request(), saved("/ui/", null, null), "#/node/1"));
+        assertEquals("http://localhost:8980/opennms/ui/#/node/1", LoginRedirects.buildTargetUrl(request(), "/ui/", "#/node/1"));
     }
 
     @Test
     public void buildTargetUrlDropsInvalidFragment() {
-        assertEquals("http://localhost:8980/opennms/ui/index.html", LoginRedirects.buildTargetUrl(request(), saved("/ui/index.html", null, null), "#//x"));
+        assertEquals("http://localhost:8980/opennms/ui/index.html", LoginRedirects.buildTargetUrl(request(), "/ui/index.html", "#//x"));
     }
 
     @Test
     public void buildTargetUrlIgnoresFragmentForNonSpaTarget() {
         assertEquals("http://localhost:8980/opennms/element/node.jsp?node=fs:fid",
-            LoginRedirects.buildTargetUrl(request(), saved("/element/node.jsp", null, "node=fs:fid"), "#/node/1"));
+            LoginRedirects.buildTargetUrl(request(), "/element/node.jsp?node=fs:fid", "#/node/1"));
     }
 
     static MockHttpServletRequest request() {
@@ -135,13 +171,18 @@ public class LoginRedirectsTest {
 
     /** Saves a GET for the given path into a fresh session, the way Spring's ExceptionTranslationFilter does. */
     static SavedRequest saved(final String servletPath, final String pathInfo, final String query) {
+        return saved("/opennms" + servletPath + (pathInfo == null ? "" : pathInfo), servletPath, pathInfo, query);
+    }
+
+    /** As above, with the request URI as the client sent it (encoded, maybe with path parameters). */
+    static SavedRequest saved(final String requestURI, final String servletPath, final String pathInfo, final String query) {
         final MockHttpServletRequest original = request();
         original.setMethod("GET");
         original.setSession(new MockHttpSession());
         original.setServletPath(servletPath);
         original.setPathInfo(pathInfo);
         original.setQueryString(query);
-        original.setRequestURI("/opennms" + servletPath + (pathInfo == null ? "" : pathInfo));
+        original.setRequestURI(requestURI);
         final MockHttpServletResponse response = new MockHttpServletResponse();
         final HttpSessionRequestCache cache = new HttpSessionRequestCache();
         cache.saveRequest(original, response);

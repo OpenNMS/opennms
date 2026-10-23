@@ -30,9 +30,17 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 /**
  * Selects the unauthenticated requests that the request cache saves as the post-login target.
  *
- * Only a browser navigation to a page qualifies: a GET that accepts HTML and is not an XHR.
- * Without this, any later unauthenticated GET (an image, font, script or XHR, e.g. from
- * another tab) replaces the saved page, and the user lands on the default page after login.
+ * Only a navigation to a page qualifies. Without this, any later unauthenticated GET (an image,
+ * font, script or XHR, e.g. from another tab) replaces the saved page, and the user lands on the
+ * default page after login. Saving also creates a session, so each saved asset request would
+ * create one more.
+ *
+ * Modern browsers send Fetch Metadata headers: a top-level page navigation has
+ * "Sec-Fetch-Mode: navigate" and "Sec-Fetch-Dest: document". Iframe navigations (e.g. embedded
+ * Vaadin or Grafana pages) and subresources are not saved. Older clients without these headers
+ * are saved when they accept HTML, accept anything ("*&#47;*" alone) or send no Accept header,
+ * for kiosk tools and embedded browsers that request pages that way. "Accept: *&#47;*" with
+ * Fetch Metadata is a subresource and is not saved.
  */
 public class PageNavigationRequestMatcher implements RequestMatcher {
     @Override
@@ -43,12 +51,16 @@ public class PageNavigationRequestMatcher implements RequestMatcher {
         if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
             return false;
         }
-        final String accept = request.getHeader("Accept");
-        if (accept == null || !accept.toLowerCase(Locale.ROOT).contains("text/html")) {
+        if (LoginModuleUtils.isInvalidSavedRequestUrl(LoginRedirects.decodedPath(request.getServletPath(), request.getPathInfo()))) {
             return false;
         }
-        final String path = (request.getServletPath() == null ? "" : request.getServletPath())
-            + (request.getPathInfo() == null ? "" : request.getPathInfo());
-        return !LoginModuleUtils.isInvalidSavedRequestUrl(path);
+        final String mode = request.getHeader("Sec-Fetch-Mode");
+        if (mode != null) {
+            final String dest = request.getHeader("Sec-Fetch-Dest");
+            return "navigate".equals(mode) && (dest == null || "document".equals(dest));
+        }
+        final String accept = request.getHeader("Accept");
+        return accept == null || accept.isBlank() || "*/*".equals(accept.trim())
+            || accept.toLowerCase(Locale.ROOT).contains("text/html");
     }
 }

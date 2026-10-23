@@ -72,6 +72,7 @@
 		org.opennms.core.utils.TimeSeries,
 		org.opennms.web.api.Util,
 		org.opennms.netmgt.config.NotifdConfigFactory,
+		org.opennms.web.springframework.security.LoginState,
 		org.owasp.encoder.Encode
 	"%>
 
@@ -92,7 +93,7 @@
   // modulepreload link and the module script tag: the browser's module map is
   // keyed by the full URL, so differing queries would fetch the bundle twice.
   long __menuAssetsLastModified = 0;
-  for (final String __menuAsset : new String[] { "/ui-components/assets/index.js", "/ui-components/assets/index.css" }) {
+  for (final String __menuAsset : new String[] { "/ui-components/assets/index.js", "/ui-components/assets/index.css", "/ui-components/assets/anonymous-pages.css" }) {
       final String __menuAssetPath = application.getRealPath(__menuAsset);
       if (__menuAssetPath != null) {
           __menuAssetsLastModified = Math.max(__menuAssetsLastModified, new java.io.File(__menuAssetPath).lastModified());
@@ -102,8 +103,10 @@
 
   // The menu bundle files (/ui-components/assets/**) are for logged-in users only: a request
   // without login gets a 401 (see applicationContext-spring-security.xml). Pages open to
-  // anonymous users (login.jsp, accessDenied.jsp, logoff.jsp) do not load them.
-  final boolean __menuAssetsAllowed = request.getRemoteUser() != null;
+  // anonymous users (login.jsp, accessDenied.jsp, logoff.jsp, error pages) load only the
+  // bundle's base styles instead (anonymous-pages.css). LoginState, not getRemoteUser():
+  // on an error page the security filter has finished, so getRemoteUser() is null there.
+  final boolean __menuAssetsAllowed = LoginState.isLoggedIn(request);
 %>
 <%-- The <html> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
@@ -264,6 +267,9 @@
   <c:if test='${param.nomenujs != "true" and not __bs_flags.contains("nomenujs")}'>
     <link rel="modulepreload" href="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>" />
   </c:if>
+  <% } else { %>
+  <%-- Without login: only the menu bundle's base styles (reset, typography, theme tokens). --%>
+  <link rel="stylesheet" href="<%= __baseHref %>ui-components/assets/anonymous-pages.css<%= __menuAssetsVersion %>" media="screen" />
   <% } %>
 </head>
 

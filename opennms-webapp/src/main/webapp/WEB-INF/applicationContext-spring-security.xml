@@ -419,7 +419,7 @@
        to login.jsp: rendering the login page for a script or stylesheet creates a session, which can
        replace the session of a login page that is open at the same time, so that login fails; and a
        browser can cache the redirect as the asset (NMS-20174). Pages that are open to anonymous users
-       do not load these files (see bootstrap.jsp). /ui/index.html and /ui-components/index.html stay in
+       load only anonymous-pages.css (see bootstrap.jsp). /ui/index.html and /ui-components/index.html stay in
        the main block (NMS-20180). The pre-auth filters are the same as in the main block, so that the
        same logins work here. -->
   <http request-matcher-ref="staticAssetsMatcher" create-session="never" use-expressions="true" entry-point-ref="noStoreUnauthorizedEntryPoint">
@@ -427,8 +427,12 @@
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
-    <!-- the menu is also on the dashboard pages, see /dashboard.jsp in the main block -->
-    <intercept-url pattern="/ui-components/assets/**" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
+    <!-- Base styles for the pages open to anonymous users (login.jsp, logoff.jsp, accessDenied.jsp, error
+         pages); bootstrap.jsp links it only without login. No code, no data: reset, typography, theme tokens. -->
+    <intercept-url pattern="/ui-components/assets/anonymous-pages.css" access="permitAll" />
+    <!-- Any logged-in user: bootstrap.jsp loads the menu on every page for a logged-in user (LoginState),
+         whatever the roles, e.g. a ROLE_REST-only user on accessDenied.jsp. -->
+    <intercept-url pattern="/ui-components/assets/**" access="isAuthenticated()" />
     <intercept-url pattern="/ui/assets/**" access="hasAnyRole('ROLE_USER')" />
     <intercept-url pattern="/**" access="denyAll"/>
 

@@ -24,6 +24,7 @@ package org.opennms.web.springframework.security;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.opennms.web.api.Util;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
@@ -47,6 +48,9 @@ public final class LoginRedirects {
     // control characters, or HTML metacharacters), so it cannot inject headers or markup.
     private static final Pattern FRAGMENT_PATTERN = Pattern.compile("^#/[A-Za-z0-9\\-._~!$&'()*+,;=:@/?%]{0,2047}$");
 
+    // ";name=value" path parameters in a path segment, e.g. ";jsessionid=..."
+    private static final Pattern PATH_PARAMETERS = Pattern.compile(";[^/]*");
+
     private static final String SPA_PATH = "/ui";
 
     private LoginRedirects() {}
@@ -66,28 +70,51 @@ public final class LoginRedirects {
     }
 
     /**
-     * @return the context-relative path and query of the saved request, or null if there is
-     *     none or it is not a page (see {@link LoginModuleUtils#isInvalidSavedRequestUrl})
+     * @return the servlet path and path info joined, as the servlet container decoded them (never null)
+     */
+    public static String decodedPath(final String servletPath, final String pathInfo) {
+        return (servletPath == null ? "" : servletPath) + (pathInfo == null ? "" : pathInfo);
+    }
+
+    /**
+     * @return the context-relative path and query of the saved request, as the client sent them
+     *     (still encoded, without path parameters such as ";jsessionid="), or null if there is none
+     *     or it is not a page (see {@link LoginModuleUtils#isInvalidSavedRequestUrl})
      */
     public static String savedRequestPath(final SavedRequest saved) {
         if (!(saved instanceof DefaultSavedRequest)) {
             return null;
         }
         final DefaultSavedRequest request = (DefaultSavedRequest) saved;
-        final String path = (request.getServletPath() == null ? "" : request.getServletPath())
-            + (request.getPathInfo() == null ? "" : request.getPathInfo());
-        if (LoginModuleUtils.isInvalidSavedRequestUrl(path)) {
+        // check the decoded path, so that an encoded name cannot hide an asset or REST path
+        final String decoded = decodedPath(request.getServletPath(), request.getPathInfo());
+        if (LoginModuleUtils.isInvalidSavedRequestUrl(decoded)) {
             return null;
         }
+        final String path = encodedPath(request, decoded);
         return request.getQueryString() == null ? path : path + "?" + request.getQueryString();
     }
 
+    // The request URI is not decoded, so "%3F", "%23" or "%20" in the path keep their meaning in the redirect.
+    private static String encodedPath(final DefaultSavedRequest request, final String decoded) {
+        final String uri = request.getRequestURI();
+        final String contextPath = request.getContextPath() == null ? "" : request.getContextPath();
+        if (uri == null || !uri.startsWith(contextPath)) {
+            return decoded;
+        }
+        return PATH_PARAMETERS.matcher(uri.substring(contextPath.length())).replaceAll("");
+    }
+
+    public static boolean isPasswordGatePending(final HttpSession session) {
+        return session != null && session.getAttribute(PASSWORD_GATE_PENDING_ATTRIBUTE) != null;
+    }
+
     /**
-     * @return the absolute URL to redirect to: the saved request (or {@link #DEFAULT_TARGET_PATH}),
-     *     plus the fragment when the target is the Vue SPA and the fragment is safe
+     * @param savedPath the result of {@link #savedRequestPath}, or null for {@link #DEFAULT_TARGET_PATH}
+     * @return the absolute URL to redirect to, plus the fragment when the target is the Vue SPA and
+     *     the fragment is safe
      */
-    public static String buildTargetUrl(final HttpServletRequest request, final SavedRequest saved, final String fragment) {
-        final String savedPath = savedRequestPath(saved);
+    public static String buildTargetUrl(final HttpServletRequest request, final String savedPath, final String fragment) {
         final String path = savedPath == null ? DEFAULT_TARGET_PATH : savedPath;
 
         final int query = path.indexOf('?');

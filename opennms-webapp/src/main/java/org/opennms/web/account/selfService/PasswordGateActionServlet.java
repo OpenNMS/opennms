@@ -45,13 +45,14 @@ public class PasswordGateActionServlet extends AbstractBasePasswordChangeActionS
 
         // The gate is only for a login with the default admin password (see OpenNMSAuthSuccessHandler).
         // At any other time, do nothing and go to the main page.
-        if (userSession == null || userSession.getAttribute(LoginRedirects.PASSWORD_GATE_PENDING_ATTRIBUTE) == null) {
+        if (!LoginRedirects.isPasswordGatePending(userSession)) {
             response.sendRedirect(LoginRedirects.buildTargetUrl(request, null, null));
             return;
         }
 
         // after the gate, go to the page the user asked for before login, or to the main page
-        final String targetUrl = LoginRedirects.buildTargetUrl(request, requestCache.getRequest(request, response),
+        final String targetUrl = LoginRedirects.buildTargetUrl(request,
+            LoginRedirects.savedRequestPath(requestCache.getRequest(request, response)),
             (String) userSession.getAttribute(LoginRedirects.FRAGMENT_SESSION_ATTRIBUTE));
 
         final String skip = request.getParameter("skip");

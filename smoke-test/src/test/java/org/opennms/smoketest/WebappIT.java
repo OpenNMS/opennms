@@ -164,6 +164,20 @@ public class WebappIT {
     }
   }
 
+  /**
+   * NMS-20178: the pages open to anonymous users (login.jsp, logoff.jsp, accessDenied.jsp, error
+   * pages) load the menu bundle's base styles from this one anonymous file.
+   */
+  @Test
+  public void verifyAnonymousPagesCssIsAnonymouslyAccessible() {
+    given().redirects().follow(false)
+        .get("ui-components/assets/anonymous-pages.css")
+        .then().assertThat()
+        .statusCode(200)
+        .header("Content-Type", containsString("css"))
+        .header("Set-Cookie", nullValue());
+  }
+
   @Test
   public void verifyMenuBundleJsAssetIsAccessibleWhenAuthenticated() {
     given().redirects().follow(false)
@@ -202,6 +216,7 @@ public class WebappIT {
    * NMS-18978, NMS-20178: the login page never mounts the Vue menu, and without
    * login the menu bundle files get a 401, so the login page must not reference
    * them at all (bootstrap.jsp loads the menu bundle only for logged-in users).
+   * It links the anonymous base styles (anonymous-pages.css) instead.
    * In particular it must never execute the bundle (NMS-20174): an
    * unauthenticated menu run fires REST calls that pollute the post-login
    * saved request.
@@ -214,15 +229,18 @@ public class WebappIT {
         .statusCode(200)
         .extract().response().body().asString();
 
-    // Positive controls: this really is the rendered login page, and it still
-    // links the legacy (anonymous) stylesheets, so the negative assertion below
-    // can't pass vacuously on an error page or if the asset URLs change shape.
+    // Positive controls: this really is the rendered login page, and it links
+    // the anonymous base styles from the same directory, so the negative
+    // assertions below can't pass vacuously on an error page or if the asset
+    // URLs change shape.
     assertTrue("expected login.jsp to render the login form. Body: " + body,
         body.contains("id=\"loginForm\""));
-    assertTrue("expected login.jsp to link the theme stylesheet. Body: " + body,
-        body.contains("assets/opennms-theme.css"));
-    assertFalse("login.jsp must not reference the menu bundle. Body: " + body,
-        body.contains("ui-components/assets/"));
+    assertTrue("expected login.jsp to link the anonymous base styles. Body: " + body,
+        body.contains("ui-components/assets/anonymous-pages.css"));
+    assertFalse("login.jsp must not reference the menu bundle JavaScript. Body: " + body,
+        body.contains("ui-components/assets/index.js"));
+    assertFalse("login.jsp must not reference the menu bundle stylesheet. Body: " + body,
+        body.contains("ui-components/assets/index.css"));
   }
 
   /**

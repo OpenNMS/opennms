@@ -35,7 +35,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.util.StringUtils;
 
 @SuppressWarnings("java:S2068")
@@ -70,15 +69,15 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                 session.removeAttribute(LoginRedirects.FRAGMENT_SESSION_ATTRIBUTE);
             }
 
-            final SavedRequest savedRequest = this.requestCache.getRequest(request, response);
+            // null if there is no saved request, or it is for an asset or REST call (not a page to go back to)
+            final String savedPath = LoginRedirects.savedRequestPath(this.requestCache.getRequest(request, response));
             final String targetUrlParameter = this.getTargetUrlParameter();
 
-            // a saved request for an asset or REST call is not a page to go back to, see LoginRedirects.savedRequestPath
-            final boolean useSavedRequest = LoginRedirects.savedRequestPath(savedRequest) != null && !this.isAlwaysUseDefaultTargetUrl() &&
+            final boolean useSavedRequest = savedPath != null && !this.isAlwaysUseDefaultTargetUrl() &&
                 (targetUrlParameter == null || !StringUtils.hasText(request.getParameter(targetUrlParameter)));
 
             final String targetUrl = useSavedRequest
-                ? LoginRedirects.buildTargetUrl(request, savedRequest, fragment)
+                ? LoginRedirects.buildTargetUrl(request, savedPath, fragment)
                 : createTargetURL(request, response);
 
             this.requestCache.removeRequest(request, response);
