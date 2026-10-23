@@ -14,6 +14,7 @@
 ** xref:core/installing-jdbc-driver.adoc[]
 
 * xref:minion/introduction.adoc[]
+** xref:minion/ipc.adoc[]
 ** xref:minion/system-requirements.adoc[]
 ** xref:minion/install.adoc[]
 ** xref:minion/tuning.adoc[]

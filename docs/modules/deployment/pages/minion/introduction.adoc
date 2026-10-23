@@ -39,6 +39,7 @@ The Minion sends heartbeat messages to show that it is functioning properly in t
 
 The specific management protocol messages (for example, SNMP, ICMP) transit a message broker for execution by a Minion.
 The Minion forwards the responses via the same message broker to the central {page-component-title} instance, which processes them accordingly.
+For a description of the messaging patterns that carry this traffic, see xref:minion/ipc.adoc[].
 
 A Minion proxy scenario supports the following monitoring capabilities:
 
