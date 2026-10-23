@@ -40,7 +40,7 @@ Edits to the archived file, or to a new `etc/trapd-configuration.xml`, have no e
 
 You can manage the configuration in the following ways:
 
-* Use the *Trap Configuration* page in the web UI (see <<trapd-config-ui>>).
+* Use the *Trap Configuration* page in the web UI (menu:Integrations[Trap Configuration]).
 * Use the xref:development:rest/trapd-rest-api.adoc[Trapd REST API (v2)].
 
 Each change saved through the web UI or the REST API sends a `uei.opennms.org/internal/reloadDaemonConfig` event for trapd.
@@ -49,38 +49,9 @@ Trapd reads the remaining settings (new suspect on trap, raw message, forwarded 
 
 NOTE: The mappings between OIDs and UEIs are stored in the database and can be configured using the Web-UI.
 
-[[trapd-config-ui]]
-=== Trap Configuration page
-
-To open the page, click menu:Integrations[Trap Configuration] in the side menu.
-The page has three tabs:
-
-General Configuration::
-Sets the trap listener.
-+
-* *Port* sets `snmp-trap-port`.
-* *Bind Address* sets `snmp-trap-address`.
-Use `*` to listen on all interfaces.
-* *Create new nodes when receiving an SNMP trap with an unknown source IP address?* sets `new-suspect-on-trap`.
-* *Advanced Configuration Options* expands the following settings: *Include raw trap message (before processing)* (`include-raw-message`), *Use forwarded trap source address (for forwarded SNMPv2 traps)* (`use-address-from-varbind`), *Threads*, *Queue Size*, *Batch Size*, and *Batch Interval ms*.
-* Click *Update Changes* to save.
-+
-The settings on this tab apply to the {page-component-title} core only.
+The trap listener settings apply to the {page-component-title} core only.
 Minions read their trap listener settings from `$\{MINION_HOME}/etc/org.opennms.netmgt.trapd.cfg`.
-
-SNMPv3 User Management::
-Lists the SNMPv3 users that trapd uses to authenticate and decrypt SNMPv3 traps, with their security name, security level, authentication protocol, and privacy protocol.
-Click *Add User* to create a user, or use the edit and delete icons in the *Action* column.
-Each user has a *Security Name*, an optional *Engine ID*, a *Security Level*, and, depending on the level, an *Auth Protocol*, *Auth Passphrase*, *Privacy Protocol*, and *Privacy Passphrase*.
-Passphrases must be at least eight characters long.
-The page masks stored passphrases, and you cannot display them again after you save them.
-Creating, updating, or deleting a user saves the configuration immediately.
-The SNMPv3 users apply to the {page-component-title} core and to Minions.
-
-Advanced::
-Downloads or uploads the complete trapd configuration in XML or JSON format.
-An upload replaces the existing configuration.
-The web UI requires the `ROLE_ADMIN` role to upload or download.
+The SNMPv3 users apply to the core and to Minions.
 
 == Additional information
 
@@ -91,7 +62,7 @@ To do so, use the `discardtraps` logmsg.
 See xref:operation:deep-dive/events/event-definition.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] in the Event Daemon Configuration section for more information.
 
 For V3, you must specify the SNMPv3 credentials that trapd uses to authenticate and decode V3 traps.
-You can add them on the *SNMPv3 User Management* tab, or include them in an XML configuration that you upload, as in the following example:
+You can add them through the web UI or the REST API, or include them in an XML configuration that you upload, as in the following example:
 
 [source, xml]
 ----

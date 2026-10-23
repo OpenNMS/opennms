@@ -7,7 +7,7 @@
 It receives SNMP traps via the xref:reference:daemons/daemon-config-files/trapd.adoc[trapd service daemon], which is enabled by default.
 
 The trapd configuration is stored in the database.
-To manage it in the web UI, see xref:reference:daemons/daemon-config-files/trapd.adoc#trapd-config-ui[Trap Configuration page].
+To manage it in the web UI, use the *Trap Configuration* page (see xref:reference:daemons/daemon-config-files/trapd.adoc#trapd-config-storage[trapd configuration storage]).
 To manage it through REST, see xref:development:rest/trapd-rest-api.adoc[Trapd REST API (v2)].
 
 {page-component-title} transforms these traps into events based on event definitions.
@@ -362,7 +362,6 @@ When SNMP traps are forwarded through a proxy using SNMPv2c or SNMPv3, preservin
 https://tools.ietf.org/html/rfc3584#page-42[RFC 3584] defines an optional varbind `snmpTrapAddress (.1.3.6.1.6.3.18.1.3.0)` that you can add to forwarded traps to convey the original source IP address.
 
 To configure {page-component-title} to honor `snmpTrapAddress` when present, set `use-address-from-varbind="true"` in the trapd configuration and restart {page-component-title}.
-On the xref:reference:daemons/daemon-config-files/trapd.adoc#trapd-config-ui[Trap Configuration page], this is the *Use forwarded trap source address (for forwarded SNMPv2 traps)* option under *Advanced Configuration Options*.
 
 .Configuration example for using RFC 3584 helper varbinds in forwarded traps
 [source, xml]
