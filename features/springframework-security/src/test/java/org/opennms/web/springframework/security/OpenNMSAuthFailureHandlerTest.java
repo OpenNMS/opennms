@@ -53,7 +53,7 @@ public class OpenNMSAuthFailureHandlerTest {
 
     @Test
     public void failureRedirectDropsInvalidFragment() throws Exception {
-        assertEquals("http://localhost:8980/opennms/login.jsp?login_error=1", failWithFragment("#/<x>"));
+        assertEquals("http://localhost:8980/opennms/login.jsp?login_error=1", failWithFragment("#/a\r\nSet-Cookie: x=1"));
     }
 
     private static String failWithFragment(final String fragment) throws Exception {

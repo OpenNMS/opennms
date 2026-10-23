@@ -75,6 +75,27 @@ public class OpenNMSAuthSuccessHandlerTest {
     }
 
     @Test
+    public void redirectsToSpaWithEncodedFragment() throws Exception {
+        // a user-entered name in the query of a Vue route, with characters vue-router does not encode
+        final MockHttpServletRequest request = login("bob", "x", "/ui/", null, "#/scheduled-outages/edit?name=a[1]|b");
+        final MockHttpServletResponse response = new MockHttpServletResponse();
+
+        handler().onAuthenticationSuccess(request, response, mock(Authentication.class));
+
+        assertEquals("http://localhost:8980/opennms/ui/#/scheduled-outages/edit?name=a%5B1%5D%7Cb", response.getRedirectedUrl());
+    }
+
+    @Test
+    public void redirectsToSpaWithoutRejectedFragment() throws Exception {
+        final MockHttpServletRequest request = login("bob", "x", "/ui/", null, "#/a\r\nSet-Cookie: x=1");
+        final MockHttpServletResponse response = new MockHttpServletResponse();
+
+        handler().onAuthenticationSuccess(request, response, mock(Authentication.class));
+
+        assertEquals("http://localhost:8980/opennms/ui/", response.getRedirectedUrl());
+    }
+
+    @Test
     public void ignoresFragmentForNonSpaTarget() throws Exception {
         final MockHttpServletRequest request = login("bob", "x", "/outage/index.jsp", null, "#/node/1");
         final MockHttpServletResponse response = new MockHttpServletResponse();

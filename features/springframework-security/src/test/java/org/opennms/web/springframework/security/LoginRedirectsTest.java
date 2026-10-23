@@ -59,10 +59,27 @@ public class LoginRedirectsTest {
     }
 
     @Test
+    public void sanitizeFragmentEncodesCharactersVueRouterLeavesUnencoded() {
+        // vue-router leaves | [ ] { } ^ (and ` in query values) unencoded in the hash; a user-entered
+        // name in the query, e.g. a scheduled outage, can contain them. Encoded, the route stays the same.
+        assertEquals("#/scheduled-outages/edit?name=a%5B1%5D%7Cb%7Bc%7D%5Ed%60e",
+            LoginRedirects.sanitizeFragment("#/scheduled-outages/edit?name=a[1]|b{c}^d`e"));
+    }
+
+    @Test
+    public void sanitizeFragmentEncodesOtherPrintableCharacters() {
+        assertEquals("#/a%20b", LoginRedirects.sanitizeFragment("#/a b"));
+        assertEquals("#/a%23b", LoginRedirects.sanitizeFragment("#/a#b"));
+        assertEquals("#/%3Cscript%3E%22%5C", LoginRedirects.sanitizeFragment("#/<script>\"\\"));
+        // UTF-8 bytes
+        assertEquals("#/node/%C3%A9", LoginRedirects.sanitizeFragment("#/node/\u00e9"));
+    }
+
+    @Test
     public void sanitizeFragmentRejectsBadInput() {
         final String[] bad = {
             null, "", "#", "/node/1", "#node", "#//evil.example.com", "#/a\r\nSet-Cookie: x=1",
-            "#/<script>", "#/a#b", "#/a b"
+            "#/a\tb", "#/a\u0000b", "#/a\u007fb"
         };
         for (final String fragment : bad) {
             assertNull("should reject: " + fragment, LoginRedirects.sanitizeFragment(fragment));

@@ -21,6 +21,7 @@
  */
 package org.opennms.web.springframework.security;
 
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,9 +45,12 @@ public final class LoginRedirects {
     public static final String PASSWORD_GATE_PENDING_ATTRIBUTE = "org.opennms.web.login.PASSWORD_GATE_PENDING";
     public static final String DEFAULT_TARGET_PATH = "/index.jsp";
 
-    // A Vue hash route: "#/" followed by RFC 3986 fragment characters only (no '#', whitespace,
-    // control characters, or HTML metacharacters), so it cannot inject headers or markup.
-    private static final Pattern FRAGMENT_PATTERN = Pattern.compile("^#/[A-Za-z0-9\\-._~!$&'()*+,;=:@/?%]{0,2047}$");
+    // A Vue hash route keeps only RFC 3986 fragment characters (and '%' of an existing escape); every
+    // other character is percent-encoded, so the result cannot inject headers or markup.
+    private static final String FRAGMENT_CHARACTERS =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~!$&'()*+,;=:@/?%";
+    private static final int MAX_FRAGMENT_LENGTH = 2049;
+    private static final char[] HEX = "0123456789ABCDEF".toCharArray();
 
     // ";name=value" path parameters in a path segment, e.g. ";jsessionid=..."
     private static final Pattern PATH_PARAMETERS = Pattern.compile(";[^/]*");
@@ -56,13 +60,32 @@ public final class LoginRedirects {
     private LoginRedirects() {}
 
     /**
-     * @return the fragment if it is a safe Vue hash route, otherwise null
+     * vue-router leaves some characters unencoded in the hash, e.g. | [ ] { } ^ and, in query values,
+     * `. A user-entered name in the query can contain them. Percent-encode them, and any other
+     * character outside {@link #FRAGMENT_CHARACTERS}: vue-router decodes the escapes, so the route
+     * stays the same.
+     *
+     * @return the fragment as a safe Vue hash route ("#/..."), or null if it is not one: no "#/"
+     *     at the start, "#//" (looks like a host), control characters, or too long
      */
     public static String sanitizeFragment(final String fragment) {
-        if (fragment == null || fragment.startsWith("#//") || !FRAGMENT_PATTERN.matcher(fragment).matches()) {
+        if (fragment == null || !fragment.startsWith("#/") || fragment.startsWith("#//") || fragment.length() > MAX_FRAGMENT_LENGTH) {
             return null;
         }
-        return fragment;
+        final StringBuilder safe = new StringBuilder(fragment.length() + 16).append("#/");
+        for (final byte b : fragment.substring(2).getBytes(StandardCharsets.UTF_8)) {
+            final int c = b & 0xff;
+            if (c < 0x20 || c == 0x7f) {
+                // a control character (e.g. CR, LF) is never part of a route
+                return null;
+            }
+            if (c < 0x80 && FRAGMENT_CHARACTERS.indexOf(c) >= 0) {
+                safe.append((char) c);
+            } else {
+                safe.append('%').append(HEX[c >> 4]).append(HEX[c & 0x0f]);
+            }
+        }
+        return safe.toString();
     }
 
     public static boolean isSpaPath(final String path) {
