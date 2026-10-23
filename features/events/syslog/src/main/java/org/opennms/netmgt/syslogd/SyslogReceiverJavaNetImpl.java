@@ -102,14 +102,9 @@ public class SyslogReceiverJavaNetImpl extends SinkDispatchingSyslogReceiver {
             LOG.debug("Thread context stopped and joined");
         }
 
-        try {
-            if (m_dispatcher != null) {
-                m_dispatcher.close();
-                m_dispatcher = null;
-            }
-        } catch (Exception e) {
-            LOG.warn("Exception while closing dispatcher.", e);
-        }
+        // Delegate rather than closing the dispatcher here: the base class also owns the
+        // TCP socket, and duplicating this teardown left that socket bound.
+        super.stop();
     }
 
     /**
