@@ -95,8 +95,10 @@ else
 fi
 
 # bound each attempt so a hung mirror fails fast instead of stalling the job
-retry timeout 5m sudo apt-get -y --error-on=any update \
-  && retry timeout 5m sudo apt-get -y install openjdk-25-jdk-headless
+# (--foreground: sudo needs the tty's foreground process group or it gets stopped)
+retry timeout --foreground -k 30s 5m sudo apt-get -y --error-on=any update </dev/null \
+  && retry timeout --foreground -k 30s 5m sudo env DEBIAN_FRONTEND=noninteractive \
+       apt-get -y install openjdk-25-jdk-headless </dev/null
 
 # When retries are enabled, use --fail-at-end so all tests run before retrying
 FAILURE_MODE="--fail-fast"
