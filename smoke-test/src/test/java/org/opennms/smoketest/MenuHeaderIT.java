@@ -196,7 +196,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // Administration Menu
         clickMenuItem("Administration", "Surveillance Categories");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Surveillance Categories']")));
+        // now a /ui (Vue) page rather than the legacy JSP card header
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Surveillance Categories']")));
 
         clickMenuItem("Administration", "Configure Thresholds");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Threshold Configuration']")));
