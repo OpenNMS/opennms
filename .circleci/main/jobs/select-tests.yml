@@ -1,0 +1,29 @@
+jobs:
+  select-tests:
+    executor: select-tests-executor
+    resource_class: small
+    steps:
+      - cached-checkout
+      - run:
+          name: Select tests for this pull request (shadow mode)
+          command: |
+            # Shadow mode: the selection is only stored as an artifact, and the full suites still run.
+            # This step never fails the job.
+            . ./.circleci/scripts/lib.sh
+            BASE="$(get_reference_branch || echo develop)"
+            echo "Reference branch: ${BASE}"
+            if [ -z "${CIRCLE_PULL_REQUEST:-}" ]; then
+              echo "No pull request for this branch; skipping test selection."
+              exit 0
+            fi
+            if [ "${BASE}" != "develop" ]; then
+              echo "Test selection runs only for branches based on develop; skipping."
+              exit 0
+            fi
+            pip install --quiet "anthropic==1.16.0" \
+              && python3 .circleci/pyscripts/select_tests.py --base "origin/${BASE}" --out-dir ~/selection \
+              || echo "Selector failed; the full suites run as usual."
+            exit 0
+      - store_artifacts:
+          path: ~/selection
+          destination: selection
