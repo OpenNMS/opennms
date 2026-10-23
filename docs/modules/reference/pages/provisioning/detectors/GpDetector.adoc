@@ -1,0 +1,83 @@
+= General Purpose Detector
+:description: Learn how the GpDetector in OpenNMS {page-component-title} runs a script to determine whether a service exists.
+
+The GpDetector (general purpose detector) runs an external script to determine whether a service exists.
+It runs the script with the interface address and a timeout as arguments, and detects the service when the script exits with status `0` and its standard output matches the `banner` regular expression.
+The script must be located under `$\{OPENNMS_HOME}`.
+
+The detector runs the script as follows:
+
+[source, console]
+----
+<script> <hoption> <ip-address> <toption> <timeout-in-seconds> [<args>]
+----
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.generic.GpDetector`
+|===
+
+== Configuration and use
+
+The GpDetector uses the xref:reference:provisioning/detectors.adoc#ref-detector-provisioning-common-parameters[common configuration parameters].
+
+.Parameters for the GpDetector
+[options="header"]
+[cols="1,4,1"]
+|===
+| Parameter
+| Description
+| Default
+
+3+| *Required*
+
+| script
+| Absolute path of the script to run.
+The path must be inside `$\{OPENNMS_HOME}`.
+| none
+
+| banner
+| Java regular expression that must match the entire standard output of the script.
+| none
+
+3+| *Optional*
+
+| match
+| Accepted, but not used: only `banner` decides the result.
+| none
+
+| args
+| Additional arguments appended to the command line.
+| none
+
+| hoption
+| Option name that precedes the IP address.
+| --hostname
+
+| toption
+| Option name that precedes the timeout.
+The timeout is passed in seconds, with a minimum of one second.
+| --timeout
+
+| timeout
+| Maximum run time of the script, in milliseconds.
+| 2000
+|===
+
+NOTE: When the script exits with a non-zero status, the detector matches `banner` against an empty string.
+A pattern that also matches an empty string, such as `.*`, detects the service even when the script fails.
+
+== Example configuration
+
+The following detector runs a script that prints `OK` when the service exists:
+
+[source, xml]
+----
+<detector name="Custom-Service" class="org.opennms.netmgt.provision.detector.generic.GpDetector">
+    <parameter key="script" value="/opt/opennms/bin/check-custom-service.sh"/>
+    <parameter key="banner" value="OK\s*"/>
+    <parameter key="timeout" value="5000"/>
+</detector>
+----
