@@ -41,6 +41,7 @@ import org.springframework.security.authentication.event.AbstractAuthenticationE
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
+import org.springframework.security.authentication.event.LogoutSuccessEvent;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.util.Assert;
 import org.springframework.web.context.support.ServletRequestHandledEvent;
@@ -56,6 +57,7 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
     public static final String SUCCESS_UEI = "uei.opennms.org/internal/authentication/successfulLogin";
     /** Constant <code>FAILURE_UEI="uei.opennms.org/internal/authentication"{trunked}</code> */
     public static final String FAILURE_UEI = "uei.opennms.org/internal/authentication/failure";
+    public static final String LOGOUT_UEI = "uei.opennms.org/internal/authentication/loggedOut";
 
     private EventProxy m_eventProxy;
     
@@ -90,6 +92,13 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
             auditLog("FAILURE", authEvent, authEvent.getException().getMessage());
         }
         
+        if (event instanceof LogoutSuccessEvent) {
+            LogoutSuccessEvent authEvent = (LogoutSuccessEvent) event;
+            EventBuilder builder = createEvent(LOGOUT_UEI, authEvent);
+            builder.setTime(new Date(event.getTimestamp()));
+            sendEvent(builder.getEvent());
+        }
+
         if (event instanceof AuthorizedEvent) {
             AuthorizedEvent authEvent = (AuthorizedEvent) event;
             LOG.debug("AuthorizedEvent received - \n  Details - {}\n  Principal - {}", authEvent.getAuthentication().getDetails(), authEvent.getAuthentication().getPrincipal());
