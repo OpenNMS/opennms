@@ -18,8 +18,8 @@
           variant="outlined"
           :icon="RefreshIcon"
           title="Refresh"
-          tooltip="Redraw the graph with the latest data"
-          :disabled="!canQuery || loading"
+          tooltip="Reload the resources and redraw the graph with the latest data"
+          :disabled="!(canQuery || canRefresh) || loading"
           data-test="toolbar-refresh"
           @click="emit('refresh')"
         />
@@ -170,6 +170,8 @@ import { DEFAULT_RESOLUTION, MAX_RESOLUTION } from './utils/adhocQuery'
 withDefaults(defineProps<{
   config: AdhocGraphConfig
   canQuery: boolean
+  /** Refresh also reloads resources, so it is useful before there is anything to query. */
+  canRefresh?: boolean
   hasData: boolean
   loading: boolean
   /** True while the graph is filling the page with the selectors hidden. */
@@ -177,6 +179,7 @@ withDefaults(defineProps<{
   /** Graph-only route: no editing controls, no expand/pop-out of its own. */
   viewOnly?: boolean
 }>(), {
+  canRefresh: false,
   expanded: false,
   viewOnly: false
 })
