@@ -49,10 +49,9 @@ public class Header implements Serializable {
     private String m_created;
 
     /**
-     * Monitoring station? This is seemingly
-     *  unused.
+     * Deprecated and ignored; kept so existing users.xml files still load.
      */
-    @XmlElement(name = "mstation", required = true)
+    @XmlElement(name = "mstation")
     private String m_mstation;
 
     public Header() {
