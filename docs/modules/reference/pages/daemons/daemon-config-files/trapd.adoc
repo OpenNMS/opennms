@@ -43,9 +43,8 @@ You can manage the configuration in the following ways:
 * Use the *Trap Configuration* page in the web UI (menu:Integrations[Trap Configuration]).
 * Use the xref:development:rest/trapd-rest-api.adoc[Trapd REST API (v2)].
 
-Each change saved through the web UI or the REST API sends a `uei.opennms.org/internal/reloadDaemonConfig` event for trapd.
-Trapd then restarts its trap listener with the new address, port, and SNMPv3 users.
-Trapd reads the remaining settings (new suspect on trap, raw message, forwarded source address, threads, queue size, batch size, and batch interval) when it starts, so restart {page-component-title} after you change them.
+Changes saved through the web UI or the REST API take effect without restarting {page-component-title}.
+Each save updates the configuration that trapd uses and sends a `uei.opennms.org/internal/reloadDaemonConfig` event, which restarts the trap listener with the new settings.
 
 NOTE: The mappings between OIDs and UEIs are stored in the database and can be configured using the Web-UI.
 
