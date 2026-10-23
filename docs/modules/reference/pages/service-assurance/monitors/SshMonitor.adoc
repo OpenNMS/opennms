@@ -31,7 +31,9 @@ The xref:service-assurance/monitors/MinaSshMonitor.adoc[MinaSshMonitor] also tes
 | Default
 
 | banner
-| Regular expression to be matched against the service's banner.
+| Java regular expression to find in the banner line that the SSH server sends.
+A value of `*` disables banner matching.
+See <<ssh-banner-matching, Banner matching>>.
 | n/a
 
 | client-banner
@@ -39,7 +41,7 @@ The xref:service-assurance/monitors/MinaSshMonitor.adoc[MinaSshMonitor] also tes
 | SSH-1.99-OpenNMS_1.5
 
 | match
-| Regular expression to match against the service's banner. +
+| Java regular expression to find in the banner line that the SSH server sends. +
 Deprecated, please use the banner parameter instead.
 Note that this parameter does take precedence over the banner parameter.
 | n/a
@@ -49,11 +51,46 @@ Note that this parameter does take precedence over the banner parameter.
 | 22
 
 | retry
-| Number of attempts to establish the SSH connection.
+| Number of retries after the first failed attempt to establish the SSH connection.
 | 0
 |===
 
 This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+[[ssh-banner-matching]]
+== Banner matching
+
+The SSH server sends a banner line, such as `SSH-2.0-OpenSSH_9.6`, when the connection opens.
+The monitor compiles the `banner` (or `match`) value with the Java `java.util.regex.Pattern` syntax and searches the banner line for it.
+The expression has to match only part of the line, not the whole line.
+Use `^` and `$` to anchor the expression to the start or end of the line.
+
+Matching is case-sensitive by default.
+Use a character class such as `[Ss][Ss][Hh]` or the inline flag `(?i)` to ignore case.
+
+If the banner does not match, the service is considered down without further retries.
+If the server opens the connection and then closes it before it sends a banner, the service is considered down with the reason `server closed connection before banner was received.`
+If the expression is not a valid Java regular expression, the monitor logs the error and reports the service as down.
+
+.Example banner expressions
+[options="header"]
+[cols="1,3"]
+|===
+| Expression
+| Result
+
+| `OpenSSH`
+| Matches any banner that contains `OpenSSH`.
+
+| `(?i)openssh`
+| Matches `OpenSSH` in any case.
+
+| `^SSH-2\.0-`
+| Matches only servers that announce protocol version 2.0.
+
+| `OpenSSH_(8\.[89]\|9\.)`
+| Matches OpenSSH 8.8, 8.9, and any 9.x release.
+|===
 
 == Examples
 

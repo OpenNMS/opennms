@@ -104,9 +104,33 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 Some example configurations showing how to configure the monitor in `poller-configuration.xml`.
 [source, xml]
 ----
-<parameter key="url" value="http://$\{ipaddr}:$\{port}/jolokia"/>
-<parameter key="url" value="https://$\{ipaddr}:$\{port}/jolokia"/>
+<parameter key="url" value="http://${ipaddr}:${port}/jolokia"/>
+<parameter key="url" value="https://${ipaddr}:${port}/jolokia"/>
 ----
+
+The following example reads the `VmName` attribute of the `java.lang:type=Runtime` MBean through a Jolokia JVM agent on port 8778.
+The service is up when the attribute value contains `Server VM`.
+Note that you must include the `monitor` section for each service in your definition.
+
+[source, xml]
+----
+<service name="Jolokia-Runtime" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="port" value="8778"/> <1>
+  <parameter key="url" value="http://${ipaddr}:${port}/jolokia"/> <2>
+  <parameter key="beanname" value="java.lang:type=Runtime"/>
+  <parameter key="attrname" value="VmName"/>
+  <parameter key="banner" value="Server VM"/> <3>
+</service>
+
+<monitor service="Jolokia-Runtime" class-name="org.opennms.netmgt.poller.monitors.JolokiaBeanMonitor"/>
+----
+<1> Replaces `$\{port}` in the URL.
+<2> The monitor replaces `$\{ipaddr}` with the address of the monitored interface.
+<3> Substring match; use `~` as the first character for a Java regular expression that must match the whole value, for example `~.*Server VM.*`.
+
+NOTE: If `banner` is not set, is empty, or is `*`, the monitor reports the service as up as soon as it creates the Jolokia client, without reading the attribute or running the method.
 
 == AttrName versus MethodName
 

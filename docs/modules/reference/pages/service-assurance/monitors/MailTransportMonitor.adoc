@@ -288,7 +288,7 @@ Note that you must include the `monitor` section in your definition.
                        use-authentication="false" <2>
                        use-jmta="false" <3>
                        debug="false" > <4>
-          <sendmail-host host="$\{ipaddr}" <5>
+          <sendmail-host host="${ipaddr}" <5>
                          port="25" /> <6>
           <sendmail-protocol mailer="smtpsend" /> <7>
           <sendmail-message to=opennms@gmail.com  <8>
