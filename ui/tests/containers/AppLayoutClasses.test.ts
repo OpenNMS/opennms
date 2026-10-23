@@ -26,24 +26,26 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { defineComponent, h } from 'vue'
 import App from '@/main/App.vue'
+import { useOnmsChromeless } from '@opennms/onms-ui'
 
 // The topology page has to sit exactly inside the layout's main grid row, which
 // two route-scoped classes arrange: one bounds the layout to the viewport, the
 // other passes that height down. Without a test, renaming the route or adding a
 // new one silently unbounds the layout and puts the footer below the fold again,
-// which is the bug those classes were added to fix.
+// which is the bug those classes were added to fix. Routes with meta.chromeless (wall displays,
+// plugin child routes) drop the Menubar, side rail and footer.
 // vi.mock is hoisted, so each factory builds its own stub rather than closing
 // over a shared helper.
 const blank = (name: string) => defineComponent({ name, render: () => h('div') })
 
 vi.mock('@/components/Menu/Menubar.vue', () => ({
-  default: { name: 'Menubar', render: () => h('div') }
+  default: { name: 'Menubar', render: () => h('div', { class: 'stub-menubar' }) }
 }))
 vi.mock('@/components/Menu/SideMenu.vue', () => ({
-  default: { name: 'SideMenu', render: () => h('div') }
+  default: { name: 'SideMenu', render: () => h('div', { class: 'stub-sidemenu' }) }
 }))
 vi.mock('@/components/Layout/Footer.vue', () => ({
-  default: { name: 'Footer', render: () => h('div') }
+  default: { name: 'Footer', render: () => h('div', { class: 'stub-footer' }) }
 }))
 vi.mock('@/components/Common/Spinner.vue', () => ({
   default: { name: 'Spinner', render: () => h('div') }
@@ -57,7 +59,16 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     { path: '/topology/:source?', name: 'Topology', component: blank('TopologyPage') },
-    { path: '/nodes', name: 'Nodes', component: blank('NodesPage') }
+    { path: '/nodes', name: 'Nodes', component: blank('NodesPage') },
+    {
+      path: '/plugins/exampleUiExtension/:resourceRootPath/:moduleFileName',
+      name: 'Plugin-exampleUiExtension',
+      component: blank('PluginHost'),
+      children: [
+        { path: 'board', name: 'PluginBoard', component: blank('PluginBoard'), meta: { chromeless: true }},
+        { path: 'editor', name: 'PluginEditor', component: blank('PluginEditor') }
+      ]
+    }
   ]
 })
 
@@ -70,6 +81,8 @@ afterEach(() => {
     mounted.pop()!.unmount()
   }
   document.body.innerHTML = ''
+  // Chromeless state is module-level and outlives the mounted App.
+  useOnmsChromeless().exitChromeless()
   vi.clearAllMocks()
 })
 
@@ -79,9 +92,9 @@ const mountAt = async (path: string) => {
   const wrapper = mount(App, {
     global: {
       // stubActions: App.vue's onMounted kicks off several store fetches, and this
-      // test is about two CSS classes.
+      // test is about the layout's classes and chrome.
       plugins: [router, createTestingPinia()],
-      stubs: { OnmsAppLayout: { template: '<div :class="$attrs.class"><slot /></div>' }}
+      stubs: { OnmsAppLayout: { template: '<div :class="$attrs.class"><slot name="header" /><slot /><slot name="footer" /></div>' }}
     }
   })
   mounted.push(wrapper)
@@ -99,5 +112,55 @@ describe('App layout classes', () => {
     const wrapper = await mountAt('/nodes')
     expect(wrapper.find('.main-content').classes()).not.toContain('main-content-fill')
     expect(wrapper.html()).not.toContain('app-layout-bounded')
+  })
+
+  it('drops the chrome on a plugin child route with meta.chromeless, not on its sibling', async () => {
+    const wrapper = await mountAt('/plugins/exampleUiExtension/example-ui/example.es.js/board')
+    expect(wrapper.html()).toContain('app-layout-chromeless')
+    expect(wrapper.find('.stub-menubar').exists()).toBe(false)
+    expect(wrapper.find('.stub-sidemenu').exists()).toBe(false)
+    expect(wrapper.find('.stub-footer').exists()).toBe(false)
+
+    await router.push('/plugins/exampleUiExtension/example-ui/example.es.js/editor')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.html()).not.toContain('app-layout-chromeless')
+    expect(wrapper.find('.stub-menubar').exists()).toBe(true)
+    expect(wrapper.find('.stub-footer').exists()).toBe(true)
+  })
+
+  it('brings the chrome back on Escape until the next navigation', async () => {
+    const board = '/plugins/exampleUiExtension/example-ui/example.es.js/board'
+    const wrapper = await mountAt(board)
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.stub-menubar').exists()).toBe(true)
+    expect(wrapper.html()).not.toContain('app-layout-chromeless')
+
+    await router.push('/nodes')
+    await router.push(board)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.stub-menubar').exists()).toBe(false)
+  })
+
+  it('leaves the chrome hidden when Escape is closing a dialog', async () => {
+    const wrapper = await mountAt('/plugins/exampleUiExtension/example-ui/example.es.js/board')
+    const mask = document.createElement('div')
+    mask.className = 'p-dialog-mask p-overlay-mask'
+    document.body.appendChild(mask)
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.stub-menubar').exists()).toBe(false)
+  })
+
+  it('drops the chrome on enterChromeless() and restores it on Escape', async () => {
+    const wrapper = await mountAt('/nodes')
+    useOnmsChromeless().enterChromeless()
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.stub-menubar').exists()).toBe(false)
+    expect(wrapper.html()).toContain('app-layout-chromeless')
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.stub-menubar').exists()).toBe(true)
   })
 })
