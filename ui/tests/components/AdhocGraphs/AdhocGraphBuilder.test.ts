@@ -375,24 +375,21 @@ describe('AdhocGraphBuilder', () => {
       await flushPromises()
       expect(store.reachablePickedResources.map(resource => resource.id)).toEqual([RESOURCE_ID])
 
-      // Deselecting the visible one in the list must not take the hidden one with it.
+      // Unchecking the visible one, even though it is the last one listed, must
+      // not take the hidden one with it: that is a click, not a clear.
       component(wrapper, '[data-test="resources-list"]').vm.$emit('update:modelValue', [])
       await flushPromises()
-      expect(store.pickedResources.map(resource => resource.id)).toEqual([])
+      expect(store.pickedResources.map(resource => resource.id)).toEqual(['node[2].interfaceSnmp[eth0]'])
 
-      store.setPickedResources([...store.resourceOptions])
-      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '1', label: 'switch-01' }, { id: '2', label: 'switch-02' }] })
-      await store.setNodeFilter('catincRouters')
-      await flushPromises()
-      store.setPickedResources([...store.resourceOptions])
-      getNodesByFilterRule.mockResolvedValue({ nodes: [{ id: '1', label: 'switch-01' }] })
-      await store.setNodeFilter('catincRouters & catincCore')
-      await flushPromises()
-
-      // Toggling (rather than clearing) keeps the hidden pick.
+      // Checking it again keeps the hidden one too.
       component(wrapper, '[data-test="resources-list"]').vm.$emit('update:modelValue', [store.resourceOptions[0]])
       await flushPromises()
       expect(store.pickedResources.map(resource => resource.id).sort()).toEqual(['node[1].interfaceSnmp[eth0]', 'node[2].interfaceSnmp[eth0]'])
+
+      // Only the Clear button means the whole selection.
+      await wrapper.find('[data-test="resources-clear"]').trigger('click')
+      await flushPromises()
+      expect(store.pickedResources).toEqual([])
     })
 
     it('adds to the selection on Select all rather than replacing it', async () => {
@@ -534,6 +531,40 @@ describe('AdhocGraphBuilder', () => {
       expect(store.datasourceFilter).toBe('')
       expect((wrapper.find('input[data-test="datasources-filter"]').element as HTMLInputElement).value).toBe('')
       expect(wrapper.find('[data-test="series-empty"]').exists()).toBe(true)
+    })
+
+    // The blocker from review: a failed first load used to prune every edit a
+    // link carried, and 400 ms later rewrite the address bar without them.
+    it('keeps the edits of a link through a failed load, until the problem is fixed', async () => {
+      copyToClipboard.mockResolvedValue(undefined)
+      const link = `${RESOURCE_ID}~ifHCInOctets~~kept~~#2a78d6~`
+
+      const cases: [() => void, (wrapper: ReturnType<typeof mount>, store: ReturnType<typeof useAdhocGraphStore>) => Promise<void>][] = [
+        // A rule the server failed on, then retyped.
+        [() => getNodesByFilterRule.mockResolvedValueOnce({ error: 'failed' }), async (_wrapper, store) => store.setNodeFilter('catincRouters')],
+        // A rule matching too many nodes, then narrowed.
+        [() => getNodesByFilterRule.mockResolvedValueOnce({ error: 'too-many', count: 5000 }), async (_wrapper, store) => store.setNodeFilter('catincRouters & catincCore')],
+        // A node that did not answer, then Refresh.
+        [() => getResourceForNode.mockRejectedValueOnce(new Error('boom')), async wrapper => wrapper.find('[data-test="toolbar-refresh"]').trigger('click')]
+      ]
+
+      for (const [breakIt, fixIt] of cases) {
+        routeQuery = { nf: 'catincRouters', rf: 'interfaceSnmp[eth*]', df: 'ifHC*Octets', o: link, range: 'hours:1' }
+        breakIt()
+        const { wrapper, store } = mountBuilder()
+        await flushPromises()
+
+        await fixIt(wrapper, store)
+        await flushPromises()
+
+        expect(seriesLabels(wrapper), String(fixIt)).toEqual(['kept', 'switch_01_eth0_ifHCOutOctets'])
+        copyToClipboard.mockClear()
+        await wrapper.find('[data-test="toolbar-share"]').trigger('click')
+        await flushPromises()
+        const params = new URLSearchParams((copyToClipboard.mock.calls[0][0] as string).split('?')[1])
+        expect(params.getAll('o')).toEqual([link])
+        mounted.pop()?.unmount()
+      }
     })
 
     it('forgets an edit for a series no node seen this session can produce', async () => {
@@ -886,7 +917,17 @@ describe('AdhocGraphBuilder', () => {
 
       store.queryLoading = false
       await flushPromises()
-      expect(refreshDisabled()).toBe(true) // still disabled: no series yet
+      expect(refreshDisabled()).toBe(true) // still disabled: nothing to query or reload yet
+    })
+
+    it('enables Refresh once there are nodes to reload, even with nothing to graph yet', async () => {
+      const { wrapper, store } = mountBuilder()
+      await flushPromises()
+
+      await store.setNodeFilter('catincRouters')
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="toolbar-refresh"]').attributes('disabled')).toBeUndefined()
     })
   })
 

@@ -44,7 +44,7 @@
         variant="ghost"
         :disabled="!modelValue.length && !setAsideCount && !excludedCount"
         :data-test="`${dataTest}-clear`"
-        @click="emit('update:modelValue', [])"
+        @click="emit('clear')"
       >Clear</OnmsButton>
     </div>
 
@@ -150,7 +150,10 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
+  /** The listed items' selection changed; says nothing about items not listed. */
   'update:modelValue': [value: unknown[]]
+  /** The Clear button: the whole selection, listed or not, and anything else the column narrows by. */
+  clear: []
   filter: [term: string]
 }>()
 

@@ -115,12 +115,13 @@ describe('SelectionColumn', () => {
       expect(wrapper.emitted('update:modelValue')?.[0][0]).toEqual(OPTIONS)
     })
 
-    it('drops every selection on Clear', async () => {
+    it('reports Clear as its own event, apart from the listed selection changing', async () => {
       const wrapper = mountColumn({ modelValue: [OPTIONS[1]] })
 
       await wrapper.find('[data-test="resources-clear"]').trigger('click')
 
-      expect(wrapper.emitted('update:modelValue')?.[0][0]).toEqual([])
+      expect(wrapper.emitted('clear')).toHaveLength(1)
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
     })
 
     it('disables Clear when nothing is selected', () => {

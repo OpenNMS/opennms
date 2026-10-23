@@ -371,8 +371,13 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
   const nodeResourceLoads = new Map<string, Promise<NodeResources | null>>()
   /** Effective nodes whose resources could not be loaded. */
   const failedNodeLoads = ref(0)
-  /** Bumped when a resource load completes; what to watch to act on a settled list. */
-  const resourceLoads = ref(0)
+  /**
+   * Bumped when a resource load completes with nothing missing: no rule error,
+   * no overflow, no node that failed to answer, and at least one node seen. That
+   * is the only moment at which "no node seen this session can produce this"
+   * means anything; after a failure it would just mean "the server was down".
+   */
+  const cleanResourceLoads = ref(0)
   /**
    * Every id form of every node whose resources have been seen this session,
    * including the form the server used in the resource ids themselves. What
@@ -606,9 +611,13 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
       { ...node, label: cachedResources(node.id)?.label ?? node.id } :
       node))
 
-    // An exclusion of a series no node seen this session can produce is dead weight.
-    excludedDatasourceKeys.value = excludedDatasourceKeys.value.filter(isKnownKey)
-    resourceLoads.value++
+    const clean = !nodeFilterError.value && !nodeLimitExceeded.value && !failedNodeLoads.value && seenNodeForms.size > 0
+
+    if (clean) {
+      // An exclusion of a series no node seen this session can produce is dead weight.
+      excludedDatasourceKeys.value = excludedDatasourceKeys.value.filter(isKnownKey)
+      cleanResourceLoads.value++
+    }
   }
 
   /**
@@ -859,7 +868,7 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     resourceMatches,
     resourceOptions,
     resourcesLoading,
-    resourceLoads,
+    cleanResourceLoads,
     pickedResources,
     reachablePickedResources,
     setAsideResources,

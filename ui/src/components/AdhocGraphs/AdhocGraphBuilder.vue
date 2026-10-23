@@ -56,6 +56,7 @@
           :labelOf="option => (option as AdhocNodeOption).label"
           :descriptionOf="describeNode"
           @filter="onNodeFilter"
+          @clear="onPickNodes([])"
           @update:modelValue="value => onPickNodes(value as AdhocNodeOption[])"
         />
       </div>
@@ -78,6 +79,7 @@
           :labelOf="option => (option as AdhocResourceOption).label"
           :descriptionOf="describeResource"
           @filter="onResourceFilter"
+          @clear="store.setPickedResources([])"
           @update:modelValue="value => onPickResources(value as AdhocResourceOption[])"
         />
       </div>
@@ -99,6 +101,7 @@
           :labelOf="option => (option as AdhocDatasourceOption).attribute"
           :descriptionOf="describeDatasource"
           @filter="onDatasourceFilter"
+          @clear="store.setPickedDatasources([])"
           @update:modelValue="value => onPickDatasources(value as AdhocDatasourceOption[])"
         />
       </div>
@@ -156,6 +159,7 @@
         <AdhocChartToolbar
           :config="config"
           :canQuery="canQuery"
+          :canRefresh="store.effectiveNodes.length > 0"
           :hasData="Boolean(store.measurements)"
           :loading="store.queryLoading"
           :expanded="expanded"
@@ -487,14 +491,11 @@ const notePinned = (what: string, count: number) => {
  * A column shows only the selections its filters currently reach; the rest are
  * set aside, to come back when the filters reach them again. A click in the list
  * therefore reports only the visible part of the selection, and the hidden part
- * has to be kept by hand, or one click would silently delete it. Clearing is the
- * exception: an empty selection means the whole selection.
+ * has to be kept by hand, or one click would silently delete it. Unchecking the
+ * last visible item is still a click, not a clear: the column's Clear button
+ * is a separate event for the whole selection.
  */
 const withHidden = <T>(visible: T[], all: T[], reachable: T[], keyOf: (item: T) => string): T[] => {
-  if (!visible.length) {
-    return []
-  }
-
   const reachableKeys = new Set(reachable.map(keyOf))
   return [...visible, ...all.filter(item => !reachableKeys.has(keyOf(item)))]
 }
@@ -913,9 +914,10 @@ watch(() => store.effectiveDatasources, value => reconcileSeries([...value]))
 
 // Edits and generated labels for series no node seen this session can produce
 // are forgotten, so neither the page nor the link grows for as long as it is
-// open. Judged after a load has settled, never on an empty page: a restored
-// link's edits arrive before its nodes do.
-watch(() => store.resourceLoads, () => {
+// open. Judged only after a load that had nothing missing (see the store): after
+// a failed rule, an overflow or a node that did not answer, "not seen" says
+// nothing about the series, and a link's edits must survive until it is fixed.
+watch(() => store.cleanResourceLoads, () => {
   for (const key of Object.keys(overrides)) {
     if (!store.isKnownKey(key)) {
       delete overrides[key]
