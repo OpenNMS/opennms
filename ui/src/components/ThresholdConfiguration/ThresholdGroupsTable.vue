@@ -1,26 +1,26 @@
 <template>
-  <TableCard>
+  <TableCard class="threshold-groups-card">
     <div class="table-header">
       <OnmsSearchInput
+        class="group-search"
         :modelValue="search"
         placeholder="Search groups"
         ariaLabel="Search threshold groups"
         dataTest="threshold-group-search"
         @update:modelValue="search = $event ?? ''"
       />
-      <OnmsButton data-test="threshold-group-create" @click="onCreate">New group</OnmsButton>
+      <OnmsButton class="create-button" data-test="threshold-group-create" @click="router.push(GROUP_CREATE_PATH)">New group</OnmsButton>
     </div>
 
     <OnmsTable :value="filteredGroups" data-test="threshold-groups-table">
       <OnmsColumn header="Name">
         <template #body="{ data }">
-          <router-link :to="groupRoute(data.name)" data-test="threshold-group-link">{{ data.name }}</router-link>
+          <router-link :to="groupPath(data.name)" data-test="threshold-group-link">{{ data.name }}</router-link>
         </template>
       </OnmsColumn>
-      <OnmsColumn header="RRD repository" field="rrdRepository" />
       <OnmsColumn header="Thresholds" field="thresholdCount" />
       <OnmsColumn header="Expressions" field="expressionCount" />
-      <OnmsColumn header="Used by">
+      <OnmsColumn header="Used by package">
         <template #body="{ data }">
           <span data-test="threshold-group-used-by">{{ usedBy(data.name) }}</span>
         </template>
@@ -62,14 +62,6 @@
         <p>{{ deleteMessage }}</p>
       </template>
     </OnmsConfirmationDialog>
-
-    <ThresholdGroupDrawer
-      :visible="isDrawerVisible"
-      :isCreate="true"
-      :existingNames="store.groupNames"
-      @cancel="isDrawerVisible = false"
-      @save="onSaveNewGroup"
-    />
   </TableCard>
 </template>
 
@@ -78,11 +70,10 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import ThresholdGroupDrawer from '@/components/ThresholdConfiguration/ThresholdGroupDrawer.vue'
 import useSnackbar from '@/composables/useSnackbar'
+import { GROUP_CREATE_PATH, groupPath } from '@/lib/thresholdRoutes'
 import { useThreshdConfigurationStore } from '@/stores/threshdConfigurationStore'
 import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
-import type { ThresholdGroup } from '@/types/thresholdConfig'
 import {
   OnmsButton,
   OnmsColumn,
@@ -101,7 +92,6 @@ const { showSnackBar } = useSnackbar()
 
 const search = ref('')
 const pendingDelete = ref('')
-const isDrawerVisible = ref(false)
 
 const filteredGroups = computed(() => {
   const term = search.value.trim().toLowerCase()
@@ -110,13 +100,8 @@ const filteredGroups = computed(() => {
     return store.groups
   }
 
-  return store.groups.filter(
-    group =>
-      group.name.toLowerCase().includes(term) || (group.rrdRepository ?? '').toLowerCase().includes(term)
-  )
+  return store.groups.filter(group => group.name.toLowerCase().includes(term))
 })
-
-const groupRoute = (name: string) => `/threshold-config/group/${encodeURIComponent(name)}`
 
 const usedBy = (name: string) => {
   const packages = threshdStore.packagesUsingGroup(name)
@@ -133,22 +118,6 @@ const deleteMessage = computed(() => {
   return `'${pendingDelete.value}' and all of its thresholds will be removed.`
 })
 
-const onCreate = () => {
-  isDrawerVisible.value = true
-}
-
-const onSaveNewGroup = async (group: ThresholdGroup) => {
-  isDrawerVisible.value = false
-
-  const result = await store.createGroup(group)
-
-  showSnackBar({ msg: result.success ? 'Threshold group created.' : result.message, error: !result.success })
-
-  if (result.success) {
-    router.push(groupRoute(group.name))
-  }
-}
-
 const onConfirmDelete = async () => {
   const name = pendingDelete.value
   pendingDelete.value = ''
@@ -160,12 +129,34 @@ const onConfirmDelete = async () => {
 </script>
 
 <style lang="scss" scoped>
+// Padded like the event configuration table and framed like the SNMP configuration tabs.
+.threshold-groups-card {
+  padding: 25px;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 5px;
+}
+
 .table-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1em;
-  padding: 0 1em 0.75em 1em;
+  padding: 0 0 0.75em 0;
+}
+
+// The search field gives up width first so the button label stays on one line.
+.group-search {
+  flex: 0 1 auto;
+  min-width: 0;
+
+  :deep(input) {
+    width: 100%;
+  }
+}
+
+.create-button {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .actions {

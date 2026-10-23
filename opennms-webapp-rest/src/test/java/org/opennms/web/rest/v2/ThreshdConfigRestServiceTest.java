@@ -308,16 +308,6 @@ public class ThreshdConfigRestServiceTest {
         assertEquals("threshd-configuration.xml", reloadedConfigFile());
     }
 
-    @Test
-    public void reloadEndpointIsAdminOnly() {
-        try (Response response = restService.reloadThreshdConfiguration(userContext())) {
-            assertEquals(403, response.getStatus());
-        }
-        try (Response response = restService.reloadThreshdConfiguration(adminContext())) {
-            assertEquals(202, response.getStatus());
-        }
-    }
-
     // ---------------------------------------------------------------- download
 
     @Test

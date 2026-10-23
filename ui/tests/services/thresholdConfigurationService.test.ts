@@ -10,7 +10,6 @@ import {
   getThresholdingMetadata,
   getThreshdConfiguration,
   getThreshdPackages,
-  reloadThresholdingConfiguration,
   updateThresholdGroup,
   updateThreshdPackage,
   uploadThresholdingConfiguration
@@ -145,15 +144,6 @@ describe('thresholdConfigurationService', () => {
 
       await deleteThreshdPackage('example1')
       expect(v2.delete).toHaveBeenCalledWith('/threshd/packages/example1', undefined)
-    })
-
-    test('posts a reload with no body', async () => {
-      vi.mocked(v2.post).mockResolvedValue({ status: 202 })
-
-      const result = await reloadThresholdingConfiguration()
-
-      expect(v2.post).toHaveBeenCalledWith('/thresholding/reload')
-      expect(result.success).toBe(true)
     })
 
     test('uploads to the xml endpoint when the file is xml', async () => {

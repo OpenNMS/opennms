@@ -19,8 +19,7 @@ vi.mock('@/services', () => ({
     createThreshdPackage: vi.fn(),
     updateThreshdPackage: vi.fn(),
     updateThreshdConfiguration: vi.fn(),
-    deleteThreshdPackage: vi.fn(),
-    reloadThreshdConfiguration: vi.fn()
+    deleteThreshdPackage: vi.fn()
   }
 }))
 

@@ -9,7 +9,7 @@
     <template v-if="store.currentGroup">
       <ThresholdGroupHeader
         :group="store.currentGroup"
-        @edit="isEditDrawerVisible = true"
+        @edit="router.push(groupEditPath(groupName))"
         @delete="isDeleteConfirmVisible = true"
       />
 
@@ -23,17 +23,6 @@
           :readOnly="!!store.currentGroup.readOnly"
         />
       </div>
-
-      <ThresholdDefinitionDrawer />
-
-      <ThresholdGroupDrawer
-        :visible="isEditDrawerVisible"
-        :isCreate="false"
-        :group="store.currentGroup"
-        :existingNames="store.groupNames"
-        @cancel="isEditDrawerVisible = false"
-        @save="onSaveGroup"
-      />
 
       <OnmsConfirmationDialog
         v-if="isDeleteConfirmVisible"
@@ -63,16 +52,14 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
-import ThresholdDefinitionDrawer from '@/components/ThresholdConfiguration/Group/ThresholdDefinitionDrawer.vue'
 import ThresholdDefinitionTable from '@/components/ThresholdConfiguration/Group/ThresholdDefinitionTable.vue'
-import ThresholdGroupDrawer from '@/components/ThresholdConfiguration/ThresholdGroupDrawer.vue'
 import ThresholdGroupHeader from '@/components/ThresholdConfiguration/Group/ThresholdGroupHeader.vue'
 import useSnackbar from '@/composables/useSnackbar'
+import { groupEditPath, nameFromParam } from '@/lib/thresholdRoutes'
 import { ThresholdDefinitionKind } from '@/lib/thresholdValidator'
 import { useMenuStore } from '@/stores/menuStore'
 import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
 import { BreadCrumb } from '@/types'
-import type { ThresholdGroup } from '@/types/thresholdConfig'
 import { OnmsConfirmationDialog } from '@opennms/onms-ui'
 
 const route = useRoute()
@@ -81,10 +68,9 @@ const menuStore = useMenuStore()
 const store = useThresholdGroupStore()
 const { showSnackBar } = useSnackbar()
 
-const isEditDrawerVisible = ref(false)
 const isDeleteConfirmVisible = ref(false)
 
-const groupName = computed(() => decodeURIComponent(String(route.params.name ?? '')))
+const groupName = computed(() => nameFromParam(route.params.name))
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => ([
@@ -106,28 +92,6 @@ const load = async () => {
 onMounted(load)
 
 watch(groupName, load)
-
-const onSaveGroup = async (group: ThresholdGroup) => {
-  isEditDrawerVisible.value = false
-
-  const previousName = groupName.value
-  // The drawer only edits name and rrdRepository; keep the definitions the detail page already holds.
-  const payload: ThresholdGroup = {
-    ...(store.currentGroup as ThresholdGroup),
-    name: group.name,
-    rrdRepository: group.rrdRepository
-  }
-
-  const result = await store.renameGroup(previousName, payload)
-
-  showSnackBar({ msg: result.success ? 'Threshold group saved.' : result.message, error: !result.success })
-
-  if (result.success && group.name !== previousName) {
-    router.replace(`/threshold-config/group/${encodeURIComponent(group.name)}`)
-  } else if (result.success) {
-    await store.fetchGroup(previousName)
-  }
-}
 
 const onDeleteGroup = async () => {
   isDeleteConfirmVisible.value = false

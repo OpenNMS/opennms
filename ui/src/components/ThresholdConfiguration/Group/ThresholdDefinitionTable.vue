@@ -1,5 +1,5 @@
 <template>
-  <TableCard>
+  <TableCard class="threshold-definition-card">
     <div class="table-header">
       <h3>{{ title }}</h3>
       <OnmsButton
@@ -16,12 +16,7 @@
       <OnmsColumn header="Description">
         <template #body="{ data }">{{ data.description || '--' }}</template>
       </OnmsColumn>
-      <OnmsColumn v-if="isThresholdKind" header="Datasource" field="dsName" />
-      <OnmsColumn v-else header="Expression" field="expression" />
-      <OnmsColumn header="Datasource type" field="dsType" />
-      <OnmsColumn header="Datasource label">
-        <template #body="{ data }">{{ data.dsLabel || '--' }}</template>
-      </OnmsColumn>
+      <OnmsColumn v-if="!isThresholdKind" header="Expression" field="expression" />
       <OnmsColumn v-if="!isThresholdKind" header="Expression label">
         <template #body="{ data }">{{ data.exprLabel || '--' }}</template>
       </OnmsColumn>
@@ -86,12 +81,13 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import TableCard from '@/components/Common/TableCard.vue'
 import ThresholdUeiCell from '@/components/ThresholdConfiguration/Group/ThresholdUeiCell.vue'
 import useSnackbar from '@/composables/useSnackbar'
+import { definitionCreatePath, definitionEditPath } from '@/lib/thresholdRoutes'
 import { ThresholdDefinitionKind } from '@/lib/thresholdValidator'
 import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
-import { CreateEditMode } from '@/types'
 import type { Expression, Threshold } from '@/types/thresholdConfig'
 import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
 import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
@@ -103,6 +99,7 @@ const props = defineProps<{
 }>()
 
 const store = useThresholdGroupStore()
+const router = useRouter()
 const { showSnackBar } = useSnackbar()
 
 const pendingDeleteIndex = ref(-1)
@@ -139,12 +136,14 @@ const deleteMessage = computed(() => {
   return `The ${definition.type} threshold on '${subject}' will be removed from this group.`
 })
 
+const groupName = computed(() => store.currentGroup?.name ?? '')
+
 const onCreate = () => {
-  store.openDefinitionDrawer(props.kind, CreateEditMode.Create)
+  router.push(definitionCreatePath(groupName.value, props.kind))
 }
 
 const onEdit = (index: number) => {
-  store.openDefinitionDrawer(props.kind, CreateEditMode.Edit, index)
+  router.push(definitionEditPath(groupName.value, props.kind, index))
 }
 
 const onConfirmDelete = async () => {
@@ -161,11 +160,18 @@ const onConfirmDelete = async () => {
 </script>
 
 <style lang="scss" scoped>
+// Padded like the event configuration table and framed like the SNMP configuration tabs.
+.threshold-definition-card {
+  padding: 25px;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 5px;
+}
+
 .table-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1em 0.75em 1em;
+  padding: 0 0 0.75em 0;
 
   h3 {
     margin: 0;
@@ -180,6 +186,5 @@ const onConfirmDelete = async () => {
 
 .empty {
   color: var(--p-text-muted-color);
-  padding: 0 1em;
 }
 </style>

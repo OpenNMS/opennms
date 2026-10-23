@@ -91,6 +91,25 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import {
+  createThresholdGroup,
+  createThreshdPackage,
+  deleteThresholdGroup,
+  deleteThreshdPackage,
+  downloadThresholdingConfiguration,
+  downloadThreshdConfiguration,
+  getThresholdGroup,
+  getThresholdGroups,
+  getThresholdingMetadata,
+  getThreshdConfiguration,
+  getThreshdPackage,
+  getThreshdPackages,
+  updateThresholdGroup,
+  updateThreshdConfiguration,
+  updateThreshdPackage,
+  uploadThresholdingConfiguration,
+  uploadThreshdConfiguration
+} from './thresholdConfigurationService'
 import { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import { getAbout } from './aboutService'
@@ -150,34 +169,8 @@ import {
   renameManagedGroup,
   updateManagedGroup
 } from './groupAdminService'
-import {
-  createThresholdGroup,
-  createThreshdPackage,
-  deleteThresholdGroup,
-  deleteThreshdPackage,
-  downloadThresholdingConfiguration,
-  downloadThreshdConfiguration,
-  getThresholdGroup,
-  getThresholdGroups,
-  getThresholdingMetadata,
-  getThreshdConfiguration,
-  getThreshdPackage,
-  getThreshdPackages,
-  reloadThresholdingConfiguration,
-  reloadThreshdConfiguration,
-  updateThresholdGroup,
-  updateThreshdConfiguration,
-  updateThreshdPackage,
-  uploadThresholdingConfiguration,
-  uploadThreshdConfiguration
-} from './thresholdConfigurationService'
 
 export default {
-  getMinionNodeIds,
-  getCoreVersion,
-  listMinions,
-  deleteMinion,
-  getMinion,
   createThresholdGroup,
   createThreshdPackage,
   deleteThresholdGroup,
@@ -190,13 +183,16 @@ export default {
   getThreshdConfiguration,
   getThreshdPackage,
   getThreshdPackages,
-  reloadThresholdingConfiguration,
-  reloadThreshdConfiguration,
   updateThresholdGroup,
   updateThreshdConfiguration,
   updateThreshdPackage,
   uploadThresholdingConfiguration,
   uploadThreshdConfiguration,
+  getMinionNodeIds,
+  getCoreVersion,
+  listMinions,
+  deleteMinion,
+  getMinion,
   search,
   getAbout,
   getSystemReportPlugins,

@@ -9,13 +9,14 @@
     <template v-if="store.currentPackage">
       <div class="header">
         <div class="left">
-          <OnmsIconButton
-            :icon="BackIcon"
-            tooltip="Back to threshold configuration"
-            aria-label="Back to threshold configuration"
+          <OnmsButton
+            variant="text"
             data-test="threshd-package-back"
-            @click="router.push('/threshold-config?tab=packages')"
-          />
+            @click="router.push(PACKAGES_TAB_PATH)"
+          >
+            <OnmsIcon :icon="ArrowBack" />
+            Go Back
+          </OnmsButton>
           <h2 data-test="threshd-package-name">{{ packageName }}</h2>
         </div>
         <OnmsButton data-test="threshd-package-save" :disabled="hasErrors(errors)" @click="onSave">
@@ -40,20 +41,21 @@
 
 <script setup lang="ts">
 import { computed, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import PackageAddressEditor from '@/components/ThresholdConfiguration/Package/PackageAddressEditor.vue'
 import PackageBasicsForm from '@/components/ThresholdConfiguration/Package/PackageBasicsForm.vue'
 import PackageServicesTable from '@/components/ThresholdConfiguration/Package/PackageServicesTable.vue'
 import useSnackbar from '@/composables/useSnackbar'
+import { PACKAGES_TAB_PATH, isServicePageOf, nameFromParam, packagePath } from '@/lib/thresholdRoutes'
 import { hasErrors, validateThreshdPackage } from '@/lib/thresholdValidator'
 import { useMenuStore } from '@/stores/menuStore'
 import { useThreshdConfigurationStore } from '@/stores/threshdConfigurationStore'
 import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
 import { BreadCrumb } from '@/types'
-import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
-import BackIcon from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
+import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -62,7 +64,7 @@ const store = useThreshdConfigurationStore()
 const groupStore = useThresholdGroupStore()
 const { showSnackBar } = useSnackbar()
 
-const packageName = computed(() => decodeURIComponent(String(route.params.name ?? '')))
+const packageName = computed(() => nameFromParam(route.params.name))
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => ([
@@ -78,6 +80,12 @@ const errors = computed(() =>
 )
 
 const load = async () => {
+  // Back from the service page the package is still loaded, possibly with edits that are not saved yet.
+  if (store.loadedPackageName === packageName.value && store.currentPackage) {
+    await groupStore.fetchGroups()
+    return
+  }
+
   // The group names drive the threshold group picker on each service.
   const [pkg] = await Promise.all([store.fetchPackage(packageName.value), groupStore.fetchGroups()])
 
@@ -98,7 +106,14 @@ watch(packageName, (name) => {
 // Any save can rename the package, including a service save while a name edit is pending.
 watch(() => store.loadedPackageName, (name) => {
   if (name && name !== packageName.value) {
-    router.replace(`/threshold-config/package/${encodeURIComponent(name)}`)
+    router.replace(packagePath(name))
+  }
+})
+
+// Unsaved edits survive a trip to this package's service page and back; anywhere else they are dropped.
+onBeforeRouteLeave((to) => {
+  if (!isServicePageOf(to, store.loadedPackageName)) {
+    store.clearCurrentPackage()
   }
 })
 
@@ -122,7 +137,7 @@ const onSave = async () => {
     .left {
       display: flex;
       align-items: center;
-      gap: 0.75em;
+      gap: 20px;
     }
 
     h2 {
