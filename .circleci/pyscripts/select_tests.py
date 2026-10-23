@@ -23,10 +23,13 @@ MODEL = "claude-opus-5-5"
 FULL_RUN_PATHS = [
     r"^pom\.xml$", r"^core/xml/src/main/", r"^core/lib/src/main/", r"^core/spring/src/main/",
     r"^core/soa/src/main/", r"^core/test-api/", r"^opennms-model/src/main/", r"^opennms-dao-api/src/main/",
-    r"^container/features/",
+    r"^container/features/", r"^dependencies/.*pom\.xml$", r"^\.circleci/scripts/itest\.sh$",
 ]
-FULL_SMOKE_PATHS = [r"^smoke-test/pom\.xml$", r"^smoke-test/src/main/"]
+FULL_SMOKE_PATHS = [r"^smoke-test/pom\.xml$", r"^smoke-test/src/main/", r"^opennms-container/",
+                    r"^\.circleci/scripts/smoke\.sh$"]
 MAX_CHANGED_FILES = 100
+# About 100K tokens; a larger diff costs much and gives little benefit.
+MAX_DIFF_CHARS = 400_000
 
 # The model gets only the names of changed files under these paths.
 EXCLUDE_FROM_DIFF = ("ui/", "docs/", "core/web-assets/")
@@ -96,8 +99,25 @@ def build_catalog(ref):
     files = [f for f in tree if "/src/test/java/" in f and f.endswith(".java")]
     test_api = [f for f in tree if f.startswith("core/test-api/") and "/src/main/java/" in f and f.endswith(".java")]
     sources = read_files(ref, files + test_api)
-    by_simple = {f.rsplit("/", 1)[1][:-5]: f for f in test_api + files}
+    by_simple = {}
+    for f in test_api + files:
+        by_simple.setdefault(f.rsplit("/", 1)[1][:-5], []).append(f)
     consts = {name: xml for src in sources.values() for name, xml in CONST_RE.findall(src)}
+
+    def parent_file(name, child):
+        """Find the file of a parent class: the only match, a match in the same package, or an imported match."""
+        paths = by_simple.get(name, [])
+        if len(paths) == 1:
+            return paths[0]
+        package = child.split("/java/", 1)[1].rsplit("/", 1)[0]
+        for p in paths:
+            if p.split("/java/", 1)[1].rsplit("/", 1)[0] == package:
+                return p
+        src = sources.get(child, "")
+        for p in paths:
+            if f"import {p.split('/java/', 1)[1][:-5].replace('/', '.')};" in src:
+                return p
+        return None
 
     def own(f):
         src = sources.get(f, "")
@@ -111,16 +131,19 @@ def build_catalog(ref):
     entries = []
     for f in files:
         name = f.rsplit("/", 1)[1]
-        if not re.search(r"IT\w*\.java$", name) or name.startswith("Abstract"):
+        if not re.search(r"IT(?:Case)?\.java$", name) or name.startswith("Abstract"):
             continue
         src = sources.get(f, "")
-        if "abstract class" in src:
+        if re.search(r"^(?:public )?abstract class", src, re.M):
             continue
         ctx, pkgs, runs, configs, parent = own(f)
+        child = f
         for _ in range(3):  # merge parents up to three levels
-            if parent not in by_simple:
+            pfile = parent and parent_file(parent, child)
+            if not pfile:
                 break
-            pctx, ppkgs, pruns, pconfigs, parent = own(by_simple[parent])
+            pctx, ppkgs, pruns, pconfigs, parent = own(pfile)
+            child = pfile
             ctx |= pctx
             pkgs |= ppkgs
             runs |= pruns
@@ -200,14 +223,19 @@ def select(ref, base):
     poms = {p.rsplit("/", 1)[0] for p in git("ls-tree", "-r", "--name-only", ref).split() if p.endswith("/pom.xml")}
     changed_modules = {module_of(p, poms) for p in changed} - {""}
     changed_xml = {p.rsplit("/", 1)[1][:-4] for p in changed if p.endswith(".xml") and "/src/main/" in p}
-    always = sorted(e["cls"] for e in entries if e["suite"] == "it"
+    changed_tests = {p.split("/src/test/java/")[1][:-5].replace("/", ".") for p in changed
+                     if "/src/test/java/" in p and p.endswith(".java")}
+    always = sorted(e["cls"] for e in entries if e["cls"] in changed_tests or e["suite"] == "it"
                     and (e["module"] in changed_modules or e["ctx"] & changed_xml))
     full_smoke = sorted({p for p in changed for r in FULL_SMOKE_PATHS if re.search(r, p)})
 
     diff = git("diff", f"{merge_base}..{ref}", "--", ".", ":(exclude)*.svg", ":(exclude)*package-lock.json",
                *[f":(exclude){d}" for d in EXCLUDE_FROM_DIFF])
+    if len(diff) > MAX_DIFF_CHARS:
+        return {**result, "mode": "full_run", "reason": f"diff has {len(diff)} characters > {MAX_DIFF_CHARS}"}
     user = ("Changed files:\n" + "\n".join(changed)
-            + "\n\nITs that always run (same module as a change, or they load a changed Spring XML file):\n"
+            + "\n\nTests that always run (the PR changes them, or ITs in the same module as a change,"
+            + " or ITs that load a changed Spring XML file):\n"
             + ("\n".join(always) or "(none)") + f"\n\nDiff:\n{diff}")
     system = RULES + "\n\nCatalog:\n" + "\n".join(lines)
     sel, usage = ask_model(system, user)
@@ -220,8 +248,8 @@ def select(ref, base):
     listed = {c.rsplit(".", 1)[1] for c in sel["its"] + sel["smoke"]}
     added_from_reasons = sorted(c for name in named - listed for c in by_simple.get(name, []))
 
-    picked = set(sel["its"]) | set(sel["smoke"]) | set(added_from_reasons)
-    its = sorted({c for c in picked if known.get(c) == "it"} | set(always))
+    picked = set(sel["its"]) | set(sel["smoke"]) | set(added_from_reasons) | set(always)
+    its = sorted(c for c in picked if known.get(c) == "it")
     smoke_all = {c for c, s in known.items() if s.startswith("smoke")}
     smoke = sorted(smoke_all if full_smoke else picked & smoke_all)
     return {**result, "mode": "selected", "its": its, "smoke": smoke, "always": always,
