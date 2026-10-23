@@ -51,6 +51,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     	private volatile PollStatus m_pollStatus;
             @Override
 		public void run() {
+		    retryPendingOutageWrites();
 		    doPoll();
 		    getNode().processStatusChange(new Date());
 		    m_pollStatus = getStatus();
@@ -67,6 +68,9 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     private volatile Schedule m_schedule;
     private volatile long m_statusChangeTime = 0L;
     private volatile PollStatus m_preemptivePollStatus;
+    // Outage writes that failed and are retried before the next poll
+    private volatile boolean m_outagePending = false;
+    private volatile PollEvent m_pendingResolution = null;
 
     /**
      * <p>Constructor for PollableService.</p>
@@ -268,13 +272,48 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     @Override
     public void createOutage(PollEvent cause) {
         super.createOutage(cause);
-        getContext().openOutage(this, cause);
+        retryPendingResolution();
+        if (m_pendingResolution != null) {
+            // the open outage must close first, or it would absorb this one
+            m_outagePending = true;
+            return;
+        }
+        m_outagePending = !getContext().openOutage(this, cause);
     }
     /** {@inheritDoc} */
     @Override
     protected void resolveOutage(PollEvent resolution) {
         super.resolveOutage(resolution);
-        getContext().resolveOutage(this, resolution);
+        m_outagePending = false;
+        m_pendingResolution = getContext().resolveOutage(this, resolution) ? null : resolution;
+    }
+
+    /**
+     * Retries outage writes that failed (the service row may have been missing,
+     * or the write failed). Runs before each poll, so the first retry is one
+     * interval later. A non-null cause means the tree still has the outage open,
+     * whether the service itself or its interface or node went down.
+     */
+    void retryPendingOutageWrites() {
+        retryPendingResolution();
+        if (m_outagePending && m_pendingResolution == null && getCause() != null) {
+            m_outagePending = !getContext().openOutage(this, getCause());
+        }
+    }
+
+    private void retryPendingResolution() {
+        final PollEvent resolution = m_pendingResolution;
+        if (resolution != null && getContext().resolveOutage(this, resolution)) {
+            m_pendingResolution = null;
+        }
+    }
+
+    boolean isOutagePending() {
+        return m_outagePending;
+    }
+
+    boolean isResolutionPending() {
+        return m_pendingResolution != null;
     }
 
     /**
@@ -405,11 +444,14 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     public void doRunWithPreemptivePollStatus(PollStatus pollStatus) {
         withTreeLock(() -> {
             m_preemptivePollStatus = pollStatus;
-            PollRunner r = new PollRunner();
-            r.run();
-            // Track the result of the poll, do this here since we short circuit PollableServiceConfig::poll
-            getContext().trackPoll(this, pollStatus);
-            m_preemptivePollStatus = null;
+            try {
+                PollRunner r = new PollRunner();
+                r.run();
+                // Track the result of the poll, do this here since we short circuit PollableServiceConfig::poll
+                getContext().trackPoll(this, pollStatus);
+            } finally {
+                m_preemptivePollStatus = null;
+            }
         });
     }
 
@@ -434,6 +476,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
                 status = r.getPollStatus();
             }
             else {
+                retryPendingOutageWrites();
                 doPoll();
                 processStatusChange(new Date());
                 status = getStatus();
