@@ -37,6 +37,7 @@ import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.opennms.netmgt.config.datacollection.IpList;
 import org.opennms.netmgt.config.datacollection.MibObj;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
@@ -123,11 +124,10 @@ public class DataCollectionConfigConverter extends AbstractDatacollectionConfigV
             if (m_groupName == null) {
                 throw new IllegalStateException("visitMibObj called, but no current group name has been set!");
             }
-            try {
-                Integer.parseInt(instance, 10);
-                // this has an instance number, so it's a normal "group"
+            if (MibObject.isInstanceId(instance)) {
+                // this has a fixed instance identifier, so it's a normal "group"
                 m_currentGroup = new GroupImpl(m_groupName);
-            } catch (final NumberFormatException e) {
+            } else {
                 // this has an instance string, so it's a table
                 m_currentTable = new TableImpl(m_groupName, instance);
             }
