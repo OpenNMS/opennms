@@ -26,12 +26,12 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 
 import com.google.common.collect.Lists;
 
-public class GeoIpConfigTest  extends XmlTestNoCastor<GeoIpConfig> {
+public class GeoIpConfigTest  extends XmlTest<GeoIpConfig> {
 
     public GeoIpConfigTest(GeoIpConfig sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/geoip-adapter-configuration.xsd");

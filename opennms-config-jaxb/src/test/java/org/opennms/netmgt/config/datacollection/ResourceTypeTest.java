@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class ResourceTypeTest extends XmlTestNoCastor<ResourceType> {
+public class ResourceTypeTest extends XmlTest<ResourceType> {
 
     public ResourceTypeTest(final ResourceType sampleObject, final String sampleXml, final String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

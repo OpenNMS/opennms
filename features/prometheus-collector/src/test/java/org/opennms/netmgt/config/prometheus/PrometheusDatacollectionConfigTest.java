@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class PrometheusDatacollectionConfigTest extends XmlTestNoCastor<PrometheusDatacollectionConfig> {
+public class PrometheusDatacollectionConfigTest extends XmlTest<PrometheusDatacollectionConfig> {
 
     public PrometheusDatacollectionConfigTest(PrometheusDatacollectionConfig sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/prometheus-datacollection.xsd");

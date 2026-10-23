@@ -26,13 +26,13 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.dto.CollectionResourceDTO;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.NumericAttribute;
 
-public class CollectionResourceDTOTest extends XmlTestNoCastor<CollectionResourceDTO> {
+public class CollectionResourceDTOTest extends XmlTest<CollectionResourceDTO> {
 
     public CollectionResourceDTOTest(CollectionResourceDTO sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, null);

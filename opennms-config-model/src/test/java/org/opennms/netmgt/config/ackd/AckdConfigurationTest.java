@@ -28,9 +28,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class AckdConfigurationTest extends XmlTestNoCastor<AckdConfiguration> {
+public class AckdConfigurationTest extends XmlTest<AckdConfiguration> {
 
     public AckdConfigurationTest(final AckdConfiguration sampleObject,
             final String sampleXml, final String schemaFile) {
