@@ -72,11 +72,23 @@ const GraphStub = {
   template: '<div data-test="graph-stub" :data-canvas="canvasId" :data-start="time.startTime" :data-format="time.format" />'
 }
 
+// the ad-hoc cell owns a store and a query pipeline; record what it was handed
+const AdhocStub = {
+  props: ['canvasId', 'adhocState', 'start', 'end'],
+  template: '<div data-test="adhoc-stub" :data-canvas="canvasId" :data-state="adhocState" :data-start="start" />'
+}
+
 const mountGrid = (value: ResolvedGraphCollection) => mount(GraphCollectionGrid, {
   props: { collection: value },
   global: {
-    stubs: { Graph: GraphStub, 'router-link': { props: ['to'], template: '<a :href="JSON.stringify(to)"><slot /></a>' }}
+    stubs: { Graph: GraphStub, AdhocCollectionGraph: AdhocStub, 'router-link': { props: ['to'], template: '<a :href="JSON.stringify(to)"><slot /></a>' }}
   }
+})
+
+const STATE = 'nf=rtr&df=ifHCInOctets&n=2&title=Uplinks'
+const adhoc = (index: number, over: Partial<ResolvedGraphCollectionGraph> = {}): ResolvedGraphCollectionGraph => ({
+  index, kind: 'adhoc', title: '', timespan: '1_day', graphtype: null, resourceId: null, resource: null,
+  adhocState: STATE, valid: true, error: null, start: END - DAY, end: END, ...over
 })
 
 describe('GraphCollectionGrid.vue', () => {
@@ -126,6 +138,40 @@ describe('GraphCollectionGrid.vue', () => {
   it('falls back to the prefabricated title when the entry has none', () => {
     const wrapper = mountGrid(collection([graph(0, { title: '' })]))
     expect(wrapper.find('[data-test="gc-title"]').text()).toBe('Bits In/Out')
+  })
+
+  it('draws an ad-hoc entry from its stored state over the window, with a link into the builder on that window', () => {
+    const wrapper = mountGrid(collection([graph(0), adhoc(1)]))
+    const stub = wrapper.find('[data-test="adhoc-stub"]')
+    expect(stub.attributes('data-state')).toBe(STATE)
+    expect(stub.attributes('data-start')).toBe(String(END - DAY))
+    expect(stub.attributes('data-canvas')).toBe(wrapper.findAll('[data-test="gc-cell"]')[1].find('[data-test="adhoc-stub"]').attributes('data-canvas'))
+    // one prefab graph, one ad-hoc graph, and neither cell draws the other kind
+    expect(wrapper.findAll('[data-test="graph-stub"]')).toHaveLength(1)
+    // the entry has no title of its own, so the one the builder stored is used
+    expect(wrapper.findAll('[data-test="gc-title"]')[1].text()).toBe('Uplinks')
+    expect(wrapper.findAll('[data-test="gc-detail"]')).toHaveLength(1)
+    const builder = JSON.parse(wrapper.find('[data-test="gc-builder"]').attributes('href') as string)
+    expect(builder.path).toBe('/adhoc-graphs')
+    expect(builder.query).toMatchObject({ nf: 'rtr', df: 'ifHCInOctets', n: '2', title: 'Uplinks', start: String((END - DAY) / 1000), end: String(END / 1000), fmt: 'hours' })
+  })
+
+  it('keeps an ad-hoc cell, and its store, when the window moves, and only hands it the new window', async () => {
+    const wrapper = mountGrid(collection([graph(0), adhoc(1)]))
+    const before = wrapper.findComponent(AdhocStub)
+    const canvas = before.attributes('data-canvas')
+    await wrapper.setProps({ collection: collection([graph(0, { start: END - 2 * DAY }), adhoc(1, { start: END - 2 * DAY })]) })
+    const after = wrapper.findComponent(AdhocStub)
+    expect(after.vm).toBe(before.vm)
+    expect(after.attributes('data-canvas')).toBe(canvas)
+    expect(after.attributes('data-start')).toBe(String(END - 2 * DAY))
+  })
+
+  it('shows the placeholder for an ad-hoc entry the server flags, without a chart', () => {
+    const wrapper = mountGrid(collection([adhoc(0, { valid: false, error: 'Unknown timespan \'fortnight\'.' })]))
+    expect(wrapper.find('[data-test="adhoc-stub"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="gc-placeholder"]').text()).toContain('fortnight')
+    expect(wrapper.find('[data-test="gc-title"]').text()).toBe('Uplinks')
   })
 })
 

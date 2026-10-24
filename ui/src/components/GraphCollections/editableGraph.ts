@@ -77,16 +77,34 @@ export const fromResolvedCollection = (resolved: ResolvedGraphCollection): Edita
 /**
  * Strip the editor's bookkeeping back to what the API stores. The server goes by resourceId when
  * there is one, so an entry that has it sheds the pre-resourceId address it may still carry from
- * an older file instead of storing two locators.
+ * an older file instead of storing two locators. An ad-hoc entry keeps only its builder state;
+ * the server refuses a resource or graphtype on it, and the state on a prefab one.
  */
 export const toStoredGraph = (graph: EditableGraph): GraphCollectionGraph => {
+  const kind = graph.kind ?? 'prefab'
+  if (kind === 'adhoc') {
+    return {
+      kind,
+      title: graph.title,
+      resourceId: null,
+      graphtype: null,
+      timespan: graph.timespan,
+      adhocState: graph.adhocState ?? null,
+      extlink: graph.extlink ?? null,
+      nodeId: null,
+      nodeSource: null,
+      domain: null,
+      interfaceId: null
+    }
+  }
   const legacy = graph.resourceId ? null : graph
   return {
-    kind: graph.kind ?? 'prefab',
+    kind,
     title: graph.title,
     resourceId: graph.resourceId,
     graphtype: graph.graphtype,
     timespan: graph.timespan,
+    adhocState: null,
     extlink: graph.extlink ?? null,
     nodeId: legacy?.nodeId ?? null,
     nodeSource: legacy?.nodeSource ?? null,

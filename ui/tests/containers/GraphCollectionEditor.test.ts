@@ -89,6 +89,12 @@ const PickerStub = {
   template: '<div v-if="visible" data-test="picker-stub" :data-editing="graph ? graph.key : \'\'" />'
 }
 
+const AdhocDetailsStub = {
+  props: ['visible', 'graph', 'timespans'],
+  emits: ['update:visible', 'save'],
+  template: '<div v-if="visible" data-test="adhoc-details-stub" />'
+}
+
 const mountEditor = async (props: Record<string, string> = {}) => {
   const wrapper = mount(GraphCollectionEditor, {
     props,
@@ -97,6 +103,7 @@ const mountEditor = async (props: Record<string, string> = {}) => {
       stubs: {
         BreadCrumbs: true,
         GraphPickerDialog: PickerStub,
+        AdhocGraphDetailsDialog: AdhocDetailsStub,
         OnmsDialog: { props: ['visible'], template: '<div v-if="visible"><slot /></div>' },
         OnmsConfirmationDialog: {
           props: ['visible'],
@@ -157,8 +164,8 @@ describe('GraphCollectionEditor.vue', () => {
     expect(updateGraphCollection).toHaveBeenCalledWith(4, {
       title: 'Core (edited)', showTimespanButton: true, showGraphtypeButton: false, graphsPerLine: 2,
       graphs: [
-        { kind: 'prefab', title: 'Uplink', resourceId: 'node[1].interfaceSnmp[ge-0_0_0]', graphtype: 'mib2.bits', timespan: '7_day', extlink: null, nodeId: null, nodeSource: null, domain: null, interfaceId: null },
-        { kind: 'prefab', title: 'Errors', resourceId: 'node[1].interfaceSnmp[ge-0_0_0]', graphtype: 'mib2.errors', timespan: '1_day', extlink: null, nodeId: null, nodeSource: null, domain: null, interfaceId: null }
+        { kind: 'prefab', title: 'Uplink', resourceId: 'node[1].interfaceSnmp[ge-0_0_0]', graphtype: 'mib2.bits', timespan: '7_day', adhocState: null, extlink: null, nodeId: null, nodeSource: null, domain: null, interfaceId: null },
+        { kind: 'prefab', title: 'Errors', resourceId: 'node[1].interfaceSnmp[ge-0_0_0]', graphtype: 'mib2.errors', timespan: '1_day', adhocState: null, extlink: null, nodeId: null, nodeSource: null, domain: null, interfaceId: null }
       ]
     }, '"v1"')
     expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Saved "Core (edited)".' })
@@ -175,6 +182,38 @@ describe('GraphCollectionEditor.vue', () => {
     await flushPromises()
     expect(rows(wrapper)).toEqual(['Uplink', 'Gone'])
     expect(wrapper.find('[data-test="graph-problem"]').exists()).toBe(false)
+  })
+
+  it('edits an ad-hoc entry\'s title and timespan in its own dialog and stores only its builder state', async () => {
+    const state = 'nf=rtr&df=CpuRawUser&n=3&title=CPU'
+    const adhoc = { kind: 'adhoc', title: '', resourceId: null, graphtype: null, timespan: '1_day', adhocState: state, extlink: null }
+    getGraphCollection.mockResolvedValue({ success: true, message: '', payload: { collection: { ...stored, graphs: [stored.graphs[0], adhoc] }, etag: '"v1"' }})
+    getResolvedGraphCollection.mockResolvedValue({ success: true, message: '', payload: { ...resolved, collection: {
+      ...resolved.collection, graphs: [resolved.collection.graphs[0], { index: 1, kind: 'adhoc', valid: true, adhocState: state, resource: null }]
+    }}})
+    updateGraphCollection.mockResolvedValue({ success: true, message: '', payload: { collection: stored, etag: '"v2"' }})
+    const wrapper = await mountEditor({ id: '4' })
+
+    // the row names the graph the builder titled it, and says what it is instead of a graph type
+    expect(wrapper.findAll('[data-test="graph-resource"]')[1].text()).toBe('CPU')
+    expect(wrapper.text()).toContain('Ad-hoc')
+    expect(wrapper.find('[data-test="graph-problem"]').exists()).toBe(false)
+
+    await wrapper.findAll('[data-test="edit-graph"]')[1].trigger('click')
+    expect(wrapper.findComponent(PickerStub).props('visible')).toBe(false)
+    const details = wrapper.findComponent(AdhocDetailsStub)
+    expect(details.props('visible')).toBe(true)
+    expect(details.props('graph').adhocState).toBe(state)
+    details.vm.$emit('save', { ...details.props('graph'), title: 'Core CPU', timespan: '7_day' })
+    await flushPromises()
+    expect(rows(wrapper)).toEqual(['Uplink', 'Core CPU'])
+
+    await wrapper.find('[data-test="save"]').trigger('click')
+    await flushPromises()
+    expect(updateGraphCollection.mock.calls[0][1].graphs[1]).toEqual({
+      kind: 'adhoc', title: 'Core CPU', resourceId: null, graphtype: null, timespan: '7_day', adhocState: state, extlink: null,
+      nodeId: null, nodeSource: null, domain: null, interfaceId: null
+    })
   })
 
   it('creates a new collection and requires a title', async () => {

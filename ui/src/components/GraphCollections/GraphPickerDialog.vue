@@ -297,7 +297,7 @@ const reset = () => {
       label: props.graph.resourceLabel ?? props.graph.resourceId,
       typeLabel: props.graph.resourceTypeLabel ?? ''
     }
-    graphtype.value = props.graph.graphtype
+    graphtype.value = props.graph.graphtype ?? ''
     loadGraphtypes(props.graph.resourceId)
   }
 }

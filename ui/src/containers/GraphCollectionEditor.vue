@@ -69,12 +69,15 @@
           <OnmsColumn header="Resource">
             <template #body="{ data }">
               <span class="wrap-cell" data-test="graph-resource">
-                <template v-if="data.parentLabel">{{ data.parentLabel }} / </template>{{ data.resourceLabel ?? data.resourceId ?? legacyAddress(data) }}
+                <template v-if="data.kind === 'adhoc'">{{ adhocStateTitle(data.adhocState) || 'Custom performance graph' }}</template>
+                <template v-else>
+                  <template v-if="data.parentLabel">{{ data.parentLabel }} / </template>{{ data.resourceLabel ?? data.resourceId ?? legacyAddress(data) }}
+                </template>
               </span>
             </template>
           </OnmsColumn>
           <OnmsColumn header="Graph type">
-            <template #body="{ data }"><span class="wrap-cell">{{ data.graphtype }}</span></template>
+            <template #body="{ data }"><span class="wrap-cell">{{ data.kind === 'adhoc' ? 'Ad-hoc' : data.graphtype }}</span></template>
           </OnmsColumn>
           <OnmsColumn header="Timespan">
             <template #body="{ data }">{{ timespanLabel(data.timespan) }}</template>
@@ -88,7 +91,7 @@
           <OnmsColumn header="Actions">
             <template #body="{ data, index }">
               <div class="action-container">
-                <OnmsIconButton :icon="Edit" :tooltip="'Edit this graph'" aria-label="Edit this graph" data-test="edit-graph" @click="openPicker(data)" />
+                <OnmsIconButton :icon="Edit" :tooltip="'Edit this graph'" aria-label="Edit this graph" data-test="edit-graph" @click="data.kind === 'adhoc' ? openAdhocDetails(data) : openPicker(data)" />
                 <OnmsIconButton :icon="KeyboardArrowUp" :disabled="index === 0" :tooltip="'Move up'" aria-label="Move up" data-test="move-up" @click="move(index, -1)" />
                 <OnmsIconButton :icon="KeyboardArrowDown" :disabled="index === graphs.length - 1" :tooltip="'Move down'" aria-label="Move down" data-test="move-down" @click="move(index, 1)" />
                 <OnmsIconButton :icon="Delete" severity="danger" :tooltip="'Remove this graph'" aria-label="Remove this graph" data-test="remove-graph" @click="remove(index)" />
@@ -106,6 +109,14 @@
       :timespans="timespans"
       @update:visible="(value: boolean) => pickerOpen = value"
       @save="applyPicked"
+    />
+
+    <AdhocGraphDetailsDialog
+      :visible="adhocDetailsOpen"
+      :graph="adhocGraph"
+      :timespans="timespans"
+      @update:visible="(value: boolean) => adhocDetailsOpen = value"
+      @save="applyAdhocDetails"
     />
 
     <OnmsConfirmationDialog
@@ -155,7 +166,9 @@ import KeyboardArrowUp from '@opennms/onms-ui/icons/hardware/KeyboardArrowUp.vue
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import FormField from '@/components/Common/FormField.vue'
 import TableCard from '@/components/Common/TableCard.vue'
+import AdhocGraphDetailsDialog from '@/components/GraphCollections/AdhocGraphDetailsDialog.vue'
 import GraphPickerDialog from '@/components/GraphCollections/GraphPickerDialog.vue'
+import { adhocStateTitle } from '@/components/GraphCollections/adhocCollectionState'
 import { EditableGraph, fromResolvedCollection, toEditableGraphs, toStoredGraph } from '@/components/GraphCollections/editableGraph'
 import useActionFeedback from '@/composables/useActionFeedback'
 import {
@@ -342,6 +355,22 @@ const applyPicked = (picked: EditableGraph) => {
     graphs.value.splice(index, 1, picked)
   } else {
     graphs.value.push({ ...picked, key: nextKey++ })
+  }
+}
+
+// An ad-hoc entry's title and timespan are edited here; the graph itself is edited in the builder.
+const adhocDetailsOpen = ref(false)
+const adhocGraph = ref<EditableGraph | null>(null)
+
+const openAdhocDetails = (graph: EditableGraph) => {
+  adhocGraph.value = graph
+  adhocDetailsOpen.value = true
+}
+
+const applyAdhocDetails = (changed: EditableGraph) => {
+  const index = graphs.value.findIndex(g => g.key === changed.key)
+  if (index >= 0) {
+    graphs.value.splice(index, 1, changed)
   }
 }
 
