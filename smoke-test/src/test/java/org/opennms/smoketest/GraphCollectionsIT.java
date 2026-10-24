@@ -84,6 +84,7 @@ public class GraphCollectionsIT extends OpenNMSSeleniumIT {
     protected void createCollection() throws Exception {
         clickElement(By.cssSelector("[data-test='create-collection']"));
         wait.until(pageContainsText("New Graph Collection"));
+        waitForSpinner();
         enterText(By.cssSelector("[data-test='title']"), TITLE);
 
         // the picker: node, then resource, then graph type
@@ -110,6 +111,7 @@ public class GraphCollectionsIT extends OpenNMSSeleniumIT {
         waitForElement(titleLink(TITLE));
         clickElement(rowButton(TITLE, "edit-collection"));
         waitForValue(By.cssSelector("[data-test='title']"), TITLE);
+        waitForSpinner();
 
         // rename, offer the timespan override, and re-time the graph
         enterText(By.cssSelector("[data-test='title']"), RENAMED_TITLE);
@@ -136,6 +138,15 @@ public class GraphCollectionsIT extends OpenNMSSeleniumIT {
         clickElement(By.xpath("//div[@role='dialog']//button[.//span[normalize-space(.)='Delete']]"));
         wait.until(ExpectedConditions.invisibilityOfElementLocated(titleLink(RENAMED_TITLE)));
         assertElementDoesNotExist(titleLink(RENAMED_TITLE));
+    }
+
+    /**
+     * The editor loads under the page spinner, an overlay that fades out for half a second after
+     * the load and intercepts clicks until it is gone. clickElement retries through that, but
+     * enterText clicks once, so wait it out before typing into a freshly loaded page.
+     */
+    private void waitForSpinner() {
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("div.spinner")));
     }
 
     /**
