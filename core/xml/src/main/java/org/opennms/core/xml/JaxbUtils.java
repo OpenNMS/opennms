@@ -80,6 +80,8 @@ public abstract class JaxbUtils {
     private static final String XERCES_SECURITY_MANAGER_CLASS = "org.apache.xerces.util.SecurityManager";
     private static final String XERCES_SECURITY_MANAGER_PROPERTY = "http://apache.org/xml/properties/security-manager";
     private static volatile boolean s_warnedNoEntityExpansionLimit = false;
+    private static final String JDK_MAX_GENERAL_ENTITY_SIZE_LIMIT = "jdk.xml.maxGeneralEntitySizeLimit";
+    private static final String JDK_TOTAL_ENTITY_SIZE_LIMIT = "jdk.xml.totalEntitySizeLimit";
 
     private static final Class<?>[] EMPTY_CLASS_LIST = new Class<?>[0];
     private static final Source[] EMPTY_SOURCE_LIST = new Source[0];
@@ -362,6 +364,7 @@ public abstract class JaxbUtils {
     private static void limitEntityExpansion(final XMLReader xmlReader) {
         try {
             xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            relaxEntitySizeLimits(xmlReader);
             return;
         } catch (final SAXException e) {
             LOG.trace("{} does not support secure processing, trying the Xerces security manager", xmlReader.getClass().getName());
@@ -379,6 +382,21 @@ public abstract class JaxbUtils {
         if (!s_warnedNoEntityExpansionLimit) {
             s_warnedNoEntityExpansionLimit = true;
             LOG.warn("XML parser {} does not support an entity expansion limit; documents with a DOCTYPE are parsed without one", xmlReader.getClass().getName());
+        }
+    }
+
+    /**
+     * JDK 24 and later set a limit of 100,000 on the general and total entity size in jaxp.properties.
+     * The JDK parser counts each predefined entity reference (for example "&amp;lt;") in the document against these limits.
+     * Thus, large event files such as CPQHPIM.events.xml do not parse.
+     * This sets the values that secure processing used on JDK 21. The entity expansion limit stays in effect.
+     */
+    private static void relaxEntitySizeLimits(final XMLReader xmlReader) {
+        try {
+            xmlReader.setProperty(JDK_MAX_GENERAL_ENTITY_SIZE_LIMIT, "0");
+            xmlReader.setProperty(JDK_TOTAL_ENTITY_SIZE_LIMIT, "50000000");
+        } catch (final SAXException e) {
+            LOG.trace("{} does not support the JDK entity size limits", xmlReader.getClass().getName());
         }
     }
 
