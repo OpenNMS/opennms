@@ -40,14 +40,16 @@ import io.restassured.http.ContentType;
  * Verifies the Spring Security rules guarding <code>/rest/config/**</code>
  * in <code>applicationContext-spring-security.xml</code>.
  * <p>
- * Reads stay open to ROLE_REST (and ROLE_MINION), but every write verb requires
- * ROLE_ADMIN (NMS-20382). The rules are order-sensitive (first match wins) and
- * no unit test loads that file, so this pins the behaviour against the live webapp.
+ * Reads stay open to ROLE_REST, but every write verb requires ROLE_ADMIN (NMS-20382).
+ * ROLE_MINION has no read access to <code>/rest/config/**</code> or <code>/rest/info</code> (NMS-20459).
+ * The rules are order-sensitive (first match wins) and no unit test loads that file, so this pins the behaviour against the live webapp.
  */
 public class ConfigRestAccessIT extends AbstractRestIT {
 
     private static final String REST_USER = "nms20382-rest-only";
     private static final String REST_PASSWORD = "rest-only-password";
+    private static final String MINION_USER = "nms20459-minion-only";
+    private static final String MINION_PASSWORD = "minion-only-password";
 
     public ConfigRestAccessIT() {
         super(Version.V1, "config/email-nbi");
@@ -56,11 +58,13 @@ public class ConfigRestAccessIT extends AbstractRestIT {
     @Before
     public void createRestOnlyUser() {
         addUser(REST_USER, REST_PASSWORD, "ROLE_REST");
+        addUser(MINION_USER, MINION_PASSWORD, "ROLE_MINION");
     }
 
     @After
     public void deleteRestOnlyUser() {
         removeUser(REST_USER);
+        removeUser(MINION_USER);
     }
 
     @Test
@@ -109,6 +113,22 @@ public class ConfigRestAccessIT extends AbstractRestIT {
         given().queryParam("enabled", false).put("/status")
                 .then().log().status()
                 .assertThat().statusCode(204);
+    }
+
+    @Test
+    public void minionUserCannotReadConfig() {
+        useCredentials(MINION_USER, MINION_PASSWORD);
+        given().accept(ContentType.TEXT).get("/status")
+                .then().log().status()
+                .assertThat().statusCode(403);
+    }
+
+    @Test
+    public void minionUserCannotReadInfo() {
+        useCredentials(MINION_USER, MINION_PASSWORD);
+        given().basePath("/opennms/rest/info").accept(ContentType.JSON).get()
+                .then().log().status()
+                .assertThat().statusCode(403);
     }
 
     private void asRestUser() {
