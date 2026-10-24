@@ -93,6 +93,8 @@
       </div>
     </TableCard>
 
+    <NodeCollectionPicker class="node-picker" />
+
     <OnmsConfirmationDialog
       :visible="!!collectionToDelete"
       title="Delete Graph Collection"
@@ -124,6 +126,7 @@ import View from '@opennms/onms-ui/icons/action/View.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
+import NodeCollectionPicker from '@/components/GraphCollections/NodeCollectionPicker.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useRole from '@/composables/useRole'
 import { deleteGraphCollection, getGraphCollections } from '@/services/graphCollectionsService'
@@ -205,6 +208,10 @@ const confirmDelete = async () => {
 
 <style scoped lang="scss">
 .graph-collections {
+  .node-picker {
+    margin-top: 1.5rem;
+  }
+
   padding: 0 2px 2rem 2px;
 
   :deep(.table-card) {

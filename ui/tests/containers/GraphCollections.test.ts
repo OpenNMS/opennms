@@ -86,6 +86,7 @@ const mountList = async () => {
       stubs: {
         'router-link': { props: ['to'], template: '<a :href="to"><slot /></a>' },
         BreadCrumbs: true,
+        NodeCollectionPicker: true,
         // the real dialog teleports to <body>, out of the wrapper's reach
         OnmsConfirmationDialog: {
           props: ['visible'],
