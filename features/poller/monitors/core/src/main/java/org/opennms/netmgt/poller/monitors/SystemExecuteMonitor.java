@@ -179,7 +179,7 @@ final public class SystemExecuteMonitor extends AbstractServiceMonitor {
 
     private String checkScriptFile(String script) {
 
-        if (script == null) {
+        if (script == null || script.isBlank()) {
             return "required parameter script not found";
         }
 
