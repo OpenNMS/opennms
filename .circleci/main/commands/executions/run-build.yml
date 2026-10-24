@@ -56,6 +56,7 @@ commands:
               -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
+              --threads << parameters.number-vcpu >> \
               $MAVEN_ARGS || exit 1
             ./compile.pl -s .circleci/scripts/structure-settings.xml \
               --batch-mode \
