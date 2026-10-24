@@ -33,6 +33,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -152,7 +153,10 @@ public class GraphCollectionsIT extends OpenNMSSeleniumIT {
     /**
      * Open a PrimeVue select by the id of its combobox and click the option with the given text,
      * or the first option when text is null. The option list is looked up through the combobox's
-     * aria-controls, so another open list on the page cannot be picked from by mistake.
+     * aria-controls, so another open list on the page cannot be picked from by mistake. The list
+     * shows a few options at a time and clickElement scrolls only the window, so an option below
+     * the list's fold is scrolled into the list's view first; left where it is, the click guard
+     * would see it as obscured until the wait ran out.
      */
     private void pickSelectOption(final String comboboxId, final String optionText) {
         final WebElement combobox = clickElement(By.id(comboboxId));
@@ -166,6 +170,8 @@ public class GraphCollectionsIT extends OpenNMSSeleniumIT {
         final String option = optionText == null
                 ? "//ul[@id='" + listId + "']//li[@role='option'][1]"
                 : "//ul[@id='" + listId + "']//li[@role='option' and normalize-space(.)='" + optionText + "']";
+        final WebElement li = waitForElement(By.xpath(option));
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView({block: 'nearest'});", li);
         clickElement(By.xpath(option));
     }
 
