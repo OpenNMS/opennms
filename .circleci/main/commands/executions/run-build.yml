@@ -31,7 +31,7 @@ commands:
             export SIGN_KEY_PASS="$(echo "${GPG_PASSPHRASE}" | base64 -d)"
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             << parameters.node-memory >>
-            export MAVEN_OPTS="-Xmx12g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             MAVEN_ARGS="install"
             mkdir -p target/artifacts
             case "${CIRCLE_BRANCH}" in
@@ -56,6 +56,7 @@ commands:
               -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
+              --threads << parameters.number-vcpu >> \
               $MAVEN_ARGS || exit 1
             ./compile.pl -s .circleci/scripts/structure-settings.xml \
               --batch-mode \
