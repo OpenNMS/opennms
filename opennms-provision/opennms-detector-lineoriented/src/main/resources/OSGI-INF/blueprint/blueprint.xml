@@ -10,10 +10,6 @@
 ">
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.simple.DominoIIOPDetectorFactory" />
-	</service>
-
-	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.netmgt.provision.detector.simple.FtpDetectorFactory" />
 	</service>
 
@@ -50,10 +46,6 @@
 	</service>
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.simple.NotesHttpDetectorFactory" />
-	</service>
-
-	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.netmgt.provision.detector.simple.Pop3DetectorFactory" />
 	</service>
 
@@ -67,10 +59,6 @@
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.netmgt.provision.detector.simple.TrivialTimeDetectorFactory" />
-	</service>
-
-	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.msexchange.MSExchangeDetectorFactory" />
 	</service>
 
 </blueprint>
