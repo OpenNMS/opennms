@@ -560,7 +560,10 @@ public class Collectd extends AbstractServiceDaemon implements
             LOG.debug("getSpecificationsForInterface: address/service: {}/{} scheduled, interface does belong to package: {}", iface, svcName, wpkg.getName());
             final var collector = m_collectdConfigFactory.getCollectors().stream().filter(c->c.getService().equals(svcName)).findFirst().orElse(null);
             String className = collector == null? null : collector.getClassName();
-            if(className != null) {
+            if (className != null && getServiceCollector(svcName) == null) {
+                // Configured but not registered; it is scheduled through instantiateCollectors() once it binds
+                LOG.debug("getSpecificationsForInterface: address/service: {}/{} not scheduled, collector {} is not available.", iface, svcName, className);
+            } else if(className != null) {
                 final ScopeProvider scopeProvider = new FallBackScopeProvider(
                     entityScopeProvider.getScopeProviderForNode(iface.getNodeId()),
                     entityScopeProvider.getScopeProviderForInterface(iface.getNodeId(), InetAddressUtils.toIpAddrString(iface.getIpAddress()))
@@ -1495,7 +1498,6 @@ public class Collectd extends AbstractServiceDaemon implements
 
     private void instantiateCollectors() {
         LOG.debug("instantiateCollectors: Loading collectors");
-        AtomicInteger scheduledCounter = new AtomicInteger(0);
         /*
          * Load up an instance of each collector from the config
          * so that the event processor will have them for
@@ -1522,14 +1524,14 @@ public class Collectd extends AbstractServiceDaemon implements
                     return;
                 }
                 getScheduler().schedule(0, scheduleCollector(svcName));
-                if(scheduledCounter.incrementAndGet() == collectors.size()) {
-                    setSchedulingCompleted(true);
-                }
             });
             if(!collectorFuture.isDone()) {
-                LOG.warn("The collector {} with class {} is not available yet, if the feature is installed correctly it will be available later.", svcName, collector.getClassName());
+                LOG.warn("The collector {} with class {} is not available yet. Services that use it will not be collected until it is available. Remove it from collectd-configuration.xml if it is no longer installed.", svcName, collector.getClassName());
             }
         }
+        // Available collectors were scheduled inline above; a collector that never
+        // registers must not hold back collection for every other service.
+        setSchedulingCompleted(true);
     }
 
     private ReadyRunnable scheduleCollector(String svcName) {
