@@ -169,6 +169,11 @@ See xref:operation:deep-dive/notifications/strategies/webhook.adoc#migrating-fro
 The XMPP notification strategies have been removed and `xmpp-configuration.properties` is ignored.
 Existing `users.xml` files with `xmppAddress` contacts still load, but no notifications are sent to them.
 
+=== PercDetector removed
+The PercDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.snmp.PercDetector` from your foreign source definitions before upgrading.
+The xref:reference:service-assurance/monitors/PercMonitor.adoc[PercMonitor] is unchanged; to keep monitoring a PERC array, add the PERC service to nodes in their requisitions, or detect it with an xref:reference:provisioning/detectors/SnmpDetector.adoc[SnmpDetector] on the OID `.1.3.6.1.4.1.3582.1.1.2.1.3.0.0`.
+
 === IRCcat notification strategy removed
 The IRCcat notification strategy, the stock `ircCat` notification command, and the `irccat.host` and `irccat.port` system properties have been removed.
 An `ircCat` command left in an existing `notificationCommands.xml` still loads, but notices routed to it fail when sent.
