@@ -124,11 +124,48 @@ validateInt() {
   fi
 }
 
+isValidAddress() {
+  local value="$1" octet label
+  [[ "$value" == "*" ]] && return 0
+  # IPv4: four dotted octets, each 0-255
+  if [[ "$value" =~ ^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$ ]]; then
+    for octet in "${BASH_REMATCH[@]:1}"; do
+      (( 10#$octet <= 255 )) || return 1
+    done
+    return 0
+  fi
+  # IPv6: hex groups of up to 4 digits, eight groups or fewer with a single "::"
+  if [[ "$value" == *:* ]]; then
+    [[ "$value" =~ ^[0-9a-fA-F:]+$ && "$value" != *:::* ]] || return 1
+    [[ "${value#*::}" != *::* ]] || return 1
+    local -a groups
+    IFS=':' read -ra groups <<< "$value"
+    for octet in "${groups[@]}"; do
+      (( ${#octet} <= 4 )) || return 1
+    done
+    if [[ "$value" == *::* ]]; then
+      (( ${#groups[@]} <= 8 )) || return 1
+    else
+      (( ${#groups[@]} == 8 )) || return 1
+    fi
+    return 0
+  fi
+  # Hostname (RFC 1123): dot-separated labels of letters, digits and hyphens; not all-numeric
+  [[ "$value" =~ [A-Za-z] ]] || return 1
+  local -a labels
+  IFS='.' read -ra labels <<< "$value"
+  [[ "$value" != .* && "$value" != *. && "$value" != *..* ]] || return 1
+  for label in "${labels[@]}"; do
+    [[ "$label" =~ ^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$ ]] || return 1
+  done
+  return 0
+}
+
+# TrapListener resolves names via InetAddressUtils.addr(), so hostnames are accepted as well as IP addresses
 validateAddress() {
   local name="$1" value="$2"
-  # Accept wildcard, IPv4, or IPv6
-  if [[ "$value" != "*" && ! "$value" =~ ^[0-9a-fA-F:.]+$ ]]; then
-    echo "ERROR: ${name}='${value}' is not a valid address. Expected '*' or an IP address." >&2
+  if ! isValidAddress "$value"; then
+    echo "ERROR: ${name}='${value}' is not a valid address. Expected '*', an IP address, or a hostname." >&2
     exit ${E_INIT_CONFIG}
   fi
 }
@@ -193,66 +230,6 @@ processEnvConfig() {
 
     envsubst < "${CONTAINER_CONFIG_ETC}/templates/_container.timeseries.properties.tmpl" \
               > "${OPENNMS_HOME}/etc/opennms.properties.d/_container.timeseries.properties"
-  )
-
-  # Process service-configuration.xml from template with defaults for unset variables
-  (
-    export CORE_SERVICE_ALARMD_ENABLED="${CORE_SERVICE_ALARMD_ENABLED:-true}"
-    export CORE_SERVICE_BSMD_ENABLED="${CORE_SERVICE_BSMD_ENABLED:-true}"
-    export CORE_SERVICE_TICKETER_ENABLED="${CORE_SERVICE_TICKETER_ENABLED:-true}"
-    export CORE_SERVICE_CORRELATOR_ENABLED="${CORE_SERVICE_CORRELATOR_ENABLED:-false}"
-    export CORE_SERVICE_QUEUED_ENABLED="${CORE_SERVICE_QUEUED_ENABLED:-true}"
-    export CORE_SERVICE_ACTIOND_ENABLED="${CORE_SERVICE_ACTIOND_ENABLED:-true}"
-    export CORE_SERVICE_NOTIFD_ENABLED="${CORE_SERVICE_NOTIFD_ENABLED:-true}"
-    export CORE_SERVICE_SCRIPTD_ENABLED="${CORE_SERVICE_SCRIPTD_ENABLED:-true}"
-    export CORE_SERVICE_RTCD_ENABLED="${CORE_SERVICE_RTCD_ENABLED:-true}"
-    export CORE_SERVICE_POLLERD_ENABLED="${CORE_SERVICE_POLLERD_ENABLED:-true}"
-    export CORE_SERVICE_SNMPPOLLER_ENABLED="${CORE_SERVICE_SNMPPOLLER_ENABLED:-false}"
-    export CORE_SERVICE_ENHANCEDLINKD_ENABLED="${CORE_SERVICE_ENHANCEDLINKD_ENABLED:-true}"
-    export CORE_SERVICE_COLLECTD_ENABLED="${CORE_SERVICE_COLLECTD_ENABLED:-true}"
-    export CORE_SERVICE_DISCOVERY_ENABLED="${CORE_SERVICE_DISCOVERY_ENABLED:-true}"
-    export CORE_SERVICE_VACUUMD_ENABLED="${CORE_SERVICE_VACUUMD_ENABLED:-true}"
-    export CORE_SERVICE_EVENTTRANSLATOR_ENABLED="${CORE_SERVICE_EVENTTRANSLATOR_ENABLED:-true}"
-    export CORE_SERVICE_PASSIVESTATUSD_ENABLED="${CORE_SERVICE_PASSIVESTATUSD_ENABLED:-true}"
-    export CORE_SERVICE_STATSD_ENABLED="${CORE_SERVICE_STATSD_ENABLED:-true}"
-    export CORE_SERVICE_PROVISIOND_ENABLED="${CORE_SERVICE_PROVISIOND_ENABLED:-true}"
-    export CORE_SERVICE_ACKD_ENABLED="${CORE_SERVICE_ACKD_ENABLED:-true}"
-    export CORE_SERVICE_JETTYSERVER_ENABLED="${CORE_SERVICE_JETTYSERVER_ENABLED:-true}"
-    export CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED="${CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED:-true}"
-    export CORE_SERVICE_SYSLOGD_ENABLED="${CORE_SERVICE_SYSLOGD_ENABLED:-false}"
-    export CORE_SERVICE_TELEMETRYD_ENABLED="${CORE_SERVICE_TELEMETRYD_ENABLED:-true}"
-    export CORE_SERVICE_TRAPD_ENABLED="${CORE_SERVICE_TRAPD_ENABLED:-true}"
-    export CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED="${CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED:-true}"
-
-    validateBool CORE_SERVICE_ALARMD_ENABLED              "$CORE_SERVICE_ALARMD_ENABLED"
-    validateBool CORE_SERVICE_BSMD_ENABLED                "$CORE_SERVICE_BSMD_ENABLED"
-    validateBool CORE_SERVICE_TICKETER_ENABLED            "$CORE_SERVICE_TICKETER_ENABLED"
-    validateBool CORE_SERVICE_CORRELATOR_ENABLED          "$CORE_SERVICE_CORRELATOR_ENABLED"
-    validateBool CORE_SERVICE_QUEUED_ENABLED              "$CORE_SERVICE_QUEUED_ENABLED"
-    validateBool CORE_SERVICE_ACTIOND_ENABLED             "$CORE_SERVICE_ACTIOND_ENABLED"
-    validateBool CORE_SERVICE_NOTIFD_ENABLED              "$CORE_SERVICE_NOTIFD_ENABLED"
-    validateBool CORE_SERVICE_SCRIPTD_ENABLED             "$CORE_SERVICE_SCRIPTD_ENABLED"
-    validateBool CORE_SERVICE_RTCD_ENABLED                "$CORE_SERVICE_RTCD_ENABLED"
-    validateBool CORE_SERVICE_POLLERD_ENABLED             "$CORE_SERVICE_POLLERD_ENABLED"
-    validateBool CORE_SERVICE_SNMPPOLLER_ENABLED          "$CORE_SERVICE_SNMPPOLLER_ENABLED"
-    validateBool CORE_SERVICE_ENHANCEDLINKD_ENABLED       "$CORE_SERVICE_ENHANCEDLINKD_ENABLED"
-    validateBool CORE_SERVICE_COLLECTD_ENABLED            "$CORE_SERVICE_COLLECTD_ENABLED"
-    validateBool CORE_SERVICE_DISCOVERY_ENABLED           "$CORE_SERVICE_DISCOVERY_ENABLED"
-    validateBool CORE_SERVICE_VACUUMD_ENABLED             "$CORE_SERVICE_VACUUMD_ENABLED"
-    validateBool CORE_SERVICE_EVENTTRANSLATOR_ENABLED     "$CORE_SERVICE_EVENTTRANSLATOR_ENABLED"
-    validateBool CORE_SERVICE_PASSIVESTATUSD_ENABLED      "$CORE_SERVICE_PASSIVESTATUSD_ENABLED"
-    validateBool CORE_SERVICE_STATSD_ENABLED              "$CORE_SERVICE_STATSD_ENABLED"
-    validateBool CORE_SERVICE_PROVISIOND_ENABLED          "$CORE_SERVICE_PROVISIOND_ENABLED"
-    validateBool CORE_SERVICE_ACKD_ENABLED                "$CORE_SERVICE_ACKD_ENABLED"
-    validateBool CORE_SERVICE_JETTYSERVER_ENABLED         "$CORE_SERVICE_JETTYSERVER_ENABLED"
-    validateBool CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED "$CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED"
-    validateBool CORE_SERVICE_SYSLOGD_ENABLED             "$CORE_SERVICE_SYSLOGD_ENABLED"
-    validateBool CORE_SERVICE_TELEMETRYD_ENABLED          "$CORE_SERVICE_TELEMETRYD_ENABLED"
-    validateBool CORE_SERVICE_TRAPD_ENABLED               "$CORE_SERVICE_TRAPD_ENABLED"
-    validateBool CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED   "$CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED"
-
-    envsubst < "${CONTAINER_CONFIG_ETC}/templates/service-configuration.xml.tmpl" \
-              > "${OPENNMS_HOME}/etc/service-configuration.xml"
   )
 
   # Process prom-jmx-exporter config from template; only scalar knobs are exposed.

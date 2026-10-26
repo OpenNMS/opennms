@@ -1180,7 +1180,7 @@ case "$COMMAND" in
 		if [[ "$karafSshPort" =~ $envPlaceholder ]]; then
 			envName="${BASH_REMATCH[1]}"
 			envDefault="${BASH_REMATCH[3]}"
-			karafSshPort="${!envName:-$envDefault}"
+			karafSshPort="${!envName:-${envDefault:-8101}}"
 		fi
 		karafUser="$(grep "^karaf.local.user" "${OPENNMS_HOME}/etc/system.properties" | cut -d= -f2 | tr -d "[:blank:]")"
 		printf 'Trying to establish SSH connection to OpenNMS Karaf Shell (%s@localhost:%s)... ' "$karafUser" "$karafSshPort"

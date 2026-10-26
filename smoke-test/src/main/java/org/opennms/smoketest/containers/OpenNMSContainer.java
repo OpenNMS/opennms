@@ -205,8 +205,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 .withEnv("OPENNMS_CASSANDRA_KEYSPACE", "newts")
                 .withEnv("OPENNMS_CASSANDRA_PORT", Integer.toString(CassandraContainer.CQL_PORT))
                 .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
-                // service-configuration.xml is rendered from CORE_SERVICE_* by the entrypoint; Syslogd is off by default
-                // Mixed case also exercises the boolean normalisation
+                // ServiceConfigFactory reads CORE_SERVICE_* from the environment; Syslogd is off by default
+                // Mixed case also exercises the case-insensitive boolean parsing
                 .withEnv("CORE_SERVICE_SYSLOGD_ENABLED", "True")
                 .withEnv("JAVA_OPTS", javaOpts)
                 .withNetwork(Network.SHARED)
