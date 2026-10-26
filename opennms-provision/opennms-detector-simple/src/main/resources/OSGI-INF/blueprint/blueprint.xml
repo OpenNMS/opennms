@@ -28,10 +28,6 @@
 		<bean class="org.opennms.netmgt.provision.detector.loop.LoopDetectorFactory" />
 	</service>
 
-	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.smb.SmbDetectorFactory" />
-	</service>
-
 	<!-- SnmpDetectorFactory needs destroy method -->
 	<bean id="snmpDetectorFactory" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetectorFactory"
 		  destroy-method="destroy">
@@ -49,10 +45,6 @@
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetectorFactory" />
-	</service>
-
-	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.snmp.OmsaStorageDetectorFactory" />
 	</service>
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
