@@ -9,6 +9,8 @@ The monitor offers the following functionalities:
 * existence of management beans
 * test the status of a single or multiple management bean, and evaluate its value(s)
 
+To detect JMX services during provisioning, use the xref:provisioning/detectors/Jsr160Detector.adoc[JMX detector].
+
 == Monitor facts
 
 [cols="1,7"]

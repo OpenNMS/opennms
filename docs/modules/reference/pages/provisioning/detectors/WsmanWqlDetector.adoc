@@ -37,7 +37,7 @@ Connection details, credentials, and Kerberos settings for the target come from 
 
 | serviceName
 | A custom service name to identify this service.
-| WsManWQLService
+| WSManWQL
 |===
 
 == Examples
