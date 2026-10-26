@@ -49,7 +49,7 @@ commands:
                 ;;
             esac
             echo "export OPENNMS_VERSION=\"$OPENNMS_VERSION\"" >> $BASH_ENV
-            ./compile.pl -DskipTests=true -DskipITs=true -Dbuild.skip.tarball=false \
+            COMPILE_ARGS=(-DskipTests=true -DskipITs=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
@@ -59,7 +59,14 @@ commands:
               -Psmoke \
               --batch-mode \
               --threads << parameters.number-vcpu >> \
-              $MAVEN_ARGS || exit 1
+              $MAVEN_ARGS)
+            # The Karaf assemblies package bundles from features files, and Maven does not use features
+            # files to order the build. In a parallel build, an assembly can start before its bundles exist.
+            # Build the assemblies in a second run, when all bundles are in the local repository.
+            # No other module depends on them.
+            KARAF_ASSEMBLIES="container/karaf,container/shared,features/container/minion,features/container/sentinel,features/minion/core/repository,features/minion/repository"
+            ./compile.pl "${COMPILE_ARGS[@]}" --projects "!${KARAF_ASSEMBLIES//,/,!}" || exit 1
+            ./compile.pl "${COMPILE_ARGS[@]}" --projects "$KARAF_ASSEMBLIES" || exit 1
             ./compile.pl -s .circleci/scripts/structure-settings.xml \
               --batch-mode \
               --fail-at-end \
