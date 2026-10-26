@@ -73,30 +73,6 @@ License.
         />
       </div>
 
-      <div
-        v-else-if="panel.type === 'html-content'"
-        class="opts__field"
-      >
-        <label class="opts__label">Content URL</label>
-        <OnmsInputText
-          v-model="htmlUrl"
-          placeholder="/opennms/… or https://this-server/…"
-          class="opts__control"
-          :class="{ 'opts__control--error': !!urlError }"
-        />
-        <small
-          v-if="urlError"
-          class="opts__error"
-        >{{ urlError }}</small>
-        <small
-          v-else
-          class="opts__hint"
-        >
-          Loaded in an iframe. Only same-origin URLs work (the dashboard CSP is <code>frame-src 'self'</code>);
-          note many external sites also refuse to be framed.
-        </small>
-      </div>
-
       <template v-if="panel.type === 'metric-chart'">
         <div class="opts__field">
           <label class="opts__label">Entity</label>
@@ -184,7 +160,7 @@ License.
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { OnmsDialog, OnmsTextarea, OnmsInputText, OnmsButton, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsDialog, OnmsTextarea, OnmsButton, OnmsSelect } from '@opennms/onms-ui'
 import type { DashboardPanel, PanelHeightMode } from '@/types/dashboard'
 import { getPanelDefinition } from './registry'
 import { useDashboardStore } from '@/stores/dashboardStore'
@@ -232,7 +208,6 @@ const title = computed(
 const heightMode = ref<PanelHeightMode>('auto')
 const shade = ref(false)
 const notesText = ref('')
-const htmlUrl = ref('')
 
 // panels that support optional severity row shading (legacy-style)
 const SHADEABLE = ['pending-situations', 'nodes-with-alarms', 'availability']
@@ -303,30 +278,10 @@ watch(chartEntity, (id) => {
 })
 
 
-// External URLs are blocked by the dashboard CSP (frame-src 'self'); validate
-// up front so the user gets an explanation instead of a silent broken iframe.
-const urlError = computed(() => {
-  const t = htmlUrl.value.trim()
-  if (!t) {
-    return ''
-  }
-  let parsed: URL
-  try {
-    parsed = new URL(t, window.location.origin)
-  } catch {
-    return 'That is not a valid URL.'
-  }
-  if (parsed.origin !== window.location.origin) {
-    return `External URLs (${parsed.origin}) are blocked by the dashboard security policy (frame-src 'self'). Use a URL on this server, or ask an admin to allow the host in the server CSP.`
-  }
-  return ''
-})
-
 const syncFromPanel = () => {
   heightMode.value = store.resolvedHeightMode(props.panel)
   shade.value = !!props.panel.options?.shade
   notesText.value = String(props.panel.options?.text ?? '')
-  htmlUrl.value = String(props.panel.options?.url ?? '')
   topnKpi.value = String(props.panel.options?.kpi ?? DEFAULT_TOPN_KPI)
   topnN.value = clampTopnN(props.panel.options?.n)
   topnDirection.value = props.panel.options?.direction === 'asc' ? 'asc' : 'desc'
@@ -351,9 +306,6 @@ watch(
 )
 
 const apply = () => {
-  if (props.panel.type === 'html-content' && urlError.value) {
-    return // keep the dialog open; the error is shown inline
-  }
   store.setPanelHeightMode(props.panel.id, heightMode.value)
   const opts: Record<string, unknown> = { ...props.panel.options }
   if (supportsShade.value) {
@@ -361,9 +313,6 @@ const apply = () => {
   }
   if (props.panel.type === 'notes') {
     opts.text = notesText.value
-  }
-  if (props.panel.type === 'html-content') {
-    opts.url = htmlUrl.value.trim()
   }
   if (props.panel.type === 'topn') {
     opts.kpi = topnKpi.value

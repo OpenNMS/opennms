@@ -172,7 +172,7 @@
 
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
-<sec:authorize url="admin/deleteService">
+<sec:authorize access="hasRole('ROLE_ADMIN')">
 
 <script type="text/javascript" >
 function doDelete() {
@@ -194,7 +194,7 @@ function doDelete() {
 
       <h4>${service.serviceName} service on ${service.ipAddress.hostAddress}</h4>
 
-       <sec:authorize url="admin/deleteService">
+       <sec:authorize access="hasRole('ROLE_ADMIN')">
          <form method="post" name="delete" action="admin/deleteService">
          <input type="hidden" name="node" value="${service.ipInterface.node.id}"/>
          <input type="hidden" name="intf" value="${service.ipInterface.ipAddress.hostAddress}"/>
@@ -213,7 +213,7 @@ function doDelete() {
 
           <li class="list-inline-item"><a href="<c:out value="${metaDataLink}"/>">Meta-Data</a></li>
 
-       <sec:authorize url="admin/deleteService">
+       <sec:authorize access="hasRole('ROLE_ADMIN')">
          <li class="list-inline-item"><a href="admin/deleteService" onClick="return doDelete()">Delete</a></li>
        </sec:authorize>
 
@@ -223,7 +223,7 @@ function doDelete() {
 
 
 
-      <sec:authorize url="admin/deleteService">
+      <sec:authorize access="hasRole('ROLE_ADMIN')">
          </form>
       </sec:authorize>
 

@@ -19,14 +19,22 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.core.test.xml;
+package org.opennms.netmgt.config.datacollection;
 
-/**
- * Since we removed Castor in NMS-9135, this is now the same as
- * the XmlTest.
- */
-public abstract class XmlTestNoCastor<T> extends XmlTest<T> {
-    public XmlTestNoCastor(final T sampleObject, final Object sampleXml, final String schemaFile) {
-        super(sampleObject, sampleXml, schemaFile);
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
+public class MibObjectTest {
+
+    @Test
+    public void testIsInstanceId() {
+        for (final String instance : new String[] {"0", "101", "1.5", "1.3.6", " 7 "}) {
+            assertTrue(instance, MibObject.isInstanceId(instance));
+        }
+        for (final String instance : new String[] {null, "", "ifIndex", "hrStorageIndex", "-1", "1.", ".1", "1..5", "1,2"}) {
+            assertFalse(String.valueOf(instance), MibObject.isInstanceId(instance));
+        }
     }
 }

@@ -881,6 +881,8 @@ public class DataCollectionConfRestService implements DataCollectionConfRestApi 
 
         } catch (EntityNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity("MibGroup was not found: " + ex.getMessage()).build();
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         } catch (Exception ex) {
             return internalServerError(ex);
         }

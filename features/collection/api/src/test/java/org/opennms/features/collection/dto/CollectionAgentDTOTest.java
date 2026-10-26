@@ -26,12 +26,12 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
 import org.opennms.netmgt.model.ResourcePath;
 
-public class CollectionAgentDTOTest extends XmlTestNoCastor<CollectionAgentDTO> {
+public class CollectionAgentDTOTest extends XmlTest<CollectionAgentDTO> {
 
     public CollectionAgentDTOTest(CollectionAgentDTO sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, null);

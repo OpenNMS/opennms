@@ -208,17 +208,6 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     renamable: true,
     collapsible: true
   },
-  'html-content': {
-    type: 'html-content',
-    defaultHeightMode: 'fixed',
-    title: 'HTML Content',
-    category: 'info',
-    component: defineAsyncComponent(() => import('./panels/HtmlContentPanel.vue')),
-    defaultSize: { w: 4, h: 5 },
-    minSize: { w: 2, h: 3 },
-    renamable: true,
-    collapsible: true
-  },
   sample: {
     type: 'sample',
     hidden: true, // framework wiring check — keep for debugging, not for production

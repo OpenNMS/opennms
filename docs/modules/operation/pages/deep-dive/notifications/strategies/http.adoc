@@ -1,0 +1,93 @@
+
+= HTTP Form Notifications
+:description: How the HTTP notification strategy in {page-component-title} posts a notice as an HTML form to a URL, and optionally records the reply in the database.
+
+The HTTP notification strategy posts a notice to a URL as form fields (`application/x-www-form-urlencoded`).
+It suits older SMS gateways and ticketing scripts that accept form posts.
+For JSON payloads, custom headers, or other HTTP methods, use the xref:operation:deep-dive/notifications/strategies/webhook.adoc[webhook strategy] instead.
+
+The strategy class is `org.opennms.netmgt.notifd.HttpNotificationStrategy`.
+
+== How values reach the strategy
+
+Like most Java strategies, this one ignores the `<substitution>` element of its arguments.
+Each switch receives its value from the notification parameter with the same name, which you define with a `<parameter>` element on the notification in `notifications.xml`.
+Parameter values can contain event tokens such as `%nodelabel%` and metadata expressions such as `${scv:gateway:password}`.
+
+== Arguments
+
+[options="header"]
+[cols="1,3"]
+|===
+| Switch
+| Description
+
+| `url`
+| Target URL.
+Required; the notice fails if it has no value.
+
+| `post-<name>`
+| Adds a form field called `<name>`.
+Repeat the switch for each field.
+If the parameter value is the name of a built-in switch such as `-tm`, `-subject`, or `-nodeid`, the field receives that switch's value, which requires the command to declare that switch as well.
+
+| `result-match`
+| Regular expression that must match the whole response body before `sql` runs.
+Capture groups are available to `sql` as `$\{1}`, `$\{2}`, and so on.
+
+| `sql`
+| SQL statement to run against the {page-component-title} database when `result-match` matches, for example to store a ticket number returned by a gateway.
+
+| `useSystemProxy`
+| Set to `true` to send the request through the configured system proxy.
+Defaults to `false`.
+|===
+
+The strategy always sends a POST request; without any `post-` arguments, the form is empty.
+Connection and socket timeouts are fixed at 3 seconds.
+
+NOTE: The strategy reports the HTTP status code to notifd as its result, and notifd counts any result other than `0` as a failed notice.
+As a result, the notifd delivery statistics list notices sent with this strategy as failed even when the request succeeds.
+
+== Example
+
+This command posts the node ID and the text message to a gateway:
+
+[source, xml]
+----
+<command binary="false">
+  <name>httpGateway</name>
+  <execute>org.opennms.netmgt.notifd.HttpNotificationStrategy</execute>
+  <comment>Post a notice to an HTTP form gateway</comment>
+  <argument streamed="false">
+    <switch>url</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>post-node</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>post-message</switch>
+  </argument>
+  <argument streamed="false">
+    <switch>-tm</switch>
+  </argument>
+</command>
+----
+
+The notification supplies the values and names a destination path, here `Gateway`, whose targets use the `httpGateway` command:
+
+[source, xml]
+----
+<notification name="nodeDown to gateway" status="on">
+  <uei>uei.opennms.org/nodes/nodeDown</uei>
+  <rule>IPADDR != '0.0.0.0'</rule>
+  <destinationPath>Gateway</destinationPath>
+  <text-message>Node %nodelabel% is down.</text-message>
+  <subject>Notice #%noticeid%: %nodelabel% down</subject>
+  <parameter name="url" value="https://gateway.example.org/cgi-bin/notify"/>
+  <parameter name="post-node" value="%nodelabel%"/>
+  <parameter name="post-message" value="-tm"/>
+</notification>
+----
+
+The gateway receives the form fields `node` (the node label) and `message` (the text message).

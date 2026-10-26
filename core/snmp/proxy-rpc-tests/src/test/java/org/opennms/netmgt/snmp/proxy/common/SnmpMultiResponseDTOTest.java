@@ -26,14 +26,14 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValueFactory;
 
-public class SnmpMultiResponseDTOTest extends XmlTestNoCastor<SnmpMultiResponseDTO> {
+public class SnmpMultiResponseDTOTest extends XmlTest<SnmpMultiResponseDTO> {
 
     public SnmpMultiResponseDTOTest(SnmpMultiResponseDTO sampleObject, String sampleXml) {
         super(sampleObject, sampleXml, null);

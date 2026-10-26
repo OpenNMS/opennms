@@ -33,6 +33,63 @@ Implemented as an external command using the `qpage` utility.
 
 |===
 
+[[notification-strategies]]
+== Notification strategies
+
+A command with `binary="false"` names a Java class that implements the notification strategy interface in its `<execute>` element.
+{page-component-title} includes the following strategies, all in the `org.opennms.netmgt.notifd` package:
+
+[options="header"]
+[cols="2,3"]
+|===
+| Class
+| Description
+
+| `JavaMailNotificationStrategy`
+| Sends an email message.
+See xref:operation:deep-dive/notifications/strategies/javamail.adoc[Email Notifications].
+
+| `BrowserNotificationStrategy`
+| Shows a desktop notification in the target user's web browser.
+See xref:operation:deep-dive/notifications/strategies/browser.adoc[Browser Notifications].
+
+| `WebhookNotificationStrategy`
+| Sends an HTTP request with a templated body, for chat platforms and other webhook receivers.
+See xref:operation:deep-dive/notifications/strategies/webhook.adoc[Webhook Notifications].
+
+| `HttpNotificationStrategy`
+| Posts form fields to a URL and can store part of the reply in the database.
+See xref:operation:deep-dive/notifications/strategies/http.adoc[HTTP Form Notifications].
+
+| `SnmpTrapNotificationStrategy`
+| Sends an SNMPv1 or SNMPv2c trap.
+See xref:operation:deep-dive/notifications/strategies/snmp-trap.adoc[SNMP Trap Notifications].
+
+| `BSFNotificationStrategy`
+| Runs a script through a JSR-223 script engine.
+See xref:operation:deep-dive/notifications/strategies/scripting.adoc[Scripted Notifications].
+
+| `TicketNotificationStrategy`
+| Creates and closes trouble tickets for the alarm behind the notification.
+See xref:operation:deep-dive/notifications/strategies/ticket.adoc[Trouble Ticket Notifications].
+
+| `NullNotificationStrategy`
+| Sends nothing and always reports success.
+Use it to record a notice against a user, so that it appears in the user's notices and can be acknowledged in the web UI, without contacting anyone.
+It takes no arguments.
+|===
+
+A command that uses the null strategy needs only a name and the class:
+
+[source, xml]
+----
+<command binary="false">
+  <name>nullNotify</name>
+  <execute>org.opennms.netmgt.notifd.NullNotificationStrategy</execute>
+  <comment>Record the notice without sending it</comment>
+</command>
+----
+
 == Custom notification commands
 
 You can edit `$\{OPENNMS_HOME}/etc/notificationCommands.xml` to customize and extend notification commands.
@@ -161,87 +218,4 @@ You can pass arbitrary parameters from the notification to the `notificationComm
 
 == Examples
 
-=== SnmpTrapNotificationStrategy
-
-This configuration sends a {page-component-title} trap to an external system with the `nodelabel` in the varbind:
-
-[source, xml]
-----
-    <notification name="snmpTrap" status="on">
-        <uei>uei.opennms.org/nodes/nodeDown</uei>
-        <rule>IPADDR IPLIKE *.*.*.*</rule>
-        <destinationPath>trapNotifier</destinationPath>
-        <text-message>
-                All services are down on node %nodeid%.
-        </text-message>
-        <subject>node %nodeid% down.</subject>
-        <numeric-message>111-%noticeid%</numeric-message>
-        <parameter name="trapVersion" value="v1" />
-        <parameter name="trapTransport" value="UDP" />
-        <parameter name="trapHost" value="my-trap-host.mydomain.org" />
-        <parameter name="trapPort" value="162" />
-        <parameter name="trapCommunity" value="public" />
-        <parameter name="trapEnterprise" value=".1.3.6.1.4.1.5813" />
-        <parameter name="trapGeneric" value="6" />
-        <parameter name="trapSpecific" value="1" />
-        <parameter name="trapVarbind" value="Node: %nodelabel%" />
-    </notification>
-----
-
-The parameters defined here are passed to the notification command as switches.
-You can see these in the `notificationCommands.xml` file:
-
-[source, xml]
-----
-    <command binary="false">
-        <name>snmpTrap</name>
-        <execute>org.opennms.netmgt.notifd.SnmpTrapNotificationStrategy</execute>
-        <comment>Class for sending notifications as SNMP Traps</comment>
-        <argument streamed="false">
-                <switch>trapVersion</switch>
-        </argument>
-        <argument streamed="false">
-                <switch>trapTransport</switch>
-        </argument>
-        <argument streamed="false">
-                <switch>trapHost</switch>
-        </argument>
-        <argument streamed="false">
-                <switch>trapPort</switch>
-        </argument>
-        <argument streamed="false">
-                <switch>trapCommunity</switch>
-        </argument>
-        <argument streamed="false">
-                <switch>trapEnterprise</switch>
-        </argument>
-        <argument streamed="false">
-                <switch>trapGeneric</switch>
-        </argument>
-        <argument streamed="false">
-                <switch>trapSpecific</switch>
-        </argument>
-        <argument streamed="false">
-                <switch>trapVarbind</switch>
-        </argument>
-    </command>
-----
-
-You can define any or none of these parameters and switches.
-If you define a parameter in the notification, however, you must define a corresponding switch in the notification command.
-The defaults are as follows:
-
-[source, properties]
-----
-trapVersion="v1" ("v1 or "v2c")
-trapTransport="UDP" (only UDP for now)
-trapHost="127.0.0.1" (any valid hostname or ip address)
-trapPort="162" (any valid IP port)
-trapCommunity="public" (any valid community string)
-trapEnterprise=".1.3.6.1.4.1.5813" (any valid OID)
-trapGeneric="6" (any valid generic ID)
-trapSpecific="1" (any valid trapSpecific ID)
-trapVarbind="OpenNMS Trap Notification" (any string or one or more valid %<event field>% such as "%eventUEI%" in the string)
-----
-
-The one allowed trap varbind will be sent with the object ID `.1.3.6.1.4.1.5813.20.1` and the `DisplayString` object type.
+For a complete example that passes notification parameters to a command, see xref:operation:deep-dive/notifications/strategies/snmp-trap.adoc[SNMP Trap Notifications].
