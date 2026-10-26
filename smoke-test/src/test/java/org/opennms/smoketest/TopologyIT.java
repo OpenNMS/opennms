@@ -52,8 +52,11 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -79,6 +82,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
     private static final int DEFAULT_MENU_RETRIES = 3;
     public static int IMPLICIT_WAIT_SECONDS = 2;
+    private static final String CONTEXT_MENU_POPUP_XPATH = "//*[@class='v-menubar-popup']";
 
     private TopologyUIPage topologyUiPage;
 
@@ -230,15 +234,38 @@ public class TopologyIT extends OpenNMSSeleniumIT {
         }
 
         public ContextMenu contextMenu() {
-            try {
-                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
-                Actions action = new Actions(testCase.getDriver());
-                action.contextClick(getElement());
-                action.build().perform();
-                return new ContextMenu(testCase);
-            } finally {
-                testCase.setImplicitWait();
+            // The D3 layout can still move the vertex, or a server push can redraw it, when the
+            // right-click occurs. Then no menu opens. Retry until the context menu popup is visible.
+            for (int attempt = 1; ; attempt++) {
+                try {
+                    testCase.setImplicitWait(0, TimeUnit.SECONDS);
+                    waitForStableLocation();
+                    new Actions(testCase.getDriver()).contextClick(getElement()).build().perform();
+                    new WebDriverWait(testCase.getDriver(), Duration.ofSeconds(10))
+                            .until(ExpectedConditions.visibilityOfElementLocated(By.xpath(CONTEXT_MENU_POPUP_XPATH)));
+                    return new ContextMenu(testCase);
+                } catch (TimeoutException | StaleElementReferenceException e) {
+                    if (attempt >= DEFAULT_MENU_RETRIES) {
+                        throw e;
+                    }
+                    LOG.info("Context menu for vertex {} did not open (attempt {}). Retrying.", label, attempt);
+                    new Actions(testCase.getDriver()).sendKeys(Keys.ESCAPE).build().perform();
+                } finally {
+                    testCase.setImplicitWait();
+                }
             }
+        }
+
+        private void waitForStableLocation() {
+            final Point[] last = new Point[1];
+            new WebDriverWait(testCase.getDriver(), Duration.ofSeconds(30)).pollingEvery(Duration.ofMillis(500))
+                    .ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
+                    .until(driver -> {
+                        final Point now = getElement().getLocation();
+                        final boolean stable = now.equals(last[0]);
+                        last[0] = now;
+                        return stable;
+                    });
         }
 
         public void changeIcon(String iconName) {
@@ -309,7 +336,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                     testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                     for (int i = 0; i < menuPath.length; i++) {
                         final String eachPath = menuPath[i];
-                        final WebElement menuElement = testCase.findElementByXpath("//*[@class='v-menubar-popup']//*[@class='v-menubar-submenu']//*[text()='" + eachPath + "']");
+                        final WebElement menuElement = testCase.findElementByXpath(CONTEXT_MENU_POPUP_XPATH + "//*[@class='v-menubar-submenu']//*[text()='" + eachPath + "']");
 
                         // If sub-menu selection, navigate to each element in the
                         // menu, until the last one
@@ -881,7 +908,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
     }
 
     public static class TopologyUISearchResults {
-        private static final String XPATH = "//*/td[@role='menuitem']/div[contains(text(),'%s')]";
+        static final String XPATH = "//*/td[@role='menuitem']/div[contains(text(),'%s')]";
 
         private final TopologyUIPage ui;
 
@@ -964,8 +991,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
         // Find Node and try select ping from context menu
         topologyUiPage.selectTopologyProvider(TopologyProvider.ENLINKD);
         topologyUiPage.clearFocus();
-        topologyUiPage.refreshNow();
-        topologyUiPage.search("Dummy Node").selectItemThatContains("Dummy Node");
+        searchAndSelectAfterReload("Dummy Node");
         PingWindow pingWindow = topologyUiPage.findVertex("Dummy Node").contextMenu().ping();
         pingWindow.close();
     }
@@ -1102,6 +1128,34 @@ public class TopologyIT extends OpenNMSSeleniumIT {
         // TODO: Find a better way that does not require an explicit sleep
         testCase.sleepQuietly(3000);
         testCase.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
+    }
+
+    /**
+     * Enlinkd and the UI topology cache handle the reload event independently.
+     * The cache can reload before enlinkd adds the new node, and the search then finds nothing.
+     * The suggestion popup does not update by itself, so send the reload event again and search again.
+     */
+    private void searchAndSelectAfterReload(String label) throws InterruptedException, IOException {
+        final String resultXpath = String.format(TopologyUISearchResults.XPATH, label);
+        for (int attempt = 1; ; attempt++) {
+            topologyUiPage.refreshNow();
+            topologyUiPage.search(label);
+            try {
+                setImplicitWait(0, TimeUnit.SECONDS);
+                new WebDriverWait(getDriver(), Duration.ofSeconds(15))
+                        .until(ExpectedConditions.elementToBeClickable(By.xpath(resultXpath))).click();
+                waitForTransition(this);
+                return;
+            } catch (TimeoutException e) {
+                if (attempt >= 6) {
+                    throw e;
+                }
+                LOG.info("No search result for '{}' (attempt {}). Sending reload event again.", label, attempt);
+            } finally {
+                setImplicitWait();
+            }
+            new TopologyReloadEvent().send();
+        }
     }
 
     private void createDummyNode() throws InterruptedException, IOException {
