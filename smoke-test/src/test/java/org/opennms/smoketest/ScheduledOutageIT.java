@@ -32,6 +32,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.smoketest.ui.NodeDetailsPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -150,9 +151,10 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
             findElementByXpath("//input[@name='setOutageType']").click();
             findElementByXpath("//input[@name='addOutage']").click();
             findElementByXpath("//input[@name='saveButton']").click();
-            getDriver().get(getBaseUrlInternal() + "opennms/element/node.jsp?node=" + REQUISITION_NAME + ":TestMachine");
-            findElementByXpath("//a[text()='"+name+"']").click();
-            with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Editing Outage: "+name).apply(driver));
+            // The node page lists the scheduled outages that affect the node, linked to the Vue editor.
+            new NodeDetailsPage(this).open(REQUISITION_NAME + ":TestMachine");
+            clickElement(By.xpath("//a[@data-test='node-scheduled-outage-link' and text()='" + name + "']"));
+            with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText("Edit Scheduled Outage: " + name).apply(driver));
         } finally {
             getDriver().get(getBaseUrlInternal() + "opennms/admin/sched-outages/index.jsp");
 
