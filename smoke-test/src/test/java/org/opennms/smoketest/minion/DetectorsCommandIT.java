@@ -72,7 +72,6 @@ public class DetectorsCommandIT {
             .put("Cisco_IP_SLA", "org.opennms.netmgt.provision.detector.snmp.CiscoIpSlaDetector")
             .put("DHCP", "org.opennms.netmgt.provision.detector.dhcp.DhcpDetector")
             .put("DNS", "org.opennms.netmgt.provision.detector.datagram.DnsDetector")
-            .put("Dell_OpenManageChassis", "org.opennms.netmgt.provision.detector.snmp.OpenManageChassisDetector")
             .put("DiskUsage", "org.opennms.netmgt.provision.detector.snmp.DiskUsageDetector")
             .put("FTP", "org.opennms.netmgt.provision.detector.simple.FtpDetector")
             .put("GP", "org.opennms.netmgt.provision.detector.generic.GpDetector")
