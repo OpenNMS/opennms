@@ -30,11 +30,12 @@ import GraphCollectionView from '@/containers/GraphCollectionView.vue'
 // hoisted: the service index pulls in modules that call useSnackbar at import time, before this
 // file's own constants would otherwise exist
 const {
-  getGraphCollections, deleteGraphCollection, createGraphCollection, getResolvedGraphCollection,
+  getGraphCollections, deleteGraphCollection, reloadGraphCollections, createGraphCollection, getResolvedGraphCollection,
   getResolvedSyntheticGraphCollection, getGraphCollectionTimespans, showSnackBar, push, replace, role, query
 } = vi.hoisted(() => ({
   getGraphCollections: vi.fn(),
   deleteGraphCollection: vi.fn(),
+  reloadGraphCollections: vi.fn(),
   createGraphCollection: vi.fn(),
   getResolvedGraphCollection: vi.fn(),
   getResolvedSyntheticGraphCollection: vi.fn(),
@@ -51,6 +52,7 @@ vi.mock(import('@/services/graphCollectionsService'), async importOriginal => ({
   ...await importOriginal(),
   getGraphCollections: () => getGraphCollections(),
   deleteGraphCollection: (...a: unknown[]) => deleteGraphCollection(...a),
+  reloadGraphCollections: () => reloadGraphCollections(),
   createGraphCollection: (...a: unknown[]) => createGraphCollection(...a),
   getResolvedGraphCollection: (...a: unknown[]) => getResolvedGraphCollection(...a),
   getResolvedSyntheticGraphCollection: (...a: unknown[]) => getResolvedSyntheticGraphCollection(...a),
@@ -126,6 +128,29 @@ describe('GraphCollections.vue', () => {
     expect(wrapper.findAll('[data-test="duplicate-collection"]')).toHaveLength(0)
     expect(wrapper.findAll('[data-test="edit-collection"]')).toHaveLength(0)
     expect(wrapper.find('[data-test="create-collection"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="reload-collections"]').exists()).toBe(false)
+  })
+
+  it('re-reads the configuration file on request and shows what it holds now', async () => {
+    reloadGraphCollections.mockResolvedValue({ success: true, message: '' })
+    const wrapper = await mountList()
+    getGraphCollections.mockResolvedValue({ success: true, message: '', payload: [collection(7, 'Hand-edited')] })
+    await wrapper.find('[data-test="reload-collections"]').trigger('click')
+    await flushPromises()
+    expect(reloadGraphCollections).toHaveBeenCalledTimes(1)
+    expect(getGraphCollections).toHaveBeenCalledTimes(2)
+    expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Reloaded the graph collections from the configuration file.' })
+    expect(wrapper.findAll('[data-test="collection-title"]').map(t => t.text())).toEqual(['Hand-edited'])
+  })
+
+  it('reports a failed reload and keeps the list it has', async () => {
+    reloadGraphCollections.mockResolvedValue({ success: false, message: 'Failed to reload the graph collections from disk.' })
+    const wrapper = await mountList()
+    await wrapper.find('[data-test="reload-collections"]').trigger('click')
+    await flushPromises()
+    expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Failed to reload the graph collections from disk.', error: true })
+    expect(getGraphCollections).toHaveBeenCalledTimes(1)
+    expect(wrapper.findAll('[data-test="collection-title"]').map(t => t.text())).toEqual(['Core', 'Edge'])
   })
 
   it('deletes after confirmation and reloads the list', async () => {

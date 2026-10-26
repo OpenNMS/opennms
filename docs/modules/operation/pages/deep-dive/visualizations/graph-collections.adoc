@@ -32,7 +32,8 @@ If the collection was changed by someone else while you were editing it, saving 
 == Configuration file
 
 Collections are stored in `etc/ksc-performance-reports.xml`.
-Edits made to the file by hand are picked up on the next read, or immediately through the `reload` operation of the xref:development:rest/graph_collections.adoc[Graph Collections REST API].
+{page-component-title} reads the file at startup and after each change made through the web UI or the REST API, so edits made to the file by hand are not seen until it is reloaded.
+To reload it, click *Reload from file* on the Graph Collections page, call the `reload` operation of the xref:development:rest/graph_collections.adoc[Graph Collections REST API], or restart {page-component-title}.
 
 The following is an example collection:
 

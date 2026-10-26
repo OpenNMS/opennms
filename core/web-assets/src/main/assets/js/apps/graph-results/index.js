@@ -35,6 +35,7 @@ require('apps/onms-default-apps');
 // "Add to Graph Collection" modal, the graph filter box and the flow graph links.
 // The Vue resource graphs page has its own versions of all three.
 angular.module('onms-graph-results', [
+  'ngSanitize',
   'onms.http',
   'onms.default.apps',
   'ui.bootstrap',
@@ -73,7 +74,20 @@ angular.module('onms-graph-results', [
 
 }])
 
-.controller('AddToGraphCollectionCtrl', ['$scope', '$http', '$uibModal', 'growl', function($scope, $http, $uibModal, growl) {
+// angular-growl shows its messages as HTML, whatever ngSanitize says, so anything a user
+// named is escaped before it goes into one.
+.factory('escapeHtml', function() {
+  return function(value) {
+    return String(value === undefined || value === null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  };
+})
+
+.controller('AddToGraphCollectionCtrl', ['$scope', '$http', '$uibModal', 'growl', 'escapeHtml', function($scope, $http, $uibModal, growl, escapeHtml) {
 
   $scope.open = function(resourceId, resourceLabel, graphName, graphTitle) {
     $uibModal.open({
@@ -94,7 +108,7 @@ angular.module('onms-graph-results', [
       return graph.resourceId === resourceId && graph.graphtype === graphName;
     });
     if (alreadyThere) {
-      growl.warning('The graph "' + graphTitle + '" for resource "' + resourceLabel + '" has been already added to "' + collection.title + '"');
+      growl.warning('The graph "' + escapeHtml(graphTitle) + '" for resource "' + escapeHtml(resourceLabel) + '" has been already added to "' + escapeHtml(collection.title) + '"');
       return;
     }
     $http({
@@ -108,9 +122,9 @@ angular.module('onms-graph-results', [
         timespan: timespan
       }
     }).then(function() {
-      growl.success('The graph "' + graphTitle + '" has been added to "' + collection.title + '"');
+      growl.success('The graph "' + escapeHtml(graphTitle) + '" has been added to "' + escapeHtml(collection.title) + '"');
     }, function(response) {
-      growl.error(response.data || 'The graph could not be added.');
+      growl.error(escapeHtml(response.data || 'The graph could not be added.'));
     });
   };
 }])

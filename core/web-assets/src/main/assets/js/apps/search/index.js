@@ -34,7 +34,10 @@ const nodesTemplate = require('./template.nodes.html');
 
 import Util from 'lib/util';
 
+// ngSanitize: the typeahead renders each match's label as HTML, sanitized only when
+// $sanitize is injectable. Without it a collection title would run as markup.
 angular.module('onms-search', [
+  'ngSanitize',
   'onms.http',
   'ui.bootstrap'
 ])
