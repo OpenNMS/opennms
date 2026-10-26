@@ -120,6 +120,13 @@ function updateConfig() {
         echo "[Configuring][WARN] value for '$key' contains '\${', which Karaf expands as a placeholder when it reads '$file'"
     fi
 
+    # A file mounted read-only (e.g. from a ConfigMap) can't be changed. Skip it rather
+    # than failing the start, but say loudly that the value was not applied.
+    if ! isWritable "$file"; then
+        echo "[Configuring][WARN] '$file' is read-only, '$key'${env_name:+ from ${env_name}} NOT applied"
+        return 0
+    fi
+
     # If config exists in file, replace it (also uncommenting it). Otherwise, append to file.
     # Key and value are passed through the environment and compared literally,
     # so values may contain any character (e.g. '@', '&' or '\').
@@ -170,15 +177,25 @@ function updateConfig() {
         }
     ' "$file") && rc=0 || rc=$?
 
-    # Omit $value here, in case there is sensitive information
     case "$rc" in
-      0) echo "[Configuring] '$key' in '$file'" ;;
+      0) ;;
       3) echo "[Configuring] '$key' in '$file' is resolved from \${env:${env_name}}, left unchanged"; return 0 ;;
       *) return "$rc" ;;
     esac
     # Rewrite in place to keep the file's ownership and permissions
     printf '%s\n' "$result" > "$file"
     CONFIG_WRITTEN=true
+    # Omit $value here, in case there is sensitive information
+    echo "[Configuring] '$key' in '$file'"
+}
+
+function isWritable() {
+    # An existing file must be writable itself, a new one needs a writable directory
+    if [ -e "$1" ]; then
+        [ -w "$1" ]
+    else
+        [ -w "$(dirname "$1")" ]
+    fi
 }
 
 function resetConfig() {
@@ -190,6 +207,10 @@ function resetConfig() {
     seed="${CONTAINER_CONFIG_ETC}/$(basename "$file")"
 
     [ -f "$file" ] || return 0
+    if [ ! -w "$file" ]; then
+        echo "[Configuring][WARN] '$file' is read-only, '$key' NOT reset although its environment variable is no longer set"
+        return 0
+    fi
     local result
     result=$(KEY="$key" SEED="$seed" awk '
         function matches(l,   rest) {
@@ -208,12 +229,12 @@ function resetConfig() {
         { print }
     ' "$file")
 
-    echo "[Configuring] '$key' in '$file' reset, its environment variable is no longer set"
     if [ -n "$result" ]; then
       printf '%s\n' "$result" > "$file"
     else
       : > "$file"
     fi
+    echo "[Configuring] '$key' in '$file' reset, its environment variable is no longer set"
 }
 
 # Records which keys were written from which environment variable, so a key can be
@@ -264,6 +285,8 @@ function parseEnvironment() {
             applyEnvConfig "$env_var" "$es_key" "${SENTINEL_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg"
         fi
 
+        # The image-provided ${env:...} placeholders already track these variables; the
+        # mapping only matters for files that still hold a literal value from older images.
         case "$env_var" in
           OPENNMS_INSTANCE_ID)
             applyEnvConfig "$env_var" "org.opennms.instance.id" "${SENTINEL_HOME}/etc/custom.system.properties"
@@ -366,6 +389,30 @@ function seedContainerConfig() {
         cp "${src}" "${SENTINEL_HOME}/etc/"
       fi
     done
+
+    # custom.system.properties usually exists already and holds settings of its own,
+    # so instead of installing it whole, add each image-provided property it is missing.
+    local file="${SENTINEL_HOME}/etc/custom.system.properties"
+    local line key
+    src="${CONTAINER_CONFIG_ETC}/custom.system.properties"
+    [ -f "${src}" ] || return 0
+    while IFS= read -r line; do
+      [[ "${line}" =~ ^[[:space:]]*([^#[:space:]=]+)[[:space:]]*= ]] || continue
+      key="${BASH_REMATCH[1]}"
+      if [ -f "${file}" ] && grep -E -q "^[[:space:]]*${key//./\\.}[[:space:]]*=" "${file}"; then
+        continue
+      fi
+      if ! isWritable "${file}"; then
+        echo "[Startup][WARN] '${file}' is read-only, default ${key} NOT installed"
+        continue
+      fi
+      # Make sure the property starts on a line of its own
+      if [ -s "${file}" ] && [ -n "$(tail -c 1 "${file}")" ]; then
+        echo >> "${file}"
+      fi
+      echo "[Startup] Installing default ${key} in $(basename "${file}")"
+      printf '%s\n' "${line}" >> "${file}"
+    done < "${src}"
 }
 
 function applyFeatureBootTemplates() {
