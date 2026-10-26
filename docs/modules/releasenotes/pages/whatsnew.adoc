@@ -195,6 +195,11 @@ The C3P0 connection pool factory (`org.opennms.core.db.C3P0ConnectionFactory`) a
 If your `opennms-datasources.xml` explicitly sets `factory="org.opennms.core.db.C3P0ConnectionFactory"`,
 remove that attribute before upgrading.
 
+=== SmbDetector removed
+The SmbDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.smb.SmbDetector` from your foreign source definitions before upgrading.
+The xref:reference:service-assurance/monitors/SmbMonitor.adoc[SmbMonitor] is unchanged; to keep monitoring SMB, add the SMB service to nodes in their requisitions, or detect it with a xref:reference:provisioning/detectors/TcpDetector.adoc[TcpDetector] on port 445.
+
 === At least PostgreSQL 14.0 is required
 
 OpenNMS {page-component-title} now requires PostgreSQL 14.x or newer.
