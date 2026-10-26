@@ -34,7 +34,7 @@ export const bannerSeverity = (severity: string | undefined): BannerSeverity => 
 }
 
 /**
- * A node's at-a-glance status, as the legacy includes/nodeStatus-box.jsp showed it.
+ * A node's at-a-glance status, as the legacy node page's status box showed it.
  */
 export interface NodeStatus {
   // Highest severity among the node's unacknowledged problem alarms, as an upper-case

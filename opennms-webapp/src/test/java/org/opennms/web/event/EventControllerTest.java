@@ -373,7 +373,7 @@ public class EventControllerTest  {
     }
     @Test
     public void acknowledgeRejectsGet() throws Exception {
-        final MockHttpServletRequest request = ackRequest("GET", "/opennms/element/node.jsp?node=5");
+        final MockHttpServletRequest request = ackRequest("GET", "/opennms/element/interface.jsp?ipinterfaceid=5");
         final MockHttpServletResponse response = new MockHttpServletResponse();
 
         Assert.assertNull(eventController.acknowledge(request, response));
@@ -400,7 +400,7 @@ public class EventControllerTest  {
         // Event detail page sends a path relative to /event/.
         Assert.assertEquals("detail.jsp?id=1", acknowledgeAndGetLocation("detail.jsp?id=1"));
         // Element pages that include the event list send the full request URI.
-        Assert.assertEquals("/opennms/element/node.jsp?node=5", acknowledgeAndGetLocation("/opennms/element/node.jsp?node=5"));
+        Assert.assertEquals("/opennms/element/interface.jsp?ipinterfaceid=5", acknowledgeAndGetLocation("/opennms/element/interface.jsp?ipinterfaceid=5"));
         Assert.assertEquals("/opennms/element/service.jsp?ifserviceid=7", acknowledgeAndGetLocation("/opennms/element/service.jsp?ifserviceid=7"));
         verify(m_webEventRepository, times(3)).acknowledgeMatchingEvents(eq("admin"), any(), any());
     }
@@ -408,10 +408,12 @@ public class EventControllerTest  {
     @Test
     public void acknowledgeFallsBackToEventListForOtherRedirects() throws Exception {
         Assert.assertEquals("/opennms/event/list", acknowledgeAndGetLocation("https://evil.example/"));
-        Assert.assertEquals("/opennms/event/list", acknowledgeAndGetLocation("//evil.example/element/node.jsp"));
+        Assert.assertEquals("/opennms/event/list", acknowledgeAndGetLocation("//evil.example/element/interface.jsp"));
         Assert.assertEquals("/opennms/event/list", acknowledgeAndGetLocation("/opennms//evil.example/"));
         Assert.assertEquals("/opennms/event/list", acknowledgeAndGetLocation("?"));
         Assert.assertEquals("/opennms/event/list", acknowledgeAndGetLocation(null));
+        // The node page is now the Vue page, which does not post event acknowledgements.
+        Assert.assertEquals("/opennms/event/list", acknowledgeAndGetLocation("/opennms/element/node.jsp?node=5"));
     }
 
     @Test

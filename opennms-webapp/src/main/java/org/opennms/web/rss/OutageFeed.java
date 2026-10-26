@@ -96,10 +96,9 @@ public class OutageFeed extends AbstractFeed {
                     break;
                 }
                 // Deliberately not the Vue node page (ElementConstants.NODE_DETAILS_URI): feed readers
-                // open this link from outside the app, often logged out, and login drops the URL
-                // fragment, so a hash route would land on the home page. The node id in the query
-                // string survives login, and element/node.jsp stays as a permanent redirect to the
-                // Vue page (NMS-20441).
+                // open this link from outside the app, and a hash route's fragment never reaches the
+                // server. The node id in the query string does, and element/node.jsp stays as a
+                // permanent redirect to the Vue page (NMS-20441).
                 String link = getUrlBase() + "element/node.jsp?node=" + summary.getNodeId();
 
                 entry = new SyndEntryImpl();

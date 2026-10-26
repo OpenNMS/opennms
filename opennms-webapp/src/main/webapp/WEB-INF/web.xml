@@ -350,10 +350,6 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/element/node.jsp</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/element/linkednode.jsp</url-pattern>
   </filter-mapping>
   <filter-mapping>
@@ -622,6 +618,20 @@
   <servlet-mapping>
     <servlet-name>nodeLabelChange</servlet-name>
     <url-pattern>/admin/nodeLabelChange</url-pattern>
+  </servlet-mapping>
+
+  <!--
+    The legacy node page URL redirects to the Vue Node Details page. Keep it: external links
+    (RSS, email, stored event text) use it. An exact mapping takes precedence over the *.jsp
+    mapping, so no JSP file is needed at this path.
+  -->
+  <servlet>
+    <servlet-name>nodeDetailsRedirect</servlet-name>
+    <servlet-class>org.opennms.web.element.NodeDetailsRedirectServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>nodeDetailsRedirect</servlet-name>
+    <url-pattern>/element/node.jsp</url-pattern>
   </servlet-mapping>
 
   <!-- Servlet for modify Discovery configuration service -->
