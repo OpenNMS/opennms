@@ -182,6 +182,11 @@ Spring Security 5.8 has no compatible SAML/OpenID extension libraries, so they a
 If single sign-on is enabled through a custom `spring-security.d/*.xml` file, the web application fails to start after the upgrade — this affects *all* logins, not just SSO.
 See xref:spring-hibernate-upgrade.adoc#spring-hibernate-upgrade[Spring, Hibernate, and Camel Platform Upgrade] for this and other upgrade-related compatibility changes.
 
+=== MSExchangeDetector removed
+The MSExchangeDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.msexchange.MSExchangeDetector` from your foreign source definitions before upgrading.
+Use the xref:reference:provisioning/detectors/WsmanWqlDetector.adoc[WsmanWqlDetector] or the xref:reference:provisioning/detectors/Win32ServiceDetector.adoc[Win32ServiceDetector] to detect Microsoft Exchange services instead.
+
 === WMI integration removed
 The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.
 
