@@ -478,11 +478,12 @@
             <scope>provided</scope>
         </dependency>
         <!--
-          Build order only. The karaf-maven-plugin gets these artifacts from features
-          files or artifactItems, and Maven does not use those to order the build.
-          Without these entries, a parallel build can run this module before the
-          artifacts exist. Type pom, scope test and the exclusions keep them out of the
-          build output and out of the dependency tree.
+          Build order only. The patch jars are copied with artifactItems, and Maven
+          does not use artifactItems to order the build. Without these entries, a
+          parallel build can run this module before the jars exist. Type pom, scope
+          test and the exclusions keep them out of the build output and out of the
+          dependency tree. The bundles from the features files get their build order
+          from container/features.
         -->
         <dependency>
             <groupId>org.opennms.container</groupId>

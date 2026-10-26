@@ -530,65 +530,9 @@
             <artifactId>org.opennms.features.openconfig.telemetry-client</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--
-          Build order only. The karaf-maven-plugin gets these artifacts from features
-          files or artifactItems, and Maven does not use those to order the build.
-          Without these entries, a parallel build can run this module before the
-          artifacts exist. Type pom, scope test and the exclusions keep them out of the
-          build output and out of the dependency tree.
-        -->
-        <dependency>
-            <groupId>org.opennms.core.mate</groupId>
-            <artifactId>org.opennms.core.mate.shell-commands</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features</groupId>
-            <artifactId>org.opennms.features.prometheus-collector</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.telemetry</groupId>
-            <artifactId>org.opennms.features.telemetry.connectors</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.telemetry.protocols.netflow.xml</groupId>
-            <artifactId>org.opennms.features.telemetry.protocols.netflow.xml.minion</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+
+
+
     </dependencies>
 
 </project>
