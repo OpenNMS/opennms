@@ -178,6 +178,11 @@ The xref:reference:service-assurance/monitors/PercMonitor.adoc[PercMonitor] is u
 The IRCcat notification strategy, the stock `ircCat` notification command, and the `irccat.host` and `irccat.port` system properties have been removed.
 An `ircCat` command left in an existing `notificationCommands.xml` still loads, but notices routed to it fail when sent.
 
+=== OpenManageChassisDetector removed
+The OpenManageChassisDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.snmp.OpenManageChassisDetector` from your foreign source definitions before upgrading.
+The xref:reference:service-assurance/monitors/OpenManageChassisMonitor.adoc[OpenManageChassisMonitor] is unchanged; to keep monitoring the chassis status, add the Dell_OpenManageChassis service to nodes in their requisitions, or detect it with an xref:reference:provisioning/detectors/SnmpDetector.adoc[SnmpDetector] on the OID `.1.3.6.1.4.1.674.10892.1.200.10.1.4.1`.
+
 === Asterisk notification strategy removed
 The Asterisk notification strategy, the AsteriskGateway daemon, the stock `callHomePhone`, `callMobilePhone`, and `callWorkPhone` notification commands, and the `asterisk-configuration.properties` and `ami-config.xml` files have been removed.
 Those commands left in an existing `notificationCommands.xml` still load, but notices routed to them fail when sent.
@@ -228,6 +233,11 @@ Attempting a schema upgrade with `install -dis` will result in an error.
 If upgrading PostgreSQL to at least version 14 isn’t possible and you’re completely blocked, the -Q flag lets you skip the version check.
 Use this only as a last resort, since it may affect compatibility.
 Be aware that doing so takes you beyond supported configurations — here be dragons.
+
+=== CitrixDetector removed
+The CitrixDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.simple.CitrixDetector` from your foreign source definitions before upgrading.
+The xref:reference:service-assurance/monitors/CitrixMonitor.adoc[CitrixMonitor] is unchanged; to keep monitoring the ICA protocol, add the service to nodes in their requisitions, or detect it with a xref:reference:provisioning/detectors/TcpDetector.adoc[TcpDetector] on port 1494.
 
 === Prometheus RemoteWrite plugin (formerly Cortex TSS plugin)
 

@@ -2,7 +2,6 @@
 <foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="test">
     <scan-interval>2h</scan-interval>
     <detectors>
-        <detector name="Citrix" class="org.opennms.netmgt.provision.detector.simple.CitrixDetector" />
         <detector name="DNS" class="org.opennms.netmgt.provision.detector.datagram.DnsDetector" />
         <detector name="FTP" class="org.opennms.netmgt.provision.detector.simple.FtpDetector" />
         <detector name="HTTP" class="org.opennms.netmgt.provision.detector.simple.HttpDetector" />
