@@ -37,8 +37,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.awaitility.core.ConditionFactory;
@@ -121,13 +123,17 @@ public class DefaultSchedulerServiceIT {
         deliveryOptions.setPersist(true);
         deliveryOptions.setInstanceId(INSTANCE_ID);
 
-        jobListener = new JobExecutionVerificationListener();
-        m_scheduler.getListenerManager().addJobListener(jobListener);
-
         await = await().atMost(10, SECONDS).pollInterval(250, MILLISECONDS);
 
         m_schedulerService.getTriggerDescriptions().forEach(trigger -> m_schedulerService.removeTrigger(trigger.getTriggerName()));
         assertThat(m_schedulerService.getTriggerDescriptions(), hasSize(0));
+
+        // A trigger of the previous test can fire just before it is removed, and that job can end after this point.
+        // The listener ignores each job that fired before testStart. All triggers of this test fire after testStart.
+        final Date testStart = new Date(System.currentTimeMillis() + 1);
+        await().pollDelay(1, MILLISECONDS).until(() -> System.currentTimeMillis() >= testStart.getTime());
+        jobListener = new JobExecutionVerificationListener(testStart);
+        m_scheduler.getListenerManager().addJobListener(jobListener);
     }
 
     @Test
@@ -166,7 +172,7 @@ public class DefaultSchedulerServiceIT {
             assertThat(ex.getContext(), is("floatParm1"));
         }
 
-        assertThat(jobListener.actualExecutions, is(0));
+        assertThat(jobListener.actualExecutions.get(), is(0));
     }
 
     @Test
@@ -177,7 +183,7 @@ public class DefaultSchedulerServiceIT {
         } catch (SchedulerContextException ex) {
             assertThat(ex.getContext(), is("cronExpression"));
         }
-        assertThat(jobListener.actualExecutions, is(0));
+        assertThat(jobListener.actualExecutions.get(), is(0));
     }
 
     @Test
@@ -247,8 +253,13 @@ public class DefaultSchedulerServiceIT {
     private class JobExecutionVerificationListener implements JobListener {
 
         private int expectedExecutions = 1;
-        private JobExecutionException exception;
-        private int actualExecutions;
+        private final Date notBefore;
+        private volatile JobExecutionException exception;
+        private final AtomicInteger actualExecutions = new AtomicInteger();
+
+        private JobExecutionVerificationListener(final Date notBefore) {
+            this.notBefore = notBefore;
+        }
 
         @Override
         public String getName() {
@@ -267,12 +278,15 @@ public class DefaultSchedulerServiceIT {
 
         @Override
         public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
+            if (context.getFireTime().before(notBefore)) {
+                return;
+            }
             this.exception = jobException;
-            this.actualExecutions++;
+            this.actualExecutions.incrementAndGet();
         }
 
         public boolean wasSuccess() {
-            return exception == null && actualExecutions == expectedExecutions;
+            return exception == null && actualExecutions.get() == expectedExecutions;
         }
 
     }

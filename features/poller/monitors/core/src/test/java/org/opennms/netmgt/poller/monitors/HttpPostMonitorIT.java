@@ -95,7 +95,8 @@ public class HttpPostMonitorIT {
         }
 
         m.put("retry", "0");
-        m.put("timeout", "500");
+        // The first request to the embedded webapp is slow on a loaded CI host. 500 ms gave "Read timed out".
+        m.put("timeout", "10000");
         m.put("banner", "");
         m.put("uri", "/opennms/j_spring_security_check");
         m.put("payload", "foo");
