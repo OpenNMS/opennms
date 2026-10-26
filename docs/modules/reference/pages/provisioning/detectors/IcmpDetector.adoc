@@ -1,0 +1,46 @@
+= ICMP Detector
+:description: Learn how the IcmpDetector in OpenNMS {page-component-title} finds interfaces that respond to ICMP echo requests.
+
+The IcmpDetector finds interfaces that respond to ICMP echo requests (ping).
+It detects the service when the interface replies to an echo request.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.icmp.IcmpDetector`
+|===
+
+== Configuration and use
+
+The IcmpDetector uses the xref:reference:provisioning/detectors.adoc#ref-detector-provisioning-common-parameters[common configuration parameters].
+
+.Parameters for the IcmpDetector
+[options="header"]
+[cols="1,4,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| dscp
+| DSCP traffic-control value set on outgoing packets.
+| 0
+
+| allowFragmentation
+| Whether outgoing packets may be fragmented.
+| false
+|===
+
+NOTE: The detector always uses a timeout of 800 milliseconds and two retries, and does not apply the `timeout` and `retries` parameters.
+
+== Example configuration
+
+The following detector finds interfaces that respond to ping with a DSCP value of 46 (Expedited Forwarding):
+
+[source, xml]
+----
+<detector name="ICMP-EF" class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector">
+    <parameter key="dscp" value="46"/>
+</detector>
+----

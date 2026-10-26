@@ -1,0 +1,71 @@
+= DHCP Detector
+:description: Learn how the DhcpDetector in OpenNMS {page-component-title} finds DHCP servers in your network.
+
+The DhcpDetector finds DHCP servers in your network.
+It uses the same DHCP client as the xref:service-assurance/monitors/DhcpMonitor.adoc[DhcpMonitor]: it sends a DISCOVER message to the interface and detects the service when the server answers with a valid response.
+The CAUTION about UDP ports 67 and 68 on the xref:service-assurance/monitors/DhcpMonitor.adoc[DhcpMonitor] page also applies to this detector.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.dhcp.DhcpDetector`
+|===
+
+== Configuration and use
+
+The DhcpDetector uses the xref:reference:provisioning/detectors.adoc#ref-detector-provisioning-common-parameters[common configuration parameters].
+
+.Parameters for the DhcpDetector
+[options="header"]
+[cols="1,4,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| timeout
+| Time, in milliseconds, to wait for a response.
+| 3000
+
+| retries
+| Number of retries after the first attempt.
+| 0
+
+| macAddress
+| MAC address the detector uses in the DHCP request.
+| 00:06:0D:BE:9C:B2
+
+| relayMode
+| Set `true` to send requests in relay mode, so that the server unicasts its response to `myIpAddress`.
+Use this to test DHCP servers outside the subnet of the {page-component-title} server.
+| false
+
+| myIpAddress
+| Address the DHCP server sends its responses to in relay mode.
+Typically the IP address of the {page-component-title} server.
+| 127.0.0.1
+
+| extendedMode
+| Set `true` to send an INFORM and then a REQUEST when the DISCOVER gets no valid response.
+In extended mode, OFFER, ACK, and NAK are valid responses.
+| false
+
+| requestIpAddress
+| IP address requested in REQUEST messages when `extendedMode` is `true`.
+| 127.0.0.1
+|===
+
+== Example configuration
+
+The following detector finds DHCP servers in another subnet by using relay mode:
+
+[source, xml]
+----
+<detector name="DHCP" class="org.opennms.netmgt.provision.detector.dhcp.DhcpDetector">
+    <parameter key="relayMode" value="true"/>
+    <parameter key="myIpAddress" value="192.0.2.10"/>
+    <parameter key="timeout" value="3000"/>
+    <parameter key="retries" value="1"/>
+</detector>
+----
