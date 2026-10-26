@@ -1,0 +1,9 @@
+// Base styles for the JSP pages that users see without login: login.jsp, logoff.jsp,
+// accessDenied.jsp and the error pages (NMS-20178). The menu bundle (index.css) is for
+// logged-in users only, but these pages use its global element styles: the reset, the
+// typography of headings, paragraphs, links and form fields, and the theme tokens.
+// These are the three stylesheets that main.ts imports, without the styles of the Vue
+// components and PrimeVue. Built by vite.config.anonymous.ts; bootstrap.jsp links it.
+@use '../styles/onms-base.scss';
+@use '../styles/onms-theme.scss';
+@use '../styles/opennms-styles.scss';

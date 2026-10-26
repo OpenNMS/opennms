@@ -10,6 +10,7 @@
               http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
   
   <http pattern="/rest/alarms/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+    <request-cache ref="nullRequestCache"/>
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
@@ -48,6 +49,7 @@
     use-expressions block so ROLE_READONLY can be excluded, mirroring the alarms rules.
   -->
   <http pattern="/rest/notifications/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+    <request-cache ref="nullRequestCache"/>
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
@@ -81,6 +83,7 @@
 
   <!-- Only use BASIC auth for the RESTful APIs -->
   <http pattern="/rest/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+    <request-cache ref="nullRequestCache"/>
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
@@ -219,6 +222,7 @@
   </http>
 
   <http pattern="/nrt/**" realm="OpenNMS Realm" use-expressions="true">
+    <request-cache ref="nullRequestCache"/>
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
@@ -246,6 +250,7 @@
     the alarms and notifications rules; it must precede the generic /api/v2/** block.
   -->
   <http pattern="/api/v2/graph-collections/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+    <request-cache ref="nullRequestCache"/>
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
@@ -273,6 +278,7 @@
 
   <!-- Only use BASIC auth for the RESTful API v2 -->
   <http pattern="/api/v2/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+    <request-cache ref="nullRequestCache"/>
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
@@ -394,6 +400,7 @@
 
   <!-- Only use BASIC auth for the RSS URL -->
   <http pattern="/rss.jsp*" realm="OpenNMS Realm" use-expressions="false">
+    <request-cache ref="nullRequestCache"/>
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
@@ -407,9 +414,54 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
   
+  <!-- Static files of the Vue SPA (/ui/assets) and of the Vue menu bundle (/ui-components/assets).
+       Logged-in users only. An unauthenticated request gets a plain, uncacheable 401 and not a redirect
+       to login.jsp: rendering the login page for a script or stylesheet creates a session, which can
+       replace the session of a login page that is open at the same time, so that login fails; and a
+       browser can cache the redirect as the asset (NMS-20174). Pages that are open to anonymous users
+       load only anonymous-pages.css (see bootstrap.jsp). /ui/index.html and /ui-components/index.html stay in
+       the main block (NMS-20180). The pre-auth filters are the same as in the main block, so that the
+       same logins work here. -->
+  <http request-matcher-ref="staticAssetsMatcher" create-session="never" use-expressions="true" entry-point-ref="noStoreUnauthorizedEntryPoint">
+    <request-cache ref="nullRequestCache"/>
+    <csrf disabled="true" />
+    <headers defaults-disabled="true" />
+
+    <!-- Base styles for the pages open to anonymous users (login.jsp, logoff.jsp, accessDenied.jsp, error
+         pages); bootstrap.jsp links it only without login. No code, no data: reset, typography, theme tokens. -->
+    <intercept-url pattern="/ui-components/assets/anonymous-pages.css" access="permitAll" />
+    <!-- Any logged-in user: bootstrap.jsp loads the menu on every page for a logged-in user (LoginState),
+         whatever the roles, e.g. a ROLE_REST-only user on accessDenied.jsp. -->
+    <intercept-url pattern="/ui-components/assets/**" access="isAuthenticated()" />
+    <intercept-url pattern="/ui/assets/**" access="hasAnyRole('ROLE_USER')" />
+    <intercept-url pattern="/**" access="denyAll"/>
+
+    <!-- Basic auth, as in the main block. Bad credentials also get the plain 401. -->
+    <http-basic entry-point-ref="noStoreUnauthorizedEntryPoint" />
+
+    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
+    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
+  </http>
+
+  <beans:bean id="staticAssetsMatcher" class="org.springframework.security.web.util.matcher.OrRequestMatcher">
+    <beans:constructor-arg>
+      <util:list value-type="org.springframework.security.web.util.matcher.RequestMatcher">
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg value="/ui/assets/**"/>
+        </beans:bean>
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg value="/ui-components/assets/**"/>
+        </beans:bean>
+      </util:list>
+    </beans:constructor-arg>
+  </beans:bean>
+
+  <beans:bean id="noStoreUnauthorizedEntryPoint" class="org.opennms.web.springframework.security.NoStoreUnauthorizedEntryPoint" />
+
   <http pattern="/admin/userGroupView/**" use-expressions="true" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
     <!-- see NMS-13124 -->
     <csrf request-matcher-ref="csrfMatcher"/>
+    <request-cache ref="requestCache"/>
 
     <access-denied-handler error-page="/accessDenied.jsp" />
     <intercept-url pattern="/admin/userGroupView/**" access="hasAnyRole('ROLE_ADMIN')" />
@@ -444,11 +496,11 @@
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>
         <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
-          <beans:constructor-arg name="pattern" value="/admin/account/selfService/newPasswordAction"/>
+          <beans:constructor-arg name="pattern" value="/account/selfService/newPasswordAction"/>
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>
         <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
-          <beans:constructor-arg name="pattern" value="/admin/account/selfService/passwordGateAction"/>
+          <beans:constructor-arg name="pattern" value="/account/selfService/passwordGateAction"/>
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>
         <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
@@ -506,6 +558,7 @@
   <http pattern="/**" use-expressions="true" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
     <access-denied-handler error-page="/accessDenied.jsp" />
     <csrf request-matcher-ref="csrfMatcher"/>
+    <request-cache ref="requestCache"/>
     <headers defaults-disabled="true" />
 
     <intercept-url pattern="/" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
@@ -526,13 +579,8 @@
     <intercept-url pattern="/images/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/assets/load-assets.jsp*" access="denyAll" /><!-- only used as include, shouldn't be accessible directly -->
     <intercept-url pattern="/assets/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
-    <!-- Vue menu bundle (static js/css/fonts). Must be anonymous: bootstrap.jsp preloads it from the
-         login page, and an auth redirect there gets cached by Safari/Firefox as text/html for the
-         asset URL, breaking the menu on all JSP pages after login (NMS-20174). Deliberately limited
-         to assets/**: the unpacked dist-menu artifact also ships an index.html (the Vite build
-         input) at /ui-components/, which nothing links to and which must not be anonymously
-         reachable (NMS-20180). -->
-    <intercept-url pattern="/ui-components/assets/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <!-- /ui/assets/** and /ui-components/assets/** (the Vue SPA and menu bundles) have their own
+         <http> block above: logged in only, with a plain 401 instead of a redirect to login.jsp. -->
 
     <intercept-url pattern="/admin/ng-requisitions/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
     <intercept-url pattern="/admin/classification/index.jsp" access="hasAnyRole('ROLE_FLOW_MANAGER','ROLE_ADMIN')" />
@@ -604,6 +652,17 @@
     <beans:property name="authenticationSuccessHandler" ref="successHandler"/>
     <beans:property name="postOnly" value="false"/>
   </beans:bean>
+
+  <!-- Saves the page an unauthenticated user asked for, so login can return there. Only browser page
+       navigations are saved: an asset or XHR GET must not replace the saved page. -->
+  <beans:bean id="requestCache" class="org.springframework.security.web.savedrequest.HttpSessionRequestCache">
+    <beans:property name="requestMatcher">
+      <beans:bean class="org.opennms.web.springframework.security.PageNavigationRequestMatcher" />
+    </beans:property>
+  </beans:bean>
+
+  <!-- For the blocks that never redirect to login.jsp (REST, APIs, static assets): nothing to return to. -->
+  <beans:bean id="nullRequestCache" class="org.springframework.security.web.savedrequest.NullRequestCache" />
 
   <beans:bean id="successHandler" class="org.opennms.web.springframework.security.OpenNMSAuthSuccessHandler">
     <beans:property name="defaultTargetUrl" value="/index.jsp"/>

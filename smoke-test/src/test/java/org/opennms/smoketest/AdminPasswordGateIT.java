@@ -21,17 +21,21 @@
  */
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
@@ -47,6 +51,10 @@ public class AdminPasswordGateIT extends OpenNMSSeleniumIT {
 
     private static final String ALTERNATE_ADMIN_PASSWORD = "Admin!admin1";
     private static final String INVALID_ADMIN_PASSWORD = "jwV5wddWoSCFS6Vn7JTRZVGvVGfgBaEL";
+
+    // pages asked for before login; after login, the browser must come back to them
+    private static final String REQUESTED_PAGE = "outage/index.jsp?x=a:b";
+    private static final String VUE_HASH_ROUTE = "ui/index.html#/nodes?x=a:b";
 
     @Before
     public void setUp() throws Exception {
@@ -118,34 +126,89 @@ public class AdminPasswordGateIT extends OpenNMSSeleniumIT {
         handleAlert("Password complexity is not correct!", false);
     }
 
-    @Ignore("Not currently working. RequestCache may not be saving correct page.")
+    @Test
     public void testAdminPasswordGateRetainsRequestedPage() {
-        // logout and try to go to a non-login page
+        // logout and try to go to a non-login page, with a query string that contains ':'
         // user will be redirected to login page, login with "admin/admin"
         // will get password gate page, click Skip, then should redirect to original page
         LOG.debug("Test logout and login to the outage page, confirm that skipping the password gate redirects there");
         logout();
-        outagePage();
+        driver.get(getBaseUrlInternal() + "opennms/" + REQUESTED_PAGE);
         waitFor("login.jsp");
         login(PASSWORD_GATE_USERNAME, PASSWORD_GATE_PASSWORD, true, false, false, false);
-        waitFor("outage/index.jsp");
+        waitFor(REQUESTED_PAGE);
 
         // logout and try to go to a non-login page
         // user will be redirected to login page, login with "admin/admin"
         // will get password gate page, change the password, then should redirect to outage page
         LOG.debug("Test logout and login to the outage page, confirm that changing the password redirects to outage page");
         logout();
-        outagePage();
+        driver.get(getBaseUrlInternal() + "opennms/" + REQUESTED_PAGE);
         waitFor("login.jsp");
-        loginAndChangePassword("outage/index.jsp", false);
+        loginAndChangePassword(REQUESTED_PAGE, false);
+
+        // the admin password is not the default now, so there is no password gate
+        LOG.debug("Test login to a Vue hash route, without the password gate");
+        loginThroughVueHashRoute(ALTERNATE_ADMIN_PASSWORD, false);
 
         // Reset password back to "admin" using Rest API
         resetPassword();
 
+        LOG.debug("Test login to a Vue hash route, skipping the password gate");
+        loginThroughVueHashRoute(PASSWORD_GATE_PASSWORD, true);
+
         // login with "admin/admin", should succeed but display passwordGate page, which is skipped
         LOG.debug("Test final logout and login to the outage page and skip");
+        // logout uses the menu of a JSP page
+        driver.get(getBaseUrlInternal() + "opennms/index.jsp");
         logout();
         loginAndSkip();
+    }
+
+    /**
+     * The password gate action is a POST that changes the password, so it must require the CSRF token.
+     */
+    @Test
+    public void testPasswordGateActionRequiresCsrfToken() {
+        login();
+
+        final Object status = ((JavascriptExecutor) driver).executeAsyncScript(
+            "const done = arguments[arguments.length - 1];"
+            + "fetch('/opennms/account/selfService/passwordGateAction?skip=1',"
+            + " {method: 'POST', redirect: 'manual', credentials: 'same-origin'})"
+            + ".then(r => done(r.status)).catch(e => done('error: ' + e));");
+
+        assertEquals(403L, status);
+    }
+
+    /**
+     * Go to a Vue hash route while not logged in, login (and skip the password gate if expected),
+     * then confirm that the browser is back at the same hash route.
+     */
+    private void loginThroughVueHashRoute(final String password, final boolean expectGate) {
+        // start with no session
+        driver.manage().deleteAllCookies();
+        driver.get("about:blank");
+
+        driver.get(getBaseUrlInternal() + "opennms/" + VUE_HASH_ROUTE);
+        waitFor("login.jsp");
+
+        // not login(): it waits for elements of JSP pages, which the Vue app does not have
+        enterText(By.name("j_username"), PASSWORD_GATE_USERNAME);
+        enterText(By.name("j_password"), password);
+        clickElement(By.name("Login"));
+
+        if (expectGate) {
+            waitFor("passwordGate.jsp");
+            clickElement(By.id("btn_skip"));
+        }
+
+        wait.until((WebDriver d) -> decodedUrl(d).contains(VUE_HASH_ROUTE));
+        assertTrue(decodedUrl(driver).contains(VUE_HASH_ROUTE));
+    }
+
+    private static String decodedUrl(final WebDriver d) {
+        return URLDecoder.decode(d.getCurrentUrl(), StandardCharsets.UTF_8);
     }
 
     private void resetPassword() {

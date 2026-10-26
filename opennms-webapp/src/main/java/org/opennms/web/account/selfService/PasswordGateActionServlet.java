@@ -29,52 +29,68 @@ import javax.servlet.http.HttpSession;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.web.springframework.security.LoginModuleUtils;
-import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+import org.opennms.web.springframework.security.LoginRedirects;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 
 public class PasswordGateActionServlet extends AbstractBasePasswordChangeActionServlet {
     private static final long serialVersionUID = 1L;
 
+    private final transient RequestCache requestCache = new HttpSessionRequestCache();
+
     /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        initUserFactory("PasswordGateActionServlet");
+        final HttpSession userSession = request.getSession(false);
+
+        // The gate is only for a login with the default admin password (see OpenNMSAuthSuccessHandler).
+        // At any other time, do nothing and go to the main page.
+        if (!LoginRedirects.isPasswordGatePending(userSession)) {
+            response.sendRedirect(LoginRedirects.buildTargetUrl(request, null, null));
+            return;
+        }
+
+        // after the gate, go to the page the user asked for before login, or to the main page
+        final String targetUrl = LoginRedirects.buildTargetUrl(request,
+            LoginRedirects.savedRequestPath(requestCache.getRequest(request, response)),
+            (String) userSession.getAttribute(LoginRedirects.FRAGMENT_SESSION_ATTRIBUTE));
 
         final String skip = request.getParameter("skip");
 
         if (skip != null && skip.equals("1")) {
-            // skip was clicked, redirect either back to originally requested page or to the main page
-            response.sendRedirect(getRedirectPath(request, response));
+            finishGate(request, response, userSession);
+            response.sendRedirect(targetUrl);
             return;
         }
 
-        final UserManager userFactory = UserFactory.getInstance();
+        final UserManager userFactory = getUserManager();
         final String userid = request.getRemoteUser();
         final User user = userFactory.getUser(userid);
 
         readonlyUserCheck(request, user);
 
-        final HttpSession userSession = request.getSession(false);
         final String currentPassword = request.getParameter("currentPassword");
         final String newPassword = request.getParameter("newPassword");
 
-        verifyAndChangePassword(userFactory, userSession, user,
+        final boolean changed = verifyAndChangePassword(userFactory, userSession, user,
             request, response, currentPassword, newPassword,
             "/account/selfService/passwordGate.jsp?action=redo",
-            getRedirectPath(request, response),
+            targetUrl,
             true);
+
+        if (changed) {
+            finishGate(request, response, userSession);
+        }
     }
 
-    private String getRedirectPath(HttpServletRequest request, HttpServletResponse response) {
-        final RequestCache requestCache = new HttpSessionRequestCache();
-        final DefaultSavedRequest savedRequest = (DefaultSavedRequest) requestCache.getRequest(request, response);
-        final String servletPath = savedRequest != null ? savedRequest.getServletPath() : null;
-        final String path = servletPath != null && !servletPath.isEmpty() &&
-                !LoginModuleUtils.isInvalidSavedRequestUrl(servletPath)
-                ? servletPath : "/index.jsp";
+    protected UserManager getUserManager() throws ServletException {
+        initUserFactory("PasswordGateActionServlet");
+        return UserFactory.getInstance();
+    }
 
-        return request.getContextPath() + path;
+    private void finishGate(HttpServletRequest request, HttpServletResponse response, HttpSession userSession) {
+        userSession.removeAttribute(LoginRedirects.PASSWORD_GATE_PENDING_ATTRIBUTE);
+        userSession.removeAttribute(LoginRedirects.FRAGMENT_SESSION_ATTRIBUTE);
+        requestCache.removeRequest(request, response);
     }
 }
