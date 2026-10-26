@@ -173,6 +173,11 @@ Existing `users.xml` files with `xmppAddress` contacts still load, but no notifi
 The IRCcat notification strategy, the stock `ircCat` notification command, and the `irccat.host` and `irccat.port` system properties have been removed.
 An `ircCat` command left in an existing `notificationCommands.xml` still loads, but notices routed to it fail when sent.
 
+=== OpenManageChassisDetector removed
+The OpenManageChassisDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.snmp.OpenManageChassisDetector` from your foreign source definitions before upgrading.
+The xref:reference:service-assurance/monitors/OpenManageChassisMonitor.adoc[OpenManageChassisMonitor] is unchanged; to keep monitoring the chassis status, add the Dell_OpenManageChassis service to nodes in their requisitions, or detect it with an xref:reference:provisioning/detectors/SnmpDetector.adoc[SnmpDetector] on the OID `.1.3.6.1.4.1.674.10892.1.200.10.1.4.1`.
+
 === Asterisk notification strategy removed
 The Asterisk notification strategy, the AsteriskGateway daemon, the stock `callHomePhone`, `callMobilePhone`, and `callWorkPhone` notification commands, and the `asterisk-configuration.properties` and `ami-config.xml` files have been removed.
 Those commands left in an existing `notificationCommands.xml` still load, but notices routed to them fail when sent.
