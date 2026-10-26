@@ -52,10 +52,6 @@
 	</service>
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.snmp.OmsaStorageDetectorFactory" />
-	</service>
-
-	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.netmgt.provision.detector.snmp.OpenManageChassisDetectorFactory" />
 	</service>
 

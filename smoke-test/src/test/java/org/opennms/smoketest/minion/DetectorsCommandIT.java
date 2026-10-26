@@ -97,7 +97,6 @@ public class DetectorsCommandIT {
             .put("NOTES", "org.opennms.netmgt.provision.detector.simple.NotesHttpDetector")
             .put("NRPE", "org.opennms.netmgt.provision.detector.simple.NrpeDetector")
             .put("NTP", "org.opennms.netmgt.provision.detector.datagram.NtpDetector")
-            .put("OMSAStorage", "org.opennms.netmgt.provision.detector.snmp.OmsaStorageDetector")
             .put("PERC", "org.opennms.netmgt.provision.detector.snmp.PercDetector")
             .put("POP3", "org.opennms.netmgt.provision.detector.simple.Pop3Detector")
             .put("SMB", "org.opennms.netmgt.provision.detector.smb.SmbDetector")

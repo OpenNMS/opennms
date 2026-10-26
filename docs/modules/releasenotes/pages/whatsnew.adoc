@@ -177,6 +177,11 @@ An `ircCat` command left in an existing `notificationCommands.xml` still loads, 
 The Asterisk notification strategy, the AsteriskGateway daemon, the stock `callHomePhone`, `callMobilePhone`, and `callWorkPhone` notification commands, and the `asterisk-configuration.properties` and `ami-config.xml` files have been removed.
 Those commands left in an existing `notificationCommands.xml` still load, but notices routed to them fail when sent.
 
+=== OmsaStorageDetector removed
+The OmsaStorageDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.snmp.OmsaStorageDetector` from your foreign source definitions before upgrading.
+The xref:reference:service-assurance/monitors/OmsaStorageMonitor.adoc[OmsaStorageMonitor] is unchanged; to keep monitoring OMSA storage, add the service to nodes in their requisitions, or detect it with an xref:reference:provisioning/detectors/SnmpDetector.adoc[SnmpDetector] on the OID `.1.3.6.1.4.1.674.10893.1.20.140.1.1.19.1`.
+
 === SAML and OpenID SSO support removed
 Spring Security 5.8 has no compatible SAML/OpenID extension libraries, so they are no longer shipped.
 If single sign-on is enabled through a custom `spring-security.d/*.xml` file, the web application fails to start after the upgrade — this affects *all* logins, not just SSO.
