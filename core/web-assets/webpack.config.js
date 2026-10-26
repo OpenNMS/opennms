@@ -554,7 +554,8 @@ function createConfig(options) {
     }
     myconf.optimization.minimizer.push(new TerserPlugin({
       cache: true,
-      parallel: true,
+      // A fixed worker count: "true" starts one worker per CPU, which can be the host CPU count in a container.
+      parallel: 4,
       sourceMap: true,
       terserOptions: {
         mangle: {
