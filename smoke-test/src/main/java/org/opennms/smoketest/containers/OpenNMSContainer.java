@@ -444,15 +444,14 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
             try {
                 waitUntilReadyWrapped();
             } catch (Exception e) {
-                var logs =
-                        "\n\t\t----------------------------------------------------------\n"
-                                + container.getLogs()
-                                .replaceFirst(
-                                        "(?ms).*?(^An error occurred while attempting to start the .*?)\\s*^\\[INFO\\].*",
-                                        "$1\n")
-                                .replaceAll("(?m)^", "\t\t")
-                                + "\t\t----------------------------------------------------------";
-
+                // Log only the end of the container output. A regex on the full output can run for hours.
+                try {
+                    final String logs = container.getLogs();
+                    LOG.error("OpenNMS is not ready: {}. Last container output:\n{}", e.getMessage(),
+                            logs.substring(Math.max(0, logs.length() - 20_000)));
+                } catch (Exception logException) {
+                    LOG.warn("Cannot get the container output.", logException);
+                }
                 throw e;
             }
         }

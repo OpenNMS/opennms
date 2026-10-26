@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -65,7 +66,11 @@ public class RestHealthClient {
     public RestHealthClient(final URL webUrl, final Optional<String> alias){
         this.alias = alias;
         this.url = webUrl;
-        this.client = ClientBuilder.newClient();
+        // Without timeouts, a server that does not answer blocks the caller forever.
+        this.client = ClientBuilder.newBuilder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .build();
     }
 
     private WebTarget getTargetFor(final String path){
