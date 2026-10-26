@@ -98,7 +98,6 @@ public class DetectorsCommandIT {
             .put("OMSAStorage", "org.opennms.netmgt.provision.detector.snmp.OmsaStorageDetector")
             .put("PERC", "org.opennms.netmgt.provision.detector.snmp.PercDetector")
             .put("POP3", "org.opennms.netmgt.provision.detector.simple.Pop3Detector")
-            .put("SMB", "org.opennms.netmgt.provision.detector.smb.SmbDetector")
             .put("SMTP", "org.opennms.netmgt.provision.detector.simple.SmtpDetector")
             .put("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector")
             .put("SSH", "org.opennms.netmgt.provision.detector.ssh.SshDetector")
