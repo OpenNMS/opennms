@@ -185,6 +185,11 @@ See xref:spring-hibernate-upgrade.adoc#spring-hibernate-upgrade[Spring, Hibernat
 === WMI integration removed
 The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.
 
+=== NotesHttpDetector removed
+The NotesHttpDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.simple.NotesHttpDetector` from your foreign source definitions before upgrading.
+To detect a Lotus Notes or HCL Domino web server, use the xref:reference:provisioning/detectors/HttpDetector.adoc[HttpDetector] instead.
+
 === JoeSNMP removed
 The SNMP implementation JoeSNMP was removed in OpenNMS {page-component-title}.
 
