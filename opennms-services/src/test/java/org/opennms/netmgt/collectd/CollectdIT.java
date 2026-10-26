@@ -408,6 +408,60 @@ public class CollectdIT {
     }
 
     /**
+     * NMS-20493: a configured collector whose class never registers (e.g. WMI after its removal in 36)
+     * must not keep other services from collecting, and its own services must be skipped.
+     */
+    @Test
+    public void testUnavailableCollectorDoesNotBlockOtherCollectors() throws Exception {
+        OnmsIpInterface iface = getInterface();
+
+        setupCollector("SNMP");
+        Collector wmi = new Collector();
+        wmi.setService("WMI");
+        wmi.setClassName("org.opennms.netmgt.collectd.WmiCollector");
+        List<Collector> collectors = new ArrayList<>(m_collectdConfigFactory.getCollectors());
+        collectors.add(wmi);
+        when(m_collectdConfigFactory.getCollectors()).thenReturn(collectors);
+
+        setupInterface(iface);
+        setupTransactionManager();
+
+        Package pkg = getCollectionPackageThatMatchesSNMP();
+        Service wmiSvc = new Service();
+        wmiSvc.setName("WMI");
+        wmiSvc.setStatus("on");
+        pkg.addService(wmiSvc);
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(pkg));
+        when(m_collectdConfigFactory.interfaceInPackage(iface, pkg)).thenReturn(true);
+
+        ThresholdingService mockThresholdingService = mock(ThresholdingService.class);
+        when(mockThresholdingService.createSession(anyInt(), anyString(), anyString(), isA(ServiceParameters.class))
+             ).thenReturn(mock(ThresholdingSession.class));
+        m_collectd.setThresholdingService(mockThresholdingService);
+
+        m_collectd.afterPropertiesSet();
+        m_collectd.start();
+
+        // Runs the scheduling task for SNMP, which creates its CollectableService
+        m_scheduler.next();
+
+        assertEquals("collectable service count", 1, m_collectd.getCollectableServiceCount());
+        // MockScheduler ignores isReady(), so check it directly: this is what LegacyScheduler polls
+        assertTrue("SNMP service must be ready despite the unavailable WMI collector",
+                m_collectd.getCollectableServices().get(0).isReady());
+        // Event-driven scheduling (e.g. nodeGainedService) of the WMI service must skip it, not fail
+        assertTrue(m_collectd.getSpecificationsForInterface(iface, "WMI").isEmpty());
+
+        m_collectd.stop();
+
+        MockLogAppender.assertLogMatched(Level.WARN, "not available yet");
+        MockLogAppender.resetState();
+
+        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
+        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+    }
+
+    /**
      * A successful collection stamps collectlastgood on the service's ifservices row and leaves
      * collectlastfail alone. This drives the real chain: Collectd wiring, CollectableService,
      * the transaction template, and the MonitoredServiceDao update by primary key.
