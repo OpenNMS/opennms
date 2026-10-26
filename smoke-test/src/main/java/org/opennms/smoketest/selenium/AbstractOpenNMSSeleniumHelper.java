@@ -283,21 +283,41 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     public void login(final String username, final String password) {
-        // Start with a clean slate
+        // Start with a clean slate. Park on about:blank afterwards so background
+        // requests from the previous page (e.g. Vaadin heartbeats) cannot race the
+        // login page load and swap the session cookie after the form is rendered,
+        // which would invalidate the CSRF token embedded in the form.
         getDriver().manage().deleteAllCookies();
+        getDriver().get("about:blank");
 
         getDriver().get(getBaseUrlInternal() + "opennms/login.jsp");
 
-        waitForLogin();
+        for (int attempt = 1; ; attempt++) {
+            waitForLogin();
 
-        enterText(By.name("j_username"), username);
-        enterText(By.name("j_password"), password);
-        clickElement(By.name("Login"));
+            enterText(By.name("j_username"), username);
+            enterText(By.name("j_password"), password);
+            clickElement(By.name("Login"));
 
-        wait.until((WebDriver driver) -> {
-            return ! driver.getCurrentUrl().contains("login.jsp");
-        });
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
+            wait.until((WebDriver driver) -> {
+                return ! driver.getCurrentUrl().contains("login.jsp");
+            });
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
+
+            // A rejected login POST (e.g. a stale CSRF token after a session cookie swap)
+            // forwards to the access-denied page instead of failing on login.jsp, so it
+            // passes the waits above. Retry with a freshly rendered form in that case.
+            final String landedOn = getDriver().getCurrentUrl();
+            if (!landedOn.contains("accessDenied.jsp") && !landedOn.contains("j_spring_security_check")) {
+                break;
+            }
+            if (attempt >= 3) {
+                fail("Login POST was rejected " + attempt + " times; last landed on: " + landedOn);
+            }
+            LOG.warn("Login POST was rejected (landed on {}), retrying with a fresh login form.", landedOn);
+            getDriver().get(getBaseUrlInternal() + "opennms/login.jsp");
+        }
+
         invokeWithImplicitWait(0, () -> {
             try {
                 // Make sure that the 'login-attempt-failed' element is not present
