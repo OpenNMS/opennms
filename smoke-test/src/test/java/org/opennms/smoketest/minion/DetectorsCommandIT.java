@@ -75,7 +75,6 @@ public class DetectorsCommandIT {
             .put("DNS", "org.opennms.netmgt.provision.detector.datagram.DnsDetector")
             .put("Dell_OpenManageChassis", "org.opennms.netmgt.provision.detector.snmp.OpenManageChassisDetector")
             .put("DiskUsage", "org.opennms.netmgt.provision.detector.snmp.DiskUsageDetector")
-            .put("DominoIIOP", "org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector")
             .put("FTP", "org.opennms.netmgt.provision.detector.simple.FtpDetector")
             .put("GP", "org.opennms.netmgt.provision.detector.generic.GpDetector")
             .put("HOST-RESOURCES", "org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetector")
