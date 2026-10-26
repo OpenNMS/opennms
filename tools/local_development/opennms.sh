@@ -92,16 +92,9 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
-if [[ "$DISABLE_JRRD2" != "true" ]]; then
-   # if $JAVA_HOME is not set, ask user to setup JAVA_HOME
-   if [[ -z "${JAVA_HOME:-}" ]]; then
-     echo "JAVA_HOME is not set. Detecting required JDK version from pom.xml..."
-     detect_jdk_version_required
-     echo "Detected required JDK version: $REQUIRED_VERSION"
-     echo "Please set JAVA_HOME to a JDK $REQUIRED_VERSION installation and re-run this script."
-     exit 1
-   fi
+select_jdk || exit 1
 
+if [[ "$DISABLE_JRRD2" != "true" ]]; then
    detect_jrrd2_location
    if [[ -z "$JRRD_JAR" ]] || [[ ! -f "$JRRD_JAR" ]] || [[ -z "$JRRD_LIB" ]] || [[ ! -f "$JRRD_LIB" ]]; then
      # Build JRRD2 from source then run the rest of script
@@ -127,25 +120,41 @@ if [[ -f "$ROOT/target/opennms/bin/opennms" ]]; then
     ./target/opennms/bin/opennms stop || true
 fi
 
+BUILD_START=$(date +%s)
+
 if [[ "$SKIP_CLEANUP" == "yes" ]]; then
     echo "Skipping cleanup of previous build artifacts."
 else
     echo "Cleaning previous build artifacts..."
-    ./clean.pl
+    # Faster than clean.pl, which starts Maven on every module. node_modules stays, so pnpm does not install all packages again.
+    find . -name node_modules -prune -o -name target -type d -prune -exec rm -rf {} +
+    rm -rf ./ui/src/main/dist ./ui/src/menu/dist-menu
 fi
 
+# "-p dir" writes the assembly to target/opennms-$RELEASE, so there is no tarball to unpack.
+# Local builds do not use the source tarball or the core and optional tarballs.
+ASSEMBLE_ARGS=(-p dir -Dbuild.skip.tarball=true -Dbuild.skip.coretar=true)
 if [[ "$ENABLE_TESTS" == "yes" ]]; then
     echo "Compiling & assembling (with tests)..."
-    ./compile.pl && ./assemble.pl
+    ./compile.pl -Dbuild.skip.tarball=true && ./assemble.pl "${ASSEMBLE_ARGS[@]}"
 else
     echo "Compiling & assembling (skip tests)..."
-    ./compile.pl -DskipTests=true && ./assemble.pl -DskipTests=true
+    # Parallel threads need a larger heap. CI runs checkstyle and the enforcer rules.
+    CPUS=$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
+    export MAVEN_OPTS=${MAVEN_OPTS:-"-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"}
+    COMPILE_ARGS=(-DskipTests=true -Dbuild.skip.tarball=true -Ddisable.checkstyle=true -Denforcer.skip=true \
+        --threads "$(( CPUS < 8 ? CPUS : 8 ))" install)
+    # The Karaf assemblies package bundles from features files, and Maven does not use features files
+    # to order the build. In a parallel build, an assembly can start before its bundles exist.
+    # Build the assemblies in a second run, when all bundles are in the local repository.
+    KARAF_ASSEMBLIES="container/karaf,container/shared,features/container/minion,features/container/sentinel,features/minion/core/repository,features/minion/repository"
+    ./compile.pl "${COMPILE_ARGS[@]}" --projects "!${KARAF_ASSEMBLIES//,/,!}" \
+        && ./compile.pl "${COMPILE_ARGS[@]}" --projects "$KARAF_ASSEMBLIES" \
+        && ./assemble.pl -DskipTests=true "${ASSEMBLE_ARGS[@]}"
 fi
 
 echo "Preparing symlink for OpenNMS release $RELEASE"
-mkdir -p "./target/opennms-$RELEASE"
-ln -s "$ROOT/target/opennms-$RELEASE" "$ROOT/target/opennms"
-tar -zxvf "./target/opennms-$RELEASE.tar.gz" -C "$ROOT/target/opennms-$RELEASE"
+ln -sfn "$ROOT/target/opennms-$RELEASE" "$ROOT/target/opennms"
 
 # Set runtime user
 echo "RUNAS=$(id -u -n)" > "$ROOT/target/opennms/etc/opennms.conf"
@@ -177,6 +186,10 @@ echo "Initialize the Java environment..."
 
 echo "Initialize the database schema..."
 "$ROOT/target/opennms/bin/install" -dis
+
+# Show the time before the start, because a foreground start does not return until OpenNMS stops.
+ELAPSED=$(( $(date +%s) - BUILD_START ))
+echo "Build and setup time: $(( ELAPSED / 60 ))m $(( ELAPSED % 60 ))s"
 
 if [[ "$RUN_OPENNMS_FOREGROUND" == "yes" ]]; then
   echo "Starting OpenNMS (foreground)..."
