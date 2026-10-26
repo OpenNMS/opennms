@@ -45,9 +45,9 @@ public class JniRrdStrategyTest {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
         String rrdLib = System.getProperty("opennms.library.jrrd");
-        if (rrdLib != null && !rrdLib.equals("${opennms.library.jrrd}")) {
+        if (rrdLib != null && !rrdLib.isBlank() && !rrdLib.equals("${opennms.library.jrrd}")) {
             File libFile = new File(rrdLib);
-            if (libFile.exists()) {
+            if (libFile.isFile()) {
                 m_strategy = new JniRrdStrategy();
             } else {
                 System.err.println("System property 'opennms.library.jrrd' points to non-existent file: skipping tests");

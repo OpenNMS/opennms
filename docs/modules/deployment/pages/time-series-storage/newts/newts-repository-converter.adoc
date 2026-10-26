@@ -32,7 +32,8 @@ You will need this information later to invoke the `newts-repository-converter` 
 *** In `rrd.base.dir`, check for the location where RRD or JRB files are stored.
 *** In `rrd.binary`, check for the location of the RRDTool binary.
 .. `$\{OPENNMS_HOME}/etc/rrd-configuration.properties`:
-*** In `org.opennms.rrd.strategyClass`, check if you are using JRobin (`JRobinRrdStrategy` or `JniRrdStrategy`) or RRDTool (`MultithreadedJniRrdStrategy`).
+*** In `org.opennms.rrd.strategyClass`, check which strategy is configured; `JniRrdStrategy` and `MultithreadedJniRrdStrategy` both use RRDtool.
+JRobin is no longer available as a storage strategy, but the converter can still read `.jrb` files that earlier releases wrote.
 . Stop {page-component-title}.
 . Reconfigure {page-component-title} settings to persist data to Newts.
 When properly configured, all new samples will be persisted to Newts after {page-component-title} starts.

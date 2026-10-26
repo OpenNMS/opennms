@@ -434,6 +434,9 @@ endif::[]
 |opennms:kafka-evaluate-filter
 |Compiles the given expression and optionally test it against an object
 |xref:operation:deep-dive/kafka-producer/kafka-producer.adoc[opennms-kafka-producer]
+|opennms:kafka-evaluate-metric-filter
+|Evaluates a metricFilter expression against the resources in the resource tree and shows which of them would be forwarded to Kafka
+|xref:operation:deep-dive/kafka-producer/shell-commands.adoc#kafka-evaluate-metric-filter[opennms-kafka-producer]
 |opennms:kafka-push-topology-edges
 |Pushes all of the related topology edges to the configured topic
 |opennms-kafka-producer

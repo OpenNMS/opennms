@@ -1,0 +1,94 @@
+
+[[node-label]]
+= Node Labels
+:description: How {page-component-title} chooses the label of a node during provisioning, and how the node label source records where the label came from.
+
+Every node in {page-component-title} has a label that identifies it in the web UI, in events, and in notifications.
+{page-component-title} also stores a node label source, a one-character flag that records where the label came from.
+The label source determines whether {page-component-title} can change the label automatically later.
+
+[options="header", cols="1,2,4"]
+|===
+| Source
+| Name
+| Description
+
+| `U`
+| User defined
+| The label comes from a requisition or was entered manually.
+{page-component-title} does not change it automatically.
+
+| `N`
+| NetBIOS
+| The label is the node's Windows/NetBIOS name.
+
+| `H`
+| DNS hostname
+| The label is the hostname returned by a reverse DNS lookup of the node's primary IP address.
+
+| `S`
+| SNMP sysName
+| The label is the value of the node's MIB-II `sysName` object.
+
+| `A`
+| IP address
+| The label is the node's primary IP address.
+|===
+
+How the label is chosen depends on how the node was added.
+
+[[node-label-requisition]]
+== Nodes from a requisition
+
+The node label is a required field of every node in a requisition.
+When you synchronize the requisition, Provisiond sets the node label to the value in the requisition and the label source to `U`.
+DNS, SNMP, and other scan results do not change it.
+
+Because the requisition is the source of truth for these nodes, every synchronization resets the label to the value in the requisition.
+To rename a requisitioned node, change its label in the requisition and synchronize it.
+
+[[node-label-discovered]]
+== Discovered nodes
+
+When a node is created from a `newSuspect` event, for example by xref:deep-dive/provisioning/auto-discovery.adoc[automatic discovery], Provisiond chooses the label in the following order:
+
+. When the node is created, Provisiond performs a reverse DNS lookup of the discovered IP address from the node's monitoring location.
+If the lookup returns a hostname, that hostname becomes the label (source `H`).
+Otherwise, the IP address becomes the label (source `A`).
+. During the node scan, if the label source is still `A` and the SNMP agent returns a non-empty `sysName`, the `sysName` becomes the label (source `S`).
+. On each later scan, if the label source is `H` or `A`, Provisiond repeats the reverse DNS lookup for the node's primary interface (or, if it has none, one of its interfaces) and sets the label to the hostname (source `H`) or to the IP address (source `A`).
+If the label source is `H` and the hostname no longer resolves, Provisiond keeps the existing label.
+Labels with source `S` or `U` are not changed by later scans.
+
+In practice, a discovered node gets its DNS name when one exists, its SNMP `sysName` when there is no DNS name, and its IP address when neither is available.
+
+When a `newSuspect` event names a requisition in its `foreignSource` parameter, Provisiond also adds the new node to that requisition with the label it chose when it created the node (the hostname or the IP address).
+From then on, the requisition controls the label as described in <<node-label-requisition, Nodes from a requisition>>.
+
+[[node-label-change]]
+== Change the label of a node
+
+For nodes that are not part of a requisition, you can change the label in the web UI:
+
+. Open the node's page.
+. Click *Admin*, then click *Change Node Label*.
+. Choose one of the following options and click *Change Label*:
+** *User Defined*: enter a label.
+The label source becomes `U`, so later scans do not change it.
+** *Automatic*: use the label that {page-component-title} computes from the node's current data.
+
+The *Change Node Label* link is not shown for nodes that belong to a requisition; change those labels in the requisition instead.
+
+The *Automatic* option computes the label in the following order:
+
+. The node's NetBIOS name, if one is stored for the node (source `N`).
+. The hostname of the node's primary interface, if it has one (source `H`).
+For this calculation, the primary interface is the managed IP interface with the lowest IP address.
+If the node has no managed interfaces, the unmanaged interface with the lowest IP address is used.
+. The node's SNMP `sysName`, if it has one (source `S`).
+. The IP address of the primary interface (source `A`).
+
+Labels longer than 256 characters are truncated.
+
+NOTE: The `org.opennms.bluebird.dp.primaryInterfaceSelectMethod` system property controls which interface the *Automatic* option treats as primary.
+The default value, `min`, selects the lowest IP address; `max` selects the highest.

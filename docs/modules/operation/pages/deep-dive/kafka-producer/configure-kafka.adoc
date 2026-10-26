@@ -170,6 +170,119 @@ admin@opennms()> config:update
 In the example above, the filter is configured such that only metrics associated with the given location are forwarded.
 Available properties are nodeId, nodeLabel, foreignSource, foreignId, location, resourceTypeName, resourceName, resourceId, ifIndex and instance.
 
+The filter is evaluated once per resource, not per metric: a resource either keeps all of its attributes or loses all of them.
+Note that `resourceTypeName` holds `nodeSnmp` for node-level resources, `interfaceSnmp` for interface-level resources, `responseTime` for response time resources and the data collection resource type name for everything else.
+Response time resources carry node information, but their `location` property is only set for nodes outside the `Default` location.
+
+==== Test a metric filter
+
+Use the xref:deep-dive/kafka-producer/shell-commands.adoc#kafka-evaluate-metric-filter[opennms:kafka-evaluate-metric-filter] shell command to see which resources a filter would forward, without waiting for a collection.
+
+[source, console]
+----
+admin@opennms()> opennms:kafka-evaluate-metric-filter -n 5 'getLocation() == "Raleigh"'
+----
+
+The metric filter is read when the feature starts, so a changed configuration only applies after the `opennms-kafka-producer` feature has been restarted.
+The command's `--show-config` option shows both the configured and the running values.
+
+=== Filter examples
+
+The following tables list sample expressions for each filter.
+Expressions call the getter methods of the filtered object, can combine conditions with `and`, `or`, and `!`, and can use the SpEL `matches` operator for regular expressions.
+Type references such as `T(java.lang.Math)` and constructors are not available in filter expressions.
+
+[caption=]
+.Sample `eventFilter` expressions
+[options="header", cols="3,2"]
+|===
+| Expression
+| Forwards
+
+| `getUei() matches 'uei\.opennms\.org/nodes/node(Down\|Up)'`
+| Node down and node up events.
+
+| `getUei().startsWith('uei.opennms.org/vendor/cisco/')`
+| Events whose UEI starts with the given prefix.
+
+| `!getUei().startsWith('uei.opennms.org/internal/')`
+| All events except internal events.
+
+| `getSeverity() == 'Major' or getSeverity() == 'Critical'`
+| Events with a severity of Major or Critical.
+
+| `getNodeid() != null and getNodeid() > 0`
+| Events that are associated with a node.
+
+| `getParmCollection().?[getParmName() == 'ifName'].size() > 0`
+| Events that carry an `ifName` parameter.
+|===
+
+[caption=]
+.Sample `alarmFilter` expressions
+[options="header", cols="3,2"]
+|===
+| Expression
+| Forwards
+
+| `getSeverityId() >= 6`
+| Alarms with a severity of Major (6) or Critical (7).
+
+| `getSeverityId() >= 6 and !isAcknowledged()`
+| Major and Critical alarms that are not acknowledged.
+
+| `{'uei.opennms.org/nodes/nodeDown', 'uei.opennms.org/nodes/interfaceDown'}.contains(getUei())`
+| Alarms with one of the listed UEIs.
+
+| `getNodeLabel() != null and getNodeLabel().startsWith('core-')`
+| Alarms on nodes whose label starts with `core-`.
+
+| `!isSituation()`
+| All alarms except situations.
+|===
+
+NOTE: The alarm filter is evaluated on every alarm update.
+If an alarm stops matching the filter, for example when a severity filter excludes its `CLEARED` update, that update is not forwarded.
+The alarm filter does not apply to the `null` record that the Kafka Producer sends when an alarm is deleted.
+In alarm stream mode, no `null` record is sent.
+
+[caption=]
+.Sample `metricFilter` expressions
+[options="header", cols="3,2"]
+|===
+| Expression
+| Forwards
+
+| `getForeignSource() == 'Routers'`
+| Metrics from nodes in the `Routers` requisition.
+
+| `getNodeLabel() != null and getNodeLabel().startsWith('core-')`
+| Metrics from nodes whose label starts with `core-`.
+
+| `getIfIndex() != null`
+| Interface-level metrics only.
+
+| `getResourceTypeName() != 'hrStorageIndex'`
+| All metrics except those of the `hrStorageIndex` resource type.
+|===
+
+There is no separate node filter.
+The Kafka Producer forwards a node when it forwards an event or alarm that references that node, or a topology message with a vertex for that node, so the event and alarm filters also reduce the records in the node topic.
+
+The following example forwards only Major and Critical alarms and events that are associated with a node:
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer
+admin@opennms()> config:property-set alarmFilter 'getSeverityId() >= 6'
+admin@opennms()> config:property-set eventFilter 'getNodeid() != null and getNodeid() > 0'
+admin@opennms()> config:update
+----
+
+Use the `opennms:kafka-evaluate-filter` command to test an alarm or event expression before you apply it; see xref:operation:deep-dive/kafka-producer/shell-commands.adoc[Shell Commands].
+
 == Enable metric forwarding
 
 To enable metric forwarding, set the value of the `forward.metrics` property to `true`.

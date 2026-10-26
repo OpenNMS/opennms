@@ -44,6 +44,8 @@ import dateFormatDirective from '../directives/v-date'
 import { addStylesheet, externalComponent, getJSPath } from '../components/Plugin/utils'
 import { setupPrimeVue } from '../theme/primevue-setup'
 import { useAppStore } from '@/stores/appStore'
+import { rest, restFile, v2 } from '@/services/axiosInstances'
+import { installRouterSessionHandling, installSessionExpiryInterceptor } from '@/services/sessionExpiry'
 
 // let plugins use state mngmnt / router
 (window as any).Vue = Vue;
@@ -57,6 +59,12 @@ import { useAppStore } from '@/stores/appStore'
 // (guarded by tests/onms-ui/exports.test.ts); the version marker is
 // window.OnmsUI.ONMS_UI_VERSION.
 ;(window as any).OnmsUI = OnmsUI
+
+// SPA only: on session expiry, reload during a route change so the server's login redirect brings
+// the user back here; otherwise show SessionExpiredDialog (in App.vue).
+// Not in the menu app: a reload of a JSP page shown after a form POST would post the form again.
+installSessionExpiryInterceptor(v2, rest, restFile)
+installRouterSessionHandling(router)
 
 // plugin scripts must be loaded before app to use their routes
 const baseRestUrl = import.meta.env.VITE_BASE_REST_URL

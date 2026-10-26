@@ -22,12 +22,12 @@
 package org.opennms.netmgt.telemetry.config.model;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-public class TelemetrydConfigTest extends XmlTestNoCastor<TelemetrydConfig> {
+public class TelemetrydConfigTest extends XmlTest<TelemetrydConfig> {
     public TelemetrydConfigTest(TelemetrydConfig sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/telemetryd-config.xsd");
     }

@@ -22,6 +22,7 @@
 
 import {
   getNodes,
+  getNodesByFilterRule,
   getNodeById,
   getNodeAlarmStatus,
   getNodeCriticalPath,
@@ -161,6 +162,7 @@ export default {
   generateSystemReport,
   getInfo,
   getNodes,
+  getNodesByFilterRule,
   getAlarms,
   getEvents,
   modifyAlarm,
