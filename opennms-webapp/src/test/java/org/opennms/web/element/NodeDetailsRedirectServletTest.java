@@ -22,6 +22,7 @@
 package org.opennms.web.element;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -72,11 +73,19 @@ public class NodeDetailsRedirectServletTest {
     }
 
     @Test
-    public void postRedirectsToo() throws Exception {
-        assertEquals(BASE + "ui/index.html#/node/7", redirectFor("POST", "7"));
+    public void postIsNotAllowed() throws Exception {
+        final MockHttpServletResponse response = request("POST", "7");
+        assertEquals(405, response.getStatus());
+        assertNull(response.getRedirectedUrl());
     }
 
     private String redirectFor(final String method, final String node) throws Exception {
+        final MockHttpServletResponse response = request(method, node);
+        assertEquals(302, response.getStatus());
+        return response.getRedirectedUrl();
+    }
+
+    private MockHttpServletResponse request(final String method, final String node) throws Exception {
         final MockHttpServletRequest request = new MockHttpServletRequest(method, "/opennms/element/node.jsp");
         request.setScheme("http");
         request.setServerName("localhost");
@@ -87,7 +96,6 @@ public class NodeDetailsRedirectServletTest {
         }
         final MockHttpServletResponse response = new MockHttpServletResponse();
         servlet.service(request, response);
-        assertEquals(302, response.getStatus());
-        return response.getRedirectedUrl();
+        return response;
     }
 }

@@ -46,21 +46,15 @@ import org.springframework.web.util.UriUtils;
 public class NodeDetailsRedirectServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    static final String NODE_LIST_URI = "ui/index.html#/nodes";
-
+    // GET only (HEAD comes with it): nothing posts to this URL, so a POST gets HttpServlet's 405.
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         response.sendRedirect(Util.calculateUrlBase(request, getTargetPath(request.getParameter("node"))));
     }
 
-    @Override
-    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        doGet(request, response);
-    }
-
     static String getTargetPath(final String node) {
         if (node == null || node.isBlank()) {
-            return NODE_LIST_URI;
+            return ElementConstants.NODE_LIST_URI;
         }
         // One path segment of the hash route: '/', '#', '?', '%' and spaces are encoded, ':' is not.
         return ElementConstants.NODE_DETAILS_URI + UriUtils.encodePathSegment(node, StandardCharsets.UTF_8);
