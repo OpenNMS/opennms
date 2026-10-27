@@ -210,9 +210,9 @@ const router = createRouter({
       component: () => import('@/containers/Nodes.vue')
     },
     {
-      // :id is a node id or foreignSource:foreignId, as element/node.jsp?node= took. NodeDetails
-      // parses it: a foreign id is resolved and replaced with the node id, and an invalid or
-      // unknown one shows its own message instead of falling through to the catch-all.
+      // :id is a node id or foreignSource:foreignId, as the legacy element/node.jsp?node= took.
+      // NodeDetails parses it: a foreign id is resolved and replaced with the node id, and an
+      // invalid or unknown one shows its own message instead of falling through to the catch-all.
       path: '/node/:id',
       name: 'Node Details',
       props: true,

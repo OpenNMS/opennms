@@ -21,7 +21,7 @@
 ///
 
 // The Services menu of the Node Details links row: shortcuts to a node's remote-access and web
-// services, as the legacy node page's links (element/node.jsp, createLinkForService). Kept apart
+// services, as the legacy node page's links were (its createLinkForService). Kept apart
 // from the components so the address rules can be tested on their own.
 
 import { NodeLinkService } from '@/types'

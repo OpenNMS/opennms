@@ -7,7 +7,7 @@
       <strong>{{ heading }}</strong>
       <div>{{ detail }}</div>
     </OnmsMessage>
-    <!-- Replaces the legacy error page's "search again" form, which goes away with node.jsp. -->
+    <!-- Replaces the legacy node page's error page and its "search again" form. -->
     <form
       class="node-lookup-form"
       @submit.prevent="lookUp"

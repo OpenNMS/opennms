@@ -39,7 +39,7 @@ const getElement = async <T>(kind: string, nodeId: string): Promise<{ ok: boolea
 
 /**
  * What Enlinkd discovered about a node itself -- its LLDP, CDP, OSPF, IS-IS and bridge elements --
- * as the legacy node page's boxes show it. Five small requests in parallel rather than the
+ * as the legacy node page's boxes showed it. Five small requests in parallel rather than the
  * all-in-one /enlinkd/{node}, which also carries every neighbor link.
  *
  * Fails if any of the five fails; the payload still holds whatever did load.

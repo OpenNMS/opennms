@@ -26,8 +26,8 @@
 //
 // The id accepts what the legacy element/node.jsp?node= accepted: a database id, or
 // foreignSource:foreignId. The two differ for a foreign id holding ':'. This page splits at the
-// first ':' and keeps the rest (FS:a:b is foreign id 'a:b'); the legacy node.jsp goes through
-// NodeDao.get(String), which split(":")s and uses only the second part (FS:a:b looks up 'a').
+// first ':' and keeps the rest (FS:a:b is foreign id 'a:b'); the legacy node.jsp went through
+// NodeDao.get(String), which split(":")s and uses only the second part (FS:a:b looked up 'a').
 
 import { parsePositiveIntegerId } from '@/lib/ids'
 

@@ -138,7 +138,7 @@ public interface GraphCollectionRestApi {
                       "label": "rtr-01",
                       "typeName": "node",
                       "typeLabel": "Node",
-                      "link": "element/node.jsp?node=12",
+                      "link": "ui/index.html#/node/Routers:rtr-01",
                       "parent": null
                     }
                   },

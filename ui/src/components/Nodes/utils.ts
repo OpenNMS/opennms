@@ -159,8 +159,8 @@ export type SnmpInterfaceStatus = 'UP' | 'DOWN' | 'DISABLED' | 'TESTING' | 'UNKN
 /**
  * Status shown in the SNMP interfaces table.
  *
- * This is deliberately finer-grained than setStylesForSnmpInterfaces() in the legacy node page's
- * AngularJS interfaces table, which had only up / down / unknown and folded every non-up ifAdminStatus into 'unknown'. An
+ * This is deliberately finer-grained than the legacy node page's AngularJS interfaces table, which
+ * had only up / down / unknown and folded every non-up ifAdminStatus into 'unknown'. An
  * interface that is administratively down was deliberately turned off, and one under test is
  * mid-change; neither is unknown, and neither is a fault. Separating them leaves UNKNOWN meaning
  * what it says: the agent gave us no ifAdminStatus, or one outside the MIB's range.
