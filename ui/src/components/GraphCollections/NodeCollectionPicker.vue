@@ -24,6 +24,11 @@ License.
   The "Node and Domain Interface Reports" of the legacy index page: pick a node or a domain to
   see a collection built on the fly from its SNMP interfaces. Nothing is stored until the user
   saves it as a collection from the view page.
+
+  Nodes are searched on the server one bounded page at a time. Listing every top-level resource
+  instead walks the whole resource tree on the server and hands the browser a list it then has to
+  filter and draw on every keystroke, which stops being usable somewhere above a thousand nodes.
+  Domains only come from that walk, so they are listed on request and kept for the page's life.
 -->
 <template>
   <TableCard>
@@ -34,88 +39,160 @@ License.
       </div>
     </div>
 
+    <OnmsSearchInput
+      :modelValue="filter"
+      placeholder="Find a node by label"
+      dataTest="ncp-filter"
+      @update:modelValue="onFilter"
+    />
     <p v-if="loadError" class="error" data-test="ncp-load-error">{{ loadError }}</p>
-    <template v-else>
-      <OnmsSearchInput
-        :modelValue="filter"
-        placeholder="Filter by name"
-        dataTest="ncp-filter"
-        @update:modelValue="(value) => filter = String(value ?? '')"
-      />
-      <p v-if="loading" class="muted" data-test="ncp-loading">Loading nodes and domains...</p>
-      <p v-else-if="!visibleResources.length" class="muted" data-test="ncp-empty">
-        {{ resources.length ? 'No node or domain matches the filter.' : 'No node or domain has performance data yet.' }}
-      </p>
-      <OnmsListbox
-        v-else
-        :options="visibleResources"
-        :modelValue="null"
-        dataKey="id"
-        optionLabel="label"
-        scrollHeight="18rem"
-        aria-label="Nodes and domains"
-        data-test="ncp-resources"
-        @update:modelValue="(value) => open(value as TopLevelResource | null)"
-      >
-        <template #option="{ option }">
-          <span class="option">
-            <span>{{ asResource(option).label }}</span>
-            <span class="muted">{{ asResource(option).typeLabel }}</span>
-          </span>
-        </template>
-      </OnmsListbox>
-    </template>
+    <p v-else-if="loading && !visibleResources.length" class="muted" data-test="ncp-loading">Searching...</p>
+    <p v-else-if="!visibleResources.length" class="muted" data-test="ncp-empty">{{ emptyMessage }}</p>
+    <OnmsListbox
+      v-else
+      :options="visibleResources"
+      :modelValue="null"
+      dataKey="id"
+      optionLabel="label"
+      scrollHeight="18rem"
+      aria-label="Nodes and domains"
+      data-test="ncp-resources"
+      @update:modelValue="(value) => open(value as PickerEntry | null)"
+    >
+      <template #option="{ option }">
+        <span class="option">
+          <span>{{ asEntry(option).label }}</span>
+          <span class="muted">{{ asEntry(option).typeLabel }}</span>
+        </span>
+      </template>
+    </OnmsListbox>
+    <p v-if="truncated" class="muted" data-test="ncp-truncated">
+      Showing {{ nodes.length }} of {{ totalNodes }} matching nodes. Narrow the filter if necessary.
+    </p>
+
+    <div class="domains">
+      <template v-if="domains === null">
+        <span class="muted">Domains are listed on request, since finding them means walking every resource.</span>
+        <OnmsButton
+          variant="text"
+          size="small"
+          :label="loadingDomains ? 'Loading domains...' : 'Show domains'"
+          :disabled="loadingDomains"
+          data-test="ncp-show-domains"
+          @click="loadDomains"
+        />
+      </template>
+      <span v-else-if="!domains.length" class="muted" data-test="ncp-no-domains">No domain has performance data.</span>
+      <p v-if="domainsError" class="error" data-test="ncp-domains-error">{{ domainsError }}</p>
+    </div>
   </TableCard>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onScopeDispose, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { OnmsListbox, OnmsSearchInput } from '@opennms/onms-ui'
+import { debounce } from 'lodash'
+import { OnmsButton, OnmsListbox, OnmsSearchInput } from '@opennms/onms-ui'
 import TableCard from '@/components/Common/TableCard.vue'
+import { searchNodes } from '@/services/graphCollectionsService'
 import { getResources } from '@/services/resourceService'
 import { syntheticCollectionRoute } from './syntheticCollectionRoute'
 
-interface TopLevelResource { id: string, label: string, typeLabel: string, route: string }
+interface PickerEntry { id: string, label: string, typeLabel: string, route: string }
+
+// Enough nodes to scan through, few enough that the page stays quick with ten thousand behind it.
+const NODE_PAGE_SIZE = 50
+// Long enough to coalesce a burst of typing, short enough that the list still feels live.
+const SEARCH_DEBOUNCE_MS = 175
 
 const router = useRouter()
 
-const resources = ref<TopLevelResource[]>([])
+const filter = ref('')
+const nodes = ref<PickerEntry[]>([])
+const totalNodes = ref(0)
 const loading = ref(true)
 const loadError = ref('')
-const filter = ref('')
+// null until the user asks for them
+const domains = ref<PickerEntry[] | null>(null)
+const loadingDomains = ref(false)
+const domainsError = ref('')
 
 // the listbox option slot is untyped
-const asResource = (option: unknown) => option as TopLevelResource
+const asEntry = (option: unknown) => option as PickerEntry
 
-const visibleResources = computed(() => {
-  const term = filter.value.trim().toLowerCase()
-  return term ? resources.value.filter(r => r.label.toLowerCase().includes(term)) : resources.value
+const term = computed(() => filter.value.trim())
+const visibleDomains = computed(() => {
+  const needle = term.value.toLowerCase()
+  return (domains.value ?? []).filter(d => !needle || d.label.toLowerCase().includes(needle))
+})
+// domains first, as the legacy page listed them; the nodes arrive sorted by label
+const visibleResources = computed(() => [...visibleDomains.value, ...nodes.value])
+const truncated = computed(() => totalNodes.value > nodes.value.length)
+const emptyMessage = computed(() => {
+  if (!term.value) {
+    return 'No node has been provisioned yet.'
+  }
+  return domains.value ? 'No node or domain matches the filter.' : 'No node matches the filter.'
 })
 
-const load = async () => {
+// a search that started before a later one answers must not overwrite the later one's result
+let generation = 0
+
+const search = async () => {
+  const mine = ++generation
   loading.value = true
-  loadError.value = ''
-  const response = await getResources()
-  loading.value = false
-  if (response === null) {
-    loadError.value = 'Failed to load the nodes and domains.'
+  const result = await searchNodes(term.value, NODE_PAGE_SIZE)
+  if (mine !== generation) {
     return
   }
-  // only the top-level resources that have an on-the-fly collection, nodes by label then domains
-  resources.value = (response.resource ?? [])
-    .map(r => ({ id: r.id, label: r.label, typeLabel: r.typeLabel, route: syntheticCollectionRoute(r.id) }))
-    .filter((r): r is TopLevelResource => r.route !== null)
-    .sort((a, b) => a.typeLabel.localeCompare(b.typeLabel) || a.label.localeCompare(b.label))
+  loading.value = false
+  if (result === null) {
+    loadError.value = 'Failed to search the nodes.'
+    return
+  }
+  loadError.value = ''
+  nodes.value = result.nodes.map(n => ({
+    id: `node[${n.id}]`,
+    label: n.label,
+    typeLabel: 'Node',
+    route: `/graph-collections/node/${n.id}`
+  }))
+  totalNodes.value = result.totalCount
 }
 
-const open = (resource: TopLevelResource | null) => {
-  if (resource) {
-    router.push(resource.route)
+const debouncedSearch = debounce(search, SEARCH_DEBOUNCE_MS)
+
+const onFilter = (value: unknown) => {
+  filter.value = String(value ?? '')
+  debouncedSearch()
+}
+
+// a keystroke close to unmount would otherwise search after the component is gone
+onScopeDispose(() => debouncedSearch.cancel())
+
+const loadDomains = async () => {
+  loadingDomains.value = true
+  domainsError.value = ''
+  const response = await getResources()
+  loadingDomains.value = false
+  if (response === null) {
+    domainsError.value = 'Failed to load the domains.'
+    return
+  }
+  domains.value = (response.resource ?? [])
+    .filter(r => r.id.startsWith('domain['))
+    .map(r => ({ id: r.id, label: r.label, typeLabel: r.typeLabel, route: syntheticCollectionRoute(r.id) }))
+    .filter((r): r is PickerEntry => r.route !== null)
+    .sort((a, b) => a.label.localeCompare(b.label))
+}
+
+const open = (entry: PickerEntry | null) => {
+  if (entry) {
+    router.push(entry.route)
   }
 }
 
-onMounted(load)
+onMounted(search)
 </script>
 
 <style scoped lang="scss">
@@ -146,5 +223,13 @@ onMounted(load)
   justify-content: space-between;
   gap: 1rem;
   width: 100%;
+}
+
+.domains {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
 }
 </style>

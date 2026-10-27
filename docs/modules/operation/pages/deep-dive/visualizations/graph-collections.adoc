@@ -14,6 +14,8 @@ From the list you can view, edit, duplicate or delete a collection.
 The view page draws every graph of the collection; if the collection allows it, you can override the timespan or the graph type of all its graphs for the current view.
 
 The *Node and Domain Collections* card below the list builds a collection on the fly for a node or a domain, one graph per SNMP interface.
+Type part of a node label to find the node; the card shows a page of matches at a time rather than every node.
+Domains are listed when you click *Show domains*, because finding them means walking every resource.
 *Save as collection* on its view page turns it into a stored collection that you can then customize.
 
 == Create and edit graph collections
