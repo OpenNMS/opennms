@@ -98,6 +98,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 
 /**
@@ -174,6 +175,8 @@ public class Collectd extends AbstractServiceDaemon implements
 
     @Autowired(required = false)
     private volatile List<CollectorAdaptor> m_collectorAdaptors = Collections.emptyList();
+
+    private volatile MetricRegistry m_metricRegistry = new MetricRegistry();
 
     static class SchedulingCompletedFlag {
         volatile boolean m_schedulingCompleted = false;
@@ -483,7 +486,8 @@ public class Collectd extends AbstractServiceDaemon implements
                     m_schedulingCompletedFlag,
                     m_transTemplate.getTransactionManager(),
                     m_persisterFactory,
-                    m_thresholdingService
+                    m_thresholdingService,
+                    m_metricRegistry
                 );
 
                 // Add new collectable service to the collectable service list.
@@ -1503,6 +1507,10 @@ public class Collectd extends AbstractServiceDaemon implements
 
     public void setPersisterFactory(PersisterFactory persisterFactory) {
         m_persisterFactory = persisterFactory;
+    }
+
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        m_metricRegistry = Objects.requireNonNull(metricRegistry);
     }
 
     /**

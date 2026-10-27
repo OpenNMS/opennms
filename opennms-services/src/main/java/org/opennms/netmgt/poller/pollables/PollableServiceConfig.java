@@ -47,6 +47,10 @@ import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.LockFreeExponentiallyDecayingReservoir;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.NoopMetricRegistry;
+
 /**
  * Represents a PollableServiceConfig
  *
@@ -55,6 +59,8 @@ import org.slf4j.LoggerFactory;
  */
 public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private static final Logger LOG = LoggerFactory.getLogger(PollableServiceConfig.class);
+
+    public static final String POLLS_METRIC = "polls";
 
     private PollerConfig m_pollerConfig;
     private PollableService m_service;
@@ -72,7 +78,11 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private final ServiceMonitorAdaptor m_DeviceConfigMonitorAdaptor;
 
     private final ReadablePollOutagesDao m_pollOutagesDao;
-    
+
+    private final MetricRegistry m_metricRegistry;
+    private final com.codahale.metrics.Timer m_pollTimer;
+    private volatile com.codahale.metrics.Timer m_servicePollTimer;
+
     /**
      * <p>Constructor for PollableServiceConfig.</p>
      *
@@ -84,6 +94,14 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, Package pkg, Timer timer, PersisterFactory persisterFactory,
                                  ThresholdingService thresholdingService, LocationAwarePollerClient locationAwarePollerClient,
                                  ReadablePollOutagesDao pollOutagesDao, ServiceMonitorAdaptor serviceMonitorAdaptor) {
+        this(svc, pollerConfig, pkg, timer, persisterFactory, thresholdingService, locationAwarePollerClient,
+                pollOutagesDao, serviceMonitorAdaptor, new NoopMetricRegistry());
+    }
+
+    public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, Package pkg, Timer timer, PersisterFactory persisterFactory,
+                                 ThresholdingService thresholdingService, LocationAwarePollerClient locationAwarePollerClient,
+                                 ReadablePollOutagesDao pollOutagesDao, ServiceMonitorAdaptor serviceMonitorAdaptor,
+                                 MetricRegistry metricRegistry) {
         m_service = svc;
         m_pollerConfig = pollerConfig;
         m_pkg = pkg;
@@ -93,8 +111,16 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_statusStoringServiceMonitorAdaptor = new StatusStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory);
         m_DeviceConfigMonitorAdaptor = serviceMonitorAdaptor;
         m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
+        m_metricRegistry = Objects.requireNonNull(metricRegistry);
+        m_pollTimer = pollTimer(metricRegistry, POLLS_METRIC);
 
         this.findService();
+    }
+
+    private static com.codahale.metrics.Timer pollTimer(MetricRegistry metricRegistry, String name) {
+        // JMX quotes ObjectName values containing these, which the name=polls* collection pattern can't match
+        final String safeName = name.replaceAll("[:,=\"*?\\n]", "_");
+        return metricRegistry.timer(safeName, () -> new com.codahale.metrics.Timer(LockFreeExponentiallyDecayingReservoir.builder().build()));
     }
 
     private synchronized void findService() {
@@ -103,12 +129,16 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 
         m_configService = service.service;
         m_patternVariables = service.patternVariables;
+        // Keyed by the configured name: pattern services match one poller service per vhost, port, etc.
+        m_servicePollTimer = pollTimer(m_metricRegistry, MetricRegistry.name(POLLS_METRIC, m_configService.getName()));
     }
 
     @Override
     public CompletionStage<PollStatus> asyncPoll() {
         // Use the service's configured interval as the TTL for this request
         final Long ttlInMs = m_configService.getInterval();
+        // Covers the RPC round trip (including any Minion queueing) and the adaptors run on the result
+        final long startNanos = System.nanoTime();
         return m_locationAwarePollerClient.poll()
                 .withService(m_service)
                 .withMonitorLocator(m_pollerConfig.getServiceMonitorLocator(m_configService.getName()).orElseThrow())
@@ -120,6 +150,11 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 .withAdaptor(m_DeviceConfigMonitorAdaptor)
                 .withPatternVariables(m_patternVariables)
                 .execute()
+                .whenComplete((response, ex) -> {
+                    final long elapsedNanos = System.nanoTime() - startNanos;
+                    m_pollTimer.update(elapsedNanos, TimeUnit.NANOSECONDS);
+                    m_servicePollTimer.update(elapsedNanos, TimeUnit.NANOSECONDS);
+                })
                 .thenApply(PollerResponse::getPollStatus);
     }
 

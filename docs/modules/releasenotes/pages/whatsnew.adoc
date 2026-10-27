@@ -141,6 +141,13 @@ This includes more reliable rendering with reduced load times as well as expecte
 === Karaf shell pubkey auth
 Support has been added for configuring Karaf shell authentication using ssh public keys.
 
+=== Poll and collection timing metrics
+Pollerd and Collectd now publish timers over JMX, both overall and per service name, under `org.opennms.netmgt.poller:name=polls*` and `org.opennms.netmgt.collectd:name=collections*`.
+They report average, minimum, and maximum poll and collection times along with polls and collections per second.
+The average is weighted toward roughly the last five minutes, but the minimum and maximum cover the most recent 1028 samples.
+For a service that is polled or collected infrequently, those samples can span several days, so a single slow poll may remain the maximum for some time.
+OpenNMS collects them about itself and graphs them under the *Pollerd Poll Stats* and *Collectd Collection Stats* resources.
+
 == Breaking changes
 
 === Kafka SASL/OAUTHBEARER endpoint URLs are blocked by default
