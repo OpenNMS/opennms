@@ -496,6 +496,23 @@ describe('NodeDetails.vue', () => {
       expect(wrapper.findComponent({ name: 'NodeDetailsLinks' }).props('existsInRequisition')).toBe(true)
     })
 
+    it('marks the links row once the check has answered for this node', async () => {
+      const { wrapper, nodeStore } = mountComponent('42', true)
+      await flushPromises()
+
+      const links = () => wrapper.findComponent({ name: 'NodeDetailsLinks' })
+      expect(links().attributes('data-requisition-checked')).toBeUndefined()
+
+      // An answer for another node, from before the user moved on, does not count.
+      nodeStore.existsInRequisitionNodeId = '41'
+      await flushPromises()
+      expect(links().attributes('data-requisition-checked')).toBeUndefined()
+
+      nodeStore.existsInRequisitionNodeId = '42'
+      await flushPromises()
+      expect(links().attributes('data-requisition-checked')).toBe('true')
+    })
+
     it('does not ask before the node has loaded', async () => {
       const { nodeStore } = mountComponent('42', false)
       await flushPromises()

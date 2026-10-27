@@ -69,6 +69,16 @@ public class NodeDetailsPage {
     }
 
     /**
+     * Waits until the page has found out whether the node is in its requisition, which decides
+     * whether the Admin menu offers Edit in Requisition. The check runs only for a user who may
+     * edit requisitions.
+     */
+    public NodeDetailsPage waitForRequisitionCheck() {
+        testCase.waitForElement(By.xpath(LINKS + "[@data-requisition-checked='true']"));
+        return this;
+    }
+
+    /**
      * Opens a menu of the links row (Inventory, Monitoring, Graphs, Services, Admin) and clicks
      * one of its items.
      */

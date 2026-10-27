@@ -77,11 +77,11 @@ public class EditInRequisitionIT extends OpenNMSSeleniumIT {
     }
 
     private void assertNoEditInRequisitionLink(final String node, final String label) {
-        final NodeDetailsPage nodePage = new NodeDetailsPage(this).open(node).waitForLabel(label);
         // The page asks whether the node is in its requisition after the node has loaded, and adds
-        // the link only when it is. Give that request time to answer, or the check below could
-        // pass before the link would have been added.
-        sleepQuietly(3000);
+        // the link only when it is. Wait for the answer, or the check below could pass before the
+        // link would have been added.
+        final NodeDetailsPage nodePage = new NodeDetailsPage(this).open(node).waitForLabel(label)
+                .waitForRequisitionCheck();
         Assert.assertFalse("Link 'Edit in Requisition' should not appear on the node page!",
                 nodePage.getLinkLabels("Admin").contains("Edit in Requisition"));
     }

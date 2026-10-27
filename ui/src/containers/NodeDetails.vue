@@ -49,6 +49,7 @@
             :existsInRequisition="nodeStore.existsInRequisition"
             :services="nodeStore.linkServices"
             :triggerNodeInfo="onNodeInfo"
+            :data-requisition-checked="requisitionChecked || undefined"
           />
         </div>
       </div>
@@ -218,6 +219,12 @@ const followRoute = async () => {
 // Immediate, so the fetch starts (and the store clears an earlier visit's failure) before the
 // first render.
 watch(() => props.id, followRoute, { immediate: true })
+
+// Whether the requisition check has answered for this node, so the links row's Edit in Requisition
+// action is final. On the links row as data-requisition-checked: the smoke tests wait for it
+// before they check that the action is absent.
+const requisitionChecked = computed(() =>
+  nodeStore.nodeLoaded && nodeStore.existsInRequisitionNodeId === nodeStore.node?.id)
 
 // The Edit in Requisition action needs to know whether the node is in its requisition, which the
 // node payload does not say. Asked once the node has loaded, and only of a user who could use
