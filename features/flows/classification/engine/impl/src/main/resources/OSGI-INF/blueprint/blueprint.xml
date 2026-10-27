@@ -62,14 +62,10 @@
     </bean>
     <bean id="asyncReloadingClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.AsyncReloadingClassificationEngine">
         <argument ref="timingClassificationEngine" />
+        <argument ref="sessionUtils" />
     </bean>
 
     <service ref="asyncReloadingClassificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine"/>
-
-    <bean id="classificationEngineInitializer" class="org.opennms.netmgt.flows.classification.internal.ClassificationEngineInitializer">
-        <argument ref="timingClassificationEngine"/>
-        <argument ref="sessionUtils" />
-    </bean>
 
     <!-- Metrics -->
     <bean id="classificationMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>

@@ -28,6 +28,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
@@ -51,6 +52,7 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
     }
 
     private final ClassificationEngine delegate;
+    private final SessionUtils sessionUtils;
 
     // uses at most one additional thread; if the thread is not used for 60 seconds then it is terminated
     // -> uses no additional resources while being idle
@@ -65,7 +67,16 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
     private Future<?> reloadFuture;
 
     public AsyncReloadingClassificationEngine(ClassificationEngine delegate) {
+        this(delegate, null);
+    }
+
+    /**
+     * @param sessionUtils runs each reload in a read-only transaction, which the rule provider
+     *                     needs to load the rules from the database. May be null in tests.
+     */
+    public AsyncReloadingClassificationEngine(ClassificationEngine delegate, SessionUtils sessionUtils) {
         this.delegate = delegate;
+        this.sessionUtils = sessionUtils;
         // trigger reload
         // -> blocks classification requests until classification engine is ready
         reload();
@@ -96,7 +107,7 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
         // this method must not modify the state because it not synchronized
         try {
             LOG.debug("reload classification engine");
-            delegate.reload();
+            reloadDelegate();
             LOG.debug("classification engine reloaded");
             onReloadSucceeded();
         } catch (InterruptedException e) {
@@ -105,6 +116,35 @@ public class AsyncReloadingClassificationEngine implements ClassificationEngine 
         } catch (Throwable e) {
             LOG.error("reload of classification engine failed", e);
             onReloadFailed(e);
+        }
+    }
+
+    private void reloadDelegate() throws InterruptedException {
+        if (sessionUtils == null) {
+            delegate.reload();
+            return;
+        }
+        try {
+            sessionUtils.withReadOnlyTransaction(() -> {
+                try {
+                    delegate.reload();
+                } catch (InterruptedException e) {
+                    throw new ReloadInterruptedException(e);
+                }
+            });
+        } catch (ReloadInterruptedException e) {
+            throw e.getCause();
+        }
+    }
+
+    private static class ReloadInterruptedException extends RuntimeException {
+        ReloadInterruptedException(InterruptedException cause) {
+            super(cause);
+        }
+
+        @Override
+        public synchronized InterruptedException getCause() {
+            return (InterruptedException) super.getCause();
         }
     }
 
