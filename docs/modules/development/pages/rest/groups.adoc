@@ -77,3 +77,5 @@ Like users, groups have a simplified interface.
 | /groups/\{groupname}/categories/\{categoryname}
 | Disassociate a category from a group, given a group name and category name.
 |===
+
+See also the database-backed xref:development:rest/groups_v2.adoc[Groups (v2)] API.
