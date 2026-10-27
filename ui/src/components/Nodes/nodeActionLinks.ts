@@ -30,10 +30,10 @@ import { IpInterface, Node } from '@/types'
 // `navEntries`). Those came from ConditionalPageNavEntry services registered for "Page=node": any
 // OSGi bundle can register one with `registration.export=true`, and OnmsOSGiBridgeActivator copies
 // it into the core ServiceRegistry, where the page found it and asked it, per request and node,
-// whether to show. They are code, not user configuration. The only one in this codebase is
-// TopoMapNavEntry ("View in Topology", the topology app's blueprint.xml), whose URL is the same as
-// the 'topology' link below. Supporting third-party ones would need a REST endpoint that evaluates
-// them on the server; that can come later if needed.
+// whether to show. They are code, not user configuration. The only one OpenNMS had was
+// TopoMapNavEntry ("View in Topology"), whose URL is the same as the 'topology' link below; it was
+// removed with the legacy page. Supporting third-party ones would need a REST endpoint that
+// evaluates them on the server; that can come later if needed.
 export const linkItems = [
   { name: 'events', label: 'Events' },
   { name: 'alarms', label: 'Alarms' },

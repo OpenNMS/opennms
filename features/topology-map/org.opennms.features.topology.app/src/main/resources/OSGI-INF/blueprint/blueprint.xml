@@ -378,17 +378,6 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
     <reference id="historyManager" interface="org.opennms.features.topology.api.HistoryManager" availability="mandatory">
     </reference>
 
-	<bean id="topoMapsLink" class="org.opennms.features.topology.app.internal.TopoMapNavEntry">
-		<property name="name" value="View in Topology" />
-	</bean>
-
-	<service id="nodeMapsLinkService" interface="org.opennms.web.navigate.ConditionalPageNavEntry" ref="topoMapsLink">
-		<service-properties>
-			<entry key="Page" value="node" />
-			<entry key="registration.export" value="true" />
-		</service-properties>
-	</service>
-
     <!-- Info Items -->
     <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
         <bean class="org.opennms.features.topology.app.internal.ui.info.DefaultVertexInfoPanelItemProvider" />
