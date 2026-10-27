@@ -37,6 +37,7 @@ import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
 import org.opennms.netmgt.threshd.api.ThresholdingSet;
 import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * HashMap implementation of a {@link ThresholdingSetPersister}.
@@ -59,6 +60,7 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
     private IfLabel ifLabelDao;
     
     @Autowired
+    @Qualifier("cachedEntityScopeProvider")
     private EntityScopeProvider entityScopeProvider;
 
     @Override
