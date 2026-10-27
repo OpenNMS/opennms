@@ -115,8 +115,9 @@
 	 	  
 	 	  <c:otherwise>
 			<c:forEach var="role" items="${roleManager.roles}">
-				<c:set var="deleteUrl" value="javascript:doDelete('${e:forJavaScript(role.name)}')" />
-				<c:set var="viewUrl" value="javascript:doView('${e:forJavaScript(role.name)}')" />
+				<%-- javascript: URLs are percent-decoded before they run, so percent-encode the JS string too --%>
+				<c:set var="deleteUrl" value="javascript:doDelete('${e:forUriComponent(e:forJavaScript(role.name))}')" />
+				<c:set var="viewUrl" value="javascript:doView('${e:forUriComponent(e:forJavaScript(role.name))}')" />
 				<c:set var="confirmScript" value="return confirm('Are you sure you want to delete the role ${e:forJavaScript(role.name)}?')"/>
 				
 				<tr>
@@ -125,16 +126,16 @@
 				<td>
 				  <c:set var="supervisorUser">${role.defaultUser}</c:set>
 				  <c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set>
-				  <span title="${fullName}">${role.defaultUser}</span>
+				  <span title="${fn:escapeXml(fullName)}">${fn:escapeXml(role.defaultUser)}</span>
 				</td>
 				<td>
 					<c:forEach var="scheduledUser" items="${role.currentUsers}">
 						<c:set var="curUserName">${scheduledUser}</c:set>
 						<c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("curUserName").toString()) %></c:set>
-						<span title="${fullName}">${scheduledUser}</span>
+						<span title="${fn:escapeXml(fullName)}">${fn:escapeXml(scheduledUser)}</span>
 					</c:forEach>	
 				</td>
-				<td>${role.membershipGroup}</td>
+				<td>${fn:escapeXml(role.membershipGroup)}</td>
 				<td><c:out value="${role.description}"/></td>
 				</tr>
 			</c:forEach>

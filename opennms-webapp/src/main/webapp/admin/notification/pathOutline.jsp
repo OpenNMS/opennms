@@ -25,6 +25,7 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
+		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.destinationPaths.*
 	"
@@ -294,7 +295,7 @@
         }
         
         for (final Target t : targets) {
-            buffer.append("<option>").append(t.getName()).append("</option>");
+            buffer.append("<option>").append(WebSecurityUtils.sanitizeString(t.getName())).append("</option>");
         }
         buffer.append("</select>");
         

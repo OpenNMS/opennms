@@ -27,6 +27,7 @@
 	import="java.util.*,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.api.Util,
+		org.owasp.encoder.Encode,
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.destinationPaths.*,
         org.opennms.netmgt.config.notificationCommands.Command
@@ -134,7 +135,7 @@
         
           for (int i = 0; i < targets.length; i++)
           {
-              buffer.append("<tr><td>").append(targets[i].getName()).append("</td>");
+              buffer.append("<tr><td>").append(WebSecurityUtils.sanitizeString(targets[i].getName())).append("</td>");
               // don't let user pick commands for email addresses
               boolean isEmailCommand = targets[i].getCommands().size() == 1 &&
                   ("email".equals(targets[i].getCommands().get(0)) || "javaEmail".equals(targets[i].getCommands().get(0)));
@@ -161,7 +162,7 @@
     public String buildCommandSelect(Path path, int index, String name)
       throws ServletException
     {
-        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" multiple size=\"3\" NAME=\"" + name + "Commands\">");
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" multiple size=\"3\" NAME=\"" + Encode.forHtmlAttribute(name) + "Commands\">");
         
         TreeMap<String, Command> commands = null;
         Collection<String> selectedOptions = null;
@@ -199,7 +200,7 @@
     public String buildAutoNotifySelect(String name, String currValue)
     {
           String values[] = {"off", "auto", "on"};
-          StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" size=\"3\" NAME=\"" + name  + "AutoNotify\">");
+          StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" size=\"3\" NAME=\"" + Encode.forHtmlAttribute(name)  + "AutoNotify\">");
           String defaultOption = "on";
  
           if(currValue == null || currValue.equals("")) {

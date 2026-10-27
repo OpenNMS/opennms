@@ -33,13 +33,14 @@
 <%@page import="org.opennms.web.api.Util"%>
 <%@page import="org.opennms.web.api.Authentication"%>
 <%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <%!
     private String createSelectList(String name, List<String> elements) {
         StringBuffer buffer = new StringBuffer("<select class=\"form-control\" multiple=\"multiple\" name=\""+name+"\" size=\"10\">");
         for(String element : elements){
-            buffer.append("<option>" + element + "</option>");
+            buffer.append("<option>" + WebSecurityUtils.sanitizeString(element) + "</option>");
         }
         buffer.append("</select>");
 
@@ -331,14 +332,14 @@
 	<div class="form-row form-group">
           <label for="fullName" class="col-sm-2 col-form-label">Full Name</label>
           <div class="col-sm-10">
-            <input id="fullName" type="text" class="form-control" size="35" name="fullName" value="<%= (fullName == null? "" : fullName) %>" ng-non-bindable/>
+            <input id="fullName" type="text" class="form-control" size="35" name="fullName" value="<%= (fullName == null? "" : Encode.forHtmlAttribute(fullName)) %>" ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="userComments" class="col-sm-2 col-form-label">Comments</label>
           <div class="col-sm-10">
-            <textarea class="form-control" rows="5" id="userComments" name="userComments" ng-non-bindable><%= (comments == null? "" : comments) %></textarea>
+            <textarea class="form-control" rows="5" id="userComments" name="userComments" ng-non-bindable><%= (comments == null? "" : WebSecurityUtils.sanitizeString(comments)) %></textarea>
           </div>
         </div>
 
@@ -364,63 +365,63 @@
 	<div class="form-row form-group">
           <label for="email" class="col-sm-2 col-form-label">Email</label>
           <div class="col-sm-10">
-            <input class="form-control" id="email" type="text" name="email" value='<%= (email == null ? "":email) %>' ng-non-bindable/>
+            <input class="form-control" id="email" type="text" name="email" value="<%= (email == null ? "" : Encode.forHtmlAttribute(email)) %>" ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="pemail" class="col-sm-2 col-form-label">Pager Email</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="pemail" name="pemail" value='<%=(pagerEmail == null ? "":pagerEmail)%>' ng-non-bindable/>
+            <input class="form-control" type="text" id="pemail" name="pemail" value="<%= (pagerEmail == null ? "" : Encode.forHtmlAttribute(pagerEmail)) %>" ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="numericalService" class="col-sm-2 col-form-label">Numeric Service</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="numericalService" name="numericalService" value='<%=(numericPage == null ? "":numericPage) %>' ng-non-bindable/>
+            <input class="form-control" type="text" id="numericalService" name="numericalService" value="<%= (numericPage == null ? "" : Encode.forHtmlAttribute(numericPage)) %>" ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="numericalPin" class="col-sm-2 col-form-label">Numeric PIN</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="numericalPin" name="numericalPin" value='<%= (numericPin == null ? "":numericPin)%>' ng-non-bindable/>
+            <input class="form-control" type="text" id="numericalPin" name="numericalPin" value="<%= (numericPin == null ? "" : Encode.forHtmlAttribute(numericPin)) %>" ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="textService" class="col-sm-2 col-form-label">Text Service</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="textService" name="textService" value='<%= (textPage == null ? "":textPage)%>' ng-non-bindable/>
+            <input class="form-control" type="text" id="textService" name="textService" value="<%= (textPage == null ? "" : Encode.forHtmlAttribute(textPage)) %>" ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="textPin" class="col-sm-2 col-form-label">Text PIN</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="textPin" name="textPin" value='<%=(textPin == null ? "":textPin)%>' ng-non-bindable/>
+            <input class="form-control" type="text" id="textPin" name="textPin" value="<%= (textPin == null ? "" : Encode.forHtmlAttribute(textPin)) %>" ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="workPhone" class="col-sm-2 col-form-label">Work Phone</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="workPhone" name="workPhone" value='<%=(workPhone == null ? "":workPhone)%>' ng-non-bindable/>
+            <input class="form-control" type="text" id="workPhone" name="workPhone" value="<%= (workPhone == null ? "" : Encode.forHtmlAttribute(workPhone)) %>" ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="mobilePhone" class="col-sm-2 col-form-label">Mobile Phone</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="mobilePhone" name="mobilePhone" value='<%=(mobilePhone == null ? "":mobilePhone)%>' ng-non-bindable/>
+            <input class="form-control" type="text" id="mobilePhone" name="mobilePhone" value="<%= (mobilePhone == null ? "" : Encode.forHtmlAttribute(mobilePhone)) %>" ng-non-bindable/>
           </div>
         </div>
 
 	<div class="form-row form-group">
           <label for="homePhone" class="col-sm-2 col-form-label">Home Phone</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="homePhone" name="homePhone" value='<%=(homePhone == null ? "":homePhone)%>' ng-non-bindable/>
+            <input class="form-control" type="text" id="homePhone" name="homePhone" value="<%= (homePhone == null ? "" : Encode.forHtmlAttribute(homePhone)) %>" ng-non-bindable/>
           </div>
         </div>
 

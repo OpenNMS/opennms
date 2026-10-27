@@ -76,7 +76,7 @@
             Full Name:
           </th>
           <td width="75%" ng-non-bindable>
-            <%=user.getFullName().orElse("")%>
+            <%=WebSecurityUtils.sanitizeString(user.getFullName().orElse(""))%>
           </td>
         </tr>
         <tr>
@@ -84,7 +84,7 @@
             Security Roles:
           </th>
           <td width="75%" ng-non-bindable>
-            <%=org.apache.commons.lang.StringUtils.join(user.getRoles().toArray(new String[user.getRoles().size()]), "<br/>")%>
+            <%=String.join("<br/>", WebSecurityUtils.sanitizeString(user.getRoles().toArray(new String[0])))%>
           </td>
         </tr>
         <tr>
@@ -112,7 +112,7 @@
                        Email:
                      </th>
                       <td width="75%" ng-non-bindable>
-                        <%=userFactory.getEmail(userID)%>
+                        <%=WebSecurityUtils.sanitizeString(userFactory.getEmail(userID))%>
                       </td>
                     </tr>
                     
@@ -121,7 +121,7 @@
                         Pager Email:
                       </th>
                       <td ng-non-bindable>
-                        <%=userFactory.getPagerEmail(userID)%>
+                        <%=WebSecurityUtils.sanitizeString(userFactory.getPagerEmail(userID))%>
                       </td>
                     </tr>
                     
@@ -130,7 +130,7 @@
                         Numerical Service:
                       </th>
                       <td ng-non-bindable>
-                        <%=userFactory.getNumericPage(userID)%>
+                        <%=WebSecurityUtils.sanitizeString(userFactory.getNumericPage(userID))%>
                       </td>
                     </tr>
                     
@@ -139,7 +139,7 @@
                         Numerical Pin:
                       </th>
                       <td ng-non-bindable>
-                        <%=userFactory.getNumericPin(userID)%>
+                        <%=WebSecurityUtils.sanitizeString(userFactory.getNumericPin(userID))%>
                       </td>
                     </tr>
 
@@ -148,7 +148,7 @@
                         Text Service:
                       </th>
                       <td ng-non-bindable>
-                        <%=userFactory.getTextPage(userID)%>
+                        <%=WebSecurityUtils.sanitizeString(userFactory.getTextPage(userID))%>
                       </td>
                     </tr>
 
@@ -157,7 +157,7 @@
                         Text Pin:
                       </th>
                       <td ng-non-bindable>
-                        <%=userFactory.getTextPin(userID)%>
+                        <%=WebSecurityUtils.sanitizeString(userFactory.getTextPin(userID))%>
                       </td>
                     </tr>
 
@@ -166,7 +166,7 @@
                         Work Phone:
                       </th>
                       <td ng-non-bindable>
-                        <%=userFactory.getWorkPhone(userID)%>
+                        <%=WebSecurityUtils.sanitizeString(userFactory.getWorkPhone(userID))%>
                       </td>
                     </tr>
 
@@ -175,7 +175,7 @@
                         Mobile Phone:
                       </th>
                       <td ng-non-bindable>
-                        <%=userFactory.getMobilePhone(userID)%>
+                        <%=WebSecurityUtils.sanitizeString(userFactory.getMobilePhone(userID))%>
                       </td>
                     </tr>
 
@@ -184,7 +184,7 @@
                         Home Phone:
                       </th>
                       <td ng-non-bindable>
-                        <%=userFactory.getHomePhone(userID)%>
+                        <%=WebSecurityUtils.sanitizeString(userFactory.getHomePhone(userID))%>
                       </td>
                     </tr>
       </table>

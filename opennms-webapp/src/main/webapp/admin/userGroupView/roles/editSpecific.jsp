@@ -52,8 +52,8 @@
     <form role="form" class="form" action="<c:url value='${reqUrl}'/>" method="post" name="saveEntryForm">
       <input type="hidden" name="operation" value="saveEntry"/>
       <input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
-      <input type="hidden" name="schedIndex" value="${schedIndex}"/>
-      <input type="hidden" name="timeIndex" value="${timeIndex}" />
+      <input type="hidden" name="schedIndex" value="${fn:escapeXml(schedIndex)}"/>
+      <input type="hidden" name="timeIndex" value="${fn:escapeXml(timeIndex)}" />
       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
       <div class="form-group form-row">
@@ -69,8 +69,8 @@
           <select class="form-control custom-select" id="input_roleUser" name="roleUser">
           <c:forEach var="user" items="${role.membershipGroup.users}">
             <c:choose>
-              <c:when test="${user == scheduledUser}"><option selected>${user}</option></c:when>
-              <c:otherwise><option>${user}</option></c:otherwise>
+              <c:when test="${user == scheduledUser}"><option selected>${fn:escapeXml(user)}</option></c:when>
+              <c:otherwise><option>${fn:escapeXml(user)}</option></c:otherwise>
             </c:choose>
           </c:forEach>
           </select>

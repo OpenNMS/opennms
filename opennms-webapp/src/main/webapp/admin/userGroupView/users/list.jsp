@@ -27,6 +27,7 @@
 <%@page import="org.opennms.netmgt.config.*" %>
 <%@page import="org.opennms.netmgt.config.users.*" %>
 <%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
@@ -65,7 +66,7 @@
     
     function detailUser(userID)
     {
-        document.allUsers.action="admin/userGroupView/users/userDetail.jsp?userID=" + userID;
+        document.allUsers.action="admin/userGroupView/users/userDetail.jsp?userID=" + encodeURIComponent(userID);
         document.allUsers.submit();
     }
     
@@ -150,11 +151,14 @@
               String numericPin = userFactory.getNumericPin(userid);
               String textPin = userFactory.getTextPin(userid);
               String sanitizedUserId = WebSecurityUtils.sanitizeString(curUser.getUserId());
+              // For JS strings in event handlers; in javascript: URLs also percent-encode, since the browser percent-decodes those
+              String jsUserId = Encode.forJavaScript(userid);
+              String jsUrlUserId = Encode.forUriComponent(jsUserId);
          %>
-         <tr id="user-<%= userid %>">
+         <tr id="user-<%= sanitizedUserId %>">
           <% if (!curUser.getUserId().equals("admin") && !curUser.getUserId().equals("rtc")) { %>
           <td rowspan="2" class="text-center"> 
-            <a id="<%= "users("+sanitizedUserId+").doDelete" %>" href="javascript:deleteUser('<%=sanitizedUserId%>')" onclick="return confirm('Are you sure you want to delete the user <%=sanitizedUserId%>?')"><i class="fas fa-trash-can fa-2x"></i></a>
+            <a id="<%= "users("+sanitizedUserId+").doDelete" %>" href="javascript:deleteUser('<%=jsUrlUserId%>')" onclick="return confirm('Are you sure you want to delete the user <%=jsUserId%>?')"><i class="fas fa-trash-can fa-2x"></i></a>
           </td>
           <% } else { %>
           <td rowspan="2" class="text-center">
@@ -162,31 +166,31 @@
           </td>
           <% } %>
           <td rowspan="2" class="text-center">
-            <a id="<%= "users("+sanitizedUserId+").doModify" %>" href="javascript:modifyUser('<%=sanitizedUserId%>')"><i class="fas fa-pen-to-square fa-2x"></i></a>
+            <a id="<%= "users("+sanitizedUserId+").doModify" %>" href="javascript:modifyUser('<%=jsUrlUserId%>')"><i class="fas fa-pen-to-square fa-2x"></i></a>
           </td>
           <td rowspan="2" class="text-center">
             <% if ( !curUser.getUserId().equals("admin")) { %>
-                <button id="<%= "users("+sanitizedUserId+").doRename" %>" class="btn btn-secondary"  name="rename" onclick="renameUser('<%=sanitizedUserId%>')">Rename</button>
+                <button id="<%= "users("+sanitizedUserId+").doRename" %>" class="btn btn-secondary"  name="rename" onclick="renameUser('<%=jsUserId%>')">Rename</button>
               <% } else { %>
                 <button id="<%= "users("+sanitizedUserId+").doRename" %>" class="btn btn-secondary"  name="rename" onclick="alert('Sorry, the admin user cannot be renamed.')">Rename</button>
               <% } %>
           </td>
           <td>
-            <a id="<%= "users("+sanitizedUserId+").doDetails" %>" href="javascript:detailUser('<%=sanitizedUserId%>')"><%=sanitizedUserId%></a>
+            <a id="<%= "users("+sanitizedUserId+").doDetails" %>" href="javascript:detailUser('<%=jsUrlUserId%>')"><%=sanitizedUserId%></a>
           </td>
           <td>
            <div id="<%= "users("+sanitizedUserId+").fullName" %>" ng-non-bindable>
-		    <%= (curUser.getFullName().orElse("")) %>
+		    <%= WebSecurityUtils.sanitizeString(curUser.getFullName().orElse("")) %>
 	      </div>
           </td>
           <td>
             <div id="<%= "users("+sanitizedUserId+").email" %>" ng-non-bindable>
-            <%= ((email == null || email.equals("")) ? "&nbsp;" : email) %>
+            <%= ((email == null || email.equals("")) ? "&nbsp;" : WebSecurityUtils.sanitizeString(email)) %>
             </div>
           </td>
           <td>
            <div id="<%= "users("+sanitizedUserId+").pagerEmail" %>" ng-non-bindable>
-            <%= ((pagerEmail == null || pagerEmail.equals("")) ? "&nbsp;" : pagerEmail) %>
+            <%= ((pagerEmail == null || pagerEmail.equals("")) ? "&nbsp;" : WebSecurityUtils.sanitizeString(pagerEmail)) %>
             </div>
           </td>
           </tr>

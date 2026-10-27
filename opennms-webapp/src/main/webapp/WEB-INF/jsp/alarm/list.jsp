@@ -776,7 +776,7 @@
             <% if (parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
               </td>
               <td>
-                <nobr><%=alarms[i].getAckUser()%></nobr>
+                <nobr><%=WebSecurityUtils.sanitizeString(alarms[i].getAckUser())%></nobr>
                   <nobr>
                     <a href="<%=this.makeLink(callback, parms, new AcknowledgedByFilter(alarms[i].getAckUser()), true, favorite)%>"  class="filterLink" title="Only show alarms ack by this user">${addPositiveFilter}</a>
                     <a href="<%=this.makeLink(callback, parms, new NegativeAcknowledgedByFilter(alarms[i].getAckUser()), true, favorite)%>" class="filterLink" title="Only show alarms ack by other users">${addNegativeFilter}</a>

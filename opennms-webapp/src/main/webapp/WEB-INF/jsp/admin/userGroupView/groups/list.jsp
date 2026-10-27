@@ -23,6 +23,7 @@
 --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" prefix="e"%>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
@@ -112,24 +113,27 @@
           <th>Comments</th>
         </tr>
          <c:forEach var="group" varStatus="groupStatus" items="${groups}">
+         <%-- The group name as a JS string for event handlers; javascript: URLs are also percent-decoded, so percent-encode it there --%>
+         <c:set var="jsGroupName" value="${e:forJavaScript(group.name)}"/>
+         <c:set var="jsUrlGroupName" value="${e:forUriComponent(jsGroupName)}"/>
          <tr class="divider ${groupStatus.index % 2 == 0 ?  'even' : 'odd'}" id="group-${fn:escapeXml(group.name)}">
           <td width="5%" class="text-center">
             <c:choose>
               <c:when test='${fn:escapeXml(group.name) != "Admin"}'>
-                <a id="${group.name}.doDelete" href="javascript:deleteGroup('${fn:escapeXml(group.name)}')" onclick="return confirm('Are you sure you want to delete the group ${fn:escapeXml(group.name)}?')"><i class="fas fa-trash-can fa-2x"></i></a>
+                <a id="${fn:escapeXml(group.name)}.doDelete" href="javascript:deleteGroup('${jsUrlGroupName}')" onclick="return confirm('Are you sure you want to delete the group ${jsGroupName}?')"><i class="fas fa-trash-can fa-2x"></i></a>
               </c:when>
               <c:otherwise>
-                <i class="fas fa-trash-can fa-2x" onclick="alert('Sorry, the ${fn:escapeXml(group.name)} group cannot be deleted.')"></i>
+                <i class="fas fa-trash-can fa-2x" onclick="alert('Sorry, the ${jsGroupName} group cannot be deleted.')"></i>
               </c:otherwise>
             </c:choose>
           </td>
           <td width="5%" class="text-center">
-            <a id="${fn:escapeXml(group.name)}.doModify" href="javascript:modifyGroup('${fn:escapeXml(group.name)}')"><i class="fas fa-pen-to-square fa-2x"></i></a>
+            <a id="${fn:escapeXml(group.name)}.doModify" href="javascript:modifyGroup('${jsUrlGroupName}')"><i class="fas fa-pen-to-square fa-2x"></i></a>
           </td>
           <td width="5%" class="text-center">
             <c:choose>
               <c:when test='${group.name != "Admin"}'>
-                <button id="${fn:escapeXml(group.name)}.doRename" type="button" class="btn btn-secondary" name="rename" onclick="renameGroup('${fn:escapeXml(group.name)}')">Rename</button>
+                <button id="${fn:escapeXml(group.name)}.doRename" type="button" class="btn btn-secondary" name="rename" onclick="renameGroup('${jsGroupName}')">Rename</button>
               </c:when>
               <c:otherwise>
                 <button id="${fn:escapeXml(group.name)}.doRename" type="button" class="btn btn-secondary" name="rename" onclick="alert('Sorry, the Admin group cannot be renamed.')">Rename</button>
@@ -137,7 +141,7 @@
             </c:choose>
           </td>
           <td>
-            <a href="javascript:detailGroup('${fn:escapeXml(group.name)}')">${fn:escapeXml(group.name)}</a>
+            <a href="javascript:detailGroup('${jsUrlGroupName}')">${fn:escapeXml(group.name)}</a>
           </td>
             <td>
               <c:choose>
