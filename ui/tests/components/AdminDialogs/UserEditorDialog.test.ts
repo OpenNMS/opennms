@@ -138,7 +138,7 @@ describe('UserEditorDialog.vue', () => {
   })
 
   it('shows a server rejection inside the dialog and stays open', async () => {
-    store.createUser.mockResolvedValue('User jose already exists.')
+    store.createUser.mockResolvedValue({ message: 'User jose already exists.', stale: false })
     await mountDialog()
     await wrapper.find('[data-test="user-id-input"]').setValue('jose')
     await setPassword('secret')

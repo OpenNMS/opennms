@@ -30,7 +30,18 @@ export interface ManagedGroup {
   comments?: string | null
   users?: string[]
   dutySchedules?: string[]
+  version: number
 }
+
+export type ManagedGroupCreate = Omit<ManagedGroup, 'version'>
+
+// Shown when a write is rejected with 412 (If-Match no longer matches the stored version).
+export const STALE_GROUP_MESSAGE =
+  'This group was changed by someone else. The list has been reloaded; reapply your change.'
+
+// Shown instead when the reload after a 412 failed too.
+export const STALE_GROUP_RELOAD_FAILED_MESSAGE =
+  'This group was changed by someone else, and the list could not be reloaded. Reload the page.'
 
 // The server refuses to delete or rename this group; mirrored here so the UI
 // can disable the controls with an explanation instead of a 400.

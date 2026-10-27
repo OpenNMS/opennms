@@ -118,10 +118,12 @@
   <UserPasswordDialog
     v-model:visible="showPassword"
     :userId="actionUserId"
+    :version="actionVersion"
   />
   <UserRenameDialog
     v-model:visible="showRename"
     :userId="actionUserId"
+    :version="actionVersion"
   />
   <OnmsConfirmationDialog
     :visible="showDeleteConfirmation"
@@ -165,6 +167,7 @@ const userToEdit = ref<ManagedUser | null>(null)
 const showPassword = ref(false)
 const showRename = ref(false)
 const actionUserId = ref('')
+const actionVersion = ref(0)
 const showDeleteConfirmation = ref(false)
 const userToDelete = ref<ManagedUser | null>(null)
 
@@ -181,11 +184,13 @@ const openEditor = (user: ManagedUser | null) => {
 
 const openPassword = (user: ManagedUser) => {
   actionUserId.value = user.userId
+  actionVersion.value = user.version
   showPassword.value = true
 }
 
 const openRename = (user: ManagedUser) => {
   actionUserId.value = user.userId
+  actionVersion.value = user.version
   showRename.value = true
 }
 
@@ -216,7 +221,7 @@ const toggleRowMenu = (event: Event, user: ManagedUser) => {
 
 const confirmDelete = async () => {
   if (userToDelete.value) {
-    await store.deleteUser(userToDelete.value.userId)
+    await store.deleteUser(userToDelete.value.userId, userToDelete.value.version)
   }
   showDeleteConfirmation.value = false
   userToDelete.value = null

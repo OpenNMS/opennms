@@ -109,6 +109,7 @@
   <GroupRenameDialog
     v-model:visible="showRename"
     :groupName="actionGroupName"
+    :version="actionVersion"
   />
   <OnmsConfirmationDialog
     :visible="showDeleteConfirmation"
@@ -150,6 +151,7 @@ const showEditor = ref(false)
 const groupToEdit = ref<ManagedGroup | null>(null)
 const showRename = ref(false)
 const actionGroupName = ref('')
+const actionVersion = ref(0)
 const showDeleteConfirmation = ref(false)
 const groupToDelete = ref<ManagedGroup | null>(null)
 
@@ -166,6 +168,7 @@ const openEditor = (group: ManagedGroup | null) => {
 
 const openRename = (group: ManagedGroup) => {
   actionGroupName.value = group.name
+  actionVersion.value = group.version
   showRename.value = true
 }
 
@@ -195,7 +198,7 @@ const toggleRowMenu = (event: Event, group: ManagedGroup) => {
 
 const confirmDelete = async () => {
   if (groupToDelete.value) {
-    await store.deleteGroup(groupToDelete.value.name)
+    await store.deleteGroup(groupToDelete.value.name, groupToDelete.value.version)
   }
   showDeleteConfirmation.value = false
   groupToDelete.value = null
