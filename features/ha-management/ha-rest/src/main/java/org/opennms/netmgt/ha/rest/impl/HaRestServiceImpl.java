@@ -89,7 +89,8 @@ public class HaRestServiceImpl implements HaRestService {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(
                      "SELECT instance_id, configured_role, current_state, last_heartbeat, active_since, " +
-                     "EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds, hostname " +
+                     "EXTRACT(EPOCH FROM (NOW() - last_heartbeat)) AS age_seconds, hostname, " +
+                     "last_sync_success, last_sync_error, boot_config_changed_at " +
                      "FROM ha_instance_status ORDER BY configured_role")) {
 
             List<HaInstanceStatusDto> instances = new ArrayList<>();
@@ -103,6 +104,10 @@ public class HaRestServiceImpl implements HaRestService {
                 Timestamp activeSinceTs = rs.getTimestamp("active_since");
                 dto.setActiveSince(activeSinceTs != null ? activeSinceTs.toInstant().toString() : null);
                 dto.setHostname(rs.getString("hostname"));
+                Timestamp syncTs = rs.getTimestamp("last_sync_success");
+                dto.setLastSyncSuccess(syncTs != null ? syncTs.toInstant().toString() : null);
+                dto.setLastSyncError(rs.getString("last_sync_error"));
+                dto.setRestartRequired(rs.getTimestamp("boot_config_changed_at") != null);
 
                 long ageSeconds = rs.getLong("age_seconds");
                 dto.setHeartbeatStale(!rs.wasNull() && ageSeconds > failoverThresholdSeconds);
@@ -276,8 +281,9 @@ public class HaRestServiceImpl implements HaRestService {
         try {
             List<String> excludes = coord.getConfig().getSyncExcludes();
             List<HaSyncFiles.Entry> manifest =
-                    HaSyncFiles.buildManifest(HaSyncFiles.etcRoot(), excludes);
-            return Response.ok(HaSyncFiles.toManifestText(manifest, excludes)).build();
+                    HaSyncFiles.buildManifest(coord.getConfig().getSyncRoots(), excludes);
+            return Response.ok(
+                    HaSyncFiles.toManifestText(manifest, excludes, HaSyncFiles.localVersion())).build();
         } catch (Exception e) {
             LOG.error("HA sync: failed to build manifest", e);
             return Response.serverError().entity("Failed to build manifest: " + e.getMessage()).build();
@@ -285,7 +291,7 @@ public class HaRestServiceImpl implements HaRestService {
     }
 
     @Override
-    public Response getSyncFile(String relativePath) {
+    public Response getSyncFile(String root, String relativePath) {
         HaStartupCoordinator coord = HaStartupCoordinator.getInstance();
         if (coord == null) {
             return Response.status(Response.Status.NOT_FOUND)
@@ -299,8 +305,13 @@ public class HaRestServiceImpl implements HaRestService {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("file is excluded from sync: " + relativePath).build();
         }
+        String rootName = (root == null || root.isBlank()) ? HaSyncFiles.DEFAULT_ROOT : root;
+        if (!coord.getConfig().getSyncRoots().contains(rootName)) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("not a configured sync root: " + rootName).build();
+        }
         try {
-            Path file = HaSyncFiles.resolveSafe(HaSyncFiles.etcRoot(), relativePath);
+            Path file = HaSyncFiles.resolveSafe(HaSyncFiles.root(rootName), relativePath);
             if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("no such file: " + relativePath).build();
