@@ -252,6 +252,16 @@ Plugins append a node ID or `foreignSource:foreignId` to it to link to a node's 
 Escape the appended part as one URL path segment, for example with `encodeURIComponent`, so that a `/`, `#` or space in a foreign ID does not break the link.
 It is a hash route, so do not append query parameters such as `&quiet=true`.
 
+=== Legacy node page removed
+The legacy node page, `element/node.jsp`, is removed.
+Its URL, `element/node.jsp?node=<node>`, stays available as a redirect to the new node details page, `ui/index.html#/node/<node>`, so existing links, bookmarks and stored event text continue to work.
+The redirect ignores all query parameters other than `node`, for example `quiet=true`.
+Without a `node` parameter, it goes to the node list.
+
+The new node details page does not show links that plugins add with `ConditionalPageNavEntry` services registered with `Page=node`.
+The legacy node page was the only page that showed them.
+The built-in "View in Topology" link is replaced by the "Topology Map" item in the "Graphs" menu of the new page.
+
 === DOCTYPE rejected in requisition and foreign-source XML
 Requisition and foreign-source XML that contains a `DOCTYPE` is now rejected on import.
 Remove the `DOCTYPE` from requisitions that external tools write, or set the system property `org.opennms.provision.requisition.allowDoctype=true` to accept it.

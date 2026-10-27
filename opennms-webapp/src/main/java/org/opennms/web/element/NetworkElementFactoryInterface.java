@@ -455,8 +455,6 @@ public interface NetworkElementFactoryInterface {
 
 	List<OnmsMonitoringSystem> getMonitoringSystems();
 
-	boolean nodeExistsInRequisition(final String foreignSource, final String foreignId);
-
 	List<String> getCategories();
 
 	/**

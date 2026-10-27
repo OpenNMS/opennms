@@ -22,7 +22,7 @@
 
 // Wire shapes of the /api/v2/enlinkd/*_elems/{node} endpoints: what Enlinkd discovered about a node
 // itself, as opposed to its links to neighbors. Every value is a display string formatted on the
-// server, the same strings the legacy node page shows.
+// server, the same strings the legacy node page showed.
 
 export interface LldpElement {
   lldpChassisId?: string | null

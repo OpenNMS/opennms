@@ -45,7 +45,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Entry points that link to the Vue Node Details page (NMS-20412): the route itself, the Vue node
- * list redirect, the home page quick search, and a sample of legacy pages.
+ * list redirect, the home page quick search, and a sample of legacy pages. Also the legacy node
+ * page URL, which now redirects to the Vue page (NMS-20441).
  */
 public class NodeDetailsLinksIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(NodeDetailsLinksIT.class);
@@ -162,6 +163,12 @@ public class NodeDetailsLinksIT extends OpenNMSSeleniumIT {
             getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/node/test:links%2F2");
             wait.until(ExpectedConditions.urlMatches(".*#/node/" + slashNodeId + "([?&].*)?$"));
             wait.until(pageContainsText("Node Details for " + slashLabel));
+
+            // The legacy URL takes the foreign id as a query parameter; the redirect encodes it as
+            // one path segment of the hash route.
+            getDriver().get(getBaseUrlInternal() + "opennms/element/node.jsp?node=test:links%2F2");
+            wait.until(ExpectedConditions.urlMatches(".*#/node/" + slashNodeId + "([?&].*)?$"));
+            wait.until(pageContainsText("Node Details for " + slashLabel));
         } finally {
             if (slashNodeId != null) {
                 try {
@@ -183,6 +190,53 @@ public class NodeDetailsLinksIT extends OpenNMSSeleniumIT {
     public void routeShowsInvalidNodeId() {
         getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/node/abc");
         wait.until(pageContainsText("Invalid Node ID"));
+    }
+
+    // --- the legacy node page URL ---
+
+    @Test
+    public void legacyUrlRedirectsByNodeId() {
+        getDriver().get(getBaseUrlInternal() + "opennms/element/node.jsp?node=" + nodeId);
+        waitForVueNodeDetails();
+    }
+
+    @Test
+    public void legacyUrlRedirectsByForeignSourceAndId() {
+        getDriver().get(getBaseUrlInternal() + "opennms/element/node.jsp?node=test:links1");
+        waitForVueNodeDetails();
+    }
+
+    @Test
+    public void legacyUrlWithoutNodeOpensTheNodeList() {
+        getDriver().get(getBaseUrlInternal() + "opennms/element/node.jsp");
+        wait.until(ExpectedConditions.urlMatches(".*#/nodes([?&].*)?$"));
+    }
+
+    /**
+     * Links from outside the web UI (RSS, email, stored event text) use the legacy URL, so it must
+     * lead to the node after login too.
+     */
+    @Test
+    public void legacyUrlSurvivesLogin() {
+        getDriver().manage().deleteAllCookies();
+        getDriver().get("about:blank");
+
+        getDriver().get(getBaseUrlInternal() + "opennms/element/node.jsp?node=" + nodeId);
+        wait.until(ExpectedConditions.urlContains("login.jsp"));
+
+        // not login(): it waits for elements of JSP pages, which the Vue app does not have
+        enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
+        enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
+        clickElement(By.name("Login"));
+
+        // admin/admin is sent to the password gate first; skipping it continues to the saved page
+        wait.until(ExpectedConditions.or(
+                ExpectedConditions.urlContains("passwordGate.jsp"),
+                ExpectedConditions.urlMatches(".*#/node/" + nodeId + "([?&].*)?$")));
+        if (getDriver().getCurrentUrl().contains("passwordGate.jsp")) {
+            clickElement(By.id("btn_skip"));
+        }
+        waitForVueNodeDetails();
     }
 
     // --- Vue entry points ---

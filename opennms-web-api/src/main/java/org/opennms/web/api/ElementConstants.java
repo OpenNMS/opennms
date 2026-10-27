@@ -37,6 +37,12 @@ public final class ElementConstants {
      */
     public static final String NODE_DETAILS_URI = "ui/index.html#/node/";
 
+    /**
+     * The Vue node list page, relative to the webapp context root. It is a compile-time constant,
+     * as {@link #NODE_DETAILS_URI} is.
+     */
+    public static final String NODE_LIST_URI = "ui/index.html#/nodes";
+
     private ElementConstants() {
     }
 }

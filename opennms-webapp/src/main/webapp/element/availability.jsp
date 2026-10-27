@@ -35,7 +35,6 @@
         java.net.*,
         java.sql.SQLException,
         org.opennms.core.spring.BeanUtils,
-        org.opennms.core.soa.ServiceRegistry,
         org.opennms.core.utils.InetAddressUtils,
         org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao,
         org.opennms.netmgt.config.poller.outages.Outage,
@@ -46,10 +45,7 @@
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
         org.opennms.web.element.*,
-        org.opennms.web.navigate.*,
-        org.springframework.util.StringUtils,
-        org.springframework.web.context.WebApplicationContext,
-        org.springframework.web.context.support.WebApplicationContextUtils"
+        org.springframework.util.StringUtils"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -200,23 +196,6 @@
     }
 
     pageContext.setAttribute("model", nodeModel);
-
-	final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-	final ServiceRegistry registry = webAppContext.getBean(ServiceRegistry.class);
-
-	final List<String> renderedLinks = new ArrayList<>();
-	final Collection<ConditionalPageNavEntry> navLinks = registry.findProviders(ConditionalPageNavEntry.class, "(Page=node)");
-	for (final ConditionalPageNavEntry link : navLinks) {
-	    final DisplayStatus displayStatus = link.evaluate(request, node_db);
-	    if (displayStatus == null) continue;
-	    if (displayStatus == DisplayStatus.DISPLAY_NO_LINK) {
-	        renderedLinks.add(link.getName());
-	    } else if (displayStatus == DisplayStatus.DISPLAY_LINK) {
-	        renderedLinks.add("<a href=\"" + link.getUrl().replace("%nodeid%", ""+nodeId) + "\">" + link.getName() + "</a>");
-	    }
-	}
-	
-	pageContext.setAttribute("navEntries", renderedLinks);
 
     final List<String> schedOutages = new ArrayList<>();
 

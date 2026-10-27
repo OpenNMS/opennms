@@ -1090,7 +1090,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         }
         final int nodeId = node.getId();
 
-        // As includes/nodeStatus-box.jsp, which loaded every alarm and counted them; here the database counts.
+        // As the legacy node page's status box, which loaded every alarm and counted them; here the database counts.
         final List<OnmsAlarm> worstUnacknowledged = m_alarmDao.findMatching(problemAlarms(nodeId)
                 .isNull("alarmAckTime")
                 .orderBy("severity").desc()

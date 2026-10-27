@@ -53,6 +53,9 @@ export const useNodeStore = defineStore('nodeStore', () => {
   // Whether the node is in its requisition, for the Edit in Requisition action. False until
   // known: offering the link and having it 404 is worse than leaving it out.
   const existsInRequisition = ref(false)
+  // The node the requisition check last answered for (yes, no, or could not tell). Undefined
+  // while a check is pending, so the page can tell an answer from a check still in flight.
+  const existsInRequisitionNodeId = ref<string | undefined>(undefined)
 
   // The node's own critical path, for the Path Outage panel; undefined when it has none, or until
   // known.
@@ -160,6 +163,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     snmpInterfacesTotalCount.value = 0
     snmpPrimaryIpAddress.value = undefined
     existsInRequisition.value = false
+    existsInRequisitionNodeId.value = undefined
     criticalPath.value = undefined
     linkServices.value = []
   }
@@ -238,12 +242,15 @@ export const useNodeStore = defineStore('nodeStore', () => {
    * above, so a slow answer for the node the user left cannot offer this one a link it does not
    * have.
    */
-  const getNodeExistsInRequisition = async (n: Pick<Node, 'foreignSource' | 'foreignId'>) => {
+  const getNodeExistsInRequisition = async (n: Pick<Node, 'id' | 'foreignSource' | 'foreignId'>) => {
     const requestId = ++existsInRequisitionRequestId
 
     existsInRequisition.value = false
+    existsInRequisitionNodeId.value = undefined
 
     if (!n.foreignSource || !n.foreignId) {
+      existsInRequisitionNodeId.value = n.id
+
       return
     }
 
@@ -251,6 +258,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
 
     if (requestId === existsInRequisitionRequestId) {
       existsInRequisition.value = exists === true
+      existsInRequisitionNodeId.value = n.id
     }
   }
 
@@ -412,6 +420,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     nodeLoadError,
     snmpPrimaryIpAddress,
     existsInRequisition,
+    existsInRequisitionNodeId,
     criticalPath,
     linkServices,
     snmpInterfaces,

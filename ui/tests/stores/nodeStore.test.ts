@@ -656,20 +656,38 @@ describe('nodeStore getNodeExistsInRequisition', () => {
     vi.mocked(API.nodeExistsInRequisition).mockResolvedValue(true)
     const store = useNodeStore()
 
-    await store.getNodeExistsInRequisition({ foreignSource: 'fs', foreignId: 'fid' })
+    await store.getNodeExistsInRequisition({ id: '7', foreignSource: 'fs', foreignId: 'fid' })
 
     expect(API.nodeExistsInRequisition).toHaveBeenCalledWith('fs', 'fid')
     expect(store.existsInRequisition).toBe(true)
+    expect(store.existsInRequisitionNodeId).toBe('7')
+  })
+
+  it('has no answer while the check is pending', async () => {
+    let resolve: (value: boolean) => void = () => undefined
+    vi.mocked(API.nodeExistsInRequisition).mockImplementationOnce(() => new Promise((r) => {
+      resolve = r
+    }))
+    const store = useNodeStore()
+    store.existsInRequisitionNodeId = '6'
+
+    const pending = store.getNodeExistsInRequisition({ id: '7', foreignSource: 'fs', foreignId: 'fid' })
+
+    expect(store.existsInRequisitionNodeId).toBeUndefined()
+    resolve(false)
+    await pending
+    expect(store.existsInRequisitionNodeId).toBe('7')
   })
 
   it('does not ask about a node with no foreign source', async () => {
     const store = useNodeStore()
     store.existsInRequisition = true
 
-    await store.getNodeExistsInRequisition({ foreignSource: null as never, foreignId: null as never })
+    await store.getNodeExistsInRequisition({ id: '7', foreignSource: null as never, foreignId: null as never })
 
     expect(API.nodeExistsInRequisition).not.toHaveBeenCalled()
     expect(store.existsInRequisition).toBe(false)
+    expect(store.existsInRequisitionNodeId).toBe('7')
   })
 
   // null is "could not tell"; offering a link that may 404 is worse than leaving it out.
@@ -677,9 +695,10 @@ describe('nodeStore getNodeExistsInRequisition', () => {
     vi.mocked(API.nodeExistsInRequisition).mockResolvedValue(null)
     const store = useNodeStore()
 
-    await store.getNodeExistsInRequisition({ foreignSource: 'fs', foreignId: 'fid' })
+    await store.getNodeExistsInRequisition({ id: '7', foreignSource: 'fs', foreignId: 'fid' })
 
     expect(store.existsInRequisition).toBe(false)
+    expect(store.existsInRequisitionNodeId).toBe('7')
   })
 
   it('discards a superseded answer', async () => {
@@ -691,22 +710,25 @@ describe('nodeStore getNodeExistsInRequisition', () => {
       .mockResolvedValueOnce(false)
     const store = useNodeStore()
 
-    const first = store.getNodeExistsInRequisition({ foreignSource: 'fs', foreignId: 'one' })
-    await store.getNodeExistsInRequisition({ foreignSource: 'fs', foreignId: 'two' })
+    const first = store.getNodeExistsInRequisition({ id: '1', foreignSource: 'fs', foreignId: 'one' })
+    await store.getNodeExistsInRequisition({ id: '2', foreignSource: 'fs', foreignId: 'two' })
     resolveFirst(true)
     await first
 
     expect(store.existsInRequisition).toBe(false)
+    expect(store.existsInRequisitionNodeId).toBe('2')
   })
 
   it('is cleared when the next node fails to load', async () => {
     vi.mocked(API.lookupNodeById).mockResolvedValue(failed)
     const store = useNodeStore()
     store.existsInRequisition = true
+    store.existsInRequisitionNodeId = '98'
 
     await store.getNodeById({ id: '99' } as Node)
 
     expect(store.existsInRequisition).toBe(false)
+    expect(store.existsInRequisitionNodeId).toBeUndefined()
   })
 })
 
