@@ -55,7 +55,7 @@ const fillsLayoutCell = computed<boolean>(() =>
   FILL_LAYOUT_CELL_ROUTES.has(String(route.name ?? '')))
 
 // Full-screen pages such as wall displays: a route's meta.chromeless, or enterChromeless() from
-// useOnmsChromeless in a page or plugin.
+// useOnmsChromeless in a page or plugin. Either lasts until the next route change.
 const { isChromeless: chromeless } = useOnmsChromelessHost(() => route.meta.chromeless === true, () => route.path)
 
 const authStore = useAuthStore()

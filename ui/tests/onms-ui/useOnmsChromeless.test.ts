@@ -24,7 +24,17 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { effectScope, nextTick, ref } from 'vue'
 import { useOnmsChromeless, useOnmsChromelessHost } from '@opennms/onms-ui'
 
-const pressEscape = () => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+const pressEscape = (target: EventTarget = document) => {
+  const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+  target.dispatchEvent(event)
+  return event
+}
+
+const addToBody = (html: string) => {
+  const holder = document.createElement('div')
+  holder.innerHTML = html
+  return document.body.appendChild(holder.firstElementChild!)
+}
 
 describe('useOnmsChromeless', () => {
   const { isChromeless, enterChromeless, exitChromeless } = useOnmsChromeless()
@@ -58,10 +68,15 @@ describe('useOnmsChromeless', () => {
     expect(isChromeless.value).toBe(false)
   })
 
-  it('keeps an enter across route changes until exit', async () => {
+  it('keeps an enter until the next route change', async () => {
     enterChromeless()
-    await navigate('/nodes', false)
     expect(isChromeless.value).toBe(true)
+    await navigate('/nodes', false)
+    expect(isChromeless.value).toBe(false)
+  })
+
+  it('keeps an enter until exit on the same route', () => {
+    enterChromeless()
     exitChromeless()
     expect(isChromeless.value).toBe(false)
   })
@@ -74,17 +89,43 @@ describe('useOnmsChromeless', () => {
     expect(isChromeless.value).toBe(true)
   })
 
-  it('exits on Escape, but not while a dialog or drawer is closing on it', () => {
+  it.each([
+    '<div class="p-dialog-mask p-overlay-mask"></div>',
+    '<div class="p-drawer-mask p-overlay-mask"></div>',
+    '<div class="p-popover p-component"></div>',
+    '<div class="p-menu p-component p-menu-overlay"></div>',
+    '<div class="p-tieredmenu p-component p-tieredmenu-overlay"></div>',
+    '<div class="p-contextmenu p-component"></div>'
+  ])('ignores Escape while an overlay closes on it: %s', (html) => {
     enterChromeless()
-    const mask = document.createElement('div')
-    mask.className = 'p-drawer-mask p-overlay-mask'
-    document.body.appendChild(mask)
+    const overlay = addToBody(html)
     pressEscape()
     expect(isChromeless.value).toBe(true)
 
-    mask.remove()
+    overlay.remove()
     pressEscape()
     expect(isChromeless.value).toBe(false)
+  })
+
+  it('does not count an inline menu as an overlay', () => {
+    enterChromeless()
+    addToBody('<div class="p-tieredmenu p-component"></div>')
+    pressEscape()
+    expect(isChromeless.value).toBe(false)
+  })
+
+  it('ignores Escape a component already handled', () => {
+    enterChromeless()
+    const field = addToBody('<div></div>')
+    field.addEventListener('keydown', event => event.preventDefault())
+    pressEscape(field)
+    expect(isChromeless.value).toBe(true)
+  })
+
+  it.each(['<input>', '<textarea></textarea>', '<select></select>'])('ignores Escape typed into %s', (html) => {
+    enterChromeless()
+    pressEscape(addToBody(html))
+    expect(isChromeless.value).toBe(true)
   })
 
   it('stops handling Escape once the host scope is gone', () => {

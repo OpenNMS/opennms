@@ -20,11 +20,11 @@
 /// License.
 ///
 
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createRouter, createWebHashHistory } from 'vue-router'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, onMounted } from 'vue'
 import App from '@/main/App.vue'
 import { useOnmsChromeless } from '@opennms/onms-ui'
 
@@ -60,6 +60,15 @@ const router = createRouter({
   routes: [
     { path: '/topology/:source?', name: 'Topology', component: blank('TopologyPage') },
     { path: '/nodes', name: 'Nodes', component: blank('NodesPage') },
+    {
+      path: '/wall',
+      name: 'Wall',
+      component: defineComponent({
+        name: 'WallPage',
+        setup: () => onMounted(() => useOnmsChromeless().enterChromeless()),
+        render: () => h('div')
+      })
+    },
     {
       path: '/plugins/exampleUiExtension/:resourceRootPath/:moduleFileName',
       name: 'Plugin-exampleUiExtension',
@@ -161,6 +170,17 @@ describe('App layout classes', () => {
 
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
     await wrapper.vm.$nextTick()
+    expect(wrapper.find('.stub-menubar').exists()).toBe(true)
+  })
+
+  it('keeps a page\'s own enterChromeless() on arrival and resets it on leaving', async () => {
+    const wrapper = await mountAt('/nodes')
+    await router.push('/wall')
+    await flushPromises()
+    expect(wrapper.find('.stub-menubar').exists()).toBe(false)
+
+    await router.push('/nodes')
+    await flushPromises()
     expect(wrapper.find('.stub-menubar').exists()).toBe(true)
   })
 })

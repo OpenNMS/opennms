@@ -39,19 +39,39 @@ const exitChromeless = () => {
   dismissed.value = true
 }
 
-// PrimeVue closes these on Escape without marking the event handled.
-const isModalOpen = () => !!document.querySelector('.p-dialog-mask.p-overlay-mask, .p-drawer-mask.p-overlay-mask')
+// PrimeVue closes these on Escape without marking the event handled. Each is in the DOM only
+// while open, and still is when this listener on document sees the event.
+const OVERLAY_SELECTOR = [
+  '.p-dialog-mask.p-overlay-mask',
+  '.p-drawer-mask.p-overlay-mask',
+  '.p-popover',
+  '.p-menu-overlay',
+  '.p-tieredmenu-overlay',
+  '.p-contextmenu'
+].join(', ')
+
+const isEditable = (target: EventTarget | null) => {
+  const el = target as HTMLElement | null
+  return !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)
+}
 
 const onKeydown = (event: KeyboardEvent) => {
-  if (event.key === 'Escape' && isChromeless.value && !event.isComposing && !isModalOpen()) {
-    exitChromeless()
+  if (event.key !== 'Escape' || !isChromeless.value || event.isComposing || event.defaultPrevented) {
+    return
   }
+
+  if (isEditable(event.target) || document.querySelector(OVERLAY_SELECTOR)) {
+    return
+  }
+
+  exitChromeless()
 }
 
 /**
  * Whether the host app hides its chrome (menu bar, side menu, footer), e.g. for a wall display.
- * A page turns it on with `enterChromeless()` and it stays on across navigation until
- * `exitChromeless()` or Escape. The host also turns it on for routes it marks chromeless.
+ * A page turns it on with `enterChromeless()`, typically when it mounts, and it stays on until the
+ * next route change, `exitChromeless()` or Escape. The host also turns it on for routes it marks
+ * chromeless.
  */
 export const useOnmsChromeless = () => ({
   isChromeless: readonly(isChromeless),
@@ -60,12 +80,14 @@ export const useOnmsChromeless = () => ({
 })
 
 /**
- * Host only: call once from the app shell's setup. `isRouteChromeless` is re-read whenever
- * `routeKey` changes; a new route also undoes an exit, not an enter. Installs the Escape handler.
+ * Host only: call once from the app shell's setup. Each `routeKey` change resets the state and
+ * re-reads `isRouteChromeless`; it runs before the new page renders, so that page's own
+ * `enterChromeless()` still applies. Installs the Escape handler.
  */
 export const useOnmsChromelessHost = (isRouteChromeless: () => boolean, routeKey: () => unknown) => {
   watch(routeKey, () => {
     routeChromeless.value = isRouteChromeless()
+    requested.value = false
     dismissed.value = false
   }, { immediate: true })
 

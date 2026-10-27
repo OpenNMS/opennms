@@ -395,10 +395,12 @@ use.
 
 `useOnmsChromeless()` lets a page or plugin hide the host's menu bar, side
 menu and footer, e.g. for a wall display. `enterChromeless()` turns it on until
-`exitChromeless()` or Escape; `isChromeless` is a readonly ref for a toggle's
-state. Escape is ignored while a dialog or drawer is open, since those close
-on it. The state is module-level, like `useOnmsToast`, so host and plugins
-share it through `window.OnmsUI`.
+the next route change, `exitChromeless()` or Escape, so a page that wants it
+calls `enterChromeless()` when it mounts (in `onActivated` if it is kept
+alive). `isChromeless` is a readonly ref for a toggle's state. Escape is
+ignored while a dialog, drawer, popover or popup menu is open, and while focus
+is in a text field. The state is module-level, like `useOnmsToast`, so host
+and plugins share it through `window.OnmsUI`.
 
 `useOnmsChromelessHost()` is for the host only: `App.vue` calls it once to
 sync routes marked `meta.chromeless` and install the Escape handler.
