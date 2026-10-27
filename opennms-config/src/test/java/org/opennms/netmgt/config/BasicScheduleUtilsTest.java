@@ -32,8 +32,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.IntervalTestCase;
 import org.opennms.core.utils.OwnedInterval;
@@ -46,6 +49,30 @@ import org.opennms.netmgt.config.groups.Time;
 import org.opennms.netmgt.config.poller.outages.Outage;
 
 public class BasicScheduleUtilsTest extends IntervalTestCase {
+
+    private Locale m_locale;
+
+    @Before
+    public void pinLocale() {
+        m_locale = Locale.getDefault();
+        Locale.setDefault(Locale.ENGLISH);
+    }
+
+    @After
+    public void restoreLocale() {
+        Locale.setDefault(m_locale);
+    }
+
+    @Test
+    public void testIsValidTime() {
+        assertTrue(BasicScheduleUtils.isValidTime("21-Oct-2026 08:00:00", BasicScheduleUtils.FORMAT1));
+        assertTrue(BasicScheduleUtils.isValidTime("08:00:00", BasicScheduleUtils.FORMAT2));
+        assertFalse(BasicScheduleUtils.isValidTime("8:00:00", BasicScheduleUtils.FORMAT2));
+        assertFalse(BasicScheduleUtils.isValidTime("25:00:00", BasicScheduleUtils.FORMAT2));
+        assertFalse(BasicScheduleUtils.isValidTime("08:00:00", BasicScheduleUtils.FORMAT1));
+        assertFalse(BasicScheduleUtils.isValidTime("32-Oct-2026 08:00:00", BasicScheduleUtils.FORMAT1));
+        assertFalse(BasicScheduleUtils.isValidTime(null, BasicScheduleUtils.FORMAT2));
+    }
 
     @Test
     public void testSimpleScheduleExcluded() throws Exception {

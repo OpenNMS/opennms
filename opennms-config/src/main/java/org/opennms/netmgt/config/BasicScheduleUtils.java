@@ -22,6 +22,7 @@
 package org.opennms.netmgt.config;
 
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -215,6 +216,25 @@ public abstract class BasicScheduleUtils {
         }
     }
     
+    /**
+     * Checks a schedule time the way {@link #setOutCalTime(Calendar, String)} reads it: the text must be exactly as
+     * long as the format, and a non-lenient {@link SimpleDateFormat} in the default locale (the one notifd parses
+     * with) must parse all of it.
+     *
+     * @param timeStr the time text, e.g. {@code 08:00:00}
+     * @param format {@link #FORMAT1} or {@link #FORMAT2}
+     * @return true if notifd can evaluate the time
+     */
+    public static boolean isValidTime(final String timeStr, final String format) {
+        if (timeStr == null || format == null || timeStr.length() != format.length()) {
+            return false;
+        }
+        final SimpleDateFormat parser = new SimpleDateFormat(format);
+        parser.setLenient(false);
+        final ParsePosition position = new ParsePosition(0);
+        return parser.parse(timeStr, position) != null && position.getIndex() == timeStr.length();
+    }
+
     /**
      * <p>getDayOfWeekIndex</p>
      *
