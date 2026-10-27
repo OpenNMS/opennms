@@ -30,7 +30,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
@@ -38,15 +40,21 @@ import org.opennms.web.rest.v2.model.GroupDto;
 import org.opennms.web.rest.v2.model.GroupRenameRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
- * Versioned group management API backed by groups.xml. Admin-only
+ * Versioned group management API backed by the database. Admin-only
  * (enforced by Spring Security and in-code).
  */
 @Path("groups")
 @Tag(name = "Groups", description = "Group Management API")
 public interface GroupsRestApi {
+
+    String IF_MATCH_DESCRIPTION = "Optional. The `ETag` the group had when it was read; the write is refused with 412 if the group has changed since. A weak tag (`W/\"7\"`) or a comma-separated list of tags is accepted; `*` matches any existing group. If the group does not exist, the answer is 412 rather than 404.";
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -57,27 +65,39 @@ public interface GroupsRestApi {
     @Path("{name}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get one group", operationId = "getGroup")
-    Response getGroup(@Context SecurityContext securityContext, @PathParam("name") String name);
+    Response getGroup(@Context SecurityContext securityContext, @Context Request request, @PathParam("name") String name);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Create a group", operationId = "createGroup")
     Response createGroup(@Context SecurityContext securityContext, GroupDto group);
 
     @PUT
     @Path("{name}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Update a group (fields not carried by the API are preserved; the user list order drives notification escalation)", operationId = "updateGroup")
-    Response updateGroup(@Context SecurityContext securityContext, @PathParam("name") String name, GroupDto group);
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response updateGroup(@Context SecurityContext securityContext, @Context HttpHeaders headers, @PathParam("name") String name, GroupDto group);
 
     @POST
     @Path("{name}/rename")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Rename a group (on-call roles referencing it follow the rename)", operationId = "renameGroup")
-    Response renameGroup(@Context SecurityContext securityContext, @PathParam("name") String name, GroupRenameRequest request);
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response renameGroup(@Context SecurityContext securityContext, @Context HttpHeaders headers, @PathParam("name") String name, GroupRenameRequest body);
 
     @DELETE
     @Path("{name}")
     @Operation(summary = "Delete a group (rejected while on-call roles reference it; the Admin group is protected)", operationId = "deleteGroup")
-    Response deleteGroup(@Context SecurityContext securityContext, @PathParam("name") String name);
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response deleteGroup(@Context SecurityContext securityContext, @Context HttpHeaders headers, @PathParam("name") String name);
 }

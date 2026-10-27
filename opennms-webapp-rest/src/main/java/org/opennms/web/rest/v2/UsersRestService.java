@@ -21,25 +21,33 @@
  */
 package org.opennms.web.rest.v2;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.UserManager;
-import org.opennms.netmgt.config.api.UserConfig.ContactType;
-import org.opennms.netmgt.config.users.Contact;
-import org.opennms.netmgt.config.users.User;
+import org.opennms.netmgt.config.UserMgmtJaxbMapper;
+import org.opennms.netmgt.dao.api.OnCallRoleDao;
+import org.opennms.netmgt.dao.api.SecurityRoleDao;
+import org.opennms.netmgt.dao.api.UserAccountDao;
+import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
+import org.opennms.netmgt.model.usermgmt.ContactType;
+import org.opennms.netmgt.model.usermgmt.OnCallRole;
+import org.opennms.netmgt.model.usermgmt.SecurityRole;
+import org.opennms.netmgt.model.usermgmt.UserAccount;
+import org.opennms.netmgt.model.usermgmt.UserContact;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.v2.api.UsersRestApi;
 import org.opennms.web.rest.v2.model.UserDto;
@@ -50,279 +58,265 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Versioned user management on top of {@link UserManager}: users.xml remains
- * the system of record and hand-editing keeps working. Unlike the legacy JSPs
- * (which only hid the buttons), the admin/rtc delete and rename protections
- * are enforced here, server-side. The password hash is never serialized.
+ * Versioned user management on the user DAOs. Each request is one transaction: a write takes the
+ * user-management write lock first, so the If-Match check is exact, and the in-memory managers reload
+ * once it commits. Unlike the legacy JSPs (which only hid the buttons), the admin/rtc delete and rename
+ * protections are enforced here, server-side. The password hash is never serialized.
  *
- * Mutations validate the full request up front and then apply it to a
- * detached copy of the stored user, so a rejected request can never leave
- * partial changes in the manager's shared in-memory state.
+ * Errors are thrown, never returned, so that a rejected request rolls back whatever it had done.
  */
 @Component("usersRestServiceV2")
 public class UsersRestService implements UsersRestApi {
-
-    // Check-then-act sequences synchronize on GroupFactory.class: user
-    // mutations cascade into GroupManager (deleteUser/renameUser walk every
-    // group), so the v2 users and groups services must share one monitor.
 
     private static final Logger LOG = LoggerFactory.getLogger(UsersRestService.class);
 
     /** System accounts that must not be deleted or renamed. */
     private static final Set<String> PROTECTED_USERS = Set.of("admin", "rtc");
 
-    /**
-     * Rejects markup (legacy servlet rule) plus characters that break how the
-     * id is used downstream: ':' (HTTP basic auth), whitespace (group
-     * references), and '/', '\', '%', '?', '#' (the id is a URL path segment
-     * in every per-user endpoint).
-     */
-    private static final Pattern INVALID_USER_ID = Pattern.compile("[&<>\"`':/\\\\%?#\\s]");
-
-    /** Same markup characters the groups API rejects in comments. */
-    private static final Pattern INVALID_COMMENTS = Pattern.compile("[&<>\"`']");
-
-    /**
-     * Day tokens + military begin-end times, e.g. MoWeFr800-1700. Overnight
-     * schedules (begin after end, e.g. MoTu2000-800) are legal — the legacy
-     * UI wrote them and hand-edited files contain them.
-     */
-    private static final Pattern DUTY_SCHEDULE = Pattern.compile("^((?:Mo|Tu|We|Th|Fr|Sa|Su){1,7})(\\d{1,4})-(\\d{1,4})$");
+    @Autowired
+    private UserMgmtRestSupport m_support;
 
     @Autowired
-    private UserManager m_userManager;
+    private UserAccountDao m_userAccountDao;
+
+    @Autowired
+    private SecurityRoleDao m_securityRoleDao;
 
     /** For the on-call-role supervisor referential check on delete. */
     @Autowired
-    private org.opennms.netmgt.config.GroupManager m_groupManager;
+    private OnCallRoleDao m_onCallRoleDao;
 
     @Override
+    @Transactional(readOnly = true)
     public Response listUsers(final SecurityContext securityContext) {
-        assertAdmin(securityContext);
+        m_support.assertAdmin(securityContext, "User management");
+        m_support.requireDatabaseStore();
         try {
-            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
-                final List<UserDto> users = new ArrayList<>();
-                for (final User user : m_userManager.getUsers().values()) {
-                    users.add(toDto(user));
-                }
-                users.sort(Comparator.comparing(UserDto::getUserId, String.CASE_INSENSITIVE_ORDER));
-                return Response.ok(users).build();
+            final List<UserDto> users = new ArrayList<>();
+            for (final UserAccount user : m_userAccountDao.findAll()) {
+                users.add(toDto(user, user.getVersion()));
             }
+            users.sort(Comparator.comparing(UserDto::getUserId, String.CASE_INSENSITIVE_ORDER));
+            return Response.ok(users).build();
         } catch (final Exception e) {
-            return serverError("Can't read users: %s", e);
+            throw m_support.translate("read users", e);
         }
     }
 
     @Override
-    public Response getUser(final SecurityContext securityContext, final String userId) {
-        assertAdmin(securityContext);
+    @Transactional(readOnly = true)
+    public Response getUser(final SecurityContext securityContext, final Request request, final String userId) {
+        m_support.assertAdmin(securityContext, "User management");
+        m_support.requireDatabaseStore();
         try {
-            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
-                final User user = m_userManager.getUser(userId);
-                if (user == null) {
-                    return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
-                }
-                return Response.ok(toDto(user)).build();
-            }
+            final UserAccount user = load(userId);
+            // the version of the row read for the body, not a second read: a newer version with an older body would let
+            // an old copy pass If-Match (lazily loaded children can only be newer, which at worst gives a false 412)
+            final int version = user.getVersion();
+            return Response.ok(toDto(user, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
-            return serverError("Can't read user: %s", e);
+            throw m_support.translate("read user", e);
         }
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Response listAvailableRoles(final SecurityContext securityContext) {
-        assertAdmin(securityContext);
-        final List<String> roles = new ArrayList<>(Authentication.getAvailableRoles());
-        roles.sort(String.CASE_INSENSITIVE_ORDER);
-        return Response.ok(roles).build();
+        m_support.assertAdmin(securityContext, "User management");
+        m_support.requireDatabaseStore();
+        try {
+            final List<String> roles = m_securityRoleDao.findAll().stream()
+                    .map(SecurityRole::getName)
+                    .sorted(String.CASE_INSENSITIVE_ORDER)
+                    .collect(Collectors.toList());
+            return Response.ok(roles).build();
+        } catch (final Exception e) {
+            throw m_support.translate("read roles", e);
+        }
     }
 
     @Override
+    @Transactional
     public Response createUser(final SecurityContext securityContext, final UserWriteRequest request) {
-        assertAdmin(securityContext);
+        m_support.assertAdmin(securityContext, "User management");
+        m_support.requireDatabaseStore();
         if (request == null || StringUtils.isBlank(request.getUserId())) {
-            return Response.status(Status.BAD_REQUEST).entity("A userId is required.").build();
+            throw m_support.badRequest("A userId is required.");
         }
         final String userId = request.getUserId().trim();
-        final String userIdProblem = validateUserId(userId);
+        final String userIdProblem = UserMgmtValidation.validateName(userId, "userId");
         if (userIdProblem != null) {
-            return Response.status(Status.BAD_REQUEST).entity(userIdProblem).build();
+            throw m_support.badRequest(userIdProblem);
         }
         if (StringUtils.isBlank(request.getPassword())) {
-            return Response.status(Status.BAD_REQUEST).entity("A password is required.").build();
+            throw m_support.badRequest("A password is required.");
         }
         try {
-            validateDtoFields(request, null);
-        } catch (final IllegalArgumentException e) {
-            return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-        }
-        try {
-            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
-                if (m_userManager.hasUser(userId)) {
-                    return Response.status(Status.BAD_REQUEST).entity("User " + userId + " already exists.").build();
-                }
-                final User user = new User();
-                user.setUserId(userId);
-                user.setPassword(m_userManager.encryptedPassword(request.getPassword(), true), Boolean.TRUE);
-                applyDto(user, request);
-                try {
-                    m_userManager.saveUser(userId, user);
-                } catch (final Exception e) {
-                    rollbackPhantomUser(userId);
-                    throw e;
-                }
+            m_support.lockForWrite();
+            if (m_userAccountDao.findByUsername(userId) != null) {
+                throw m_support.conflict("User " + userId + " already exists.");
             }
-            LOG.info("User {} created by {}", userId, principal(securityContext));
-            return Response.status(Status.CREATED).build();
+            final UserAccount user = new UserAccount(userId);
+            UserMgmtValidation.checkLength(owner(userId), "user name", userId, UserMgmtJaxbMapper.USERNAME_LENGTH);
+            final List<SecurityRole> roles = validateDtoFields(request, null);
+            user.setPasswordHash(UserManager.hashPassword(request.getPassword()));
+            user.setPasswordSalted(true);
+            applyDto(user, request, roles);
+            m_userAccountDao.saveOrUpdate(user);
+            m_userAccountDao.flush();
+            final int version = m_support.version(VersionedTable.users, user.getId());
+            LOG.info("User {} created by {}", userId, UserMgmtValidation.principal(securityContext));
+            return Response.status(Status.CREATED).entity(toDto(user, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
-            return serverError("Can't create user: %s", e);
+            throw m_support.translate("create user", e);
         }
     }
 
     @Override
-    public Response updateUser(final SecurityContext securityContext, final String userId, final UserDto dto) {
-        assertAdmin(securityContext);
+    @Transactional
+    public Response updateUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserDto dto) {
+        m_support.assertAdmin(securityContext, "User management");
+        m_support.requireDatabaseStore();
         if (dto == null) {
-            return Response.status(Status.BAD_REQUEST).entity("A user body is required.").build();
+            throw m_support.badRequest("A user body is required.");
         }
         if (dto.getUserId() != null && !userId.equals(dto.getUserId())) {
-            return Response.status(Status.BAD_REQUEST)
-                    .entity("The userId in the body does not match the request path; use the rename endpoint to change ids.").build();
+            throw m_support.badRequest("The userId in the body does not match the request path; use the rename endpoint to change ids.");
         }
         // stripping ROLE_ADMIN from the admin account would lock every
-        // administrator out of the web UI until users.xml is hand-edited
+        // administrator out of the web UI until the roles are repaired by hand
         if ("admin".equals(userId) && dto.getRoles() != null && !dto.getRoles().contains(Authentication.ROLE_ADMIN)) {
-            return Response.status(Status.BAD_REQUEST)
-                    .entity("The admin user must keep the " + Authentication.ROLE_ADMIN + " role.").build();
+            throw m_support.badRequest("The admin user must keep the " + Authentication.ROLE_ADMIN + " role.");
         }
         try {
-            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
-                final User existing = m_userManager.getUser(userId);
-                if (existing == null) {
-                    return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
-                }
-                try {
-                    validateDtoFields(dto, existing);
-                } catch (final IllegalArgumentException e) {
-                    return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-                }
-                final User updated = copyOf(existing);
-                applyDto(updated, dto);
-                try {
-                    m_userManager.saveUser(userId, updated);
-                } catch (final Exception e) {
-                    restorePreviousUser(userId, existing);
-                    throw e;
-                }
-            }
-            return Response.noContent().build();
+            m_support.lockForWrite();
+            final UserAccount user = load(userId, headers);
+            m_support.checkIfMatch(headers, VersionedTable.users, user.getId(), "User " + userId);
+            final List<SecurityRole> roles = validateDtoFields(dto, user);
+            applyDto(user, dto, roles);
+            m_userAccountDao.saveOrUpdate(user);
+            m_userAccountDao.flush();
+            final int version = m_support.version(VersionedTable.users, user.getId());
+            return Response.ok(toDto(user, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
-            return serverError("Can't update user: %s", e);
+            throw m_support.translate("update user", e);
         }
     }
 
     @Override
-    public Response setPassword(final SecurityContext securityContext, final String userId, final UserPasswordRequest request) {
-        assertAdmin(securityContext);
-        if (request == null || StringUtils.isBlank(request.getPassword())) {
-            return Response.status(Status.BAD_REQUEST).entity("A password is required.").build();
+    @Transactional
+    public Response setPassword(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserPasswordRequest body) {
+        m_support.assertAdmin(securityContext, "User management");
+        m_support.requireDatabaseStore();
+        if (body == null || StringUtils.isBlank(body.getPassword())) {
+            throw m_support.badRequest("A password is required.");
         }
         try {
-            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
-                final User existing = m_userManager.getUser(userId);
-                if (existing == null) {
-                    return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
-                }
-                final User updated = copyOf(existing);
-                updated.setPassword(m_userManager.encryptedPassword(request.getPassword(), true), Boolean.TRUE);
-                try {
-                    m_userManager.saveUser(userId, updated);
-                } catch (final Exception e) {
-                    // without this, the new hash stays live in memory after the
-                    // 500 and the user can log in with the "failed" password
-                    restorePreviousUser(userId, existing);
-                    throw e;
-                }
-            }
-            LOG.info("Password changed for user {} by {}", userId, principal(securityContext));
-            return Response.noContent().build();
+            m_support.lockForWrite();
+            final UserAccount user = load(userId, headers);
+            m_support.checkIfMatch(headers, VersionedTable.users, user.getId(), "User " + userId);
+            user.setPasswordHash(UserManager.hashPassword(body.getPassword()));
+            user.setPasswordSalted(true);
+            m_userAccountDao.saveOrUpdate(user);
+            m_userAccountDao.flush();
+            final int version = m_support.version(VersionedTable.users, user.getId());
+            LOG.info("Password changed for user {} by {}", userId, UserMgmtValidation.principal(securityContext));
+            return Response.noContent().tag(m_support.etag(version)).build();
         } catch (final Exception e) {
-            return serverError("Can't change password: %s", e);
+            throw m_support.translate("change password", e);
         }
     }
 
     @Override
-    public Response renameUser(final SecurityContext securityContext, final String userId, final UserRenameRequest request) {
-        assertAdmin(securityContext);
-        if (request == null || StringUtils.isBlank(request.getNewUserId())) {
-            return Response.status(Status.BAD_REQUEST).entity("A newUserId is required.").build();
+    @Transactional
+    public Response renameUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserRenameRequest body) {
+        m_support.assertAdmin(securityContext, "User management");
+        m_support.requireDatabaseStore();
+        if (body == null || StringUtils.isBlank(body.getNewUserId())) {
+            throw m_support.badRequest("A newUserId is required.");
         }
         if (PROTECTED_USERS.contains(userId)) {
-            return Response.status(Status.BAD_REQUEST).entity("The system user " + userId + " cannot be renamed.").build();
+            throw m_support.badRequest("The system user " + userId + " cannot be renamed.");
         }
-        final String newUserId = request.getNewUserId().trim();
-        final String userIdProblem = validateUserId(newUserId);
+        final String newUserId = body.getNewUserId().trim();
+        final String userIdProblem = UserMgmtValidation.validateName(newUserId, "userId");
         if (userIdProblem != null) {
-            return Response.status(Status.BAD_REQUEST).entity(userIdProblem).build();
+            throw m_support.badRequest(userIdProblem);
         }
         try {
-            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
-                if (!m_userManager.hasUser(userId)) {
-                    return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
-                }
-                if (m_userManager.hasUser(newUserId)) {
-                    return Response.status(Status.BAD_REQUEST).entity("User " + newUserId + " already exists.").build();
-                }
-                m_userManager.renameUser(userId, newUserId);
+            m_support.lockForWrite();
+            final UserAccount user = load(userId, headers);
+            m_support.checkIfMatch(headers, VersionedTable.users, user.getId(), "User " + userId);
+            if (m_userAccountDao.findByUsername(newUserId) != null) {
+                throw m_support.conflict("User " + newUserId + " already exists.");
             }
-            LOG.info("User {} renamed to {} by {}", userId, newUserId, principal(securityContext));
-            return Response.noContent().build();
+            UserMgmtValidation.checkLength(owner(newUserId), "user name", newUserId, UserMgmtJaxbMapper.USERNAME_LENGTH);
+            // memberships, supervisors and schedules reference the id and follow the new name
+            user.setUsername(newUserId);
+            m_userAccountDao.saveOrUpdate(user);
+            m_userAccountDao.flush();
+            final int version = m_support.version(VersionedTable.users, user.getId());
+            LOG.info("User {} renamed to {} by {}", userId, newUserId, UserMgmtValidation.principal(securityContext));
+            return Response.ok(toDto(user, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
-            return serverError("Can't rename user: %s", e);
+            throw m_support.translate("rename user", e);
         }
     }
 
     @Override
-    public Response deleteUser(final SecurityContext securityContext, final String userId) {
-        assertAdmin(securityContext);
+    @Transactional
+    public Response deleteUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId) {
+        m_support.assertAdmin(securityContext, "User management");
+        m_support.requireDatabaseStore();
         if (PROTECTED_USERS.contains(userId)) {
-            return Response.status(Status.BAD_REQUEST).entity("The system user " + userId + " cannot be deleted.").build();
+            throw m_support.badRequest("The system user " + userId + " cannot be deleted.");
         }
         try {
-            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
-                if (!m_userManager.hasUser(userId)) {
-                    return Response.status(Status.NOT_FOUND).entity("User " + userId + " was not found.").build();
-                }
-                // GroupManager.deleteUser strips memberships and schedules but
-                // leaves role supervisors dangling, silently killing the
-                // supervisor fallback for those rotas
-                final List<String> supervisedRoles = new ArrayList<>();
-                for (final org.opennms.netmgt.config.groups.Role role : m_groupManager.getRoles()) {
-                    if (userId.equals(role.getSupervisor())) {
-                        supervisedRoles.add(role.getName());
-                    }
-                }
-                if (!supervisedRoles.isEmpty()) {
-                    return Response.status(Status.BAD_REQUEST).entity("User " + userId
-                            + " is the supervisor of on-call role(s) " + String.join(", ", supervisedRoles)
-                            + "; assign a different supervisor first.").build();
-                }
-                m_userManager.deleteUser(userId);
+            m_support.lockForWrite();
+            final UserAccount user = load(userId, headers);
+            m_support.checkIfMatch(headers, VersionedTable.users, user.getId(), "User " + userId);
+            // the DAO strips memberships and schedules but refuses a supervisor; checking first lets the
+            // message name the roles
+            final List<String> supervisedRoles = m_onCallRoleDao.findBySupervisor(userId).stream()
+                    .map(OnCallRole::getName)
+                    .collect(Collectors.toList());
+            if (!supervisedRoles.isEmpty()) {
+                throw m_support.conflict("User " + userId
+                        + " is the supervisor of on-call role(s) " + String.join(", ", supervisedRoles)
+                        + "; assign a different supervisor first.");
             }
-            LOG.info("User {} deleted by {}", userId, principal(securityContext));
+            m_userAccountDao.delete(user);
+            m_userAccountDao.flush();
+            LOG.info("User {} deleted by {}", userId, UserMgmtValidation.principal(securityContext));
             return Response.noContent().build();
         } catch (final Exception e) {
-            return serverError("Can't delete user: %s", e);
+            throw m_support.translate("delete user", e);
         }
     }
 
-    private UserDto toDto(final User user) {
+    /** @throws javax.ws.rs.WebApplicationException 404 if there is no such object */
+    private UserAccount load(final String userId) {
+        return load(userId, null);
+    }
+
+    /** For a write: a missing object is a 412 instead of a 404 when the request carries an If-Match. */
+    private UserAccount load(final String userId, final HttpHeaders headers) {
+        final UserAccount user = m_userAccountDao.findByUsername(userId);
+        if (user == null) {
+            throw m_support.notFoundOrPreconditionFailed(headers, "User " + userId, "User " + userId + " was not found.");
+        }
+        return user;
+    }
+
+    private static UserDto toDto(final UserAccount user, final int version) {
         final UserDto dto = new UserDto();
-        dto.setUserId(user.getUserId());
-        dto.setFullName(user.getFullName().orElse(null));
-        dto.setUserComments(user.getUserComments().orElse(null));
+        dto.setUserId(user.getUsername());
+        dto.setVersion(version);
+        dto.setFullName(user.getFullName());
+        dto.setUserComments(user.getComments());
         dto.setEmail(contactInfo(user, ContactType.email));
         dto.setPagerEmail(contactInfo(user, ContactType.pagerEmail));
         dto.setWorkPhone(contactInfo(user, ContactType.workPhone));
@@ -332,270 +326,143 @@ public class UsersRestService implements UsersRestApi {
         dto.setNumericPagerPin(contactInfo(user, ContactType.numericPage));
         dto.setTextPagerService(contactServiceProvider(user, ContactType.textPage));
         dto.setTextPagerPin(contactInfo(user, ContactType.textPage));
-        dto.setTuiPin(user.getTuiPin().orElse(null));
-        dto.setTimeZoneId(user.getTimeZoneId().map(Objects::toString).orElse(null));
+        dto.setTuiPin(user.getTuiPin());
+        dto.setTimeZoneId(user.getTimeZoneId());
         dto.setDutySchedules(new ArrayList<>(user.getDutySchedules()));
-        dto.setRoles(new ArrayList<>(user.getRoles()));
-        dto.setReadOnly(user.getRoles().contains(Authentication.ROLE_READONLY));
+        final List<String> roles = user.getSecurityRoles().stream()
+                .map(SecurityRole::getName)
+                .sorted()
+                .collect(Collectors.toList());
+        dto.setRoles(roles);
+        dto.setReadOnly(roles.contains(Authentication.ROLE_READONLY));
         return dto;
-    }
-
-    /** Detached copy so mutations never touch the manager's live object. */
-    private static User copyOf(final User user) {
-        // Round-trip through JAXB (field access — User is @XmlAccessorType(NONE)
-        // with field annotations, Contact is FIELD) so the deep copy bypasses the
-        // HTML-sanitizing setters. setFullName / Contact.setInfo run a
-        // non-idempotent Encode.forHtml, so a setter-based copy would escape an
-        // already-stored value one layer deeper on every write — a password
-        // change or any unrelated edit would mangle full name and contacts.
-        return JaxbUtils.unmarshal(User.class, JaxbUtils.marshal(user));
     }
 
     /**
      * Validates every field of the request BEFORE anything is applied, so a
      * rejected request cannot leave partial state anywhere.
+     *
+     * @return the security roles the request names, or null if it leaves the roles alone
      */
-    private static void validateDtoFields(final UserDto dto, final User existing) {
-        if (dto.getUserComments() != null && INVALID_COMMENTS.matcher(dto.getUserComments()).find()
-                && (existing == null || !dto.getUserComments().equals(existing.getUserComments().orElse(null)))) {
-            throw new IllegalArgumentException("The comments must not contain any HTML markup.");
-        }
+    private List<SecurityRole> validateDtoFields(final UserDto dto, final UserAccount existing) {
+        final String owner = owner(existing == null ? dto.getUserId() : existing.getUsername());
+        UserMgmtValidation.checkComments(dto.getUserComments(), existing == null ? null : existing.getComments(), existing != null);
         final String timeZoneId = StringUtils.trimToNull(dto.getTimeZoneId());
         if (timeZoneId != null) {
             try {
-                java.time.ZoneId.of(timeZoneId);
-            } catch (final RuntimeException e) {
-                throw new IllegalArgumentException("Invalid timeZoneId: " + timeZoneId);
+                UserMgmtValidation.checkLength(owner, "time zone", ZoneId.of(timeZoneId).getId(), UserMgmtJaxbMapper.TIME_ZONE_ID_LENGTH);
+            } catch (final java.time.DateTimeException e) {
+                throw new UserMgmtValidationException("Invalid timeZoneId: " + timeZoneId);
             }
         }
-        // users.xsd constrains tui-pin to [0-9]+; an invalid value would pass
-        // into the in-memory map and then fail the schema-validating marshal,
-        // leaving the map poisoned (isUpdateNeeded stays false) until restart
+        // the TUI PIN is dialled on a phone keypad
         final String tuiPin = StringUtils.trimToNull(dto.getTuiPin());
         if (tuiPin != null && !tuiPin.matches("[0-9]+")) {
-            throw new IllegalArgumentException("The TUI PIN must contain only digits.");
+            throw new UserMgmtValidationException("The TUI PIN must contain only digits.");
         }
+        UserMgmtValidation.checkLength(owner, "TUI PIN", tuiPin, UserMgmtJaxbMapper.TUI_PIN_LENGTH);
+        UserMgmtValidation.checkLength(owner, "full name", StringUtils.trimToNull(dto.getFullName()), UserMgmtJaxbMapper.FULL_NAME_LENGTH);
+        for (final String[] field : new String[][] {
+                { "email", dto.getEmail() }, { "pager email", dto.getPagerEmail() }, { "work phone", dto.getWorkPhone() },
+                { "mobile phone", dto.getMobilePhone() }, { "home phone", dto.getHomePhone() },
+                { "numeric pager service", dto.getNumericPagerService() }, { "numeric pager PIN", dto.getNumericPagerPin() },
+                { "text pager service", dto.getTextPagerService() }, { "text pager PIN", dto.getTextPagerPin() } }) {
+            UserMgmtValidation.checkLength(owner, field[0], StringUtils.trimToNull(field[1]), UserMgmtJaxbMapper.CONTACT_LENGTH);
+        }
+        List<SecurityRole> roles = null;
         if (dto.getRoles() != null) {
-            for (final String role : dto.getRoles()) {
-                if (!Authentication.isValidRole(role)) {
-                    throw new IllegalArgumentException("Unknown security role: " + role);
+            roles = new ArrayList<>();
+            for (final String name : dto.getRoles()) {
+                if (StringUtils.isBlank(name)) {
+                    throw new UserMgmtValidationException("Security role names must not be blank.");
+                }
+                final SecurityRole role = m_securityRoleDao.findByName(name);
+                if (role == null) {
+                    throw new UserMgmtValidationException("Unknown security role: " + name);
+                }
+                if (!roles.contains(role)) {
+                    roles.add(role);
                 }
             }
         }
         if (dto.getDutySchedules() != null) {
-            // strings already stored on the record are preserved as-is so
-            // hand-edited files never make a user uneditable; only entries
-            // new to this request must pass validation
-            final Set<String> preExisting = existing == null
-                    ? Set.of() : new java.util.LinkedHashSet<>(existing.getDutySchedules());
-            for (final String schedule : dto.getDutySchedules()) {
-                if (!preExisting.contains(schedule)) {
-                    validateDutySchedule(schedule);
-                }
-            }
+            // hand-edited data never makes a user uneditable: see UserMgmtValidation.validateDutySchedules
+            UserMgmtValidation.validateDutySchedules(owner, dto.getDutySchedules(), existing == null ? null : existing.getDutySchedules());
         }
+        return roles;
     }
 
     /**
-     * Applies the pre-validated DTO. Only the exposed contact types (email,
-     * pagerEmail) are touched; every other contact — XMPP, microblog, phones,
-     * paging services — and the password survive untouched, so a v2 update
-     * can never corrupt hand-maintained users.xml entries. List fields left
-     * out of the request body arrive as null and are preserved.
+     * Applies the pre-validated DTO. Only the exposed contact types are
+     * touched; every other contact — XMPP, microblog, SNMP trap — and the
+     * password survive untouched, so a v2 update can never corrupt
+     * hand-maintained entries. List fields left out of the request body
+     * arrive as null and are preserved.
      */
-    private static void applyDto(final User user, final UserDto dto) {
+    private static void applyDto(final UserAccount user, final UserDto dto, final List<SecurityRole> roles) {
         // omitted (null) fields are preserved, matching the groups and
         // on-call services; an empty string clears a field
         if (dto.getFullName() != null) {
-            // setFullName runs a non-idempotent HTML sanitizer; only write when the
-            // value actually changed so an unrelated edit can't re-escape the
-            // already-stored value one layer deeper
-            final String incoming = StringUtils.trimToNull(dto.getFullName());
-            if (!Objects.equals(incoming, user.getFullName().orElse(null))) {
-                user.setFullName(incoming);
-            }
+            user.setFullName(StringUtils.trimToNull(dto.getFullName()));
         }
-        if (dto.getUserComments() != null) {
-            user.setUserComments(StringUtils.trimToNull(dto.getUserComments()));
+        if (dto.getUserComments() != null && !UserMgmtValidation.commentsUnchanged(dto.getUserComments(), user.getComments())) {
+            user.setComments(StringUtils.trimToNull(dto.getUserComments()));
         }
         if (dto.getTuiPin() != null) {
             user.setTuiPin(StringUtils.trimToNull(dto.getTuiPin()));
         }
         if (dto.getTimeZoneId() != null) {
+            // stored as a manager round trip would write it back, so a later manager save doesn't rewrite it
             final String timeZoneId = StringUtils.trimToNull(dto.getTimeZoneId());
-            if (timeZoneId == null) {
-                user.setTimeZoneId((java.time.ZoneId) null);
-            } else {
-                user.setTimeZoneId(timeZoneId);
-            }
+            user.setTimeZoneId(timeZoneId == null ? null : ZoneId.of(timeZoneId).getId());
         }
-        applyContactInfoIfChanged(user, ContactType.email, dto.getEmail());
-        applyContactInfoIfChanged(user, ContactType.pagerEmail, dto.getPagerEmail());
-        applyContactInfoIfChanged(user, ContactType.workPhone, dto.getWorkPhone());
-        applyContactInfoIfChanged(user, ContactType.mobilePhone, dto.getMobilePhone());
-        applyContactInfoIfChanged(user, ContactType.homePhone, dto.getHomePhone());
-        // pager PIN is the contact info; pager service provider is a separate
-        // (also sanitizing) field on the same contact
-        applyContactInfoIfChanged(user, ContactType.numericPage, dto.getNumericPagerPin());
-        applyContactServiceProviderIfChanged(user, ContactType.numericPage, dto.getNumericPagerService());
-        applyContactInfoIfChanged(user, ContactType.textPage, dto.getTextPagerPin());
-        applyContactServiceProviderIfChanged(user, ContactType.textPage, dto.getTextPagerService());
-        if (dto.getDutySchedules() != null) {
-            user.setDutySchedules(new ArrayList<>(dto.getDutySchedules()));
-        }
-        if (dto.getRoles() != null) {
-            user.setRoles(new ArrayList<>(dto.getRoles()));
+        applyContact(user, ContactType.email, dto.getEmail(), null);
+        applyContact(user, ContactType.pagerEmail, dto.getPagerEmail(), null);
+        applyContact(user, ContactType.workPhone, dto.getWorkPhone(), null);
+        applyContact(user, ContactType.mobilePhone, dto.getMobilePhone(), null);
+        applyContact(user, ContactType.homePhone, dto.getHomePhone(), null);
+        // pager PIN is the contact info; pager service provider is a separate field on the same contact
+        applyContact(user, ContactType.numericPage, dto.getNumericPagerPin(), dto.getNumericPagerService());
+        applyContact(user, ContactType.textPage, dto.getTextPagerPin(), dto.getTextPagerService());
+        UserMgmtValidation.replaceIfChanged(user.getDutySchedules(), dto.getDutySchedules());
+        if (roles != null && !user.getSecurityRoles().equals(new LinkedHashSet<>(roles))) {
+            user.getSecurityRoles().clear();
+            user.getSecurityRoles().addAll(roles);
         }
     }
 
     /**
-     * A failed save leaves the new user in UserManager's in-memory map
-     * (_writeUser puts before _saveCurrent), which would 400 every retry as
-     * "already exists". Best effort: remove the phantom again.
+     * A null value means "preserve", an empty one "clear". A contact left with neither a value nor a
+     * service provider is removed.
      */
-    private void rollbackPhantomUser(final String userId) {
-        try {
-            if (m_userManager.hasUser(userId)) {
-                m_userManager.deleteUser(userId);
-            }
-        } catch (final Exception rollbackFailure) {
-            LOG.warn("Could not roll back partially created user {}", userId, rollbackFailure);
-        }
-    }
-
-    // saveUser mutates the in-memory map before marshalling, so a failed save
-    // leaves the new state live in memory while users.xml keeps the old one —
-    // and isUpdateNeeded() won't notice. Re-save the previous state to bring
-    // memory and file back in line.
-    private void restorePreviousUser(final String userId, final User previous) {
-        try {
-            m_userManager.saveUser(userId, previous);
-        } catch (final Exception rollbackFailure) {
-            LOG.warn("Could not restore the previous state of user {} after a failed save; "
-                    + "in-memory state may diverge from users.xml until restart", userId, rollbackFailure);
-        }
-    }
-
-    /** Returns a problem description, or null when the user id is acceptable. */
-    private static String validateUserId(final String userId) {
-        if (INVALID_USER_ID.matcher(userId).find()) {
-            return "The userId must not contain markup, whitespace, or the characters : / \\ % ? #";
-        }
-        if (".".equals(userId) || "..".equals(userId)) {
-            return "The userId must not be a dot segment.";
-        }
-        return null;
-    }
-
-    /**
-     * Duty schedules are stored as strings like MoWeFr800-1700 and parsed with
-     * unchecked exceptions all over notifd/group scheduling — an invalid string
-     * saved here would break duty evaluation at runtime.
-     */
-    private static void validateDutySchedule(final String schedule) {
-        final Matcher matcher = schedule == null ? null : DUTY_SCHEDULE.matcher(schedule);
-        if (matcher == null || !matcher.matches()) {
-            throw new IllegalArgumentException("Invalid duty schedule '" + schedule + "': expected day tokens followed by begin-end military times, e.g. MoWeFr800-1700");
-        }
-        final int begin = Integer.parseInt(matcher.group(2));
-        final int end = Integer.parseInt(matcher.group(3));
-        if (begin > 2359 || end > 2359 || begin % 100 > 59 || end % 100 > 59) {
-            throw new IllegalArgumentException("Invalid duty schedule '" + schedule + "': times must be military clock values between 0 and 2359");
-        }
-        // DutySchedule.isInSchedule compares within one calendar day, so an
-        // overnight range can never match and would silently disable the
-        // schedule; require two rows (e.g. MoTu2000-2359 + TuWe0-800) instead
-        if (begin > end) {
-            throw new IllegalArgumentException("Invalid duty schedule '" + schedule + "': the begin time must not be after the end time; split overnight coverage into two schedules");
-        }
-    }
-
-    private static String contactInfo(final User user, final ContactType type) {
-        return user.getContacts().stream()
-                .filter(c -> type.name().equals(c.getType()))
-                .findFirst()
-                .flatMap(Contact::getInfo)
-                .filter(info -> !info.isEmpty())
-                .orElse(null);
-    }
-
-    private static String contactServiceProvider(final User user, final ContactType type) {
-        return user.getContacts().stream()
-                .filter(c -> type.name().equals(c.getType()))
-                .findFirst()
-                .flatMap(Contact::getServiceProvider)
-                .filter(sp -> !sp.isEmpty())
-                .orElse(null);
-    }
-
-    // A null DTO value means "preserve"; and because Contact.setInfo /
-    // setServiceProvider run a non-idempotent HTML sanitizer, only write when the
-    // value actually changed so an unrelated edit can't re-escape a stored value.
-    private static void applyContactInfoIfChanged(final User user, final ContactType type, final String dtoValue) {
-        if (dtoValue == null) {
+    private static void applyContact(final UserAccount user, final ContactType type, final String info, final String serviceProvider) {
+        if (info == null && serviceProvider == null) {
             return;
         }
-        final String incoming = StringUtils.trimToNull(dtoValue);
-        if (!Objects.equals(incoming, contactInfo(user, type))) {
-            setContact(user, type, incoming);
+        final UserContact contact = user.getContact(type);
+        final String newInfo = info == null ? (contact == null ? null : contact.getInfo()) : StringUtils.trimToNull(info);
+        final String newProvider = serviceProvider == null ? (contact == null ? null : contact.getServiceProvider())
+                : StringUtils.trimToNull(serviceProvider);
+        if (newInfo == null && newProvider == null) {
+            user.removeContact(type);
+        } else if (contact == null || !Objects.equals(newInfo, contact.getInfo())
+                || !Objects.equals(newProvider, contact.getServiceProvider())) {
+            user.setContact(type, newInfo, newProvider);
         }
     }
 
-    private static void applyContactServiceProviderIfChanged(final User user, final ContactType type, final String dtoValue) {
-        if (dtoValue == null) {
-            return;
-        }
-        final String incoming = StringUtils.trimToNull(dtoValue);
-        if (!Objects.equals(incoming, contactServiceProvider(user, type))) {
-            setContactServiceProvider(user, type, incoming);
-        }
+    private static String contactInfo(final UserAccount user, final ContactType type) {
+        final UserContact contact = user.getContact(type);
+        return contact == null || StringUtils.isEmpty(contact.getInfo()) ? null : contact.getInfo();
     }
 
-    private static void setContact(final User user, final ContactType type, final String value) {
-        final Optional<Contact> existing = user.getContacts().stream()
-                .filter(c -> type.name().equals(c.getType()))
-                .findFirst();
-        final String trimmed = StringUtils.trimToNull(value);
-        if (existing.isPresent()) {
-            existing.get().setInfo(trimmed == null ? "" : trimmed);
-        } else if (trimmed != null) {
-            final Contact contact = new Contact(type.name());
-            contact.setInfo(trimmed);
-            user.getContacts().add(contact);
-        }
+    private static String contactServiceProvider(final UserAccount user, final ContactType type) {
+        final UserContact contact = user.getContact(type);
+        return contact == null || StringUtils.isEmpty(contact.getServiceProvider()) ? null : contact.getServiceProvider();
     }
 
-    private static void setContactServiceProvider(final User user, final ContactType type, final String value) {
-        final Optional<Contact> existing = user.getContacts().stream()
-                .filter(c -> type.name().equals(c.getType()))
-                .findFirst();
-        final String trimmed = StringUtils.trimToNull(value);
-        if (existing.isPresent()) {
-            existing.get().setServiceProvider(trimmed == null ? "" : trimmed);
-        } else if (trimmed != null) {
-            final Contact contact = new Contact(type.name());
-            contact.setServiceProvider(trimmed);
-            user.getContacts().add(contact);
-        }
-    }
-
-    private static void assertAdmin(final SecurityContext securityContext) {
-        if (securityContext == null || !securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            throw new javax.ws.rs.WebApplicationException(
-                    Response.status(Status.FORBIDDEN).entity("User management requires the admin role.").build());
-        }
-    }
-
-    private static String principal(final SecurityContext securityContext) {
-        return securityContext.getUserPrincipal() == null ? "?" : securityContext.getUserPrincipal().getName();
-    }
-
-    private Response serverError(final String format, final Exception e) {
-        if (e instanceof IllegalArgumentException) {
-            return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-        }
-        LOG.error(String.format(format, e.getMessage()), e);
-        return Response.status(Status.INTERNAL_SERVER_ERROR).entity(String.format(format, e.getMessage())).build();
+    private static String owner(final String userId) {
+        return "User \"" + userId + "\"";
     }
 
 }

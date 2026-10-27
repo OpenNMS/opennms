@@ -23,13 +23,23 @@ package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -37,13 +47,26 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.config.UserManager;
-import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.netmgt.dao.api.OnCallRoleDao;
+import org.opennms.netmgt.dao.api.SecurityRoleDao;
+import org.opennms.netmgt.dao.api.UserAccountDao;
+import org.opennms.netmgt.dao.api.UserGroupDao;
+import org.opennms.netmgt.model.usermgmt.ContactType;
+import org.opennms.netmgt.model.usermgmt.OnCallRole;
+import org.opennms.netmgt.model.usermgmt.OnCallSchedule;
+import org.opennms.netmgt.model.usermgmt.OnCallScheduleTime;
+import org.opennms.netmgt.model.usermgmt.UserAccount;
+import org.opennms.netmgt.model.usermgmt.UserGroup;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -59,19 +82,35 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml",
-        // in-memory user/group managers so users.xml is never touched
-        "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
         "classpath:/applicationContext-rest-test.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
 public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
+    private static final String JSON = MediaType.APPLICATION_JSON;
+
+    /** The database managers, as the JSPs and Spring Security use them. */
     @Autowired
     private UserManager m_userManager;
 
     @Autowired
-    private org.opennms.netmgt.config.GroupManager m_groupManager;
+    private UserAccountDao m_userAccountDao;
+
+    @Autowired
+    private UserGroupDao m_userGroupDao;
+
+    @Autowired
+    private OnCallRoleDao m_onCallRoleDao;
+
+    @Autowired
+    private SecurityRoleDao m_securityRoleDao;
+
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
+    @Autowired
+    private DataSource m_dataSource;
 
     public UsersRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -82,16 +121,37 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         MockLogAppender.setupLogging();
     }
 
+    @Before
+    public void createAdmin() {
+        // the database starts without users; the REST calls run as admin, which must exist for its own protections
+        inTx(() -> {
+            if (m_userAccountDao.findByUsername("admin") == null) {
+                final UserAccount admin = new UserAccount("admin");
+                admin.setPasswordHash("");
+                admin.getSecurityRoles().add(m_securityRoleDao.findByName("ROLE_ADMIN"));
+                m_userAccountDao.save(admin);
+            }
+            return null;
+        });
+    }
+
+    @After
+    public void clearStoreProperty() {
+        System.clearProperty("org.opennms.usermgmt.store");
+    }
+
     @Test
     public void testListNeverContainsPasswordHashes() throws Exception {
         final String json = getJson("/users", 200);
         final JSONArray users = new JSONArray(json);
-        assertTrue(users.length() >= 1);
-        assertEquals("admin", users.getJSONObject(0).getString("userId"));
+        boolean foundAdmin = false;
+        for (int i = 0; i < users.length(); i++) {
+            foundAdmin |= "admin".equals(users.getJSONObject(i).getString("userId"));
+        }
+        assertTrue(foundAdmin);
         // the v1 API leaks hashes to admins; the v2 contract is that no
         // response ever carries the password in any form
         assertFalse(json.contains("password"));
-        assertFalse(json.contains("21232F29"));
     }
 
     @Test
@@ -116,7 +176,9 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final String body = "{\"userId\":\"junituser\",\"password\":\"S3cret!pw\",\"fullName\":\"JUnit User\","
                 + "\"email\":\"junit@example.com\",\"pagerEmail\":\"junit-pager@example.com\","
                 + "\"dutySchedules\":[\"MoWeFr800-1700\"],\"roles\":[\"ROLE_USER\"]}";
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", body, 201);
+        final MockHttpServletResponse response = exec(POST, "/users", body, null, 201);
+        assertEquals("junituser", new JSONObject(response.getContentAsString()).getString("userId"));
+        assertNotNull(response.getHeader("ETag"));
 
         final JSONObject created = new JSONObject(getJson("/users/junituser", 200));
         assertEquals("JUnit User", created.getString("fullName"));
@@ -127,38 +189,40 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(m_userManager.comparePasswords("junituser", "S3cret!pw"));
 
         // creating the same user again must be rejected
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", body, 400);
+        exec(POST, "/users", body, null, 409);
 
         sendRequest(DELETE, "/users/junituser", 204);
         sendRequest(GET, "/users/junituser", 404);
     }
 
     @Test
+    public void testCreateDuplicateIs409() throws Exception {
+        exec(POST, "/users", "{\"userId\":\"dupuser\",\"password\":\"pw\"}", null, 201);
+        final MockHttpServletResponse response = exec(POST, "/users", "{\"userId\":\"dupuser\",\"password\":\"pw\"}", null, 409);
+        assertEquals("User dupuser already exists.", response.getContentAsString());
+    }
+
+    @Test
     public void testCreateValidation() throws Exception {
         // missing password
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"nopass\"}", 400);
+        exec(POST, "/users", "{\"userId\":\"nopass\"}", null, 400);
         // markup in the user id
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"bad<script>\",\"password\":\"x\"}", 400);
+        exec(POST, "/users", "{\"userId\":\"bad<script>\",\"password\":\"x\"}", null, 400);
         // colon breaks basic auth, whitespace breaks group references
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"with:colon\",\"password\":\"x\"}", 400);
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"with space\",\"password\":\"x\"}", 400);
+        exec(POST, "/users", "{\"userId\":\"with:colon\",\"password\":\"x\"}", null, 400);
+        exec(POST, "/users", "{\"userId\":\"with space\",\"password\":\"x\"}", null, 400);
         // unknown security role
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"badrole\",\"password\":\"x\",\"roles\":[\"ROLE_NOT_A_THING\"]}", 400);
+        exec(POST, "/users", "{\"userId\":\"badrole\",\"password\":\"x\",\"roles\":[\"ROLE_NOT_A_THING\"]}", null, 400);
         // invalid time zone
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"badzone\",\"password\":\"x\",\"timeZoneId\":\"Mars/Olympus\"}", 400);
+        exec(POST, "/users", "{\"userId\":\"badzone\",\"password\":\"x\",\"timeZoneId\":\"Mars/Olympus\"}", null, 400);
         // duty schedules that would break notifd's parsing at runtime
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"badduty\",\"password\":\"x\",\"dutySchedules\":[\"garbage\"]}", 400);
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"badduty\",\"password\":\"x\",\"dutySchedules\":[\"Mo899-999\"]}", 400);
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"badduty\",\"password\":\"x\",\"dutySchedules\":[\"Mo800-2400\"]}", 400);
+        exec(POST, "/users", "{\"userId\":\"badduty\",\"password\":\"x\",\"dutySchedules\":[\"garbage\"]}", null, 400);
+        exec(POST, "/users", "{\"userId\":\"badduty\",\"password\":\"x\",\"dutySchedules\":[\"Mo899-999\"]}", null, 400);
+        exec(POST, "/users", "{\"userId\":\"badduty\",\"password\":\"x\",\"dutySchedules\":[\"Mo800-2400\"]}", null, 400);
         // ids that cannot be addressed as a URL path segment
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"team/lead\",\"password\":\"x\"}", 400);
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"pct%20\",\"password\":\"x\"}", 400);
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"frag#1\",\"password\":\"x\"}", 400);
+        exec(POST, "/users", "{\"userId\":\"team/lead\",\"password\":\"x\"}", null, 400);
+        exec(POST, "/users", "{\"userId\":\"pct%20\",\"password\":\"x\"}", null, 400);
+        exec(POST, "/users", "{\"userId\":\"frag#1\",\"password\":\"x\"}", null, 400);
         // none of the rejects may have been created
         sendRequest(GET, "/users/badrole", 404);
         sendRequest(GET, "/users/badzone", 404);
@@ -166,39 +230,47 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    public void testInvalidTuiPinRejectedWithoutPoisoningTheMap() throws Exception {
-        final User user = new User();
-        user.setUserId("pinuser");
-        user.setPassword(m_userManager.encryptedPassword("pw", true), Boolean.TRUE);
-        m_userManager.saveUser("pinuser", user);
+    public void testLengthLimitsAre400() throws Exception {
+        final String tooLong = "x".repeat(257);
+        exec(POST, "/users", "{\"userId\":\"longname\",\"password\":\"pw\",\"fullName\":\"" + tooLong + "\"}", null, 400);
+        exec(POST, "/users", "{\"userId\":\"longmail\",\"password\":\"pw\",\"email\":\"" + tooLong + "\"}", null, 400);
+        sendRequest(GET, "/users/longname", 404);
+        sendRequest(GET, "/users/longmail", 404);
 
-        // users.xsd constrains tui-pin to [0-9]+; an unvalidated write used to
-        // reach the in-memory map, fail the schema-validating marshal, and wedge
-        // every later user mutation until restart
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/pinuser",
-                "{\"userId\":\"pinuser\",\"tuiPin\":\"1234x\"}", 400);
+        exec(POST, "/users", "{\"userId\":\"longedit\",\"password\":\"pw\"}", null, 201);
+        final int version = rowVersion("longedit");
+        exec(PUT, "/users/longedit", "{\"userId\":\"longedit\",\"fullName\":\"" + tooLong + "\"}", null, 400);
+        exec(PUT, "/users/longedit", "{\"userId\":\"longedit\",\"email\":\"" + tooLong + "\"}", null, 400);
+        assertEquals(version, rowVersion("longedit"));
+        // the limit is 256 characters
+        exec(PUT, "/users/longedit", "{\"userId\":\"longedit\",\"fullName\":\"" + "x".repeat(256) + "\"}", null, 200);
+    }
 
-        // the map must not be poisoned: a valid follow-up write still succeeds
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/pinuser",
-                "{\"userId\":\"pinuser\",\"tuiPin\":\"1234\",\"fullName\":\"Pin User\"}", 204);
-        final User updated = m_userManager.getUser("pinuser");
-        assertEquals("1234", updated.getTuiPin().orElse(null));
-        assertEquals("Pin User", updated.getFullName().orElse(null));
+    @Test
+    public void testInvalidTuiPinRejected() throws Exception {
+        createUser("pinuser", u -> { });
+        final int version = rowVersion("pinuser");
+
+        exec(PUT, "/users/pinuser", "{\"userId\":\"pinuser\",\"tuiPin\":\"1234x\"}", null, 400);
+        assertEquals(version, rowVersion("pinuser"));
+        assertNull(column("pinuser", "tui_pin"));
+
+        // a valid follow-up write still succeeds
+        exec(PUT, "/users/pinuser", "{\"userId\":\"pinuser\",\"tuiPin\":\"1234\",\"fullName\":\"Pin User\"}", null, 200);
+        assertEquals("1234", column("pinuser", "tui_pin"));
+        assertEquals("Pin User", column("pinuser", "full_name"));
     }
 
     @Test
     public void testUpdatePreservesUnexposedContacts() throws Exception {
-        // seed a user carrying an XMPP contact, as a hand-edited users.xml would
-        final User user = new User();
-        user.setUserId("xmppuser");
-        user.setPassword(m_userManager.encryptedPassword("pw", true), Boolean.TRUE);
-        final Contact xmpp = new Contact("xmppAddress");
-        xmpp.setInfo("xmpp@jabber.example.com");
-        user.getContacts().add(xmpp);
-        m_userManager.saveUser("xmppuser", user);
+        // seed a user carrying an XMPP contact, as a migrated users.xml would
+        createUser("xmppuser", u -> {
+            u.setPasswordHash(new org.jasypt.util.password.StrongPasswordEncryptor().encryptPassword("pw"));
+            u.setPasswordSalted(true);
+            u.setContact(ContactType.xmppAddress, "xmpp@jabber.example.com", null);
+        });
 
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/xmppuser",
-                "{\"userId\":\"xmppuser\",\"fullName\":\"XMPP User\",\"email\":\"new@example.com\"}", 204);
+        exec(PUT, "/users/xmppuser", "{\"userId\":\"xmppuser\",\"fullName\":\"XMPP User\",\"email\":\"new@example.com\"}", null, 200);
 
         final User updated = m_userManager.getUser("xmppuser");
         assertNotNull(updated);
@@ -213,45 +285,34 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    public void testWritesDoNotReEscapeFullNameAndContacts() throws Exception {
-        // full name and email carry HTML-escapable characters; the config model
-        // sanitizes them to a single layer on create
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"escuser\",\"password\":\"pw\",\"fullName\":\"O'Brien & Sons\","
-                + "\"email\":\"bill&ted@example.com\"}", 201);
+    public void testTextIsStoredRaw() throws Exception {
+        final String fullName = "A & <B> 'c\"";
+        final String email = "a&b@x.org";
+        final String body = new JSONObject().put("userId", "rawuser").put("password", "pw")
+                .put("fullName", fullName).put("email", email).toString();
+        exec(POST, "/users", body, null, 201);
 
-        final User created = m_userManager.getUser("escuser");
-        final String storedFullName = created.getFullName().orElse(null);
-        final String storedEmail = emailOf(created);
-        assertNotNull(storedFullName);
-        assertNotNull(storedEmail);
+        final JSONObject read = new JSONObject(getJson("/users/rawuser", 200));
+        assertEquals(fullName, read.getString("fullName"));
+        assertEquals(email, read.getString("email"));
+        assertEquals(fullName, column("rawuser", "full_name"));
+        assertEquals(email, new JdbcTemplate(m_dataSource).queryForObject(
+                "select c.info from user_contacts c join users u on u.id = c.user_id where u.username = ? and c.contact_type = 'email'",
+                String.class, "rawuser"));
 
-        // a password change copies the stored user; it must not re-escape the
-        // full name or contacts it leaves untouched
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/escuser/password", "{\"password\":\"new\"}", 204);
-        User after = m_userManager.getUser("escuser");
-        assertEquals(storedFullName, after.getFullName().orElse(null));
-        assertEquals(storedEmail, emailOf(after));
-
-        // an unrelated edit that echoes the already-escaped values back must
-        // leave full name and email byte-for-byte unchanged (no cumulative escaping)
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/escuser",
-                "{\"userId\":\"escuser\",\"fullName\":\"" + storedFullName + "\",\"email\":\""
-                + storedEmail + "\",\"userComments\":\"touched\"}", 204);
-        after = m_userManager.getUser("escuser");
-        assertEquals(storedFullName, after.getFullName().orElse(null));
-        assertEquals(storedEmail, emailOf(after));
-
-        sendRequest(DELETE, "/users/escuser", 204);
+        // an unrelated edit that echoes the values back leaves them as they are
+        exec(PUT, "/users/rawuser", new JSONObject().put("userId", "rawuser").put("fullName", fullName)
+                .put("email", email).put("userComments", "touched").toString(), null, 200);
+        assertEquals(fullName, column("rawuser", "full_name"));
+        assertEquals(fullName, m_userManager.getUser("rawuser").getFullName().orElse(null));
     }
 
     @Test
     public void testEditsPhoneAndPagerContacts() throws Exception {
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"contactuser\",\"password\":\"pw\","
+        exec(POST, "/users", "{\"userId\":\"contactuser\",\"password\":\"pw\","
                 + "\"workPhone\":\"555-1000\",\"mobilePhone\":\"555-2000\",\"homePhone\":\"555-3000\","
                 + "\"numericPagerService\":\"AcmePage\",\"numericPagerPin\":\"12345\","
-                + "\"textPagerService\":\"AcmeText\",\"textPagerPin\":\"67890\"}", 201);
+                + "\"textPagerService\":\"AcmeText\",\"textPagerPin\":\"67890\"}", null, 201);
 
         JSONObject u = new JSONObject(getJson("/users/contactuser", 200));
         assertEquals("555-1000", u.getString("workPhone"));
@@ -263,8 +324,7 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("67890", u.getString("textPagerPin"));
 
         // a partial update touches only the mobile phone; every other contact is preserved
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/contactuser",
-                "{\"userId\":\"contactuser\",\"mobilePhone\":\"555-9999\"}", 204);
+        exec(PUT, "/users/contactuser", "{\"userId\":\"contactuser\",\"mobilePhone\":\"555-9999\"}", null, 200);
         u = new JSONObject(getJson("/users/contactuser", 200));
         assertEquals("555-9999", u.getString("mobilePhone"));
         assertEquals("555-1000", u.getString("workPhone"));
@@ -274,40 +334,33 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(DELETE, "/users/contactuser", 204);
     }
 
-    private static String emailOf(final User user) {
-        return user.getContacts().stream()
-                .filter(c -> "email".equals(c.getType()))
-                .findFirst()
-                .flatMap(Contact::getInfo)
-                .orElse(null);
-    }
-
     @Test
     public void testPasswordChange() throws Exception {
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"pwuser\",\"password\":\"first\"}", 201);
+        exec(POST, "/users", "{\"userId\":\"pwuser\",\"password\":\"first\"}", null, 201);
         assertTrue(m_userManager.comparePasswords("pwuser", "first"));
 
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/pwuser/password", "{\"password\":\"second\"}", 204);
+        exec(PUT, "/users/pwuser/password", "{\"password\":\"second\"}", null, 204);
         assertFalse(m_userManager.comparePasswords("pwuser", "first"));
         assertTrue(m_userManager.comparePasswords("pwuser", "second"));
 
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/pwuser/password", "{}", 400);
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/missing/password", "{\"password\":\"x\"}", 404);
+        exec(PUT, "/users/pwuser/password", "{}", null, 400);
+        exec(PUT, "/users/missing/password", "{\"password\":\"x\"}", null, 404);
 
         sendRequest(DELETE, "/users/pwuser", 204);
     }
 
     @Test
     public void testRename() throws Exception {
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"renameme\",\"password\":\"pw\"}", 201);
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"occupied\",\"password\":\"pw\"}", 201);
+        exec(POST, "/users", "{\"userId\":\"renameme\",\"password\":\"pw\"}", null, 201);
+        exec(POST, "/users", "{\"userId\":\"occupied\",\"password\":\"pw\"}", null, 201);
 
         // renaming onto an existing user must be rejected
-        sendData(POST, MediaType.APPLICATION_JSON, "/users/renameme/rename", "{\"newUserId\":\"occupied\"}", 400);
+        exec(POST, "/users/renameme/rename", "{\"newUserId\":\"occupied\"}", null, 409);
         // markup in the new id
-        sendData(POST, MediaType.APPLICATION_JSON, "/users/renameme/rename", "{\"newUserId\":\"bad<b>\"}", 400);
+        exec(POST, "/users/renameme/rename", "{\"newUserId\":\"bad<b>\"}", null, 400);
 
-        sendData(POST, MediaType.APPLICATION_JSON, "/users/renameme/rename", "{\"newUserId\":\"renamed\"}", 204);
+        final MockHttpServletResponse renamed = exec(POST, "/users/renameme/rename", "{\"newUserId\":\"renamed\"}", null, 200);
+        assertEquals("renamed", new JSONObject(renamed.getContentAsString()).getString("userId"));
         sendRequest(GET, "/users/renameme", 404);
         sendRequest(GET, "/users/renamed", 200);
 
@@ -318,23 +371,22 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testSystemAccountProtections() throws Exception {
         sendRequest(DELETE, "/users/admin", 400);
-        sendData(POST, MediaType.APPLICATION_JSON, "/users/admin/rename", "{\"newUserId\":\"root\"}", 400);
+        exec(POST, "/users/admin/rename", "{\"newUserId\":\"root\"}", null, 400);
         sendRequest(GET, "/users/admin", 200);
 
         // the protection is by name, wherever the account came from
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"rtc\",\"password\":\"pw\"}", 201);
+        exec(POST, "/users", "{\"userId\":\"rtc\",\"password\":\"pw\"}", null, 201);
         sendRequest(DELETE, "/users/rtc", 400);
-        sendData(POST, MediaType.APPLICATION_JSON, "/users/rtc/rename", "{\"newUserId\":\"rtc2\"}", 400);
+        exec(POST, "/users/rtc/rename", "{\"newUserId\":\"rtc2\"}", null, 400);
     }
 
     @Test
     public void testPartialUpdatePreservesRolesAndSchedules() throws Exception {
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"partial\",\"password\":\"pw\",\"roles\":[\"ROLE_USER\"],\"dutySchedules\":[\"MoWeFr800-1700\"]}", 201);
+        exec(POST, "/users",
+                "{\"userId\":\"partial\",\"password\":\"pw\",\"roles\":[\"ROLE_USER\"],\"dutySchedules\":[\"MoWeFr800-1700\"]}", null, 201);
 
         // a body that omits the roles and dutySchedules keys must preserve both
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/partial",
-                "{\"userId\":\"partial\",\"fullName\":\"Partial Update\"}", 204);
+        exec(PUT, "/users/partial", "{\"userId\":\"partial\",\"fullName\":\"Partial Update\"}", null, 200);
 
         final JSONObject after = new JSONObject(getJson("/users/partial", 200));
         assertEquals("Partial Update", after.getString("fullName"));
@@ -346,18 +398,20 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testRejectedUpdateLeavesNoPartialState() throws Exception {
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"atomic\",\"password\":\"pw\",\"fullName\":\"Original Name\",\"email\":\"orig@example.com\"}", 201);
+        exec(POST, "/users",
+                "{\"userId\":\"atomic\",\"password\":\"pw\",\"fullName\":\"Original Name\",\"email\":\"orig@example.com\"}", null, 201);
+        final int version = rowVersion("atomic");
 
         // invalid role arrives with new name/email; nothing may be applied
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/atomic",
-                "{\"userId\":\"atomic\",\"fullName\":\"Changed Name\",\"email\":\"changed@example.com\",\"roles\":[\"ROLE_TYPO\"]}", 400);
+        exec(PUT, "/users/atomic",
+                "{\"userId\":\"atomic\",\"fullName\":\"Changed Name\",\"email\":\"changed@example.com\",\"roles\":[\"ROLE_TYPO\"]}", null, 400);
 
         final JSONObject after = new JSONObject(getJson("/users/atomic", 200));
         assertEquals("Original Name", after.getString("fullName"));
         assertEquals("orig@example.com", after.getString("email"));
-        final User inManager = m_userManager.getUser("atomic");
-        assertEquals("Original Name", inManager.getFullName().orElse(null));
+        assertEquals("Original Name", column("atomic", "full_name"));
+        assertEquals(version, rowVersion("atomic"));
+        assertEquals(version, after.getInt("version"));
 
         sendRequest(DELETE, "/users/atomic", 204);
     }
@@ -366,46 +420,39 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testOvernightDutyScheduleRejectedForNewEntries() throws Exception {
         // DutySchedule.isInSchedule compares within one calendar day, so an
         // overnight range never matches and would silently disable the schedule
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"nightshift\",\"password\":\"pw\",\"dutySchedules\":[\"MoTu2000-800\"]}", 400);
+        exec(POST, "/users", "{\"userId\":\"nightshift\",\"password\":\"pw\",\"dutySchedules\":[\"MoTu2000-800\"]}", null, 400);
         sendRequest(GET, "/users/nightshift", 404);
     }
 
     @Test
     public void testPreExistingOddDutyScheduleStaysEditable() throws Exception {
-        // a hand-edited users.xml may already carry an overnight string; the
+        // migrated data may already carry an overnight string; the
         // record must remain editable when the UI round-trips it unchanged
-        final User user = new User();
-        user.setUserId("legacynight");
-        user.setPassword(m_userManager.encryptedPassword("pw", true), Boolean.TRUE);
-        user.getDutySchedules().add("MoTu2000-800");
-        m_userManager.saveUser("legacynight", user);
+        createUser("legacynight", u -> u.getDutySchedules().add("MoTu2000-800"));
 
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/legacynight",
-                "{\"userId\":\"legacynight\",\"fullName\":\"Night Shift\",\"dutySchedules\":[\"MoTu2000-800\"]}", 204);
+        exec(PUT, "/users/legacynight",
+                "{\"userId\":\"legacynight\",\"fullName\":\"Night Shift\",\"dutySchedules\":[\"MoTu2000-800\"]}", null, 200);
         final JSONObject after = new JSONObject(getJson("/users/legacynight", 200));
         assertEquals("MoTu2000-800", after.getJSONArray("dutySchedules").getString(0));
 
         // but ADDING another overnight entry is still rejected
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/legacynight",
-                "{\"userId\":\"legacynight\",\"dutySchedules\":[\"MoTu2000-800\",\"WeTh2100-700\"]}", 400);
+        exec(PUT, "/users/legacynight",
+                "{\"userId\":\"legacynight\",\"dutySchedules\":[\"MoTu2000-800\",\"WeTh2100-700\"]}", null, 400);
 
         sendRequest(DELETE, "/users/legacynight", 204);
     }
 
     @Test
     public void testDotSegmentIdsRejected() throws Exception {
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\".\",\"password\":\"x\"}", 400);
-        sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"..\",\"password\":\"x\"}", 400);
+        exec(POST, "/users", "{\"userId\":\".\",\"password\":\"x\"}", null, 400);
+        exec(POST, "/users", "{\"userId\":\"..\",\"password\":\"x\"}", null, 400);
     }
 
     @Test
     public void testFieldsCanBeCleared() throws Exception {
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"clearme\",\"password\":\"pw\",\"fullName\":\"Full\",\"email\":\"c@example.com\"}", 201);
+        exec(POST, "/users", "{\"userId\":\"clearme\",\"password\":\"pw\",\"fullName\":\"Full\",\"email\":\"c@example.com\"}", null, 201);
         // explicit empty strings clear; omitted keys preserve
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/clearme",
-                "{\"userId\":\"clearme\",\"fullName\":\"\",\"email\":\"\"}", 204);
+        exec(PUT, "/users/clearme", "{\"userId\":\"clearme\",\"fullName\":\"\",\"email\":\"\"}", null, 200);
         final JSONObject after = new JSONObject(getJson("/users/clearme", 200));
         assertFalse(after.has("fullName") && !after.isNull("fullName"));
         assertFalse(after.has("email") && !after.isNull("email"));
@@ -415,50 +462,55 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testAdminRoleCannotBeStripped() throws Exception {
         // removing ROLE_ADMIN from admin would lock every administrator out
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/admin",
-                "{\"userId\":\"admin\",\"roles\":[\"ROLE_USER\"]}", 400);
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/admin",
-                "{\"userId\":\"admin\",\"roles\":[\"ROLE_USER\",\"ROLE_ADMIN\"]}", 204);
+        exec(PUT, "/users/admin", "{\"userId\":\"admin\",\"roles\":[\"ROLE_USER\"]}", null, 400);
+        exec(PUT, "/users/admin", "{\"userId\":\"admin\",\"roles\":[\"ROLE_USER\",\"ROLE_ADMIN\"]}", null, 200);
     }
 
     @Test
     public void testPartialUpdatePreservesScalarFields() throws Exception {
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"partial\",\"password\":\"pw\",\"fullName\":\"Full Name\",\"userComments\":\"kept\",\"email\":\"p@example.org\"}", 201);
+        exec(POST, "/users",
+                "{\"userId\":\"partialscalar\",\"password\":\"pw\",\"fullName\":\"Full Name\",\"userComments\":\"kept\",\"email\":\"p@example.org\"}", null, 201);
         // a roles-only body must not wipe the other fields
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/partial",
-                "{\"userId\":\"partial\",\"roles\":[\"ROLE_USER\"]}", 204);
-        final JSONObject after = new JSONObject(getJson("/users/partial", 200));
+        exec(PUT, "/users/partialscalar", "{\"userId\":\"partialscalar\",\"roles\":[\"ROLE_USER\"]}", null, 200);
+        final JSONObject after = new JSONObject(getJson("/users/partialscalar", 200));
         assertEquals("Full Name", after.getString("fullName"));
         assertEquals("kept", after.getString("userComments"));
         assertEquals("p@example.org", after.getString("email"));
-        sendRequest(DELETE, "/users/partial", 204);
+        sendRequest(DELETE, "/users/partialscalar", 204);
     }
 
     @Test
     public void testCommentsMarkupRejectedEvenWithNewlines() throws Exception {
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"markup\",\"password\":\"pw\"}", 201);
+        exec(POST, "/users", "{\"userId\":\"markup\",\"password\":\"pw\"}", null, 201);
         // newlines must not smuggle markup past the check
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/markup",
-                "{\"userId\":\"markup\",\"userComments\":\"hello\\n<script>alert(1)</script>\"}", 400);
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/markup",
-                "{\"userId\":\"markup\",\"userComments\":\"plain text\"}", 204);
+        exec(PUT, "/users/markup", "{\"userId\":\"markup\",\"userComments\":\"hello\\n<script>alert(1)</script>\"}", null, 400);
+        exec(PUT, "/users/markup", "{\"userId\":\"markup\",\"userComments\":\"plain text\"}", null, 200);
         sendRequest(DELETE, "/users/markup", 204);
     }
 
     @Test
-    public void testHandEditedMarkupCommentStaysEditable() throws Exception {
-        // a hand-edited users.xml comment with markup characters must not
-        // make the user uneditable when it round-trips unchanged
-        final User user = new User();
-        user.setUserId("legacycomment");
-        user.setPassword(m_userManager.encryptedPassword("pw", true), Boolean.TRUE);
-        user.setUserComments("Bob's R&D user");
-        m_userManager.saveUser("legacycomment", user);
+    public void testStoredCommentWithTrailingWhitespaceIsGrandfathered() throws Exception {
+        // a JSP-written comment can end in a newline; the Vue page echoes it trimmed
+        createUser("legacytrail", u -> u.setComments("Don't page me\n"));
+        final int version = rowVersion("legacytrail");
 
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/legacycomment",
-                "{\"userId\":\"legacycomment\",\"userComments\":\"Bob's R&D user\",\"fullName\":\"Touched\"}", 204);
+        final MockHttpServletResponse put = exec(PUT, "/users/legacytrail",
+                "{\"userId\":\"legacytrail\",\"userComments\":\"Don't page me\"}", null, 200);
+
+        assertEquals(version, rowVersion("legacytrail"));
+        assertEquals("\"" + version + "\"", put.getHeader("ETag"));
+        assertEquals("Don't page me\n", column("legacytrail", "comments"));
+        sendRequest(DELETE, "/users/legacytrail", 204);
+    }
+
+    @Test
+    public void testHandEditedMarkupCommentStaysEditable() throws Exception {
+        // a comment with markup characters (migrated, or written by the JSPs) must not
+        // make the user uneditable when it round-trips unchanged
+        createUser("legacycomment", u -> u.setComments("Bob's R&D user"));
+
+        exec(PUT, "/users/legacycomment",
+                "{\"userId\":\"legacycomment\",\"userComments\":\"Bob's R&D user\",\"fullName\":\"Touched\"}", null, 200);
         final JSONObject after = new JSONObject(getJson("/users/legacycomment", 200));
         assertEquals("Bob's R&D user", after.getString("userComments"));
         assertEquals("Touched", after.getString("fullName"));
@@ -467,43 +519,92 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testDeleteBlockedWhileSupervisingOnCallRole() throws Exception {
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"rolesuper\",\"password\":\"pw\"}", 201);
-        final org.opennms.netmgt.config.groups.Role role = new org.opennms.netmgt.config.groups.Role();
-        role.setName("super-role");
-        role.setMembershipGroup("Admin");
-        role.setSupervisor("rolesuper");
-        m_groupManager.saveRole(role);
+        createUser("rolesuper", u -> { });
+        createRole("super-role", "super-group", "rolesuper", null);
 
         // deleting the supervisor would leave the rota's fallback dangling
-        sendData(DELETE, MediaType.APPLICATION_JSON, "/users/rolesuper", "", 400);
+        final MockHttpServletResponse response = exec(DELETE, "/users/rolesuper", null, null, 409);
+        assertTrue(response.getContentAsString(), response.getContentAsString().contains("super-role"));
+        assertEquals(1, rowCount("users", "username", "rolesuper"));
 
-        m_groupManager.deleteRole("super-role");
+        inTx(() -> {
+            m_onCallRoleDao.delete(m_onCallRoleDao.findByName("super-role"));
+            return null;
+        });
         sendRequest(DELETE, "/users/rolesuper", 204);
     }
 
     @Test
+    public void testDeleteSupervisorIs409NamingRoles() throws Exception {
+        createUser("twosuper", u -> { });
+        createRole("rota-one", "rota-group-one", "twosuper", null);
+        createRole("rota-two", "rota-group-two", "twosuper", null);
+
+        final MockHttpServletResponse response = exec(DELETE, "/users/twosuper", null, null, 409);
+        final String text = response.getContentAsString();
+        assertTrue(text, text.contains("rota-one") && text.contains("rota-two"));
+    }
+
+    @Test
     public void testRenameCarriesOnCallRoleSupervisor() throws Exception {
-        sendData(POST, MediaType.APPLICATION_JSON, "/users",
-                "{\"userId\":\"superrename\",\"password\":\"pw\"}", 201);
-        final org.opennms.netmgt.config.groups.Role role = new org.opennms.netmgt.config.groups.Role();
-        role.setName("carry-role");
-        role.setMembershipGroup("Admin");
-        role.setSupervisor("superrename");
-        m_groupManager.saveRole(role);
+        createUser("superrename", u -> { });
+        createRole("carry-role", "carry-group", "superrename", null);
 
         // renaming must follow the supervisor over to the new id, not leave the rota dangling
-        sendData(POST, MediaType.APPLICATION_JSON, "/users/superrename/rename", "{\"newUserId\":\"superrenamed\"}", 204);
-        assertEquals("superrenamed", m_groupManager.getRole("carry-role").getSupervisor());
+        exec(POST, "/users/superrename/rename", "{\"newUserId\":\"superrenamed\"}", null, 200);
+        assertEquals("superrenamed", inTx(() -> m_onCallRoleDao.findByName("carry-role").getSupervisor().getUsername()));
+    }
 
-        m_groupManager.deleteRole("carry-role");
-        sendRequest(DELETE, "/users/superrenamed", 204);
+    @Test
+    public void testRenameBumpsGroupAndRoleVersions() throws Exception {
+        createUser("bumpme", u -> { });
+        createRole("bump-role", "bump-group", "bumpme", "bumpme");
+        final int groupVersion = new JdbcTemplate(m_dataSource).queryForObject(
+                "select version from groups where name = 'bump-group'", Integer.class);
+        final int roleVersion = new JdbcTemplate(m_dataSource).queryForObject(
+                "select version from oncall_roles where name = 'bump-role'", Integer.class);
+
+        exec(POST, "/users/bumpme/rename", "{\"newUserId\":\"bumped\"}", null, 200);
+
+        // both documents show the user name
+        assertNotEquals(groupVersion, (int) new JdbcTemplate(m_dataSource).queryForObject(
+                "select version from groups where name = 'bump-group'", Integer.class));
+        assertNotEquals(roleVersion, (int) new JdbcTemplate(m_dataSource).queryForObject(
+                "select version from oncall_roles where name = 'bump-role'", Integer.class));
+    }
+
+    @Test
+    public void testDeleteRemovesMembershipsAndSchedules() throws Exception {
+        createUser("leaver", u -> { });
+        createUser("stayer", u -> { });
+        createRole("leave-role", "leave-group", "stayer", "leaver");
+        inTx(() -> {
+            final UserGroup group = m_userGroupDao.findByName("leave-group");
+            group.getMembers().add(m_userAccountDao.findByUsername("stayer"));
+            final OnCallRole role = m_onCallRoleDao.findByName("leave-role");
+            final OnCallSchedule schedule = new OnCallSchedule(m_userAccountDao.findByUsername("stayer"), OnCallSchedule.Type.weekly);
+            schedule.getTimes().add(new OnCallScheduleTime("Monday", "08:00:00", "17:00:00"));
+            role.getSchedules().add(schedule);
+            return null;
+        });
+
+        sendRequest(DELETE, "/users/leaver", 204);
+
+        inTx(() -> {
+            final UserGroup group = m_userGroupDao.findByName("leave-group");
+            assertEquals(1, group.getMembers().size());
+            assertEquals("stayer", group.getMembers().get(0).getUsername());
+            final OnCallRole role = m_onCallRoleDao.findByName("leave-role");
+            assertEquals(1, role.getSchedules().size());
+            assertEquals("stayer", role.getSchedules().get(0).getUser().getUsername());
+            return null;
+        });
+        assertEquals(0, rowCount("users", "username", "leaver"));
     }
 
     @Test
     public void testBodyPathUserIdMismatchRejected() throws Exception {
-        sendData(PUT, MediaType.APPLICATION_JSON, "/users/admin",
-                "{\"userId\":\"somebody-else\",\"fullName\":\"X\"}", 400);
+        exec(PUT, "/users/admin", "{\"userId\":\"somebody-else\",\"fullName\":\"X\"}", null, 400);
     }
 
     @Test
@@ -511,16 +612,277 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         setUser("nobody", new String[]{ "ROLE_USER" });
         try {
             sendRequest(GET, "/users", 403);
-            sendData(POST, MediaType.APPLICATION_JSON, "/users", "{\"userId\":\"x\",\"password\":\"x\"}", 403);
+            exec(POST, "/users", "{\"userId\":\"x\",\"password\":\"x\"}", null, 403);
             sendRequest(DELETE, "/users/admin", 403);
         } finally {
             setUser("admin", new String[]{ "ROLE_ADMIN" });
         }
     }
 
+    @Test
+    public void testGetSendsETag() throws Exception {
+        exec(POST, "/users", "{\"userId\":\"etaguser\",\"password\":\"pw\",\"roles\":[\"ROLE_USER\"]}", null, 201);
+        final MockHttpServletResponse response = exec(GET, "/users/etaguser", null, null, 200);
+        final JSONObject dto = new JSONObject(response.getContentAsString());
+        assertEquals("\"" + dto.getInt("version") + "\"", response.getHeader("ETag"));
+        assertEquals(rowVersion("etaguser"), dto.getInt("version"));
+    }
+
+    @Test
+    public void testRecreatedUserDoesNotMatchOldETag() throws Exception {
+        final String body = "{\"userId\":\"jane\",\"password\":\"pw\",\"fullName\":\"Jane\"}";
+        exec(POST, "/users", body, null, 201);
+        final String old = exec(GET, "/users/jane", null, null, 200).getHeader("ETag");
+        exec(DELETE, "/users/jane", null, null, 204);
+        exec(POST, "/users", body, null, 201);
+        // the same name and the same content, but not the object the tag was read from
+        assertNotEquals(old, exec(GET, "/users/jane", null, null, 200).getHeader("ETag"));
+        exec(PUT, "/users/jane", "{\"userId\":\"jane\",\"fullName\":\"Overwritten\"}", old, 412);
+        assertEquals("Jane", column("jane", "full_name"));
+    }
+
+    @Test
+    public void testStaleIfMatchIs412AndChangesNothing() throws Exception {
+        exec(POST, "/users", "{\"userId\":\"stale\",\"password\":\"pw\",\"fullName\":\"First\"}", null, 201);
+        final String stale = exec(GET, "/users/stale", null, null, 200).getHeader("ETag");
+        exec(PUT, "/users/stale", "{\"userId\":\"stale\",\"fullName\":\"Second\"}", null, 200);
+        final int version = rowVersion("stale");
+
+        exec(PUT, "/users/stale", "{\"userId\":\"stale\",\"fullName\":\"Third\"}", stale, 412);
+        exec(PUT, "/users/stale/password", "{\"password\":\"other\"}", stale, 412);
+        exec(POST, "/users/stale/rename", "{\"newUserId\":\"stale2\"}", stale, 412);
+        exec(DELETE, "/users/stale", null, stale, 412);
+
+        assertEquals("Second", column("stale", "full_name"));
+        assertEquals(version, rowVersion("stale"));
+        assertTrue(m_userManager.comparePasswords("stale", "pw"));
+    }
+
+    @Test
+    public void testCurrentIfMatchUpdatesAndReturnsNewETag() throws Exception {
+        exec(POST, "/users", "{\"userId\":\"current\",\"password\":\"pw\"}", null, 201);
+        final String etag = exec(GET, "/users/current", null, null, 200).getHeader("ETag");
+
+        final MockHttpServletResponse updated = exec(PUT, "/users/current", "{\"userId\":\"current\",\"fullName\":\"New\"}", etag, 200);
+        final String newEtag = updated.getHeader("ETag");
+        assertNotEquals(etag, newEtag);
+        final JSONObject dto = new JSONObject(updated.getContentAsString());
+        assertEquals("New", dto.getString("fullName"));
+        assertEquals("\"" + dto.getInt("version") + "\"", newEtag);
+        assertEquals(newEtag, exec(GET, "/users/current", null, null, 200).getHeader("ETag"));
+        // the new tag is the one that works now
+        exec(PUT, "/users/current", "{\"userId\":\"current\",\"fullName\":\"Newer\"}", newEtag, 200);
+    }
+
+    @Test
+    public void testIfMatchStarAndAbsentGoThrough() throws Exception {
+        exec(POST, "/users", "{\"userId\":\"starred\",\"password\":\"pw\"}", null, 201);
+        exec(PUT, "/users/starred", "{\"userId\":\"starred\",\"fullName\":\"Star\"}", "*", 200);
+        exec(PUT, "/users/starred", "{\"userId\":\"starred\",\"fullName\":\"No header\"}", null, 200);
+        assertEquals("No header", column("starred", "full_name"));
+        // a version in the body is ignored
+        exec(PUT, "/users/starred", "{\"userId\":\"starred\",\"version\":999,\"fullName\":\"Ignored version\"}", null, 200);
+        assertEquals("Ignored version", column("starred", "full_name"));
+    }
+
+    @Test
+    public void testNullListEntriesAre400() throws Exception {
+        exec(POST, "/users", "{\"userId\":\"nullduty\",\"password\":\"x\",\"dutySchedules\":[null]}", null, 400);
+        exec(POST, "/users", "{\"userId\":\"nullduty\",\"password\":\"x\",\"dutySchedules\":[\"\"]}", null, 400);
+        exec(POST, "/users", "{\"userId\":\"nullrole\",\"password\":\"x\",\"roles\":[null]}", null, 400);
+        sendRequest(GET, "/users/nullduty", 404);
+        sendRequest(GET, "/users/nullrole", 404);
+        exec(POST, "/users", "{\"userId\":\"nullok\",\"password\":\"x\"}", null, 201);
+        exec(PUT, "/users/nullok", "{\"userId\":\"nullok\",\"dutySchedules\":[null]}", null, 400);
+        exec(PUT, "/users/nullok", "{\"userId\":\"nullok\",\"roles\":[null]}", null, 400);
+    }
+
+    @Test
+    public void testWeakIfMatchTagIsAccepted() throws Exception {
+        exec(POST, "/users", "{\"userId\":\"weak\",\"password\":\"pw\"}", null, 201);
+        final String etag = exec(GET, "/users/weak", null, null, 200).getHeader("ETag");
+        final MockHttpServletResponse updated = exec(PUT, "/users/weak", "{\"userId\":\"weak\",\"fullName\":\"Weak\"}", "W/" + etag, 200);
+        assertEquals("Weak", column("weak", "full_name"));
+        // the weak tag of the old version is stale like the strong one
+        exec(PUT, "/users/weak", "{\"userId\":\"weak\",\"fullName\":\"Again\"}", "W/" + etag, 412);
+        exec(PUT, "/users/weak", "{\"userId\":\"weak\",\"fullName\":\"Again\"}", "W/" + updated.getHeader("ETag"), 200);
+    }
+
+    @Test
+    public void testIfMatchListIsAccepted() throws Exception {
+        exec(POST, "/users", "{\"userId\":\"listed\",\"password\":\"pw\"}", null, 201);
+        final String etag = exec(GET, "/users/listed", null, null, 200).getHeader("ETag");
+        exec(PUT, "/users/listed", "{\"userId\":\"listed\",\"fullName\":\"One\"}", "\"1\", W/\"2\", " + etag, 200);
+        assertEquals("One", column("listed", "full_name"));
+        // none of the tags is the current one any more
+        exec(PUT, "/users/listed", "{\"userId\":\"listed\",\"fullName\":\"Two\"}", "\"1\", " + etag, 412);
+        // a header that is not a list of entity tags matches nothing
+        exec(PUT, "/users/listed", "{\"userId\":\"listed\",\"fullName\":\"Two\"}", "garbage", 412);
+        assertEquals("One", column("listed", "full_name"));
+    }
+
+    @Test
+    public void testIfMatchOnAMissingUserIs412WhileNoIfMatchIs404() throws Exception {
+        final String body = "{\"userId\":\"ghost\",\"fullName\":\"Boo\"}";
+        exec(PUT, "/users/ghost", body, null, 404);
+        exec(PUT, "/users/ghost/password", "{\"password\":\"x\"}", null, 404);
+        exec(POST, "/users/ghost/rename", "{\"newUserId\":\"ghost2\"}", null, 404);
+        exec(DELETE, "/users/ghost", null, null, 404);
+        for (final String ifMatch : new String[] { "\"1\"", "*", "W/\"1\"" }) {
+            exec(PUT, "/users/ghost", body, ifMatch, 412);
+            exec(PUT, "/users/ghost/password", "{\"password\":\"x\"}", ifMatch, 412);
+            exec(POST, "/users/ghost/rename", "{\"newUserId\":\"ghost2\"}", ifMatch, 412);
+            exec(DELETE, "/users/ghost", null, ifMatch, 412);
+        }
+    }
+
+    @Test
+    public void testRenameAndDeleteAndPasswordHonourIfMatch() throws Exception {
+        exec(POST, "/users", "{\"userId\":\"honour\",\"password\":\"pw\"}", null, 201);
+
+        String etag = exec(GET, "/users/honour", null, null, 200).getHeader("ETag");
+        final MockHttpServletResponse password = exec(PUT, "/users/honour/password", "{\"password\":\"second\"}", etag, 204);
+        assertNotEquals(etag, password.getHeader("ETag"));
+        assertTrue(m_userManager.comparePasswords("honour", "second"));
+
+        etag = exec(GET, "/users/honour", null, null, 200).getHeader("ETag");
+        final MockHttpServletResponse renamed = exec(POST, "/users/honour/rename", "{\"newUserId\":\"honoured\"}", etag, 200);
+        assertNotEquals(etag, renamed.getHeader("ETag"));
+
+        etag = exec(GET, "/users/honoured", null, null, 200).getHeader("ETag");
+        exec(DELETE, "/users/honoured", null, etag, 204);
+        sendRequest(GET, "/users/honoured", 404);
+    }
+
+    @Test
+    public void testTimeZoneStoredCanonically() throws Exception {
+        exec(POST, "/users", "{\"userId\":\"zoned\",\"password\":\"pw\",\"timeZoneId\":\"GMT+1\"}", null, 201);
+        assertEquals("GMT+01:00", column("zoned", "time_zone_id"));
+        assertEquals("GMT+01:00", new JSONObject(getJson("/users/zoned", 200)).getString("timeZoneId"));
+    }
+
+    @Test
+    public void testXmlStoreIs503() throws Exception {
+        System.setProperty("org.opennms.usermgmt.store", "xml");
+        try {
+            final String message = "User management through this API needs org.opennms.usermgmt.store=db.";
+            final List<MockHttpServletResponse> responses = Arrays.asList(
+                    exec(GET, "/users", null, null, 503),
+                    exec(GET, "/users/admin", null, null, 503),
+                    exec(GET, "/users/available-roles", null, null, 503),
+                    exec(POST, "/users", "{\"userId\":\"x\",\"password\":\"x\"}", null, 503),
+                    exec(PUT, "/users/admin", "{\"userId\":\"admin\"}", null, 503),
+                    exec(PUT, "/users/admin/password", "{\"password\":\"x\"}", null, 503),
+                    exec(POST, "/users/admin/rename", "{\"newUserId\":\"x\"}", null, 503),
+                    exec(DELETE, "/users/admin", null, null, 503));
+            for (final MockHttpServletResponse response : responses) {
+                assertEquals(message, response.getContentAsString());
+            }
+        } finally {
+            System.clearProperty("org.opennms.usermgmt.store");
+        }
+    }
+
+    @Test
+    public void testManagersSeeChangeAtOnce() throws Exception {
+        exec(POST, "/users", "{\"userId\":\"seen\",\"password\":\"pw\",\"roles\":[\"ROLE_USER\"]}", null, 201);
+        assertFalse(m_userManager.getUser("seen").getRoles().contains("ROLE_REST"));
+
+        exec(PUT, "/users/seen", "{\"userId\":\"seen\",\"roles\":[\"ROLE_USER\",\"ROLE_REST\"]}", null, 200);
+
+        // no sleep: the manager reloads when the request's transaction commits
+        assertTrue(m_userManager.getUser("seen").getRoles().contains("ROLE_REST"));
+    }
+
+    @Test
+    public void testJspStyleManagerSaveOnlyBumpsTheEditedUser() throws Exception {
+        for (final String id : new String[] { "jsp1", "jsp2", "jsp3" }) {
+            exec(POST, "/users", new JSONObject().put("userId", id).put("password", "pw")
+                    .put("fullName", "Full & <Name> " + id).put("userComments", "comment " + id)
+                    .put("email", id + "@example.org").put("pagerEmail", id + "-pager@example.org")
+                    .put("workPhone", "555-1").put("mobilePhone", "555-2").put("homePhone", "555-3")
+                    .put("numericPagerService", "NumSvc").put("numericPagerPin", "123")
+                    .put("textPagerService", "TextSvc").put("textPagerPin", "456")
+                    .put("tuiPin", "4711").put("timeZoneId", "GMT+1")
+                    .put("dutySchedules", new JSONArray().put("MoWeFr800-1700").put("TuTh900-1200"))
+                    .put("roles", new JSONArray().put("ROLE_USER").put("ROLE_REST")).toString(), null, 201);
+        }
+        final int v1 = rowVersion("jsp1");
+        final int v2 = rowVersion("jsp2");
+        final int v3 = rowVersion("jsp3");
+
+        // what the JSPs do: save the user through the manager, which re-applies every cached user
+        final User user = m_userManager.getUser("jsp2");
+        user.setUserComments("changed comment");
+        m_userManager.saveUser("jsp2", user);
+
+        assertEquals(v1, rowVersion("jsp1"));
+        assertNotEquals(v2, rowVersion("jsp2"));
+        assertEquals(v3, rowVersion("jsp3"));
+        assertEquals("changed comment", column("jsp2", "comments"));
+    }
+
     private String getJson(final String url, final int expectedStatus) throws Exception {
         final MockHttpServletRequest request = createRequest(GET, url);
-        request.addHeader("Accept", MediaType.APPLICATION_JSON);
+        request.addHeader("Accept", JSON);
         return sendRequest(request, expectedStatus);
+    }
+
+    /** Sends a JSON request, with an If-Match header if the tag is not null, and returns the response. */
+    private MockHttpServletResponse exec(final String method, final String url, final String body, final String ifMatch,
+            final int expectedStatus) throws Exception {
+        final MockHttpServletRequest request = createRequest(servletContext, method, url, getUser(), getUserRoles());
+        request.addHeader("Accept", JSON);
+        if (body != null) {
+            request.setContentType(JSON);
+            request.setContent(body.getBytes("UTF-8"));
+        }
+        if (ifMatch != null) {
+            request.addHeader("If-Match", ifMatch);
+        }
+        final MockHttpServletResponse response = createResponse();
+        dispatch(request, response);
+        assertEquals(response.getContentAsString(), expectedStatus, response.getStatus());
+        return response;
+    }
+
+    private <T> T inTx(final Supplier<T> work) {
+        return new TransactionTemplate(m_transactionManager).execute(status -> work.get());
+    }
+
+    /** Commits a user, so that the REST call (its own transaction) sees it. */
+    private void createUser(final String username, final Consumer<UserAccount> customize) {
+        inTx(() -> {
+            final UserAccount user = new UserAccount(username);
+            user.setPasswordHash("");
+            customize.accept(user);
+            m_userAccountDao.save(user);
+            return null;
+        });
+    }
+
+    /** Commits a group (with that member, if any) and an on-call role over it. */
+    private void createRole(final String roleName, final String groupName, final String supervisor, final String member) {
+        inTx(() -> {
+            final UserGroup group = new UserGroup(groupName);
+            if (member != null) {
+                group.getMembers().add(m_userAccountDao.findByUsername(member));
+            }
+            m_userGroupDao.save(group);
+            m_onCallRoleDao.save(new OnCallRole(roleName, group, m_userAccountDao.findByUsername(supervisor)));
+            return null;
+        });
+    }
+
+    private int rowVersion(final String username) {
+        return new JdbcTemplate(m_dataSource).queryForObject("select version from users where username = ?", Integer.class, username);
+    }
+
+    private String column(final String username, final String column) {
+        return new JdbcTemplate(m_dataSource).queryForObject("select " + column + " from users where username = ?", String.class, username);
+    }
+
+    private int rowCount(final String table, final String column, final String value) {
+        return new JdbcTemplate(m_dataSource).queryForObject("select count(*) from " + table + " where " + column + " = ?", Integer.class, value);
     }
 }
