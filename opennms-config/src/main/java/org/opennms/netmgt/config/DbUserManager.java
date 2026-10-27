@@ -138,7 +138,8 @@ public class DbUserManager extends UserManager {
         final long cachedVersion = m_version;
         try {
             m_version = UserMgmtTransactions.inTransaction(m_transactions, () -> {
-                if (m_versionDao.lockVersion(Domain.users) != cachedVersion) {
+                m_versionDao.lockAll();
+                if (m_versionDao.getVersion(Domain.users) != cachedVersion) {
                     throw new UserDataChangedException();
                 }
                 write(userinfo.getUsers(), false);
@@ -157,6 +158,7 @@ public class DbUserManager extends UserManager {
         update();
         try {
             UserMgmtTransactions.inTransaction(m_transactions, () -> {
+                m_versionDao.lockAll();
                 write(users, true);
                 return null;
             });
@@ -190,6 +192,8 @@ public class DbUserManager extends UserManager {
         update();
         try {
             UserMgmtTransactions.inTransaction(m_transactions, () -> {
+                // a rename fires triggers that bump the groups version: take both locks in order first
+                m_versionDao.lockAll();
                 final UserAccount user = m_userDao.findByUsername(oldName);
                 if (user == null) {
                     throw new Exception("UserFactory:rename the old user name " + oldName + " is not found");
@@ -214,6 +218,8 @@ public class DbUserManager extends UserManager {
         update();
         try {
             UserMgmtTransactions.inTransaction(m_transactions, () -> {
+                // the delete cascades to memberships and schedules, which bumps the groups version: take both locks in order first
+                m_versionDao.lockAll();
                 final UserAccount user = m_userDao.findByUsername(name);
                 if (user == null) {
                     throw new Exception("UserFactory:delete The old user name " + name + " is not found");

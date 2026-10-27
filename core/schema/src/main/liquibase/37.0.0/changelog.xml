@@ -14,6 +14,24 @@
          The on-call schedule strings (duty schedules, begins/ends/day) are kept in their XML formats, so the
          migration from the files is a lossless copy and the existing parsers keep working. -->
 
+    <!-- The row versions of the four aggregates (users, groups, security roles, on-call roles) all come from this one
+         sequence, so a version is unique across the four tables and is never reused, even by an object that is
+         deleted and created again under the same name.
+         The sequence stops at the largest integer, like the version columns, so running out fails as a sequence limit. -->
+    <changeSet author="stheleman" id="37.0.0-usermgmt-row-version-sequence">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="usermgmt_row_version_seq"/>
+            </not>
+        </preConditions>
+
+        <createSequence sequenceName="usermgmt_row_version_seq" startValue="1" incrementBy="1" maxValue="2147483647"/>
+
+        <rollback>
+            <dropSequence sequenceName="usermgmt_row_version_seq"/>
+        </rollback>
+    </changeSet>
+
     <!-- Security roles: the built-in ones (seeded below; SecurityRoleDao refuses to delete them) and custom ones -->
     <changeSet author="stheleman" id="37.0.0-security-roles-table">
         <preConditions onFail="MARK_RAN">
@@ -38,6 +56,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="last_modified" type="timestamp with time zone"/>
+            <!-- from usermgmt_row_version_seq, kept by the triggers of 37.0.0-usermgmt-row-versions; the REST ETag -->
+            <column name="version" type="integer" defaultValueComputed="nextval('usermgmt_row_version_seq')">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <createSequence sequenceName="security_roles_id_seq" startValue="1" incrementBy="1"/>
@@ -187,6 +209,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="last_modified" type="timestamp with time zone"/>
+            <!-- from usermgmt_row_version_seq, kept by the triggers of 37.0.0-usermgmt-row-versions; the REST ETag -->
+            <column name="version" type="integer" defaultValueComputed="nextval('usermgmt_row_version_seq')">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <createSequence sequenceName="users_id_seq" startValue="1" incrementBy="1"/>
@@ -330,6 +356,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="last_modified" type="timestamp with time zone"/>
+            <!-- from usermgmt_row_version_seq, kept by the triggers of 37.0.0-usermgmt-row-versions; the REST ETag -->
+            <column name="version" type="integer" defaultValueComputed="nextval('usermgmt_row_version_seq')">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <createSequence sequenceName="groups_id_seq" startValue="1" incrementBy="1"/>
@@ -337,6 +367,19 @@
         <rollback>
             <dropTable tableName="groups"/>
             <dropSequence sequenceName="groups_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- groups.name has 256 characters, and category_group.groupid (1.10.1) held 64 -->
+    <changeSet author="stheleman" id="37.0.0-category-group-groupid-length">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">SELECT count(*) FROM information_schema.columns WHERE table_name = 'category_group' AND column_name = 'groupid' AND character_maximum_length &lt; 256</sqlCheck>
+        </preConditions>
+
+        <modifyDataType tableName="category_group" columnName="groupid" newDataType="varchar(256)"/>
+
+        <rollback>
+            <modifyDataType tableName="category_group" columnName="groupid" newDataType="varchar(64)"/>
         </rollback>
     </changeSet>
 
@@ -442,6 +485,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="last_modified" type="timestamp with time zone"/>
+            <!-- from usermgmt_row_version_seq, kept by the triggers of 37.0.0-usermgmt-row-versions; the REST ETag -->
+            <column name="version" type="integer" defaultValueComputed="nextval('usermgmt_row_version_seq')">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <createSequence sequenceName="oncall_roles_id_seq" startValue="1" incrementBy="1"/>
@@ -639,6 +686,148 @@ DROP TRIGGER IF EXISTS oncall_schedule_times_version ON oncall_schedule_times;
 DROP FUNCTION IF EXISTS usermgmt_increment_version();
             </sql>
             <dropTable tableName="usermgmt_version"/>
+        </rollback>
+    </changeSet>
+
+    <!-- A version on every row of the four aggregates, kept by triggers (not by JPA) so every writer is covered:
+         the webapp, the password CLI and the upgrade tasks. The REST API uses it as the ETag, and the order
+         of the locks (users, then groups) keeps concurrent writers from deadlocking. A row version is a number
+         from usermgmt_row_version_seq, a new one whenever the row changes and never one that was used before,
+         by any object. A row version moves when the row changed, when a row of a child table changed, and, for
+         the username and group name, when a row that shows the name changed. A bump of a row that is being deleted finds nothing to update. -->
+    <changeSet author="stheleman" id="37.0.0-usermgmt-row-versions">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1">SELECT count(*) FROM pg_proc WHERE proname = 'usermgmt_bump_row_version'</sqlCheck>
+            </not>
+        </preConditions>
+
+        <createProcedure>
+-- BEFORE UPDATE of a parent row: a changed row gets a new version from the sequence. A statement that sets the
+-- version itself (the child triggers do, with version + 1) is a change, whatever value it sets; an UPDATE that
+-- changes nothing keeps the version.
+CREATE OR REPLACE FUNCTION usermgmt_bump_row_version() RETURNS trigger AS $$
+BEGIN
+    IF NEW.version IS DISTINCT FROM OLD.version
+       OR (row_to_json(NEW)::jsonb - 'version') IS DISTINCT FROM (row_to_json(OLD)::jsonb - 'version') THEN
+        NEW.version := nextval('usermgmt_row_version_seq');
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <createProcedure>
+-- AFTER a change to a child row: bumps the parent. TG_ARGV[0] is the parent table, TG_ARGV[1] the FK column.
+CREATE OR REPLACE FUNCTION usermgmt_bump_parent() RETURNS trigger AS $$
+DECLARE
+    new_id integer;
+    old_id integer;
+BEGIN
+    -- an UPDATE that changes nothing is no change of the parent
+    IF TG_OP = 'UPDATE' AND NEW IS NOT DISTINCT FROM OLD THEN
+        RETURN NULL;
+    END IF;
+    IF TG_OP &lt;&gt; 'DELETE' THEN
+        new_id := (to_jsonb(NEW) -&gt;&gt; TG_ARGV[1])::integer;
+        EXECUTE format('UPDATE %I SET version = version + 1 WHERE id = $1', TG_ARGV[0]) USING new_id;
+    END IF;
+    IF TG_OP &lt;&gt; 'INSERT' THEN
+        old_id := (to_jsonb(OLD) -&gt;&gt; TG_ARGV[1])::integer;
+        IF old_id IS DISTINCT FROM new_id THEN
+            EXECUTE format('UPDATE %I SET version = version + 1 WHERE id = $1', TG_ARGV[0]) USING old_id;
+        END IF;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <createProcedure>
+-- oncall_schedule_times reaches its on-call role through its schedule, which is gone when the role is deleted
+CREATE OR REPLACE FUNCTION usermgmt_bump_oncall_role_of_time() RETURNS trigger AS $$
+BEGIN
+    -- an UPDATE that changes nothing is no change of the on-call role
+    IF TG_OP = 'UPDATE' AND NEW IS NOT DISTINCT FROM OLD THEN
+        RETURN NULL;
+    END IF;
+    IF TG_OP &lt;&gt; 'DELETE' THEN
+        UPDATE oncall_roles SET version = version + 1
+         WHERE id = (SELECT oncall_role_id FROM oncall_schedules WHERE id = NEW.schedule_id);
+    END IF;
+    IF TG_OP &lt;&gt; 'INSERT' AND (TG_OP = 'DELETE' OR OLD.schedule_id IS DISTINCT FROM NEW.schedule_id) THEN
+        UPDATE oncall_roles SET version = version + 1
+         WHERE id = (SELECT oncall_role_id FROM oncall_schedules WHERE id = OLD.schedule_id);
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <createProcedure>
+-- a renamed user: the groups it is a member of and the on-call roles it supervises or is scheduled in show the name
+CREATE OR REPLACE FUNCTION usermgmt_bump_for_username() RETURNS trigger AS $$
+BEGIN
+    UPDATE groups SET version = version + 1
+     WHERE id IN (SELECT group_id FROM group_members WHERE user_id = NEW.id);
+    UPDATE oncall_roles SET version = version + 1
+     WHERE supervisor_user_id = NEW.id
+        OR id IN (SELECT oncall_role_id FROM oncall_schedules WHERE user_id = NEW.id);
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <createProcedure>
+-- a renamed group: the on-call roles that use it as membership group show the name
+CREATE OR REPLACE FUNCTION usermgmt_bump_for_group_name() RETURNS trigger AS $$
+BEGIN
+    UPDATE oncall_roles SET version = version + 1 WHERE membership_group_id = NEW.id;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <sql>
+CREATE TRIGGER users_row_version BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_row_version();
+CREATE TRIGGER groups_row_version BEFORE UPDATE ON groups FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_row_version();
+CREATE TRIGGER oncall_roles_row_version BEFORE UPDATE ON oncall_roles FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_row_version();
+CREATE TRIGGER security_roles_row_version BEFORE UPDATE ON security_roles FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_row_version();
+
+CREATE TRIGGER user_contacts_bump_parent AFTER INSERT OR UPDATE OR DELETE ON user_contacts FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_parent('users', 'user_id');
+CREATE TRIGGER user_duty_schedules_bump_parent AFTER INSERT OR UPDATE OR DELETE ON user_duty_schedules FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_parent('users', 'user_id');
+CREATE TRIGGER user_security_roles_bump_parent AFTER INSERT OR UPDATE OR DELETE ON user_security_roles FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_parent('users', 'user_id');
+CREATE TRIGGER group_members_bump_parent AFTER INSERT OR UPDATE OR DELETE ON group_members FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_parent('groups', 'group_id');
+CREATE TRIGGER group_duty_schedules_bump_parent AFTER INSERT OR UPDATE OR DELETE ON group_duty_schedules FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_parent('groups', 'group_id');
+CREATE TRIGGER oncall_schedules_bump_parent AFTER INSERT OR UPDATE OR DELETE ON oncall_schedules FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_parent('oncall_roles', 'oncall_role_id');
+CREATE TRIGGER oncall_schedule_times_bump_parent AFTER INSERT OR UPDATE OR DELETE ON oncall_schedule_times FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_oncall_role_of_time();
+
+-- Hibernate's UPDATE lists every column, so UPDATE OF alone would fire on every save: the WHEN clauses matter
+CREATE TRIGGER users_username_bump AFTER UPDATE OF username ON users FOR EACH ROW WHEN (OLD.username IS DISTINCT FROM NEW.username) EXECUTE PROCEDURE usermgmt_bump_for_username();
+CREATE TRIGGER groups_name_bump AFTER UPDATE OF name ON groups FOR EACH ROW WHEN (OLD.name IS DISTINCT FROM NEW.name) EXECUTE PROCEDURE usermgmt_bump_for_group_name();
+        </sql>
+
+        <rollback>
+            <sql>
+DROP TRIGGER IF EXISTS users_row_version ON users;
+DROP TRIGGER IF EXISTS groups_row_version ON groups;
+DROP TRIGGER IF EXISTS oncall_roles_row_version ON oncall_roles;
+DROP TRIGGER IF EXISTS security_roles_row_version ON security_roles;
+DROP TRIGGER IF EXISTS user_contacts_bump_parent ON user_contacts;
+DROP TRIGGER IF EXISTS user_duty_schedules_bump_parent ON user_duty_schedules;
+DROP TRIGGER IF EXISTS user_security_roles_bump_parent ON user_security_roles;
+DROP TRIGGER IF EXISTS group_members_bump_parent ON group_members;
+DROP TRIGGER IF EXISTS group_duty_schedules_bump_parent ON group_duty_schedules;
+DROP TRIGGER IF EXISTS oncall_schedules_bump_parent ON oncall_schedules;
+DROP TRIGGER IF EXISTS oncall_schedule_times_bump_parent ON oncall_schedule_times;
+DROP TRIGGER IF EXISTS users_username_bump ON users;
+DROP TRIGGER IF EXISTS groups_name_bump ON groups;
+DROP FUNCTION IF EXISTS usermgmt_bump_row_version();
+DROP FUNCTION IF EXISTS usermgmt_bump_parent();
+DROP FUNCTION IF EXISTS usermgmt_bump_oncall_role_of_time();
+DROP FUNCTION IF EXISTS usermgmt_bump_for_username();
+DROP FUNCTION IF EXISTS usermgmt_bump_for_group_name();
+            </sql>
         </rollback>
     </changeSet>
 

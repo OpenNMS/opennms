@@ -89,4 +89,13 @@ public class DatabasePasswordsIT implements TemporaryDatabaseAware<TemporaryData
         // the DOM path used contains(), so "dmi" matched "admin"; the database path matches exactly
         assertThrows(IllegalArgumentException.class, () -> DatabasePasswords.setPassword(m_dataSource, "dmi", "x"));
     }
+
+    @Test
+    public void testSetPasswordBumpsUserVersion() throws Exception {
+        final int before = m_jdbc.queryForObject("SELECT version FROM users WHERE username = 'admin'", Integer.class);
+        final long usersVersion = m_jdbc.queryForObject("SELECT version FROM usermgmt_version WHERE name = 'users'", Long.class);
+        DatabasePasswords.setPassword(m_dataSource, "admin", "n3w");
+        assertTrue(m_jdbc.queryForObject("SELECT version FROM users WHERE username = 'admin'", Integer.class) > before);
+        assertTrue(m_jdbc.queryForObject("SELECT version FROM usermgmt_version WHERE name = 'users'", Long.class) > usersVersion);
+    }
 }

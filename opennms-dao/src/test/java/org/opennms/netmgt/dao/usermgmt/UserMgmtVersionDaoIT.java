@@ -22,6 +22,7 @@
 package org.opennms.netmgt.dao.usermgmt;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -72,6 +73,9 @@ public class UserMgmtVersionDaoIT implements InitializingBean {
     @Autowired
     private TransactionOperations m_tx;
 
+    @Autowired
+    private org.hibernate.SessionFactory m_sessionFactory;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -107,8 +111,21 @@ public class UserMgmtVersionDaoIT implements InitializingBean {
     }
 
     @Test
-    public void testLockVersionReturnsTheCurrentValue() {
-        final long expected = m_versionDao.getVersion(Domain.groups);
-        assertEquals(Long.valueOf(expected), m_tx.execute(status -> m_versionDao.lockVersion(Domain.groups)));
+    public void testLockAllDoesNotWriteOutPendingChanges() {
+        final int[] visibleBeforeFlush = new int[1];
+        m_tx.execute(status -> {
+            m_groupDao.save(new UserGroup("LockProbe"));
+            m_versionDao.lockAll();
+            // a flush here would fire the triggers before the second lock is held
+            m_sessionFactory.getCurrentSession().doWork(connection -> {
+                try (java.sql.ResultSet rs = connection.createStatement().executeQuery("SELECT count(*) FROM groups WHERE name = 'LockProbe'")) {
+                    rs.next();
+                    visibleBeforeFlush[0] = rs.getInt(1);
+                }
+            });
+            return null;
+        });
+        assertEquals(0, visibleBeforeFlush[0]);
+        assertNotNull(m_tx.execute(status -> m_groupDao.findByName("LockProbe")));
     }
 }

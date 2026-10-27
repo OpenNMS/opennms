@@ -130,7 +130,8 @@ public class DbGroupManager extends GroupManager {
         try {
             m_groupsVersion = UserMgmtTransactions.inTransaction(m_transactions, () -> {
                 // a manager that never loaded holds only what the caller added, which an upsert can write safely
-                if (m_versionDao.lockVersion(Domain.groups) != m_groupsVersion && loaded) {
+                m_versionDao.lockAll();
+                if (m_versionDao.getVersion(Domain.groups) != m_groupsVersion && loaded) {
                     throw new UserDataChangedException();
                 }
                 writtenUserIds.putAll(write(groupinfo));
@@ -298,6 +299,7 @@ public class DbGroupManager extends GroupManager {
     private void change(final ChangeWork work) throws Exception {
         try {
             UserMgmtTransactions.inTransaction(m_transactions, () -> {
+                m_versionDao.lockAll();
                 work.run();
                 m_groupDao.flush();
                 return null;

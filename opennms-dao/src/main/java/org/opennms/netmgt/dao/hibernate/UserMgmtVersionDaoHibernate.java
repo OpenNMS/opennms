@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
+import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 
@@ -32,16 +33,44 @@ public class UserMgmtVersionDaoHibernate extends HibernateDaoSupport implements 
     }
 
     @Override
-    public long lockVersion(final Domain domain) {
-        return query("SELECT version FROM usermgmt_version WHERE name = :name FOR UPDATE", domain);
+    public void lockAll() {
+        lock(Domain.users);
+        lock(Domain.groups);
+    }
+
+    // no flush: a flush can fire the triggers, which bump the counter of a domain whose lock is not yet held
+    private void lock(final Domain domain) {
+        getHibernateTemplate().execute(session -> session
+                .createNativeQuery("SELECT version FROM usermgmt_version WHERE name = :name FOR UPDATE")
+                .setParameter("name", domain.name())
+                .uniqueResult());
+    }
+
+    @Override
+    public int getRowVersion(final VersionedTable table, final int id) {
+        return getHibernateTemplate().execute(session -> {
+            flushIfDirty(session);
+            // the table name comes from the enum, so it is safe to concatenate
+            final Number version = (Number) session.createNativeQuery("SELECT version FROM " + table.name() + " WHERE id = :id")
+                    .setParameter("id", id)
+                    .uniqueResult();
+            if (version == null) {
+                throw new IllegalArgumentException("No row with id " + id + " in " + table);
+            }
+            return version.intValue();
+        });
+    }
+
+    private static void flushIfDirty(final Session session) {
+        // write out pending changes first, so their triggers have run when the version is read
+        if (session.isDirty()) {
+            session.flush();
+        }
     }
 
     private long query(final String sql, final Domain domain) {
         return getHibernateTemplate().execute(session -> {
-            // write out pending changes first, so their triggers have run when the version is read
-            if (session.isDirty()) {
-                session.flush();
-            }
+            flushIfDirty(session);
             final Number version = (Number) session.createNativeQuery(sql)
                     .setParameter("name", domain.name())
                     .uniqueResult();
