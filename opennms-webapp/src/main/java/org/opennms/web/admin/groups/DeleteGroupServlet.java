@@ -28,8 +28,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.netmgt.config.GroupFactory;
-import org.opennms.netmgt.config.GroupManager;
+import org.opennms.web.svclayer.api.GroupService;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * A servlet that handles deleting an existing group
@@ -49,11 +51,12 @@ public class DeleteGroupServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String groupName = request.getParameter("groupName");
 
-        // now save to the xml file
         try {
-            GroupFactory.init();
-            GroupManager groupFactory = GroupFactory.getInstance();
-            groupFactory.deleteGroup(groupName);
+            // the group service also clears the category authorizations of the group, which a later group
+            // with the same name would otherwise inherit; they are written when the transaction commits
+            final WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+            final GroupService groupService = context.getBean(GroupService.class);
+            context.getBean(TransactionTemplate.class).executeWithoutResult(status -> groupService.deleteGroup(groupName));
         } catch (Throwable e) {
             throw new ServletException("Error deleting group " + groupName, e);
         }

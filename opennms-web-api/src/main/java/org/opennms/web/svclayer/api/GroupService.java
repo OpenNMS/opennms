@@ -52,6 +52,18 @@ public interface GroupService {
 
     void renameGroup(String oldName, String newName);
 
+    /**
+     * Moves every category authorization from one group name to another. Touches only
+     * categories (through the CategoryDao) and joins the caller's transaction.
+     */
+    void moveCategoryAuthorizations(String oldName, String newName);
+
+    /**
+     * Removes the group from every category authorization. Touches only categories
+     * (through the CategoryDao) and joins the caller's transaction.
+     */
+    void clearCategoryAuthorizations(String name);
+
     boolean addCategory(String groupName, String categoryName);
 
     boolean removeCategory(String groupName, String categoryName);
