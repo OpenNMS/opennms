@@ -80,6 +80,11 @@ public class GraphCollectionsIT extends OpenNMSSeleniumIT {
         assertElementDoesNotExist(titleLink(TITLE));
         assertElementDoesNotExist(titleLink(RENAMED_TITLE));
         waitForElement(By.cssSelector("[data-test='create-collection']"));
+
+        // the legacy list URL redirects here, so bookmarks from before the move keep working
+        driver.get(getBaseUrlInternal() + "opennms/KSC/index.jsp");
+        wait.until(ExpectedConditions.urlContains("#/graph-collections"));
+        waitForElement(By.cssSelector("[data-test='create-collection']"));
     }
 
     protected void createCollection() throws Exception {
@@ -105,6 +110,13 @@ public class GraphCollectionsIT extends OpenNMSSeleniumIT {
         clickElement(By.cssSelector("[data-test='save']"));
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("[data-test='gc-view-title']"), TITLE));
         waitForElement(By.cssSelector("[data-test='gc-cell']"));
+        waitForElement(By.xpath("//*[@data-test='gc-cell']//canvas"));
+
+        // the legacy view URL redirects to this page, override and all
+        final String id = driver.getCurrentUrl().replaceAll(".*#/graph-collections/(\\d+).*", "$1");
+        driver.get(getBaseUrlInternal() + "opennms/KSC/customView.htm?type=custom&report=" + id + "&timespan=1_day");
+        wait.until(ExpectedConditions.urlContains("#/graph-collections/" + id + "?timespan=1_day"));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("[data-test='gc-view-title']"), TITLE));
         waitForElement(By.xpath("//*[@data-test='gc-cell']//canvas"));
     }
 

@@ -74,6 +74,44 @@ describe('onms-search graph collection typeahead', function() {
   });
 });
 
+describe('onms-graph-results add dialog', function() {
+  let scope, httpBackend;
+
+  beforeEach(angular.mock.module('onms-graph-results'));
+
+  beforeEach(angular.mock.inject(function($rootScope, $httpBackend, $controller) {
+    scope = $rootScope.$new();
+    httpBackend = $httpBackend;
+    httpBackend.expect('GET', 'api/v2/graph-collections').respond([
+      { id: 3, title: 'Core', graphs: [{ resourceId: 'node[1].nodeSnmp[]', graphtype: 'mib2.bits', timespan: '1_day' }] },
+      { id: 4, title: 'Edge', graphs: [] }
+    ]);
+    httpBackend.expect('GET', 'api/v2/graph-collections/timespans').respond([{ id: '1_day', label: '1 day' }]);
+    $controller('AddToGraphCollectionModalInstanceCtrl', {
+      '$scope': scope,
+      '$uibModalInstance': { close: jest.fn(), dismiss: jest.fn() },
+      'resourceId': 'node[1].nodeSnmp[]',
+      'resourceLabel': 'rtr',
+      'graphName': 'mib2.bits',
+      'graphTitle': 'Bits'
+    });
+    httpBackend.flush();
+  }));
+
+  afterEach(function() {
+    httpBackend.verifyNoOutstandingExpectation();
+    httpBackend.verifyNoOutstandingRequest();
+  });
+
+  test('points out a collection that already holds the graph, without refusing it', function() {
+    expect(scope.alreadyIn()).toBe(false);
+    scope.collection = scope.collections[0];
+    expect(scope.alreadyIn()).toBe(true);
+    scope.collection = scope.collections[1];
+    expect(scope.alreadyIn()).toBe(false);
+  });
+});
+
 describe('onms-graph-results growl messages', function() {
   const growl = { success: jest.fn(), warning: jest.fn(), error: jest.fn() };
   let scope, httpBackend;
@@ -103,10 +141,15 @@ describe('onms-graph-results growl messages', function() {
     expect(growl.success).toHaveBeenCalledWith('The graph "Bits &lt;i&gt;in&lt;/i&gt;" has been added to "Core &lt;img src=&quot;x&quot; onerror=&quot;window.pwned = true&quot;&gt;"');
   });
 
-  test('escape the names in the already-added warning', function() {
-    const collection = { id: 3, title: 'Core <b>x</b>', graphs: [{ resourceId: 'node[1].nodeSnmp[]', graphtype: 'mib2.bits' }] };
-    scope.addGraph(collection, 'node[1].nodeSnmp[]', 'rtr <b>1</b>', 'mib2.bits', 'Bits <i>in</i>', '1_day');
-    expect(growl.warning).toHaveBeenCalledWith('The graph "Bits &lt;i&gt;in&lt;/i&gt;" for resource "rtr &lt;b&gt;1&lt;/b&gt;" has been already added to "Core &lt;b&gt;x&lt;/b&gt;"');
+  test('add a graph already in the collection a second time, as the Vue dialog does', function() {
+    const collection = { id: 3, title: 'Core', graphs: [{ resourceId: 'node[1].nodeSnmp[]', graphtype: 'mib2.bits', timespan: '1_day' }] };
+    httpBackend.expect('POST', 'api/v2/graph-collections/3/graphs', function(body) {
+      return JSON.parse(body).timespan === '7_day';
+    }).respond(200, {});
+    scope.addGraph(collection, 'node[1].nodeSnmp[]', 'rtr', 'mib2.bits', 'Bits', '7_day');
+    httpBackend.flush();
+    expect(growl.warning).not.toHaveBeenCalled();
+    expect(growl.success).toHaveBeenCalledWith('The graph "Bits" has been added to "Core"');
   });
 
   test('escape the server\'s refusal, which may quote the title', function() {

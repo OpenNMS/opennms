@@ -493,6 +493,9 @@
         <property name="rrdGraphService" ref="rrdGraphService"/>
     </bean>
 
+    <!-- the removed KSC view page: bookmarks to it land on the Graph Collections view of the Vue UI -->
+    <bean name="/KSC/customView.htm" class="org.opennms.web.controller.GraphCollectionRedirectController"/>
+
 
     <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>

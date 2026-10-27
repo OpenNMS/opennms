@@ -32,6 +32,7 @@
         typeahead-min-length="0"
         ng-class="{ 'is-invalid' : graphCollectionForm.collection.$invalid }">
       <p class="invalid-feedback">Target Graph Collection is required.</p>
+      <p class="form-text text-muted" ng-if="alreadyIn()">This graph is already in "{{ collection.title }}". Adding it again shows it twice.</p>
     </div>
   </div>
   <div class="modal-footer">

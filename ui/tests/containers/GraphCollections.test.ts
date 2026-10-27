@@ -31,7 +31,7 @@ import GraphCollectionView from '@/containers/GraphCollectionView.vue'
 // file's own constants would otherwise exist
 const {
   getGraphCollections, deleteGraphCollection, reloadGraphCollections, createGraphCollection, getResolvedGraphCollection,
-  getResolvedSyntheticGraphCollection, getGraphCollectionTimespans, showSnackBar, push, replace, role, query
+  getResolvedSyntheticGraphCollection, getGraphCollectionTimespans, showSnackBar, startSpinner, push, replace, role, query
 } = vi.hoisted(() => ({
   getGraphCollections: vi.fn(),
   deleteGraphCollection: vi.fn(),
@@ -41,6 +41,7 @@ const {
   getResolvedSyntheticGraphCollection: vi.fn(),
   getGraphCollectionTimespans: vi.fn(),
   showSnackBar: vi.fn(),
+  startSpinner: vi.fn(),
   push: vi.fn(),
   replace: vi.fn(),
   role: { readOnly: false },
@@ -60,7 +61,7 @@ vi.mock(import('@/services/graphCollectionsService'), async importOriginal => ({
 }))
 
 vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
-vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() }) }))
+vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner, stopSpinner: vi.fn() }) }))
 
 vi.mock('@/composables/useRole', () => ({
   default: () => ({
@@ -274,6 +275,28 @@ describe('GraphCollectionView.vue', () => {
     expect(replace).toHaveBeenCalledWith({ query: { timespan: '7_day' }})
     select.vm.$emit('update:modelValue', 'none')
     expect(replace).toHaveBeenLastCalledWith({ query: {}})
+  })
+
+  it('re-resolves the collection every five minutes while shown, as the legacy refresh header did', async () => {
+    // only the interval is faked: flushPromises needs the real scheduler
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })
+    try {
+      getResolvedGraphCollection.mockResolvedValue({ success: true, message: '', payload: { collection: resolved(), etag: null }})
+      const wrapper = await mountView({ id: '1' })
+      expect(getResolvedGraphCollection).toHaveBeenCalledTimes(1)
+      await vi.advanceTimersByTimeAsync(5 * 60 * 1000)
+      await flushPromises()
+      expect(getResolvedGraphCollection).toHaveBeenCalledTimes(2)
+      expect(getResolvedGraphCollection).toHaveBeenLastCalledWith(1, { timespan: null, graphtype: null })
+      // a refresh is quiet: the spinner is for what the user asked for
+      expect(startSpinner).toHaveBeenCalledTimes(1)
+      wrapper.unmount()
+      await vi.advanceTimersByTimeAsync(5 * 60 * 1000)
+      await flushPromises()
+      expect(getResolvedGraphCollection).toHaveBeenCalledTimes(2)
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('builds a node collection on the fly and offers no way back to the stored list', async () => {

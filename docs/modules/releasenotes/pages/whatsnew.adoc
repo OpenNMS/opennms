@@ -263,7 +263,9 @@ The feature formerly labeled *KSC Reports* is now *Graph Collections* throughout
 The list, view, editor and the *Add to Graph Collection* dialog on the resource graphs pages are all new; a collection can be created from a blank form, as a copy of another, from the on-the-fly collection of a node, or straight from the dialog when adding a graph.
 The global search category formerly named *KSC Report* is now *Graph Collection*.
 
-The legacy `KSC/*.jsp` pages and `KSC/*.htm` controllers have been removed, so bookmarks to them no longer work.
+The legacy `KSC/*.jsp` pages and `KSC/*.htm` controllers have been removed.
+`KSC/index.jsp` and `KSC/customView.htm` redirect to the new list and view pages, with the report, timespan and graph type parameters carried over, so bookmarks and links to a report keep working; the legacy editor URLs do not redirect.
+The view page refreshes itself every five minutes, as the legacy page did.
 The REST API under `/rest/ksc` has been removed; use the xref:development:rest/graph_collections.adoc[Graph Collections API] under `/api/v2/graph-collections` instead.
 The configuration file `etc/ksc-performance-reports.xml` and the `ksc.default.graphsPerLine` property are unchanged, so existing reports keep working.
 

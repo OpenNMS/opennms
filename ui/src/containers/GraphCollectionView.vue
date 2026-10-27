@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { OnmsButton, OnmsSelect } from '@opennms/onms-ui'
@@ -176,33 +176,48 @@ const applyOverride = (name: 'timespan' | 'graphtype', value: string) => {
 // the latest.
 let loadSeq = 0
 
-const load = async () => {
+const resolve = async () => {
   const current = ++loadSeq
-  await withSpinner(async () => {
-    const result = props.id
-      ? await getResolvedGraphCollection(Number(props.id), options.value)
-      : await getResolvedSyntheticGraphCollection(props.kind ?? 'node', props.source ?? '', options.value)
-    if (current !== loadSeq) {
-      return
-    }
-    if (!result.success) {
-      // this component instance is reused across collection routes, so drop what the previous
-      // route showed instead of leaving it under the error
-      collection.value = null
-      loadError.value = result.message
-      return
-    }
-    loadError.value = ''
-    const resolved = result.payload as ResolvedGraphCollection | { collection: ResolvedGraphCollection }
-    collection.value = 'collection' in resolved ? resolved.collection : resolved
-    if (collection.value.showTimespanButton && !timespans.value.length) {
-      const spans = await getGraphCollectionTimespans()
-      timespans.value = spans.payload ?? []
-    }
-  })
+  const result = props.id
+    ? await getResolvedGraphCollection(Number(props.id), options.value)
+    : await getResolvedSyntheticGraphCollection(props.kind ?? 'node', props.source ?? '', options.value)
+  if (current !== loadSeq) {
+    return
+  }
+  if (!result.success) {
+    // this component instance is reused across collection routes, so drop what the previous
+    // route showed instead of leaving it under the error
+    collection.value = null
+    loadError.value = result.message
+    return
+  }
+  loadError.value = ''
+  const resolved = result.payload as ResolvedGraphCollection | { collection: ResolvedGraphCollection }
+  collection.value = 'collection' in resolved ? resolved.collection : resolved
+  if (collection.value.showTimespanButton && !timespans.value.length) {
+    const spans = await getGraphCollectionTimespans()
+    timespans.value = spans.payload ?? []
+  }
 }
 
-onMounted(load)
+const load = () => withSpinner(resolve)
+
+// The legacy view page carried a Refresh header of five minutes, so a wall display showing a
+// collection kept moving. Re-resolve on the same cadence, without the spinner, while the page is
+// visible; a fresh resolve moves every graph's window, and the grid redraws the graphs it moves.
+const REFRESH_INTERVAL_MS = 5 * 60 * 1000
+let refreshTimer: ReturnType<typeof setInterval> | undefined
+
+onMounted(() => {
+  load()
+  refreshTimer = setInterval(() => {
+    if (!document.hidden && !loadError.value) {
+      resolve()
+    }
+  }, REFRESH_INTERVAL_MS)
+})
+
+onBeforeUnmount(() => clearInterval(refreshTimer))
 
 // a changed override, or a navigation from one collection to another, re-resolves the view
 watch(() => [props.id, props.kind, props.source, route.query.timespan, route.query.graphtype], load)

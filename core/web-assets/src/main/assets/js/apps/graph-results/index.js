@@ -49,13 +49,22 @@ angular.module('onms-graph-results', [
   growlProvider.globalTimeToLive(5000);
   growlProvider.globalPosition('bottom-center');
 }])
-.controller('AddToGraphCollectionModalInstanceCtrl', ['$scope', '$http', '$uibModalInstance', 'resourceLabel', 'graphTitle', function ($scope, $http, $uibModalInstance, resourceLabel, graphTitle) {
+.controller('AddToGraphCollectionModalInstanceCtrl', ['$scope', '$http', '$uibModalInstance', 'resourceId', 'resourceLabel', 'graphName', 'graphTitle', function ($scope, $http, $uibModalInstance, resourceId, resourceLabel, graphName, graphTitle) {
 
   $scope.resourceLabel = resourceLabel;
   $scope.graphTitle = graphTitle;
   $scope.collections = [];
   $scope.timespan = '1_day';
   $scope.timespans = [];
+
+  // A second entry with another timespan is a legitimate use, so a graph already in the chosen
+  // collection is pointed out rather than refused, as the Vue dialog does.
+  $scope.alreadyIn = function() {
+    const collection = $scope.collection;
+    return Boolean(collection) && (collection.graphs || []).some(function(graph) {
+      return graph.resourceId === resourceId && graph.graphtype === graphName;
+    });
+  };
 
   $scope.ok = function () {
     $uibModalInstance.close({ collection: $scope.collection, title: $scope.graphTitle, timespan: $scope.timespan });
@@ -95,7 +104,9 @@ angular.module('onms-graph-results', [
       templateUrl: templateUrl,
       controller: 'AddToGraphCollectionModalInstanceCtrl',
       resolve: {
+        resourceId: function() { return resourceId; },
         resourceLabel: function() { return resourceLabel; },
+        graphName: function() { return graphName; },
         graphTitle: function() { return graphTitle; }
       }
     }).result.then(function (data) {
@@ -104,13 +115,6 @@ angular.module('onms-graph-results', [
   };
 
   $scope.addGraph = function(collection, resourceId, resourceLabel, graphName, graphTitle, timespan) {
-    const alreadyThere = (collection.graphs || []).some(function(graph) {
-      return graph.resourceId === resourceId && graph.graphtype === graphName;
-    });
-    if (alreadyThere) {
-      growl.warning('The graph "' + escapeHtml(graphTitle) + '" for resource "' + escapeHtml(resourceLabel) + '" has been already added to "' + escapeHtml(collection.title) + '"');
-      return;
-    }
     $http({
       url: 'api/v2/graph-collections/' + collection.id + '/graphs',
       method: 'POST',
