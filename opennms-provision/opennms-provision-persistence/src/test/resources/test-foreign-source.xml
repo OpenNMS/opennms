@@ -9,7 +9,6 @@
         <detector name="ICMP" class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector" />
         <detector name="IMAP" class="org.opennms.netmgt.provision.detector.simple.ImapDetector" />
         <detector name="LDAP" class="org.opennms.netmgt.provision.detector.simple.LdapDetector" />
-        <detector name="NRPE" class="org.opennms.netmgt.provision.detector.simple.NrpeDetector" />
         <detector name="POP3" class="org.opennms.netmgt.provision.detector.simple.Pop3Detector" />
         <detector name="SMTP" class="org.opennms.netmgt.provision.detector.simple.SmtpDetector" />
         <detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" />

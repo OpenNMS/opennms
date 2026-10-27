@@ -90,7 +90,6 @@ public class DetectorsCommandIT {
             .put("LDAPS", "org.opennms.netmgt.provision.detector.simple.LdapsDetector")
             .put("LOOP", "org.opennms.netmgt.provision.detector.loop.LoopDetector")
             .put("Memcached", "org.opennms.netmgt.provision.detector.simple.MemcachedDetector")
-            .put("NRPE", "org.opennms.netmgt.provision.detector.simple.NrpeDetector")
             .put("NTP", "org.opennms.netmgt.provision.detector.datagram.NtpDetector")
             .put("PERC", "org.opennms.netmgt.provision.detector.snmp.PercDetector")
             .put("POP3", "org.opennms.netmgt.provision.detector.simple.Pop3Detector")

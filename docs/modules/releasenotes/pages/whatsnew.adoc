@@ -208,6 +208,11 @@ To detect a Lotus Notes or HCL Domino web server, use the xref:reference:provisi
 === JoeSNMP removed
 The SNMP implementation JoeSNMP was removed in OpenNMS {page-component-title}.
 
+=== NrpeDetector removed
+The NrpeDetector has been removed, and the default foreign source no longer includes the NRPE detector.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.simple.NrpeDetector` from your foreign source definitions, including a customized `default-foreign-source.xml`, before upgrading.
+The xref:reference:service-assurance/monitors/NrpeMonitor.adoc[NrpeMonitor] is unchanged; to keep monitoring NRPE checks, add the NRPE services to nodes in their requisitions.
+
 === C3P0 connection pool removed
 The C3P0 connection pool factory (`org.opennms.core.db.C3P0ConnectionFactory`) and
 `etc/c3p0.properties` have been removed. HikariCP is now the only supported pool, and has been the default since OpenNMS {page-component-title} 35.

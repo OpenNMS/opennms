@@ -42,10 +42,6 @@
 	</service>
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.simple.NrpeDetectorFactory" />
-	</service>
-
-	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.netmgt.provision.detector.simple.Pop3DetectorFactory" />
 	</service>
 
