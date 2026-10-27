@@ -114,7 +114,7 @@ for change in changed_files:
         add_to_build_list("oci")
     elif ".circleci" in change and ".circleci/epoch" not in change:
         add_to_build_list("circleci_configuration")
-    elif "docs/" in change:
+    elif change.startswith("docs/"):
         add_to_build_list("docs")
     elif "ui" in change:
         add_to_build_list("ui")
@@ -217,27 +217,9 @@ if build_mappings["experimental"] or "experimentalPath" in git_keywords:
     build_mappings["experimental"] = True
 
 def should_proceed(item, What_to_build, combine_build_element):
-    # Check if the item is one of the specified values and if What_to_build has one item
-    is_single_item = (item in ["docs", "ui", "circleci_configuration"] and len(What_to_build) == 1)
-
-    # Check if any two of the specified values are present in combine_build_element
-    is_two_items = (
-        (("docs" in combine_build_element and "ui" in combine_build_element) or
-         ("docs" in combine_build_element and "circleci_configuration" in combine_build_element) or
-         ("circleci_configuration" in combine_build_element and "ui" in combine_build_element)) and
-        len(What_to_build) == 2
-    )
-
-    # Check if all three specified values are present and if What_to_build has three items
-    is_three_items = (
-        "docs" in combine_build_element and
-        "ui" in combine_build_element and
-        "circleci_configuration" in combine_build_element and
-        len(What_to_build) == 3
-    )
-
-    # Return True if any of the conditions are met
-    return is_single_item or is_two_items or is_three_items
+    # Skip the build when every changed item is documentation, UI or CI configuration.
+    # Test list membership, not substrings: "build" contains "ui".
+    return set(What_to_build) <= {"docs", "ui", "circleci_configuration"}
 
 if "trigger-build" in mappings:
     if (
