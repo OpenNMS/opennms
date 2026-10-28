@@ -32,7 +32,7 @@ This page describes the settings that these features share and their defaults.
 | No
 | `org.opennms.features.alarms.history.elastic.cfg`
 
-| xref:development:rest/situation-feedback.adoc[Situation feedback]
+| xref:operation:deep-dive/alarms/situations.adoc#ga-situation-feedback[Situation feedback]
 | `opennms-situation-feedback`
 | No
 | `org.opennms.features.situationfeedback.persistence.elastic.cfg`
