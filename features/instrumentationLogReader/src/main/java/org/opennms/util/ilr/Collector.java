@@ -56,6 +56,9 @@ public class Collector {
         TOTALCOLLECTS,
         TOTALCOLLECTTIME,
         AVGCOLLECTTIME, 
+        MINCOLLECTTIME,
+        MAXCOLLECTTIME,
+        LASTCOLLECTTIME,
         AVGTIMEBETWEENCOLLECTS,
         TOTALSUCCESSCOLLECTS,
         SUCCESSPERCENTAGE,
@@ -224,6 +227,33 @@ public class Collector {
             };
 
         }   
+        case MINCOLLECTTIME:
+        {
+            return new LongComparator() {
+                @Override
+                protected long getLong(ServiceCollector sc) {
+                    return sc.getMinCollectionTime();
+                }
+            };
+        }
+        case MAXCOLLECTTIME:
+        {
+            return new LongComparator() {
+                @Override
+                protected long getLong(ServiceCollector sc) {
+                    return sc.getMaxCollectionTime();
+                }
+            };
+        }
+        case LASTCOLLECTTIME:
+        {
+            return new LongComparator() {
+                @Override
+                protected long getLong(ServiceCollector sc) {
+                    return sc.getLastCollectionTime();
+                }
+            };
+        }
         case AVGTIMEBETWEENCOLLECTS: 
         {
             return new LongComparator() {

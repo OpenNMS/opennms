@@ -193,6 +193,42 @@ pageContext.setAttribute("showDeletedParam", showDeleted ? "&showDeleted=true" :
       </c:choose>
   
       <c:choose>
+      	<c:when test="${sortColumn == 'MINCOLLECTTIME' && sortOrder == 'DESCENDING'}">
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=MINCOLLECTTIME&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Minimum Collection Time ^</a></th>
+      	</c:when>
+      	<c:when test="${sortColumn != 'MINCOLLECTTIME'}">
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=MINCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Minimum Collection Time</a></th>
+      	</c:when>
+      	<c:otherwise>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=MINCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Minimum Collection Time v</a></th>
+      	</c:otherwise>
+      </c:choose>
+  
+      <c:choose>
+      	<c:when test="${sortColumn == 'MAXCOLLECTTIME' && sortOrder == 'DESCENDING'}">
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=MAXCOLLECTTIME&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Maximum Collection Time ^</a></th>
+      	</c:when>
+      	<c:when test="${sortColumn != 'MAXCOLLECTTIME'}">
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=MAXCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Maximum Collection Time</a></th>
+      	</c:when>
+      	<c:otherwise>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=MAXCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Maximum Collection Time v</a></th>
+      	</c:otherwise>
+      </c:choose>
+  
+      <c:choose>
+      	<c:when test="${sortColumn == 'LASTCOLLECTTIME' && sortOrder == 'DESCENDING'}">
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=LASTCOLLECTTIME&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Last Collection Time ^</a></th>
+      	</c:when>
+      	<c:when test="${sortColumn != 'LASTCOLLECTTIME'}">
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=LASTCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Last Collection Time</a></th>
+      	</c:when>
+      	<c:otherwise>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=LASTCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Last Collection Time v</a></th>
+      	</c:otherwise>
+      </c:choose>
+  
+      <c:choose>
       	<c:when test="${sortColumn == 'AVGTIMEBETWEENCOLLECTS' && sortOrder == 'DESCENDING'}">
       		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGTIMEBETWEENCOLLECTS&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Average Time Between Collections ^</a></th>
       	</c:when>
@@ -343,6 +379,9 @@ pageContext.setAttribute("showDeletedParam", showDeleted ? "&showDeleted=true" :
       </c:choose>
       <td class="text-right">${svcCollector.collectionCount}</td>
       <td class="text-right">${svcCollector.averageCollectionDuration}</td>
+      <td class="text-right">${svcCollector.minCollectionDuration}</td>
+      <td class="text-right">${svcCollector.maxCollectionDuration}</td>
+      <td class="text-right">${svcCollector.lastCollectionDuration}</td>
       <td class="text-right">${svcCollector.averageDurationBetweenCollections}</td>
       <td class="text-right">${svcCollector.successfulCollectionCount}</td>
       <c:choose>
