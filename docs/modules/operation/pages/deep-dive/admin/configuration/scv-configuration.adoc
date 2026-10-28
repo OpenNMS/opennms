@@ -215,7 +215,9 @@ The password is masked.
 | Deletes an entry.
 |===
 
-The examples below assume `scvcli` is on your `PATH`; otherwise use its full path, for example `/opt/opennms/bin/scvcli` or `/opt/minion/bin/scvcli`.
+The examples below assume `scvcli` is on your `PATH`.
+On {page-component-title} Core installed from RPM packages, `/etc/profile.d/opennms.sh` adds `$OPENNMS_HOME/bin` to the `PATH` of login shells.
+Otherwise, use the full path, for example `/opt/opennms/bin/scvcli` or `/opt/minion/bin/scvcli`.
 Run it as the user that runs the service, so the keystore stays readable by that service.
 
 .Store database credentials on {page-component-title} Core and prompt for the password
