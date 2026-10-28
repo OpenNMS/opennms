@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.poller.pollables;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -28,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
@@ -118,9 +120,23 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     }
 
     private static com.codahale.metrics.Timer pollTimer(MetricRegistry metricRegistry, String name) {
+        return metricRegistry.timer(safeTimerName(name), () -> new com.codahale.metrics.Timer(LockFreeExponentiallyDecayingReservoir.builder().build()));
+    }
+
+    private static String safeTimerName(String name) {
         // JMX quotes ObjectName values containing these, which the name=polls* collection pattern can't match
-        final String safeName = name.replaceAll("[:,=\"*?\\n]", "_");
-        return metricRegistry.timer(safeName, () -> new com.codahale.metrics.Timer(LockFreeExponentiallyDecayingReservoir.builder().build()));
+        return name.replaceAll("[:,=\"*?\\n]", "_");
+    }
+
+    /**
+     * Removes the per-service timers of services that are no longer configured,
+     * which would otherwise stay registered, and collected, until a restart.
+     */
+    public static void removeUnconfiguredTimers(MetricRegistry metricRegistry, Collection<String> configuredServiceNames) {
+        final var keep = configuredServiceNames.stream()
+                .map(svc -> safeTimerName(MetricRegistry.name(POLLS_METRIC, svc)))
+                .collect(Collectors.toSet());
+        metricRegistry.removeMatching((name, metric) -> name.startsWith(POLLS_METRIC + ".") && !keep.contains(name));
     }
 
     private synchronized void findService() {

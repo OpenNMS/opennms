@@ -37,10 +37,12 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 
 import org.jrobin.core.RrdException;
 import org.junit.After;
@@ -410,6 +412,21 @@ public class CollectableServiceTest {
 
         assertEquals(2, metricRegistry.timer("collections").getCount());
         assertEquals(2, metricRegistry.timer("collections.SNMP").getCount());
+    }
+
+    /**
+     * Timers of services dropped from the configuration are removed; the overall timer stays.
+     */
+    @Test
+    public void removesTimersOfUnconfiguredServices() {
+        final MetricRegistry registry = new MetricRegistry();
+        registry.timer("collections");
+        registry.timer("collections.SNMP");
+        registry.timer("collections.JMX-Cassandra");
+
+        CollectableService.removeUnconfiguredTimers(registry, Collections.singleton("SNMP"));
+
+        assertEquals(new TreeSet<>(Arrays.asList("collections", "collections.SNMP")), registry.getNames());
     }
 
     private void createCollectableService() throws CollectionInitializationException, IOException {

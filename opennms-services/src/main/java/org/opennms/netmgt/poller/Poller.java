@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
@@ -261,6 +262,16 @@ public class Poller extends AbstractServiceDaemon {
 
     public void setMetricRegistry(MetricRegistry metricRegistry) {
         m_metricRegistry = Objects.requireNonNull(metricRegistry);
+    }
+
+    /**
+     * Removes the poll timers of services that a configuration reload dropped.
+     */
+    public void removeUnconfiguredPollTimers() {
+        PollableServiceConfig.removeUnconfiguredTimers(m_metricRegistry, getPollerConfig().getPackages().stream()
+                .flatMap(pkg -> pkg.getServices().stream())
+                .map(org.opennms.netmgt.config.poller.Service::getName)
+                .collect(Collectors.toSet()));
     }
 
     /**

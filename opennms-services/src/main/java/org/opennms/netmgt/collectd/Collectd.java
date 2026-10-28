@@ -1011,6 +1011,12 @@ public class Collectd extends AbstractServiceDaemon implements
             }
         }
 
+        // Remove the timers of services no longer configured
+        CollectableService.removeUnconfiguredTimers(m_metricRegistry, m_collectdConfigFactory.getPackages().stream()
+                .flatMap(pkg -> pkg.getServices().stream())
+                .map(org.opennms.netmgt.config.collectd.Service::getName)
+                .collect(Collectors.toSet()));
+
         //Re-instantiate collectors
         instantiateCollectors();
     }

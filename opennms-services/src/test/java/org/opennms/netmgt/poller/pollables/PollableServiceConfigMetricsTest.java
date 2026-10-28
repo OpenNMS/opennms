@@ -122,4 +122,21 @@ public class PollableServiceConfigMetricsTest {
 
         assertEquals(new TreeSet<>(Arrays.asList("polls", "polls.HTTP")), metricRegistry.getNames());
     }
+
+    /**
+     * Timers of services dropped from the configuration are removed; the overall timer stays.
+     * Configured names are sanitized the same way as the timer names.
+     */
+    @Test
+    public void removesTimersOfUnconfiguredServices() {
+        final MetricRegistry metricRegistry = new MetricRegistry();
+        metricRegistry.timer("polls");
+        metricRegistry.timer("polls.ICMP");
+        metricRegistry.timer("polls.HTTP-8080");
+        metricRegistry.timer("polls.Web_Port");
+
+        PollableServiceConfig.removeUnconfiguredTimers(metricRegistry, Arrays.asList("ICMP", "Web:Port"));
+
+        assertEquals(new TreeSet<>(Arrays.asList("polls", "polls.ICMP", "polls.Web_Port")), metricRegistry.getNames());
+    }
 }
