@@ -25,7 +25,7 @@ In the example, the monitor navigates to the Event list page, to ensure that it 
 Finally, the monitor calls the URL of the logout page to close the session.
 Using the locationMatch parameter verifies that the logout was successful and a redirect was triggered.
 
-Each page is checked to ensure its HTTP response code fits into the response-range, before the failureMatch, successMatch, and locationMatch expressions are evaluated.
+Each page is checked to ensure its HTTP response code fits into the response-range, before the locationMatch, failureMatch, and successMatch expressions are evaluated, in that order.
 
 [source, xml]
 ----
@@ -68,7 +68,7 @@ Each page is checked to ensure its HTTP response code fits into the response-ran
 <3> Text to look for in the response body.
 <4> HTTP method (*GET* or *POST*).
 <5> Range of acceptable HTTP response codes.
-<6> The relative URL that must be located for the request to be successful.
+<6> Regular expression that the `Location` header of the response must match.
 <7> Required *monitor* section.
 
 [[ga-pollerd-web-application-monitoring-http-https]]
@@ -100,7 +100,6 @@ The third page has no `method` and uses GET, so its parameter is sent as a URL q
             path="/ecomm/controller" <4>
             virtual-host="ecomm.example.com" <5>
             successMatch="requesttab_select.gif" <6>
-            failureMessage="Login failed: ${1}" <9>
             http-version="1.1"> <7>
         <parameter key="action_name"
                    value="XbtnLogin"/>
@@ -125,18 +124,17 @@ The third page has no `method` and uses GET, so its parameter is sent as a URL q
   </parameter>
 </service>
 
-<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <10>
+<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <9>
 ----
 <1> Define the URL scheme as *http* or *https*.
 <2> Host name or address to connect to instead of the IP interface address; the HTTP `Host` header comes from `virtual-host`.
 <3> Host port number to use when connecting.
 <4> The relative URL to call in the request.
-<5> Set the virtual host field in the HTTP header.
+<5> Value of the HTTP `Host` header.
 <6> Text to look for in the response body.
-<7> HTTP protocol version (0.9, 1.0, or 1.1).
+<7> HTTP protocol version (1.0 or 1.1).
 <8> HTTP method (*GET* or *POST*).
-<9> The failure message constructs the reason code.
-<10> Required *monitor* section.
+<9> Required *monitor* section.
 
 [[ga-pollerd-web-application-monitoring-session-variables]]
 == Log in with credentials read from a page

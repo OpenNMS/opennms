@@ -59,11 +59,9 @@ See table below with page sequence parameters.
 | 0
 
 | strict-timeout
-| Number of milliseconds to wait before retrying.
-Used only if the retry parameter is not set to zero. +
-If `retry >= 1` and `strict-timeout` is `true`, the next attempt is delayed and the Poller daemon
-waits `NOW - InitialAttempt ms + Timeout ms`. +
-With `strict-timeout = false` the next attempt starts right after a failure.
+| If `true`, a retry waits until the timeout period of the failed attempt has passed.
+If `false`, the next attempt starts right after a failure.
+Used only if `retry` is not zero.
 | false
 
 | sequence-retry
@@ -100,16 +98,16 @@ Any query string content after a `?` should be part of the query parameter.
 | GET
 
 | http-version
-| HTTP protocol version (0.9, 1.0, or 1.1)
-| HTTP/1.1
+| HTTP protocol version (1.0 or 1.1).
+| 1.1
 
 | user-agent
 | Set the user agent field in the HTTP header to identify the OpenNMS monitor.
 | OpenNMS PageSequenceMonitor (Service name: "${SERVICE NAME}")
 
 | virtual-host
-| Set the virtual host field in the HTTP header.
-In case of an HTTPS request, this is also the virtual domain to send as part of the TLS negotiation, known as server name indication (SNI) (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546], section 3.1.).
+| Value of the HTTP `Host` header.
+It does not change the server name sent in the TLS negotiation (SNI), which comes from `host`.
 | n/a
 
 | scheme
@@ -117,8 +115,7 @@ In case of an HTTPS request, this is also the virtual domain to send as part of 
 | http
 
 | user-info
-| Set user info field in the HTTP header.
-Colon-separated credentials such as USERNAME:PASSWORD.
+| User name and password for HTTP basic authentication, as `USERNAME:PASSWORD`.
 | n/a
 
 | preemptive-auth
@@ -130,7 +127,7 @@ User name and password must be provided in the `user-info` attribute.
 | host
 | Host name or address to connect to instead of the IP interface address.
 The HTTP `Host` header is set from `virtual-host`, not from this attribute.
-| IP interface address of the service
+| `$\{ipaddr}` (IP interface address of the service)
 
 | requireIPv6
 | Communication requires a connection to an IPv6 address (true or false).
@@ -154,9 +151,8 @@ Set to `false` to verify certificates against the JVM trust store.
 | n/a
 
 | failureMatch
-| Text to look for in the response body.
-This is a regular expression matched against every line, is considered a
-failure at the first match, and sets the service with this monitor as Down.
+| Regular expression searched for in the whole response body.
+If it matches, the page fails and the service is marked down.
 | n/a
 
 | failureMessage
@@ -166,13 +162,13 @@ regular expression.
 | n/a
 
 | successMatch
-| Text to look for in the response body.
-This is a regular expression matched against every line, is considered a
-success at the first match, and sets the service with this monitor  as Up.
+| Regular expression searched for in the whole response body.
+If it does not match, the page fails.
 | n/a
 
 | locationMatch
-| The relative URL that must be located for the request to be successful.
+| Regular expression that the `Location` header of the response must match.
+If the header is missing or does not match, the page fails.
 | n/a
 
 | session-variable
@@ -185,22 +181,27 @@ The match group is identified by number and must be zero or greater.
 | 100-399
 |===
 
+For each page, the monitor checks the response code against `response-range`, then `locationMatch`, `failureMatch`, and `successMatch`.
+
 A page can also contain the following child elements, in this order:
 
 * `<parameter key="..." value="..."/>` adds a request parameter.
-With `method="POST"`, parameters are sent as an `application/x-www-form-urlencoded` form body; with `GET`, they are sent as the URL query string.
+With `method="POST"`, parameters are sent as an `application/x-www-form-urlencoded` form body; with `GET`, they replace the URL query string, including any values from the `query` attribute.
 Use them to submit login forms, for example the `j_username` and `j_password` fields of the {page-component-title} login page.
 Values can reference <<session-variables,session variables>> as `$\{name}`.
 * `<session-variable name="..." match-group="..."/>` stores a capture group of the page's `successMatch` expression in a session variable for later pages.
 * `<header name="..." value="..."/>` adds an HTTP request header.
 
-TIP: If you set both `requireIPv4` and `requireIPv6` to false, the host IP for connection will be resolved from system name resolver and the associated IP address from the IP interface is ignored.
+TIP: If both `requireIPv4` and `requireIPv6` are false (the default), the monitor connects to the `host` value as given, which is the IP interface address unless you set `host`.
+If `host` is a name, the system name resolver chooses the address.
 
 == Session variables
 
 It is possible to assign strings from a retrieved page to variables that can be used in page parameters later in the same sequence.
 First, specify one or more capturing groups in the successMatch expression (see link:http://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html[Java Class Pattern] for more information on regular expressions in Java).
 Use the session-variable parameter to assign the captured values to variable names for use in a later page load.
+
+Session variables, and the service variables `$\{ipaddr}`, `$\{nodeid}`, `$\{nodelabel}`, and `$\{svcname}`, can be used in the `host`, `port`, `path`, `query`, `fragment`, and `virtual-host` attributes and in `<parameter>` values.
 For an example, see xref:operation:deep-dive/service-assurance/web-application-monitoring.adoc#ga-pollerd-web-application-monitoring-session-variables[Log in with credentials read from a page].
 
 == Per-page response times
