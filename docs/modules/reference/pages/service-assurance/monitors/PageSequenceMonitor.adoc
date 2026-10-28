@@ -95,13 +95,9 @@ Any query string content after a `?` should be part of the query parameter.
 
 3+|*Optional*
 
-| name
-| The name of the page-sequence.
-| n/a
-
 | method
-| HTTP method (GET or POST)
-| n/a
+| HTTP method (GET or POST).
+| GET
 
 | http-version
 | HTTP protocol version (0.9, 1.0, or 1.1)
@@ -132,7 +128,8 @@ User name and password must be provided in the `user-info` attribute.
 | n/a
 
 | host
-| Set host field in HTTP header.
+| Host name or address to connect to instead of the IP interface address.
+The HTTP `Host` header is set from `virtual-host`, not from this attribute.
 | IP interface address of the service
 
 | requireIPv6
@@ -144,10 +141,9 @@ User name and password must be provided in the `user-info` attribute.
 | n/a
 
 | disable-ssl-verification
-| Enable or disable SSL certificate verification for HTTPS tests.
-Use this option carefully, since self-signed certificates import the CA certificate
-in the JVM and do not just disable it.
-| false
+| If `true`, certificate and host name verification are disabled for HTTPS requests.
+Set to `false` to verify certificates against the JVM trust store.
+| true
 
 | port
 | Host port number to use when connecting.
@@ -179,10 +175,6 @@ success at the first match, and sets the service with this monitor  as Up.
 | The relative URL that must be located for the request to be successful.
 | n/a
 
-| response-range
-| Range for allowed HTTP error codes from the response.
-| n/a
-
 | session-variable
 | Assign the value of a regex match group to a session variable with a user-defined name.
 The match group is identified by number and must be zero or greater.
@@ -192,6 +184,15 @@ The match group is identified by number and must be zero or greater.
 | A range of acceptable HTTP response codes.
 | 100-399
 |===
+
+A page can also contain the following child elements, in this order:
+
+* `<parameter key="..." value="..."/>` adds a request parameter.
+With `method="POST"`, parameters are sent as an `application/x-www-form-urlencoded` form body; with `GET`, they are sent as the URL query string.
+Use them to submit login forms, for example the `j_username` and `j_password` fields of the {page-component-title} login page.
+Values can reference <<session-variables,session variables>> as `$\{name}`.
+* `<session-variable name="..." match-group="..."/>` stores a capture group of the page's `successMatch` expression in a session variable for later pages.
+* `<header name="..." value="..."/>` adds an HTTP request header.
 
 TIP: If you set both `requireIPv4` and `requireIPv6` to false, the host IP for connection will be resolved from system name resolver and the associated IP address from the IP interface is ignored.
 
@@ -223,7 +224,7 @@ The following example shows how to monitor the OpenNMS web application using sev
 
 It first does an HTTP GET of `http://$\{ipaddr}:8980/opennms/login.jsp` (following redirects as a browser would) and then checks to ensure that the resulting page has the phrase `Password` on it.
 Next, it uses HTTP POST to attempt a login to the relative URL for submitting form data (usually the URL that the form action points to).
-The parameters (`_j_username_` and `_j_password_`) indicate the form's data and values to submit.
+The `<parameter>` elements of that page (`j_username` and `j_password`) are the form fields and values to submit.
 Furthermore, it sets a custom header (`foo`) for demonstration purposes.
 After getting the resulting page, the expression specified in the page's failureMatch attribute is verified, which when found anywhere on the page indicates that the page has failed.
 If the failureMatch expression is not found in the resulting page, then the expression specified in the page's successMatch attribute is checked to ensure it matches the resulting page.

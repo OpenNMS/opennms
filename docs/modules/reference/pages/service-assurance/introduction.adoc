@@ -21,7 +21,8 @@ Service names are subject to certain definitions:
 == Common configuration parameters
 
 Application- or device-specific monitors are based on a generic API that provides common configuration parameters.
-These minimum configuration parameters are available in all monitors and describe the behavior for timeouts, retries, and so on.
+Set them as `<parameter key="..." value="..."/>` entries in a service definition of a xref:operation:deep-dive/service-assurance/polling-packages.adoc[polling package].
+Pollerd applies `invert-status`, `ds-name`, `rrd-*`, and `thresholding-enabled` to every service; most monitors also read `retry` and `timeout`, with their own defaults.
 
 .Optional common configuration parameters
 [options="header"]
@@ -32,39 +33,42 @@ These minimum configuration parameters are available in all monitors and describ
 | Default
 
 | retry
-| Number of attempts to test a service's status (up or down).
-| 3
+| Number of additional attempts after the first attempt fails, before the service is considered down.
+| Varies by monitor; see the monitor's page.
 
 | timeout
-| Timeout for the isReachable method, in milliseconds.
-| 3000
+| Time to wait for a response on each attempt, in milliseconds.
+| Varies by monitor; often 3000.
 
 | invert-status
-| Invert the up/down behavior of the monitor.
+| If `true`, the service is reported as down when the monitor finds it available, and up when the monitor finds it unavailable.
 | false
 
-| ds-name *
-| Name of the RRD data source (DS) name in which to store this service monitor's response-time samples.
-| response-time
+| ds-name
+| Name of the data source (DS) in which to store this service's response time and status samples.
+| Service name, in lowercase
 
-| rrd-base-name *
-| The file name of the RRD file (minus the `.rrd` file extension) within the specified rrd-repository path in which to persist this service monitor's response-time samples.
-| value of `ds-name`
+| rrd-base-name
+| File name (without extension) in which to store this service's response-time and status samples.
+| Value of `ds-name`
 
-| rrd-repository *
-| Base directory of an RRD repository in which to store this service monitor's response-time samples.
-| null
+| rrd-repository
+| Directory in which to store this service's response-time samples.
+If not set, pollerd does not store response time for the service.
+| n/a
 
 | rrd-status
-| Enable xref:operation:deep-dive/service-assurance/polling-packages.adoc#service-status-persistence[service status persistence]
+| Enable xref:operation:deep-dive/service-assurance/polling-packages.adoc#service-status-persistence[service status persistence].
 | true
 
 | thresholding-enabled
-| Whether collected response time should be tested against thresholds.
+| Whether to apply thresholds to the response-time samples.
+Has an effect only if `rrd-repository` is set.
 | false
 |===
 
-NOTE: * If RRD properties are provided, the pollerd service will persist response times for the monitored service.
+Elements such as `filter`, `include-range`, `rrd`, and `downtime` that appear in some monitor examples belong to the polling package, not to the service, and apply to every service in that package.
+See xref:operation:deep-dive/service-assurance/polling-packages.adoc[] and xref:operation:deep-dive/service-assurance/downtime-model.adoc[].
 
 TIP: If the monitor uses SNMP, the default configuration for timeout and retry are taken from the SNMP configuration (`snmp-config.xml`).
 
