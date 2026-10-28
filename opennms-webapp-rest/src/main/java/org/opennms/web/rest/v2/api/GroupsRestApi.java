@@ -95,7 +95,7 @@ public interface GroupsRestApi {
 
     @DELETE
     @Path("{name}")
-    @Operation(summary = "Delete a group (rejected while on-call roles reference it; the Admin group is protected)", operationId = "deleteGroup")
+    @Operation(summary = "Delete a group (rejected while on-call roles or destination paths reference it; the Admin group is protected)", operationId = "deleteGroup")
     @Parameters({
             @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
     })

@@ -315,4 +315,23 @@ public class UserMgmtRestSupportTest {
     public void testLockForWriteOutsideTransactionFails() {
         m_support.lockForWrite();
     }
+
+    @Test
+    public void testDestinationPathTargetIs409NamingThePathsSorted() throws Exception {
+        final TestDestinationPaths paths = new TestDestinationPaths();
+        try {
+            paths.add("Page-Night", "someone-else", "ops"); // an escalation names it
+            paths.add("Page-Day", "ops", null);
+            paths.add("Page-Other", "opsx", "Ops"); // other names, and the match is exact
+            try {
+                m_support.checkNotDestinationPathTarget("Group ops", "ops");
+                fail("expected 409");
+            } catch (final WebApplicationException e) {
+                assertStatus(409, "Group ops is a target of destination path(s) Page-Day, Page-Night; remove it from them first.", e);
+            }
+            m_support.checkNotDestinationPathTarget("Group devs", "devs");
+        } finally {
+            paths.restore();
+        }
+    }
 }

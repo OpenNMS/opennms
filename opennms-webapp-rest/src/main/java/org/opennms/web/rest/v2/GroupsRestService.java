@@ -238,6 +238,7 @@ public class GroupsRestService implements GroupsRestApi {
                 throw m_support.conflict("Group " + name + " is the membership group of on-call role(s) "
                         + String.join(", ", referencingRoles) + "; delete or reassign those roles first.");
             }
+            m_support.checkNotDestinationPathTarget("Group " + name, name);
             m_userGroupDao.delete(group);
             m_userGroupDao.flush();
             // without this, a future group reusing the name would silently inherit the old authorizations

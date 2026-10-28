@@ -141,9 +141,12 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         });
     }
 
+    private final TestDestinationPaths m_paths = new TestDestinationPaths();
+
     @After
     public void clearStoreProperty() {
         System.clearProperty("org.opennms.usermgmt.store");
+        m_paths.restore();
     }
 
     @Test
@@ -510,6 +513,20 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         });
         assertEquals(version, rowVersion("fromgroup"));
         assertEquals(1, groupRowCount("fromgroup"));
+    }
+
+    @Test
+    public void testDeleteIs409WhileADestinationPathNamesTheGroup() throws Exception {
+        createGroup("pagedgroup", g -> { });
+        m_paths.add("Page-Ops", "someone@example.org", "pagedgroup");
+
+        final MockHttpServletResponse response = exec(DELETE, "/groups/pagedgroup", null, null, 409);
+        assertTrue(response.getContentAsString(), response.getContentAsString().contains("Page-Ops"));
+        assertEquals(1, groupRowCount("pagedgroup"));
+
+        m_paths.clear();
+        exec(DELETE, "/groups/pagedgroup", null, null, 204);
+        assertEquals(0, groupRowCount("pagedgroup"));
     }
 
     @Test

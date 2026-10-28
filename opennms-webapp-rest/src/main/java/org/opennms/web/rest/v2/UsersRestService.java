@@ -42,6 +42,7 @@ import org.opennms.netmgt.config.UserMgmtJaxbMapper;
 import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.dao.api.SecurityRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
+import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
 import org.opennms.netmgt.model.usermgmt.ContactType;
 import org.opennms.netmgt.model.usermgmt.OnCallRole;
@@ -85,9 +86,13 @@ public class UsersRestService implements UsersRestApi {
     @Autowired
     private SecurityRoleDao m_securityRoleDao;
 
-    /** For the on-call-role supervisor referential check on delete. */
+    /** For the checks on delete: the roles the user supervises, and a role named like the user. */
     @Autowired
     private OnCallRoleDao m_onCallRoleDao;
+
+    /** For the destination path check on delete: a group named like the user. */
+    @Autowired
+    private UserGroupDao m_userGroupDao;
 
     @Override
     @Transactional(readOnly = true)
@@ -295,6 +300,10 @@ public class UsersRestService implements UsersRestApi {
                         + "; assign a different supervisor first.");
             }
             checkNotLastAdministrator(user, "be deleted");
+            // notifd resolves a target name as a group, then an on-call role, then a user: one of those takes the paths
+            if (m_userGroupDao.findByName(userId) == null && m_onCallRoleDao.findByName(userId) == null) {
+                m_support.checkNotDestinationPathTarget("User " + userId, userId);
+            }
             m_userAccountDao.delete(user);
             m_userAccountDao.flush();
             LOG.info("User {} deleted by {}", userId, UserMgmtValidation.principal(securityContext));

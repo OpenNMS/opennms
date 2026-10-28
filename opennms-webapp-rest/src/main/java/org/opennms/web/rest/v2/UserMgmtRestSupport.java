@@ -22,7 +22,11 @@
 package org.opennms.web.rest.v2;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,9 +37,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
+import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.UserDataChangedException;
 import org.opennms.netmgt.config.UserMgmtManagers;
 import org.opennms.netmgt.config.api.UserMgmtStore;
+import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
 import org.opennms.web.api.Authentication;
@@ -51,7 +57,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 /**
  * Shared plumbing for the v2 user-management services (users, groups, security roles, on-call roles):
- * the admin and store-mode checks, the write lock with its after-commit manager reload, the
+ * the admin and store-mode checks, the write lock with its after-commit manager expiry, the destination path check, the
  * ETag / If-Match handling, and the translation of exceptions to HTTP errors.
  *
  * Every error is thrown, never returned as a Response, so that the surrounding transaction rolls back.
@@ -75,6 +81,20 @@ public class UserMgmtRestSupport {
 
     @Autowired
     private UserMgmtManagers m_managers;
+
+    /** The destination paths that notifd sends to. */
+    static final Callable<Collection<Path>> NOTIFD_DESTINATION_PATHS = () -> {
+        DestinationPathFactory.init();
+        return DestinationPathFactory.getInstance().getPaths().values();
+    };
+
+    /** Static so that tests can replace it in the per-test CXF context. */
+    private static volatile Callable<Collection<Path>> s_destinationPaths = NOTIFD_DESTINATION_PATHS;
+
+    /** For tests; {@link #NOTIFD_DESTINATION_PATHS} restores the default. */
+    static void setDestinationPaths(final Callable<Collection<Path>> destinationPaths) {
+        s_destinationPaths = destinationPaths;
+    }
 
     public void assertAdmin(final SecurityContext securityContext, final String what) {
         if (securityContext == null || !securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
@@ -187,6 +207,25 @@ public class UserMgmtRestSupport {
 
     public WebApplicationException conflict(final String message) {
         return error(Status.CONFLICT, message);
+    }
+
+    /**
+     * Throws 409 if a destination path names {@code target}, among its targets or those of an escalation. notifd
+     * looks a target up by name when it sends, so after a delete the path would notify nobody in its place (and only
+     * log a warning), and an object created later under that name would receive its notices.
+     */
+    public void checkNotDestinationPathTarget(final String what, final String target) throws Exception {
+        final List<String> paths = s_destinationPaths.call().stream()
+                .filter(path -> Stream.concat(path.getTargets().stream(),
+                                path.getEscalates().stream().flatMap(escalate -> escalate.getTargets().stream()))
+                        .anyMatch(t -> target.equals(t.getName())))
+                .map(Path::getName)
+                .sorted()
+                .collect(Collectors.toList());
+        if (!paths.isEmpty()) {
+            throw conflict(what + " is a target of destination path(s) " + String.join(", ", paths)
+                    + "; remove it from them first.");
+        }
     }
 
     /** Returns the exception to throw for a failure while performing {@code action}. */

@@ -137,9 +137,12 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         });
     }
 
+    private final TestDestinationPaths m_paths = new TestDestinationPaths();
+
     @After
     public void clearStoreProperty() {
         System.clearProperty("org.opennms.usermgmt.store");
+        m_paths.restore();
     }
 
     @Test
@@ -582,6 +585,24 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
             return null;
         });
         sendRequest(DELETE, "/users/rolesuper", 204);
+    }
+
+    @Test
+    public void testDeleteIs409WhileADestinationPathNamesTheUser() throws Exception {
+        createUser("paged", u -> { });
+        m_paths.add("Page-Night", "someone@example.org", "paged");
+        m_paths.add("Page-Day", "paged", null);
+
+        final MockHttpServletResponse response = exec(DELETE, "/users/paged", null, null, 409);
+        assertTrue(response.getContentAsString(), response.getContentAsString().contains("Page-Day, Page-Night"));
+        assertEquals(1, rowCount("users", "username", "paged"));
+
+        // notifd resolves the name as a group first, so with a group of that name the paths do not name the user
+        inTx(() -> {
+            m_userGroupDao.save(new UserGroup("paged"));
+            return null;
+        });
+        sendRequest(DELETE, "/users/paged", 204);
     }
 
     @Test
