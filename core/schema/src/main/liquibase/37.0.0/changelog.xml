@@ -373,14 +373,13 @@
     <!-- groups.name has 256 characters, and category_group.groupid (1.10.1) held 64 -->
     <changeSet author="stheleman" id="37.0.0-category-group-groupid-length">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="1">SELECT count(*) FROM information_schema.columns WHERE table_name = 'category_group' AND column_name = 'groupid' AND character_maximum_length &lt; 256</sqlCheck>
+            <sqlCheck expectedResult="1">SELECT count(*) FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'category_group' AND column_name = 'groupid' AND character_maximum_length &lt; 256</sqlCheck>
         </preConditions>
 
         <modifyDataType tableName="category_group" columnName="groupid" newDataType="varchar(256)"/>
 
-        <rollback>
-            <modifyDataType tableName="category_group" columnName="groupid" newDataType="varchar(64)"/>
-        </rollback>
+        <!-- Kept at 256: names longer than 64 may be stored by now, and the 36.x code works with the wider column -->
+        <rollback/>
     </changeSet>
 
     <!-- The members of each group, in order -->
@@ -698,14 +697,14 @@ DROP FUNCTION IF EXISTS usermgmt_increment_version();
     <changeSet author="stheleman" id="37.0.0-usermgmt-row-versions">
         <preConditions onFail="MARK_RAN">
             <not>
-                <sqlCheck expectedResult="1">SELECT count(*) FROM pg_proc WHERE proname = 'usermgmt_bump_row_version'</sqlCheck>
+                <sqlCheck expectedResult="1">SELECT count(*) FROM pg_proc WHERE proname = 'usermgmt_bump_row_version' AND pronamespace = current_schema()::regnamespace</sqlCheck>
             </not>
         </preConditions>
 
         <createProcedure>
 -- BEFORE UPDATE of a parent row: a changed row gets a new version from the sequence. A statement that sets the
--- version itself (the child triggers do, with version + 1) is a change, whatever value it sets; an UPDATE that
--- changes nothing keeps the version.
+-- version to another value (the child triggers do, with version + 1) is a change, and the value it sets is replaced;
+-- an UPDATE that changes nothing, including one that sets the version to its current value, keeps the version.
 CREATE OR REPLACE FUNCTION usermgmt_bump_row_version() RETURNS trigger AS $$
 BEGIN
     IF NEW.version IS DISTINCT FROM OLD.version
