@@ -166,6 +166,15 @@ public class DbGroupManagerIT {
     }
 
     @Test
+    public void testExpireMakesTheNextReadCheckAtOnce() throws Exception {
+        m_manager.getGroupNames(); // load
+        m_tx.execute(s -> m_groupDao.save(new UserGroup("Ops")));
+        assertFalse(m_manager.hasGroup("Ops")); // within the check interval
+        m_manager.expire();
+        assertTrue(m_manager.hasGroup("Ops"));
+    }
+
+    @Test
     public void testStaleSaveIsRejected() throws Exception {
         m_manager.getGroupNames(); // load
         m_tx.execute(s -> m_groupDao.save(new UserGroup("Other")));

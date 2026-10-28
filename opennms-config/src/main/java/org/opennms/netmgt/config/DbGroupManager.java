@@ -66,7 +66,8 @@ public class DbGroupManager extends GroupManager {
     private Map<String, Integer> m_loadedUserIds = new HashMap<>();
     private long m_usersVersion = -1;
     private long m_groupsVersion = -1;
-    private long m_lastCheck;
+    /** When the versions were last checked; {@link #expire()} sets it to 0 without taking the monitor. */
+    private volatile long m_lastCheck;
 
     public DbGroupManager(final UserAccountDao userDao, final UserGroupDao groupDao, final OnCallRoleDao roleDao,
                           final UserMgmtVersionDao versionDao, final PlatformTransactionManager transactionManager) {
@@ -98,8 +99,18 @@ public class DbGroupManager extends GroupManager {
         reload();
     }
 
+    /**
+     * Makes the next read check the versions, without waiting for the check interval; reads nothing and takes no lock.
+     * Called after a write that bypassed this manager commits, so the cache reloads once, when it is next read.
+     */
+    public void expire() {
+        m_lastCheck = 0;
+    }
+
     /** Loads the groups and on-call roles from the database now. */
     public synchronized void reload() {
+        // record the check before reading: an expire() that comes during the reload must not be overwritten
+        m_lastCheck = System.currentTimeMillis();
         final Loaded loaded = m_transactions.execute(status -> {
             // read the versions first: a write that commits in between makes the next check reload again
             final long usersVersion = m_versionDao.getVersion(Domain.users);
@@ -120,7 +131,6 @@ public class DbGroupManager extends GroupManager {
         m_loadedUserIds = loaded.m_userIds;
         m_usersVersion = loaded.m_usersVersion;
         m_groupsVersion = loaded.m_groupsVersion;
-        m_lastCheck = System.currentTimeMillis();
     }
 
     @Override

@@ -149,6 +149,15 @@ public class DbUserManagerIT {
     }
 
     @Test
+    public void testExpireMakesTheNextReadCheckAtOnce() throws Exception {
+        m_users.getUserNames(); // load
+        m_tx.execute(s -> m_userDao.save(new UserAccount("external")));
+        assertFalse(m_users.hasUser("external")); // within the check interval
+        m_users.expire();
+        assertTrue(m_users.hasUser("external"));
+    }
+
+    @Test
     public void testRenameUserKeepsGroupMembership() throws Exception {
         m_users.saveUser("jane", user("jane"));
         m_groups.saveGroup("Ops", group("Ops", "jane"));

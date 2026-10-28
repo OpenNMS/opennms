@@ -75,7 +75,7 @@ public class UserMgmtManagersTest {
     }
 
     @Test
-    public void testReloadAllIsNoOpInXmlMode() throws Exception {
+    public void testExpireAllIsNoOpInXmlMode() throws Exception {
         final Path home = Files.createTempDirectory("usermgmt-home");
         final Path etc = Files.createDirectory(home.resolve("etc"));
         Files.write(etc.resolve("users.xml"), ("<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><header><rev>1</rev>"
@@ -89,7 +89,7 @@ public class UserMgmtManagersTest {
             final UserMgmtVersionDao versionDao = mock(UserMgmtVersionDao.class);
             final UserMgmtManagers managers = new UserMgmtManagers(mock(UserAccountDao.class), mock(UserGroupDao.class),
                     mock(OnCallRoleDao.class), mock(SecurityRoleDao.class), versionDao, mock(PlatformTransactionManager.class));
-            managers.reloadAll();
+            managers.expireAll();
             verifyNoInteractions(versionDao);
         } finally {
             if (oldHome == null) {

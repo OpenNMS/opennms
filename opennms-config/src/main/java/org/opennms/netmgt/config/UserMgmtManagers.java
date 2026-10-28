@@ -70,11 +70,15 @@ public class UserMgmtManagers {
         return m_groupManager;
     }
 
-    /** Loads the users and then the groups from the database now; does nothing in xml mode. */
-    public void reloadAll() {
+    /**
+     * Makes the next read of each manager check the database version at once, so a committed write is seen without
+     * waiting for the check interval. Reads and reloads nothing now: a burst of writes costs one reload, on the next
+     * read. Does nothing in xml mode.
+     */
+    public void expireAll() {
         if (m_dbUserManager != null) {
-            m_dbUserManager.reload();
-            m_dbGroupManager.reload();
+            m_dbUserManager.expire();
+            m_dbGroupManager.expire();
         }
     }
 }
