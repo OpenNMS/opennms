@@ -48,6 +48,7 @@ import AdhocChart from '@/components/AdhocGraphs/AdhocChart.vue'
 import { useAdhocGraphDefinition } from '@/components/AdhocGraphs/useAdhocGraphDefinition'
 import { decodeAdhocState } from '@/components/AdhocGraphs/utils/adhocUrlState'
 import { defineAdhocGraphStore } from '@/stores/adhocGraphStore'
+import { expressionIssues, seriesLabelIssues } from '@/components/AdhocGraphs/utils/adhocQuery'
 import { adhocStateToQuery } from './adhocCollectionState'
 import { graphTimeFor } from './graphCollectionTime'
 
@@ -62,13 +63,34 @@ const props = defineProps<{
 }>()
 
 const store = defineAdhocGraphStore(`adhocGraph:${props.canvasId}`)()
-const { config, time, tooManySeriesMessage, updateTime, runQuery, restore } = useAdhocGraphDefinition(store)
+const { config, time, tooManySeriesMessage, canQuery, updateTime, runQuery, restore } = useAdhocGraphDefinition(store)
 
 const restoring = ref(true)
 const decodeError = ref('')
 
-// The chart's own empty states tell the user to pick datasources, which assumes the builder's
-// picker is on the page. Here the sources are stored, so say what became of them instead.
+// A definition the query pipeline refuses, which the builder shows beside the offending input:
+// an expression whose labels are all gone since the sources were stored, or labels that collide
+// now that the filters match more. Here there is no input to mark, so name the problem instead.
+const definitionProblem = computed(() => {
+  if (restoring.value || !config.series.length || canQuery.value || tooManySeriesMessage.value) {
+    return ''
+  }
+  // the builder's messages sit beside an input, so not all of them end a sentence
+  const sentence = (text: string) => text.endsWith('.') ? text : `${text}.`
+  const [expressionId, expressionIssue] = Object.entries(expressionIssues(config))[0] ?? []
+  if (expressionIssue) {
+    const label = config.expressions.find(expression => expression.id === expressionId)?.label || 'expression'
+    return `The stored expression '${label}' cannot be drawn: ${sentence(expressionIssue.message)} Open the graph in the builder to fix it.`
+  }
+  const labelIssue = Object.values(seriesLabelIssues(config))[0]
+  if (labelIssue) {
+    return `The stored series labels cannot be drawn: ${sentence(labelIssue)} Open the graph in the builder to fix them.`
+  }
+  return 'The stored graph definition cannot be drawn. Open the graph in the builder to check it.'
+})
+
+// The chart's own empty states tell the user to pick datasources, or to refresh, which assumes
+// the builder's controls are on the page. Here the sources are stored, so say what became of them.
 const status = computed(() => {
   if (tooManySeriesMessage.value) {
     return tooManySeriesMessage.value
@@ -82,7 +104,7 @@ const status = computed(() => {
   if (!restoring.value && !config.series.length) {
     return 'The stored sources match nothing now. Open the graph in the builder to check them.'
   }
-  return ''
+  return definitionProblem.value
 })
 
 // The collection's window is absolute, so there is no relative range to slide.

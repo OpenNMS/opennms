@@ -167,6 +167,17 @@ describe('GraphCollectionGrid.vue', () => {
     expect(after.attributes('data-start')).toBe(String(END - 2 * DAY))
   })
 
+  it('remakes an ad-hoc cell when a refresh brings a different definition to its index', async () => {
+    const wrapper = mountGrid(collection([adhoc(0)]))
+    const before = wrapper.findComponent(AdhocStub)
+    // the entry was edited, or another one now sits at this index: the old sources must not be drawn under the new title
+    await wrapper.setProps({ collection: collection([adhoc(0, { adhocState: 'nf=core&df=ifHCOutOctets&n=1&title=Downlinks' })]) })
+    const after = wrapper.findComponent(AdhocStub)
+    expect(after.vm).not.toBe(before.vm)
+    expect(after.attributes('data-state')).toBe('nf=core&df=ifHCOutOctets&n=1&title=Downlinks')
+    expect(wrapper.find('[data-test="gc-title"]').text()).toBe('Downlinks')
+  })
+
   it('shows the placeholder for an ad-hoc entry the server flags, without a chart', () => {
     const wrapper = mountGrid(collection([adhoc(0, { valid: false, error: 'Unknown timespan \'fortnight\'.' })]))
     expect(wrapper.find('[data-test="adhoc-stub"]').exists()).toBe(false)

@@ -52,9 +52,12 @@ const columns = computed(() => Math.max(1, props.collection.graphsPerLine || 1))
 // and a chart that is only updated keeps its zoom and legend state from the previous window. An
 // ad-hoc cell is left out of that: it evaluates its stored sources against the server when it
 // mounts, which can mean one request per node, so it keeps its store and re-queries on its own.
+// Its stored state is in the key instead, since the cell only decodes it on mount: when the
+// five-minute refresh finds the entry edited, deleted or reordered, the cell at that index is
+// remade for the new definition rather than keeping the old one's sources under the new title.
 const cellKey = (graph: ResolvedGraphCollectionGraph) => {
   const prefix = `gc-${props.collection.id ?? props.collection.type}-${graph.index}`
-  return graph.kind === 'adhoc' ? `${prefix}-adhoc` : `${prefix}-${graph.graphtype}-${graph.start}-${graph.end}`
+  return graph.kind === 'adhoc' ? `${prefix}-adhoc-${graph.adhocState}` : `${prefix}-${graph.graphtype}-${graph.start}-${graph.end}`
 }
 </script>
 

@@ -417,6 +417,11 @@ public class GraphCollectionRestServiceIT extends AbstractSpringJerseyRestTestCa
                 sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\",\"adhocState\":\"" + state + "&range=hours:24\"}]}", 400).getContentAsString());
         assertEquals("Graph 1: adhocState must be a URL query string without the leading '?'.",
                 sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\",\"adhocState\":\"?" + state + "\"}]}", 400).getContentAsString());
+        // an encoded key is the same key to the client, so it is refused too
+        assertEquals("Graph 1: adhocState must not carry a time window (range); the entry's timespan sets it.",
+                sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\",\"adhocState\":\"" + state + "&r%61nge=hours:24\"}]}", 400).getContentAsString());
+        // and an encoded source key still names a source
+        sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\",\"adhocState\":\"n%66=a\"}]}", 201);
         // the decoder's own words follow, and they are the JDK's to change
         final String malformed = sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\",\"adhocState\":\"nf=a%\"}]}", 400).getContentAsString();
         assertTrue(malformed, malformed.startsWith("Graph 1: adhocState is not a well-formed URL query string: "));

@@ -148,6 +148,15 @@ describe('AdhocCollectionGraph.vue', () => {
     expect(error).toMatch(/could not be evaluated/)
   })
 
+  it('names an expression whose labels are gone instead of asking for a refresh', async () => {
+    // the series this expression summed were renamed or dropped after the graph was stored
+    const wrapper = await mountGraph({ adhocState: `${STATE}&e=${encodeURIComponent('total~gone*8~line~#ff0000')}` })
+    expect(getGraphMetrics).not.toHaveBeenCalled()
+    const chart = wrapper.find('[data-test="chart-stub"]')
+    expect(chart.attributes('data-loading')).toBe('false')
+    expect(chart.attributes('data-error')).toBe('The stored expression \'total\' cannot be drawn: Unknown label: gone. Open the graph in the builder to fix it.')
+  })
+
   it('says so instead of drawing when the stored state is not a graph', async () => {
     const wrapper = await mountGraph({ adhocState: 'nonsense=1' })
     expect(wrapper.find('[data-test="gc-adhoc-error"]').text()).toContain('could not be read')

@@ -629,12 +629,17 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
         boolean namesSources = false;
         for (final String pair : state.split("&")) {
             final int eq = pair.indexOf('=');
-            final String key = eq < 0 ? pair : pair.substring(0, eq);
-            if (key.isEmpty()) {
+            final String rawKey = eq < 0 ? pair : pair.substring(0, eq);
+            if (rawKey.isEmpty()) {
                 return "adhocState must be a URL query string without the leading '?'.";
             }
+            // The key is checked decoded, as URLSearchParams reads it: r%61nge is range to the client.
+            final String key;
             try {
-                URLDecoder.decode(pair, StandardCharsets.UTF_8);
+                key = URLDecoder.decode(rawKey, StandardCharsets.UTF_8);
+                if (eq >= 0) {
+                    URLDecoder.decode(pair.substring(eq + 1), StandardCharsets.UTF_8);
+                }
             } catch (final IllegalArgumentException e) {
                 return "adhocState is not a well-formed URL query string: " + e.getMessage();
             }
