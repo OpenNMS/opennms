@@ -92,6 +92,10 @@ public class UserMgmtRestSupport {
     /**
      * Takes the write lock (users, then groups) and arranges for the in-memory managers to be reloaded
      * once the surrounding transaction commits. Must be called inside an active transaction.
+     * <p>
+     * The committed transaction's session is still bound to the thread in {@code afterCommit}, so data access
+     * there would join it. The managers' reloads run in a new transaction (PROPAGATION_REQUIRES_NEW), with a
+     * new session, so they read the committed rows and not that session's cache.
      */
     public void lockForWrite() {
         if (!TransactionSynchronizationManager.isSynchronizationActive()) {
@@ -115,11 +119,14 @@ public class UserMgmtRestSupport {
      * Throws 412 if the request carries an If-Match that doesn't match the stored row's current version.
      * <p>
      * The header is evaluated here rather than by the JAX-RS {@code Request}, which only understands strong tags
-     * and would also apply If-None-Match (a 304 for a write). The rules are those of RFC 9110: no header passes;
-     * {@code *} matches any existing object; otherwise the header is a comma-separated list of entity tags (empty list elements are ignored), each
-     * strong ({@code "7"}) or weak ({@code W/"7"}), and the precondition holds if any tag's opaque value is the
-     * current version (a weak comparison, as the tag depends on nothing but the version). A header that cannot be
-     * parsed matches nothing, so it is a 412 and never a silent pass. If-None-Match is ignored.
+     * and would also apply If-None-Match (a 304 for a write). The rules are those of RFC 9110, with one deliberate
+     * difference. No header passes; {@code *} matches any existing object; otherwise the header is a
+     * comma-separated list of entity tags (empty list elements are ignored), and the precondition holds if any
+     * tag's opaque value is the current version. RFC 9110 (13.1.1) requires the strong comparison for If-Match,
+     * so a weak tag ({@code W/"7"}) never matches. Here a weak tag matches like a strong one: a proxy that
+     * compresses the response turns the strong tag we send into a weak one, and the tag depends on nothing but
+     * the version, so the weak tag still identifies the version exactly. A header that cannot be parsed matches
+     * nothing, so it is a 412 and never a silent pass. If-None-Match is ignored.
      */
     public void checkIfMatch(final HttpHeaders headers, final VersionedTable table, final int id, final String what) {
         final String ifMatch = ifMatch(headers);

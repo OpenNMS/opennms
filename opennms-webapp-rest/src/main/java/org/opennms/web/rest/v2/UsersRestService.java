@@ -196,6 +196,9 @@ public class UsersRestService implements UsersRestApi {
             final UserAccount user = load(userId, headers);
             m_support.checkIfMatch(headers, VersionedTable.users, user.getId(), "User " + userId);
             final List<SecurityRole> roles = validateDtoFields(dto, user);
+            if (roles != null && roles.stream().noneMatch(r -> Authentication.ROLE_ADMIN.equals(r.getName()))) {
+                checkNotLastAdministrator(user, "lose the " + Authentication.ROLE_ADMIN + " role");
+            }
             applyDto(user, dto, roles);
             m_userAccountDao.saveOrUpdate(user);
             m_userAccountDao.flush();
@@ -246,6 +249,9 @@ public class UsersRestService implements UsersRestApi {
         if (userIdProblem != null) {
             throw m_support.badRequest(userIdProblem);
         }
+        if (newUserId.equals(userId)) {
+            throw m_support.badRequest("The newUserId is the same as the current userId.");
+        }
         try {
             m_support.lockForWrite();
             final UserAccount user = load(userId, headers);
@@ -288,12 +294,27 @@ public class UsersRestService implements UsersRestApi {
                         + " is the supervisor of on-call role(s) " + String.join(", ", supervisedRoles)
                         + "; assign a different supervisor first.");
             }
+            checkNotLastAdministrator(user, "be deleted");
             m_userAccountDao.delete(user);
             m_userAccountDao.flush();
             LOG.info("User {} deleted by {}", userId, UserMgmtValidation.principal(securityContext));
             return Response.noContent().build();
         } catch (final Exception e) {
             throw m_support.translate("delete user", e);
+        }
+    }
+
+    /**
+     * Throws 409 if the user is the only one with ROLE_ADMIN. Without an administrator nobody can manage users in
+     * the web UI or log in to the Karaf console until the roles are repaired in the database. Must be called under
+     * the write lock, so that two requests cannot each remove a different last-but-one administrator.
+     */
+    private void checkNotLastAdministrator(final UserAccount user, final String change) {
+        final boolean isAdministrator = user.getSecurityRoles().stream().anyMatch(r -> Authentication.ROLE_ADMIN.equals(r.getName()));
+        if (isAdministrator && m_userAccountDao.findBySecurityRole(Authentication.ROLE_ADMIN).stream()
+                .allMatch(u -> u.getId().equals(user.getId()))) {
+            throw m_support.conflict("User " + user.getUsername() + " is the only user with the " + Authentication.ROLE_ADMIN
+                    + " role and cannot " + change + "; give the role to another user first.");
         }
     }
 

@@ -112,7 +112,7 @@ public interface UsersRestApi {
 
     @DELETE
     @Path("{userId}")
-    @Operation(summary = "Delete a user (also removes group memberships; admin and rtc are protected)", operationId = "deleteUser")
+    @Operation(summary = "Delete a user (also removes group memberships; admin, rtc and the last user with ROLE_ADMIN are protected)", operationId = "deleteUser")
     @Parameters({
             @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
     })

@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
@@ -56,6 +57,7 @@ import org.opennms.netmgt.model.usermgmt.ContactType;
 import org.opennms.netmgt.model.usermgmt.OnCallRole;
 import org.opennms.netmgt.model.usermgmt.OnCallSchedule;
 import org.opennms.netmgt.model.usermgmt.OnCallScheduleTime;
+import org.opennms.netmgt.model.usermgmt.SecurityRole;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.netmgt.model.usermgmt.UserGroup;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -358,6 +360,8 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         exec(POST, "/users/renameme/rename", "{\"newUserId\":\"occupied\"}", null, 409);
         // markup in the new id
         exec(POST, "/users/renameme/rename", "{\"newUserId\":\"bad<b>\"}", null, 400);
+        // the current id: there is nothing to rename
+        exec(POST, "/users/renameme/rename", "{\"newUserId\":\"renameme\"}", null, 400);
 
         final MockHttpServletResponse renamed = exec(POST, "/users/renameme/rename", "{\"newUserId\":\"renamed\"}", null, 200);
         assertEquals("renamed", new JSONObject(renamed.getContentAsString()).getString("userId"));
@@ -464,6 +468,52 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // removing ROLE_ADMIN from admin would lock every administrator out
         exec(PUT, "/users/admin", "{\"userId\":\"admin\",\"roles\":[\"ROLE_USER\"]}", null, 400);
         exec(PUT, "/users/admin", "{\"userId\":\"admin\",\"roles\":[\"ROLE_USER\",\"ROLE_ADMIN\"]}", null, 200);
+    }
+
+    @Test
+    public void testLastAdministratorKeepsTheAdminRole() throws Exception {
+        // admin is guarded by name, so take its role away here: boss is then the only administrator
+        setAdminRole("admin", false);
+        try {
+            createUser("boss", u -> u.getSecurityRoles().add(m_securityRoleDao.findByName("ROLE_ADMIN")));
+            createUser("boss2", u -> { });
+
+            exec(PUT, "/users/boss", "{\"roles\":[\"ROLE_USER\"]}", null, 409);
+            sendRequest(DELETE, "/users/boss", 409);
+            // a change that keeps the role, or one that leaves the roles alone, goes through
+            exec(PUT, "/users/boss", "{\"roles\":[\"ROLE_USER\",\"ROLE_ADMIN\"]}", null, 200);
+            exec(PUT, "/users/boss", "{\"fullName\":\"Boss\"}", null, 200);
+            // a user without the role is not affected
+            exec(PUT, "/users/boss2", "{\"roles\":[\"ROLE_USER\"]}", null, 200);
+
+            // with a second administrator, either one can lose the role, and then the other is the last one
+            exec(PUT, "/users/boss2", "{\"roles\":[\"ROLE_ADMIN\"]}", null, 200);
+            exec(PUT, "/users/boss", "{\"roles\":[\"ROLE_USER\"]}", null, 200);
+            sendRequest(DELETE, "/users/boss2", 409);
+            exec(PUT, "/users/boss2", "{\"roles\":[\"ROLE_USER\"]}", null, 409);
+            assertEquals(List.of("boss2"), inTx(() -> m_userAccountDao.findBySecurityRole("ROLE_ADMIN").stream()
+                    .map(UserAccount::getUsername).collect(Collectors.toList())));
+
+            sendRequest(DELETE, "/users/boss", 204);
+            setAdminRole("admin", true);
+            sendRequest(DELETE, "/users/boss2", 204);
+        } finally {
+            setAdminRole("admin", true);
+        }
+    }
+
+    private void setAdminRole(final String username, final boolean hasRole) {
+        inTx(() -> {
+            final UserAccount user = m_userAccountDao.findByUsername(username);
+            final SecurityRole role = m_securityRoleDao.findByName("ROLE_ADMIN");
+            if (hasRole) {
+                user.getSecurityRoles().add(role);
+            } else {
+                user.getSecurityRoles().remove(role);
+            }
+            m_userAccountDao.saveOrUpdate(user);
+            return null;
+        });
     }
 
     @Test

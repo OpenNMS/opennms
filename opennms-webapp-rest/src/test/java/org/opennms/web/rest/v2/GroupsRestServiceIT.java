@@ -409,6 +409,8 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         exec(POST, "/groups/renamegroup/rename", "{\"newName\":\"occupiedgroup\"}", null, 409);
         exec(POST, "/groups/renamegroup/rename", "{\"newName\":\"bad<b>\"}", null, 400);
+        // the current name: there is nothing to rename
+        exec(POST, "/groups/renamegroup/rename", "{\"newName\":\"renamegroup\"}", null, 400);
 
         final MockHttpServletResponse renamed = exec(POST, "/groups/renamegroup/rename", "{\"newName\":\"renamedgroup\"}", null, 200);
         assertEquals("renamedgroup", new JSONObject(renamed.getContentAsString()).getString("name"));

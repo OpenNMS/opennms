@@ -193,6 +193,9 @@ public class GroupsRestService implements GroupsRestApi {
         if (nameProblem != null) {
             throw m_support.badRequest(nameProblem);
         }
+        if (newName.equals(name)) {
+            throw m_support.badRequest("The newName is the same as the current name.");
+        }
         try {
             m_support.lockForWrite();
             final UserGroup group = load(name, headers);
