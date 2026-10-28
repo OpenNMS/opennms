@@ -1,0 +1,197 @@
+[[ga-pollerd-web-application-monitoring]]
+= Monitor Web Applications
+:description: Examples that use the PageSequenceMonitor in {page-component-title} to test logins and other paths through a web application.
+
+The xref:reference:service-assurance/monitors/PageSequenceMonitor.adoc[PageSequenceMonitor] tests a path through a web application, for example logging in, opening a page, and logging out.
+This page shows example configurations; see the reference page for all parameters and their defaults.
+
+Each example is a `<service>` definition for a polling package in `poller-configuration.xml`, plus the required `<monitor>` element.
+See xref:deep-dive/service-assurance/configuration.adoc#ga-pollerd-configuration-service-monitor-relation[How services, packages, and monitors relate] for where these elements go.
+The examples use the CentOS/RHEL path for `rrd-repository`; for Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+[[ga-pollerd-web-application-monitoring-login]]
+== Log in to the {page-component-title} web application
+
+The following example monitors the {page-component-title} web application by logging in, opening a page, and logging out.
+
+It first does an HTTP GET of `http://$\{ipaddr}:8980/opennms/login.jsp` (following redirects as a browser would) and then checks to ensure that the resulting page has the phrase `Password` on it.
+Next, it uses HTTP POST to attempt a login to the relative URL for submitting form data (usually the URL that the form action points to).
+The `<parameter>` elements of that page (`j_username` and `j_password`) are the form fields and values to submit.
+Furthermore, it sets a custom header (`foo`) for demonstration purposes.
+The POST page itself checks only that the response code is within `response-range`.
+The following `index.jsp` page verifies the login with `successMatch="Log Out"`; if that text is missing, the page and the sequence fail.
+
+In the example, the monitor navigates to the Event list page, to ensure that it finds the text "View all events" on the page.
+Finally, the monitor calls the URL of the logout page to close the session.
+Using the locationMatch parameter verifies that the logout was successful and a redirect was triggered.
+
+Each page is checked to ensure its HTTP response code fits into the response-range, before the failureMatch, successMatch, and locationMatch expressions are evaluated.
+
+[source, xml]
+----
+<service name="OpenNMS-Web-Login" interval="30000" user-defined="true" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="5000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="ds-name" value="opennmslogin"/>
+  <parameter key="page-sequence">
+    <page-sequence>
+      <page path="/opennms/login.jsp" <1>
+            port="8980" <2>
+            successMatch="Password" /> <3>
+      <page path="/opennms/j_spring_security_check" <1>
+            port="8980" <2>
+            method="POST"> <4>
+        <parameter key="j_username" value="admin"/>
+        <parameter key="j_password" value="admin"/>
+        <header name="foo" value="bar"/>
+      </page>
+      <page path="/opennms/index.jsp" <1>
+            port="8980" <2>
+            successMatch="Log Out" /> <3>
+      <page path="/opennms/event/list" <1>
+            port="8980" <2>
+            successMatch="View all events" /> <3>
+      <page path="/opennms/j_spring_security_logout" <1>
+            port="8980" <2>
+            method="POST" <4>
+            response-range="300-399" <5>
+            locationMatch="/opennms" /> <6>
+    </page-sequence>
+  </parameter>
+</service>
+
+<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <7>
+----
+<1> The relative URL to call in the request.
+<2> Host port number to use when connecting.
+<3> Text to look for in the response body.
+<4> HTTP method (*GET* or *POST*).
+<5> Range of acceptable HTTP response codes.
+<6> The relative URL that must be located for the request to be successful.
+<7> Required *monitor* section.
+
+[[ga-pollerd-web-application-monitoring-http-https]]
+== Mix HTTP and HTTPS in a page sequence
+
+The following sequence opens a login page over HTTP, submits the login form over HTTPS, and logs out over HTTP.
+The second page uses `method="POST"`, so its `<parameter>` elements are submitted as a form body.
+The third page has no `method` and uses GET, so its parameter is sent as a URL query string.
+
+[source, xml]
+----
+<service name="OpenNMS-Web-Login" interval="30000" user-defined="true" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="5000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="ds-name" value="opennmslogin"/>
+  <parameter key="page-sequence">
+    <page-sequence>
+      <page scheme="http" <1>
+            host="ecomm.example.com" <2>
+            port="80" <3>
+            path="/ecomm/jsp/Login.jsp" <4>
+            virtual-host="ecomm.example.com" <5>
+            successMatch="eComm Login" <6>
+            http-version="1.1"/> <7>
+      <page scheme="https" <1>
+            method="POST" <8>
+            host="ecomm.example.com" port="443" <2>
+            path="/ecomm/controller" <4>
+            virtual-host="ecomm.example.com" <5>
+            successMatch="requesttab_select.gif" <6>
+            failureMessage="Login failed: ${1}" <9>
+            http-version="1.1"> <7>
+        <parameter key="action_name"
+                   value="XbtnLogin"/>
+        <parameter key="session_timeout"
+                   value=""/>
+        <parameter key="userid"
+                   value="EXAMPLE"/>
+        <parameter key="password"
+                   value="econ"/>
+      </page>
+      <page scheme="http" <1>
+            host="ecomm.example.com" <2>
+            port="80" <3>
+            path="/econsult/controller" <4>
+            virtual-host="ecomm.example.com" <5>
+            successMatch="You have successfully logged out of eComm" <6>
+            http-version="1.1"> <7>
+        <parameter key="action_name"
+                   value="XbtnLogout"/>
+      </page>
+    </page-sequence>
+  </parameter>
+</service>
+
+<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <10>
+----
+<1> Define the URL scheme as *http* or *https*.
+<2> Host name or address to connect to instead of the IP interface address; the HTTP `Host` header comes from `virtual-host`.
+<3> Host port number to use when connecting.
+<4> The relative URL to call in the request.
+<5> Set the virtual host field in the HTTP header.
+<6> Text to look for in the response body.
+<7> HTTP protocol version (0.9, 1.0, or 1.1).
+<8> HTTP method (*GET* or *POST*).
+<9> The failure message constructs the reason code.
+<10> Required *monitor* section.
+
+[[ga-pollerd-web-application-monitoring-session-variables]]
+== Log in with credentials read from a page
+
+The following sequence reads a user name and password from the first page with capture groups in `successMatch`, stores them in session variables, and submits them as form parameters on the next page.
+
+[source, xml]
+----
+<service name="OpenNMS-Web-Login" interval="30000" user-defined="true" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="5000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="ds-name" value="opennmslogin"/>
+  <parameter key="page-sequence">
+    <page-sequence>
+      <page path="/opennms" <1>
+            port="80" <2>
+            virtual-host="demo.opennms.org" <3>
+            successMatch="(?s)User:.*&lt;strong&gt;(.*?)&lt;/strong&gt;.*?Password:.*?&lt;strong&gt;(.*?)&lt;/strong&gt;"> <4>
+        <session-variable name="username"
+                          match-group="1" />
+        <session-variable name="password"
+                          match-group="2" />
+      </page>
+      <page path="/opennms/j_acegi_security_check" <1>
+            port="80" <2>
+            virtual-host="demo.opennms.org" <3>
+            method="POST" <5>
+            failureMatch="(?s)Your log-in attempt failed.*Reason: ([^&lt;]*)" <6>
+            failureMessage="Login Failed: ${1}" <7>
+            successMatch="Log out"> <4>
+        <parameter key="j_username"
+                   value="${username}" />
+        <parameter key="j_password"
+                   value="${password}" />
+      </page>
+      <page path="/opennms/event/list" <1>
+            port="80" <2>
+            virtual-host="demo.opennms.org" <3>
+            successMatch="View all events" /> <4>
+      <page path="/opennms/j_acegi_logout" <1>
+            port="80" <2>
+            virtual-host="demo.opennms.org" <3>
+            successMatch="logged off" /> <4>
+    </page-sequence>
+  </parameter>
+</service>
+
+<monitor service="OpenNMS-Web-Login" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/> <8>
+----
+<1> The relative URL to call in the request.
+<2> Host port number to use when connecting.
+<3> Set the virtual host field in the HTTP header.
+<4> Text to look for in the response body.
+<5> HTTP method (*GET* or *POST*).
+<6> Text that marks the page as failed if found in the response body.
+<7> The failure message constructs the reason code.
+<8> Required *monitor* section.
