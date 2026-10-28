@@ -15,6 +15,7 @@
 ** xref:configuration/sentinel-features.adoc[]
 ** xref:configuration/tuning-activemq.adoc[]
 ** xref:configuration/tuning-kafka.adoc[]
+** xref:configuration/tuning-elasticsearch.adoc[]
 ** xref:configuration/ttl-rpc.adoc[]
 ** xref:configuration/selinux.adoc[]
 ** xref:configuration/receive-snmp-traps.adoc[]
