@@ -22,7 +22,7 @@ This page describes the settings that these features share and their defaults.
 | Yes
 | `org.opennms.features.flows.persistence.elastic.cfg`
 
-| xref:operation:deep-dive/elasticsearch/features/event-forwarder.adoc[Event forwarder]
+| xref:operation:deep-dive/event-forwarder/introduction.adoc[Event forwarder]
 | `opennms-es-rest`
 | No
 | `org.opennms.plugin.elasticsearch.rest.forwarder.cfg`

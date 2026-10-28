@@ -188,9 +188,9 @@
 ** xref:deep-dive/telemetryd/introduction.adoc[]
 
 ** Elasticsearch Integration
-*** xref:deep-dive/elasticsearch/features/event-forwarder.adoc[]
-**** xref:deep-dive/elasticsearch/features/event-forwarder-mapping.adoc[]
-**** xref:deep-dive/elasticsearch/features/event-forwarder-mapping-table.adoc[]
+
+** xref:deep-dive/event-forwarder/introduction.adoc[]
+*** xref:deep-dive/event-forwarder/index-mapping.adoc[]
 
 ** xref:deep-dive/flows/introduction.adoc[]
 *** xref:deep-dive/flows/basic.adoc[]

@@ -1,0 +1,160 @@
+[[ga-event-forwarder]]
+= Forward Events to Elasticsearch
+:description: Learn how to configure the event forwarder in {page-component-title} to send events to Elasticsearch for archiving, search, and visualization.
+:page-aliases: deep-dive/elasticsearch/features/event-forwarder.adoc
+
+The event forwarder (formerly known as the Elasticsearch REST plugin) sends {page-component-title} events to https://www.elastic.co/elasticsearch/[Elasticsearch].
+You can then use the events in Elasticsearch for long-term archiving, searching and browsing with Kibana, or plotting with Grafana.
+
+Each event is stored as a flat document that also contains information about the related node and its assets, as it was when the event was forwarded (see xref:deep-dive/event-forwarder/index-mapping.adoc[]).
+
+== Requirements
+
+Make sure that you have the following before you set up the event forwarder:
+
+* A running {page-component-title} instance.
+* An Elasticsearch cluster, version 7.0 or later, that {page-component-title} can reach over HTTP or HTTPS.
+* (Optional) A Kibana instance whose version is compatible with your Elasticsearch version, if you want to browse events in Kibana.
+
+== Before you begin
+
+* Plan an index retention process.
+{page-component-title} writes events to time-based indices that it never removes, so the Elasticsearch disk can fill up (see xref:reference:configuration/tuning-elasticsearch.adoc#ga-elasticsearch-index-retention[Index retention]).
+* Decide which index strategy to use.
+By default, a new index is created each month.
+* By default, only events that are stored in the {page-component-title} database are forwarded.
+Events that are not stored in the database (for example, events with the `donotpersist` log destination) are forwarded only if you set `logAllEvents` to `true`.
+
+== Configure and enable the event forwarder
+
+. Connect to the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell]:
++
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+. Configure the connection to your Elasticsearch cluster:
++
+[source, karaf]
+----
+config:edit org.opennms.plugin.elasticsearch.rest.forwarder
+config:property-set elasticUrl http://elastic:9200 <1>
+config:property-set elasticIndexStrategy daily <2>
+config:update
+----
+<1> Replace with a comma-separated list of the URLs of your Elasticsearch nodes.
+<2> Optional.
+Allowed values are `yearly`, `monthly` (default), `daily`, and `hourly`.
++
+The properties are saved in `$\{OPENNMS_HOME}/etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg`.
+See xref:reference:configuration/tuning-elasticsearch.adoc[] for credentials, timeouts, index settings, and the other connection settings, and <<ga-event-forwarder-parameters, Event forwarder parameters>> for the settings specific to the event forwarder.
+
+. Install the event forwarder feature:
++
+[source, karaf]
+----
+feature:install opennms-es-rest
+----
+
+. To install the feature automatically when {page-component-title} starts, add it to a file in `featuresBoot.d`:
++
+[source, console]
+----
+echo "opennms-es-rest" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/es-rest.boot
+----
+
+. Verify that events are written to Elasticsearch by listing the event indices:
++
+[source, console]
+----
+curl "http://elastic:9200/_cat/indices/opennms-events-*?v"
+----
++
+An index appears after the first event is forwarded.
+
+[[ga-event-forwarder-parameters]]
+== Event forwarder parameters
+
+In addition to the xref:reference:configuration/tuning-elasticsearch.adoc#ga-elasticsearch-global-parameters[global Elasticsearch parameters], you can set the following optional properties in `org.opennms.plugin.elasticsearch.rest.forwarder.cfg`:
+
+[options="header", cols="1,3,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| logEventDescription
+| Whether to forward the event description.
+You can disable it because it is a long text field that often repeats information from the rest of the event.
+| true
+
+| archiveAssetData
+| Whether to include the following node asset fields in forwarded events, when they are not empty: +
+asset-latitude, asset-longitude, asset-region, asset-building, asset-floor, asset-room, asset-rack, asset-slot, asset-port, asset-category, asset-displaycategory, asset-notifycategory, asset-pollercategory, asset-thresholdcategory, asset-managedobjecttype, asset-managedobjectinstance, asset-manufacturer, asset-vendor, asset-modelnumber, parent-nodelabel, parent-nodeid, parent-foreignsource, parent-foreignid.
+| true
+
+| groupOidParameters
+| If `true`, all OID event parameters are stored in a single `p_oids` array instead of one field each.
+| false
+
+| logAllEvents
+| If `true`, also forward events that are not stored in the {page-component-title} database.
+| false
+
+| batchSize
+| Maximum number of events sent to Elasticsearch in a single bulk request.
+| 200
+
+| batchInterval
+| Maximum time, in milliseconds, to wait for a batch to fill before it is sent.
+| 500
+
+| threads
+| Number of threads that send events to Elasticsearch.
+Set to `0` to use the default.
+| <number of processors> * 2
+|===
+
+== Index names
+
+Events are stored in indices named `opennms-events-raw-<date>`, where the date format depends on `elasticIndexStrategy`.
+If you set `indexPrefix`, it is added at the beginning of the name.
+
+.Sample index name with the default monthly index strategy
+[source]
+----
+opennms-events-raw-2017-01
+----
+
+== Load historical events
+
+You can load historical events from the {page-component-title} database into Elasticsearch with a Karaf shell command.
+The command retrieves events through the {page-component-title} Events REST API and forwards them to Elasticsearch.
+Because it uses the REST API, it can also load events from a remote {page-component-title} instance if you provide its URL and credentials.
+
+.Send historical events to Elasticsearch, starting with the first event
+[source, karaf]
+----
+opennms:send-events-to-elasticsearch --username admin --password admin --url http://localhost:8980 --limit 1000 --offset 0
+----
+
+The command retrieves and sends events in batches of `--log-size` events (default: 200), starting at `--offset`.
+It stops when no more events are returned or when the number of events sent exceeds `--limit` (default: 1000).
+Because it sends whole batches, it can send more events than `--limit`.
+Run the command with `--help` to see all options.
+
+== View events
+
+You can query the forwarded events with the Kibana Dev Tools console or any other Elasticsearch client.
+Refer to the https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html[Elasticsearch search API documentation] to learn how to write searches.
+
+.Example requests
+[source]
+----
+# Search all event indices
+GET /opennms-events-raw-*/_search
+
+# List all event indices
+GET /_cat/indices/opennms-events-raw-*?v
+----
