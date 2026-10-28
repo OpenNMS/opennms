@@ -48,6 +48,90 @@ The following shows settings to configure a reload event in the UI:
 .Send `configuration-reload` event in the web UI
 image::service-assurance/04_send-event-WebUI.png["Page displaying configuration settings for generating a configuration-reload event", 700]
 
+[[ga-pollerd-configuration-service-monitor-relation]]
+== How services, packages, and monitors relate
+
+Pollerd polls a service on an IP interface only if all of the following are true:
+
+. The service is provisioned on the IP interface, for example by a xref:deep-dive/provisioning/detectors.adoc[provisioning detector] or in a requisition.
+Adding a service to `poller-configuration.xml` does not add it to any interface.
+. At least one polling package matches the IP interface.
+The address must pass the package `filter`, and must be in an `include-range`, a `specific` entry, or an `include-url` file, and not in an `exclude-range`.
+A package without `include-range`, `specific`, or `include-url` entries includes every address that passes its filter.
+. That package contains a `<service>` with `status="on"` whose `name` matches the provisioned service name (not case-sensitive), or whose xref:deep-dive/service-assurance/polling-packages.adoc#ga-pollerd-packages-patterns[`pattern`] matches it.
+. A `<monitor>` element has a `service` attribute equal to that package service's `name`.
+Its `class-name` selects the service monitor to run.
+
+If more than one package matches, pollerd uses the last matching package that is not `perspective-only` (see xref:deep-dive/service-assurance/polling-packages.adoc#overlapping-services[Overlapping services]).
+
+The following table shows what happens when one of these parts is missing:
+
+[options="autowidth"]
+|===
+| Missing part | Result
+
+| No package matches the IP interface and service
+| The service is not polled.
+If the service was active, pollerd marks it as not polled and logs `Active service ... not configured for any package` in `poller.log`.
+
+| A package `<service>` without a matching `<monitor>`
+| The service is scheduled, but every poll returns down with an `Unexpected exception while polling` reason.
+
+| A `<monitor>` without a package `<service>`
+| The monitor is not used.
+
+| The service is not provisioned on the interface
+| Nothing is polled; the package and monitor definitions alone do not create services.
+|===
+
+The schema of `poller-configuration.xml` also sets the structure of the file:
+
+* `<node-outage>` comes first, followed by at least one `<package>` and at least one `<monitor>`.
+* `<service>` elements are allowed only inside a `<package>`.
+* Each `<package>` requires a `<filter>`, an `<rrd>` element, at least one `<service>`, and at least one `<downtime>` element, in that order (address selection elements such as `<include-range>` go between `<filter>` and `<rrd>`).
+* All `<monitor>` elements follow the last `<package>`.
+
+{page-component-title} validates the file against this schema and rejects it at the first violation.
+At startup, pollerd does not start.
+On a configuration reload, pollerd logs the error, sends a `uei.opennms.org/internal/reloadDaemonConfigFailed` event, and keeps running with the previous configuration.
+
+The following example adds a service named `HTTP-9000` that uses the HttpMonitor on port 9000:
+
+[source, xml]
+----
+<package name="web-9000"> <1>
+  <filter>IPADDR != '0.0.0.0'</filter> <2>
+  <include-range begin="192.168.10.1" end="192.168.10.254"/> <3>
+  <rrd step="300"> <4>
+    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+    <rra>RRA:AVERAGE:0.5:288:366</rra>
+    <rra>RRA:MAX:0.5:288:366</rra>
+    <rra>RRA:MIN:0.5:288:366</rra>
+  </rrd>
+  <service name="HTTP-9000" interval="300000" user-defined="false" status="on"> <5>
+    <parameter key="port" value="9000"/>
+    <parameter key="url" value="/"/>
+  </service>
+  <downtime interval="30000" begin="0" end="300000"/> <6>
+  <downtime interval="300000" begin="300000"/>
+</package>
+
+<!-- other packages -->
+
+<monitor service="HTTP-9000" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/> <7>
+----
+<1> Unique package name.
+<2> Filter rule that selects the candidate IP interfaces.
+<3> Address range within the filter results to which the package applies.
+<4> RRD step and archives for response-time data stored by services in this package.
+<5> Service definition; `name` must match the service name provisioned on the interface, and `interval` is the polling interval in milliseconds.
+<6> xref:deep-dive/service-assurance/downtime-model.adoc[Downtime model] for services in this package.
+<7> Monitor mapping; `service` must match the package service's `name`.
+
+The `HTTP-9000` service must also exist on the IP interfaces, for example through an xref:reference:provisioning/detectors/HttpDetector.adoc[HttpDetector] with `port` set to `9000` in the foreign source definition.
+To store response time, add an `rrd-repository` parameter to the service (see xref:reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters[common configuration parameters]).
+
 [[ga-pollerd-configuration-meta-data]]
 == Metadata DSL
 

@@ -123,13 +123,25 @@ Parameters that support placeholder substitution have a kbd:[{}] icon beside the
 
 == Example service definition
 
-The following shows the basic format of a sample service definition.
-Note that all service definitions must include the `monitor` section.
+A service definition is a `<service>` element inside a polling package, plus a `<monitor>` element that maps the service name to a monitor class.
+The service runs only on IP interfaces that have a service with the same name and that match the package filter and address ranges.
+For the full set of requirements and a complete example, see xref:operation:deep-dive/service-assurance/configuration.adoc#ga-pollerd-configuration-service-monitor-relation[How services, packages, and monitors relate].
 
 [source, xml]
 ----
-<service name="SomeServiceName" interval="300000" user-defined="false" status="on"> <parameter key="key1" value="1" /> <parameter key="key2" value="2" /> <parameter key="key3" value="3" /> </service>
+<package name="SomePackage">
+  <filter>IPADDR != '0.0.0.0'</filter>
+  <rrd step="300">
+    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+  </rrd>
+  <service name="SomeServiceName" interval="300000" user-defined="false" status="on"> <1>
+    <parameter key="key1" value="1"/>
+    <parameter key="key2" value="2"/>
+  </service>
+  <downtime interval="30000" begin="0" end="300000"/>
+</package>
 
-<monitor service="SomeServiceName" class-name="org.opennms.netmgt.poller.monitors.SomeServiceName"/> <1>
+<monitor service="SomeServiceName" class-name="org.opennms.netmgt.poller.monitors.SomeServiceMonitor"/> <2>
 ----
-<1> Required *monitor* section.
+<1> Service definition with monitor parameters, inside a polling package.
+<2> Required *monitor* section; the `service` attribute must match the service `name`.
