@@ -67,7 +67,8 @@ Returns `200` with the role and its `ETag`, `400` when the new name is the curre
 WARNING: A rename does not update `destinationPaths.xml`.
 Destination paths that name the old role keep pointing at it, so update them yourself.
 
-A role name may not have leading or trailing whitespace, may not be `.` or `..`, may not contain any of the characters `&`, `<`, `>`, `"`, `'`, a backtick, `/`, `\`, `%`, `?` or `#`, and is limited to 256 characters.
+A role name starts with a letter or a digit and contains only letters (of any script), digits, the characters `_`, `-`, `.`, `(` and `)`, and single spaces between words.
+It is limited to 256 characters.
 Names already stored are not re-checked.
 
 == PUTs (modifying data)
@@ -157,6 +158,9 @@ The format of `day`, `begins` and `ends` depends on the schedule type.
 
 The month abbreviation in the `specific` times is parsed in the default locale of the OpenNMS server, exactly as notifd parses it.
 On a server with an English locale the months are `Jan`, `Feb`, `Mar`, `Oct` and so on; on a server with another locale they are that locale's abbreviations.
+
+A `specific` time is also read in the server's time zone, and a time that the time zone skips is rejected.
+For example, on a server in `America/New_York`, `08-Mar-2026 02:30:00` does not exist, because the clocks go from 02:00 to 03:00 that day.
 
 [caption=]
 [cols="1,2,3"]

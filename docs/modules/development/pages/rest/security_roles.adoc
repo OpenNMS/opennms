@@ -42,9 +42,10 @@ Error responses carry a plain-text message.
 
 | /security-roles
 | Get every role: built-in roles first, then custom roles, each sorted by name.
+Each role carries `userCount`, the number of users that hold it.
 
 | /security-roles/\{name}
-| Get one role. The response carries an `ETag` header.
+| Get one role. The response carries an `ETag` header and no `userCount`; use the list for the count.
 |===
 
 == POSTs (adding data)
@@ -96,7 +97,8 @@ A role that users still hold returns `409`; the message lists those users.
 == Detecting concurrent edits
 
 Every GET of a single role returns an `ETag` header: the quoted version of the role, for example `"4817"`.
-The version is an opaque number: it changes on every change of the role, including a change of what it contains, and a version is never reused, not even by a role that is deleted and created again under the same name.
+The version is an opaque number: it changes on every change of the role's own fields, and a version is never reused, not even by a role that is deleted and created again under the same name.
+Granting the role to a user or revoking it is a change of the user, not of the role, so it does not change the role's version.
 Do not interpret it, count with it or compare it for order, only send it back.
 `PUT` and `DELETE` accept an `If-Match` header carrying that tag.
 
@@ -122,7 +124,7 @@ To detect concurrent edits, send the version in `If-Match`.
 | name | Role name, such as `ROLE_AUDITOR`. Required on create.
 | description | Description. Only writable on custom roles.
 | builtin | `true` for a built-in role. Read-only.
-| userCount | Number of users that hold the role. Read-only.
+| userCount | Number of users that hold the role. Only in the list; read-only.
 | version | Opaque row version, also sent as the `ETag`. Ignored on input.
 |===
 
