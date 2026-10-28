@@ -57,6 +57,7 @@ Collector c = new Collector();
 String searchString = request.getParameter("searchString");
 String sortColumn = request.getParameter("sortColumn");
 String sortOrder = request.getParameter("sortOrder");
+boolean showDeleted = "true".equals(request.getParameter("showDeleted"));
 if(sortColumn!=null){
 	c.setSortColumn(Collector.SortColumn.valueOf(sortColumn));
 }
@@ -88,6 +89,8 @@ pageContext.setAttribute("OpennmsHome",opennmsHome);
 pageContext.setAttribute("sortColumn", sortColumn);
 pageContext.setAttribute("sortOrder", sortOrder);
 pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searchString));
+pageContext.setAttribute("showDeleted", showDeleted);
+pageContext.setAttribute("showDeletedParam", showDeleted ? "&showDeleted=true" : "");
 %>
 
 <c:set var="nan" value="<%=java.lang.Double.NaN%>"/>
@@ -144,6 +147,10 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
       <div class="card-body">
         <form id="ILRfilter" action="admin/nodemanagement/instrumentationLogReader.jsp" method="get" style="display:inline">
           <input type="text" class="form-control" name="searchString" size="15" value="<%=searchString==null?"":WebSecurityUtils.sanitizeString(searchString)%>"/>
+          <div class="form-check mt-1">
+            <input type="checkbox" class="form-check-input" id="showDeleted" name="showDeleted" value="true" <%=showDeleted ? "checked" : ""%>/>
+            <label class="form-check-label" for="showDeleted">Show deleted nodes</label>
+          </div>
           <button type="submit" class="btn btn-secondary mt-1">Submit</button>
         </form>
         <form id="ILRreset" action="admin/nodemanagement/instrumentationLogReader.jsp" method="get" style="display:inline">
@@ -163,133 +170,133 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
       <th>Service</th>
       <c:choose>
       	<c:when test="${sortColumn == 'TOTALCOLLECTS' && sortOrder == 'DESCENDING'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALCOLLECTS&sortOrder=ASCENDING&&searchString=${searchString}">Collections ^</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALCOLLECTS&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Collections ^</a></th>
       	</c:when>
       	<c:when test="${sortColumn != 'TOTALCOLLECTS'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}">Collections</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Collections</a></th>
       	</c:when>
       	<c:otherwise>
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}">Collections v</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Collections v</a></th>
       	</c:otherwise>
       </c:choose>
   
       <c:choose>
       	<c:when test="${sortColumn == 'AVGCOLLECTTIME' && sortOrder == 'DESCENDING'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGCOLLECTTIME&sortOrder=ASCENDING&&searchString=${searchString}">Average Collection Time ^</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGCOLLECTTIME&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Average Collection Time ^</a></th>
       	</c:when>
       	<c:when test="${sortColumn != 'AVGCOLLECTTIME'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}">Average Collection Time</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Average Collection Time</a></th>
       	</c:when>
       	<c:otherwise>
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}">Average Collection Time v</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Average Collection Time v</a></th>
       	</c:otherwise>	
       </c:choose>
   
       <c:choose>
       	<c:when test="${sortColumn == 'AVGTIMEBETWEENCOLLECTS' && sortOrder == 'DESCENDING'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGTIMEBETWEENCOLLECTS&sortOrder=ASCENDING&&searchString=${searchString}">Average Time Between Collections ^</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGTIMEBETWEENCOLLECTS&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Average Time Between Collections ^</a></th>
       	</c:when>
       	<c:when test="${sortColumn != 'AVGTIMEBETWEENCOLLECTS'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGTIMEBETWEENCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}">Average Time Between Collections</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGTIMEBETWEENCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Average Time Between Collections</a></th>
       	</c:when>
       	<c:otherwise>
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGTIMEBETWEENCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}">Average Time Between Collections v</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGTIMEBETWEENCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Average Time Between Collections v</a></th>
       	</c:otherwise>
       </c:choose>
   
       <c:choose>
       	<c:when test="${sortColumn == 'TOTALSUCCESSCOLLECTS' && sortOrder == 'DESCENDING'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALSUCCESSCOLLECTS&sortOrder=ASCENDING&&searchString=${searchString}">Successful Collections ^</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALSUCCESSCOLLECTS&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Successful Collections ^</a></th>
       	</c:when>
       	<c:when test="${sortColumn != 'TOTALSUCCESSCOLLECTS'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALSUCCESSCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}">Successful Collections</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALSUCCESSCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Successful Collections</a></th>
       	</c:when>
       	<c:otherwise>
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALSUCCESSCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}">Successful Collections v</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALSUCCESSCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Successful Collections v</a></th>
       	</c:otherwise>
       </c:choose>
   
       <c:choose>
       	<c:when test="${sortColumn == 'SUCCESSPERCENTAGE' && sortOrder == 'DESCENDING'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=SUCCESSPERCENTAGE&sortOrder=ASCENDING&&searchString=${searchString}">Successful Percentage ^</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=SUCCESSPERCENTAGE&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Successful Percentage ^</a></th>
       	</c:when>
       	<c:when test="${sortColumn != 'SUCCESSPERCENTAGE'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=SUCCESSPERCENTAGE&sortOrder=DESCENDING&&searchString=${searchString}">Successful Percentage</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=SUCCESSPERCENTAGE&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Successful Percentage</a></th>
       	</c:when>
       	<c:otherwise>
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=SUCCESSPERCENTAGE&sortOrder=DESCENDING&&searchString=${searchString}">Successful Percentage v</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=SUCCESSPERCENTAGE&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Successful Percentage v</a></th>
       	</c:otherwise>
       </c:choose>
   
       <c:choose>
       	<c:when test="${sortColumn == 'AVGSUCCESSCOLLECTTIME' && sortOrder == 'DESCENDING'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGSUCCESSCOLLECTTIME&sortOrder=ASCENDING&&searchString=${searchString}">Average Successful Collection Time ^</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGSUCCESSCOLLECTTIME&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Average Successful Collection Time ^</a></th>
       	</c:when>
       	<c:when test="${sortColumn !='AVGSUCCESSCOLLECTTIME'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGSUCCESSCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}">Average Successful Collection Time</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGSUCCESSCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Average Successful Collection Time</a></th>
       	</c:when>
       	<c:otherwise>
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGSUCCESSCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}">Average Successful Collection Time v</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGSUCCESSCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Average Successful Collection Time v</a></th>
       	</c:otherwise>
       </c:choose>
   
       <c:choose>
       	<c:when test="${sortColumn == 'TOTALUNSUCCESSCOLLECTS' && sortOrder == 'DESCENDING'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALUNSUCCESSCOLLECTS&sortOrder=ASCENDING&&searchString=${searchString}">Unsuccessful Collections ^</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALUNSUCCESSCOLLECTS&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Unsuccessful Collections ^</a></th>
       	</c:when>
       	<c:when test="${sortColumn != 'TOTALUNSUCCESSCOLLECTS'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALUNSUCCESSCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}">Unsuccessful Collections</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALUNSUCCESSCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Unsuccessful Collections</a></th>
       	</c:when>
       	<c:otherwise>
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALUNSUCCESSCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}">Unsuccessful Collections v</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALUNSUCCESSCOLLECTS&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Unsuccessful Collections v</a></th>
       	</c:otherwise>
       </c:choose>	
   
       <c:choose>	
       	<c:when test="${sortColumn == 'UNSUCCESSPERCENTAGE' && sortOrder == 'DESCENDING'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=UNSUCCESSPERCENTAGE&sortOrder=ASCENDING&&searchString=${searchString}">Unsuccessful Percentage ^</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=UNSUCCESSPERCENTAGE&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Unsuccessful Percentage ^</a></th>
       	</c:when>
       	<c:when test="${sortColumn != 'UNSUCCESSPERCENTAGE'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=UNSUCCESSPERCENTAGE&sortOrder=DESCENDING&&searchString=${searchString}">Unsuccessful Percentage</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=UNSUCCESSPERCENTAGE&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Unsuccessful Percentage</a></th>
       	</c:when>
       	<c:otherwise>
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=UNSUCCESSPERCENTAGE&sortOrder=DESCENDING&&searchString=${searchString}">Unsuccessful Percentage v</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=UNSUCCESSPERCENTAGE&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Unsuccessful Percentage v</a></th>
       	</c:otherwise>
       </c:choose>
   
       <c:choose>
       	<c:when test="${sortColumn == 'AVGUNSUCCESSCOLLECTTIME' && sortOrder == 'DESCENDING'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGUNSUCCESSCOLLECTTIME&sortOrder=ASCENDING&&searchString=${searchString}">Average Unsuccessful Collection Time ^</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGUNSUCCESSCOLLECTTIME&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Average Unsuccessful Collection Time ^</a></th>
       	</c:when>
       	<c:when test="${sortColumn != 'AVGUNSUCCESSCOLLECTTIME'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGUNSUCCESSCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}">Average Unsuccessful Collection Time</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGUNSUCCESSCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Average Unsuccessful Collection Time</a></th>
       	</c:when>
       	<c:otherwise>
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGUNSUCCESSCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}">Average Unsuccessful Collection Time v</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVGUNSUCCESSCOLLECTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Average Unsuccessful Collection Time v</a></th>
       	</c:otherwise>
       </c:choose>
   
       <c:choose>
       	<c:when test="${sortColumn == 'AVERAGEPERSISTTIME' && sortOrder == 'DESCENDING'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVERAGEPERSISTTIME&sortOrder=ASCENDING&&searchString=${searchString}">Average Persistence Time ^</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVERAGEPERSISTTIME&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Average Persistence Time ^</a></th>
       	</c:when>
       	<c:when test="${sortColumn != 'AVERAGEPERSISTTIME'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVERAGEPERSISTTIME&sortOrder=DESCENDING&&searchString=${searchString}">Average Persistence Time</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVERAGEPERSISTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Average Persistence Time</a></th>
       	</c:when>
       	<c:otherwise>
-      	<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVERAGEPERSISTTIME&sortOrder=DESCENDING&&searchString=${searchString}">Average Persistence Time v</a></th>
+      	<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=AVERAGEPERSISTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Average Persistence Time v</a></th>
       	</c:otherwise>
       </c:choose>
   
       <c:choose>
       	<c:when test="${sortColumn == 'TOTALPERSISTTIME' && sortOrder == 'DESCENDING'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALPERSISTTIME&sortOrder=ASCENDING&&searchString=${searchString}">Total Persistence Time ^</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALPERSISTTIME&sortOrder=ASCENDING&&searchString=${searchString}${showDeletedParam}">Total Persistence Time ^</a></th>
       	</c:when>
       	<c:when test="${sortColumn != 'TOTALPERSISTTIME'}">
-      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALPERSISTTIME&sortOrder=DESCENDING&&searchString=${searchString}">Total Persistence Time</a></th>
+      		<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALPERSISTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Total Persistence Time</a></th>
       	</c:when>
       	<c:otherwise>
-      	<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALPERSISTTIME&sortOrder=DESCENDING&&searchString=${searchString}">Total Persistence Time v</a></th>
+      	<th class="text-right"><a href="admin/nodemanagement/instrumentationLogReader.jsp?sortColumn=TOTALPERSISTTIME&sortOrder=DESCENDING&&searchString=${searchString}${showDeletedParam}">Total Persistence Time v</a></th>
       	</c:otherwise>
       </c:choose>
       </tr>
@@ -297,6 +304,24 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
       <tbody>
   
       <c:forEach var="svcCollector" items="${collector.serviceCollectors}">
+		  <%
+			  String nodeLabel = null;
+			  boolean deletedNode = false;
+			  final ServiceCollector svcCollector = (ServiceCollector) pageContext.getAttribute("svcCollector");
+			  try {
+				  final int nodeId = Integer.parseInt(svcCollector.getParsedServiceID());
+				  nodeLabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId);
+				  if (nodeLabel == null) {
+					  deletedNode = true;
+					  nodeLabel = "(deleted node " + nodeId + ")";
+				  }
+			  } catch (NumberFormatException e) {
+				  nodeLabel = "Error parsing nodeId";
+			  }
+			  pageContext.setAttribute("deletedNode", deletedNode);
+			  pageContext.setAttribute("nodeLabel", WebSecurityUtils.sanitizeString(nodeLabel));
+		  %>
+      <c:if test="${showDeleted || !deletedNode}">
       <c:choose>
           <c:when test="${svcCollector.successPercentage > 50}" >
               <tr class="Normal">
@@ -308,20 +333,14 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
               <tr class="Critical">
           </c:otherwise>
       </c:choose>
-		  <%
-			  String nodeLabel = null;
-			  final ServiceCollector svcCollector = (ServiceCollector) pageContext.getAttribute("svcCollector");
-			  try {
-				  final int nodeId = Integer.parseInt(svcCollector.getParsedServiceID());
-				  nodeLabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId);
-				  if (nodeLabel == null) {
-					  nodeLabel = "No label found for nodeId " + nodeId;
-				  }
-			  } catch (NumberFormatException e) {
-				  nodeLabel = "Error parsing nodeId";
-			  }
-		  %>
-      <td><a href="element/node.jsp?node=${svcCollector.parsedServiceID}"><%=nodeLabel%><br/>${svcCollector.serviceID}</a></td>
+      <c:choose>
+          <c:when test="${deletedNode}">
+              <td>${nodeLabel}<br/>${svcCollector.serviceID}</td>
+          </c:when>
+          <c:otherwise>
+              <td><a href="element/node.jsp?node=${svcCollector.parsedServiceID}">${nodeLabel}<br/>${svcCollector.serviceID}</a></td>
+          </c:otherwise>
+      </c:choose>
       <td class="text-right">${svcCollector.collectionCount}</td>
       <td class="text-right">${svcCollector.averageCollectionDuration}</td>
       <td class="text-right">${svcCollector.averageDurationBetweenCollections}</td>
@@ -348,6 +367,7 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
       <td class="text-right">${svcCollector.averagePersistDuration}</td>
       <td class="text-right">${svcCollector.totalPersistDuration}</td>
       </tr>
+      </c:if>
   
       </c:forEach>
       </tbody>
