@@ -44,6 +44,7 @@
 ** xref:upgrade/git-diff.adoc[]
 ** xref:upgrade/basic.adoc[]
 ** xref:upgrade/git-upgrade.adoc[]
+** xref:upgrade/minion-sentinel.adoc[]
 * xref:upgrade/backup/introduction.adoc[]
 * xref:upgrade/restore/introduction.adoc[]
 
