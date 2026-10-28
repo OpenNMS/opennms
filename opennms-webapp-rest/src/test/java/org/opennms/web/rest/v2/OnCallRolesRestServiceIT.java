@@ -328,6 +328,8 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         exec(POST, "/oncall-roles/rota7/rename", "{\"newName\":\"rota7b\"}", null, 409);
         exec(POST, "/oncall-roles/rota7/rename", "{\"newName\":\"bad/name\"}", null, 400);
         exec(POST, "/oncall-roles/rota7/rename", "{}", null, 400);
+        // the current name: there is nothing to rename
+        exec(POST, "/oncall-roles/rota7/rename", "{\"newName\":\"rota7\"}", null, 400);
         exec(POST, "/oncall-roles/nosuch/rename", "{\"newName\":\"x\"}", null, 404);
 
         final int id = roleId("rota7");

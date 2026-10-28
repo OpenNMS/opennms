@@ -203,6 +203,9 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         if (nameProblem != null) {
             throw m_support.badRequest(nameProblem);
         }
+        if (newName.equals(name)) {
+            throw m_support.badRequest("The newName is the same as the current name.");
+        }
         try {
             m_support.lockForWrite();
             final OnCallRole role = load(name, headers);
