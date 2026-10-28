@@ -129,8 +129,10 @@ public class UserMgmtRestIT extends AbstractRestIT {
                 .header("ETag", notNullValue());
 
         // 5. read each object back and capture its ETag
-        given().basePath(BASE + "security-roles").get(ROLE).then().statusCode(200)
-                .body("name", is(ROLE)).body("userCount", is(1));
+        given().basePath(BASE + "security-roles").get(ROLE).then().statusCode(200).body("name", is(ROLE));
+        // the user count is only in the list
+        given().basePath(BASE + "security-roles").get().then().statusCode(200)
+                .body("find { it.name == '" + ROLE + "' }.userCount", is(1));
         given().basePath(BASE + "groups").get(GROUP).then().statusCode(200)
                 .body("users", hasItem(USER));
         given().basePath(BASE + "oncall-roles").get(ONCALL).then().statusCode(200)
