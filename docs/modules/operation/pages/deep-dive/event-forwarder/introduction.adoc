@@ -72,6 +72,7 @@ curl "http://elastic:9200/_cat/indices/opennms-events-*?v"
 ----
 +
 An index appears after the first event is forwarded.
+If you set `indexPrefix`, add the prefix in front of `opennms-events-` in the URL.
 
 [[ga-event-forwarder-parameters]]
 == Event forwarder parameters
@@ -158,3 +159,5 @@ GET /opennms-events-raw-*/_search
 # List all event indices
 GET /_cat/indices/opennms-events-raw-*?v
 ----
+
+If you set `indexPrefix`, add the prefix in front of the index names in these requests.
