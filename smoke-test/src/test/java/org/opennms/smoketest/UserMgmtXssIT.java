@@ -211,9 +211,11 @@ public class UserMgmtXssIT extends AbstractRestIT {
         assertBodyContains(GROUP_COMMENTS);
         assertNothingRan();
 
-        // JSP: GET modifyGroup?groupName= opens the group's page; the name is in a hidden input
+        // JSP: GET modifyGroup?groupName= without an operation shows the group's detail page (read-only)
         open(base + "admin/userGroupView/groups/modifyGroup?groupName=" + GROUP);
-        assertEquals(GROUP, driver.findElement(By.name("groupName")).getAttribute("value"));
+        assertBodyContains("Details for Group: " + GROUP);
+        assertBodyContains(GROUP_COMMENTS);
+        assertBodyContains(USER);
         assertNothingRan();
 
         // JSP: group modify page, reached from the list; the name is in the hidden input, the member in the user list
@@ -269,7 +271,10 @@ public class UserMgmtXssIT extends AbstractRestIT {
             clickToLoad(driver.findElement(By.linkText(CLASSIC_ROLE)));
             assertBodyContains(DESCRIPTION);
             assertBodyContains(CLASSIC_ROLE);
-            assertTitleAttribute(FULL_NAME);
+            // only the admin role view has the tooltips; the role view for everyone shows the user ids as plain text
+            if (page.startsWith("admin/")) {
+                assertTitleAttribute(FULL_NAME);
+            }
             assertNothingRan();
         }
 
