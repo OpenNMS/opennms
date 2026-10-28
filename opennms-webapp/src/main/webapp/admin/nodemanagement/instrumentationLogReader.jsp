@@ -69,23 +69,13 @@ if(searchString != null) {
 	c.setSearchString(searchString);
 }
 
-LOG.debug("creating FilenameFilter");
-
-final FilenameFilter filter = new FilenameFilter() {
-	public boolean accept(final File dir, final String name) {
-		return name.startsWith("instrumentation.log");
-	}
-};
-
-LOG.debug("FilenameFilter = {}", filter);
-
 int filesMatched = 0;
 
 LOG.debug("scanning LogDir");
 
 final File logDir = new File(opennmsHome, "logs");
 if (logDir.exists()) {
-	for (final File file : logDir.listFiles(filter)) {
+	for (final File file : Collector.getInstrumentationLogFiles(logDir)) {
 		if (file.length() == 0) continue;
 		c.readLogMessagesFromFile(file.getPath());
 		filesMatched++;
