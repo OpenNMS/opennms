@@ -30,16 +30,18 @@ import GraphCollectionView from '@/containers/GraphCollectionView.vue'
 // hoisted: the service index pulls in modules that call useSnackbar at import time, before this
 // file's own constants would otherwise exist
 const {
-  getGraphCollections, deleteGraphCollection, createGraphCollection, getResolvedGraphCollection,
-  getResolvedSyntheticGraphCollection, getGraphCollectionTimespans, showSnackBar, push, replace, role, query
+  getGraphCollections, deleteGraphCollection, reloadGraphCollections, createGraphCollection, getResolvedGraphCollection,
+  getResolvedSyntheticGraphCollection, getGraphCollectionTimespans, showSnackBar, startSpinner, push, replace, role, query
 } = vi.hoisted(() => ({
   getGraphCollections: vi.fn(),
   deleteGraphCollection: vi.fn(),
+  reloadGraphCollections: vi.fn(),
   createGraphCollection: vi.fn(),
   getResolvedGraphCollection: vi.fn(),
   getResolvedSyntheticGraphCollection: vi.fn(),
   getGraphCollectionTimespans: vi.fn(),
   showSnackBar: vi.fn(),
+  startSpinner: vi.fn(),
   push: vi.fn(),
   replace: vi.fn(),
   role: { readOnly: false },
@@ -51,6 +53,7 @@ vi.mock(import('@/services/graphCollectionsService'), async importOriginal => ({
   ...await importOriginal(),
   getGraphCollections: () => getGraphCollections(),
   deleteGraphCollection: (...a: unknown[]) => deleteGraphCollection(...a),
+  reloadGraphCollections: () => reloadGraphCollections(),
   createGraphCollection: (...a: unknown[]) => createGraphCollection(...a),
   getResolvedGraphCollection: (...a: unknown[]) => getResolvedGraphCollection(...a),
   getResolvedSyntheticGraphCollection: (...a: unknown[]) => getResolvedSyntheticGraphCollection(...a),
@@ -58,7 +61,7 @@ vi.mock(import('@/services/graphCollectionsService'), async importOriginal => ({
 }))
 
 vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
-vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() }) }))
+vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner, stopSpinner: vi.fn() }) }))
 
 vi.mock('@/composables/useRole', () => ({
   default: () => ({
@@ -86,6 +89,7 @@ const mountList = async () => {
       stubs: {
         'router-link': { props: ['to'], template: '<a :href="to"><slot /></a>' },
         BreadCrumbs: true,
+        NodeCollectionPicker: true,
         // the real dialog teleports to <body>, out of the wrapper's reach
         OnmsConfirmationDialog: {
           props: ['visible'],
@@ -125,6 +129,29 @@ describe('GraphCollections.vue', () => {
     expect(wrapper.findAll('[data-test="duplicate-collection"]')).toHaveLength(0)
     expect(wrapper.findAll('[data-test="edit-collection"]')).toHaveLength(0)
     expect(wrapper.find('[data-test="create-collection"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="reload-collections"]').exists()).toBe(false)
+  })
+
+  it('re-reads the configuration file on request and shows what it holds now', async () => {
+    reloadGraphCollections.mockResolvedValue({ success: true, message: '' })
+    const wrapper = await mountList()
+    getGraphCollections.mockResolvedValue({ success: true, message: '', payload: [collection(7, 'Hand-edited')] })
+    await wrapper.find('[data-test="reload-collections"]').trigger('click')
+    await flushPromises()
+    expect(reloadGraphCollections).toHaveBeenCalledTimes(1)
+    expect(getGraphCollections).toHaveBeenCalledTimes(2)
+    expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Reloaded the graph collections from the configuration file.' })
+    expect(wrapper.findAll('[data-test="collection-title"]').map(t => t.text())).toEqual(['Hand-edited'])
+  })
+
+  it('reports a failed reload and keeps the list it has', async () => {
+    reloadGraphCollections.mockResolvedValue({ success: false, message: 'Failed to reload the graph collections from disk.' })
+    const wrapper = await mountList()
+    await wrapper.find('[data-test="reload-collections"]').trigger('click')
+    await flushPromises()
+    expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Failed to reload the graph collections from disk.', error: true })
+    expect(getGraphCollections).toHaveBeenCalledTimes(1)
+    expect(wrapper.findAll('[data-test="collection-title"]').map(t => t.text())).toEqual(['Core', 'Edge'])
   })
 
   it('deletes after confirmation and reloads the list', async () => {
@@ -248,6 +275,73 @@ describe('GraphCollectionView.vue', () => {
     expect(replace).toHaveBeenCalledWith({ query: { timespan: '7_day' }})
     select.vm.$emit('update:modelValue', 'none')
     expect(replace).toHaveBeenLastCalledWith({ query: {}})
+  })
+
+  it('re-resolves the collection every five minutes while shown, as the legacy refresh header did', async () => {
+    // only the interval is faked: flushPromises needs the real scheduler
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })
+    try {
+      getResolvedGraphCollection.mockResolvedValue({ success: true, message: '', payload: { collection: resolved(), etag: null }})
+      const wrapper = await mountView({ id: '1' })
+      expect(getResolvedGraphCollection).toHaveBeenCalledTimes(1)
+      await vi.advanceTimersByTimeAsync(5 * 60 * 1000)
+      await flushPromises()
+      expect(getResolvedGraphCollection).toHaveBeenCalledTimes(2)
+      expect(getResolvedGraphCollection).toHaveBeenLastCalledWith(1, { timespan: null, graphtype: null })
+      // a refresh is quiet: the spinner is for what the user asked for
+      expect(startSpinner).toHaveBeenCalledTimes(1)
+      wrapper.unmount()
+      await vi.advanceTimersByTimeAsync(5 * 60 * 1000)
+      await flushPromises()
+      expect(getResolvedGraphCollection).toHaveBeenCalledTimes(2)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('keeps the last good collection when a refresh fails, and recovers on a later tick', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })
+    try {
+      getResolvedGraphCollection.mockResolvedValueOnce({ success: true, message: '', payload: { collection: resolved(), etag: null }})
+      const wrapper = await mountView({ id: '1' })
+      expect(wrapper.find('[data-test="grid"]').exists()).toBe(true)
+
+      // a wall display must not go blank over one failed refresh
+      getResolvedGraphCollection.mockResolvedValueOnce({ success: false, message: 'Network Error' })
+      await vi.advanceTimersByTimeAsync(5 * 60 * 1000)
+      await flushPromises()
+      expect(wrapper.find('[data-test="grid"]').exists()).toBe(true)
+      expect(wrapper.find('[data-test="load-error"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="gc-stale"]').text()).toContain('The last refresh failed')
+
+      // and the timer keeps going, so the next good answer clears the note
+      getResolvedGraphCollection.mockResolvedValueOnce({ success: true, message: '', payload: { collection: resolved(), etag: null }})
+      await vi.advanceTimersByTimeAsync(5 * 60 * 1000)
+      await flushPromises()
+      expect(getResolvedGraphCollection).toHaveBeenCalledTimes(3)
+      expect(wrapper.find('[data-test="gc-stale"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="grid"]').exists()).toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('recovers a page left showing a load error once the server answers again', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })
+    try {
+      getResolvedGraphCollection.mockResolvedValueOnce({ success: false, message: 'Network Error' })
+      const wrapper = await mountView({ id: '1' })
+      expect(wrapper.find('[data-test="load-error"]').text()).toContain('Network Error')
+
+      getResolvedGraphCollection.mockResolvedValueOnce({ success: true, message: '', payload: { collection: resolved(), etag: null }})
+      await vi.advanceTimersByTimeAsync(5 * 60 * 1000)
+      await flushPromises()
+      expect(wrapper.find('[data-test="load-error"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="gc-stale"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="grid"]').exists()).toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('builds a node collection on the fly and offers no way back to the stored list', async () => {

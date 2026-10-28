@@ -375,7 +375,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // testAllFormsArePresent()
         reportsPage();
         findElementByName("resourceGraphs");
-        findElementByName("kscReports");
+        findElementByName("graphCollections");
 
         // testAllLinks
         reportsPage();
@@ -385,8 +385,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         reportsPage();
         findElementByLink("Graph Collections (Performance, Nodes, Domains)").click();
-        findElementByXpath("//div[@class='card-header']/span[text()='Customized Reports']");
-        findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
+        // the Vue Graph Collections page (ui/index.html#/graph-collections)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[contains(@class, 'card-title') and normalize-space(text())='Graph Collections']")));
 
         reportsPage();
         findElementByLink("Database Reports").click();

@@ -119,7 +119,7 @@
     </bean>
     <service ref="filterSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
 
-    <!-- KSC Database Provider -->
+    <!-- Graph Collection Provider -->
     <bean id="graphCollectionSearchProvider" class="org.opennms.netmgt.search.providers.action.GraphCollectionSearchProvider">
         <argument ref="graphCollectionService" />
     </bean>

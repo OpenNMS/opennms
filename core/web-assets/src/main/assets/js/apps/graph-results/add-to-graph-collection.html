@@ -1,17 +1,16 @@
-<ng-form name="kscForm">
+<ng-form name="graphCollectionForm">
   <div class="modal-header">
     <h3 class="modal-title">Add {{ graphTitle }} to Graph Collection</h3>
   </div>
   <div class="modal-body">
     <div class="form-group">
       <label class="col-form-label" for="resourceLabel">Resource</label>
-      <input ng-disabled="true" class="form-control" type="text" id="resourceLabel" name="resourceLabel" ng-model="resourceLabel"
-             ng-class="{ 'is-invalid' : kscForm.graphTitle.$invalid }">
+      <input ng-disabled="true" class="form-control" type="text" id="resourceLabel" name="resourceLabel" ng-model="resourceLabel">
     </div>
     <div class="form-group">
       <label class="col-form-label" for="graphTitle">Graph Title</label>
       <input required class="form-control" type="text" id="graphTitle" name="graphTitle" ng-model="graphTitle" placeholder="Graph Title"
-             ng-class="{ 'is-invalid' : kscForm.graphTitle.$invalid }">
+             ng-class="{ 'is-invalid' : graphCollectionForm.graphTitle.$invalid }">
       <p class="invalid-feedback">Graph title is required.</p>
     </div>
     <div class="form-group">
@@ -21,22 +20,23 @@
         uib-typeahead="timespan as timespan for timespan in timespans | filter:$viewValue"
         typeahead-editable="false"
         typeahead-min-length="0"
-        ng-class="{ 'is-invalid' : kscForm.timespan.$invalid }">
+        ng-class="{ 'is-invalid' : graphCollectionForm.timespan.$invalid }">
       <p class="invalid-feedback">Time range is required.</p>
     </div>
     <div class="form-group">
-      <label class="col-form-label" for="kscReport">Target Graph Collection</label>
-      <input required class="form-control" type="text" id="kscReport" name="kscReport" ng-model="kscReport" 
+      <label class="col-form-label" for="collection">Target Graph Collection</label>
+      <input required class="form-control" type="text" id="collection" name="collection" ng-model="collection"
         placeholder="Choose the target Graph Collection by typing the name here..."
-        uib-typeahead="ksc as ksc.label for ksc in kscReports | filter:$viewValue"
+        uib-typeahead="collection as collection.title for collection in collections | filter:{ title: $viewValue }"
         typeahead-editable="false"
         typeahead-min-length="0"
-        ng-class="{ 'is-invalid' : kscForm.kscReport.$invalid }">
+        ng-class="{ 'is-invalid' : graphCollectionForm.collection.$invalid }">
       <p class="invalid-feedback">Target Graph Collection is required.</p>
+      <p class="form-text text-muted" ng-if="alreadyIn()">This graph is already in "{{ collection.title }}". Adding it again shows it twice.</p>
     </div>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="kscForm.$invalid">Add <span class="fas fa-floppy-disk"></span></button>
+    <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="graphCollectionForm.$invalid">Add <span class="fas fa-floppy-disk"></span></button>
     <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
   </div>
 </ng-form>

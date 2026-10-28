@@ -27,11 +27,15 @@
 'use strict';
 
 const angular = require('vendor/angular-js');
-const templateUrl = require('./add-to-ksc.html');
+const templateUrl = require('./add-to-graph-collection.html');
 require('lib/onms-http');
 require('apps/onms-default-apps');
 
-angular.module('onms-ksc', [
+// The AngularJS helpers of the legacy graph results page (graph/results.htm): the
+// "Add to Graph Collection" modal, the graph filter box and the flow graph links.
+// The Vue resource graphs page has its own versions of all three.
+angular.module('onms-graph-results', [
+  'ngSanitize',
   'onms.http',
   'onms.default.apps',
   'ui.bootstrap',
@@ -45,100 +49,86 @@ angular.module('onms-ksc', [
   growlProvider.globalTimeToLive(5000);
   growlProvider.globalPosition('bottom-center');
 }])
-.controller('AddToKscModalInstanceCtrl', ['$scope', '$http', '$uibModalInstance', 'resourceLabel', 'graphTitle', function ($scope, $http, $uibModalInstance, resourceLabel, graphTitle) {
+.controller('AddToGraphCollectionModalInstanceCtrl', ['$scope', '$http', '$uibModalInstance', 'resourceId', 'resourceLabel', 'graphName', 'graphTitle', function ($scope, $http, $uibModalInstance, resourceId, resourceLabel, graphName, graphTitle) {
 
   $scope.resourceLabel = resourceLabel;
   $scope.graphTitle = graphTitle;
-  $scope.kscReports = [];
+  $scope.collections = [];
   $scope.timespan = '1_day';
-  $scope.timespans = [
-    '1_hour',
-    '2_hour',
-    '4_hour',
-    '6_hour',
-    '8_hour',
-    '12_hour',
-    '1_day',
-    '2_day',
-    '7_day',
-    '1_month',
-    '3_month',
-    '6_month',
-    '1_year',
-    'Today',
-    'Yesterday',
-    'Yesterday 9am-5pm',
-    'Yesterday 5pm-10pm',
-    'This Week',
-    'Last Week',
-    'This Month',
-    'Last Month',
-    'This Quarter',
-    'Last Quarter',
-    'This Year',
-    'Last Year'
-  ];
+  $scope.timespans = [];
+
+  // A second entry with another timespan is a legitimate use, so a graph already in the chosen
+  // collection is pointed out rather than refused, as the Vue dialog does.
+  $scope.alreadyIn = function() {
+    const collection = $scope.collection;
+    return Boolean(collection) && (collection.graphs || []).some(function(graph) {
+      return graph.resourceId === resourceId && graph.graphtype === graphName;
+    });
+  };
 
   $scope.ok = function () {
-    $uibModalInstance.close({ report: $scope.kscReport, title: $scope.graphTitle, timespan: $scope.timespan });
+    $uibModalInstance.close({ collection: $scope.collection, title: $scope.graphTitle, timespan: $scope.timespan });
   };
 
   $scope.cancel = function () {
     $uibModalInstance.dismiss('cancel');
   };
 
-  $http.get('rest/ksc').then(function(response) {
-    $scope.kscReports = response.data.kscReport;
+  $http.get('api/v2/graph-collections').then(function(response) {
+    $scope.collections = response.data;
+  });
+  $http.get('api/v2/graph-collections/timespans').then(function(response) {
+    $scope.timespans = response.data.map(function(timespan) { return timespan.id; });
   });
 
 }])
 
-.controller('AddToKscCtrl', ['$scope', '$http', '$uibModal', 'growl', function($scope, $http, $uibModal, growl) {
+// angular-growl shows its messages as HTML, whatever ngSanitize says, so anything a user
+// named is escaped before it goes into one.
+.factory('escapeHtml', function() {
+  return function(value) {
+    return String(value === undefined || value === null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  };
+})
+
+.controller('AddToGraphCollectionCtrl', ['$scope', '$http', '$uibModal', 'growl', 'escapeHtml', function($scope, $http, $uibModal, growl, escapeHtml) {
 
   $scope.open = function(resourceId, resourceLabel, graphName, graphTitle) {
     $uibModal.open({
       animation: $scope.animationsEnabled,
       templateUrl: templateUrl,
-      controller: 'AddToKscModalInstanceCtrl',
+      controller: 'AddToGraphCollectionModalInstanceCtrl',
       resolve: {
+        resourceId: function() { return resourceId; },
         resourceLabel: function() { return resourceLabel; },
+        graphName: function() { return graphName; },
         graphTitle: function() { return graphTitle; }
       }
     }).result.then(function (data) {
-      $scope.updateReport(data.report, resourceId, resourceLabel, graphName, data.title, data.timespan);
+      $scope.addGraph(data.collection, resourceId, resourceLabel, graphName, data.title, data.timespan);
     });
   };
 
-  $scope.updateReport = function(report, resourceId, resourceLabel, graphName, graphTitle, timespan) {
-    const url = 'rest/ksc/' + report.id;
-    $http.get(url).then(function (response) {
-      const data = response.data;
-      let found = false;
-      angular.forEach(data.kscGraph, function(r) {
-        if (r.resourceId === resourceId && r.graphtype === graphName) {
-          found = true;
-        }
-      });
-      if (found) {
-        growl.warning('The graph "' + graphTitle + '" for resource "' + resourceLabel + '" has been already added to "' + report.label + '"');
-      } else {
-        $http({
-          url: url,
-          method: 'PUT',
-          params: {
-            title: graphTitle,
-            reportName: graphName,
-            resourceId: resourceId,
-            timespan: timespan
-          }
-        }).then(function() {
-          growl.success('The graph "' + graphTitle + '" has been added to "' + report.label + '"');
-        }, function(response) {
-          growl.error(response.data);
-        });
+  $scope.addGraph = function(collection, resourceId, resourceLabel, graphName, graphTitle, timespan) {
+    $http({
+      url: 'api/v2/graph-collections/' + collection.id + '/graphs',
+      method: 'POST',
+      data: {
+        kind: 'prefab',
+        title: graphTitle,
+        resourceId: resourceId,
+        graphtype: graphName,
+        timespan: timespan
       }
-    }).error(function(msg) {
-      growl.error(msg);
+    }).then(function() {
+      growl.success('The graph "' + escapeHtml(graphTitle) + '" has been added to "' + escapeHtml(collection.title) + '"');
+    }, function(response) {
+      growl.error(escapeHtml(response.data || 'The graph could not be added.'));
     });
   };
 }])
