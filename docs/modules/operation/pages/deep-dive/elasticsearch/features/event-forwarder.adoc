@@ -10,7 +10,7 @@ NOTE: If you use Kibana, make sure you are using the version that is compatible 
 == Configuration
 
 The configuration is held in `$\{OPENNMS_HOME}/etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg`.
-Please refer to <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, Configuring Elasticsearch>> for information on how to configure Elasticsearch connection settings.
+For the Elasticsearch connection settings, see xref:reference:configuration/tuning-elasticsearch.adoc[].
 
 Besides the general Elasticsearch connection settings, the following properties are supported to configure the Event Forwarder:
 
@@ -88,7 +88,7 @@ opennms-events-raw-2017-01/eventdata/11549
 ----
 
 NOTE: Forwarded events are written to time-based indices that {page-component-title} does not expire.
-See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention, Index retention>> to avoid filling the Elasticsearch disk.
+See xref:reference:configuration/tuning-elasticsearch.adoc#ga-elasticsearch-index-retention[Index retention] to avoid filling the Elasticsearch disk.
 
 == Viewing events using Kibana Sense
 

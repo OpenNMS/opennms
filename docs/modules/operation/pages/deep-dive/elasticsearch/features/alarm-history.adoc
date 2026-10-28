@@ -18,7 +18,7 @@ A simple REST API also lets you evaluate the results, verify stored data, and pr
 NOTE: This feature requires Elasticsearch 7.0+.
 
 NOTE: Alarm history is written to time-based indices that {page-component-title} does not expire.
-See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention, Index retention>> to avoid filling the Elasticsearch disk.
+See xref:reference:configuration/tuning-elasticsearch.adoc#ga-elasticsearch-index-retention[Index retention] to avoid filling the Elasticsearch disk.
 
 == Alarm history indexing
 
@@ -40,7 +40,7 @@ When alarms are deleted, {page-component-title} pushes a new document containing
 Follow these steps to enable alarm history indexing:
 
 . Log in to your {page-component-title} instance's Karaf shell.
-. Configure the Elasticsearch client settings to point to your Elasticsearch cluster (see <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, Elasticsearch integration configuration>> for a complete list of available options):
+. Configure the Elasticsearch client settings to point to your Elasticsearch cluster (see xref:reference:configuration/tuning-elasticsearch.adoc[] for a complete list of available options):
 +
 [source, karaf]
 ----
@@ -97,7 +97,7 @@ If the file does not exist, create it.
 
 == Options
 
-You can set the following optional properties in `$\{OPENNMS_HOME}/etc/org.opennms.features.alarms.history.elastic.cfg` (along with those mentioned in <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, Elasticsearch integration configuration>>):
+You can set the following optional properties in `$\{OPENNMS_HOME}/etc/org.opennms.features.alarms.history.elastic.cfg` (along with those mentioned in xref:reference:configuration/tuning-elasticsearch.adoc[]):
 
 [options="autowidth"]
 |===

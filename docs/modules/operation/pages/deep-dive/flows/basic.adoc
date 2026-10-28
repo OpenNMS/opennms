@@ -16,7 +16,7 @@ Make sure that you have the following before you set up flows:
 The Drift version must match the targeted Elasticsearch version.
 ** (Optional) Configure Elasticsearch variables like `search.max_buckets` or maximum heap size `ES-JAVA_OPTS` if the default values are not sufficient for your volume of flows or number of nodes.
 ** A retention process to remove old flow indices so the disk does not fill up (for example, "keep _X_ days of flows").
-See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention, Index retention>>.
+See xref:reference:configuration/tuning-elasticsearch.adoc#ga-elasticsearch-index-retention[Index retention].
 ** {page-component-title} set up to monitor the Elasticsearch stack and generate an alarm if it goes down.
 * The OpenNMS plugin for Grafana configured to visualize flows.
 ** Configure the flow and performance data sources.
@@ -25,7 +25,7 @@ See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention
 ====
 Flows are high volume, and {page-component-title} does not expire them.
 Configure an index retention process before you collect flows in production, or the Elasticsearch disk can fill up.
-See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention, Index retention>>.
+See xref:reference:configuration/tuning-elasticsearch.adoc#ga-elasticsearch-index-retention[Index retention].
 ====
 
 == Configure {page-component-title} to communicate with Elasticsearch
@@ -62,7 +62,7 @@ elasticIndexStrategy=daily
 ----
 <1> Replace with comma-separated list of Elasticsearch nodes.
 
-** See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch configuration>> for a complete set of configuration options.
+** See xref:reference:configuration/tuning-elasticsearch.adoc[] for a complete set of configuration options.
 
 == Configuring NetFlow Composable Templates
 
