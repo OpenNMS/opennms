@@ -63,7 +63,7 @@ Returns `409` when the group already exists and `400` when a listed user does no
 | Rename a group.
 The body is `{"newName": "NewName"}`.
 On-call roles that use the group as their membership group follow the rename, and so do its category authorizations.
-Returns `200` with the group and its `ETag`, or `409` when the new name is taken.
+Returns `200` with the group and its `ETag`, `400` when the new name is the current name, or `409` when the new name is taken.
 The `Admin` group cannot be renamed.
 |===
 
@@ -115,7 +115,8 @@ If the group does not exist, a request with an `If-Match` header (even `*`) also
 Every successful write returns the new `ETag`.
 
 The `version` field in a JSON body is informational.
-It is ignored when you send it.
+It is ignored when you send it: a write without `If-Match` goes through even if the body holds an old version.
+To detect concurrent edits, send the version in `If-Match`.
 
 == Group fields
 

@@ -61,7 +61,7 @@ Returns `201 Created` with the role and its `ETag`, or `409` when it already exi
 
 | /oncall-roles/\{name}/rename
 | Rename a role in place. The body is `{"newName": "NewName"}`.
-Returns `200` with the role and its `ETag`, or `409` when the new name is taken.
+Returns `200` with the role and its `ETag`, `400` when the new name is the current name, or `409` when the new name is taken.
 |===
 
 WARNING: A rename does not update `destinationPaths.xml`.
@@ -118,7 +118,8 @@ If the role does not exist, a request with an `If-Match` header (even `*`) also 
 Every successful write returns the new `ETag`.
 
 The `version` field in a JSON body is informational.
-It is ignored when you send it.
+It is ignored when you send it: a write without `If-Match` goes through even if the body holds an old version.
+To detect concurrent edits, send the version in `If-Match`.
 
 == Role fields
 

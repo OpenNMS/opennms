@@ -66,7 +66,7 @@ Returns `409` when the user already exists.
 | Rename a user.
 The body is `{"newUserId": "newname"}`.
 Group memberships follow the rename.
-Returns `200` with the renamed user and its `ETag`, or `409` when the new name is taken.
+Returns `200` with the renamed user and its `ETag`, `400` when the new name is the current name, or `409` when the new name is taken.
 The `admin` and `rtc` users cannot be renamed.
 |===
 
@@ -92,7 +92,8 @@ Returns `204 No Content` with the new `ETag`.
 
 In a PUT body, a field that is omitted is left as it is and a field set to an empty string is cleared.
 For `roles` and `dutySchedules`, an omitted list is preserved and a present list, including `[]`, replaces the stored one.
-The `admin` user must keep `ROLE_ADMIN`.
+The `admin` user must keep `ROLE_ADMIN`; a request that removes it returns `400`.
+Another user can lose `ROLE_ADMIN` only while some other user still has it; otherwise the request returns `409`.
 
 == DELETEs (removing data)
 
@@ -106,6 +107,7 @@ The `admin` user must keep `ROLE_ADMIN`.
 | Delete a user and remove it from every group.
 Returns `204 No Content`.
 Returns `409` when the user still supervises an on-call role; the message names the roles.
+Returns `409` when the user is the only user with `ROLE_ADMIN`.
 The `admin` and `rtc` users cannot be deleted.
 |===
 
@@ -125,7 +127,8 @@ If the user does not exist, a request with an `If-Match` header (even `*`) also 
 Every successful write returns the new `ETag`.
 
 The `version` field in a JSON body is informational.
-It is ignored when you send it.
+It is ignored when you send it: a write without `If-Match` goes through even if the body holds an old version.
+To detect concurrent edits, send the version in `If-Match`.
 
 The password hash is never returned by any operation.
 
