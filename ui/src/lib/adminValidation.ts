@@ -24,7 +24,7 @@
 // problems before submitting. These must stay in sync with UsersRestService,
 // GroupsRestService and OnCallRolesRestService (INVALID_NAME/INVALID_COMMENTS).
 
-const INVALID_NAME = /[&<>"`':/\\%?#\s]/
+const INVALID_NAME = /[&<>"`':/\\%?#\s\p{Z}\p{C}]/u
 const INVALID_COMMENTS = /[&<>"`']/
 const EMAIL_SHAPE = /[^\s@]+@[^\s@]+/
 
@@ -39,7 +39,7 @@ export const validateAdminName = (value: string, label: string): string | null =
     return null
   }
   if (INVALID_NAME.test(trimmed)) {
-    return `The ${label} must not contain markup, whitespace, or the characters : / \\ % ? #`
+    return `The ${label} must not contain markup, whitespace, control or invisible characters, or the characters : / \\ % ? #`
   }
   if (trimmed === '.' || trimmed === '..') {
     return `The ${label} must not be a dot segment.`

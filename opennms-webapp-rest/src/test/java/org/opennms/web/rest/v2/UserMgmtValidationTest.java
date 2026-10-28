@@ -22,6 +22,8 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -38,6 +40,15 @@ public class UserMgmtValidationTest {
             fail("expected a rejection");
         } catch (final UserMgmtValidationException e) {
             assertEquals(message, e.getMessage());
+        }
+    }
+
+    @Test
+    public void testNameRejectsWhitespaceAndInvisibleCharacters() {
+        assertNull(UserMgmtValidation.validateName("jane.doe@example.org", "userId"));
+        assertNull(UserMgmtValidation.validateName("Müller", "userId"));
+        for (final String bad : List.of("a b", "Ops\u00A0", "Ops\u2003", "a\u200Bb", "a\u0000b", "a\u2028b", "a<b", "a:b")) {
+            assertNotNull("'" + bad + "' should be rejected", UserMgmtValidation.validateName(bad, "group name"));
         }
     }
 

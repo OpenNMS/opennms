@@ -40,7 +40,8 @@ import org.opennms.netmgt.config.UserMgmtJaxbMapper;
  */
 final class UserMgmtValidation {
 
-    private static final Pattern INVALID_NAME = Pattern.compile("[&<>\"`':/\\\\%?#\\s]");
+    /** Markup, the characters that are not safe in a URL path segment, and any whitespace, control or invisible character. */
+    private static final Pattern INVALID_NAME = Pattern.compile("[&<>\"`':/\\\\%?#\\s\\p{Z}\\p{C}]");
 
     private static final Pattern INVALID_COMMENTS = Pattern.compile("[&<>\"`']");
 
@@ -57,7 +58,7 @@ final class UserMgmtValidation {
      */
     static String validateName(final String name, final String label) {
         if (INVALID_NAME.matcher(name).find()) {
-            return "The " + label + " must not contain markup, whitespace, or the characters : / \\ % ? #";
+            return "The " + label + " must not contain markup, whitespace, control or invisible characters, or the characters : / \\ % ? #";
         }
         if (".".equals(name) || "..".equals(name)) {
             return "The " + label + " must not be a dot segment.";
