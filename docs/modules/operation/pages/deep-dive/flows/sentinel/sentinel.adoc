@@ -67,16 +67,12 @@ config:edit org.opennms.features.flows.persistence.elastic
 config:property-set elasticUrl http://elastic-ip:9200<1>
 config:property-set elasticIndexStrategy hourly<2>
 config:property-set settings.index.number_of_replicas 0<3>
-config:property-set connTimeout 30000<4>
-config:property-set readTimeout 60000<5>
 config:update
 ----
 <1> Replace with a URL to the Elasticsearch cluster.
 <2> Specify an index strategy.
 <3> Set number of replicas; 0 is a default.
 In production you should have at least 1.
-<4> Timeout, in milliseconds, Sentinel waits to connect to the Elasticsearch cluster.
-<5> Read timeout when data is fetched from the Elasticsearch cluster.
 
 Additional configuration properties are documented in xref:reference:configuration/tuning-elasticsearch.adoc[].
 Be sure to also set the `indexPrefix` property when using a single Elasticsearch cluster with multiple {page-component-title} instances.
