@@ -90,12 +90,11 @@ public class UserMgmtRestSupport {
     }
 
     /**
-     * Takes the write lock (users, then groups) and arranges for the in-memory managers to be reloaded
-     * once the surrounding transaction commits. Must be called inside an active transaction.
-     * <p>
-     * The committed transaction's session is still bound to the thread in {@code afterCommit}, so data access
-     * there would join it. The managers' reloads run in a new transaction (PROPAGATION_REQUIRES_NEW), with a
-     * new session, so they read the committed rows and not that session's cache.
+     * Takes the write lock (users, then groups) and, once the surrounding transaction commits, expires the
+     * in-memory managers: their next read checks the version and reloads, so the next request sees the write.
+     * Nothing is read in {@code afterCommit}, where the committed transaction's session is still bound to the
+     * thread, and a burst of writes costs one reload instead of one per write. Must be called inside an active
+     * transaction.
      */
     public void lockForWrite() {
         if (!TransactionSynchronizationManager.isSynchronizationActive()) {
@@ -105,12 +104,7 @@ public class UserMgmtRestSupport {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                try {
-                    m_managers.reloadAll();
-                } catch (final RuntimeException e) {
-                    // the write is already committed; the managers' version poll catches up within a second
-                    LOG.warn("Can't reload the user-management managers after a committed write; the version poll will catch up", e);
-                }
+                m_managers.expireAll();
             }
         });
     }

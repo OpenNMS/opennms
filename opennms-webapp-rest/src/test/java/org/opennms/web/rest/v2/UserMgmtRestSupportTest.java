@@ -27,7 +27,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -290,27 +289,16 @@ public class UserMgmtRestSupportTest {
     }
 
     @Test
-    public void testLockForWriteLocksAndReloadsAfterCommit() {
+    public void testLockForWriteLocksAndExpiresAfterCommit() {
         TransactionSynchronizationManager.initSynchronization();
         m_support.lockForWrite();
         final InOrder order = inOrder(m_versionDao);
         order.verify(m_versionDao).lockAll();
-        verify(m_managers, never()).reloadAll();
+        verify(m_managers, never()).expireAll();
         for (final TransactionSynchronization sync : TransactionSynchronizationManager.getSynchronizations()) {
             sync.afterCommit();
         }
-        verify(m_managers).reloadAll();
-    }
-
-    @Test
-    public void testReloadFailureAfterCommitIsSwallowed() {
-        doThrow(new IllegalStateException("reload failed")).when(m_managers).reloadAll();
-        TransactionSynchronizationManager.initSynchronization();
-        m_support.lockForWrite();
-        for (final TransactionSynchronization sync : TransactionSynchronizationManager.getSynchronizations()) {
-            sync.afterCommit();
-        }
-        verify(m_managers).reloadAll();
+        verify(m_managers).expireAll();
     }
 
     @Test
@@ -320,7 +308,7 @@ public class UserMgmtRestSupportTest {
         for (final TransactionSynchronization sync : TransactionSynchronizationManager.getSynchronizations()) {
             sync.afterCompletion(TransactionSynchronization.STATUS_ROLLED_BACK);
         }
-        verify(m_managers, never()).reloadAll();
+        verify(m_managers, never()).expireAll();
     }
 
     @Test(expected = IllegalStateException.class)
