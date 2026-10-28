@@ -4,6 +4,7 @@
 
 The SnmpCollector collects performance data through SNMP.
 Configure credentials to access SNMP agents in the Web UI (*Admin>Configure SNMP Community Names by IP Address*).
+For the SNMP agent configuration attributes, and for help with timeouts and other collection problems, see xref:operation:deep-dive/provisioning/snmp-configuration.adoc#snmp-configuration-troubleshooting[Troubleshoot SNMP communication].
 
 == Collector facts
 

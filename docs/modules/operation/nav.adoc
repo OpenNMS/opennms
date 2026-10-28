@@ -41,7 +41,8 @@
 *** xref:deep-dive/provisioning/integration.adoc[]
 *** xref:deep-dive/provisioning/scalability.adoc[]
 *** xref:deep-dive/provisioning/fine-grained.adoc[]
-*** xref:deep-dive/provisioning/snmp-profile.adoc[]
+*** xref:deep-dive/provisioning/snmp-configuration.adoc[]
+**** xref:deep-dive/provisioning/snmp-profile.adoc[]
 
 ** xref:deep-dive/thresholds/thresholding.adoc[]
 **** xref:deep-dive/thresholds/datasource.adoc[]
