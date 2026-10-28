@@ -48,3 +48,23 @@ When you upgrade and have the available memory, choose a large value to pass to 
 ----
 sudo /opt/opennms/bin/install -Xms1024m -Xmx2048m -dis
 ----
+
+[[db-schema-state]]
+== Check the database schema state
+
+{page-component-title} does not use a single database schema version number.
+The installer (`install -dis`) applies schema changes as Liquibase changesets and records each applied changeset in the `databasechangelog` table.
+The changesets are grouped in changelog directories that are mostly named after the release that introduced them (for example, `36.0.0`).
+
+To list the changelog files with the most recently applied changes, query the table in the {page-component-title} database:
+
+[source, console]
+----
+sudo -u postgres psql -d opennms -c "SELECT filename, MAX(orderexecuted) AS last_applied FROM databasechangelog WHERE exectype <> 'RERAN' GROUP BY filename ORDER BY last_applied DESC LIMIT 10;"
+----
+
+The `filename` column includes the changelog directory.
+The query skips rows with the `RERAN` execution type, because some changesets run again on every `install -dis` run.
+Rows from the `stored-procedures` and `foundation-*` directories are expected and are not tied to a release.
+
+Compare the result before and after an upgrade, or between two systems, to see whether they are at the same schema state.
