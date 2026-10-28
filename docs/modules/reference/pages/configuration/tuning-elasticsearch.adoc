@@ -1,7 +1,7 @@
 [[ga-elasticsearch-integration-configuration]]
 = Tuning Elasticsearch
 :description: Configure and tune the Elasticsearch connection settings that {page-component-title} features use to persist flows, events, alarm history, and situation feedback.
-:page-aliases: operation:deep-dive/elasticsearch/introduction.adoc
+:page-aliases: operation:deep-dive/elasticsearch/introduction.adoc, operation:deep-dive/elasticsearch/features/introduction.adoc
 
 {page-component-title} can persist and forward certain data to Elasticsearch.
 Each feature that uses Elasticsearch has its own configuration file with its own connection, index, and circuit breaker settings.
