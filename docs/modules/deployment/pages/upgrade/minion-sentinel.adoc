@@ -20,7 +20,6 @@ After the upgrade, the Minions table under menu:Distributed Monitoring[Manage Mi
 The steps are the same for Minion and Sentinel.
 Replace `<service>` with `minion` or `sentinel`.
 
-The packages do not require a specific Java version.
 Before you upgrade a package, install the Java version that the new release requires (see xref:deployment:core/system-requirements.adoc[]).
 
 [{tabs}]
@@ -42,40 +41,21 @@ sudo systemctl stop <service>
 sudo rsync -Ppav /opt/<service>/etc/ /opt/<service>-etc.orig/
 ----
 
-. Enable the repository you disabled after installation:
+. Upgrade the package, enabling the repository you disabled after installation for this command only:
 +
-[source, console]
+[source, console, subs="attributes"]
 ----
 ifeval::["{page-component-title}" == "Horizon"]
-sudo dnf config-manager --enable opennms-repo-stable-*
+sudo dnf -y upgrade --enablerepo='opennms-repo-stable-*' {package-prefix}-<service>
 endif::[]
 ifeval::["{page-component-title}" == "Meridian"]
-sudo dnf config-manager --enable meridian
+sudo dnf -y upgrade --enablerepo=meridian {package-prefix}-<service>
 endif::[]
 ----
 ifeval::["{page-component-title}" == "Meridian"]
 +
 If the repository's `baseurl` points to the old release family, change it to the new one first.
 endif::[]
-
-. Upgrade the package:
-+
-[source, console, subs="attributes"]
-----
-sudo dnf -y upgrade {package-prefix}-<service>
-----
-
-. Disable the repository again:
-+
-[source, console]
-----
-ifeval::["{page-component-title}" == "Horizon"]
-sudo dnf config-manager --disable opennms-repo-stable-*
-endif::[]
-ifeval::["{page-component-title}" == "Meridian"]
-sudo dnf config-manager --disable meridian
-endif::[]
-----
 
 . Reconcile configuration changes.
 For some files you changed, such as `org.apache.karaf.features.cfg`, the package keeps your version and saves the new shipped version next to it as `.rpmnew`.
