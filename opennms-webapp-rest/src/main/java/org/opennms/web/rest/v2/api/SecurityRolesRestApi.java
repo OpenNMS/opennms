@@ -57,13 +57,13 @@ public interface SecurityRolesRestApi {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "List all security roles (built-in roles first, then custom roles, each by name)", operationId = "listSecurityRoles")
+    @Operation(summary = "List all security roles with the number of users that hold each (built-in roles first, then custom roles, each by name)", operationId = "listSecurityRoles")
     Response listSecurityRoles(@Context SecurityContext securityContext);
 
     @GET
     @Path("{name}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Get one security role", operationId = "getSecurityRole")
+    @Operation(summary = "Get one security role (without the user count, which the list has)", operationId = "getSecurityRole")
     Response getSecurityRole(@Context SecurityContext securityContext, @Context Request request, @PathParam("name") String name);
 
     @POST

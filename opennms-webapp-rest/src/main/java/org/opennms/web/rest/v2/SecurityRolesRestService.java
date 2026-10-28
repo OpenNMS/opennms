@@ -104,7 +104,7 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
         try {
             final SecurityRole role = load(normalizePathName(pathName));
             final int version = role.getVersion();
-            return Response.ok(toDto(role, countUsers(role), version)).tag(m_support.etag(version)).build();
+            return Response.ok(toDto(role, null, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
             throw m_support.translate("read security role", e);
         }
@@ -133,7 +133,7 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
             m_securityRoleDao.flush();
             final int version = m_support.version(VersionedTable.security_roles, role.getId());
             LOG.info("Security role {} created by {}", name, UserMgmtValidation.principal(securityContext));
-            return Response.status(Status.CREATED).entity(toDto(role, 0, version)).tag(m_support.etag(version)).build();
+            return Response.status(Status.CREATED).entity(toDto(role, null, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
             throw m_support.translate("create security role", e);
         }
@@ -166,7 +166,7 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
             m_securityRoleDao.saveOrUpdate(role);
             m_securityRoleDao.flush();
             final int version = m_support.version(VersionedTable.security_roles, role.getId());
-            return Response.ok(toDto(role, countUsers(role), version)).tag(m_support.etag(version)).build();
+            return Response.ok(toDto(role, null, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
             throw m_support.translate("update security role", e);
         }
@@ -217,10 +217,6 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
         return role;
     }
 
-    private int countUsers(final SecurityRole role) {
-        return m_securityRoleDao.countUsersWithRole(role.getName());
-    }
-
     /** A blank path name is left as it is: it names no role, so the lookup answers 404. */
     private static String normalizePathName(final String name) {
         return StringUtils.isBlank(name) ? name : normalizeName(name);
@@ -243,7 +239,8 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
         return null;
     }
 
-    private static SecurityRoleDto toDto(final SecurityRole role, final int userCount, final int version) {
+    /** {@code userCount} is null, and left out of the JSON, for a single role: see {@link SecurityRoleDto}. */
+    private static SecurityRoleDto toDto(final SecurityRole role, final Integer userCount, final int version) {
         final SecurityRoleDto dto = new SecurityRoleDto();
         dto.setName(role.getName());
         dto.setDescription(role.getDescription());

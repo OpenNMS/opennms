@@ -21,6 +21,8 @@
  */
 package org.opennms.web.rest.v2.model;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 /**
  * A security role as exposed by the v2 user management API: a Spring Security authority ({@code ROLE_X}).
  * Only the description of a custom role can be written; {@code builtin}, {@code userCount} and
@@ -64,6 +66,8 @@ public class SecurityRoleDto {
         this.builtin = builtin;
     }
 
+    // only in the list: a single role carries an ETag, which follows the role's own row, not the users' grants
+    @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
     public Integer getUserCount() {
         return userCount;
     }

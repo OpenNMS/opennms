@@ -163,17 +163,25 @@ public class SecurityRolesRestServiceIT extends AbstractSpringJerseyRestTestCase
         createRole("ROLE_COUNTED", null);
         createUser("u1", "ROLE_COUNTED", "ROLE_USER");
         createUser("u2", "ROLE_COUNTED");
-        assertEquals(2, new JSONObject(getJson("/security-roles/ROLE_COUNTED", 200)).getInt("userCount"));
-        assertEquals(1, new JSONObject(getJson("/security-roles/ROLE_USER", 200)).getInt("userCount"));
-        assertEquals(1, new JSONObject(getJson("/security-roles/ROLE_ADMIN", 200)).getInt("userCount"));
-        assertEquals(0, new JSONObject(getJson("/security-roles/ROLE_JMX", 200)).getInt("userCount"));
-        final JSONArray roles = new JSONArray(getJson("/security-roles", 200));
-        for (int i = 0; i < roles.length(); i++) {
-            if ("ROLE_COUNTED".equals(roles.getJSONObject(i).getString("name"))) {
-                assertEquals(2, roles.getJSONObject(i).getInt("userCount"));
-            }
-        }
+        assertEquals(2, userCountInList("ROLE_COUNTED"));
+        assertEquals(1, userCountInList("ROLE_USER"));
+        assertEquals(1, userCountInList("ROLE_ADMIN"));
+        assertEquals(0, userCountInList("ROLE_JMX"));
         sendRequest(GET, "/security-roles/ROLE_NOPE", 404);
+    }
+
+    @Test
+    public void testSingleRoleHasNoUserCountAndGrantsKeepItsVersion() throws Exception {
+        createRole("ROLE_GRANTED", null);
+        final MockHttpServletResponse before = exec(GET, "/security-roles/ROLE_GRANTED", null, null, 200);
+        assertFalse(new JSONObject(before.getContentAsString()).has("userCount"));
+
+        // a grant changes the user, not the role: the role's version and ETag stay as they are
+        createUser("granted", "ROLE_GRANTED");
+        final MockHttpServletResponse after = exec(GET, "/security-roles/ROLE_GRANTED", null, null, 200);
+        assertEquals(before.getHeader("ETag"), after.getHeader("ETag"));
+        assertEquals(before.getContentAsString(), after.getContentAsString());
+        assertEquals(1, userCountInList("ROLE_GRANTED"));
     }
 
     @Test
@@ -183,7 +191,7 @@ public class SecurityRolesRestServiceIT extends AbstractSpringJerseyRestTestCase
         assertEquals("ROLE_OPERATOR", created.getString("name"));
         assertEquals("Ops", created.getString("description"));
         assertFalse(created.getBoolean("builtin"));
-        assertEquals(0, created.getInt("userCount"));
+        assertFalse(created.has("userCount"));
         assertEquals("\"" + created.getInt("version") + "\"", response.getHeader("ETag"));
         assertEquals(rowVersion("ROLE_OPERATOR"), created.getInt("version"));
 
@@ -352,7 +360,17 @@ public class SecurityRolesRestServiceIT extends AbstractSpringJerseyRestTestCase
 
         createUser("carol");
         exec(PUT, "/users/carol", "{\"userId\":\"carol\",\"roles\":[\"ROLE_NEWROLE\"]}", null, 200);
-        assertEquals(1, new JSONObject(getJson("/security-roles/ROLE_NEWROLE", 200)).getInt("userCount"));
+        assertEquals(1, userCountInList("ROLE_NEWROLE"));
+    }
+
+    private int userCountInList(final String name) throws Exception {
+        final JSONArray roles = new JSONArray(getJson("/security-roles", 200));
+        for (int i = 0; i < roles.length(); i++) {
+            if (name.equals(roles.getJSONObject(i).getString("name"))) {
+                return roles.getJSONObject(i).getInt("userCount");
+            }
+        }
+        throw new AssertionError(name + " is not in the list");
     }
 
     private String getJson(final String url, final int expectedStatus) throws Exception {
