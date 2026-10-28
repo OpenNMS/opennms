@@ -27,6 +27,7 @@
 	import="java.util.*,
 			org.opennms.core.utils.WebSecurityUtils,
             org.opennms.web.api.Util,
+            org.owasp.encoder.Encode,
             org.opennms.netmgt.config.*,
             org.opennms.netmgt.config.destinationPaths.*"
 %>
@@ -185,11 +186,11 @@ action="admin/notification/destinationWizard" >
                              String key = entry.getKey();
                              if (entry.getValue().booleanValue()) {
              %>
-                    <option selected VALUE=<%=key%>><%=key%></option>
+                    <option selected VALUE="<%=Encode.forHtmlAttribute(key)%>"><%=WebSecurityUtils.sanitizeString(key)%></option>
             <%
             } else {
             %>
-                    <option VALUE=<%=key%>><%=key%></option>
+                    <option VALUE="<%=Encode.forHtmlAttribute(key)%>"><%=WebSecurityUtils.sanitizeString(key)%></option>
             <%
                         }
                         }
@@ -203,11 +204,11 @@ action="admin/notification/destinationWizard" >
                              String key = entry.getKey();
                              if (entry.getValue().booleanValue()) {
              %>
-                    <option selected VALUE=<%=key%>><%=key%></option>
+                    <option selected VALUE="<%=Encode.forHtmlAttribute(key)%>"><%=WebSecurityUtils.sanitizeString(key)%></option>
             <%
             } else {
             %>
-                    <option VALUE="<%=key%>"><%=key%></option>
+                    <option VALUE="<%=Encode.forHtmlAttribute(key)%>"><%=WebSecurityUtils.sanitizeString(key)%></option>
             <%
                         }
                         }
@@ -221,11 +222,11 @@ action="admin/notification/destinationWizard" >
                          String key = entry.getKey();
                          if (entry.getValue().booleanValue()) {
              %>
-                    <option selected VALUE=<%=key%>><%=key%></option>
+                    <option selected VALUE="<%=Encode.forHtmlAttribute(key)%>"><%=WebSecurityUtils.sanitizeString(key)%></option>
             <%
             } else {
             %>
-                    <option VALUE=<%=key%>><%=key%></option>
+                    <option VALUE="<%=Encode.forHtmlAttribute(key)%>"><%=WebSecurityUtils.sanitizeString(key)%></option>
             <%
                         }
                         }
@@ -237,7 +238,7 @@ action="admin/notification/destinationWizard" >
              <%
                  for (String key : getEmails(targets).keySet()) {
              %>
-                    <option VALUE=<%=key%>><%=key%></option>
+                    <option VALUE="<%=Encode.forHtmlAttribute(key)%>"><%=WebSecurityUtils.sanitizeString(key)%></option>
             <%
             }
             %>

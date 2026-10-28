@@ -21,13 +21,21 @@
 ///
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
+import * as svc from '@/services/groupAdminService'
 import { getGroupMemberCandidates } from '@/services/groupAdminService'
-import { rest } from '@/services/axiosInstances'
+import { rest, v2 } from '@/services/axiosInstances'
 
-vi.mock('@/services/axiosInstances', () => ({
-  rest: { get: vi.fn() },
-  v2: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() }
-}))
+const showSnackBar = vi.hoisted(() => vi.fn())
+vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
+
+vi.mock('@/services/axiosInstances', async () => {
+  const actual = await vi.importActual<any>('@/services/axiosInstances')
+  return {
+    ifMatch: actual.ifMatch,
+    rest: { get: vi.fn() },
+    v2: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() }
+  }
+})
 
 describe('groupAdminService', () => {
   beforeEach(() => {
@@ -61,5 +69,40 @@ describe('groupAdminService', () => {
       vi.mocked(rest.get).mockRejectedValue(new Error('boom'))
       expect(await getGroupMemberCandidates()).toEqual([])
     })
+  })
+})
+
+const IF_MATCH_7 = { headers: { 'If-Match': '"7"' }}
+
+describe('groupAdminService versions', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('sends If-Match with the version on update/rename/delete', async () => {
+    vi.mocked(v2.put).mockResolvedValue({ data: {}})
+    vi.mocked(v2.post).mockResolvedValue({ data: {}})
+    vi.mocked(v2.delete).mockResolvedValue({ data: {}})
+
+    await svc.updateManagedGroup({ name: 'My Group', version: 7 } as any)
+    expect(v2.put).toHaveBeenCalledWith('/groups/My%20Group', { name: 'My Group', version: 7 }, IF_MATCH_7)
+
+    await svc.renameManagedGroup('My Group', 'New', 7)
+    expect(v2.post).toHaveBeenCalledWith('/groups/My%20Group/rename', { newName: 'New' }, IF_MATCH_7)
+
+    await svc.deleteManagedGroup('My Group', 7)
+    expect(v2.delete).toHaveBeenCalledWith('/groups/My%20Group', IF_MATCH_7)
+  })
+
+  it('on 412 returns the stale flag, whatever the body says, and shows no snackbar', async () => {
+    vi.mocked(v2.delete).mockRejectedValue({ response: { status: 412, data: 'Precondition failed.' }})
+    const error = await svc.deleteManagedGroup('x', 3)
+    expect(error?.stale).toBe(true)
+    expect(showSnackBar).not.toHaveBeenCalled()
+  })
+
+  it('on 409 returns the server message', async () => {
+    vi.mocked(v2.post).mockRejectedValue({ response: { status: 409, data: 'Group \'y\' already exists.' }})
+    expect(await svc.renameManagedGroup('x', 'y', 3)).toEqual({ message: 'Group \'y\' already exists.', stale: false })
   })
 })

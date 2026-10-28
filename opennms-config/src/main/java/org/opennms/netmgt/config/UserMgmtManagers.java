@@ -39,19 +39,26 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class UserMgmtManagers {
     private final UserManager m_userManager;
     private final GroupManager m_groupManager;
+    private final DbUserManager m_dbUserManager;
+    private final DbGroupManager m_dbGroupManager;
 
     public UserMgmtManagers(final UserAccountDao userDao, final UserGroupDao groupDao, final OnCallRoleDao roleDao,
                             final SecurityRoleDao securityRoleDao, final UserMgmtVersionDao versionDao,
                             final PlatformTransactionManager transactionManager) throws IOException {
         if (UserMgmtStore.isDatabase()) {
             final DbGroupManager groupManager = new DbGroupManager(userDao, groupDao, roleDao, versionDao, transactionManager);
+            final DbUserManager userManager = new DbUserManager(groupManager, userDao, securityRoleDao, roleDao, versionDao, transactionManager);
             m_groupManager = groupManager;
-            m_userManager = new DbUserManager(groupManager, userDao, securityRoleDao, roleDao, versionDao, transactionManager);
+            m_userManager = userManager;
+            m_dbGroupManager = groupManager;
+            m_dbUserManager = userManager;
         } else {
             GroupFactory.init();
             UserFactory.init();
             m_groupManager = GroupFactory.getInstance();
             m_userManager = UserFactory.getInstance();
+            m_dbGroupManager = null;
+            m_dbUserManager = null;
         }
     }
 
@@ -61,5 +68,17 @@ public class UserMgmtManagers {
 
     public GroupManager getGroupManager() {
         return m_groupManager;
+    }
+
+    /**
+     * Makes the next read of each manager check the database version at once, so a committed write is seen without
+     * waiting for the check interval. Reads and reloads nothing now: a burst of writes costs one reload, on the next
+     * read. Does nothing in xml mode.
+     */
+    public void expireAll() {
+        if (m_dbUserManager != null) {
+            m_dbUserManager.expire();
+            m_dbGroupManager.expire();
+        }
     }
 }

@@ -19,6 +19,13 @@ describe('validateAdminName', () => {
     }
   })
 
+  it('rejects other whitespace and invisible characters', () => {
+    for (const bad of ['Ops\u00A0x', 'Ops\u2003x', 'a\u200Bb', 'a\u0000b', 'a\u2028b']) {
+      expect(validateAdminName(bad, 'group name'), bad).toContain('must not contain')
+    }
+    expect(validateAdminName('Müller', 'user-id')).toBeNull()
+  })
+
   it('rejects dot segments', () => {
     expect(validateAdminName('.', 'user-id')).toContain('dot segment')
     expect(validateAdminName('..', 'user-id')).toContain('dot segment')

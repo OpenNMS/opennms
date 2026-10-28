@@ -60,6 +60,7 @@ import { useUserAdminStore } from '@/stores/userAdminStore'
 const props = defineProps<{
   visible: boolean
   userId: string
+  version: number
 }>()
 
 const emit = defineEmits(['update:visible'])
@@ -85,11 +86,12 @@ watch(
 const save = async () => {
   saving.value = true
   try {
-    const error = await store.renameUser(props.userId, newUserId.value.trim())
-    if (error === null) {
+    const error = await store.renameUser(props.userId, newUserId.value.trim(), props.version)
+    // A stale save has already reloaded the list; close so the dialog reopens on the fresh object and version.
+    if (error === null || error.stale) {
       emit('update:visible', false)
     } else {
-      errorText.value = error
+      errorText.value = error.message
     }
   } finally {
     saving.value = false

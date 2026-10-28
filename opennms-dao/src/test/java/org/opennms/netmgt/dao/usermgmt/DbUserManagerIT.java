@@ -46,6 +46,8 @@ import org.opennms.netmgt.dao.api.SecurityRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
 import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
+import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
+import org.opennms.netmgt.model.usermgmt.SecurityRole;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,6 +149,15 @@ public class DbUserManagerIT {
     }
 
     @Test
+    public void testExpireMakesTheNextReadCheckAtOnce() throws Exception {
+        m_users.getUserNames(); // load
+        m_tx.execute(s -> m_userDao.save(new UserAccount("external")));
+        assertFalse(m_users.hasUser("external")); // within the check interval
+        m_users.expire();
+        assertTrue(m_users.hasUser("external"));
+    }
+
+    @Test
     public void testRenameUserKeepsGroupMembership() throws Exception {
         m_users.saveUser("jane", user("jane"));
         m_groups.saveGroup("Ops", group("Ops", "jane"));
@@ -231,5 +242,81 @@ public class DbUserManagerIT {
         assertEquals(2, other.getOnmsUserList().size());
         assertTrue(other.comparePasswords("jane", "s3cret"));
         assertFalse(other.comparePasswords("nopass", ""));
+    }
+
+    /** A user with every field set, created through the DAO. */
+    private int createFullUser(final String username) {
+        return m_tx.execute(status -> {
+            final UserAccount user = new UserAccount(username);
+            user.setFullName("Full " + username);
+            user.setComments("Comment of " + username);
+            user.setPasswordHash("hash-" + username);
+            user.setPasswordSalted(true);
+            user.setTuiPin("1234");
+            user.setTimeZoneId("Europe/Berlin");
+            user.setContact(org.opennms.netmgt.model.usermgmt.ContactType.email, username + "@example.org", "provider");
+            user.setContact(org.opennms.netmgt.model.usermgmt.ContactType.workPhone, "555-0100", null);
+            user.setContact(org.opennms.netmgt.model.usermgmt.ContactType.textPage, "555-0101", "carrier");
+            user.getDutySchedules().add("MoTuWeThFr800-1700");
+            user.getDutySchedules().add("Sa0-2400");
+            for (final String name : new String[] {"ROLE_USER", "ROLE_ADMIN"}) {
+                final SecurityRole role = m_securityRoleDao.findByName(name);
+                user.getSecurityRoles().add(role);
+            }
+            m_userDao.save(user);
+            return user.getId();
+        });
+    }
+
+    @Test
+    public void testNoOpSaveKeepsRowVersions() throws Exception {
+        // a save writes every cached user back: only the one that changed may get a new version, or every user
+        // would look changed to a client that holds a version
+        final int a = createFullUser("anna");
+        final int b = createFullUser("bert");
+        final int c = createFullUser("cora");
+        final int beforeA = m_versionDao.getRowVersion(VersionedTable.users, a);
+        final int beforeB = m_versionDao.getRowVersion(VersionedTable.users, b);
+        final int beforeC = m_versionDao.getRowVersion(VersionedTable.users, c);
+
+        final User changed = m_users.getUser("bert");
+        changed.setFullName("Bert Changed");
+        m_users.saveUser("bert", changed);
+
+        assertEquals(beforeA, m_versionDao.getRowVersion(VersionedTable.users, a));
+        assertTrue(m_versionDao.getRowVersion(VersionedTable.users, b) > beforeB);
+        assertEquals(beforeC, m_versionDao.getRowVersion(VersionedTable.users, c));
+    }
+
+    @Test
+    public void testNoOpSaveKeepsAnEmptyCommentAndTuiPin() throws Exception {
+        // the load must give back exactly what is stored: an empty comment is not normalized to null
+        final int quiet = m_tx.execute(status -> {
+            final UserAccount user = new UserAccount("quiet");
+            user.setPasswordHash("hash-quiet");
+            user.setPasswordSalted(true);
+            user.setComments("");
+            user.setTuiPin("4321");
+            m_userDao.save(user);
+            return user.getId();
+        });
+        final int other = createFullUser("other");
+        final int before = m_versionDao.getRowVersion(VersionedTable.users, quiet);
+
+        final User changed = m_users.getUser("other");
+        changed.setFullName("Other Changed");
+        m_users.saveUser("other", changed);
+
+        assertEquals(before, m_versionDao.getRowVersion(VersionedTable.users, quiet));
+        assertEquals("", m_tx.execute(status -> m_userDao.findByUsername("quiet").getComments()));
+    }
+
+    @Test
+    public void testContactInfoChangeThroughManagerBumps() throws Exception {
+        final int id = createFullUser("anna");
+        final int before = m_versionDao.getRowVersion(VersionedTable.users, id);
+        m_users.setContactInfo("anna", ContactType.email, "new@example.org");
+        assertTrue(m_versionDao.getRowVersion(VersionedTable.users, id) > before);
+        assertEquals("new@example.org", newUserManager().getEmail("anna"));
     }
 }

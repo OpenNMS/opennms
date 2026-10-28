@@ -142,7 +142,7 @@ import KeyboardArrowDown from '@opennms/onms-ui/icons/hardware/KeyboardArrowDown
 import KeyboardArrowUp from '@opennms/onms-ui/icons/hardware/KeyboardArrowUp.vue'
 import { validateAdminComments, validateAdminName } from '@/lib/adminValidation'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
-import { ManagedGroup } from '@/types/groupAdmin'
+import { ManagedGroup, ManagedGroupCreate } from '@/types/groupAdmin'
 
 const props = defineProps<{
   visible: boolean
@@ -218,18 +218,19 @@ const save = async () => {
   try {
     // spread the original so fields this form doesn't expose (duty
     // schedules) round-trip untouched; default-map is preserved server-side
-    const base = props.group ?? {}
-    const payload: ManagedGroup = {
-      ...base,
+    const fields: ManagedGroupCreate = {
       name: isEditing.value ? originalName.value : name.value.trim(),
       comments: comments.value.trim(),
       users: [...members.value]
     }
-    const error = isEditing.value ? await store.updateGroup(payload) : await store.createGroup(payload)
-    if (error === null) {
+    const error = props.group
+      ? await store.updateGroup({ ...props.group, ...fields })
+      : await store.createGroup(fields)
+    // A stale save has already reloaded the list; close so the dialog reopens on the fresh object and version.
+    if (error === null || error.stale) {
       emit('update:visible', false)
     } else {
-      errorText.value = error
+      errorText.value = error.message
     }
   } finally {
     saving.value = false

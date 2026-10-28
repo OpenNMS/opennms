@@ -247,7 +247,7 @@
           <% final String responder = notification.getResponder(); %>
           <% if (responder != null) { %>
             <% Filter responderFilter = new ResponderFilter(responder); %>      
-              <%= responder %>
+              <%= WebSecurityUtils.sanitizeString(responder) %>
               <% if( parms.filters != null && !parms.filters.contains( responderFilter )) { %>
                 <a href="<%=this.makeLink( parms, responderFilter, true)%>" class="filterLink" title="Show only notices with this responder">${addPositiveFilter}</a>
               <% } %>

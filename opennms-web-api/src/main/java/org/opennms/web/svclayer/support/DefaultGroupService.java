@@ -25,7 +25,6 @@ package org.opennms.web.svclayer.support;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.opennms.core.spring.BeanUtils;
@@ -116,15 +115,31 @@ public class DefaultGroupService implements InitializingBean, GroupService {
     @Override
     public void deleteGroup(String groupName) {
         m_groupDao.deleteGroup(groupName);
-        setAuthorizedCategories(groupName, Collections.<String>emptyList());
+        clearCategoryAuthorizations(groupName);
     }
 
     @Override
     public void renameGroup(String oldName, String newName) {
         m_groupDao.renameGroup(oldName, newName);
-        List<String> categories = getAuthorizedCategoriesAsString(oldName);
-        setAuthorizedCategories(oldName, Collections.<String>emptyList());
-        setAuthorizedCategories(newName, categories);
+        moveCategoryAuthorizations(oldName, newName);
+    }
+
+    @Override
+    public void moveCategoryAuthorizations(String oldName, String newName) {
+        // the categories of the old name replace whatever the new name was authorized on before
+        final List<OnmsCategory> oldCategories = new ArrayList<>(m_categoryDao.getCategoriesWithAuthorizedGroup(oldName));
+        clearCategoryAuthorizations(newName);
+        for (OnmsCategory category : oldCategories) {
+            category.getAuthorizedGroups().remove(oldName);
+            category.getAuthorizedGroups().add(newName);
+        }
+    }
+
+    @Override
+    public void clearCategoryAuthorizations(String name) {
+        for (OnmsCategory category : m_categoryDao.getCategoriesWithAuthorizedGroup(name)) {
+            category.getAuthorizedGroups().remove(name);
+        }
     }
 
     @Override

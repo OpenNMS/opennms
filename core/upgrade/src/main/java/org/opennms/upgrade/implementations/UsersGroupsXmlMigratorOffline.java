@@ -50,6 +50,7 @@ import java.util.Set;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.BundleLists;
+import org.opennms.core.utils.HtmlEncoding;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Groupinfo;
@@ -352,7 +353,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                 final int userId = insert("INSERT INTO users (id, username, full_name, comments, password_hash, password_salted, tui_pin, time_zone_id, created_time, last_modified) "
                                 + "VALUES (nextval('users_id_seq'), ?, ?, ?, ?, ?, ?, ?, NOW(), NOW()) RETURNING id",
                         username,
-                        valueOrNull(user.getFullName().orElse(null), FULL_NAME_LENGTH, "user", username, "full-name"),
+                        valueOrNull(HtmlEncoding.decodeHtmlEncoded(user.getFullName().orElse(null)), FULL_NAME_LENGTH, "user", username, "full-name"),
                         user.getUserComments().orElse(null),
                         password,
                         user.getPassword() != null && Boolean.TRUE.equals(user.getPassword().getSalt()),
@@ -371,8 +372,8 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
             final Set<String> types = new HashSet<>();
             for (final Contact contact : contacts) {
                 final String type = contact.getType();
-                final String info = contact.getInfo().orElse(null);
-                final String provider = contact.getServiceProvider().orElse(null);
+                final String info = HtmlEncoding.decodeHtmlEncoded(contact.getInfo().orElse(null));
+                final String provider = HtmlEncoding.decodeHtmlEncoded(contact.getServiceProvider().orElse(null));
                 if (!CONTACT_TYPES.contains(type)) {
                     skip("user '%s': contact type '%s' is not known", username, type);
                 } else if (!types.add(type)) {

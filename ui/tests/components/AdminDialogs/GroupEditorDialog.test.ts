@@ -80,7 +80,7 @@ describe('GroupEditorDialog.vue', () => {
   })
 
   it('shows a server rejection inside the dialog and stays open', async () => {
-    store.createGroup.mockResolvedValue('Group TestGroup already exists.')
+    store.createGroup.mockResolvedValue({ message: 'Group TestGroup already exists.', stale: false })
     await mountDialog()
     await wrapper.find('[data-test="group-name-input"]').setValue('TestGroup')
     await wrapper.find('[data-test="save-button"]').trigger('click')
@@ -91,7 +91,7 @@ describe('GroupEditorDialog.vue', () => {
   })
 
   it('clears a previous error when reopened', async () => {
-    store.createGroup.mockResolvedValue('rejected')
+    store.createGroup.mockResolvedValue({ message: 'rejected', stale: false })
     await mountDialog()
     await wrapper.find('[data-test="group-name-input"]').setValue('TestGroup')
     await wrapper.find('[data-test="save-button"]').trigger('click')

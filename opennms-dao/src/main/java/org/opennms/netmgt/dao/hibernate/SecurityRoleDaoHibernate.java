@@ -22,7 +22,9 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.dao.api.SecurityRoleDao;
 import org.opennms.netmgt.model.usermgmt.SecurityRole;
@@ -64,6 +66,21 @@ public class SecurityRoleDaoHibernate extends AbstractDaoHibernate<SecurityRole,
         }
         delete(role);
         return true;
+    }
+
+    @Override
+    public Map<String, Integer> countUsersByRole() {
+        final Map<String, Integer> counts = new HashMap<>();
+        for (final Object[] row : findObjects(Object[].class,
+                "select r.name, count(u) from UserAccount u join u.securityRoles r group by r.name")) {
+            counts.put((String) row[0], ((Number) row[1]).intValue());
+        }
+        return counts;
+    }
+
+    @Override
+    public int countUsersWithRole(final String name) {
+        return queryInt("select count(u) from UserAccount u join u.securityRoles r where r.name = ?1", name);
     }
 
     /** Refuses a built-in role, so no delete path can remove one. */

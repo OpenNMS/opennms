@@ -20,12 +20,15 @@
 /// License.
 ///
 
+import useSnackbar from '@/composables/useSnackbar'
 import API from '@/services'
-import { ManagedGroup } from '@/types/groupAdmin'
+import { AdminWriteError } from '@/types/adminWrite'
+import { ManagedGroup, ManagedGroupCreate, STALE_GROUP_MESSAGE, STALE_GROUP_RELOAD_FAILED_MESSAGE } from '@/types/groupAdmin'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useGroupAdminStore = defineStore('groupAdminStore', () => {
+  const { showSnackBar } = useSnackbar()
   const groups = ref([] as ManagedGroup[])
   const memberCandidates = ref([] as string[])
 
@@ -34,13 +37,26 @@ export const useGroupAdminStore = defineStore('groupAdminStore', () => {
     if (result !== null) {
       groups.value = result
     }
+    return result !== null
   }
 
   const getMemberCandidates = async () => {
     memberCandidates.value = await API.getGroupMemberCandidates()
   }
 
-  const createGroup = async (group: ManagedGroup) => {
+  // A stale write means the list on screen is out of date: reload it, and say so only
+  // once the reload has succeeded. The caller gets the flag, not the text.
+  const reloadIfStale = async (error: AdminWriteError | null) => {
+    if (error?.stale) {
+      const reloaded = await getGroups()
+      const message = reloaded ? STALE_GROUP_MESSAGE : STALE_GROUP_RELOAD_FAILED_MESSAGE
+      showSnackBar({ msg: message, error: true })
+      return { ...error, message }
+    }
+    return error
+  }
+
+  const createGroup = async (group: ManagedGroupCreate) => {
     const error = await API.createManagedGroup(group)
     if (error === null) {
       await getGroups()
@@ -53,23 +69,23 @@ export const useGroupAdminStore = defineStore('groupAdminStore', () => {
     if (error === null) {
       await getGroups()
     }
-    return error
+    return await reloadIfStale(error)
   }
 
-  const renameGroup = async (name: string, newName: string) => {
-    const error = await API.renameManagedGroup(name, newName)
+  const renameGroup = async (name: string, newName: string, version: number) => {
+    const error = await API.renameManagedGroup(name, newName, version)
     if (error === null) {
       await getGroups()
     }
-    return error
+    return await reloadIfStale(error)
   }
 
-  const deleteGroup = async (name: string) => {
-    const error = await API.deleteManagedGroup(name)
+  const deleteGroup = async (name: string, version: number) => {
+    const error = await API.deleteManagedGroup(name, version)
     if (error === null) {
       await getGroups()
     }
-    return error
+    return await reloadIfStale(error)
   }
 
   const populate = async () => {

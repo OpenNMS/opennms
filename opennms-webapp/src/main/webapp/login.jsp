@@ -223,7 +223,7 @@
               Your login attempt failed, please try again.
 
                 <%-- This is: AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY --%>
-              <p id="login-attempt-failed-reason">Reason: ${SPRING_SECURITY_LAST_EXCEPTION.message}</p>
+              <p id="login-attempt-failed-reason">Reason: <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></p>
             </div>
           </c:if>
 

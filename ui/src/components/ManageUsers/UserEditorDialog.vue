@@ -180,7 +180,7 @@ import DutyScheduleEditor from '@/components/ManageUsers/DutyScheduleEditor.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { validateAdminComments, validateAdminName, validateEmailShape } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
-import { ManagedUser } from '@/types/userAdmin'
+import { ManagedUser, ManagedUserCreate } from '@/types/userAdmin'
 
 // IANA zone ids for the time-zone picker; supportedValuesOf is present in the
 // app's target browsers, guarded so a missing implementation just yields no list
@@ -294,9 +294,7 @@ const save = async () => {
     // spread the original so contact types the form still doesn't expose (XMPP,
     // microblog) round-trip untouched; the server skips re-writing any value
     // that matches what is stored.
-    const base = props.user ?? {}
-    const payload: ManagedUser = {
-      ...base,
+    const fields: Omit<ManagedUserCreate, 'password'> = {
       userId: isEditing.value ? originalUserId.value : form.userId.trim(),
       fullName: form.fullName.trim(),
       userComments: form.comments.trim(),
@@ -314,13 +312,14 @@ const save = async () => {
       dutySchedules: form.dutySchedules.map(s => s.trim()).filter(Boolean),
       roles: [...form.roles]
     }
-    const error = isEditing.value
-      ? await store.updateUser(payload)
-      : await store.createUser({ ...payload, password: form.password })
-    if (error === null) {
+    const error = props.user
+      ? await store.updateUser({ ...props.user, ...fields })
+      : await store.createUser({ ...fields, password: form.password })
+    // A stale save has already reloaded the list; close so the dialog reopens on the fresh object and version.
+    if (error === null || error.stale) {
       emit('update:visible', false)
     } else {
-      errorText.value = error
+      errorText.value = error.message
     }
   } finally {
     saving.value = false

@@ -143,7 +143,7 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
         migrate();
 
         m_sessionUtils.withReadOnlyTransaction(() -> {
-            assertEquals(Arrays.asList("admin", "bob", "carol", "rtc"),
+            assertEquals(Arrays.asList("admin", "bob", "carol", "rtc", "zoe"),
                     m_userDao.findAllOrderByUsername().stream().map(UserAccount::getUsername).collect(Collectors.toList()));
 
             final UserAccount admin = m_userDao.findByUsername("admin");
@@ -176,6 +176,35 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
             assertEquals("Carol Two", carol.getFullName());
             assertEquals("second", carol.getPasswordHash());
             assertEquals(List.of("ROLE_STAGE"), roleNames(carol));
+        });
+    }
+
+    @Test
+    public void testDecodesHtmlEncodedTextFields() throws Exception {
+        // older versions wrote full names and contacts HTML-encoded to users.xml; the database holds them raw
+        copyFixtures();
+        migrate();
+
+        m_sessionUtils.withReadOnlyTransaction(() -> {
+            final UserAccount zoe = m_userDao.findByUsername("zoe");
+            assertEquals("O'Brien & Co", zoe.getFullName());
+            assertEquals("a&b@x.org", zoe.getContact(ContactType.email).getInfo());
+        });
+    }
+
+    @Test
+    public void testDecodedTextIsCheckedForLength() throws Exception {
+        // 256 characters once decoded, but 1280 encoded
+        final String encoded = "&amp;".repeat(256);
+        write("users.xml", "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><users>"
+                + "<user><user-id>eve</user-id><full-name>" + encoded.replace("&", "&amp;") + "</full-name><password>a</password>"
+                + "<contact type=\"email\" info=\"" + encoded.replace("&", "&amp;") + "\"/></user></users></userinfo>");
+        migrate();
+
+        m_sessionUtils.withReadOnlyTransaction(() -> {
+            final UserAccount eve = m_userDao.findByUsername("eve");
+            assertEquals("&".repeat(256), eve.getFullName());
+            assertEquals("&".repeat(256), eve.getContact(ContactType.email).getInfo());
         });
     }
 
@@ -357,7 +386,7 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
 
         assertTrue(archive.delete());
         migrate();
-        assertEquals(4, count("users"));
+        assertEquals(5, count("users"));
         assertTrue(new File(archive, "users.xml").exists());
     }
 

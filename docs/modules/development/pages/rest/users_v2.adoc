@@ -1,0 +1,193 @@
+= Users (v2)
+
+This is the database-backed REST API for managing OpenNMS users.
+It is served at `/api/v2/users` and replaces the XML-based xref:development:rest/users.adoc[Users] API for installations that store users in the database.
+
+== Store mode
+
+This API works only when users and groups are stored in the database (`org.opennms.usermgmt.store=db`).
+When the store is `xml`, every operation returns `503 Service Unavailable` with the text `User management through this API needs org.opennms.usermgmt.store=db.`
+
+== Permissions
+
+Every operation, including reads, requires the `ROLE_ADMIN` role.
+Other users receive `403 Forbidden`.
+
+All operations produce and consume JSON.
+Error responses carry a plain-text message.
+
+== Status codes
+
+[caption=]
+[cols="1,4"]
+|===
+| Code | Meaning
+
+| 400 | Validation failed, for example a missing or unknown field value, a name in the wrong format, or a protected object.
+| 403 | The caller does not hold `ROLE_ADMIN`.
+| 404 | The named object does not exist.
+| 409 | The object already exists, another object still refers to it, or the data was changed at the same time by another request (try again).
+| 412 | `If-Match` was sent and no longer matches the object.
+| 503 | The user-management store is `xml`.
+|===
+
+== GETs (reading data)
+
+[caption=]
+.Users v2 API GET functions
+[cols="40%,60%"]
+|===
+| Resource | Description
+
+| /users
+| Get every user.
+
+| /users/\{userId}
+| Get one user. The response carries an `ETag` header.
+
+| /users/available-roles
+| Get the names of the security roles that can be assigned to a user, sorted by name.
+|===
+
+== POSTs (adding data)
+
+[caption=]
+.Users v2 API POST functions
+[cols="40%,60%"]
+|===
+| Resource | Description
+
+| /users
+| Create a user. The body is a user (see below) with an extra `password` field, which is required.
+Returns `201 Created` with the user and its `ETag`.
+Returns `409` when the user already exists.
+
+| /users/\{userId}/rename
+| Rename a user.
+The body is `{"newUserId": "newname"}`.
+Group memberships follow the rename.
+Returns `200` with the renamed user and its `ETag`, `400` when the new name is the current name, or `409` when the new name is taken.
+The `admin` and `rtc` users cannot be renamed.
+|===
+
+WARNING: A rename does not update `destinationPaths.xml`.
+Destination paths that name the old user id keep pointing at it, so update them yourself.
+
+== PUTs (modifying data)
+
+[caption=]
+.Users v2 API PUT functions
+[cols="40%,60%"]
+|===
+| Resource | Description
+
+| /users/\{userId}
+| Update a user's details.
+Returns `200` with the user and its `ETag`.
+The `userId` in the body must match the path; use the rename operation to change it.
+Contact types and fields that this API does not expose are preserved.
+
+| /users/\{userId}/password
+| Set a user's password. The body is `{"password": "secret"}`.
+The password is stored salted and hashed.
+Returns `204 No Content` with the new `ETag`.
+|===
+
+In a PUT body, a field that is omitted is left as it is and a field set to an empty string is cleared.
+For `roles` and `dutySchedules`, an omitted list is preserved and a present list, including `[]`, replaces the stored one.
+The `admin` user must keep `ROLE_ADMIN`; a request that removes it returns `400`.
+Another user can lose `ROLE_ADMIN` only while some other user still has it; otherwise the request returns `409`.
+
+== DELETEs (removing data)
+
+[caption=]
+.Users v2 API DELETE functions
+[cols="40%,60%"]
+|===
+| Resource | Description
+
+| /users/\{userId}
+| Delete a user and remove it from every group.
+Returns `204 No Content`.
+Returns `409` when the user still supervises an on-call role; the message names the roles.
+Returns `409` when the user is the only user with `ROLE_ADMIN`.
+Returns `409` while a destination path in `destinationPaths.xml` names the user, as a target or in an escalation; the message names the paths.
+A path does not count when a group or an on-call role has the same name, because notifd sends to that group or role instead.
+The `admin` and `rtc` users cannot be deleted.
+|===
+
+== Detecting concurrent edits
+
+Every GET of a single user returns an `ETag` header: the quoted version of the user, for example `"4817"`.
+The version is an opaque number: it changes on every change of the user, including a change of what it contains, and a version is never reused, not even by a user that is deleted and created again under the same name.
+Do not interpret it, count with it or compare it for order, only send it back.
+`PUT`, `PUT …/password`, `POST …/rename` and `DELETE` accept an `If-Match` header carrying that tag.
+
+`If-Match` is optional: a write without it always goes through.
+`*` matches any existing user.
+The tag may be weak (`W/"4817"`), and the header may list several tags separated by commas: the request goes through if any of them is the current one.
+If no tag is the current one, or the header is not a list of entity tags, the request fails with `412 Precondition Failed` and nothing is changed.
+If the user does not exist, a request with an `If-Match` header (even `*`) also fails with `412`; without the header it is `404 Not Found`.
+`If-None-Match` is ignored.
+Every successful write returns the new `ETag`.
+
+The `version` field in a JSON body is informational.
+It is ignored when you send it: a write without `If-Match` goes through even if the body holds an old version.
+To detect concurrent edits, send the version in `If-Match`.
+
+The password hash is never returned by any operation.
+
+== User fields
+
+[caption=]
+[cols="1,3"]
+|===
+| Field | Description
+
+| userId | Login name. Required on create.
+| fullName | Full name.
+| userComments | Free-form comments.
+| email | Email address.
+| pagerEmail | Pager email address.
+| workPhone | Work phone number.
+| mobilePhone | Mobile phone number.
+| homePhone | Home phone number.
+| numericPagerService | Numeric pager service provider.
+| numericPagerPin | Numeric pager PIN or number.
+| textPagerService | Text pager service provider.
+| textPagerPin | Text pager PIN or number.
+| tuiPin | Telephone user interface PIN.
+| timeZoneId | Time zone id, for example `Europe/Berlin`. Stored in its canonical form.
+| dutySchedules | List of duty schedule strings.
+| roles | List of security role names, for example `ROLE_ADMIN`. An unknown role returns `400`.
+| readOnly | `true` when the user holds `ROLE_READONLY`. Read-only.
+| version | Opaque row version, also sent as the `ETag`. Ignored on input.
+|===
+
+== Examples using cURL
+
+[source,bash]
+----
+# Create a user
+curl -u admin:admin -X POST -H 'Content-Type: application/json' \
+  -d '{"userId": "jdoe", "fullName": "Jane Doe", "email": "jdoe@example.org", "password": "s3cret", "roles": ["ROLE_USER"]}' \
+  http://localhost:8980/opennms/api/v2/users
+
+# Read it and note the ETag
+curl -u admin:admin -i http://localhost:8980/opennms/api/v2/users/jdoe
+# ... ETag: "4817" ...
+
+# Update it, refusing the write if it changed meanwhile
+curl -u admin:admin -X PUT -H 'Content-Type: application/json' -H 'If-Match: "4817"' \
+  -d '{"userId": "jdoe", "fullName": "Jane Q. Doe"}' \
+  http://localhost:8980/opennms/api/v2/users/jdoe
+
+# Change the password
+curl -u admin:admin -X PUT -H 'Content-Type: application/json' \
+  -d '{"password": "n3w-s3cret"}' http://localhost:8980/opennms/api/v2/users/jdoe/password
+
+# Rename and delete
+curl -u admin:admin -X POST -H 'Content-Type: application/json' \
+  -d '{"newUserId": "jane"}' http://localhost:8980/opennms/api/v2/users/jdoe/rename
+curl -u admin:admin -X DELETE http://localhost:8980/opennms/api/v2/users/jane
+----

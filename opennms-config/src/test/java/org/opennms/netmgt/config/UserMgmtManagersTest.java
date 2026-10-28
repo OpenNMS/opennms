@@ -25,6 +25,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.After;
 import org.junit.Test;
@@ -67,5 +72,33 @@ public class UserMgmtManagersTest {
         System.setProperty(UserMgmtStore.PROPERTY, "DB");
         final IllegalStateException e = assertThrows(IllegalStateException.class, UserMgmtManagersTest::managers);
         assertEquals("org.opennms.usermgmt.store must be \"db\" or \"xml\", not \"DB\"", e.getMessage());
+    }
+
+    @Test
+    public void testExpireAllIsNoOpInXmlMode() throws Exception {
+        final Path home = Files.createTempDirectory("usermgmt-home");
+        final Path etc = Files.createDirectory(home.resolve("etc"));
+        Files.write(etc.resolve("users.xml"), ("<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><header><rev>1</rev>"
+                + "<created>now</created><mstation>m</mstation></header><users><user><user-id>admin</user-id><full-name>A</full-name><password>x</password></user></users></userinfo>").getBytes(StandardCharsets.UTF_8));
+        Files.write(etc.resolve("groups.xml"), ("<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\"><header><rev>1</rev>"
+                + "<created>now</created><mstation>m</mstation></header><groups><group><name>Admin</name></group></groups></groupinfo>").getBytes(StandardCharsets.UTF_8));
+        final String oldHome = System.getProperty("opennms.home");
+        System.setProperty("opennms.home", home.toString());
+        System.setProperty(UserMgmtStore.PROPERTY, "xml");
+        try {
+            final UserMgmtVersionDao versionDao = mock(UserMgmtVersionDao.class);
+            final UserMgmtManagers managers = new UserMgmtManagers(mock(UserAccountDao.class), mock(UserGroupDao.class),
+                    mock(OnCallRoleDao.class), mock(SecurityRoleDao.class), versionDao, mock(PlatformTransactionManager.class));
+            managers.expireAll();
+            verifyNoInteractions(versionDao);
+        } finally {
+            if (oldHome == null) {
+                System.clearProperty("opennms.home");
+            } else {
+                System.setProperty("opennms.home", oldHome);
+            }
+            UserFactory.setInstance(null);
+            GroupFactory.setInstance(null);
+        }
     }
 }

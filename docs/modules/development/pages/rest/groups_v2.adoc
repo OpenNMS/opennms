@@ -1,0 +1,156 @@
+= Groups (v2)
+
+This is the database-backed REST API for managing OpenNMS groups.
+It is served at `/api/v2/groups` and replaces the XML-based xref:development:rest/groups.adoc[Groups] API for installations that store groups in the database.
+
+== Store mode
+
+This API works only when users and groups are stored in the database (`org.opennms.usermgmt.store=db`).
+When the store is `xml`, every operation returns `503 Service Unavailable` with the text `User management through this API needs org.opennms.usermgmt.store=db.`
+
+== Permissions
+
+Every operation, including reads, requires the `ROLE_ADMIN` role.
+Other users receive `403 Forbidden`.
+
+All operations produce and consume JSON.
+Error responses carry a plain-text message.
+
+== Status codes
+
+[caption=]
+[cols="1,4"]
+|===
+| Code | Meaning
+
+| 400 | Validation failed, for example a missing or unknown field value, a name in the wrong format, or a protected object.
+| 403 | The caller does not hold `ROLE_ADMIN`.
+| 404 | The named object does not exist.
+| 409 | The object already exists, another object still refers to it, or the data was changed at the same time by another request (try again).
+| 412 | `If-Match` was sent and no longer matches the object.
+| 503 | The user-management store is `xml`.
+|===
+
+== GETs (reading data)
+
+[caption=]
+.Groups v2 API GET functions
+[cols="40%,60%"]
+|===
+| Resource | Description
+
+| /groups
+| Get every group.
+
+| /groups/\{name}
+| Get one group. The response carries an `ETag` header.
+|===
+
+== POSTs (adding data)
+
+[caption=]
+.Groups v2 API POST functions
+[cols="40%,60%"]
+|===
+| Resource | Description
+
+| /groups
+| Create a group.
+Returns `201 Created` with the group and its `ETag`.
+Returns `409` when the group already exists and `400` when a listed user does not exist.
+
+| /groups/\{name}/rename
+| Rename a group.
+The body is `{"newName": "NewName"}`.
+On-call roles that use the group as their membership group follow the rename, and so do its category authorizations.
+Returns `200` with the group and its `ETag`, `400` when the new name is the current name, or `409` when the new name is taken.
+The `Admin` group cannot be renamed.
+|===
+
+WARNING: A rename does not update `destinationPaths.xml`.
+Destination paths that name the old group keep pointing at it, so update them yourself.
+
+== PUTs (modifying data)
+
+[caption=]
+.Groups v2 API PUT functions
+[cols="40%,60%"]
+|===
+| Resource | Description
+
+| /groups/\{name}
+| Update a group.
+Returns `200` with the group and its `ETag`.
+|===
+
+In a PUT body, a field that is omitted is left as it is and a field set to an empty string is cleared.
+For `users` and `dutySchedules`, an omitted list is preserved and a present list, including `[]`, replaces the stored one.
+The order of `users` is kept, and notifications use it to decide who is escalated to first.
+
+== DELETEs (removing data)
+
+[caption=]
+.Groups v2 API DELETE functions
+[cols="40%,60%"]
+|===
+| Resource | Description
+
+| /groups/\{name}
+| Delete a group.
+Returns `204 No Content`.
+Returns `409` while on-call roles use the group as their membership group; the message names the roles.
+Returns `409` while a destination path in `destinationPaths.xml` names the group, as a target or in an escalation; the message names the paths.
+The `Admin` group cannot be deleted.
+|===
+
+== Detecting concurrent edits
+
+Every GET of a single group returns an `ETag` header: the quoted version of the group, for example `"4817"`.
+The version is an opaque number: it changes on every change of the group, including a change of what it contains, and a version is never reused, not even by a group that is deleted and created again under the same name.
+Do not interpret it, count with it or compare it for order, only send it back.
+`PUT`, `POST …/rename` and `DELETE` accept an `If-Match` header carrying that tag.
+
+`If-Match` is optional: a write without it always goes through.
+`*` matches any existing group.
+The tag may be weak (`W/"4817"`), and the header may list several tags separated by commas: the request goes through if any of them is the current one.
+If no tag is the current one, or the header is not a list of entity tags, the request fails with `412 Precondition Failed` and nothing is changed.
+If the group does not exist, a request with an `If-Match` header (even `*`) also fails with `412`; without the header it is `404 Not Found`.
+`If-None-Match` is ignored.
+Every successful write returns the new `ETag`.
+
+The `version` field in a JSON body is informational.
+It is ignored when you send it: a write without `If-Match` goes through even if the body holds an old version.
+To detect concurrent edits, send the version in `If-Match`.
+
+== Group fields
+
+[caption=]
+[cols="1,3"]
+|===
+| Field | Description
+
+| name | Group name. Required on create.
+| comments | Free-form comments.
+| users | Ordered list of member user ids. An unknown user returns `400`.
+| dutySchedules | List of duty schedule strings.
+| version | Opaque row version, also sent as the `ETag`. Ignored on input.
+|===
+
+== Examples using cURL
+
+[source,bash]
+----
+curl -u admin:admin -X POST -H 'Content-Type: application/json' \
+  -d '{"name": "Ops", "comments": "Operations", "users": ["admin"]}' \
+  http://localhost:8980/opennms/api/v2/groups
+
+curl -u admin:admin -i http://localhost:8980/opennms/api/v2/groups/Ops
+# ... ETag: "4822" ...
+
+curl -u admin:admin -X PUT -H 'Content-Type: application/json' -H 'If-Match: "4822"' \
+  -d '{"users": ["admin", "jdoe"]}' http://localhost:8980/opennms/api/v2/groups/Ops
+
+curl -u admin:admin -X POST -H 'Content-Type: application/json' \
+  -d '{"newName": "Operations"}' http://localhost:8980/opennms/api/v2/groups/Ops/rename
+curl -u admin:admin -X DELETE http://localhost:8980/opennms/api/v2/groups/Operations
+----

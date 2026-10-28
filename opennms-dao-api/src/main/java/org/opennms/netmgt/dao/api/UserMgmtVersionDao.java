@@ -35,8 +35,27 @@ public interface UserMgmtVersionDao {
         groups
     }
 
+    /** The tables with a trigger-maintained version column; the constant names are the table names. */
+    enum VersionedTable {
+        users,
+        groups,
+        oncall_roles,
+        security_roles
+    }
+
     long getVersion(Domain domain);
 
-    /** Locks the row until the current transaction ends. Must be called in a transaction. */
-    long lockVersion(Domain domain);
+    /**
+     * Locks the users row of usermgmt_version, then the groups row: the order every writer follows. Must be
+     * called in a transaction. Takes the locks without writing out pending changes, so no trigger can bump a
+     * version before the locks are held.
+     */
+    void lockAll();
+
+    /**
+     * Writes out pending changes, then reads the version column of a row.
+     *
+     * @throws IllegalArgumentException if the row doesn't exist
+     */
+    int getRowVersion(VersionedTable table, int id);
 }

@@ -111,6 +111,25 @@ After upgrade, manage event configurations through the *Administration -> Manage
 
 See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-files-after-upgrade[Migrating event files after upgrade] for the steps to re-upload your customized event files from `etc_archive/events/`.
 
+=== Users, groups and roles moved to the DB
+{page-component-title} now stores users, groups, on-call roles and custom security roles in the database.
+The upgrade copies `users.xml`, `groups.xml` and `security-roles.properties` into the database and copies the original files to `etc_archive/`.
+The data now lives in the database: manage it through the pages and the REST APIs.
+
+New REST v2 APIs manage them: xref:development:rest/users_v2.adoc[Users (v2)], xref:development:rest/groups_v2.adoc[Groups (v2)], xref:development:rest/security_roles.adoc[Security Roles] and xref:development:rest/oncall_roles.adoc[On-Call Roles].
+
+{page-component-title} stores text as entered and HTML-encodes it only when it shows the text.
+
+The upgrade decodes HTML entities in full names and contact values once.
+Some stored text can therefore still show entities such as `&amp;`:
+
+* On-call role names that were created with the role pages between August 2022 and March 2023.
+  The role pages encoded their input in that period.
+  The upgrade does not decode role names, because destination paths refer to roles by name.
+* Full names that were encoded more than once.
+
+Edit these values to fix them.
+
 === ActiveMQ store and JVM temp directory moved out of the Karaf cache
 `java.io.tmpdir` moved from `$\{OPENNMS_HOME}/data/tmp` to `$\{OPENNMS_HOME}/tmp`, and the embedded ActiveMQ broker's on-disk store (`activemq.data`) moved from `$\{OPENNMS_HOME}/data/tmp/activemq` to `$\{OPENNMS_HOME}/var/activemq`.
 

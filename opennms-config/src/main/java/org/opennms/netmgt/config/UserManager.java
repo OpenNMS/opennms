@@ -110,6 +110,15 @@ public abstract class UserManager implements UserConfig {
 
     private static final PasswordEncryptor s_passwordEncryptor = new UserManagerPasswordEncryptor();
 
+    /**
+     * Hashes a password the way the users are stored: salted SHA-256 with 100000 iterations, as
+     * {@link #encryptedPassword(String, boolean)} does with {@code useSalt} set. Needs no manager, so that the
+     * database-backed user API hashes with the very same encryptor that {@code comparePasswords} checks with.
+     */
+    public static String hashPassword(final String password) {
+        return s_passwordEncryptor.encryptPassword(password);
+    }
+
     private final ReadWriteLock m_readWriteLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_readWriteLock.readLock();
     private final Lock m_writeLock = m_readWriteLock.writeLock();

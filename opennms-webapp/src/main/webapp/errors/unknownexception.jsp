@@ -27,7 +27,8 @@
 	isErrorPage="true"
 	import="org.opennms.core.resource.Vault,
                 java.lang.StackTraceElement,
-                java.lang.StringBuilder"
+                java.lang.StringBuilder,
+                org.owasp.encoder.Encode"
  %>
 <%@ page import="org.opennms.web.utils.ExceptionUtils" %>
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
@@ -156,7 +157,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
       <span>Exception Trace</span>
   </div>
   <div class="card-body">
-    <pre id="exceptionTrace"><%=stBuilder.toString()%></pre>
+    <pre id="exceptionTrace"><%=Encode.forHtml(stBuilder.toString())%></pre>
   </div> <!-- card-body -->
 </div> <!-- panel -->
 <% } %>
@@ -294,7 +295,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   <div class="card-body">
     <textarea id="plainTextArea" style="width: 100%; height: 300px;">Please take a few moments to include a description of what you were doing when you encountered this problem. Without knowing the context of the error, it's often difficult for the person looking at the problem to narrow the range of possible causes. Bug reports that do not include any information on the context in which the problem occurred will receive a lower priority and may even be closed as invalid. 
 
-<%= errorDetails %>
+<%= Encode.forHtml(errorDetails) %>
     </textarea>
   </div> <!-- card-body -->
 </div> <!-- panel -->

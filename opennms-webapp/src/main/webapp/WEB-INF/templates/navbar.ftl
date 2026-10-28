@@ -117,7 +117,7 @@
               <li class="nav-item dropdown">
                   <a name="nav-user-top" href="${baseHref}account/selfService/index.jsp" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                       <span class="fa fa-user"></span>
-                      ${request.remoteUser}
+                      ${request.remoteUser?html}
                   </a>
                   <div class="dropdown-menu dropdown-menu-right" role="menu">
                       <a class="dropdown-item" name="nav-admin-self-service" href="${baseHref}account/selfService/newPasswordEntry">
@@ -134,7 +134,7 @@
                       <span class="badge badge-pill teamNotificationCount" id="teamNotificationsBadge"></span>
                   </a>
                   <div class="dropdown-menu dropdown-menu-right" role="menu">
-                      <a class="dropdown-item" href="${baseHref}notification/browse?acktype=unack&amp;filter=user==${request.remoteUser}">
+                      <a class="dropdown-item" href="${baseHref}notification/browse?acktype=unack&amp;filter=user==${request.remoteUser?url('UTF-8')?html}">
                           <i class="fa fa-fw fa-user"></i>&nbsp; <span class="userNotificationCount">0</span> notices assigned to you
                       </a>
                       <div id="headerNotifications" style="min-width: 500px"></div>
@@ -188,7 +188,7 @@
 <#-- Notification gathering -->
 <#if request.remoteUser?has_content >
 <script type="text/javascript">
-    var currentUser = "${request.remoteUser}";
+    var currentUser = "${request.remoteUser?js_string}";
     var baseHref = "${baseHref}";
 
     var updateNotificationIndicators = function(summary) {
@@ -277,7 +277,7 @@
         });
 
         if (summary.userUnacknowledgedCount > notifications.length) {
-            var moreLink = baseHref + "notification/browse?acktype=unack&amp;filter=user==" + currentUser;
+            var moreLink = baseHref + "notification/browse?acktype=unack&amp;filter=user==" + encodeURIComponent(currentUser);
             $('<div class="dropdown-divider"></div><a class="dropdown-item" href="' + moreLink + '">Show more ...</a>').appendTo("#headerNotifications");
         }
     };

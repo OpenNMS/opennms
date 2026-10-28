@@ -22,16 +22,21 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
+import { AdminWriteError } from '@/types/adminWrite'
 import { ManagedUser, ManagedUserCreate } from '@/types/userAdmin'
-import { v2 } from './axiosInstances'
+import { ifMatch, v2 } from './axiosInstances'
 
 const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
 const endpoint = '/users'
 
-const errorMessage = (err: any, fallback: string): string => {
+// A 412 is reported by flag only; the store shows the stale message once the list has been reloaded.
+const writeError = (err: any, fallback: string): AdminWriteError => {
+  if (err?.response?.status === 412) {
+    return { message: '', stale: true }
+  }
   const detail = err?.response?.data
-  return typeof detail === 'string' && detail ? detail : fallback
+  return { message: typeof detail === 'string' && detail ? detail : fallback, stale: false }
 }
 
 // null on failure (not []) so callers can keep showing the previous list
@@ -58,76 +63,86 @@ const getAvailableUserRoles = async (): Promise<string[]> => {
   }
 }
 
-const createManagedUser = async (user: ManagedUserCreate): Promise<string | null> => {
+const createManagedUser = async (user: ManagedUserCreate): Promise<AdminWriteError | null> => {
   try {
     startSpinner()
     await v2.post(endpoint, user)
     showSnackBar({ msg: `User '${user.userId}' created.` })
     return null
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to create user '${user.userId}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
+    const error = writeError(err, `Failed to create user '${user.userId}'.`)
+    if (!error.stale) {
+      showSnackBar({ msg: error.message, error: true })
+    }
+    return error
   } finally {
     stopSpinner()
   }
 }
 
-const updateManagedUser = async (user: ManagedUser): Promise<string | null> => {
+const updateManagedUser = async (user: ManagedUser): Promise<AdminWriteError | null> => {
   try {
     startSpinner()
-    await v2.put(`${endpoint}/${encodeURIComponent(user.userId)}`, user)
+    await v2.put(`${endpoint}/${encodeURIComponent(user.userId)}`, user, ifMatch(user.version))
     showSnackBar({ msg: `User '${user.userId}' updated.` })
     return null
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to update user '${user.userId}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
+    const error = writeError(err, `Failed to update user '${user.userId}'.`)
+    if (!error.stale) {
+      showSnackBar({ msg: error.message, error: true })
+    }
+    return error
   } finally {
     stopSpinner()
   }
 }
 
-const setManagedUserPassword = async (userId: string, password: string): Promise<string | null> => {
+const setManagedUserPassword = async (userId: string, password: string, version: number): Promise<AdminWriteError | null> => {
   try {
     startSpinner()
-    await v2.put(`${endpoint}/${encodeURIComponent(userId)}/password`, { password })
+    await v2.put(`${endpoint}/${encodeURIComponent(userId)}/password`, { password }, ifMatch(version))
     showSnackBar({ msg: `Password changed for '${userId}'.` })
     return null
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to change the password for '${userId}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
+    const error = writeError(err, `Failed to change the password for '${userId}'.`)
+    if (!error.stale) {
+      showSnackBar({ msg: error.message, error: true })
+    }
+    return error
   } finally {
     stopSpinner()
   }
 }
 
-const renameManagedUser = async (userId: string, newUserId: string): Promise<string | null> => {
+const renameManagedUser = async (userId: string, newUserId: string, version: number): Promise<AdminWriteError | null> => {
   try {
     startSpinner()
-    await v2.post(`${endpoint}/${encodeURIComponent(userId)}/rename`, { newUserId })
+    await v2.post(`${endpoint}/${encodeURIComponent(userId)}/rename`, { newUserId }, ifMatch(version))
     showSnackBar({ msg: `User '${userId}' renamed to '${newUserId}'.` })
     return null
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to rename user '${userId}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
+    const error = writeError(err, `Failed to rename user '${userId}'.`)
+    if (!error.stale) {
+      showSnackBar({ msg: error.message, error: true })
+    }
+    return error
   } finally {
     stopSpinner()
   }
 }
 
-const deleteManagedUser = async (userId: string): Promise<string | null> => {
+const deleteManagedUser = async (userId: string, version: number): Promise<AdminWriteError | null> => {
   try {
     startSpinner()
-    await v2.delete(`${endpoint}/${encodeURIComponent(userId)}`)
+    await v2.delete(`${endpoint}/${encodeURIComponent(userId)}`, ifMatch(version))
     showSnackBar({ msg: `User '${userId}' deleted.` })
     return null
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to delete user '${userId}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
+    const error = writeError(err, `Failed to delete user '${userId}'.`)
+    if (!error.stale) {
+      showSnackBar({ msg: error.message, error: true })
+    }
+    return error
   } finally {
     stopSpinner()
   }

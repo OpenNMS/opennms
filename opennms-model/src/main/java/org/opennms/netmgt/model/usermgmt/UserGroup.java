@@ -97,6 +97,10 @@ public class UserGroup implements Serializable {
     @Column(name = "last_modified")
     private Date lastModified;
 
+    /** Kept by database triggers, never written by Hibernate; the ETag of the REST API. */
+    @Column(name = "version", insertable = false, updatable = false)
+    private int version;
+
     public UserGroup() {
     }
 
@@ -176,6 +180,11 @@ public class UserGroup implements Serializable {
 
     public void setCreatedTime(final Date createdTime) {
         this.createdTime = createdTime;
+    }
+
+    /** @return the row version, as of the last read from the database; 0 for an entity that was never loaded */
+    public int getVersion() {
+        return version;
     }
 
     public Date getLastModified() {

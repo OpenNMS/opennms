@@ -88,7 +88,7 @@ public final class UserMgmtJaxbMapper {
         final User user = new User();
         user.setUserId(account.getUsername());
         setField(user, "m_fullName", account.getFullName());
-        user.setUserComments(account.getComments());
+        setField(user, "m_userComments", account.getComments());
         if (account.getPasswordHash() != null) {
             user.setPassword(account.getPasswordHash(), account.isPasswordSalted());
         } else {
@@ -140,7 +140,7 @@ public final class UserMgmtJaxbMapper {
         xml.setName(role.getName());
         xml.setMembershipGroup(role.getMembershipGroup().getName());
         xml.setSupervisor(role.getSupervisor().getUsername());
-        xml.setDescription(role.getDescription());
+        setField(xml, "m_description", role.getDescription());
         for (final OnCallSchedule schedule : role.getSchedules()) {
             xml.addSchedule(toSchedule(schedule));
         }
@@ -271,7 +271,7 @@ public final class UserMgmtJaxbMapper {
 
     /**
      * Sets a JAXB field directly, the way JAXB does when it reads users.xml and groups.xml. Some setters change the
-     * value (User.setFullName and Contact.setInfo/setServiceProvider HTML-encode it, the Group setters trim it), so
+     * value (User.setUserComments and Role.setDescription turn an empty text into null, the Group setters trim it), so
      * using them on every load would change the stored text, and the next save would write the change back.
      */
     private static void setField(final Object target, final String field, final Object value) {

@@ -36,18 +36,41 @@ public final class DatabasePasswords {
     }
 
     /**
+     * Takes the usermgmt_version locks of users and groups, in that order like every writer, before the update, so
+     * that it cannot deadlock against the managers.
+     *
      * @throws IllegalArgumentException if no user has exactly this name
      */
     public static void setPassword(final DataSource dataSource, final String username, final String plainPassword) throws SQLException {
         final String hash = new StrongPasswordEncryptor().encryptPassword(plainPassword);
-        try (final Connection connection = dataSource.getConnection();
-             final PreparedStatement statement = connection.prepareStatement(
-                     "UPDATE users SET password_hash = ?, password_salted = true, last_modified = NOW() WHERE username = ?")) {
-            statement.setString(1, hash);
-            statement.setString(2, username);
-            if (statement.executeUpdate() == 0) {
-                throw new IllegalArgumentException("User \"" + username + "\" does not exist.");
+        try (final Connection connection = dataSource.getConnection()) {
+            final boolean autoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            try {
+                lock(connection, "users");
+                lock(connection, "groups");
+                try (final PreparedStatement statement = connection.prepareStatement(
+                        "UPDATE users SET password_hash = ?, password_salted = true, last_modified = NOW() WHERE username = ?")) {
+                    statement.setString(1, hash);
+                    statement.setString(2, username);
+                    if (statement.executeUpdate() == 0) {
+                        throw new IllegalArgumentException("User \"" + username + "\" does not exist.");
+                    }
+                }
+                connection.commit();
+            } catch (final SQLException | RuntimeException e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(autoCommit);
             }
+        }
+    }
+
+    private static void lock(final Connection connection, final String name) throws SQLException {
+        try (final PreparedStatement statement = connection.prepareStatement("SELECT version FROM usermgmt_version WHERE name = ? FOR UPDATE")) {
+            statement.setString(1, name);
+            statement.executeQuery().close();
         }
     }
 }

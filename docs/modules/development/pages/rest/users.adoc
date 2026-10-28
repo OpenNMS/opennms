@@ -68,3 +68,5 @@ Note that, if you are setting the password, you may also add the query parameter
 | /users/\{username}/roles/\{rolename}
 | Remove a security role from the user.
 |===
+
+See also the database-backed xref:development:rest/users_v2.adoc[Users (v2)] API.

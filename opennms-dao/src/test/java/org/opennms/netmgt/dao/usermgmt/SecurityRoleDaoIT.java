@@ -162,4 +162,32 @@ public class SecurityRoleDaoIT implements InitializingBean {
                 "INSERT INTO security_roles (id, name, builtin) VALUES (nextval('security_roles_id_seq'), ?, false)",
                 SecurityRoles.ROLE_ADMIN);
     }
+
+    @Test
+    @Transactional
+    public void testCountUsersByRole() {
+        m_roleDao.save(new SecurityRole("ROLE_OPERATOR", null));
+        m_roleDao.save(new SecurityRole("ROLE_UNUSED", null));
+        for (final String name : new String[] { "jane", "joe" }) {
+            final UserAccount user = new UserAccount(name);
+            user.getSecurityRoles().add(m_roleDao.findByName(SecurityRoles.ROLE_USER));
+            user.getSecurityRoles().add(m_roleDao.findByName("ROLE_OPERATOR"));
+            m_userDao.save(user);
+        }
+        final UserAccount third = new UserAccount("jim");
+        third.getSecurityRoles().add(m_roleDao.findByName(SecurityRoles.ROLE_USER));
+        m_userDao.save(third);
+        m_userDao.flush();
+
+        final Map<String, Integer> counts = m_roleDao.countUsersByRole();
+        assertEquals(Integer.valueOf(3), counts.get(SecurityRoles.ROLE_USER));
+        assertEquals(Integer.valueOf(2), counts.get("ROLE_OPERATOR"));
+        assertFalse("roles nobody holds are left out", counts.containsKey("ROLE_UNUSED"));
+        assertFalse(counts.containsKey(SecurityRoles.ROLE_ADMIN));
+
+        assertEquals(3, m_roleDao.countUsersWithRole(SecurityRoles.ROLE_USER));
+        assertEquals(2, m_roleDao.countUsersWithRole("ROLE_OPERATOR"));
+        assertEquals("a role nobody holds", 0, m_roleDao.countUsersWithRole("ROLE_UNUSED"));
+        assertEquals("a role that does not exist", 0, m_roleDao.countUsersWithRole("ROLE_NOSUCH"));
+    }
 }

@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
@@ -62,7 +61,9 @@ public class DbUserManager extends UserManager {
     private final TransactionOperations m_transactions;
 
     private volatile long m_version = -1;
-    private final AtomicLong m_lastCheck = new AtomicLong(0);
+    /** When the version was last checked; {@link #expire()} sets it to 0 so that the next read checks it. */
+    private volatile long m_lastCheck;
+    private final Object m_checkLock = new Object();
 
     public DbUserManager(final DbGroupManager groupManager, final UserAccountDao userDao, final SecurityRoleDao securityRoleDao,
                          final OnCallRoleDao roleDao, final UserMgmtVersionDao versionDao, final PlatformTransactionManager transactionManager) {
@@ -81,27 +82,45 @@ public class DbUserManager extends UserManager {
 
     @Override
     protected void doUpdate() {
-        if (isUpdateNeeded()) {
-            reload();
+        if (!isCheckDue()) {
+            return;
+        }
+        // one reader checks; the others wait for it instead of reading the cache it may be replacing. No caller
+        // holds the write lock here, which reload() takes, so this lock and the write lock cannot deadlock.
+        synchronized (m_checkLock) {
+            if (isCheckDue() && isUpdateNeeded()) {
+                reload();
+            }
         }
     }
 
+    private boolean isCheckDue() {
+        return m_version < 0 || System.currentTimeMillis() >= m_lastCheck + RELOAD_CHECK_INTERVAL_MS;
+    }
+
+    /** Reads the version now; {@link #doUpdate()} calls this at most once a second, unless {@link #expire()} is called. */
     @Override
     public boolean isUpdateNeeded() {
         if (m_version < 0) {
             return true;
         }
-        final long now = System.currentTimeMillis();
-        final long last = m_lastCheck.get();
-        if (now < last + RELOAD_CHECK_INTERVAL_MS || !m_lastCheck.compareAndSet(last, now)) {
-            return false;
-        }
+        m_lastCheck = System.currentTimeMillis();
         return m_transactions.execute(status -> m_versionDao.getVersion(Domain.users)) != m_version;
+    }
+
+    /**
+     * Makes the next read check the version, without waiting for the check interval; reads nothing and takes no lock.
+     * Called after a write that bypassed this manager commits, so the cache reloads once, when it is next read.
+     */
+    public void expire() {
+        m_lastCheck = 0;
     }
 
     /** Loads the users from the database now. */
     @Override
     public void reload() {
+        // record the check before reading: an expire() that comes during the reload must not be overwritten
+        m_lastCheck = System.currentTimeMillis();
         final Loaded loaded = m_transactions.execute(status -> {
             // read the version first: a write that commits in between makes the next check reload again
             final long version = m_versionDao.getVersion(Domain.users);
@@ -111,7 +130,6 @@ public class DbUserManager extends UserManager {
         try {
             load(loaded.m_userinfo);
             m_version = loaded.m_version;
-            m_lastCheck.set(System.currentTimeMillis());
         } finally {
             writeLock().unlock();
         }
@@ -138,7 +156,8 @@ public class DbUserManager extends UserManager {
         final long cachedVersion = m_version;
         try {
             m_version = UserMgmtTransactions.inTransaction(m_transactions, () -> {
-                if (m_versionDao.lockVersion(Domain.users) != cachedVersion) {
+                m_versionDao.lockAll();
+                if (m_versionDao.getVersion(Domain.users) != cachedVersion) {
                     throw new UserDataChangedException();
                 }
                 write(userinfo.getUsers(), false);
@@ -157,6 +176,7 @@ public class DbUserManager extends UserManager {
         update();
         try {
             UserMgmtTransactions.inTransaction(m_transactions, () -> {
+                m_versionDao.lockAll();
                 write(users, true);
                 return null;
             });
@@ -190,6 +210,8 @@ public class DbUserManager extends UserManager {
         update();
         try {
             UserMgmtTransactions.inTransaction(m_transactions, () -> {
+                // a rename fires triggers that bump the groups version: take both locks in order first
+                m_versionDao.lockAll();
                 final UserAccount user = m_userDao.findByUsername(oldName);
                 if (user == null) {
                     throw new Exception("UserFactory:rename the old user name " + oldName + " is not found");
@@ -214,6 +236,8 @@ public class DbUserManager extends UserManager {
         update();
         try {
             UserMgmtTransactions.inTransaction(m_transactions, () -> {
+                // the delete cascades to memberships and schedules, which bumps the groups version: take both locks in order first
+                m_versionDao.lockAll();
                 final UserAccount user = m_userDao.findByUsername(name);
                 if (user == null) {
                     throw new Exception("UserFactory:delete The old user name " + name + " is not found");

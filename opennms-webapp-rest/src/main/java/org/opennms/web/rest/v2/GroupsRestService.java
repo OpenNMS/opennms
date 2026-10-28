@@ -23,27 +23,32 @@ package org.opennms.web.rest.v2;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opennms.netmgt.config.GroupManager;
-import org.opennms.netmgt.config.UserManager;
-import org.opennms.netmgt.config.groups.Group;
-import org.opennms.netmgt.config.groups.Role;
-import org.opennms.web.api.Authentication;
-import org.opennms.web.svclayer.api.GroupService;
+import org.opennms.netmgt.config.UserMgmtJaxbMapper;
+import org.opennms.netmgt.dao.api.OnCallRoleDao;
+import org.opennms.netmgt.dao.api.UserAccountDao;
+import org.opennms.netmgt.dao.api.UserGroupDao;
+import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
+import org.opennms.netmgt.model.usermgmt.OnCallRole;
+import org.opennms.netmgt.model.usermgmt.UserAccount;
+import org.opennms.netmgt.model.usermgmt.UserGroup;
 import org.opennms.web.rest.v2.api.GroupsRestApi;
 import org.opennms.web.rest.v2.model.GroupDto;
 import org.opennms.web.rest.v2.model.GroupRenameRequest;
+import org.opennms.web.svclayer.api.GroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,362 +56,285 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Versioned group management on top of {@link GroupManager}: groups.xml
- * remains the system of record and hand-editing keeps working. Unlike the
- * legacy JSPs (which only hid the buttons), the Admin-group protections are
- * enforced here, server-side, and referential integrity with on-call roles is
- * handled deliberately: renames follow the roles' membership-group, deletes
- * are rejected while roles still reference the group.
+ * Versioned group management on the group DAOs. Each request is one transaction: a write takes the
+ * user-management write lock first, so the If-Match check is exact, and the in-memory managers reload
+ * once it commits. The category authorizations, which live in the categories table, move or clear in the
+ * same transaction as the group.
  *
- * Mutations validate the full request up front and then apply it to a
- * detached copy of the stored group, so a rejected request can never leave
- * partial changes in the manager's shared in-memory state.
+ * Errors are thrown, never returned, so that a rejected request rolls back whatever it had done.
  */
 @Component("groupsRestServiceV2")
 public class GroupsRestService implements GroupsRestApi {
-
-    // Check-then-act sequences synchronize on GroupFactory.class: user
-    // mutations cascade into GroupManager (deleteUser/renameUser walk every
-    // group), so a service-private lock cannot serialize the two v2 services
-    // against each other.
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupsRestService.class);
 
     /** The default group; the on-call role machinery references it. */
     private static final Set<String> PROTECTED_GROUPS = Set.of("Admin");
 
-    /** Markup per the legacy controller, plus URL-path-segment safety. */
-    private static final Pattern INVALID_NAME = Pattern.compile("[&<>\"`':/\\\\%?#\\s]");
-
-    private static final Pattern INVALID_COMMENTS = Pattern.compile("[&<>\"`']");
-
-    /** Same grammar as the users API. */
-    private static final Pattern DUTY_SCHEDULE = Pattern.compile("^((?:Mo|Tu|We|Th|Fr|Sa|Su){1,7})(\\d{1,4})-(\\d{1,4})$");
+    @Autowired
+    private UserMgmtRestSupport m_support;
 
     @Autowired
-    private GroupManager m_groupManager;
+    private UserGroupDao m_userGroupDao;
 
     @Autowired
-    private UserManager m_userManager;
+    private UserAccountDao m_userAccountDao;
 
-    /** Handles the DB-side category authorizations on delete/rename. */
+    /** For the membership-group referential check on delete. */
+    @Autowired
+    private OnCallRoleDao m_onCallRoleDao;
+
+    /** Moves or clears the category authorizations, which are stored with the categories. */
     @Autowired
     private GroupService m_groupService;
 
     @Override
+    @Transactional(readOnly = true)
     public Response listGroups(final SecurityContext securityContext) {
-        assertAdmin(securityContext);
+        m_support.assertAdmin(securityContext, "Group management");
+        m_support.requireDatabaseStore();
         try {
-            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
-                final List<GroupDto> groups = new ArrayList<>();
-                for (final Group group : m_groupManager.getGroups().values()) {
-                    groups.add(toDto(group));
-                }
-                groups.sort(Comparator.comparing(GroupDto::getName, String.CASE_INSENSITIVE_ORDER));
-                return Response.ok(groups).build();
+            final List<GroupDto> groups = new ArrayList<>();
+            for (final UserGroup group : m_userGroupDao.findAll()) {
+                groups.add(toDto(group, group.getVersion()));
             }
+            groups.sort(Comparator.comparing(GroupDto::getName, String.CASE_INSENSITIVE_ORDER));
+            return Response.ok(groups).build();
         } catch (final Exception e) {
-            return serverError("Can't read groups: %s", e);
+            throw m_support.translate("read groups", e);
         }
     }
 
     @Override
-    public Response getGroup(final SecurityContext securityContext, final String name) {
-        assertAdmin(securityContext);
+    @Transactional(readOnly = true)
+    public Response getGroup(final SecurityContext securityContext, final Request request, final String name) {
+        m_support.assertAdmin(securityContext, "Group management");
+        m_support.requireDatabaseStore();
         try {
-            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
-                final Group group = m_groupManager.getGroup(name);
-                if (group == null) {
-                    return Response.status(Status.NOT_FOUND).entity("Group " + name + " was not found.").build();
-                }
-                return Response.ok(toDto(group)).build();
-            }
+            final UserGroup group = load(name);
+            final int version = group.getVersion();
+            return Response.ok(toDto(group, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
-            return serverError("Can't read group: %s", e);
+            throw m_support.translate("read group", e);
         }
     }
 
     @Override
+    @Transactional
     public Response createGroup(final SecurityContext securityContext, final GroupDto dto) {
-        assertAdmin(securityContext);
+        m_support.assertAdmin(securityContext, "Group management");
+        m_support.requireDatabaseStore();
         if (dto == null || StringUtils.isBlank(dto.getName())) {
-            return Response.status(Status.BAD_REQUEST).entity("A group name is required.").build();
+            throw m_support.badRequest("A group name is required.");
         }
         final String name = dto.getName().trim();
-        final String nameProblem = validateName(name);
+        final String nameProblem = UserMgmtValidation.validateName(name, "group name");
         if (nameProblem != null) {
-            return Response.status(Status.BAD_REQUEST).entity(nameProblem).build();
+            throw m_support.badRequest(nameProblem);
         }
         try {
-            validateDtoFields(dto, null);
-            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
-                if (m_groupManager.hasGroup(name)) {
-                    return Response.status(Status.BAD_REQUEST).entity("Group " + name + " already exists.").build();
-                }
-                final Group group = new Group();
-                group.setName(name);
-                applyDto(group, dto);
-                m_groupManager.saveGroup(name, group);
+            m_support.lockForWrite();
+            if (m_userGroupDao.findByName(name) != null) {
+                throw m_support.conflict("Group " + name + " already exists.");
             }
-            LOG.info("Group {} created by {}", name, principal(securityContext));
-            return Response.status(Status.CREATED).build();
+            UserMgmtValidation.checkLength(owner(name), "group name", name, UserMgmtJaxbMapper.GROUP_NAME_LENGTH);
+            final List<UserAccount> members = validateDtoFields(dto, null);
+            final UserGroup group = new UserGroup(name);
+            applyDto(group, dto, members);
+            m_userGroupDao.saveOrUpdate(group);
+            m_userGroupDao.flush();
+            final int version = m_support.version(VersionedTable.groups, group.getId());
+            LOG.info("Group {} created by {}", name, UserMgmtValidation.principal(securityContext));
+            return Response.status(Status.CREATED).entity(toDto(group, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
-            return serverError("Can't create group: %s", e);
+            throw m_support.translate("create group", e);
         }
     }
 
     @Override
-    public Response updateGroup(final SecurityContext securityContext, final String name, final GroupDto dto) {
-        assertAdmin(securityContext);
+    @Transactional
+    public Response updateGroup(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupDto dto) {
+        m_support.assertAdmin(securityContext, "Group management");
+        m_support.requireDatabaseStore();
         if (dto == null) {
-            return Response.status(Status.BAD_REQUEST).entity("A group body is required.").build();
+            throw m_support.badRequest("A group body is required.");
         }
         if (dto.getName() != null && !name.equals(dto.getName())) {
-            return Response.status(Status.BAD_REQUEST)
-                    .entity("The name in the body does not match the request path; use the rename endpoint to change names.").build();
+            throw m_support.badRequest("The name in the body does not match the request path; use the rename endpoint to change names.");
         }
         try {
-            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
-                final Group existing = m_groupManager.getGroup(name);
-                if (existing == null) {
-                    return Response.status(Status.NOT_FOUND).entity("Group " + name + " was not found.").build();
-                }
-                validateDtoFields(dto, existing);
-                final Group updated = copyOf(existing);
-                applyDto(updated, dto);
-                m_groupManager.saveGroup(name, updated);
-            }
-            return Response.noContent().build();
+            m_support.lockForWrite();
+            final UserGroup group = load(name, headers);
+            m_support.checkIfMatch(headers, VersionedTable.groups, group.getId(), "Group " + name);
+            final List<UserAccount> members = validateDtoFields(dto, group);
+            applyDto(group, dto, members);
+            m_userGroupDao.saveOrUpdate(group);
+            m_userGroupDao.flush();
+            final int version = m_support.version(VersionedTable.groups, group.getId());
+            return Response.ok(toDto(group, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
-            return serverError("Can't update group: %s", e);
+            throw m_support.translate("update group", e);
         }
     }
 
     @Override
-    // The category-authorization migration in GroupService.renameGroup mutates
-    // managed OnmsCategory entities without an explicit save; OSIV runs with
-    // MANUAL flush, so without a transaction those changes never reach the DB.
     @Transactional
-    public Response renameGroup(final SecurityContext securityContext, final String name, final GroupRenameRequest request) {
-        assertAdmin(securityContext);
-        if (request == null || StringUtils.isBlank(request.getNewName())) {
-            return Response.status(Status.BAD_REQUEST).entity("A newName is required.").build();
+    public Response renameGroup(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupRenameRequest body) {
+        m_support.assertAdmin(securityContext, "Group management");
+        m_support.requireDatabaseStore();
+        if (body == null || StringUtils.isBlank(body.getNewName())) {
+            throw m_support.badRequest("A newName is required.");
         }
         if (PROTECTED_GROUPS.contains(name)) {
-            return Response.status(Status.BAD_REQUEST).entity("The system group " + name + " cannot be renamed.").build();
+            throw m_support.badRequest("The system group " + name + " cannot be renamed.");
         }
-        final String newName = request.getNewName().trim();
-        final String nameProblem = validateName(newName);
+        final String newName = body.getNewName().trim();
+        final String nameProblem = UserMgmtValidation.validateName(newName, "group name");
         if (nameProblem != null) {
-            return Response.status(Status.BAD_REQUEST).entity(nameProblem).build();
+            throw m_support.badRequest(nameProblem);
+        }
+        if (newName.equals(name)) {
+            throw m_support.badRequest("The newName is the same as the current name.");
         }
         try {
-            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
-                if (!m_groupManager.hasGroup(name)) {
-                    return Response.status(Status.NOT_FOUND).entity("Group " + name + " was not found.").build();
-                }
-                if (m_groupManager.hasGroup(newName)) {
-                    return Response.status(Status.BAD_REQUEST).entity("Group " + newName + " already exists.").build();
-                }
-                // Pre-point the on-call roles at the new name in memory, then
-                // let the rename's single save persist groups AND roles
-                // together (GroupManager.renameGroup ends in saveGroups, which
-                // serializes both). GroupService.renameGroup also migrates the
-                // DB category authorizations, as the legacy page did.
-                final List<Role> repointedRoles = new ArrayList<>();
-                for (final Role role : m_groupManager.getRoles()) {
-                    if (name.equals(role.getMembershipGroup())) {
-                        role.setMembershipGroup(newName);
-                        repointedRoles.add(role);
-                    }
-                }
-                try {
-                    m_groupService.renameGroup(name, newName);
-                } catch (final Exception e) {
-                    // only roll the roles back if the rename did NOT persist
-                    // (GroupService renames the file first, then migrates the
-                    // DB category authorizations); re-pointing after a
-                    // persisted rename would diverge memory from groups.xml
-                    if (m_groupManager.hasGroup(newName) && !m_groupManager.hasGroup(name)) {
-                        throw new IllegalStateException("The group was renamed, but migrating its category"
-                                + " authorizations failed; review the group's authorized categories. ("
-                                + e.getMessage() + ")", e);
-                    }
-                    for (final Role role : repointedRoles) {
-                        role.setMembershipGroup(name);
-                    }
-                    throw e;
-                }
+            m_support.lockForWrite();
+            final UserGroup group = load(name, headers);
+            m_support.checkIfMatch(headers, VersionedTable.groups, group.getId(), "Group " + name);
+            if (m_userGroupDao.findByName(newName) != null) {
+                throw m_support.conflict("Group " + newName + " already exists.");
             }
-            LOG.info("Group {} renamed to {} by {}", name, newName, principal(securityContext));
-            return Response.noContent().build();
+            UserMgmtValidation.checkLength(owner(newName), "group name", newName, UserMgmtJaxbMapper.GROUP_NAME_LENGTH);
+            // on-call roles reference the group row and follow the new name; the category authorizations
+            // store the name, so they move here, in the same transaction
+            group.setName(newName);
+            m_userGroupDao.saveOrUpdate(group);
+            m_userGroupDao.flush();
+            m_groupService.moveCategoryAuthorizations(name, newName);
+            final int version = m_support.version(VersionedTable.groups, group.getId());
+            LOG.info("Group {} renamed to {} by {}", name, newName, UserMgmtValidation.principal(securityContext));
+            return Response.ok(toDto(group, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
-            return serverError("Can't rename group: %s", e);
+            throw m_support.translate("rename group", e);
         }
     }
 
     @Override
-    // Clearing the group's DB category authorizations mutates managed entities
-    // without an explicit save; a transaction is required to flush them under
-    // the MANUAL-flush OSIV session (see renameGroup).
     @Transactional
-    public Response deleteGroup(final SecurityContext securityContext, final String name) {
-        assertAdmin(securityContext);
+    public Response deleteGroup(final SecurityContext securityContext, final HttpHeaders headers, final String name) {
+        m_support.assertAdmin(securityContext, "Group management");
+        m_support.requireDatabaseStore();
         if (PROTECTED_GROUPS.contains(name)) {
-            return Response.status(Status.BAD_REQUEST).entity("The system group " + name + " cannot be deleted.").build();
+            throw m_support.badRequest("The system group " + name + " cannot be deleted.");
         }
         try {
-            synchronized (org.opennms.netmgt.config.GroupFactory.class) {
-                if (!m_groupManager.hasGroup(name)) {
-                    return Response.status(Status.NOT_FOUND).entity("Group " + name + " was not found.").build();
-                }
-                final List<String> referencingRoles = m_groupManager.getRoles().stream()
-                        .filter(role -> name.equals(role.getMembershipGroup()))
-                        .map(Role::getName)
-                        .sorted()
-                        .collect(Collectors.toList());
-                if (!referencingRoles.isEmpty()) {
-                    return Response.status(Status.BAD_REQUEST)
-                            .entity("Group " + name + " is the membership group of on-call role(s) " + String.join(", ", referencingRoles)
-                                    + "; delete or reassign those roles first.").build();
-                }
-                // GroupService.deleteGroup also clears the DB category
-                // authorizations; without that, a future group reusing the
-                // name would silently inherit the old authorizations
-                m_groupService.deleteGroup(name);
+            m_support.lockForWrite();
+            final UserGroup group = load(name, headers);
+            m_support.checkIfMatch(headers, VersionedTable.groups, group.getId(), "Group " + name);
+            final List<String> referencingRoles = m_onCallRoleDao.findByMembershipGroup(name).stream()
+                    .map(OnCallRole::getName)
+                    .sorted()
+                    .collect(Collectors.toList());
+            if (!referencingRoles.isEmpty()) {
+                throw m_support.conflict("Group " + name + " is the membership group of on-call role(s) "
+                        + String.join(", ", referencingRoles) + "; delete or reassign those roles first.");
             }
-            LOG.info("Group {} deleted by {}", name, principal(securityContext));
+            m_support.checkNotDestinationPathTarget("Group " + name, name);
+            m_userGroupDao.delete(group);
+            m_userGroupDao.flush();
+            // without this, a future group reusing the name would silently inherit the old authorizations
+            m_groupService.clearCategoryAuthorizations(name);
+            LOG.info("Group {} deleted by {}", name, UserMgmtValidation.principal(securityContext));
             return Response.noContent().build();
         } catch (final Exception e) {
-            return serverError("Can't delete group: %s", e);
+            throw m_support.translate("delete group", e);
         }
     }
 
-    private static GroupDto toDto(final Group group) {
+    /** @throws javax.ws.rs.WebApplicationException 404 if there is no such object */
+    private UserGroup load(final String name) {
+        return load(name, null);
+    }
+
+    /** For a write: a missing object is a 412 instead of a 404 when the request carries an If-Match. */
+    private UserGroup load(final String name, final HttpHeaders headers) {
+        final UserGroup group = m_userGroupDao.findByName(name);
+        if (group == null) {
+            throw m_support.notFoundOrPreconditionFailed(headers, "Group " + name, "Group " + name + " was not found.");
+        }
+        return group;
+    }
+
+    /** default-map is not exposed by the API. */
+    private static GroupDto toDto(final UserGroup group, final int version) {
         final GroupDto dto = new GroupDto();
         dto.setName(group.getName());
-        dto.setComments(group.getComments().orElse(null));
-        dto.setUsers(new ArrayList<>(group.getUsers()));
+        dto.setVersion(version);
+        dto.setComments(group.getComments());
+        dto.setUsers(group.getMembers().stream().map(UserAccount::getUsername).collect(Collectors.toList()));
         dto.setDutySchedules(new ArrayList<>(group.getDutySchedules()));
         return dto;
     }
 
-    /** Detached copy so mutations never touch the manager's live object. */
-    private static Group copyOf(final Group group) {
-        final Group copy = new Group();
-        copy.setName(group.getName());
-        group.getDefaultMap().ifPresent(copy::setDefaultMap);
-        group.getComments().ifPresent(copy::setComments);
-        copy.setUsers(new ArrayList<>(group.getUsers()));
-        copy.setDutySchedules(new ArrayList<>(group.getDutySchedules()));
-        return copy;
-    }
-
     /**
-     * Validates every field of the request BEFORE anything is applied, so a
-     * rejected request cannot leave partial state anywhere.
+     * Validates every field of the request BEFORE anything is applied, so a rejected request cannot
+     * leave partial state anywhere.
+     *
+     * @return the accounts of the members the request names, in request order, or null if it leaves the members alone
      */
-    private void validateDtoFields(final GroupDto dto, final Group existing) throws Exception {
-        if (dto.getComments() != null && INVALID_COMMENTS.matcher(dto.getComments()).find()
-                && (existing == null || !dto.getComments().equals(existing.getComments().orElse(null)))) {
-            throw new IllegalArgumentException("The comments must not contain any HTML markup.");
-        }
+    private List<UserAccount> validateDtoFields(final GroupDto dto, final UserGroup existing) {
+        final String owner = owner(existing == null ? dto.getName().trim() : existing.getName());
+        // stored values that today's rules would reject are grandfathered, so a migrated group stays editable
+        UserMgmtValidation.checkComments(dto.getComments(), existing == null ? null : existing.getComments(), existing != null);
+        List<UserAccount> members = null;
         if (dto.getUsers() != null) {
-            // members already stored on the group are grandfathered (a
-            // hand-edited file may reference a user that no longer exists);
-            // only members new to this request must resolve to a real user
-            final Set<String> preExistingMembers = existing == null
-                    ? Set.of() : new LinkedHashSet<>(existing.getUsers());
             final Set<String> seen = new LinkedHashSet<>();
             for (final String user : dto.getUsers()) {
                 if (StringUtils.isBlank(user)) {
-                    throw new IllegalArgumentException("Group members must not be blank.");
+                    throw new UserMgmtValidationException("Group members must not be blank.");
                 }
                 if (!seen.add(user)) {
-                    throw new IllegalArgumentException("Duplicate group member: " + user);
+                    throw new UserMgmtValidationException("Duplicate group member: " + user);
                 }
-                if (!preExistingMembers.contains(user) && !m_userManager.hasUser(user)) {
-                    throw new IllegalArgumentException("Unknown user: " + user);
+            }
+            // the database only holds members that exist, so any name that doesn't resolve is new to the group
+            final Map<String, UserAccount> accounts = new HashMap<>();
+            if (!seen.isEmpty()) {
+                for (final UserAccount account : m_userAccountDao.findByUsernames(seen)) {
+                    accounts.put(account.getUsername(), account);
                 }
+            }
+            members = new ArrayList<>();
+            for (final String user : dto.getUsers()) {
+                final UserAccount account = accounts.get(user);
+                if (account == null) {
+                    throw new UserMgmtValidationException("Unknown user: " + user);
+                }
+                members.add(account);
             }
         }
         if (dto.getDutySchedules() != null) {
-            // strings already stored on the record are preserved as-is so
-            // hand-edited files never make a group uneditable; only entries
-            // new to this request must pass validation
-            final Set<String> preExisting = existing == null
-                    ? Set.of() : new LinkedHashSet<>(existing.getDutySchedules());
-            for (final String schedule : dto.getDutySchedules()) {
-                if (!preExisting.contains(schedule)) {
-                    validateDutySchedule(schedule);
-                }
-            }
+            // migrated data never makes a group uneditable: see UserMgmtValidation.validateDutySchedules
+            UserMgmtValidation.validateDutySchedules(owner, dto.getDutySchedules(), existing == null ? null : existing.getDutySchedules());
         }
+        return members;
     }
 
     /**
      * Applies the pre-validated DTO. default-map is not exposed by the API and
      * survives untouched; list fields left out of the request body arrive as
-     * null and are preserved. The user list order is kept exactly as sent —
+     * null and are preserved. The member order is kept exactly as sent -
      * it drives the notification escalation order.
      */
-    private static void applyDto(final Group group, final GroupDto dto) {
-        if (dto.getComments() != null) {
+    private static void applyDto(final UserGroup group, final GroupDto dto, final List<UserAccount> members) {
+        if (dto.getComments() != null && !UserMgmtValidation.commentsUnchanged(dto.getComments(), group.getComments())) {
             group.setComments(StringUtils.trimToNull(dto.getComments()));
         }
-        if (dto.getUsers() != null) {
-            group.setUsers(new ArrayList<>(dto.getUsers()));
-        }
-        if (dto.getDutySchedules() != null) {
-            group.setDutySchedules(new ArrayList<>(dto.getDutySchedules()));
-        }
+        // an unchanged list is left alone, so that no row is rewritten and the version stays put
+        UserMgmtValidation.replaceIfChanged(group.getMembers(), members);
+        UserMgmtValidation.replaceIfChanged(group.getDutySchedules(), dto.getDutySchedules());
     }
 
-    /** Returns a problem description, or null when the group name is acceptable. */
-    private static String validateName(final String name) {
-        if (INVALID_NAME.matcher(name).find()) {
-            return "The group name must not contain markup, whitespace, or the characters : / \\ % ? #";
-        }
-        if (".".equals(name) || "..".equals(name)) {
-            return "The group name must not be a dot segment.";
-        }
-        return null;
-    }
-
-    private static void validateDutySchedule(final String schedule) {
-        final Matcher matcher = schedule == null ? null : DUTY_SCHEDULE.matcher(schedule);
-        if (matcher == null || !matcher.matches()) {
-            throw new IllegalArgumentException("Invalid duty schedule '" + schedule + "': expected day tokens followed by begin-end military times, e.g. MoWeFr800-1700");
-        }
-        final int begin = Integer.parseInt(matcher.group(2));
-        final int end = Integer.parseInt(matcher.group(3));
-        if (begin > 2359 || end > 2359 || begin % 100 > 59 || end % 100 > 59) {
-            throw new IllegalArgumentException("Invalid duty schedule '" + schedule + "': times must be military clock values between 0 and 2359");
-        }
-        // DutySchedule.isInSchedule compares within one calendar day, so an
-        // overnight range can never match and would silently disable the
-        // schedule; require two rows (e.g. MoTu2000-2359 + TuWe0-800) instead
-        if (begin > end) {
-            throw new IllegalArgumentException("Invalid duty schedule '" + schedule + "': the begin time must not be after the end time; split overnight coverage into two schedules");
-        }
-    }
-
-    private static void assertAdmin(final SecurityContext securityContext) {
-        if (securityContext == null || !securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            throw new javax.ws.rs.WebApplicationException(
-                    Response.status(Status.FORBIDDEN).entity("Group management requires the admin role.").build());
-        }
-    }
-
-    private static String principal(final SecurityContext securityContext) {
-        return securityContext.getUserPrincipal() == null ? "?" : securityContext.getUserPrincipal().getName();
-    }
-
-    private Response serverError(final String format, final Exception e) {
-        if (e instanceof IllegalArgumentException) {
-            return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-        }
-        LOG.error(String.format(format, e.getMessage()), e);
-        return Response.status(Status.INTERNAL_SERVER_ERROR).entity(String.format(format, e.getMessage())).build();
+    private static String owner(final String name) {
+        return "Group \"" + name + "\"";
     }
 }

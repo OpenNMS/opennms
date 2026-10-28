@@ -22,6 +22,7 @@
 package org.opennms.netmgt.dao.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.model.usermgmt.SecurityRole;
 
@@ -47,4 +48,19 @@ public interface SecurityRoleDao extends OnmsDao<SecurityRole, Integer> {
      * @throws IllegalArgumentException if the role is built in
      */
     boolean deleteUserDefined(String name);
+
+    /**
+     * Counts the holders of every role in one query.
+     *
+     * @return role name to number of users; roles nobody holds are left out
+     */
+    Map<String, Integer> countUsersByRole();
+
+    /**
+     * Counts the holders of one role, with a single query.
+     *
+     * @param name the full authority name, {@code ROLE_ADMIN}
+     * @return the number of users that hold it, 0 for a role nobody holds or that does not exist
+     */
+    int countUsersWithRole(String name);
 }

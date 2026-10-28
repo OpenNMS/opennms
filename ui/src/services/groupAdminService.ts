@@ -22,16 +22,21 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
-import { ManagedGroup } from '@/types/groupAdmin'
-import { rest, v2 } from './axiosInstances'
+import { AdminWriteError } from '@/types/adminWrite'
+import { ManagedGroup, ManagedGroupCreate } from '@/types/groupAdmin'
+import { ifMatch, rest, v2 } from './axiosInstances'
 
 const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
 const endpoint = '/groups'
 
-const errorMessage = (err: any, fallback: string): string => {
+// A 412 is reported by flag only; the store shows the stale message once the list has been reloaded.
+const writeError = (err: any, fallback: string): AdminWriteError => {
+  if (err?.response?.status === 412) {
+    return { message: '', stale: true }
+  }
   const detail = err?.response?.data
-  return typeof detail === 'string' && detail ? detail : fallback
+  return { message: typeof detail === 'string' && detail ? detail : fallback, stale: false }
 }
 
 // null on failure (not []) so callers can keep showing the previous list
@@ -62,61 +67,69 @@ const getGroupMemberCandidates = async (): Promise<string[]> => {
   }
 }
 
-const createManagedGroup = async (group: ManagedGroup): Promise<string | null> => {
+const createManagedGroup = async (group: ManagedGroupCreate): Promise<AdminWriteError | null> => {
   try {
     startSpinner()
     await v2.post(endpoint, group)
     showSnackBar({ msg: `Group '${group.name}' created.` })
     return null
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to create group '${group.name}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
+    const error = writeError(err, `Failed to create group '${group.name}'.`)
+    if (!error.stale) {
+      showSnackBar({ msg: error.message, error: true })
+    }
+    return error
   } finally {
     stopSpinner()
   }
 }
 
-const updateManagedGroup = async (group: ManagedGroup): Promise<string | null> => {
+const updateManagedGroup = async (group: ManagedGroup): Promise<AdminWriteError | null> => {
   try {
     startSpinner()
-    await v2.put(`${endpoint}/${encodeURIComponent(group.name)}`, group)
+    await v2.put(`${endpoint}/${encodeURIComponent(group.name)}`, group, ifMatch(group.version))
     showSnackBar({ msg: `Group '${group.name}' updated.` })
     return null
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to update group '${group.name}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
+    const error = writeError(err, `Failed to update group '${group.name}'.`)
+    if (!error.stale) {
+      showSnackBar({ msg: error.message, error: true })
+    }
+    return error
   } finally {
     stopSpinner()
   }
 }
 
-const renameManagedGroup = async (name: string, newName: string): Promise<string | null> => {
+const renameManagedGroup = async (name: string, newName: string, version: number): Promise<AdminWriteError | null> => {
   try {
     startSpinner()
-    await v2.post(`${endpoint}/${encodeURIComponent(name)}/rename`, { newName })
+    await v2.post(`${endpoint}/${encodeURIComponent(name)}/rename`, { newName }, ifMatch(version))
     showSnackBar({ msg: `Group '${name}' renamed to '${newName}'.` })
     return null
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to rename group '${name}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
+    const error = writeError(err, `Failed to rename group '${name}'.`)
+    if (!error.stale) {
+      showSnackBar({ msg: error.message, error: true })
+    }
+    return error
   } finally {
     stopSpinner()
   }
 }
 
-const deleteManagedGroup = async (name: string): Promise<string | null> => {
+const deleteManagedGroup = async (name: string, version: number): Promise<AdminWriteError | null> => {
   try {
     startSpinner()
-    await v2.delete(`${endpoint}/${encodeURIComponent(name)}`)
+    await v2.delete(`${endpoint}/${encodeURIComponent(name)}`, ifMatch(version))
     showSnackBar({ msg: `Group '${name}' deleted.` })
     return null
   } catch (err: any) {
-    const msg = errorMessage(err, `Failed to delete group '${name}'.`)
-    showSnackBar({ msg, error: true })
-    return msg
+    const error = writeError(err, `Failed to delete group '${name}'.`)
+    if (!error.stale) {
+      showSnackBar({ msg: error.message, error: true })
+    }
+    return error
   } finally {
     stopSpinner()
   }

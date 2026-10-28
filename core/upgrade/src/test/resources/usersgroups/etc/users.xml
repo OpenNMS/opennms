@@ -44,6 +44,12 @@
          <role>ROLE_STAGE</role>
       </user>
       <user>
+         <user-id>zoe</user-id>
+         <full-name>O&amp;#39;Brien &amp;amp; Co</full-name>
+         <password salt="true">zoepw</password>
+         <contact type="email" info="a&amp;amp;b@x.org"/>
+      </user>
+      <user>
          <user-id>rtc</user-id>
          <full-name>RTC</full-name>
          <password salt="true">sHMy+HycWKGJC/uUMF0IGlXUXP1KhcqD0GEchFlvYTw40jT9r+zMxOb3F+phWNzX</password>
