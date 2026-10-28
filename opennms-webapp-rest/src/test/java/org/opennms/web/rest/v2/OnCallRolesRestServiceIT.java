@@ -157,10 +157,13 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         });
     }
 
+    private final TestDestinationPaths m_paths = new TestDestinationPaths();
+
     @After
     public void clearStoreProperty() {
         Locale.setDefault(m_locale);
         System.clearProperty("org.opennms.usermgmt.store");
+        m_paths.restore();
     }
 
     private static String role(final String name, final String schedules) {
@@ -275,6 +278,33 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testGroupChangeChecksEveryScheduleAgainstTheNewGroup() throws Exception {
+        exec(POST, "/oncall-roles", role("rota-move", NIGHT + "," + DAILY_CAROL), null, 201);
+        inTx(() -> {
+            final UserGroup bobOnly = new UserGroup("BobOnly");
+            bobOnly.getMembers().add(m_userAccountDao.findByUsername("bob"));
+            m_userGroupDao.save(bobOnly);
+            return null;
+        });
+
+        // without schedules in the body, the stored ones are kept, so they must fit the new group
+        String text = exec(PUT, "/oncall-roles/rota-move", "{\"membershipGroup\":\"Empty\"}", null, 400).getContentAsString();
+        assertTrue(text, text.startsWith("Schedule users bob, carol are not members of the group Empty."));
+
+        // stored schedules sent back unchanged are no longer exempt
+        text = exec(PUT, "/oncall-roles/rota-move", "{\"membershipGroup\":\"BobOnly\",\"schedules\":[" + NIGHT + "," + DAILY_CAROL + "]}",
+                null, 400).getContentAsString();
+        assertTrue(text, text.startsWith("Schedule user carol is not a member of the group BobOnly."));
+        assertEquals("Ops", new JSONObject(getJson("/oncall-roles/rota-move", 200)).getString("membershipGroup"));
+
+        // leaving carol's schedule out moves the role
+        final JSONObject moved = new JSONObject(exec(PUT, "/oncall-roles/rota-move",
+                "{\"membershipGroup\":\"BobOnly\",\"schedules\":[" + NIGHT + "]}", null, 200).getContentAsString());
+        assertEquals("BobOnly", moved.getString("membershipGroup"));
+        assertEquals(1, moved.getJSONArray("schedules").length());
+    }
+
+    @Test
     public void testStoredScheduleWithoutTimesEchoedWithoutTimesIsAccepted() throws Exception {
         inTx(() -> {
             final OnCallRole stored = new OnCallRole("rota7", m_userGroupDao.findByName("Ops"), m_userAccountDao.findByUsername("alice"));
@@ -352,6 +382,23 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, "/oncall-roles/rota8", 404);
         sendRequest(DELETE, "/oncall-roles/rota8", 404);
         assertEquals(schedulesBefore, jdbc.queryForObject("select count(*) from oncall_schedules", Integer.class).intValue());
+    }
+
+    @Test
+    public void testDeleteIs409WhileADestinationPathNamesTheRole() throws Exception {
+        exec(POST, "/oncall-roles", role("rota-paged", null), null, 201);
+        m_paths.add("Page-Rota", "rota-paged", null);
+
+        final MockHttpServletResponse response = exec(DELETE, "/oncall-roles/rota-paged", null, null, 409);
+        assertTrue(response.getContentAsString(), response.getContentAsString().contains("Page-Rota"));
+        sendRequest(GET, "/oncall-roles/rota-paged", 200);
+
+        // notifd resolves the name as a group first, so with a group of that name the path does not name the role
+        inTx(() -> {
+            m_userGroupDao.save(new UserGroup("rota-paged"));
+            return null;
+        });
+        sendRequest(DELETE, "/oncall-roles/rota-paged", 204);
     }
 
     @Test

@@ -147,7 +147,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                 throw m_support.conflict("On-call role " + name + " already exists.");
             }
             final OnCallRole role = new OnCallRole(name, loadGroup(dto.getMembershipGroup()), loadSupervisor(dto.getSupervisor()));
-            applyDto(role, dto);
+            applyDto(role, dto, false);
             m_onCallRoleDao.saveOrUpdate(role);
             m_onCallRoleDao.flush();
             final int version = m_support.version(VersionedTable.oncall_roles, role.getId());
@@ -174,13 +174,14 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
             final OnCallRole role = load(name, headers);
             m_support.checkIfMatch(headers, VersionedTable.oncall_roles, role.getId(), "On-call role " + name);
             // fields left out of the body are preserved
+            final Integer previousGroupId = role.getMembershipGroup().getId();
             if (dto.getMembershipGroup() != null) {
                 role.setMembershipGroup(loadGroup(dto.getMembershipGroup()));
             }
             if (dto.getSupervisor() != null) {
                 role.setSupervisor(loadSupervisor(dto.getSupervisor()));
             }
-            applyDto(role, dto);
+            applyDto(role, dto, !previousGroupId.equals(role.getMembershipGroup().getId()));
             m_onCallRoleDao.saveOrUpdate(role);
             m_onCallRoleDao.flush();
             final int version = m_support.version(VersionedTable.oncall_roles, role.getId());
@@ -234,6 +235,10 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
             m_support.lockForWrite();
             final OnCallRole role = load(name, headers);
             m_support.checkIfMatch(headers, VersionedTable.oncall_roles, role.getId(), "On-call role " + name);
+            // notifd resolves a target name as a group before an on-call role: a group of this name takes the paths
+            if (m_userGroupDao.findByName(name) == null) {
+                m_support.checkNotDestinationPathTarget("On-call role " + name, name);
+            }
             m_onCallRoleDao.delete(role);
             m_onCallRoleDao.flush();
             LOG.info("On-call role {} deleted by {}", name, UserMgmtValidation.principal(securityContext));
@@ -276,10 +281,17 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     /**
      * Applies the description and the schedules; the group and the supervisor are already set. Everything is
      * validated before the role is touched, so a rejected request leaves nothing half applied.
+     * <p>
+     * A stored schedule is exempt from the membership check, so that a user who left the group keeps it. When the
+     * request changes the membership group, {@code groupChanged}, every resulting schedule must name a member of the
+     * new group, the stored ones that are kept included.
      */
-    private void applyDto(final OnCallRole role, final OnCallRoleDto dto) {
+    private void applyDto(final OnCallRole role, final OnCallRoleDto dto, final boolean groupChanged) {
         final String owner = "On-call role \"" + role.getName() + "\"";
-        final List<OnCallSchedule> schedules = dto.getSchedules() == null ? null : buildSchedules(role, owner, dto.getSchedules());
+        final List<OnCallSchedule> schedules = dto.getSchedules() == null ? null : buildSchedules(role, owner, dto.getSchedules(), groupChanged);
+        if (schedules == null && groupChanged) {
+            checkMembers(role, role.getSchedules().stream().map(schedule -> schedule.getUser().getUsername()).collect(Collectors.toList()), true);
+        }
         // a description left out of the body is preserved; an empty one is stored as null, as a manager would
         if (dto.getDescription() != null) {
             role.setDescription(StringUtils.trimToNull(dto.getDescription()));
@@ -291,7 +303,8 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         }
     }
 
-    private List<OnCallSchedule> buildSchedules(final OnCallRole role, final String owner, final List<OnCallScheduleDto> dtos) {
+    private List<OnCallSchedule> buildSchedules(final OnCallRole role, final String owner, final List<OnCallScheduleDto> dtos,
+                                                final boolean groupChanged) {
         final Set<String> usernames = new HashSet<>();
         for (final OnCallScheduleDto dto : dtos) {
             if (dto == null) {
@@ -309,8 +322,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
             }
         }
         final List<Object> stored = key(role.getSchedules());
-        final Set<String> members = role.getMembershipGroup().getMembers().stream()
-                .map(UserAccount::getUsername).collect(Collectors.toSet());
+        final List<String> toCheck = new ArrayList<>();
 
         final List<OnCallSchedule> schedules = new ArrayList<>();
         for (final OnCallScheduleDto raw : dtos) {
@@ -319,13 +331,13 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
             if (user == null) {
                 throw new UserMgmtValidationException("Unknown user in a schedule: " + dto.getUser());
             }
-            // validated and membership-checked unless it is one of the role's stored schedules
-            if (!stored.contains(key(dto))) {
+            // validated and membership-checked unless it is one of the role's stored schedules; a new group checks them all
+            final boolean isStored = stored.contains(key(dto));
+            if (!isStored) {
                 OnCallScheduleValidator.validate(dto);
-                if (!members.contains(dto.getUser())) {
-                    throw new UserMgmtValidationException("Schedule user " + dto.getUser() + " is not a member of the group "
-                            + role.getMembershipGroup().getName() + ".");
-                }
+            }
+            if (!isStored || groupChanged) {
+                toCheck.add(dto.getUser());
             }
             final OnCallSchedule schedule = new OnCallSchedule(user, OnCallSchedule.Type.valueOf(dto.getType()));
             for (final OnCallTimeDto time : Objects.requireNonNullElse(dto.getTimes(), List.<OnCallTimeDto>of())) {
@@ -338,7 +350,23 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
             }
             schedules.add(schedule);
         }
+        checkMembers(role, toCheck, groupChanged);
         return schedules;
+    }
+
+    /** Throws 400 naming every one of {@code usernames} that is not a member of the role's membership group. */
+    private static void checkMembers(final OnCallRole role, final List<String> usernames, final boolean groupChanged) {
+        final Set<String> members = role.getMembershipGroup().getMembers().stream()
+                .map(UserAccount::getUsername).collect(Collectors.toSet());
+        final List<String> outsiders = usernames.stream().filter(u -> !members.contains(u)).distinct().sorted().collect(Collectors.toList());
+        final String group = role.getMembershipGroup().getName();
+        final String hint = groupChanged ? " To change the group, leave their schedules out of the request's schedules." : "";
+        if (outsiders.size() == 1) {
+            throw new UserMgmtValidationException("Schedule user " + outsiders.get(0) + " is not a member of the group " + group + "." + hint);
+        }
+        if (outsiders.size() > 1) {
+            throw new UserMgmtValidationException("Schedule users " + String.join(", ", outsiders) + " are not members of the group " + group + "." + hint);
+        }
     }
 
     /** Incoming day and id get the usual trimToNull; the times themselves are checked exactly as sent. */

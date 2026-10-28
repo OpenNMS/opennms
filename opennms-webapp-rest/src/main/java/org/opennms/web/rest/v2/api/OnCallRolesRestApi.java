@@ -95,7 +95,7 @@ public interface OnCallRolesRestApi {
 
     @DELETE
     @Path("{name}")
-    @Operation(summary = "Delete an on-call role", operationId = "deleteOnCallRole")
+    @Operation(summary = "Delete an on-call role (rejected while a destination path names it)", operationId = "deleteOnCallRole")
     @Parameters({
             @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
     })
