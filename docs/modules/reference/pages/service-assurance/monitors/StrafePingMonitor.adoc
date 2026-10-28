@@ -31,7 +31,12 @@ image::service-assurance/monitors/01_strafeping.png[]
 | Description
 | Default
 
-3+|*Required*
+3+|*Optional*
+
+| rrd-repository
+| Directory in which to store the response-time and packet-loss data.
+Polling works without it, but it is needed for the latency and packet-loss graphs.
+| n/a
 
 | ping-count
 | The number of pings to attempt each interval.
@@ -45,26 +50,17 @@ image::service-assurance/monitors/01_strafeping.png[]
 | Time in milliseconds to wait between each ICMP echo-request packet.
 | 50
 
-| rrd-repository
-| The location to write RRD data. Generally, you will not want to change this from the default.
-| $OPENNMS_HOME/share/rrd/response
-
 | rrd-base-name
 | The name of the RRD file to write (minus the extension, .rrd).
-| strafeping
-
-3+|*Optional*
+| Service name, in lowercase
 
 | timeout
-| Time in milliseconds to wait before assuming that a packet has not responded.
+| Time in milliseconds to wait for each echo reply before counting the ping as lost.
 | 800
 
-| retry
-| The number of retries to attempt when a packet fails to respond in the given timeout.
-| 2
-
 | allow-fragmentation
-| Whether to set the "Don't Fragment" bit on outgoing packets.
+| Whether outgoing packets may be fragmented.
+Set to `false` to set the "Don't Fragment" bit.
 | true
 
 | dscp
@@ -77,6 +73,7 @@ image::service-assurance/monitors/01_strafeping.png[]
 |===
 
 This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+It does not use the `retry` parameter: each ping is sent once, and lost pings count toward `failure-ping-count`.
 
 == Examples
 
@@ -91,12 +88,16 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 
 Note that you must include the `monitor` section for each service in your definition.
 
+The `filter`, `include-range`, `rrd`, and `downtime` elements are settings of the polling package, not monitor parameters.
+They select the IP interfaces the package applies to, define the RRD step and archives, and set the polling interval during an outage.
+See xref:operation:deep-dive/service-assurance/polling-packages.adoc[] and xref:operation:deep-dive/service-assurance/downtime-model.adoc[] for details.
+
 [source, xml]
 ----
 <package name="strafer" >
-  <filter>categoryName == 'Latency'</filter>
-  <include-range begin="10.0.0.1" end="10.0.0.20"/> <1>
-  <rrd step="300">
+  <filter>categoryName == 'Latency'</filter> <1>
+  <include-range begin="10.0.0.1" end="10.0.0.20"/> <2>
+  <rrd step="300"> <3>
     <rra>RRA:AVERAGE:0.5:1:2016</rra>
     <rra>RRA:AVERAGE:0.5:12:1488</rra>
     <rra>RRA:AVERAGE:0.5:288:366</rra>
@@ -104,27 +105,29 @@ Note that you must include the `monitor` section for each service in your defini
     <rra>RRA:MIN:0.5:288:366</rra>
   </rrd>
   <service name="StrafePing" interval="300000" user-defined="false" status="on">
-    <parameter key="retry" value="0"/> <2>
-    <parameter key="timeout" value="3000"/> <3>
-    <parameter key="ping-count" value="20"/> <4>
-    <parameter key="failure-ping-count" value="20"/> <5>
-    <parameter key="wait-interval" value="50"/> <6>
-    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/> <7>
-    <parameter key="rrd-base-name" value="strafeping"/> <8>
+    <parameter key="timeout" value="3000"/> <4>
+    <parameter key="ping-count" value="20"/> <5>
+    <parameter key="failure-ping-count" value="20"/> <6>
+    <parameter key="wait-interval" value="50"/> <7>
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/> <8>
+    <parameter key="rrd-base-name" value="strafeping"/> <9>
   </service>
-  <downtime interval="30000" begin="0" end="300000"/>
+  <downtime interval="30000" begin="0" end="300000"/> <10>
   <downtime interval="300000" begin="300000" end="43200000"/>
   <downtime interval="600000" begin="43200000" end="432000000"/>
   <downtime begin="432000000" delete="true"/>
 </package>
-<monitor service="StrafePing" class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor"/> <9>
+<monitor service="StrafePing" class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor"/> <11>
 ----
-<1> Range of IP addresses to include--beginning and end.
-<2> Number of attempts to test a service’s status.
-<3> Timeout for the *isReachable* method, in milliseconds.
-<4> The number of pings to attempt each interval.
-<5> The number of pings that need to fail for the service to be considered down.
-<6> Time, in milliseconds, to wait between each ICMP echo-request packet.
-<7> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
-<8> The file name of the RRD file.
-<9> Required *monitor* section.
+<1> Package filter: only IP interfaces on nodes with the `Latency` tag are considered.
+<2> Range of IP addresses to include, from beginning to end.
+<3> RRD step and archives used for this package's response-time data.
+<4> Time, in milliseconds, to wait for each echo reply.
+<5> The number of pings to attempt each interval.
+<6> The number of pings that need to fail for the service to be considered down.
+<7> Time, in milliseconds, to wait between each ICMP echo-request packet.
+<8> Base directory of an RRD repository in which to store this service monitor's response-time samples.
+<9> The file name of the RRD file.
+<10> Downtime model: how often to poll the service while it is down.
+With `delete="true"`, the service is deleted from a managed interface once it has been down for longer than `begin`.
+<11> Required *monitor* section.

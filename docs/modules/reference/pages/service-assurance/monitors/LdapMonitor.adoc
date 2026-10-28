@@ -42,7 +42,7 @@ The LDAP monitor uses the com.novell.ldap.LDAPConnection class, and supports mos
 | 389
 
 | retry
-| Number of attempts to get a search result.
+| Number of retries after the first failed attempt to get a search result.
 | 1
 
 | searchbase

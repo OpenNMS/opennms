@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { v2 } from './axiosInstances'
+import { rest, v2 } from './axiosInstances'
 import {
   GraphCollection,
   GraphCollectionGraph,
@@ -231,6 +231,33 @@ export const addGraphToCollection = async (
     return createResultWithPayload(true, '', { collection: resp.data as GraphCollection, etag: etagOf(resp) })
   } catch (err: any) {
     return failure(err, `Failed to add the graph to graph collection ${id}.`)
+  }
+}
+
+export interface NodeSearchResult {
+  nodes: { id: number, label: string }[]
+  totalCount: number
+}
+
+/**
+ * The nodes whose label contains the term, as one page of at most `limit` ordered by label,
+ * with the count of every match. Backs the node picker of the list page, which must not list
+ * every node: the v1 endpoint is paged where the resource tree walk is not, and its ilike
+ * comparator is case-insensitive where v2 FIQL wildcards are not. null when the search failed.
+ */
+export const searchNodes = async (term: string, limit: number): Promise<NodeSearchResult | null> => {
+  const filter = term ? `&comparator=ilike&label=${encodeURIComponent(`%${term}%`)}` : ''
+  try {
+    const resp = await rest.get(`/nodes?limit=${limit}&orderBy=label&order=asc${filter}`)
+    const found: any[] = resp.status === 204 ? [] : (resp.data?.node ?? [])
+    return {
+      nodes: found
+        .map(n => ({ id: Number(n.id), label: String(n.label ?? n.id) }))
+        .filter(n => Number.isInteger(n.id)),
+      totalCount: Number(resp.data?.totalCount ?? 0)
+    }
+  } catch (_err) {
+    return null
   }
 }
 

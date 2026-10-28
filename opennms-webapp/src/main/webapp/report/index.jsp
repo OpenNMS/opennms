@@ -64,12 +64,12 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="pull-right">
-                        <form class="form-inline" role="form" name="kscReports">
+                        <form class="form-inline" role="form" name="graphCollections">
                             <div class="form-group">
                                 <label class="sr-only">Graph Collections</label>
                                 <p class="form-control-static">Graph Collections</p>
                             </div>
-                            <onms-search-ksc />
+                            <onms-search-graph-collections />
                         </form>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                 <div class="col-md-12">
                     <ul class="list-unstyled">
                         <li><a href="graph/index.jsp">Resource Graphs</a></li>
-                        <li><a href="KSC/index.jsp">Graph Collections (Performance, Nodes, Domains)</a></li>
+                        <li><a href="ui/index.html#/graph-collections">Graph Collections (Performance, Nodes, Domains)</a></li>
                         <li><a href="report/database/index.jsp">Database Reports</a></li>
                     </ul>
                 </div>

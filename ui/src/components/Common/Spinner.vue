@@ -32,6 +32,10 @@ const { isActive } = useSpinner()
 .fade-leave-active {
   transition: opacity 0.5s;
 }
+// the load is over once the fade-out starts, so let clicks reach the page beneath
+.fade-leave-active {
+  pointer-events: none;
+}
 .fade-enter,
 .fade-leave-to {
   opacity: 0;

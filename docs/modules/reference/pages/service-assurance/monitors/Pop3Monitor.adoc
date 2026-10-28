@@ -46,7 +46,7 @@ Connection closed by foreign host.
 | 110
 
 | retry
-| Number of attempts to find the service as available.
+| Number of retries after the first failed attempt to find the service available.
 | 0
 
 | strict-timeout

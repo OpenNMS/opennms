@@ -1,0 +1,88 @@
+
+= LogMatchTableMonitor
+:description: Learn how to configure and use the LogMatchTableMonitor in OpenNMS {page-component-title} to test the log match table (logMatchTable) of a Net-SNMP agent.
+
+The LogMatchTableMonitor tests the link:http://www.net-snmp.org/docs/mibs/ucdavis.html#logMatchTable[logMatchTable] of a Net-SNMP agent.
+The agent populates this table from the `logmatch` directives in its `snmpd.conf` file, each of which watches a log file for a regular expression.
+
+The monitor checks that these `logmatch` lines are configured correctly; it does not report log matches.
+It walks the `logMatchErrorFlag` column (`.1.3.6.1.4.1.2021.16.2.1.100`) of the table, which the agent sets to `1` only when a `logmatch` line is not valid.
+A line whose expression matches the log file does not set the flag.
+If any entry has the value `1`, the service is considered unavailable.
+For each flagged entry, the reason names the regular expression (`logMatchRegEx`), the log file (`logMatchFilename`), and the match count (`logMatchCount`).
+If the walk returns no entries, for example because the agent has no `logmatch` directives, the service is also considered unavailable.
+
+.logMatchErrorFlag definition
+[quote,,UCD-SNMP-MIB]
+____
+errorflag: is this line configured correctly?
+____
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.LogMatchTableMonitor`
+|===
+
+== Configuration and use
+
+The monitor uses the SNMP agent configuration from `snmp-config.xml` for the interface.
+The following parameters override individual values from that configuration.
+
+.Optional monitor-specific parameters for the LogMatchTableMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| The SNMP port to query.
+| From `snmp-config.xml`
+
+| retry
+| Number of SNMP retries.
+| From `snmp-config.xml`
+
+| retries
+| *Deprecated*.
+Same as `retry`.
+The `retry` parameter takes precedence when both are set.
+| From `snmp-config.xml`
+
+| timeout
+| SNMP timeout in milliseconds.
+| From `snmp-config.xml`
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+The following example overrides the SNMP retry and timeout values for the `logmatch` configuration check.
+Note that you must include the `monitor` section for each service in your definition.
+
+[source, xml]
+----
+<service name="Log-Match" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+</service>
+
+<monitor service="Log-Match" class-name="org.opennms.netmgt.poller.monitors.LogMatchTableMonitor"/>
+----
+
+The following `snmpd.conf` line defines a `logmatch` entry named `auth-failures` that reads `/var/log/auth.log` every 60 seconds and counts lines that match `authentication failure`.
+The monitor reports the service as unavailable only if the agent flags this line as not valid, not when the count goes up:
+
+[source, console]
+----
+logmatch auth-failures /var/log/auth.log 60 authentication failure
+----
+
+== UCD-SNMP-MIB
+
+Find the UCD-SNMP-MIB link:http://www.net-snmp.org/docs/mibs/UCD-SNMP-MIB.txt[here].

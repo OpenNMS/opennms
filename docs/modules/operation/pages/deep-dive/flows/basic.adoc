@@ -16,7 +16,7 @@ Make sure that you have the following before you set up flows:
 The Drift version must match the targeted Elasticsearch version.
 ** (Optional) Configure Elasticsearch variables like `search.max_buckets` or maximum heap size `ES-JAVA_OPTS` if the default values are not sufficient for your volume of flows or number of nodes.
 ** A retention process to remove old flow indices so the disk does not fill up (for example, "keep _X_ days of flows").
-See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention, Index retention>>.
+See xref:reference:configuration/tuning-elasticsearch.adoc#ga-elasticsearch-index-retention[Index retention].
 ** {page-component-title} set up to monitor the Elasticsearch stack and generate an alarm if it goes down.
 * The OpenNMS plugin for Grafana configured to visualize flows.
 ** Configure the flow and performance data sources.
@@ -25,12 +25,12 @@ See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention
 ====
 Flows are high volume, and {page-component-title} does not expire them.
 Configure an index retention process before you collect flows in production, or the Elasticsearch disk can fill up.
-See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention, Index retention>>.
+See xref:reference:configuration/tuning-elasticsearch.adoc#ga-elasticsearch-index-retention[Index retention].
 ====
 
 == Configure {page-component-title} to communicate with Elasticsearch
 
-{page-component-title} must be set up to communicate with Elasticsearch and persist the collected flows data in a defined directory:
+{page-component-title} must be set up to communicate with Elasticsearch to persist the flows that it collects:
 
 . Connect to your {page-component-title} xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell]:
 +
@@ -39,34 +39,31 @@ See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-index-retention
 ssh -p 8101 admin@localhost
 ----
 
-. Edit `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg` to configure flow persistence to use your Elasticsearch cluster:
+. Configure flow persistence to use your Elasticsearch cluster:
 +
 [source, karaf]
 ----
 config:edit org.opennms.features.flows.persistence.elastic
-config:property-set elasticUrl http://elastic:9200
+config:property-set elasticUrl http://elastic:9200 <1>
+config:property-set settings.index.number_of_replicas 0 <2>
+config:property-set settings.index.number_of_shards 1
+config:property-set settings.index.refresh_interval 10s
+config:property-set elasticIndexStrategy daily <3>
 config:update
 ----
-
-. (Optional) Edit or create `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg` and configure persistence settings:
+<1> Replace with a comma-separated list of the URLs of your Elasticsearch nodes.
+<2> `0` suits a single-node cluster.
+In production with several nodes, use at least `1`.
+<3> Create a new index each day.
+The default is `monthly`.
 +
-[source, xml]
-----
-elasticUrl = http://10.10.3.218:9200 <1>
-connTimeout = 30000
-readTimeout = 300000
-settings.index.number_of_replicas = 0
-settings.index.number_of_shards=1
-settings.index.refresh_interval=10s
-elasticIndexStrategy=daily
-----
-<1> Replace with comma-separated list of Elasticsearch nodes.
-
-** See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch configuration>> for a complete set of configuration options.
+The properties are saved in `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+The settings other than `elasticUrl` are optional; they are recommended starting values for flows.
+See xref:reference:configuration/tuning-elasticsearch.adoc[] for all available settings and their defaults.
 
 == Configuring NetFlow Composable Templates
 
-OpenNMS supports (https://www.elastic.co/docs/manage-data/data-store/templates)[composable templates] for more flexible and modular management of Elasticsearch index settings.
+{page-component-title} supports https://www.elastic.co/docs/manage-data/data-store/templates[composable templates] for more flexible and modular management of Elasticsearch index settings.
 To enable composable templates for NetFlow data, update below configuration in Karaf:
 
 [source, karaf]
@@ -168,7 +165,7 @@ If you have trouble during or after configuration, refer to xref:deep-dive/flows
 == Configure Kafka forwarder
 
 Flows enriched with {page-component-title} node data can be forwarded to Kafka and persisted.
-By default, enriched flows are stored in the `flowsDocument` topic and the payloads are encoded using https://developers.google.com/protocol-buffers/[Google Protocol Buffers].
+By default, enriched flows are stored in the `flowDocuments` topic and the payloads are encoded using https://developers.google.com/protocol-buffers/[Google Protocol Buffers].
 See `flowdocument.proto` in the corresponding source definition for the model definitions.
 
 To enable JSON support, set `useJson` to `true`.
