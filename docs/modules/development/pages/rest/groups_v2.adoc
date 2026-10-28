@@ -67,6 +67,9 @@ Returns `200` with the group and its `ETag`, `400` when the new name is the curr
 The `Admin` group cannot be renamed.
 |===
 
+WARNING: A rename does not update `destinationPaths.xml`.
+Destination paths that name the old group keep pointing at it, so update them yourself.
+
 == PUTs (modifying data)
 
 [caption=]
@@ -96,6 +99,7 @@ The order of `users` is kept, and notifications use it to decide who is escalate
 | Delete a group.
 Returns `204 No Content`.
 Returns `409` while on-call roles use the group as their membership group; the message names the roles.
+Returns `409` while a destination path in `destinationPaths.xml` names the group, as a target or in an escalation; the message names the paths.
 The `Admin` group cannot be deleted.
 |===
 

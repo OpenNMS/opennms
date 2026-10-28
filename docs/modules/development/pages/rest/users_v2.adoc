@@ -70,6 +70,9 @@ Returns `200` with the renamed user and its `ETag`, `400` when the new name is t
 The `admin` and `rtc` users cannot be renamed.
 |===
 
+WARNING: A rename does not update `destinationPaths.xml`.
+Destination paths that name the old user id keep pointing at it, so update them yourself.
+
 == PUTs (modifying data)
 
 [caption=]
@@ -108,6 +111,8 @@ Another user can lose `ROLE_ADMIN` only while some other user still has it; othe
 Returns `204 No Content`.
 Returns `409` when the user still supervises an on-call role; the message names the roles.
 Returns `409` when the user is the only user with `ROLE_ADMIN`.
+Returns `409` while a destination path in `destinationPaths.xml` names the user, as a target or in an escalation; the message names the paths.
+A path does not count when a group or an on-call role has the same name, because notifd sends to that group or role instead.
 The `admin` and `rtc` users cannot be deleted.
 |===
 

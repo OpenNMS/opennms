@@ -86,6 +86,10 @@ Returns `200` with the role and its `ETag`.
 In a PUT body, a field that is omitted is left as it is and `description` set to an empty string is cleared.
 An omitted `schedules` keeps the stored schedules, and a present `schedules`, including `[]`, replaces them.
 
+A PUT that changes `membershipGroup` checks every schedule against the new group, also the stored ones that are kept or sent back unchanged.
+If a schedule names a user who is not a member of the new group, the request returns `400` naming those users, and nothing is changed.
+To change the group, send `schedules` without the schedules of those users in the same request.
+
 == DELETEs (removing data)
 
 [caption=]
@@ -96,12 +100,9 @@ An omitted `schedules` keeps the stored schedules, and a present `schedules`, in
 
 | /oncall-roles/\{name}
 | Delete a role. Returns `204 No Content`.
+Returns `409` while a destination path in `destinationPaths.xml` names the role, as a target or in an escalation; the message names the paths.
+A path does not count when a group has the same name, because notifd sends to that group instead.
 |===
-
-WARNING: A delete does not update `destinationPaths.xml`.
-Destination paths that name the role are left with no recipients for that target, and nothing reports it.
-Check and update the destination paths before you delete a role.
-
 == Detecting concurrent edits
 
 Every GET of a single role returns an `ETag` header: the quoted version of the role, for example `"4817"`.
@@ -130,7 +131,7 @@ To detect concurrent edits, send the version in `If-Match`.
 
 | name | Role name. Required on create.
 | description | Description.
-| membershipGroup | Name of an existing group. Required on create. A new schedule must name a user who is a member of this group; schedules already stored are not re-checked (see <<stored-schedules>>).
+| membershipGroup | Name of an existing group. Required on create. A new schedule must name a user who is a member of this group; schedules already stored are not re-checked (see <<stored-schedules>>), unless the request changes the group.
 | supervisor | User id of an existing user. Required on create.
 | schedules | List of schedules (see below).
 | version | Opaque row version, also sent as the `ETag`. Ignored on input.
@@ -178,6 +179,8 @@ If you change any part of it, for example you shorten a time, the changed entry 
 This matters for a user who has left the membership group.
 You cannot change the stored schedule of that user: you can only keep it unchanged or remove it.
 To change it, add the user to the membership group again first.
+
+The exemption ends when a request changes the membership group: then every schedule must name a member of the new group.
 
 == Examples using cURL
 
