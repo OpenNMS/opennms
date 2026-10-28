@@ -77,6 +77,35 @@ testStart() {
 	assertNotContains "Incremental GC is not enabled by default, no -Xincgc" "$output" "-Xincgc"
 }
 
+testConsolePrefixNotSetInForeground() {
+	export OPENNMS_UNIT_TEST_STATUS=3
+	output="$(runOpennms -f start 2>&1)"
+	assertContains "$output" "Skipping execution:"
+	assertNotContains "foreground start must not timestamp console output" "$output" "opennms.log.console.prefix"
+}
+
+testConsolePrefixNotSetForSystemd() {
+	export OPENNMS_UNIT_TEST_STATUS=3
+	echo "START_TIMEOUT=0" >> "$INSTPREFIX/etc/opennms.conf"
+	output="$(runOpennms -s start 2>&1)"
+	assertContains "$output" "Skipping execution:"
+	assertNotContains "systemd start must not timestamp console output" "$output" "opennms.log.console.prefix"
+}
+
+testConsolePrefixSetForOutputLog() {
+	export OPENNMS_UNIT_TEST_STATUS=3
+	echo "START_TIMEOUT=0" >> "$INSTPREFIX/etc/opennms.conf"
+	rm -f "$INSTPREFIX/log/output.log"
+	runOpennms start >/dev/null 2>&1
+	for _ in 1 2 3 4 5; do
+		grep -q "Skipping execution:" "$INSTPREFIX/log/output.log" 2>/dev/null && break
+		sleep 1
+	done
+	output="$(cat "$INSTPREFIX/log/output.log")"
+	assertContains "$output" "Skipping execution:"
+	assertContains "background start must timestamp output.log" "$output" "'-Dopennms.log.console.prefix=%d '"
+}
+
 testStop() {
 	output="$(runOpennms -f stop 2>&1)"
 	assertContains "$output" " 'exit'"
