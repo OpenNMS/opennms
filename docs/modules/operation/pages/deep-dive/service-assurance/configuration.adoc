@@ -58,7 +58,7 @@ Adding a service to `poller-configuration.xml` does not add it to any interface.
 . At least one polling package matches the IP interface.
 The address must pass the package `filter`, and must be in an `include-range`, a `specific` entry, or an `include-url` file, and not in an `exclude-range`.
 A package without `include-range`, `specific`, or `include-url` entries includes every address that passes its filter.
-. That package contains a `<service>` with `status="on"` whose `name` matches the provisioned service name (not case-sensitive), or whose xref:deep-dive/service-assurance/polling-packages.adoc#ga-pollerd-packages-patterns[`pattern`] matches it.
+. That package contains a `<service>` with `status="on"` (or no `status` attribute) whose `name` matches the provisioned service name (not case-sensitive), or whose xref:deep-dive/service-assurance/polling-packages.adoc#ga-pollerd-packages-patterns[`pattern`] matches it.
 . A `<monitor>` element has a `service` attribute equal to that package service's `name`.
 Its `class-name` selects the service monitor to run.
 
@@ -75,7 +75,8 @@ The following table shows what happens when one of these parts is missing:
 If the service was active, pollerd marks it as not polled and logs `Active service ... not configured for any package` in `poller.log`.
 
 | A package `<service>` without a matching `<monitor>`
-| The service is scheduled, but every poll returns down with an `Unexpected exception while polling` reason.
+| With the default synchronous polling engine, the service is scheduled, but every poll returns down with an `Unexpected exception while polling` reason.
+With the asynchronous polling engine (`asyncPollingEngineEnabled="true"`), the poll fails before it runs and no status is recorded.
 
 | A `<monitor>` without a package `<service>`
 | The monitor is not used.
@@ -92,7 +93,8 @@ The schema of `poller-configuration.xml` also sets the structure of the file:
 * All `<monitor>` elements follow the last `<package>`.
 
 {page-component-title} validates the file against this schema and rejects it at the first violation.
-At startup, pollerd does not start.
+Pollerd also rejects the file if a package has an invalid `filter` rule or a service has a `ds-name` parameter longer than 19 characters.
+At startup, pollerd fails to start and {page-component-title} shuts down.
 On a configuration reload, pollerd logs the error, sends a `uei.opennms.org/internal/reloadDaemonConfigFailed` event, and keeps running with the previous configuration.
 
 The following example adds a service named `HTTP-9000` that uses the HttpMonitor on port 9000:
