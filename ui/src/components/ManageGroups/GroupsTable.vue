@@ -121,7 +121,7 @@
     <template #content>
       <p>
         Are you sure you want to delete the group <strong>{{ groupToDelete?.name }}</strong>?
-        Destination paths targeting it will stop resolving. This action cannot be undone.
+        A group that an on-call role or a destination path refers to cannot be deleted. This action cannot be undone.
       </p>
     </template>
   </OnmsConfirmationDialog>
