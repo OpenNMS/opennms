@@ -29,6 +29,7 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.junit.After;
 import org.junit.Before;
@@ -72,6 +73,22 @@ public class OnCallScheduleValidatorTest {
             for (final String mention : mentions) {
                 assertTrue(e.getMessage(), e.getMessage().contains(mention));
             }
+        }
+    }
+
+    @Test
+    public void testSpecificTimeInADaylightSavingGap() {
+        final TimeZone zone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"));
+        try {
+            // the clocks go from 02:00 to 03:00 on 8 March 2026
+            assertRejected(schedule("specific", null, "08-Mar-2026 02:30:00", "08-Mar-2026 04:00:00"),
+                    "does not exist in the server's time zone (America/New_York)");
+            OnCallScheduleValidator.validate(schedule("specific", null, "08-Mar-2026 03:30:00", "08-Mar-2026 04:00:00"));
+            // a malformed time still gets the format message
+            assertRejected(schedule("specific", null, "08-Mar-2026 2:30", "08-Mar-2026 04:00:00"), "must be a time like");
+        } finally {
+            TimeZone.setDefault(zone);
         }
     }
 
@@ -134,9 +151,12 @@ public class OnCallScheduleValidatorTest {
 
     @Test
     public void testNameRules() {
-        assertNull(OnCallScheduleValidator.validateName("Night shift"));
-        assertNull(OnCallScheduleValidator.validateName("a.b"));
-        for (final String bad : List.of(" x", "x ", "a/b", "<b>", "..", ".", "a%b", "a?b", "a#b", "a\\b", "a&b", "a\"b", "a'b", "a`b", "a>b", "")) {
+        for (final String good : List.of("Night shift", "a.b", "Night-shift (2)", "rota_1", "7x24", "Bereitschaft Süd", "夜勤", "Cafe\u0301")) {
+            assertNull("'" + good + "' should be accepted", OnCallScheduleValidator.validateName(good));
+        }
+        for (final String bad : List.of(" x", "x ", "a/b", "<b>", "..", ".", "a%b", "a?b", "a#b", "a\\b", "a&b", "a\"b", "a'b", "a`b", "a>b", "",
+                // lookalikes: other whitespace, invisible characters, and double spaces
+                "Ops\u00A0", "Ops\u2003", "a\nb", "a\tb", "a  b", "a\u200Bb", "-x", "a@b")) {
             assertNotNull("'" + bad + "' should be rejected", OnCallScheduleValidator.validateName(bad));
         }
         assertNull(OnCallScheduleValidator.validateName("x".repeat(256)));

@@ -23,8 +23,14 @@ package org.opennms.web.rest.v2;
 
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.config.BasicScheduleUtils;
@@ -39,8 +45,12 @@ import org.opennms.web.rest.v2.model.OnCallTimeDto;
  */
 public final class OnCallScheduleValidator {
 
-    /** Markup characters, plus the characters that are not safe in a URL path segment. */
-    private static final Pattern INVALID_NAME_CHARACTERS = Pattern.compile("[&<>\"`'/\\\\%?#]");
+    /**
+     * Words of letters (any script, with their combining marks), decimal digits and {@code _ - . ( )}, separated by
+     * single spaces, starting with a letter or digit. This leaves out markup, the characters that are not safe in a
+     * URL path segment, dot segments, and whitespace or invisible characters that would make two names look alike.
+     */
+    private static final Pattern VALID_NAME = Pattern.compile("[\\p{L}\\p{Nd}][\\p{L}\\p{M}\\p{Nd}_.()-]*(?: [\\p{L}\\p{M}\\p{Nd}_.()-]+)*");
 
     private static final Pattern DAY_OF_MONTH = Pattern.compile("^[0-9]{1,2}$");
 
@@ -77,14 +87,9 @@ public final class OnCallScheduleValidator {
         if (name == null || name.isEmpty()) {
             return "An on-call role name is required.";
         }
-        if (!name.equals(name.trim())) {
-            return "The on-call role name must not start or end with whitespace.";
-        }
-        if (INVALID_NAME_CHARACTERS.matcher(name).find()) {
-            return "The on-call role name must not contain markup or the characters / \\ % ? #";
-        }
-        if (".".equals(name) || "..".equals(name)) {
-            return "The on-call role name must not be a dot segment.";
+        if (!VALID_NAME.matcher(name).matches()) {
+            return "The on-call role name must start with a letter or digit and contain only letters, digits, the characters"
+                    + " _ - . ( ) and single spaces between words.";
         }
         if (name.codePointCount(0, name.length()) > UserMgmtJaxbMapper.ONCALL_ROLE_NAME_LENGTH) {
             return "The on-call role name must not be longer than " + UserMgmtJaxbMapper.ONCALL_ROLE_NAME_LENGTH + " characters.";
@@ -125,7 +130,25 @@ public final class OnCallScheduleValidator {
 
     private static void checkTime(final String owner, final String field, final String value, final String format) {
         if (!BasicScheduleUtils.isValidTime(value, format)) {
+            if (BasicScheduleUtils.FORMAT1.equals(format) && isSkippedLocalTime(value)) {
+                throw new UserMgmtValidationException(owner + field + " '" + value + "' does not exist in the server's time zone ("
+                        + ZoneId.systemDefault().getId() + "): the clocks skip it on that day, for example when daylight saving time starts.");
+            }
             throw new UserMgmtValidationException(owner + field + " '" + value + "' must be a time like " + example(format) + ".");
+        }
+    }
+
+    /**
+     * True for a well-formed specific time that the server's time zone skips, such as 02:30 on the day daylight saving
+     * time starts in America/New_York. The strict parser rejects it, though its format is right.
+     */
+    private static boolean isSkippedLocalTime(final String value) {
+        try {
+            final LocalDateTime local = LocalDateTime.parse(value,
+                    DateTimeFormatter.ofPattern("dd-MMM-uuuu HH:mm:ss", Locale.getDefault()).withResolverStyle(ResolverStyle.STRICT));
+            return ZoneId.systemDefault().getRules().getValidOffsets(local).isEmpty();
+        } catch (final DateTimeParseException e) {
+            return false;
         }
     }
 
