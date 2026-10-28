@@ -35,6 +35,71 @@ For SNMP, manage resource types through *Admin -> Manage SNMP Data Collection Co
 </resourceType>
 ----
 
+[[resource-label-expressions]]
+== Resource label expressions
+
+The `resourceLabel` attribute is a template.
+{page-component-title} replaces each `+${...}+` expression in it when it displays a resource of this type.
+The following expressions are available:
+
+[options="header"]
+[cols="1,3"]
+|===
+| Expression
+| Value
+
+| `$\{index}`
+| The complete instance index of the resource, as stored (for example, `1.3.87.69.66`).
+
+| `${<attribute>}`
+| The value of a string attribute collected for the resource, such as `$\{diskIODevice}` in the example above.
+
+| `${subIndex(<offset>)}`
+| The elements of the index from position `<offset>` to the end.
+Positions start at `0`; a negative offset counts from the end of the index.
+
+| `${subIndex(<offset>, <count>)}`
+| `<count>` elements of the index, starting at position `<offset>`.
+
+| `${subIndex(<offset>, n)}`
+| A length-prefixed part of the index: the element at position `<offset>` holds a length, and the expression returns that many elements after it.
+Use this for SNMP table indexes that contain variable-length strings, which SNMP encodes as a length followed by the characters.
+
+| `+${subIndex(n, ...)}+`
+| Starts at the position after the part returned by the previous `+subIndex(..., n)+` expression in the same label.
+The second argument works as described above, and you can omit it to return the rest of the index.
+
+| `${hex(<expression>)}`
+| The elements returned by `<expression>` (for example, `index` or a `+subIndex(...)+` expression) as two-digit hexadecimal values separated by colons, such as a MAC address.
+
+| `${string(<expression>)}`
+| The elements returned by `<expression>` converted to characters, which decodes a string that is encoded in the index.
+|===
+
+Index elements are the dot-separated numbers of the instance index, and `subIndex` returns them joined with dots.
+A plain `subIndex` expression that points past the end of the index is left unchanged in the label.
+A length-prefixed `subIndex(..., n)`, or a `hex()` or `string()` expression whose inner expression fails, causes an error when the resource is loaded instead.
+
+The `cesServerFarmRserverEntry` resource type for the Cisco SLB MIB uses an index that consists of an entity number, a server farm name, a real server name, and a port:
+
+[source, xml]
+----
+<resourceType name="cesServerFarmRserverEntry" label="Cisco SLB Server Farm / Real Server"
+              resourceLabel="Cisco SLB Entity ${subIndex(0, 1)}, Server Farm ${string(subIndex(1, n))}, Real Server ${string(subIndex(n, n))}, port ${subIndex(n)}">
+  <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+  <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+</resourceType>
+----
+
+For a resource with the index `1.3.87.69.66.3.82.83.49.80`, the expressions evaluate as follows:
+
+* `${subIndex(0, 1)}` returns `1`, the entity.
+* `${string(subIndex(1, n))}` reads the length `3` at position 1, returns the next three elements `87.69.66`, and converts them to `WEB`.
+* `${string(subIndex(n, n))}` continues after `WEB`, reads the length `3`, and converts `82.83.49` to `RS1`.
+* `${subIndex(n)}` returns the rest of the index, `80`.
+
+The resulting label is `Cisco SLB Entity 1, Server Farm WEB, Real Server RS1, port 80`.
+
 == Persistence selector strategies
 
 You can configure the following persistence selector strategies to specify how to archive performance metrics:

@@ -231,6 +231,10 @@ Many of the properties here are documented with much greater detail in their rel
 | false
 | Enable or disable the SNMP Collector's ability to force rescans when the interface count changes
 
+| `org.opennms.netmgt.collectd.strictInterval`
+| true
+| If true, collectd schedules each collection one interval after the previous collection was scheduled, regardless of how long the previous collection took; if false, one interval after the previous collection finished (see xref:operation:deep-dive/performance-data-collection/collectd/configuration.adoc#ga-collectd-strict-interval[Collection scheduling])
+
 | `org.opennms.netmgt.icmp.best.timeout`
 | 500
 | The default timeout used when dynamically determining the best pinger implementation
