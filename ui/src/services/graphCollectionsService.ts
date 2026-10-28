@@ -234,7 +234,6 @@ export const addGraphToCollection = async (
   }
 }
 
-/** Re-read ksc-performance-reports.xml from disk, picking up edits made outside the API. */
 export interface NodeSearchResult {
   nodes: { id: number, label: string }[]
   totalCount: number
@@ -262,6 +261,7 @@ export const searchNodes = async (term: string, limit: number): Promise<NodeSear
   }
 }
 
+/** Re-read ksc-performance-reports.xml from disk, picking up edits made outside the API. */
 export const reloadGraphCollections = async (): Promise<ValidationResult> => {
   try {
     await v2.post(`${endpoint}/reload`)

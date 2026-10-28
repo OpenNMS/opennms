@@ -31,6 +31,9 @@
         {{ loadError }}
         <OnmsButton variant="text" label="Retry" data-test="gc-retry" @click="load" />
       </p>
+      <p v-else-if="refreshFailed" class="stale" data-test="gc-stale">
+        The last refresh failed, so the graphs are from the previous load. The page tries again every five minutes.
+      </p>
 
       <div v-if="collection && (collection.showTimespanButton || collection.showGraphtypeButton)" class="overrides">
         <FormField
@@ -123,6 +126,8 @@ const canEdit = computed(() => rolesAreLoaded.value && !readOnlyRole.value)
 const collection = ref<ResolvedGraphCollection | null>(null)
 const timespans = ref<GraphCollectionTimespan[]>([])
 const loadError = ref('')
+// set when a background refresh fails while a collection is on screen
+const refreshFailed = ref(false)
 
 const isStored = computed(() => !!props.id)
 
@@ -176,7 +181,7 @@ const applyOverride = (name: 'timespan' | 'graphtype', value: string) => {
 // the latest.
 let loadSeq = 0
 
-const resolve = async () => {
+const resolve = async (background = false) => {
   const current = ++loadSeq
   const result = props.id
     ? await getResolvedGraphCollection(Number(props.id), options.value)
@@ -185,6 +190,12 @@ const resolve = async () => {
     return
   }
   if (!result.success) {
+    // A background refresh that fails keeps the last good collection on screen and says so; the
+    // next tick tries again, so a wall display rides out a blip or a server restart on its own.
+    if (background && collection.value) {
+      refreshFailed.value = true
+      return
+    }
     // this component instance is reused across collection routes, so drop what the previous
     // route showed instead of leaving it under the error
     collection.value = null
@@ -192,6 +203,7 @@ const resolve = async () => {
     return
   }
   loadError.value = ''
+  refreshFailed.value = false
   const resolved = result.payload as ResolvedGraphCollection | { collection: ResolvedGraphCollection }
   collection.value = 'collection' in resolved ? resolved.collection : resolved
   if (collection.value.showTimespanButton && !timespans.value.length) {
@@ -200,19 +212,21 @@ const resolve = async () => {
   }
 }
 
-const load = () => withSpinner(resolve)
+const load = () => withSpinner(() => resolve())
 
 // The legacy view page carried a Refresh header of five minutes, so a wall display showing a
 // collection kept moving. Re-resolve on the same cadence, without the spinner, while the page is
 // visible; a fresh resolve moves every graph's window, and the grid redraws the graphs it moves.
+// The timer runs through failures too: a page left showing a load error recovers on its own as
+// soon as the server answers again, as the header did.
 const REFRESH_INTERVAL_MS = 5 * 60 * 1000
 let refreshTimer: ReturnType<typeof setInterval> | undefined
 
 onMounted(() => {
   load()
   refreshTimer = setInterval(() => {
-    if (!document.hidden && !loadError.value) {
-      resolve()
+    if (!document.hidden) {
+      resolve(true)
     }
   }, REFRESH_INTERVAL_MS)
 })
@@ -262,6 +276,10 @@ watch(() => [props.id, props.kind, props.source, route.query.timespan, route.que
 
   .error {
     color: var(--p-red-500, #d32f2f);
+  }
+
+  .stale {
+    color: var(--p-text-muted-color);
   }
 }
 </style>

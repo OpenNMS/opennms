@@ -299,6 +299,51 @@ describe('GraphCollectionView.vue', () => {
     }
   })
 
+  it('keeps the last good collection when a refresh fails, and recovers on a later tick', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })
+    try {
+      getResolvedGraphCollection.mockResolvedValueOnce({ success: true, message: '', payload: { collection: resolved(), etag: null }})
+      const wrapper = await mountView({ id: '1' })
+      expect(wrapper.find('[data-test="grid"]').exists()).toBe(true)
+
+      // a wall display must not go blank over one failed refresh
+      getResolvedGraphCollection.mockResolvedValueOnce({ success: false, message: 'Network Error' })
+      await vi.advanceTimersByTimeAsync(5 * 60 * 1000)
+      await flushPromises()
+      expect(wrapper.find('[data-test="grid"]').exists()).toBe(true)
+      expect(wrapper.find('[data-test="load-error"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="gc-stale"]').text()).toContain('The last refresh failed')
+
+      // and the timer keeps going, so the next good answer clears the note
+      getResolvedGraphCollection.mockResolvedValueOnce({ success: true, message: '', payload: { collection: resolved(), etag: null }})
+      await vi.advanceTimersByTimeAsync(5 * 60 * 1000)
+      await flushPromises()
+      expect(getResolvedGraphCollection).toHaveBeenCalledTimes(3)
+      expect(wrapper.find('[data-test="gc-stale"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="grid"]').exists()).toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('recovers a page left showing a load error once the server answers again', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })
+    try {
+      getResolvedGraphCollection.mockResolvedValueOnce({ success: false, message: 'Network Error' })
+      const wrapper = await mountView({ id: '1' })
+      expect(wrapper.find('[data-test="load-error"]').text()).toContain('Network Error')
+
+      getResolvedGraphCollection.mockResolvedValueOnce({ success: true, message: '', payload: { collection: resolved(), etag: null }})
+      await vi.advanceTimersByTimeAsync(5 * 60 * 1000)
+      await flushPromises()
+      expect(wrapper.find('[data-test="load-error"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="gc-stale"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="grid"]').exists()).toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('builds a node collection on the fly and offers no way back to the stored list', async () => {
     getResolvedSyntheticGraphCollection.mockResolvedValue({
       success: true, message: '', payload: resolved({ id: null, type: 'node', title: 'Node 7', showTimespanButton: false, showGraphtypeButton: false })
