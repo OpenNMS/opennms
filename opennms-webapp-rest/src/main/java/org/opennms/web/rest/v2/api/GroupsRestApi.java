@@ -29,6 +29,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -105,4 +106,38 @@ public interface GroupsRestApi {
             @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
     })
     Response deleteGroup(@Context SecurityContext securityContext, @Context HttpHeaders headers, @PathParam("name") String name);
+
+    @GET
+    @Path("item")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get one group by query parameter (for names a path cannot carry)", operationId = "getGroupByQuery")
+    Response getGroupByQuery(@Context SecurityContext securityContext, @QueryParam("name") String name);
+
+    @PUT
+    @Path("item")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Update a group by query parameter (for names a path cannot carry)", operationId = "updateGroupByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response updateGroupByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("name") String name, GroupDto group);
+
+    @POST
+    @Path("item/rename")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Rename a group by query parameter (for names a path cannot carry)", operationId = "renameGroupByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response renameGroupByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("name") String name, GroupRenameRequest body);
+
+    @DELETE
+    @Path("item")
+    @Operation(summary = "Delete a group by query parameter (for names a path cannot carry)", operationId = "deleteGroupByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response deleteGroupByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("name") String name);
 }

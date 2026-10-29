@@ -168,6 +168,29 @@ The rules apply to `name` on create and to `newName` on rename.
 A group name that is already stored is not checked again.
 A violation returns `400`.
 
+[[group-query-form]]
+== Names that a path cannot carry
+
+A group name stored before the rules above existed (for example `ops/east` from a migrated `groups.xml`) can contain `/`, `\` or `%`, which a URL path cannot carry reliably.
+A group whose name equals a literal path segment (`item` or `available-categories`) is also out of reach of the path form: `/groups/available-categories` is the list of categories, not that group.
+Every per-group endpoint therefore has a query form, `item`, that takes the name in the `name` query parameter.
+URL-encode the value (`ops%2Feast`).
+The query form behaves exactly like the path form, with the same `If-Match` and `ETag` rules, bodies and status codes.
+A missing or blank `name` returns `400`.
+
+[cols="1,2"]
+|===
+| Path form | Query form
+
+| `GET /groups/{name}` | `GET /groups/item?name={name}`
+| `PUT /groups/{name}` | `PUT /groups/item?name={name}`
+| `POST /groups/{name}/rename` | `POST /groups/item/rename?name={name}`
+| `DELETE /groups/{name}` | `DELETE /groups/item?name={name}`
+|===
+
+New group names with those characters are still refused on create and on rename, so renaming a group such as `ops/east` to a valid name is the way out of them.
+The names `item` and `available-categories` are valid, and can be created.
+
 [[group-text-rules]]
 == Comments
 

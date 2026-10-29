@@ -27,6 +27,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -954,6 +956,134 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         return values;
     }
 
+    /** The query form tests commit names that the other tests of this class must not meet, and a failed one cannot clean up after itself. */
+    @After
+    public void purgeQueryFormRows() {
+        for (final String name : new String[] { "ops/east", "ops-east", "item", "item-2", "available-categories", "available-categories-2", "plain", "plain2" }) {
+            new JdbcTemplate(m_dataSource).update("delete from groups where name = ?", name);
+        }
+    }
+
+    /** The query string for a group name that a path cannot carry. */
+    private static String byName(final String name) {
+        return "?name=" + URLEncoder.encode(name, StandardCharsets.UTF_8);
+    }
+
+    private static final String MIGRATED = "ops/east";
+
+    @Test
+    public void testQueryFormLifecycle() throws Exception {
+        createGroup(MIGRATED, g -> g.setComments("East"));
+
+        final MockHttpServletResponse read = exec(GET, "/groups/item" + byName(MIGRATED), null, null, 200);
+        assertEquals(MIGRATED, new JSONObject(read.getContentAsString()).getString("name"));
+        String etag = read.getHeader("ETag");
+        assertNotNull(etag);
+
+        final MockHttpServletResponse updated = exec(PUT, "/groups/item" + byName(MIGRATED), "{\"comments\":\"Edited\"}", etag, 200);
+        assertEquals("Edited", groupColumn(MIGRATED, "comments"));
+        assertNotEquals(etag, updated.getHeader("ETag"));
+        etag = updated.getHeader("ETag");
+
+        final MockHttpServletResponse renamed = exec(POST, "/groups/item/rename" + byName(MIGRATED), "{\"newName\":\"ops-east\"}", etag, 200);
+        assertEquals("ops-east", new JSONObject(renamed.getContentAsString()).getString("name"));
+        assertEquals(0, groupRowCount(MIGRATED));
+        etag = renamed.getHeader("ETag");
+
+        exec(DELETE, "/groups/item" + byName("ops-east"), null, etag, 204);
+        assertEquals(0, groupRowCount("ops-east"));
+    }
+
+    @Test
+    public void testQueryFormStaleIs412() throws Exception {
+        createGroup(MIGRATED, g -> { });
+        final String stale = exec(GET, "/groups/item" + byName(MIGRATED), null, null, 200).getHeader("ETag");
+        exec(PUT, "/groups/item" + byName(MIGRATED), "{\"comments\":\"Second\"}", null, 200);
+        final int version = rowVersion(MIGRATED);
+
+        exec(PUT, "/groups/item" + byName(MIGRATED), "{\"comments\":\"Third\"}", stale, 412);
+        exec(POST, "/groups/item/rename" + byName(MIGRATED), "{\"newName\":\"ops-east\"}", stale, 412);
+        exec(DELETE, "/groups/item" + byName(MIGRATED), null, stale, 412);
+        assertEquals(version, rowVersion(MIGRATED));
+        assertEquals("Second", groupColumn(MIGRATED, "comments"));
+    }
+
+    @Test
+    public void testQueryFormMissingParamIs400() throws Exception {
+        for (final String query : new String[] { "", "?name=", "?name=%20", "?userId=Admin" }) {
+            assertEquals("name is required", exec(GET, "/groups/item" + query, null, null, 400).getContentAsString());
+            assertEquals("name is required", exec(PUT, "/groups/item" + query, "{\"comments\":\"x\"}", null, 400).getContentAsString());
+            assertEquals("name is required", exec(POST, "/groups/item/rename" + query, "{\"newName\":\"x\"}", null, 400).getContentAsString());
+            assertEquals("name is required", exec(DELETE, "/groups/item" + query, null, null, 400).getContentAsString());
+        }
+        exec(GET, "/groups/Admin", null, null, 200);
+    }
+
+    @Test
+    public void testQueryFormSameAsPathForm() throws Exception {
+        createGroup("plain", g -> g.setComments("Plain"));
+        createGroup("plain2", g -> { });
+        final MockHttpServletResponse path = exec(GET, "/groups/plain", null, null, 200);
+        final MockHttpServletResponse query = exec(GET, "/groups/item" + byName("plain"), null, null, 200);
+        assertEquals(path.getContentAsString(), query.getContentAsString());
+        assertEquals(path.getHeader("ETag"), query.getHeader("ETag"));
+
+        assertSame(exec(GET, "/groups/ghost", null, null, 404), exec(GET, "/groups/item" + byName("ghost"), null, null, 404));
+        assertSame(exec(PUT, "/groups/ghost", "{\"comments\":\"x\"}", "\"1\"", 412), exec(PUT, "/groups/item" + byName("ghost"), "{\"comments\":\"x\"}", "\"1\"", 412));
+        assertSame(exec(PUT, "/groups/plain", "{\"name\":\"other\"}", null, 400), exec(PUT, "/groups/item" + byName("plain"), "{\"name\":\"other\"}", null, 400));
+        assertSame(exec(POST, "/groups/plain/rename", "{\"newName\":\"plain2\"}", null, 409), exec(POST, "/groups/item/rename" + byName("plain"), "{\"newName\":\"plain2\"}", null, 409));
+        assertSame(exec(POST, "/groups/plain/rename", "{\"newName\":\"plain\"}", null, 400), exec(POST, "/groups/item/rename" + byName("plain"), "{\"newName\":\"plain\"}", null, 400));
+        assertSame(exec(DELETE, "/groups/ghost", null, null, 404), exec(DELETE, "/groups/item" + byName("ghost"), null, null, 404));
+
+        final MockHttpServletResponse pathUpdate = exec(PUT, "/groups/plain", "{\"comments\":\"Same\"}", null, 200);
+        final MockHttpServletResponse queryUpdate = exec(PUT, "/groups/item" + byName("plain2"), "{\"comments\":\"Same\"}", null, 200);
+        assertEquals(new JSONObject(pathUpdate.getContentAsString()).getString("comments"), new JSONObject(queryUpdate.getContentAsString()).getString("comments"));
+        exec(DELETE, "/groups/plain", null, null, 204);
+        exec(DELETE, "/groups/item" + byName("plain2"), null, null, 204);
+    }
+
+    private static void assertSame(final MockHttpServletResponse path, final MockHttpServletResponse query) throws Exception {
+        assertEquals(path.getStatus(), query.getStatus());
+        assertEquals(path.getContentAsString(), query.getContentAsString());
+    }
+
+    @Test
+    public void testQueryFormCannotCreateOrRenameToUnaddressable() throws Exception {
+        createGroup(MIGRATED, g -> { });
+        final String message = exec(POST, "/groups/item/rename" + byName(MIGRATED), "{\"newName\":\"a\\\\b\"}", null, 400).getContentAsString();
+        assertEquals("The group name must not contain markup, whitespace, control or invisible characters, or the characters : / \\ % ? #", message);
+        assertEquals(message, exec(POST, "/groups", "{\"name\":\"a\\\\b\"}", null, 400).getContentAsString());
+        assertEquals(message, exec(POST, "/groups", "{\"name\":\"ops/west\"}", null, 400).getContentAsString());
+        assertEquals(1, groupRowCount(MIGRATED));
+        assertEquals(0, groupRowCount("a\\b"));
+    }
+
+    @Test
+    public void testQueryFormProtectedNames() throws Exception {
+        assertSame(exec(DELETE, "/groups/Admin", null, null, 400), exec(DELETE, "/groups/item" + byName("Admin"), null, null, 400));
+        assertSame(exec(POST, "/groups/Admin/rename", "{\"newName\":\"other\"}", null, 400),
+                exec(POST, "/groups/item/rename" + byName("Admin"), "{\"newName\":\"other\"}", null, 400));
+        assertEquals("The system group Admin cannot be deleted.", exec(DELETE, "/groups/item" + byName("Admin"), null, null, 400).getContentAsString());
+        assertEquals(1, groupRowCount("Admin"));
+    }
+
+    @Test
+    public void testQueryFormReachesLiteralNames() throws Exception {
+        createGroup("item", g -> g.setComments("An item"));
+        createGroup("available-categories", g -> g.setComments("Some categories"));
+        for (final String name : new String[] { "item", "available-categories" }) {
+            final MockHttpServletResponse read = exec(GET, "/groups/item" + byName(name), null, null, 200);
+            assertEquals(name, new JSONObject(read.getContentAsString()).getString("name"));
+            exec(PUT, "/groups/item" + byName(name), "{\"comments\":\"Edited\"}", read.getHeader("ETag"), 200);
+            assertEquals("Edited", groupColumn(name, "comments"));
+            exec(POST, "/groups/item/rename" + byName(name), "{\"newName\":\"" + name + "-2\"}", null, 200);
+            exec(DELETE, "/groups/item" + byName(name + "-2"), null, null, 204);
+            assertEquals(0, groupRowCount(name + "-2"));
+        }
+        // the path form of a literal is the literal endpoint
+        assertTrue(getJson("/groups/available-categories", 200).startsWith("["));
+    }
+
     private String getJson(final String url, final int expectedStatus) throws Exception {
         final MockHttpServletRequest request = createRequest(GET, url);
         request.addHeader("Accept", JSON);
@@ -963,7 +1093,11 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     /** Sends a JSON request, with an If-Match header if the tag is not null, and returns the response. */
     private MockHttpServletResponse exec(final String method, final String url, final String body, final String ifMatch,
             final int expectedStatus) throws Exception {
-        final MockHttpServletRequest request = createRequest(servletContext, method, url, getUser(), getUserRoles());
+        final int queryStart = url.indexOf('?');
+        final MockHttpServletRequest request = createRequest(servletContext, method, queryStart < 0 ? url : url.substring(0, queryStart), getUser(), getUserRoles());
+        if (queryStart >= 0) {
+            request.setQueryString(url.substring(queryStart + 1));
+        }
         request.addHeader("Accept", JSON);
         if (body != null) {
             request.setContentType(JSON);

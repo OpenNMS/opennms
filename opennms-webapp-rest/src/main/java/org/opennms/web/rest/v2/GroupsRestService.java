@@ -136,6 +136,21 @@ public class GroupsRestService implements GroupsRestApi {
     @Override
     @Transactional(readOnly = true)
     public Response getGroup(final SecurityContext securityContext, final String name) {
+        return doGetGroup(securityContext, name);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Response getGroupByQuery(final SecurityContext securityContext, final String name) {
+        m_support.assertAdmin(securityContext, "Group management");
+        m_support.requireDatabaseStore();
+        if (StringUtils.isBlank(name)) {
+            throw m_support.badRequest("name is required");
+        }
+        return doGetGroup(securityContext, name);
+    }
+
+    private Response doGetGroup(final SecurityContext securityContext, final String name) {
         m_support.assertAdmin(securityContext, "Group management");
         m_support.requireDatabaseStore();
         try {
@@ -183,6 +198,21 @@ public class GroupsRestService implements GroupsRestApi {
     @Override
     @Transactional
     public Response updateGroup(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupDto dto) {
+        return doUpdateGroup(securityContext, headers, name, dto);
+    }
+
+    @Override
+    @Transactional
+    public Response updateGroupByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupDto dto) {
+        m_support.assertAdmin(securityContext, "Group management");
+        m_support.requireDatabaseStore();
+        if (StringUtils.isBlank(name)) {
+            throw m_support.badRequest("name is required");
+        }
+        return doUpdateGroup(securityContext, headers, name, dto);
+    }
+
+    private Response doUpdateGroup(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupDto dto) {
         m_support.assertAdmin(securityContext, "Group management");
         m_support.requireDatabaseStore();
         if (dto == null) {
@@ -210,6 +240,21 @@ public class GroupsRestService implements GroupsRestApi {
     @Override
     @Transactional
     public Response renameGroup(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupRenameRequest body) {
+        return doRenameGroup(securityContext, headers, name, body);
+    }
+
+    @Override
+    @Transactional
+    public Response renameGroupByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupRenameRequest body) {
+        m_support.assertAdmin(securityContext, "Group management");
+        m_support.requireDatabaseStore();
+        if (StringUtils.isBlank(name)) {
+            throw m_support.badRequest("name is required");
+        }
+        return doRenameGroup(securityContext, headers, name, body);
+    }
+
+    private Response doRenameGroup(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupRenameRequest body) {
         m_support.assertAdmin(securityContext, "Group management");
         m_support.requireDatabaseStore();
         if (body == null || StringUtils.isBlank(body.getNewName())) {
@@ -251,6 +296,21 @@ public class GroupsRestService implements GroupsRestApi {
     @Override
     @Transactional
     public Response deleteGroup(final SecurityContext securityContext, final HttpHeaders headers, final String name) {
+        return doDeleteGroup(securityContext, headers, name);
+    }
+
+    @Override
+    @Transactional
+    public Response deleteGroupByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name) {
+        m_support.assertAdmin(securityContext, "Group management");
+        m_support.requireDatabaseStore();
+        if (StringUtils.isBlank(name)) {
+            throw m_support.badRequest("name is required");
+        }
+        return doDeleteGroup(securityContext, headers, name);
+    }
+
+    private Response doDeleteGroup(final SecurityContext securityContext, final HttpHeaders headers, final String name) {
         m_support.assertAdmin(securityContext, "Group management");
         m_support.requireDatabaseStore();
         if (PROTECTED_GROUPS.contains(name)) {
