@@ -42,7 +42,8 @@ Error responses carry a plain-text message.
 | /users
 | Get every user, sorted by `userId` and ignoring case.
 The response has no `ETag` header.
-Each item carries its `version`, but a `PUT` or `DELETE` takes the tag from a GET of the single user.
+Each item carries its `version`.
+To use `If-Match`, send the version in quotes, or the `ETag` of a GET of the single user.
 
 | /users/\{userId}
 | Get one user. The response carries an `ETag` header.

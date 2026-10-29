@@ -42,6 +42,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
+import org.hibernate.SessionFactory;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.UserDataChangedException;
 import org.opennms.netmgt.config.UserMgmtManagers;
@@ -49,7 +50,6 @@ import org.opennms.netmgt.config.api.UserMgmtStore;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
-import org.hibernate.SessionFactory;
 import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -262,8 +262,12 @@ public class UserMgmtRestSupport {
      * <p>
      * A deadlock or serialization failure (SQL state 40P01 or 40001) anywhere in the cause chain, or in the
      * next-exception chain of an {@link SQLException} (where a JDBC batch reports the statement's own failure), is a
-     * 409, whatever wraps it: a {@link DataAccessException} from a flush or a
-     * {@link org.springframework.transaction.TransactionSystemException} from a commit. No other SQL state is.
+     * 409, whatever wraps it, for example a {@link DataAccessException} from a flush. No other SQL state is.
+     * <p>
+     * A commit's exception never gets here: the commit runs in the transaction proxy after the service method
+     * returns. The writes call {@link #flushAndCheckConstraints()} so that their failures are thrown inside the
+     * method. A deadlock inside a {@link org.springframework.transaction.TransactionSystemException} is still a 409,
+     * as a defence.
      */
     public RuntimeException translate(final String action, final Exception e) {
         if (e instanceof WebApplicationException) {

@@ -57,7 +57,8 @@ export const validateAdminComments = (value: string): string | null => {
   if (value && INVALID_COMMENTS.test(value)) {
     return 'The comments must not contain the characters & < > " ` \''
   }
-  // the server counts code points, not UTF-16 units
+  // the server counts code points, not UTF-16 units. JS trim() also strips Unicode whitespace such as
+  // NBSP, which Java's String.trim() keeps, so the counts can differ for such padding; the server decides.
   if (Array.from(value.trim()).length > FREE_TEXT_LENGTH) {
     return `The comments must not be longer than ${FREE_TEXT_LENGTH} characters.`
   }

@@ -44,7 +44,8 @@ Error responses carry a plain-text message.
 | Get every role: built-in roles first, then custom roles, each sorted by name.
 Each role carries `userCount`, the number of users that hold it.
 The response has no `ETag` header.
-Each item carries its `version`, but a `PUT` or `DELETE` takes the tag from a GET of the single role.
+Each item carries its `version`.
+To use `If-Match`, send the version in quotes, or the `ETag` of a GET of the single role.
 
 | /security-roles/\{name}
 | Get one role. The response carries an `ETag` header and no `userCount`; use the list for the count.
