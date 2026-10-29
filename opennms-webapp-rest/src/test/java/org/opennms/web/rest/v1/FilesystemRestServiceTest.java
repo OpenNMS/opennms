@@ -40,6 +40,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.BadRequestException;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -88,6 +90,11 @@ public class FilesystemRestServiceTest {
         assertEquals(0, requests.size());
 
         httpServer.stop(0);
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void testXmlWithDoctypeIsRejected() {
+        new FilesystemRestService(null).maybeValidateXml(new File("src/test/resources/NMS-20521/doctype.xml"));
     }
 
     private String loadDtdFile() throws IOException {

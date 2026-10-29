@@ -117,4 +117,10 @@ public class XmlFileSanitizerTest {
         File file = new File("target/test-classes/mock/invalid.xml");
         xmlFileSanitizer.getSanitizedResource(file);
     }
+
+    @Test(expected = FileSanitizationException.class)
+    public void testDoctypeIsRejected() throws FileSanitizationException {
+        File file = new File("target/test-classes/mock/doctype.xml");
+        xmlFileSanitizer.getSanitizedResource(file);
+    }
 }
