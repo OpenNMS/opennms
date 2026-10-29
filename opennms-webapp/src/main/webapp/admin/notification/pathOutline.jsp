@@ -26,6 +26,7 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.core.utils.WebSecurityUtils,
+		org.owasp.encoder.Encode,
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.destinationPaths.*
 	"
@@ -156,7 +157,7 @@
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
-<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br/>" : "")%></h2>
+<h2><%=(newPath.getName()!=null ? "Editing path: " + Encode.forHtml(newPath.getName()) + "<br/>" : "")%></h2>
 
 <form role="form" class="form-horizontal" method="post" name="outline" action="admin/notification/destinationWizard" onsubmit="return finish();">
   <input type="hidden" name="sourcePage" value="pathOutline.jsp"/>
@@ -179,7 +180,7 @@
             <% if (newPath.getName()==null) { %>
               <input type="text" class="form-control" name="name" value=""/>
             <% } else { %>
-              <input type="text" class="form-control" name="name" value="<%=newPath.getName()%>"/>
+              <input type="text" class="form-control" name="name" value="<%=Encode.forHtmlAttribute(newPath.getName())%>"/>
             <% } %>
           </div>
         </div>
@@ -273,7 +274,7 @@
           }
           if (!gotCurrValue)
           {
-              buffer.append("<option selected=\"selected\" value=\"" + currValue + "\">").append(currValue).append("</option>");
+              buffer.append("<option selected=\"selected\" value=\"" + Encode.forHtmlAttribute(currValue) + "\">").append(Encode.forHtml(currValue)).append("</option>");
           }
           buffer.append("</select>");
           

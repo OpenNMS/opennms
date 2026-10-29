@@ -35,6 +35,8 @@ import java.util.function.Supplier;
 import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
@@ -115,6 +117,9 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private DataSource m_dataSource;
+
+    @Autowired
+    private SessionFactory m_sessionFactory;
 
     private Locale m_locale;
 
@@ -432,8 +437,165 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("text", description("rota10"));
         exec(PUT, "/oncall-roles/rota10", "{\"description\":\"\"}", null, 200);
         assertNull(description("rota10"));
-        final JSONObject json = new JSONObject(getJson("/oncall-roles/rota10", 200));
-        assertTrue(!json.has("description") || json.isNull("description"));
+        assertTrue(new JSONObject(getJson("/oncall-roles/rota10", 200)).isNull("description"));
+    }
+
+    @Test
+    public void testDescriptionLimit() throws Exception {
+        final String limit = "x".repeat(4096);
+        final String tooLong = "x".repeat(4097);
+        exec(POST, "/oncall-roles", "{\"name\":\"freetext\",\"description\":\"" + limit + "\",\"membershipGroup\":\"Ops\",\"supervisor\":\"alice\"}", null, 201);
+        final MockHttpServletResponse put = exec(PUT, "/oncall-roles/freetext", "{\"description\":\"" + tooLong + "\"}", null, 400);
+        assertEquals("On-call role \"freetext\": the description is longer than 4096 characters.", put.getContentAsString());
+        final MockHttpServletResponse post = exec(POST, "/oncall-roles",
+                "{\"name\":\"freetext2\",\"description\":\"" + tooLong + "\",\"membershipGroup\":\"Ops\",\"supervisor\":\"alice\"}", null, 400);
+        assertEquals("On-call role \"freetext2\": the description is longer than 4096 characters.", post.getContentAsString());
+        sendRequest(GET, "/oncall-roles/freetext2", 404);
+        assertEquals(limit, description("freetext"));
+    }
+
+    @Test
+    public void testStoredLongDescriptionIsGrandfathered() throws Exception {
+        // written before the limit, e.g. by the JSPs or a migration
+        final String stored = "y".repeat(5000);
+        inTx(() -> {
+            final OnCallRole role = new OnCallRole("longtext", m_userGroupDao.findByName("Ops"), m_userAccountDao.findByUsername("alice"));
+            role.setDescription(stored);
+            m_onCallRoleDao.save(role);
+            return null;
+        });
+        final int version = rowVersion("longtext");
+
+        // echoed back unchanged, along with another change
+        exec(PUT, "/oncall-roles/longtext", "{\"description\":\"" + stored + "\",\"supervisor\":\"bob\"}", null, 200);
+        assertEquals(stored, description("longtext"));
+        assertEquals("bob", new JSONObject(getJson("/oncall-roles/longtext", 200)).getString("supervisor"));
+        final int edited = rowVersion("longtext");
+        assertNotEquals(version, edited);
+        exec(PUT, "/oncall-roles/longtext", "{\"description\":\"" + stored + "\"}", null, 200);
+        assertEquals(edited, rowVersion("longtext"));
+
+        // but a changed description over the limit is refused
+        exec(PUT, "/oncall-roles/longtext", "{\"description\":\"" + stored + "z\"}", null, 400);
+        assertEquals(stored, description("longtext"));
+        assertEquals(edited, rowVersion("longtext"));
+    }
+
+    @Test
+    public void testStoredEmptyDayAndIdMatchAnOmittedOne() throws Exception {
+        // a hand-edited groups.xml can leave day="" and id=""; the API returns them and a client may drop or blank them
+        inTx(() -> {
+            final OnCallRole stored = new OnCallRole("rota-empty", m_userGroupDao.findByName("Ops"), m_userAccountDao.findByUsername("alice"));
+            // as role() sends it
+            stored.setDescription("the rota");
+            final OnCallSchedule schedule = new OnCallSchedule(m_userAccountDao.findByUsername("outsider"), OnCallSchedule.Type.daily);
+            final OnCallScheduleTime time = new OnCallScheduleTime("", "08:00:00", "17:00:00");
+            time.setTimeId("");
+            schedule.getTimes().add(time);
+            stored.getSchedules().add(schedule);
+            m_onCallRoleDao.save(stored);
+            return null;
+        });
+        final int version = rowVersion("rota-empty");
+
+        // the stored schedule names a non-member, so only grandfathering lets it through
+        exec(PUT, "/oncall-roles/rota-empty", role("rota-empty",
+                "{\"user\":\"outsider\",\"type\":\"daily\",\"times\":[{\"begins\":\"08:00:00\",\"ends\":\"17:00:00\"}]}"), null, 200);
+        exec(PUT, "/oncall-roles/rota-empty", role("rota-empty",
+                "{\"user\":\"outsider\",\"type\":\"daily\",\"times\":[{\"id\":\" \",\"day\":\"\",\"begins\":\"08:00:00\",\"ends\":\"17:00:00\"}]}"), null, 200);
+        // nothing was rewritten
+        assertEquals(version, rowVersion("rota-empty"));
+        assertEquals("", new JdbcTemplate(m_dataSource).queryForObject("select t.day from oncall_schedule_times t"
+                + " join oncall_schedules s on s.id = t.schedule_id where s.oncall_role_id = ?", String.class, roleId("rota-empty")));
+    }
+
+    @Test
+    public void testSpecificScheduleRoundTrips() throws Exception {
+        final String specific = "{\"user\":\"bob\",\"type\":\"specific\",\"times\":["
+                + "{\"id\":\"s1\",\"begins\":\"21-Oct-2030 08:00:00\",\"ends\":\"21-Oct-2030 17:00:00\"},"
+                + "{\"begins\":\"24-Dec-2030 20:00:00\",\"ends\":\"25-Dec-2030 06:00:00\"}]}";
+        final MockHttpServletResponse created = exec(POST, "/oncall-roles", role("rota-specific", specific), null, 201);
+
+        final JSONObject json = new JSONObject(getJson("/oncall-roles/rota-specific", 200));
+        final JSONObject schedule = json.getJSONArray("schedules").getJSONObject(0);
+        assertEquals("specific", schedule.getString("type"));
+        final JSONArray times = schedule.getJSONArray("times");
+        assertEquals(2, times.length());
+        assertEquals("s1", times.getJSONObject(0).getString("id"));
+        assertTrue(times.getJSONObject(0).isNull("day"));
+        assertEquals("21-Oct-2030 08:00:00", times.getJSONObject(0).getString("begins"));
+        assertEquals("21-Oct-2030 17:00:00", times.getJSONObject(0).getString("ends"));
+        assertEquals("24-Dec-2030 20:00:00", times.getJSONObject(1).getString("begins"));
+        assertEquals("25-Dec-2030 06:00:00", times.getJSONObject(1).getString("ends"));
+
+        // the GET body sent back unchanged keeps the version
+        final int version = rowVersion("rota-specific");
+        assertEquals(created.getHeader("ETag"), "\"" + version + "\"");
+        final MockHttpServletResponse put = exec(PUT, "/oncall-roles/rota-specific", json.toString(), created.getHeader("ETag"), 200);
+        assertEquals(created.getHeader("ETag"), put.getHeader("ETag"));
+        assertEquals(version, rowVersion("rota-specific"));
+    }
+
+    @Test
+    public void testMonthlyScheduleRoundTrips() throws Exception {
+        final String monthly = "{\"user\":\"carol\",\"type\":\"monthly\",\"times\":["
+                + "{\"day\":\"15\",\"begins\":\"08:00:00\",\"ends\":\"17:00:00\"},"
+                + "{\"id\":\"first\",\"day\":\"1\",\"begins\":\"00:00:00\",\"ends\":\"23:59:59\"}]}";
+        final MockHttpServletResponse created = exec(POST, "/oncall-roles", role("rota-monthly", monthly), null, 201);
+
+        final JSONObject json = new JSONObject(getJson("/oncall-roles/rota-monthly", 200));
+        final JSONObject schedule = json.getJSONArray("schedules").getJSONObject(0);
+        assertEquals("monthly", schedule.getString("type"));
+        final JSONArray times = schedule.getJSONArray("times");
+        assertEquals(2, times.length());
+        assertEquals("15", times.getJSONObject(0).getString("day"));
+        assertEquals("08:00:00", times.getJSONObject(0).getString("begins"));
+        assertEquals("17:00:00", times.getJSONObject(0).getString("ends"));
+        assertEquals("first", times.getJSONObject(1).getString("id"));
+        assertEquals("1", times.getJSONObject(1).getString("day"));
+
+        // the GET body sent back unchanged keeps the version
+        final int version = rowVersion("rota-monthly");
+        final MockHttpServletResponse put = exec(PUT, "/oncall-roles/rota-monthly", json.toString(), created.getHeader("ETag"), 200);
+        assertEquals(created.getHeader("ETag"), put.getHeader("ETag"));
+        assertEquals(version, rowVersion("rota-monthly"));
+
+        // a day that is not a day of the month is refused
+        exec(PUT, "/oncall-roles/rota-monthly", role("rota-monthly", monthly.replace("\"15\"", "\"32\"")), null, 400);
+        exec(PUT, "/oncall-roles/rota-monthly", role("rota-monthly", monthly.replace("\"15\"", "\"0\"")), null, 400);
+        assertEquals(version, rowVersion("rota-monthly"));
+    }
+
+    /** A fresh database, so that the number of roles is known. */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testListStatementCountDoesNotGrowWithTheRoles() throws Exception {
+        // Hibernate loads a batch of up to 10 in one statement but splits larger ones (12 + 2 for 14), so no more than 10 of
+        // anything is loaded lazily here: 5 roles, groups and supervisors and 10 schedules
+        createListedRoles(0, 2);
+        final long few = statements(() -> getJson("/oncall-roles", 200));
+        createListedRoles(2, 5);
+        final long many = statements(() -> getJson("/oncall-roles", 200));
+        assertTrue("no statement counted", few > 0);
+        assertEquals("statements for 2 roles vs. 5 roles", few, many);
+
+        // the schedules and their times keep their order
+        final JSONArray roles = new JSONArray(getJson("/oncall-roles", 200));
+        assertEquals(5, roles.length());
+        for (int i = 0; i < roles.length(); i++) {
+            final JSONObject role = roles.getJSONObject(i);
+            final String name = "listed" + i;
+            assertEquals(name, role.getString("name"));
+            assertEquals(name + "-group", role.getString("membershipGroup"));
+            assertEquals(name + "-user", role.getString("supervisor"));
+            final JSONArray schedules = role.getJSONArray("schedules");
+            assertEquals(2, schedules.length());
+            assertEquals("weekly", schedules.getJSONObject(0).getString("type"));
+            assertEquals("daily", schedules.getJSONObject(1).getString("type"));
+            final JSONArray times = schedules.getJSONObject(0).getJSONArray("times");
+            assertEquals(name + "-user", schedules.getJSONObject(0).getString("user"));
+            assertEquals(Arrays.asList("tuesday", "monday"), Arrays.asList(times.getJSONObject(0).getString("day"), times.getJSONObject(1).getString("day")));
+        }
     }
 
     @Test
@@ -575,5 +737,50 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     private String description(final String role) {
         return new JdbcTemplate(m_dataSource).queryForObject("select description from oncall_roles where name = ?", String.class, role);
+    }
+
+    /**
+     * Commits the roles listed{from} to listed{to - 1}, each with its own group and user (the supervisor, and the
+     * user of a weekly schedule with two times out of day order, then a daily one).
+     */
+    private void createListedRoles(final int from, final int to) {
+        inTx(() -> {
+            for (int i = from; i < to; i++) {
+                final String name = "listed" + i;
+                final UserAccount user = user(name + "-user");
+                final UserGroup group = new UserGroup(name + "-group");
+                group.getMembers().add(user);
+                m_userGroupDao.save(group);
+                final OnCallRole role = new OnCallRole(name, group, user);
+                final OnCallSchedule weekly = new OnCallSchedule(user, OnCallSchedule.Type.weekly);
+                weekly.getTimes().add(new OnCallScheduleTime("tuesday", "00:00:00", "06:00:00"));
+                weekly.getTimes().add(new OnCallScheduleTime("monday", "18:00:00", "23:59:59"));
+                role.getSchedules().add(weekly);
+                final OnCallSchedule daily = new OnCallSchedule(user, OnCallSchedule.Type.daily);
+                daily.getTimes().add(new OnCallScheduleTime(null, "08:00:00", "17:00:00"));
+                role.getSchedules().add(daily);
+                m_onCallRoleDao.save(role);
+            }
+            return null;
+        });
+    }
+
+    /** The SQL statements Hibernate prepares while the request runs. */
+    private long statements(final Call request) throws Exception {
+        final Statistics statistics = m_sessionFactory.getStatistics();
+        final boolean enabled = statistics.isStatisticsEnabled();
+        statistics.setStatisticsEnabled(true);
+        statistics.clear();
+        try {
+            request.run();
+            return statistics.getPrepareStatementCount();
+        } finally {
+            statistics.setStatisticsEnabled(enabled);
+        }
+    }
+
+    @FunctionalInterface
+    private interface Call {
+        void run() throws Exception;
     }
 }

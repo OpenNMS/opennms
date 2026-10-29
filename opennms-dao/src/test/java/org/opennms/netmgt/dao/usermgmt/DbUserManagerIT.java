@@ -36,7 +36,10 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.DbGroupManager;
 import org.opennms.netmgt.config.DbUserManager;
+import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.UserDataChangedException;
+import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.UserMgmtManagers;
 import org.opennms.netmgt.config.api.UserConfig.ContactType;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
@@ -49,6 +52,7 @@ import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
 import org.opennms.netmgt.model.usermgmt.SecurityRole;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
+import org.opennms.netmgt.model.usermgmt.UserGroup;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -155,6 +159,27 @@ public class DbUserManagerIT {
         assertFalse(m_users.hasUser("external")); // within the check interval
         m_users.expire();
         assertTrue(m_users.hasUser("external"));
+    }
+
+    @Test
+    public void testExpireAllMakesBothManagersCheckAtOnce() throws Exception {
+        // what the v2 REST services call after a commit, in db mode (the default)
+        final UserMgmtManagers managers = new UserMgmtManagers(m_userDao, m_groupDao, m_onCallRoleDao, m_securityRoleDao,
+                m_versionDao, m_transactionManager);
+        final UserManager users = managers.getUserManager();
+        final GroupManager groups = managers.getGroupManager();
+        users.getUserNames(); // load
+        groups.getGroupNames(); // load
+        m_tx.execute(s -> {
+            m_userDao.save(new UserAccount("external"));
+            m_groupDao.save(new UserGroup("External"));
+            return null;
+        });
+        assertFalse(users.hasUser("external")); // within the check interval
+        assertFalse(groups.hasGroup("External"));
+        managers.expireAll();
+        assertTrue(groups.hasGroup("External"));
+        assertTrue(users.hasUser("external"));
     }
 
     @Test

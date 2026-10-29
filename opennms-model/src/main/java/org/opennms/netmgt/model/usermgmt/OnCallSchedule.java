@@ -41,6 +41,8 @@ import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.BatchSize;
+
 /**
  * When one user is on call for an {@link OnCallRole}: a {@code <schedule>} of a groups.xml role, whose
  * {@code name} attribute is the user.
@@ -75,6 +77,7 @@ public class OnCallSchedule implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "schedule_id", nullable = false)
     @OrderColumn(name = "position")
+    @BatchSize(size = 100)
     private List<OnCallScheduleTime> times = new ArrayList<>();
 
     public OnCallSchedule() {

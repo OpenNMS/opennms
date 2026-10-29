@@ -353,6 +353,66 @@ public class UserMgmtRowVersionIT implements InitializingBean {
         assertBumped("schedule removed", before, VersionedTable.oncall_roles, role);
     }
 
+    private int scheduleId(final String role) {
+        return m_tx.execute(status -> m_roleDao.findByName(role).getSchedules().get(0).getId());
+    }
+
+    private int timeId(final String role) {
+        return m_tx.execute(status -> m_roleDao.findByName(role).getSchedules().get(0).getTimes().get(0).getId());
+    }
+
+    @Test
+    public void testMovingAScheduleToAnotherRoleBumpsBothRoles() {
+        createUser("jane");
+        createGroup("ops", "jane");
+        final int from = createRole("night", "ops", "jane", "jane");
+        final int to = createRole("day", "ops", "jane");
+        final int unrelated = createRole("weekend", "ops", "jane", "jane");
+        final int fromBefore = version(VersionedTable.oncall_roles, from);
+        final int toBefore = version(VersionedTable.oncall_roles, to);
+        final int unrelatedBefore = version(VersionedTable.oncall_roles, unrelated);
+
+        assertEquals(1, update("UPDATE oncall_schedules SET oncall_role_id = ? WHERE id = ?", to, scheduleId("night")));
+
+        assertBumped("role the schedule left", fromBefore, VersionedTable.oncall_roles, from);
+        assertBumped("role the schedule joined", toBefore, VersionedTable.oncall_roles, to);
+        assertEquals(unrelatedBefore, version(VersionedTable.oncall_roles, unrelated));
+    }
+
+    @Test
+    public void testMovingATimeToAScheduleOfAnotherRoleBumpsBothRoles() {
+        createUser("jane");
+        createGroup("ops", "jane");
+        final int from = createRole("night", "ops", "jane", "jane");
+        final int to = createRole("day", "ops", "jane", "jane");
+        final int fromBefore = version(VersionedTable.oncall_roles, from);
+        final int toBefore = version(VersionedTable.oncall_roles, to);
+
+        assertEquals(1, update("UPDATE oncall_schedule_times SET schedule_id = ? WHERE id = ?", scheduleId("day"), timeId("night")));
+
+        assertBumped("role of the schedule the time left", fromBefore, VersionedTable.oncall_roles, from);
+        assertBumped("role of the schedule the time joined", toBefore, VersionedTable.oncall_roles, to);
+    }
+
+    @Test
+    public void testUpdatingAndDeletingATimeBumpTheRole() {
+        createUser("jane");
+        createGroup("ops", "jane");
+        final int role = createRole("night", "ops", "jane", "jane");
+        final int time = timeId("night");
+
+        int before = version(VersionedTable.oncall_roles, role);
+        assertEquals(1, update("UPDATE oncall_schedule_times SET ends = ends WHERE id = ?", time));
+        assertEquals(before, version(VersionedTable.oncall_roles, role));
+
+        assertEquals(1, update("UPDATE oncall_schedule_times SET ends = '10:00:00' WHERE id = ?", time));
+        assertBumped("time updated", before, VersionedTable.oncall_roles, role);
+
+        before = version(VersionedTable.oncall_roles, role);
+        assertEquals(1, update("DELETE FROM oncall_schedule_times WHERE id = ?", time));
+        assertBumped("time deleted", before, VersionedTable.oncall_roles, role);
+    }
+
     @Test
     public void testUsernameChangeBumpsItsGroupsAndRoles() {
         final int user = createUser("jane");

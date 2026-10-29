@@ -40,7 +40,10 @@ Error responses carry a plain-text message.
 | Resource | Description
 
 | /oncall-roles
-| Get every role with its schedules, sorted by name.
+| Get every role with its schedules, sorted by name and ignoring case.
+The response has no `ETag` header.
+Each item carries its `version`.
+To use `If-Match`, send the version in quotes, or the `ETag` of a GET of the single role.
 
 | /oncall-roles/\{name}
 | Get one role. The response carries an `ETag` header.
@@ -131,7 +134,7 @@ To detect concurrent edits, send the version in `If-Match`.
 | Field | Description
 
 | name | Role name. Required on create.
-| description | Description.
+| description | Description, at most 4096 characters. See <<oncall-description>>.
 | membershipGroup | Name of an existing group. Required on create. A new schedule must name a user who is a member of this group; schedules already stored are not re-checked (see <<stored-schedules>>), unless the request changes the group.
 | supervisor | User id of an existing user. Required on create.
 | schedules | List of schedules (see below).
@@ -172,6 +175,13 @@ For example, on a server in `America/New_York`, `08-Mar-2026 02:30:00` does not 
 | weekly | A day name, `sunday` to `saturday`. | `HH:mm:ss`.
 | monthly | A day of the month, `1` to `31`. | `HH:mm:ss`.
 |===
+
+[[oncall-description]]
+== Description
+
+The description is at most 4096 characters long, counted after leading and trailing whitespace is removed.
+A longer description returns `400`.
+A stored description that is longer stays valid while a `PUT` sends it back unchanged, apart from surrounding whitespace.
 
 [[stored-schedules]]
 == Stored schedules

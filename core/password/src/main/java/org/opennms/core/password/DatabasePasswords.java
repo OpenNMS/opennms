@@ -58,12 +58,20 @@ public final class DatabasePasswords {
                     }
                 }
                 connection.commit();
-            } catch (final SQLException | RuntimeException e) {
-                connection.rollback();
-                throw e;
-            } finally {
-                connection.setAutoCommit(autoCommit);
+            } catch (final Throwable t) {
+                // not in a finally: turning auto-commit back on would commit the update after an Error
+                // auto-commit is restored only after a successful rollback: after a failed one, the update may still be
+                // pending, and turning auto-commit on would commit it. The connection is closed right after; the pool
+                // rolls it back or discards it.
+                try {
+                    connection.rollback();
+                    connection.setAutoCommit(autoCommit);
+                } catch (final Throwable rollbackFailure) {
+                    t.addSuppressed(rollbackFailure);
+                }
+                throw t;
             }
+            connection.setAutoCommit(autoCommit);
         }
     }
 

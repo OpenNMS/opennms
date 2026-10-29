@@ -22,8 +22,13 @@
 package org.opennms.web.rest.v2;
 
 import java.sql.SQLException;
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,6 +42,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
+import org.hibernate.SessionFactory;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.UserDataChangedException;
 import org.opennms.netmgt.config.UserMgmtManagers;
@@ -51,14 +57,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * Shared plumbing for the v2 user-management services (users, groups, security roles, on-call roles):
- * the admin and store-mode checks, the write lock with its after-commit manager expiry, the destination path check, the
- * ETag / If-Match handling, and the translation of exceptions to HTTP errors.
+ * the admin and store-mode checks, the write lock with its after-commit manager expiry, the deferred-constraint check
+ * before the commit, the destination path check, the ETag / If-Match handling, and the translation of exceptions to
+ * HTTP errors.
  *
  * Every error is thrown, never returned as a Response, so that the surrounding transaction rolls back.
  */
@@ -76,11 +84,22 @@ public class UserMgmtRestSupport {
     private static final String DEADLOCK = "40P01";
     private static final String SERIALIZATION_FAILURE = "40001";
 
+    /** The deferred constraints of the user-management tables, checked by {@link #flushAndCheckConstraints}. */
+    private static final String DEFERRED_CONSTRAINTS = "uk_user_contacts_user_type, uk_group_members_group_user";
+
     @Autowired
     private UserMgmtVersionDao m_versionDao;
 
     @Autowired
     private UserMgmtManagers m_managers;
+
+    /** Translates Hibernate's exceptions, e.g. a unique violation to DataIntegrityViolationException. */
+    private HibernateTemplate m_hibernateTemplate;
+
+    @Autowired
+    void setSessionFactory(final SessionFactory sessionFactory) {
+        m_hibernateTemplate = new HibernateTemplate(sessionFactory);
+    }
 
     /** The destination paths that notifd sends to. */
     static final Callable<Collection<Path>> NOTIFD_DESTINATION_PATHS = () -> {
@@ -126,6 +145,26 @@ public class UserMgmtRestSupport {
             public void afterCommit() {
                 m_managers.expireAll();
             }
+        });
+    }
+
+    /**
+     * Writes out the pending changes and checks the deferred constraints now ({@code uk_user_contacts_user_type},
+     * {@code uk_group_members_group_user}), so that a violation is thrown here, inside the service method, where
+     * {@link #translate} turns it into an HTTP error, and not by the commit after the method returns, which would be
+     * a 500. Only these two constraints are checked, and they are deferred again afterwards, so that later changes
+     * in the same transaction are checked at the next call or at the commit. Call it after a write's last change.
+     * <p>
+     * In READ COMMITTED, PostgreSQL raises neither a deadlock nor a serialization failure at COMMIT itself, so after
+     * this the commit can only fail for connection-level reasons.
+     */
+    public void flushAndCheckConstraints() {
+        m_hibernateTemplate.execute(session -> {
+            session.flush();
+            // setting a deferred constraint to IMMEDIATE checks the pending changes at once
+            session.createNativeQuery("SET CONSTRAINTS " + DEFERRED_CONSTRAINTS + " IMMEDIATE").executeUpdate();
+            session.createNativeQuery("SET CONSTRAINTS " + DEFERRED_CONSTRAINTS + " DEFERRED").executeUpdate();
+            return null;
         });
     }
 
@@ -228,7 +267,18 @@ public class UserMgmtRestSupport {
         }
     }
 
-    /** Returns the exception to throw for a failure while performing {@code action}. */
+    /**
+     * Returns the exception to throw for a failure while performing {@code action}.
+     * <p>
+     * A deadlock or serialization failure (SQL state 40P01 or 40001) anywhere in the cause chain, or in the
+     * next-exception chain of an {@link SQLException} (where a JDBC batch reports the statement's own failure), is a
+     * 409, whatever wraps it, for example a {@link DataAccessException} from a flush. No other SQL state is.
+     * <p>
+     * A commit's exception never gets here: the commit runs in the transaction proxy after the service method
+     * returns. The writes call {@link #flushAndCheckConstraints()} so that their failures are thrown inside the
+     * method. A deadlock inside a {@link org.springframework.transaction.TransactionSystemException} is still a 409,
+     * as a defence.
+     */
     public RuntimeException translate(final String action, final Exception e) {
         if (e instanceof WebApplicationException) {
             return (WebApplicationException) e;
@@ -239,7 +289,7 @@ public class UserMgmtRestSupport {
         if (e instanceof UserDataChangedException) {
             return conflict(e.getMessage());
         }
-        if (e instanceof DataAccessException && isLockFailure(e)) {
+        if (isLockFailure(e)) {
             return conflict("The data was changed at the same time by another request. Try again.");
         }
         if (e instanceof DataIntegrityViolationException) {
@@ -253,16 +303,28 @@ public class UserMgmtRestSupport {
         return error(Status.INTERNAL_SERVER_ERROR, "Can't " + action + ".");
     }
 
+    /** Walks the causes and the next exceptions of every SQLException among them, each exception once. */
     private static boolean isLockFailure(final Throwable e) {
-        Throwable cause = e;
-        while (cause != null) {
-            if (cause instanceof SQLException) {
-                final String state = ((SQLException) cause).getSQLState();
-                if (DEADLOCK.equals(state) || SERIALIZATION_FAILURE.equals(state)) {
+        final Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+        final Deque<Throwable> pending = new ArrayDeque<>();
+        pending.add(e);
+        while (!pending.isEmpty()) {
+            final Throwable current = pending.remove();
+            if (!seen.add(current)) {
+                continue;
+            }
+            if (current instanceof SQLException) {
+                final SQLException sql = (SQLException) current;
+                if (DEADLOCK.equals(sql.getSQLState()) || SERIALIZATION_FAILURE.equals(sql.getSQLState())) {
                     return true;
                 }
+                if (sql.getNextException() != null) {
+                    pending.add(sql.getNextException());
+                }
             }
-            cause = cause.getCause() == cause ? null : cause.getCause();
+            if (current.getCause() != null) {
+                pending.add(current.getCause());
+            }
         }
         return false;
     }

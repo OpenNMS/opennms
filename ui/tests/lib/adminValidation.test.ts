@@ -49,6 +49,20 @@ describe('validateAdminComments', () => {
   })
 })
 
+describe('validateAdminComments length', () => {
+  it('accepts exactly 4096 characters and rejects one more, after trimming', () => {
+    expect(validateAdminComments('a'.repeat(4096))).toBeNull()
+    expect(validateAdminComments(`  ${'a'.repeat(4096)}  `)).toBeNull()
+    expect(validateAdminComments('a'.repeat(4097))).toBe('The comments must not be longer than 4096 characters.')
+  })
+
+  it('counts code points like the server, not UTF-16 units', () => {
+    // 4096 emoji are 8192 UTF-16 units but 4096 characters
+    expect(validateAdminComments('\u{1F600}'.repeat(4096))).toBeNull()
+    expect(validateAdminComments('\u{1F600}'.repeat(4097))).not.toBeNull()
+  })
+})
+
 describe('validateEmailShape', () => {
   it('accepts empty values and common deliverable forms', () => {
     expect(validateEmailShape('', 'email')).toBeNull()

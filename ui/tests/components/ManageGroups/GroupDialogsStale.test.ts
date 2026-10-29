@@ -1,10 +1,12 @@
-import { mount } from '@vue/test-utils'
+import { enableAutoUnmount, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import GroupsTable from '@/components/ManageGroups/GroupsTable.vue'
 import GroupEditorDialog from '@/components/ManageGroups/GroupEditorDialog.vue'
 import GroupRenameDialog from '@/components/ManageGroups/GroupRenameDialog.vue'
+import { useGroupAdminStore } from '@/stores/groupAdminStore'
 
 const store = vi.hoisted(() => ({
   updateGroup: vi.fn(),
@@ -15,16 +17,25 @@ const store = vi.hoisted(() => ({
   memberCandidates: [] as string[]
 }))
 
-vi.mock('@/stores/groupAdminStore', () => ({ useGroupAdminStore: () => store }))
+// reactive, so that a table re-renders its rows when a test replaces store.groups through useGroupAdminStore()
+vi.mock('@/stores/groupAdminStore', async () => {
+  const { reactive } = await import('vue')
+  const live = reactive(store)
+  return { useGroupAdminStore: () => live }
+})
+
+// the dialogs are teleported to the body; unmount each one, or a later test can find an earlier test's dialog
+enableAutoUnmount(afterEach)
 
 const group = { name: 'Ops', users: [], version: 3 }
 
+// each case: a mounted dialog, the store call its Save makes and the data-test of the dialog
 const cases = [
-  ['GroupEditorDialog', () => mount(GroupEditorDialog, { props: { visible: true, group }, global: { plugins: [PrimeVue] }}), store.updateGroup],
-  ['GroupRenameDialog', () => mount(GroupRenameDialog, { props: { visible: true, groupName: 'Ops', version: 3 }, global: { plugins: [PrimeVue] }}), store.renameGroup]
+  ['GroupEditorDialog', () => mount(GroupEditorDialog, { props: { visible: true, group }, global: { plugins: [PrimeVue] }}), store.updateGroup, 'group-editor-dialog'],
+  ['GroupRenameDialog', () => mount(GroupRenameDialog, { props: { visible: true, groupName: 'Ops', version: 3 }, global: { plugins: [PrimeVue] }}), store.renameGroup, 'group-rename-dialog']
 ] as const
 
-describe.each(cases)('%s', (_name, mountDialog, storeCall) => {
+describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest) => {
   beforeEach(() => vi.clearAllMocks())
 
   it('closes when the save is rejected as stale', async () => {
@@ -42,8 +53,13 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall) => {
     const wrapper = mountDialog()
 
     await (wrapper.vm as unknown as { save: () => Promise<void> }).save()
+    await nextTick()
 
     expect(wrapper.emitted('update:visible')).toBeUndefined()
+    // only the error of this dialog: the dialogs are teleported to the body
+    const errors = document.body.querySelectorAll(`[data-test="${dialogTest}"] [data-test="dialog-error"]`)
+    expect(errors).toHaveLength(1)
+    expect(errors[0].textContent).toBe('Something else went wrong')
   })
 
   it('does not close on the stale wording without the flag', async () => {
@@ -87,5 +103,77 @@ describe('version reaches the store', () => {
     await vm.confirmDelete()
 
     expect(store.deleteGroup).toHaveBeenCalledWith('Ops', 3)
+  })
+})
+
+// the rename reloads the list; an edit opened from the table must then send the renamed name and the new version,
+// not the row the table showed before the rename
+describe('a rename followed by an edit', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it('sends the renamed group name and the new version', async () => {
+    const live = useGroupAdminStore()
+    live.groups = [{ ...group }]
+    store.renameGroup.mockImplementation(async () => {
+      // what the real store does on success: reload the list
+      live.groups = [{ name: 'Dev', users: [], version: 4 }]
+      return null
+    })
+    store.updateGroup.mockResolvedValue(null)
+    const table = mount(GroupsTable, { global: { plugins: [PrimeVue], directives: { tooltip: {}}}})
+
+    // rename through the row's menu
+    await table.find('[data-test="group-actions-menu-button"]').trigger('click')
+    ;(table.vm as unknown as { rowMenuItems: { label: string, command: () => void }[] }).rowMenuItems
+      .find(item => item.label === 'Rename')!.command()
+    await nextTick()
+    const rename = table.findComponent(GroupRenameDialog)
+    expect(rename.props()).toMatchObject({ visible: true, groupName: 'Ops', version: 3 })
+    ;(rename.vm as unknown as { newName: string }).newName = 'Dev'
+    await (rename.vm as unknown as { save: () => Promise<void> }).save()
+    await nextTick()
+    expect(rename.props('visible')).toBe(false)
+
+    // edit the reloaded row through its Edit button
+    const editButtons = table.findAll('[data-test="edit-group-button"]')
+    expect(editButtons).toHaveLength(1)
+    await editButtons[0].trigger('click')
+    const editor = table.findComponent(GroupEditorDialog)
+    expect(editor.props('visible')).toBe(true)
+    await (editor.vm as unknown as { save: () => Promise<void> }).save()
+
+    expect(store.updateGroup).toHaveBeenCalledWith(expect.objectContaining({ name: 'Dev', version: 4 }))
+  })
+})
+
+describe('GroupEditorDialog comment limit', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    store.updateGroup.mockResolvedValue(null)
+  })
+
+  const mountEditor = (comments?: string) =>
+    mount(GroupEditorDialog, { props: { visible: true, group: { ...group, comments }}, global: { plugins: [PrimeVue] }})
+  const vmOf = (wrapper: { vm: unknown }) => wrapper.vm as unknown as { comments: string, commentsProblem: string | null, isValid: boolean, save: () => Promise<void> }
+
+  it('flags a new comment over 4096 characters and blocks Save', async () => {
+    const wrapper = mountEditor('short')
+    vmOf(wrapper).comments = 'a'.repeat(4097)
+    await nextTick()
+
+    expect(vmOf(wrapper).commentsProblem).toContain('4096')
+    // the Save button is disabled by isValid
+    expect(vmOf(wrapper).isValid).toBe(false)
+  })
+
+  it('lets a stored comment over the limit be saved unchanged', async () => {
+    const wrapper = mountEditor('a'.repeat(5000))
+    await nextTick()
+    // the Save button is enabled by isValid
+    expect(vmOf(wrapper).isValid).toBe(true)
+    await vmOf(wrapper).save()
+
+    expect(vmOf(wrapper).commentsProblem).toBeNull()
+    expect(store.updateGroup).toHaveBeenCalled()
   })
 })

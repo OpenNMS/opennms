@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
@@ -98,7 +97,7 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
 
     @Override
     @Transactional(readOnly = true)
-    public Response getSecurityRole(final SecurityContext securityContext, final Request request, final String pathName) {
+    public Response getSecurityRole(final SecurityContext securityContext, final String pathName) {
         m_support.assertAdmin(securityContext, "Security role management");
         m_support.requireDatabaseStore();
         try {
@@ -128,9 +127,10 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
             if (m_securityRoleDao.findByName(name) != null) {
                 throw m_support.conflict("Security role " + name + " already exists.");
             }
+            UserMgmtValidation.checkFreeText(owner(name), "description", dto.getDescription(), null);
             final SecurityRole role = new SecurityRole(name, StringUtils.trimToNull(dto.getDescription()));
             m_securityRoleDao.saveOrUpdate(role);
-            m_securityRoleDao.flush();
+            m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.security_roles, role.getId());
             LOG.info("Security role {} created by {}", name, UserMgmtValidation.principal(securityContext));
             return Response.status(Status.CREATED).entity(toDto(role, null, version)).tag(m_support.etag(version)).build();
@@ -159,12 +159,14 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
             if (role.isBuiltin()) {
                 throw m_support.badRequest("The description of the built-in security role " + name + " cannot be changed.");
             }
+            // a stored description longer than the limit is grandfathered while it is sent back unchanged
+            UserMgmtValidation.checkFreeText(owner(name), "description", dto.getDescription(), role.getDescription());
             // a description left out of the body is preserved; an empty one clears it
-            if (dto.getDescription() != null) {
+            if (dto.getDescription() != null && !UserMgmtValidation.textUnchanged(dto.getDescription(), role.getDescription())) {
                 role.setDescription(StringUtils.trimToNull(dto.getDescription()));
             }
             m_securityRoleDao.saveOrUpdate(role);
-            m_securityRoleDao.flush();
+            m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.security_roles, role.getId());
             return Response.ok(toDto(role, null, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
@@ -195,7 +197,7 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
                         + "; remove it from them first.");
             }
             m_securityRoleDao.delete(role);
-            m_securityRoleDao.flush();
+            m_support.flushAndCheckConstraints();
             LOG.info("Security role {} deleted by {}", name, UserMgmtValidation.principal(securityContext));
             return Response.noContent().build();
         } catch (final Exception e) {
@@ -237,6 +239,10 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
             return "The security role name must be ROLE_ followed by letters, digits or underscores.";
         }
         return null;
+    }
+
+    private static String owner(final String name) {
+        return "Security role \"" + name + "\"";
     }
 
     /** {@code userCount} is null, and left out of the JSON, for a single role: see {@link SecurityRoleDto}. */

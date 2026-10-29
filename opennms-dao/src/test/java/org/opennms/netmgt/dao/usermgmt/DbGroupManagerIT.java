@@ -395,6 +395,26 @@ public class DbGroupManagerIT {
         assertTrue(m_versionDao.getRowVersion(VersionedTable.oncall_roles, day) > dayBefore2);
     }
 
+    @Test
+    public void testSaveRoleKeepsGroupVersions() throws Exception {
+        // a role save writes every cached group back too: a group, even the role's membership group, keeps its version
+        final int ops = createFullGroup("Ops", "jane", "joe");
+        final int dev = createFullGroup("Dev", "jane");
+        final int night = createFullRole("Night", "Ops", "jane", "joe");
+        final int opsBefore = m_versionDao.getRowVersion(VersionedTable.groups, ops);
+        final int devBefore = m_versionDao.getRowVersion(VersionedTable.groups, dev);
+        final int nightBefore = m_versionDao.getRowVersion(VersionedTable.oncall_roles, night);
+
+        final Role changed = m_manager.getRole("Night");
+        changed.setDescription("Changed");
+        m_manager.saveRole(changed);
+        m_manager.saveRole(role("Day", "Dev", "jane"));
+
+        assertTrue(m_versionDao.getRowVersion(VersionedTable.oncall_roles, night) > nightBefore);
+        assertEquals(opsBefore, m_versionDao.getRowVersion(VersionedTable.groups, ops));
+        assertEquals(devBefore, m_versionDao.getRowVersion(VersionedTable.groups, dev));
+    }
+
     private void lockVersionRow(final String domain) {
         m_sessionFactory.getCurrentSession().doWork(connection -> {
             try (java.sql.PreparedStatement statement = connection.prepareStatement("SELECT version FROM usermgmt_version WHERE name = ? FOR UPDATE")) {

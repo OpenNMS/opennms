@@ -156,7 +156,8 @@ public class DestinationWizardServlet extends HttpServlet {
                     redirectString.append(SOURCE_PAGE_TARGETS).append(makeQueryString(requestParams));
                 } else if (action.equals("finish")) {
                     String oldName = (String) user.getAttribute(SESSION_ATTRIBUTE_OLD_PATH_NAME);
-                    path.setName(WebSecurityUtils.sanitizeString(request.getParameter("name")));
+                    // stored raw like the REST API stores it; the wizard pages encode it on output
+                    path.setName(request.getParameter("name"));
                     path.setInitialDelay(request.getParameter("initialDelay"));
 
                     try {
@@ -370,7 +371,8 @@ public class DestinationWizardServlet extends HttpServlet {
     }
 
     private static void saveOutlineForm(Path path, HttpServletRequest request) {
-        path.setName(WebSecurityUtils.sanitizeString(request.getParameter("name")));
+        // stored raw; HTML-encoding it here made each pass through the encoded wizard pages encode it again
+        path.setName(request.getParameter("name"));
         Escalate[] escalations = path.getEscalates().toArray(new Escalate[0]);
 
         for (int i = 0; i < escalations.length; i++) {

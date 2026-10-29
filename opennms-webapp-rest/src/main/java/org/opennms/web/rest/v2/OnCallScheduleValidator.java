@@ -118,11 +118,13 @@ public final class OnCallScheduleValidator {
                     throw new UserMgmtValidationException(owner + "the day '" + day + "' of a weekly time must be a weekday name, e.g. monday.");
                 }
                 break;
-            case monthly:
-                if (day == null || !DAY_OF_MONTH.matcher(day).matches() || Integer.parseInt(day) < 1 || Integer.parseInt(day) > 31) {
+            case monthly: {
+                final int dayOfMonth = day != null && DAY_OF_MONTH.matcher(day).matches() ? Integer.parseInt(day) : 0;
+                if (dayOfMonth < 1 || dayOfMonth > 31) {
                     throw new UserMgmtValidationException(owner + "the day '" + day + "' of a monthly time must be a day of the month, 1 to 31.");
                 }
                 break;
+            }
             default:
                 throw new IllegalStateException("Unhandled schedule type " + type);
         }

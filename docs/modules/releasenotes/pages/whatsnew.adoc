@@ -130,6 +130,13 @@ Some stored text can therefore still show entities such as `&amp;`:
 
 Edit these values to fix them.
 
+The destination path wizard used to HTML-encode path names when it saved them.
+It now stores path names as entered.
+A path name that an earlier release saved with an entity, for example `a&amp;b`, now shows the entity literally.
+To fix it, rename the path on the *Destination Paths* tab of the *Configure Notifications* page (`/opennms/ui/index.html#/notifications-config`).
+That rename also updates the event notifications that use the path.
+The destination path wizard does not: if you rename the path there, change each notification that uses it to the new name.
+
 === ActiveMQ store and JVM temp directory moved out of the Karaf cache
 `java.io.tmpdir` moved from `$\{OPENNMS_HOME}/data/tmp` to `$\{OPENNMS_HOME}/tmp`, and the embedded ActiveMQ broker's on-disk store (`activemq.data`) moved from `$\{OPENNMS_HOME}/data/tmp/activemq` to `$\{OPENNMS_HOME}/var/activemq`.
 

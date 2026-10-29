@@ -65,7 +65,7 @@
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
-<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br/>" : "")%></h2>
+<h2><%=(newPath.getName()!=null ? "Editing path: " + Encode.forHtml(newPath.getName()) + "<br/>" : "")%></h2>
 
 <form method="post" name="groupIntervals" action="admin/notification/destinationWizard" >
   <%=Util.makeHiddenTags(request)%>

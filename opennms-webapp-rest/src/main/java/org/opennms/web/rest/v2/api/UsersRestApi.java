@@ -32,7 +32,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
@@ -67,7 +66,7 @@ public interface UsersRestApi {
     @Path("{userId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get one user", operationId = "getUser")
-    Response getUser(@Context SecurityContext securityContext, @Context Request request, @PathParam("userId") String userId);
+    Response getUser(@Context SecurityContext securityContext, @PathParam("userId") String userId);
 
     @GET
     @Path("available-roles")

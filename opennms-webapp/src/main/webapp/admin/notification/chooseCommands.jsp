@@ -91,7 +91,7 @@
 
 </script>
 
-<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br/>" : "")%></h2>
+<h2><%=(newPath.getName()!=null ? "Editing path: " + Encode.forHtml(newPath.getName()) + "<br/>" : "")%></h2>
 
 <form method="post" name="commands"
       action="admin/notification/destinationWizard">
@@ -180,11 +180,11 @@
         for(String curCommand : commands.keySet()) {
             if (selectedOptions.contains(curCommand))
             {
-                buffer.append("<option selected VALUE=\"" + curCommand + "\">").append(curCommand).append("</option>");
+                buffer.append("<option selected VALUE=\"" + Encode.forHtmlAttribute(curCommand) + "\">").append(Encode.forHtml(curCommand)).append("</option>");
             }
             else
             {
-                buffer.append("<option VALUE=\"" + curCommand + "\">").append(curCommand).append("</option>");
+                buffer.append("<option VALUE=\"" + Encode.forHtmlAttribute(curCommand) + "\">").append(Encode.forHtml(curCommand)).append("</option>");
             }
         }
         } catch (Throwable e)

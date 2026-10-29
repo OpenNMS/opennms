@@ -40,7 +40,10 @@ Error responses carry a plain-text message.
 | Resource | Description
 
 | /users
-| Get every user.
+| Get every user, sorted by `userId` and ignoring case.
+The response has no `ETag` header.
+Each item carries its `version`.
+To use `If-Match`, send the version in quotes, or the `ETag` of a GET of the single user.
 
 | /users/\{userId}
 | Get one user. The response carries an `ETag` header.
@@ -144,9 +147,9 @@ The password hash is never returned by any operation.
 |===
 | Field | Description
 
-| userId | Login name. Required on create.
+| userId | Login name. Required on create. See <<user-id-rules>>.
 | fullName | Full name.
-| userComments | Free-form comments.
+| userComments | Free-form comments. See <<user-text-rules>>.
 | email | Email address.
 | pagerEmail | Pager email address.
 | workPhone | Work phone number.
@@ -158,11 +161,58 @@ The password hash is never returned by any operation.
 | textPagerPin | Text pager PIN or number.
 | tuiPin | Telephone user interface PIN.
 | timeZoneId | Time zone id, for example `Europe/Berlin`. Stored in its canonical form.
-| dutySchedules | List of duty schedule strings.
+| dutySchedules | List of duty schedule strings. See <<user-duty-schedules>>.
 | roles | List of security role names, for example `ROLE_ADMIN`. An unknown role returns `400`.
 | readOnly | `true` when the user holds `ROLE_READONLY`. Read-only.
 | version | Opaque row version, also sent as the `ETag`. Ignored on input.
 |===
+
+[[user-id-rules]]
+== User ids
+
+A user id must not contain:
+
+* Markup characters: `&`, `<`, `>`, `"`, `` ` `` and `'`.
+* The characters `:`, `/`, `\`, `%`, `?` and `#`.
+* Whitespace.
+* Control or invisible characters.
+
+A user id must not be `.` or `..`.
+It is at most 256 characters long.
+The rules apply to `userId` on create and to `newUserId` on rename.
+A user id that is already stored is not checked again.
+A violation returns `400`.
+
+[[user-text-rules]]
+== Comments
+
+The comments must not contain the characters `&`, `<`, `>`, `"`, `` ` `` and `'`.
+They are at most 4096 characters long, counted after leading and trailing whitespace is removed.
+A violation returns `400`.
+
+A stored value that breaks these rules stays valid while a `PUT` sends it back unchanged, apart from surrounding whitespace.
+This lets you edit other fields of a user that was stored before the rules existed.
+Any other value is checked.
+
+[[user-duty-schedules]]
+== Duty schedules
+
+A duty schedule is a string such as `MoWeFr800-1700`.
+It has these parts:
+
+* One to seven day tokens, each one of `Mo`, `Tu`, `We`, `Th`, `Fr`, `Sa` and `Su`.
+* The begin time, then `-`, then the end time.
+Each time is one to four digits in military format, for example `800` or `2359`.
+
+A time must be between `0` and `2359`, and its last two digits must be at most `59`.
+The begin time must not be after the end time.
+To cover a night, send two schedules, for example `MoTu2000-2359` and `TuWe0-800`.
+A schedule is at most 64 characters long.
+A blank schedule is rejected.
+A violation returns `400`.
+
+A schedule that is already stored on the user is kept as it is when you send it back, even if it breaks these rules.
+Only the schedules that are new to the request are checked.
 
 == Examples using cURL
 
