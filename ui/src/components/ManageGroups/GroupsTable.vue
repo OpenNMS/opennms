@@ -16,9 +16,19 @@
       </div>
     </div>
 
+    <OnmsSearchInput
+      v-if="store.groups.length"
+      v-model="filter"
+      class="groups-filter"
+      placeholder="Filter groups"
+      aria-label="Filter groups"
+      data-test="groups-filter"
+    />
+
     <OnmsTable
       v-if="store.groups.length"
-      :value="store.groups"
+      v-model:first="first"
+      :value="filteredGroups"
       paginator
       dataKey="name"
       :rows="10"
@@ -38,7 +48,7 @@
             value="system"
             severity="secondary"
             class="system-tag"
-            v-tooltip.top="'System group: cannot be deleted or renamed'"
+            v-onms-tooltip.top="'System group: cannot be deleted or renamed'"
           />
         </template>
       </OnmsColumn>
@@ -54,13 +64,7 @@
       </OnmsColumn>
       <OnmsColumn header="Actions">
         <template #body="{ data }">
-          <span
-            v-if="!isPathAddressable(data.name)"
-            class="unaddressable"
-            v-tooltip.top="'This group name contains / \\ or %, which the API cannot address; manage it by editing groups.xml.'"
-            data-test="unaddressable-note"
-          >file-managed</span>
-          <div v-else class="action-container">
+          <div class="action-container">
             <OnmsIconButton
               :icon="Edit"
               :title="`Edit ${data.name}`"
@@ -124,9 +128,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsTable, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
 import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
@@ -138,7 +142,6 @@ import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
-import { isPathAddressable } from '@/lib/adminValidation'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { ManagedGroup, PROTECTED_GROUP_NAMES } from '@/types/groupAdmin'
 
@@ -155,6 +158,22 @@ const groupToDelete = ref<ManagedGroup | null>(null)
 const emptyListContent = {
   msg: 'No groups found.'
 }
+
+const filter = ref('')
+const first = ref(0)
+
+// client-side: name, comments and member ids, ignoring case; the paginator goes back to page 1
+const filteredGroups = computed(() => {
+  const term = (filter.value ?? '').trim().toLowerCase()
+  if (!term) {
+    return store.groups
+  }
+  return store.groups.filter(g => [g.name, g.comments, ...(g.users ?? [])]
+    .some(v => (v ?? '').toLowerCase().includes(term)))
+})
+watch(filter, () => {
+  first.value = 0
+})
 
 const isProtected = (name: string) => PROTECTED_GROUP_NAMES.includes(name)
 
@@ -244,9 +263,10 @@ const cancelDelete = () => {
   color: var(--p-text-muted-color);
 }
 
-.unaddressable {
-  color: var(--p-text-muted-color);
-  font-style: italic;
+.groups-filter {
+  display: block;
+  margin-bottom: 0.75rem;
+  max-width: 24rem;
 }
 
 .action-container {

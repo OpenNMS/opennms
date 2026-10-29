@@ -16,9 +16,19 @@
       </div>
     </div>
 
+    <OnmsSearchInput
+      v-if="store.users.length"
+      v-model="filter"
+      class="users-filter"
+      placeholder="Filter users"
+      aria-label="Filter users"
+      data-test="users-filter"
+    />
+
     <OnmsTable
       v-if="store.users.length"
-      :value="store.users"
+      v-model:first="first"
+      :value="filteredUsers"
       paginator
       dataKey="userId"
       :rows="10"
@@ -32,13 +42,21 @@
         sortable
       >
         <template #body="{ data }">
-          <span class="userId">{{ data.userId }}</span>
+          <span class="user-id">{{ data.userId }}</span>
           <OnmsTag
             v-if="isProtected(data.userId)"
             value="system"
             severity="secondary"
             class="system-tag"
-            v-tooltip.top="'System account: cannot be deleted or renamed'"
+            v-onms-tooltip.top="'System account: cannot be deleted or renamed'"
+          />
+          <OnmsTag
+            v-if="data.readOnly"
+            value="read-only"
+            severity="secondary"
+            class="system-tag"
+            data-test="read-only-tag"
+            v-onms-tooltip.top="'This user cannot change anything in the web console'"
           />
         </template>
       </OnmsColumn>
@@ -56,6 +74,16 @@
         field="pagerEmail"
         header="Pager Email"
       />
+      <OnmsColumn header="Comments">
+        <template #body="{ data }">
+          <span
+            v-if="data.userComments"
+            class="comments"
+            v-onms-tooltip.top="data.userComments"
+            data-test="user-comments"
+          >{{ data.userComments }}</span>
+        </template>
+      </OnmsColumn>
       <OnmsColumn header="Roles">
         <template #body="{ data }">
           <span class="roles">{{ (data.roles ?? []).join(', ') || '--' }}</span>
@@ -63,13 +91,7 @@
       </OnmsColumn>
       <OnmsColumn header="Actions">
         <template #body="{ data }">
-          <span
-            v-if="!isPathAddressable(data.userId)"
-            class="unaddressable"
-            v-tooltip.top="'This user-id contains / \\ or %, which the API cannot address; manage it by editing users.xml.'"
-            data-test="unaddressable-note"
-          >file-managed</span>
-          <div v-else class="action-container">
+          <div class="action-container">
             <OnmsIconButton
               :icon="Edit"
               :title="`Edit ${data.userId}`"
@@ -138,9 +160,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsTable, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
 import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
@@ -153,7 +175,6 @@ import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
-import { isPathAddressable } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser, PROTECTED_USER_IDS } from '@/types/userAdmin'
 
@@ -171,6 +192,22 @@ const userToDelete = ref<ManagedUser | null>(null)
 const emptyListContent = {
   msg: 'No users found.'
 }
+
+const filter = ref('')
+const first = ref(0)
+
+// client-side: id, full name, email and comments, ignoring case; the paginator goes back to page 1
+const filteredUsers = computed(() => {
+  const term = (filter.value ?? '').trim().toLowerCase()
+  if (!term) {
+    return store.users
+  }
+  return store.users.filter(u => [u.userId, u.fullName, u.email, u.userComments]
+    .some(v => (v ?? '').toLowerCase().includes(term)))
+})
+watch(filter, () => {
+  first.value = 0
+})
 
 const isProtected = (userId: string) => PROTECTED_USER_IDS.includes(userId)
 
@@ -267,9 +304,19 @@ const cancelDelete = () => {
   color: var(--p-text-muted-color);
 }
 
-.unaddressable {
-  color: var(--p-text-muted-color);
-  font-style: italic;
+.users-filter {
+  display: block;
+  margin-bottom: 0.75rem;
+  max-width: 24rem;
+}
+
+.comments {
+  display: inline-block;
+  max-width: 16rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
 }
 
 .action-container {
