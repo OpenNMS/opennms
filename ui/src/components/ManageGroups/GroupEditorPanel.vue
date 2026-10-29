@@ -151,6 +151,7 @@ import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import KeyboardArrowDown from '@opennms/onms-ui/icons/hardware/KeyboardArrowDown.vue'
 import KeyboardArrowUp from '@opennms/onms-ui/icons/hardware/KeyboardArrowUp.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
+import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
 import { validateAdminComments, validateAdminName, validateReservedName } from '@/lib/adminValidation'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { ManagedGroup, ManagedGroupCreate, PROTECTED_GROUP_NAMES } from '@/types/groupAdmin'
@@ -166,7 +167,8 @@ const emit = defineEmits<{
 }>()
 
 const store = useGroupAdminStore()
-const { withSpinner, showError, showSuccess } = useActionFeedback()
+const { withSpinner } = useActionFeedback()
+const { reportWrite } = useAdminWriteFeedback()
 
 const name = ref('')
 const comments = ref('')
@@ -239,19 +241,12 @@ const save = async () => {
     const error = await withSpinner(() => props.group
       ? store.updateGroup({ ...props.group, ...fields })
       : store.createGroup(fields))
-    if (error === null) {
-      showSuccess(props.group ? `Group '${fields.name}' updated.` : `Group '${fields.name}' created.`)
-      if (store.reloadError) {
-        showError(store.reloadError)
+    reportWrite(error, props.group ? `Group '${fields.name}' updated.` : `Group '${fields.name}' created.`, store.reloadError, {
+      close: () => emit('close'),
+      banner: (msg) => {
+        errorText.value = msg
       }
-      emit('close')
-    } else if (error.stale) {
-      // the store has already reloaded the list; close so the editor reopens on the fresh object and version
-      showError(error.message)
-      emit('close')
-    } else {
-      errorText.value = error.message
-    }
+    })
   } finally {
     saving.value = false
   }

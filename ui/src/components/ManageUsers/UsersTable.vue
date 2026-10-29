@@ -149,6 +149,7 @@ import UserPasswordDialog from '@/components/ManageUsers/UserPasswordDialog.vue'
 import UserRenameDialog from '@/components/ManageUsers/UserRenameDialog.vue'
 import UsersAbout from '@/components/ManageUsers/UsersAbout.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
+import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
@@ -157,7 +158,8 @@ import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser, PROTECTED_USER_IDS } from '@/types/userAdmin'
 
 const store = useUserAdminStore()
-const { withSpinner, showError, showSuccess } = useActionFeedback()
+const { withSpinner } = useActionFeedback()
+const { reportWrite } = useAdminWriteFeedback()
 
 const showPassword = ref(false)
 const showRename = ref(false)
@@ -216,15 +218,8 @@ const confirmDelete = async () => {
   const user = userToDelete.value
   if (user) {
     const error = await withSpinner(() => store.deleteUser(user.userId, user.version))
-    if (error === null) {
-      showSuccess(`User '${user.userId}' deleted.`)
-      if (store.reloadError) {
-        showError(store.reloadError)
-      }
-    } else {
-      // the server's reason, or the stale message once the store has reloaded the list
-      showError(error.message)
-    }
+    // no banner here: a failure, stale or not, is a snackbar; the confirmation closes either way
+    reportWrite(error, `User '${user.userId}' deleted.`, store.reloadError)
   }
   showDeleteConfirmation.value = false
   userToDelete.value = null

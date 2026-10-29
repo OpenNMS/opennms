@@ -134,6 +134,7 @@ import TableCard from '@/components/Common/TableCard.vue'
 import GroupRenameDialog from '@/components/ManageGroups/GroupRenameDialog.vue'
 import GroupsAbout from '@/components/ManageGroups/GroupsAbout.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
+import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
@@ -142,7 +143,8 @@ import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { ManagedGroup, PROTECTED_GROUP_NAMES } from '@/types/groupAdmin'
 
 const store = useGroupAdminStore()
-const { withSpinner, showError, showSuccess } = useActionFeedback()
+const { withSpinner } = useActionFeedback()
+const { reportWrite } = useAdminWriteFeedback()
 
 const showRename = ref(false)
 const actionGroupName = ref('')
@@ -193,15 +195,8 @@ const confirmDelete = async () => {
   const group = groupToDelete.value
   if (group) {
     const error = await withSpinner(() => store.deleteGroup(group.name, group.version))
-    if (error === null) {
-      showSuccess(`Group '${group.name}' deleted.`)
-      if (store.reloadError) {
-        showError(store.reloadError)
-      }
-    } else {
-      // the server's reason, or the stale message once the store has reloaded the list
-      showError(error.message)
-    }
+    // no banner here: a failure, stale or not, is a snackbar; the confirmation closes either way
+    reportWrite(error, `Group '${group.name}' deleted.`, store.reloadError)
   }
   showDeleteConfirmation.value = false
   groupToDelete.value = null

@@ -212,6 +212,7 @@ import FormField from '@/components/Common/FormField.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
+import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
 import { RESERVED_USER_IDS, validateAdminComments, validateAdminName, validateEmailShape, validateReservedName } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser, ManagedUserCreate } from '@/types/userAdmin'
@@ -237,7 +238,8 @@ const emit = defineEmits<{
 }>()
 
 const store = useUserAdminStore()
-const { withSpinner, showError, showSuccess } = useActionFeedback()
+const { withSpinner } = useActionFeedback()
+const { reportWrite } = useAdminWriteFeedback()
 
 const form = reactive({
   userId: '',
@@ -355,19 +357,12 @@ const save = async () => {
     const error = await withSpinner(() => props.user
       ? store.updateUser({ ...props.user, ...fields })
       : store.createUser({ ...fields, password: form.password }))
-    if (error === null) {
-      showSuccess(props.user ? `User '${fields.userId}' updated.` : `User '${fields.userId}' created.`)
-      if (store.reloadError) {
-        showError(store.reloadError)
+    reportWrite(error, props.user ? `User '${fields.userId}' updated.` : `User '${fields.userId}' created.`, store.reloadError, {
+      close: () => emit('close'),
+      banner: (msg) => {
+        errorText.value = msg
       }
-      emit('close')
-    } else if (error.stale) {
-      // the store has already reloaded the list; close so the editor reopens on the fresh object and version
-      showError(error.message)
-      emit('close')
-    } else {
-      errorText.value = error.message
-    }
+    })
   } finally {
     saving.value = false
   }
