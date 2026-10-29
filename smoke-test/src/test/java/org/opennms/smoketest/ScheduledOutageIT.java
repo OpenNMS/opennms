@@ -72,12 +72,12 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testWeekly() throws Exception {
-        testOption("Weekly", "Every Sunday, From 00:00:00 Through 23:59:59");
+        testOption("Weekly", "Every Sunday, From 00:00:00 Through 23:59:59");
     }
 
     @Test
     public void testMonthly() throws Exception {
-        testOption("Monthly", "Every Sunday, From 00:00:00 Through 23:59:59");
+        testOption("Monthly", "The 1st of Each Month, From 00:00:00 Through 23:59:59");
     }
 
     @Test
@@ -122,8 +122,9 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         // now add the outage
         findElementByXpath("//input[@name='addOutage']").click();
 
-        // check whether the outage text appears correctly...
-        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText(text).apply(driver));
+        // check whether the outage text appears correctly; editoutage.jsp joins its words with &nbsp;
+        final String renderedText = text.replace(' ', '\u00A0');
+        with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> pageContainsText(renderedText).apply(driver));
     }
 
     private void testCharactersInName(String name) throws Exception {
@@ -155,7 +156,8 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
             getDriver().get(getBaseUrlInternal() + "opennms/admin/sched-outages/index.jsp");
 
             final WebDriverWait webDriverWait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
-            final String deleteLink = "//a[@id='" + name + ".delete']";
+            // index.jsp URL-encodes the outage name in the delete link's id
+            final String deleteLink = "//a[@id='" + java.net.URLEncoder.encode(name, java.nio.charset.StandardCharsets.UTF_8) + ".delete']";
 
             try {
                 webDriverWait.until(ExpectedConditions.elementToBeClickable(By.xpath(deleteLink)));
