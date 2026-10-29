@@ -31,6 +31,7 @@
 	"
 %>
 <%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <%!
     public void init() throws ServletException {
@@ -111,14 +112,17 @@
           	if(varbind!=null) {
           		varbindDescription=varbind.getVbname()+"="+varbind.getVbvalue();
           	}
+          	String ruleContent = notif.getRule() == null ? "" : notif.getRule().getContent();
+          	// a JS string in a javascript: URL; also percent-encode, since the browser percent-decodes the URL first
+          	String jsUrlName = Encode.forUriComponent(Encode.forJavaScript(notif.getName()));
       		%>
 	        <tr>
 	        	<td><%=WebSecurityUtils.sanitizeString(notif.getName())%></td>
 	        	<td><%=WebSecurityUtils.sanitizeString(notif.getDescription().orElse(""))%></td>
-	        	<td><%=notif.getRule()%></td>
+	        	<td><%=Encode.forHtml(ruleContent)%></td>
 	        	<td><%=WebSecurityUtils.sanitizeString(notif.getDestinationPath())%></td>
-	        	<td><%=varbindDescription%></td>
-	        	<td><a href="javascript: void submitEditForm('<%=notif.getName()%>');">Edit</a></td>
+	        	<td><%=Encode.forHtml(varbindDescription)%></td>
+	        	<td><a href="javascript: void submitEditForm('<%=jsUrlName%>');">Edit</a></td>
 			</tr>
 <% } %>
 	  </table>

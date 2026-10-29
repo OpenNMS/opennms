@@ -33,6 +33,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -59,9 +60,9 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
 /**
- * Stores markup and quotes in the text fields of a user, a group and an on-call role, and in the name of a
- * destination path, then opens the legacy JSP pages and the Vue pages that show them. No script may run, and the text
- * must appear as text.
+ * Stores markup and quotes in the text fields of a user, a group and an on-call role, in the name of a destination
+ * path and in the fields of an event notification, then opens the legacy JSP pages and the Vue pages that show them.
+ * No script may run, and the text must appear as text.
  *
  * <p>The v2 REST API refuses markup in names and comments. It still accepts it in full names, e-mail addresses and
  * role descriptions, so those objects are created through the API. The names that reach JavaScript strings,
@@ -76,6 +77,7 @@ import io.restassured.response.Response;
 public class UserMgmtXssIT extends AbstractRestIT {
     private static final String BASE = "/opennms/api/v2/";
     private static final String DESTINATION_PATHS = BASE + "notification-config/destination-paths";
+    private static final String EVENT_NOTIFICATIONS = BASE + "notification-config/event-notifications";
 
     private static final String USER = "xss1";
     private static final String GROUP = "xssgroup";
@@ -110,6 +112,21 @@ public class UserMgmtXssIT extends AbstractRestIT {
     private static final String DESTINATION_PATH_PREFIX = "xssp";
     private static final String DESTINATION_PATH = DESTINATION_PATH_PREFIX
             + "&<u>&amp'-(window.__xss=10)-'\"-(window.__xss=11)-\"<b>x";
+
+    // An event notification for notifsForUEI.jsp. Its name breaks out of a JS string (') and an attribute ("), holds a
+    // tag and an ampersand, and carries a percent-encoded quote, which a javascript: URL decodes before the script runs.
+    // The API refuses the % and checks the rule, so the notification is created with the seed name and gets the other
+    // values from the classic wizard, which checks neither. Both names start with the prefix, the path's with the
+    // destination path prefix, so the clean-up finds them.
+    private static final String NOTIFICATION_PREFIX = "xssn";
+    private static final String NOTIFICATION_SEED = NOTIFICATION_PREFIX + "seed";
+    private static final String NOTIFICATION = NOTIFICATION_PREFIX + "');window.__xss=12;//<u>\"&amp%27);window.__xss=13;//";
+    private static final String NOTIFICATION_UEI = "uei.opennms.org/smoketest/xssNotification";
+    private static final String NOTIFICATION_PATH = DESTINATION_PATH_PREFIX + "notification";
+    // the rule is never run: no event has the UEI
+    private static final String NOTIFICATION_RULE = "IPADDR IPLIKE *.*.*.* & (nodelabel == '<img src=x onerror=window.__xss=14>&amp')";
+    private static final String VARBIND_NAME = "<img src=x onerror=window.__xss=15>";
+    private static final String VARBIND_VALUE = "<u>v</u>&amp\"'";
 
     // the shared objects are created by the first test and removed after the last one
     private static boolean fixturesAttempted;
@@ -504,6 +521,107 @@ public class UserMgmtXssIT extends AbstractRestIT {
         } finally {
             deleteDestinationPaths();
         }
+    }
+
+    /**
+     * notifsForUEI.jsp lists the notifications of a UEI. It shows the name, the description, the rule and the varbind of
+     * each as text, and its Edit link holds the name in a javascript: URL. The link must open the wizard on that
+     * notification.
+     */
+    @Test
+    public void testNotificationsForUeiPage() throws Exception {
+        deleteNotifications();
+        deleteDestinationPaths();
+        final Map<String, Object> path = ImmutableMap.of(
+                "name", NOTIFICATION_PATH,
+                "target", new Object[] { ImmutableMap.of("name", "Admin", "command", new String[] { "browser" }) },
+                "escalate", new Object[0]);
+        given().basePath(DESTINATION_PATHS).contentType(ContentType.JSON).body(path).post().then().statusCode(204);
+        try {
+            final Map<String, Object> notification = ImmutableMap.<String, Object>builder()
+                    .put("name", NOTIFICATION_SEED)
+                    .put("status", "off")
+                    .put("uei", NOTIFICATION_UEI)
+                    .put("rule", ImmutableMap.of("value", "IPADDR IPLIKE *.*.*.*"))
+                    .put("destinationPath", NOTIFICATION_PATH)
+                    .put("text-message", "smoke test")
+                    .build();
+            given().basePath(EVENT_NOTIFICATIONS).contentType(ContentType.JSON).body(notification).post().then().statusCode(204);
+
+            // the classic wizard: edit the seed, set the rule, then save it with the other values under the new name
+            open(base() + "admin/notification/noticeWizard/notifsForUEI.jsp?uei=" + NOTIFICATION_UEI);
+            postToNotificationWizard(ImmutableMap.of("sourcePage", "notifsForUEI.jsp", "userAction", "edit", "notice", NOTIFICATION_SEED));
+            postToNotificationWizard(ImmutableMap.of("sourcePage", "validateRule.jsp", "newRule", NOTIFICATION_RULE));
+            postToNotificationWizard(ImmutableMap.<String, String>builder()
+                    .put("sourcePage", "choosePath.jsp")
+                    .put("path", NOTIFICATION_PATH)
+                    .put("name", NOTIFICATION)
+                    .put("description", DESCRIPTION)
+                    .put("textMsg", "smoke test")
+                    .put("varbindName", VARBIND_NAME)
+                    .put("varbindValue", VARBIND_VALUE)
+                    .build());
+            assertEquals(Collections.singletonList(NOTIFICATION), notificationNames());
+
+            // the list: every field is text
+            open(base() + "admin/notification/noticeWizard/notifsForUEI.jsp?uei=" + NOTIFICATION_UEI);
+            final WebElement row = driver.findElement(By.xpath("//tr[td[1]=" + xpathLiteral(NOTIFICATION) + "]"));
+            final List<String> cells = row.findElements(By.tagName("td")).stream()
+                    .map(WebElement::getText).map(String::trim).collect(Collectors.toList());
+            assertEquals(Arrays.asList(NOTIFICATION, DESCRIPTION, NOTIFICATION_RULE, NOTIFICATION_PATH,
+                    VARBIND_NAME + "=" + VARBIND_VALUE, "Edit"), cells);
+            assertNothingRan();
+
+            // the Edit link opens the wizard on this notification, which the wizard names in its heading
+            trapXss();
+            clickToLoad(row.findElement(By.linkText("Edit")));
+            assertTrue("Not on the choose UEIs page: " + driver.getCurrentUrl(), driver.getCurrentUrl().contains("chooseUeis.htm"));
+            assertEquals("Editing notice: " + NOTIFICATION,
+                    driver.findElement(By.xpath("//h2[starts-with(., 'Editing notice: ')]")).getText().trim());
+            assertEquals(NOTIFICATION_UEI, driver.findElement(By.id("regexp")).getAttribute("value"));
+            assertNothingRan();
+        } finally {
+            try {
+                deleteNotifications();
+            } finally {
+                deleteDestinationPaths();
+            }
+        }
+    }
+
+    /** The names of the event notifications of the test. */
+    private static List<String> notificationNames() {
+        final Response response = given().basePath(EVENT_NOTIFICATIONS).accept(ContentType.JSON).get();
+        assertEquals(response.asString(), 200, response.getStatusCode());
+        final List<String> names = response.jsonPath().getList("notification.name", String.class);
+        return names == null ? Collections.emptyList()
+                : names.stream().filter(name -> name.startsWith(NOTIFICATION_PREFIX)).collect(Collectors.toList());
+    }
+
+    /** Deletes the event notifications of the test through the classic wizard; the API cannot address a name with %. */
+    private void deleteNotifications() {
+        for (final String name : notificationNames()) {
+            postToNotificationWizard(ImmutableMap.of("sourcePage", "eventNotices.htm", "userAction", "delete", "notice", name));
+        }
+        assertEquals(Collections.emptyList(), notificationNames());
+    }
+
+    /**
+     * Posts the fields to the notification wizard the way its pages do, and waits for the page it redirects to. The
+     * wizard keeps the notification it edits in the browser's session.
+     */
+    private void postToNotificationWizard(final Map<String, String> fields) {
+        final WebElement page = driver.findElement(By.tagName("html"));
+        ((JavascriptExecutor) driver).executeScript(
+                "var form = document.createElement('form'); form.method = 'post'; form.action = arguments[0];"
+                + " var fields = arguments[1];"
+                + " Object.keys(fields).forEach(function(name) {"
+                + " var input = document.createElement('input'); input.type = 'hidden'; input.name = name; input.value = fields[name];"
+                + " form.appendChild(input); });"
+                + " document.body.appendChild(form); form.submit();",
+                base() + "admin/notification/noticeWizard/notificationWizard", fields);
+        wait.until(ExpectedConditions.stalenessOf(page));
+        waitForLoad();
     }
 
     /** Selects DESTINATION_PATH in the list of destinationPaths.jsp, whose option must show the name as text. */
