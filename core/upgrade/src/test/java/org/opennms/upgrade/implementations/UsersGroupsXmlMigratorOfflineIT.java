@@ -196,6 +196,7 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
     public void testDecodedTextIsCheckedForLength() throws Exception {
         // 256 characters once decoded, but 1280 encoded
         final String encoded = "&amp;".repeat(256);
+        // replace("&", "&amp;") escapes the encoded text for the XML file, so that the parser yields the encoded text
         write("users.xml", "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><users>"
                 + "<user><user-id>eve</user-id><full-name>" + encoded.replace("&", "&amp;") + "</full-name><password>a</password>"
                 + "<contact type=\"email\" info=\"" + encoded.replace("&", "&amp;") + "\"/></user></users></userinfo>");
