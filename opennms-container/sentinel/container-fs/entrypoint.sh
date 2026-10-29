@@ -440,16 +440,25 @@ function applyFeatureBootTemplates() {
     # images, leave the IPC choice to the overlay unless the environment sets one.
     # Overlays are applied after this runs, so their source directories are checked too.
     # The extender reads every non-dot file in featuresBoot.d and does not trim lines.
-    local user_boot_files=(
-      "${FEATURES_BOOT_DIR}"/*
-      "${SENTINEL_OVERLAY_ETC}"/featuresBoot.d/*
-      "${SENTINEL_OVERLAY}"/etc/featuresBoot.d/*
-    )
-    if [[ "${IPC_EXPLICIT}" == "false" ]] && grep -E -q -s '^sentinel-(jms|kafka)([/[:space:]]|$)' "${user_boot_files[@]}"; then
+    # Unmatched globs stay literal, so keep only existing files: otherwise grep's exit
+    # status depends on whether its implementation reports a match or the missing path.
+    local user_boot_files=()
+    local candidate
+    for candidate in \
+      "${FEATURES_BOOT_DIR}"/* \
+      "${SENTINEL_OVERLAY_ETC}"/featuresBoot.d/* \
+      "${SENTINEL_OVERLAY}"/etc/featuresBoot.d/*; do
+      [ -f "${candidate}" ] && user_boot_files+=("${candidate}")
+    done
+    # With no files, grep would read stdin, so only run it when there is something to check.
+    if [[ "${IPC_EXPLICIT}" == "false" ]] && [ ${#user_boot_files[@]} -gt 0 ] \
+        && grep -E -q -s '^sentinel-(jms|kafka)([/[:space:]]|$)' "${user_boot_files[@]}"; then
         echo "[Features] IPC strategy not set and a file in featuresBoot.d installs it, leaving IPC to that file."
     else
-        local conflicting
-        conflicting=$(grep -E -l -s "^!sentinel-${IPC_STRATEGY}([/[:space:]]|$)" "${user_boot_files[@]}" || true)
+        local conflicting=""
+        if [ ${#user_boot_files[@]} -gt 0 ]; then
+            conflicting=$(grep -E -l -s "^!sentinel-${IPC_STRATEGY}([/[:space:]]|$)" "${user_boot_files[@]}" || true)
+        fi
         if [ -n "${conflicting}" ]; then
             echo "[Features][WARN] IPC strategy ${IPC_STRATEGY} is excluded by:" ${conflicting}
         fi
