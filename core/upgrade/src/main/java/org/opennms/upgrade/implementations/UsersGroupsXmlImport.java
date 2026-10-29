@@ -141,6 +141,8 @@ public final class UsersGroupsXmlImport {
         private int m_imported;
         private int m_overwritten;
         private int m_existingSkipped;
+        // entries of the kind that were not written because of a problem; not their skipped contacts, members, ...
+        private int m_invalidSkipped;
     }
 
     /**
@@ -249,10 +251,15 @@ public final class UsersGroupsXmlImport {
         summaryLine(SECURITY_ROLES, names);
         for (final String name : new LinkedHashSet<>(names)) {
             // a built-in role in security-roles.properties is no custom role
-            if (!m_securityRoleIds.containsKey(name) && fits(name, SECURITY_ROLE_NAME_LENGTH, "security role", name, "security-roles.properties")) {
+            if (m_securityRoleIds.containsKey(name)) {
+                continue;
+            }
+            if (fits(name, SECURITY_ROLE_NAME_LENGTH, "security role", name, "security-roles.properties")) {
                 m_securityRoleIds.put(name, insert("INSERT INTO security_roles (id, name, builtin, created_time, last_modified) "
                         + "VALUES (nextval('security_roles_id_seq'), ?, false, NOW(), NOW()) RETURNING id", name));
                 counts(SECURITY_ROLES).m_imported++;
+            } else {
+                invalid(SECURITY_ROLES);
             }
         }
     }
@@ -265,6 +272,7 @@ public final class UsersGroupsXmlImport {
             final String username = user.getUserId();
             if (username == null || username.isEmpty()) {
                 skip("a user without a user-id in users.xml");
+                invalid(USERS);
             } else if (users.put(username, user) != null) {
                 warn("User '%s' is in users.xml more than once; the last one is used", username);
             }
@@ -279,6 +287,7 @@ public final class UsersGroupsXmlImport {
             }
             final String password = user.getPassword() == null ? null : user.getPassword().getEncryptedPassword();
             if (!fits(username, USERNAME_LENGTH, "user", username, "the user name") || !fits(password, PASSWORD_LENGTH, "user", username, "the password")) {
+                invalid(USERS);
                 continue;
             }
             final String fullName = valueOrNull(decode(user.getFullName().orElse(null)), FULL_NAME_LENGTH, "user", username, "full-name");
@@ -357,6 +366,7 @@ public final class UsersGroupsXmlImport {
             final String name = group.getName();
             if (name == null || name.isEmpty()) {
                 skip("a group without a name in groups.xml");
+                invalid(GROUPS);
             } else if (groups.put(name, group) != null) {
                 warn("Group '%s' is in groups.xml more than once; the last one is used", name);
             }
@@ -370,6 +380,7 @@ public final class UsersGroupsXmlImport {
                 continue;
             }
             if (!fits(name, GROUP_NAME_LENGTH, "group", name, "the name")) {
+                invalid(GROUPS);
                 continue;
             }
             final String defaultMap = valueOrNull(group.getDefaultMap().orElse(null), DEFAULT_MAP_LENGTH, "group", name, "default-map");
@@ -412,6 +423,7 @@ public final class UsersGroupsXmlImport {
             final String name = role.getName();
             if (name == null || name.isEmpty()) {
                 skip("an on-call role without a name in groups.xml");
+                invalid(ONCALL_ROLES);
             } else if (roles.put(name, role) != null) {
                 warn("On-call role '%s' is in groups.xml more than once; the last one is used", name);
             }
@@ -427,13 +439,16 @@ public final class UsersGroupsXmlImport {
             final Integer supervisorId = m_userIds.get(role.getSupervisor());
             if (groupId == null) {
                 skip("on-call role '%s': membership group '%s' is not a group", name, role.getMembershipGroup());
+                invalid(ONCALL_ROLES);
                 continue;
             }
             if (supervisorId == null) {
                 skip("on-call role '%s': supervisor '%s' is not a user", name, role.getSupervisor());
+                invalid(ONCALL_ROLES);
                 continue;
             }
             if (!fits(name, ONCALL_ROLE_NAME_LENGTH, "on-call role", name, "the name")) {
+                invalid(ONCALL_ROLES);
                 continue;
             }
             final int roleId;
@@ -555,9 +570,10 @@ public final class UsersGroupsXmlImport {
                 log("%s: %d copied", entry.getKey(), counts.m_imported);
             } else if (SECURITY_ROLES.equals(entry.getKey())) {
                 // one in the database already is left alone, and not listed
-                log("%s: %d imported", entry.getKey(), counts.m_imported);
+                log("%s: %d imported, %d invalid skipped", entry.getKey(), counts.m_imported, counts.m_invalidSkipped);
             } else {
-                log("%s: %d imported, %d overwritten, %d existing skipped", entry.getKey(), counts.m_imported, counts.m_overwritten, counts.m_existingSkipped);
+                log("%s: %d imported, %d overwritten, %d existing skipped, %d invalid skipped", entry.getKey(),
+                        counts.m_imported, counts.m_overwritten, counts.m_existingSkipped, counts.m_invalidSkipped);
             }
         }
         if (m_skipped > 0 || m_warnings > 0) {
@@ -580,6 +596,14 @@ public final class UsersGroupsXmlImport {
     private void summaryLine(final String kind, final List<?> entries) {
         if (m_existing != Existing.NONE_EXPECTED && !entries.isEmpty()) {
             counts(kind);
+        }
+    }
+
+    /** Counts an entry of the kind that was skipped with a message, for the summary of the tool. */
+    private void invalid(final String kind) {
+        // the migrator's summary has no such count, and no line for a kind it copied nothing of
+        if (m_existing != Existing.NONE_EXPECTED) {
+            counts(kind).m_invalidSkipped++;
         }
     }
 

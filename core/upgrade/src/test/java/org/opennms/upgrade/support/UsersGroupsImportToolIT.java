@@ -120,7 +120,7 @@ public class UsersGroupsImportToolIT implements TemporaryDatabaseAware<Temporary
         assertEquals(err(), 0, run(this::unexpected, "--users", m_users.getPath()));
 
         assertTrue(out(), lines(out()).containsAll(List.of("Existing entries skipped:", "  users: admin",
-                "users: 1 imported, 0 overwritten, 1 existing skipped")));
+                "users: 1 imported, 0 overwritten, 1 existing skipped, 0 invalid skipped")));
         assertEquals("Administrator", fullName("admin"));
         assertEquals("Bob", fullName("bob"));
         assertEquals("", err());
@@ -139,7 +139,7 @@ public class UsersGroupsImportToolIT implements TemporaryDatabaseAware<Temporary
         assertTrue(question, question.endsWith(QUESTION_END));
         assertEquals("New Admin", fullName("admin"));
         assertTrue(out(), lines(out()).containsAll(List.of("Existing entries overwritten:", "  users: admin",
-                "users: 1 imported, 1 overwritten, 0 existing skipped")));
+                "users: 1 imported, 1 overwritten, 0 existing skipped, 0 invalid skipped")));
     }
 
     @Test
@@ -185,7 +185,7 @@ public class UsersGroupsImportToolIT implements TemporaryDatabaseAware<Temporary
 
     @Test
     public void testDryRunChangesNothing() throws Exception {
-        writeUsers(user("admin", "New Admin", "ROLE_ADMIN") + user("bob", "Bob", "ROLE_NOPE"));
+        writeUsers(user("admin", "New Admin", "ROLE_ADMIN") + user("bob", "Bob", "ROLE_NOPE") + user("x".repeat(257), "Too Long", "ROLE_USER"));
         writeGroups("<groups><group><name>Admin</name><user>admin</user><user>bob</user></group>"
                 + "<group><name>Dev</name><user>bob</user><user>ghost</user></group></groups>");
         final List<Object> before = snapshot();
@@ -201,7 +201,8 @@ public class UsersGroupsImportToolIT implements TemporaryDatabaseAware<Temporary
         final List<String> report = report(out());
         assertTrue(report.toString(), report.containsAll(List.of("  users: admin", "  groups: Admin",
                 "Skipped user 'bob': security role 'ROLE_NOPE' does not exist", "Skipped group 'Dev': member 'ghost' is not a user",
-                "users: 1 imported, 1 overwritten, 0 existing skipped", "groups: 1 imported, 1 overwritten, 0 existing skipped")));
+                "users: 1 imported, 1 overwritten, 0 existing skipped, 1 invalid skipped", "groups: 1 imported, 1 overwritten, 0 existing skipped, 0 invalid skipped",
+                "Entries skipped: 3, warnings: 0; see the messages above")));
         assertEquals(report, report(dryRun));
     }
 

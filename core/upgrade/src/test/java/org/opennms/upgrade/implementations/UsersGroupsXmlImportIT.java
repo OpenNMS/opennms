@@ -194,8 +194,8 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
             assertEquals(List.of("admin", "bob"), usernames(dev.getMembers()));
             assertEquals(Integer.valueOf(m_admin), dev.getMembers().get(0).getId());
         });
-        assertTrue(m_messages.toString(), m_messages.contains("users: 1 imported, 0 overwritten, 1 existing skipped"));
-        assertTrue(m_messages.toString(), m_messages.contains("groups: 1 imported, 0 overwritten, 1 existing skipped"));
+        assertTrue(m_messages.toString(), m_messages.contains("users: 1 imported, 0 overwritten, 1 existing skipped, 0 invalid skipped"));
+        assertTrue(m_messages.toString(), m_messages.contains("groups: 1 imported, 0 overwritten, 1 existing skipped, 0 invalid skipped"));
         assertFalse(m_messages.toString(), m_messages.stream().anyMatch(m -> m.startsWith("Skipped") || m.startsWith("Warning")));
     }
 
@@ -235,8 +235,8 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
             // a group that is not in the file keeps its members
             assertEquals(List.of("admin"), usernames(m_groupDao.findByName("Admin").getMembers()));
         });
-        assertTrue(m_messages.toString(), m_messages.contains("users: 0 imported, 1 overwritten, 0 existing skipped"));
-        assertTrue(m_messages.toString(), m_messages.contains("groups: 0 imported, 1 overwritten, 0 existing skipped"));
+        assertTrue(m_messages.toString(), m_messages.contains("users: 0 imported, 1 overwritten, 0 existing skipped, 0 invalid skipped"));
+        assertTrue(m_messages.toString(), m_messages.contains("groups: 0 imported, 1 overwritten, 0 existing skipped, 0 invalid skipped"));
     }
 
     @Test
@@ -265,7 +265,7 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
         });
         // the times of the old schedule went with it
         assertEquals(1, count("oncall_schedule_times"));
-        assertTrue(m_messages.toString(), m_messages.contains("on-call roles: 0 imported, 1 overwritten, 0 existing skipped"));
+        assertTrue(m_messages.toString(), m_messages.contains("on-call roles: 0 imported, 1 overwritten, 0 existing skipped, 0 invalid skipped"));
     }
 
     @Test
@@ -369,7 +369,7 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
         m_sessionUtils.withReadOnlyTransaction(() -> assertEquals("Second", m_userDao.findByUsername("jane").getFullName()));
         assertEquals(m_messages.toString(), List.of("Warning: User 'jane' is in users.xml more than once; the last one is used"),
                 m_messages.stream().filter(m -> m.startsWith("Warning")).collect(Collectors.toList()));
-        assertTrue(m_messages.toString(), m_messages.contains("users: 0 imported, 1 overwritten, 0 existing skipped"));
+        assertTrue(m_messages.toString(), m_messages.contains("users: 0 imported, 1 overwritten, 0 existing skipped, 0 invalid skipped"));
     }
 
     @Test
@@ -423,7 +423,7 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
             assertEquals("Night shift", night.getDescription());
             assertEquals(List.of("jane"), night.getSchedules().stream().map(s -> s.getUser().getUsername()).collect(Collectors.toList()));
         });
-        assertTrue(m_messages.toString(), m_messages.contains("on-call roles: 0 imported, 0 overwritten, 1 existing skipped"));
+        assertTrue(m_messages.toString(), m_messages.contains("on-call roles: 0 imported, 0 overwritten, 1 existing skipped, 0 invalid skipped"));
     }
 
     @Test
@@ -433,7 +433,7 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
 
         importFiles(Existing.OVERWRITE, true);
 
-        assertEquals(m_messages.toString(), List.of("custom security roles: 1 imported"),
+        assertEquals(m_messages.toString(), List.of("custom security roles: 1 imported, 0 invalid skipped"),
                 m_messages.stream().filter(m -> m.startsWith("custom security roles")).collect(Collectors.toList()));
     }
 
@@ -518,18 +518,26 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
 
     @Test
     public void testKindWithOnlyInvalidEntriesHasSummary() throws Exception {
-        writeUsers("<user><user-id>" + "x".repeat(257) + "</user-id><password>pw</password></user>");
-        writeGroups("<groups><group><name>Night shift</name><user>jane</user></group></groups>"
+        writeUsers("<user><user-id>" + "x".repeat(257) + "</user-id><password>pw</password></user>"
+                + "<user><user-id>carl</user-id><password>" + "p".repeat(513) + "</password></user>");
+        // ghost is a member, not an entry: it counts only in the total
+        writeGroups("<groups><group><name>Night shift</name><user>jane</user><user>ghost</user></group></groups>"
                 + "<roles><role name=\"Day\" membership-group=\"Nobody\" supervisor=\"admin\">"
                 + "<schedule name=\"jane\" type=\"daily\"><time begins=\"08:00:00\" ends=\"17:00:00\"/></schedule>"
+                + "</role><role name=\"Eve\" membership-group=\"Ops\" supervisor=\"nobody\">"
+                + "<schedule name=\"jane\" type=\"daily\"><time begins=\"17:00:00\" ends=\"23:00:00\"/></schedule>"
                 + "</role></roles>");
+        write(SECURITY_ROLES, "roles=" + "r".repeat(130) + ", extra");
 
         importFiles(Existing.SKIP, true);
 
-        assertTrue(m_messages.toString(), m_messages.contains("users: 0 imported, 0 overwritten, 0 existing skipped"));
-        assertTrue(m_messages.toString(), m_messages.contains("groups: 1 imported, 0 overwritten, 0 existing skipped"));
-        assertTrue(m_messages.toString(), m_messages.contains("on-call roles: 0 imported, 0 overwritten, 0 existing skipped"));
-        assertTrue(m_messages.toString(), m_messages.contains("Entries skipped: 2, warnings: 0; see the messages above"));
+        assertEquals(m_messages.toString(), List.of(
+                "custom security roles: 1 imported, 1 invalid skipped",
+                "users: 0 imported, 0 overwritten, 0 existing skipped, 2 invalid skipped",
+                "groups: 1 imported, 0 overwritten, 0 existing skipped, 0 invalid skipped",
+                "on-call roles: 0 imported, 0 overwritten, 0 existing skipped, 2 invalid skipped",
+                "Entries skipped: 6, warnings: 0; see the messages above"),
+                m_messages.stream().filter(m -> !m.startsWith("Skipped")).collect(Collectors.toList()));
     }
 
     /** The files of {@link #testSkipLeavesExistingEntriesAndListsThem()}. */
