@@ -246,6 +246,7 @@ public final class UsersGroupsXmlImport {
     }
 
     public void securityRoles(final List<String> names) throws SQLException {
+        summaryLine(SECURITY_ROLES, names);
         for (final String name : new LinkedHashSet<>(names)) {
             // a built-in role in security-roles.properties is no custom role
             if (!m_securityRoleIds.containsKey(name) && fits(name, SECURITY_ROLE_NAME_LENGTH, "security role", name, "security-roles.properties")) {
@@ -257,6 +258,7 @@ public final class UsersGroupsXmlImport {
     }
 
     public void users(final List<User> xmlUsers) throws SQLException {
+        summaryLine(USERS, xmlUsers);
         // users.xml can repeat a user; UserManager keeps the last one
         final Map<String, User> users = new LinkedHashMap<>();
         for (final User user : xmlUsers) {
@@ -348,6 +350,7 @@ public final class UsersGroupsXmlImport {
     }
 
     public void groups(final List<Group> xmlGroups) throws SQLException {
+        summaryLine(GROUPS, xmlGroups);
         // groups.xml can repeat a group; GroupManager keeps the last one
         final Map<String, Group> groups = new LinkedHashMap<>();
         for (final Group group : xmlGroups) {
@@ -402,6 +405,7 @@ public final class UsersGroupsXmlImport {
     }
 
     public void onCallRoles(final List<Role> xmlRoles) throws SQLException {
+        summaryLine(ONCALL_ROLES, xmlRoles);
         // groups.xml can repeat a role; GroupManager keeps the last one
         final Map<String, Role> roles = new LinkedHashMap<>();
         for (final Role role : xmlRoles) {
@@ -567,6 +571,16 @@ public final class UsersGroupsXmlImport {
 
     private Counts counts(final String kind) {
         return m_counts.computeIfAbsent(kind, k -> new Counts());
+    }
+
+    /**
+     * Gives a kind of the files its line in the summary of the tool, also when all of its entries are skipped.
+     * The migrator's summary keeps only the kinds it copied.
+     */
+    private void summaryLine(final String kind, final List<?> entries) {
+        if (m_existing != Existing.NONE_EXPECTED && !entries.isEmpty()) {
+            counts(kind);
+        }
     }
 
     /**

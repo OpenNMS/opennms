@@ -36,8 +36,8 @@ public final class DatabasePasswords {
     }
 
     /**
-     * Takes the usermgmt_version locks of users and groups, in that order like every writer, before the update, so
-     * that it cannot deadlock against the managers.
+     * Takes the usermgmt_version locks ({@link #lockAll(Connection)}) before the update, so that it cannot deadlock
+     * against the managers.
      *
      * @throws IllegalArgumentException if no user has exactly this name
      */
@@ -47,8 +47,7 @@ public final class DatabasePasswords {
             final boolean autoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
             try {
-                lock(connection, "users");
-                lock(connection, "groups");
+                lockAll(connection);
                 try (final PreparedStatement statement = connection.prepareStatement(
                         "UPDATE users SET password_hash = ?, password_salted = true, last_modified = NOW() WHERE username = ?")) {
                     statement.setString(1, hash);
@@ -65,6 +64,16 @@ public final class DatabasePasswords {
                 connection.setAutoCommit(autoCommit);
             }
         }
+    }
+
+    /**
+     * Locks the usermgmt_version rows of users, then groups, the order the managers take them in, so that a writer
+     * outside OpenNMS cannot deadlock against them. The caller has turned off auto-commit; the locks are held until
+     * its transaction ends.
+     */
+    public static void lockAll(final Connection connection) throws SQLException {
+        lock(connection, "users");
+        lock(connection, "groups");
     }
 
     private static void lock(final Connection connection, final String name) throws SQLException {

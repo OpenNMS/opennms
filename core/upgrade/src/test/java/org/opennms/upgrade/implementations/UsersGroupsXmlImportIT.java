@@ -503,6 +503,35 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
         assertFalse(m_messages.toString(), m_messages.stream().anyMatch(m -> m.startsWith("Warning")));
     }
 
+    @Test
+    public void testNewAdminWithoutRoleAdminIsNoProblem() throws Exception {
+        // the rule for admin is about an admin that the import overwrites; jane keeps an administrator
+        deleteAdmin();
+        grantRoleAdmin(m_jane);
+        writeUsers("<user><user-id>admin</user-id><password>adminpw</password><role>ROLE_USER</role></user>");
+
+        importFiles(Existing.OVERWRITE, true);
+
+        assertEquals(List.of(), m_problems);
+        m_sessionUtils.withReadOnlyTransaction(() -> assertEquals(List.of(SecurityRoles.ROLE_USER), roleNames(m_userDao.findByUsername("admin"))));
+    }
+
+    @Test
+    public void testKindWithOnlyInvalidEntriesHasSummary() throws Exception {
+        writeUsers("<user><user-id>" + "x".repeat(257) + "</user-id><password>pw</password></user>");
+        writeGroups("<groups><group><name>Night shift</name><user>jane</user></group></groups>"
+                + "<roles><role name=\"Day\" membership-group=\"Nobody\" supervisor=\"admin\">"
+                + "<schedule name=\"jane\" type=\"daily\"><time begins=\"08:00:00\" ends=\"17:00:00\"/></schedule>"
+                + "</role></roles>");
+
+        importFiles(Existing.SKIP, true);
+
+        assertTrue(m_messages.toString(), m_messages.contains("users: 0 imported, 0 overwritten, 0 existing skipped"));
+        assertTrue(m_messages.toString(), m_messages.contains("groups: 1 imported, 0 overwritten, 0 existing skipped"));
+        assertTrue(m_messages.toString(), m_messages.contains("on-call roles: 0 imported, 0 overwritten, 0 existing skipped"));
+        assertTrue(m_messages.toString(), m_messages.contains("Entries skipped: 2, warnings: 0; see the messages above"));
+    }
+
     /** The files of {@link #testSkipLeavesExistingEntriesAndListsThem()}. */
     private void writeSkipFiles() throws Exception {
         writeUsers("<user><user-id>admin</user-id><full-name>Someone Else</full-name><password>other</password></user>"
