@@ -26,18 +26,15 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.features.eifadapter.EifParser.parseEifSlots;
 import static org.opennms.features.eifadapter.EifParser.translateEifToOpenNMS;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.mock.MockMonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.model.OnmsNode;
@@ -45,7 +42,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.xbill.DNS.Address;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -62,21 +58,16 @@ public class EifTranslatorTest {
     private MockNodeDao m_nodeDao;
 
     @Before
-    public void setUp() throws UnknownHostException {
+    public void setUp() {
         // Enable DEBUG logging
         MockLogAppender.setupLogging();
+        // No hostname resolves unless a test says so, so results do not depend on the host's DNS.
+        EifParser.hostnameResolver = hostname -> "";
 
         OnmsNode fqhostnameNode = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost.localdomain");
         OnmsNode shortnameNode = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost");
         OnmsNode originNode = new OnmsNode(m_locationDao.getDefaultLocation(), "10.0.0.7");
-        OnmsNode localhostIpNode = null;
-        try {
-            final InetAddress localAddr = Address.getByName("localhost");
-            System.err.println("localAddr=" + localAddr);
-            localhostIpNode = new OnmsNode(m_locationDao.getDefaultLocation(), InetAddressUtils.str(localAddr));
-        } catch (final Exception e) {
-            localhostIpNode = new OnmsNode(m_locationDao.getDefaultLocation(), "127.0.0.1");
-        }
+        OnmsNode localhostIpNode = new OnmsNode(m_locationDao.getDefaultLocation(), "127.0.0.1");
 
         fqhostnameNode.setForeignSource("eifTestSource");
         fqhostnameNode.setForeignId("eifTestId");
@@ -96,6 +87,11 @@ public class EifTranslatorTest {
         m_nodeDao.saveOrUpdate(originNode);
         m_nodeDao.saveOrUpdate(localhostIpNode);
         m_nodeDao.flush();
+    }
+
+    @After
+    public void tearDown() {
+        EifParser.hostnameResolver = EifParser::resolveHostname;
     }
 
     @Test
@@ -215,19 +211,31 @@ public class EifTranslatorTest {
     }
 
     @Test
-    @Ignore
     public void testCanConnectEifEventToNodeWithHostname() {
-        String incomingEif = "<START>>......................LL.....EIF_EVENT_TYPE_A;cms_hostname='htems_host';"
+        EifParser.hostnameResolver = hostname -> "localhost";
+        assertEquals(2L, (long) translateEifToOpenNMS(m_nodeDao, new StringBuilder(eifWithHostname("localhost"))).get(0).getNodeid());
+    }
+
+    @Test
+    public void testCanConnectEifEventToNodeWithShortNameOfResolvedHostname() {
+        EifParser.hostnameResolver = hostname -> "localhost.example.org";
+        assertEquals(2L, (long) translateEifToOpenNMS(m_nodeDao, new StringBuilder(eifWithHostname("localhost"))).get(0).getNodeid());
+    }
+
+    @Test
+    public void testFallsBackToOriginWhenHostnameDoesNotResolve() {
+        EifParser.hostnameResolver = hostname -> "";
+        assertEquals(4L, (long) translateEifToOpenNMS(m_nodeDao, new StringBuilder(eifWithHostname("localhost"))).get(0).getNodeid());
+    }
+
+    private static String eifWithHostname(String hostname) {
+        return "<START>>......................LL.....EIF_EVENT_TYPE_A;cms_hostname='htems_host';"
                 +"cms_port='3661';integration_type='N';master_reset_flag='';appl_label='';"
                 +"situation_name='DummyMonitoringSituation';situation_type='S';situation_origin='dummyHost:08';"
                 +"situation_time='07/22/2016 14:05:36.000';situation_status='Y';situation_thrunode='REMOTE_teps_host';"
                 +"situation_displayitem='';source='EIF_TEST';sub_source='dummyHost:08';"
-                +"fqhostname='';hostname='localhost';origin='127.0.0.1';adapter_host='dummyHost';"
+                +"fqhostname='';hostname='"+hostname+"';origin='127.0.0.1';adapter_host='dummyHost';"
                 +"date='07/22/2016';severity='WARNING';msg='My Dummy Event Message';situation_eventdata='~';END";
-        Event e = translateEifToOpenNMS(m_nodeDao, new StringBuilder(incomingEif)).get(0);
-        // nodeId will be 4 if 'localhost' fails to resolve, and we fall back to using the IP address.
-        assertTrue("NodeId " + e.getNodeid() + " must be either 2 or 4",
-                e.getNodeid() == 2 || e.getNodeid() == 4);
     }
 
     @Test
