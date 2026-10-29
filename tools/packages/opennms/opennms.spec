@@ -486,9 +486,10 @@ rm -rf %{buildroot}%{instprefix}/logs
 
 ### output.log holds the stdout of a non-systemd "opennms start"; log4j2 rotates the other logs.
 ### The JVM keeps the file open and cannot reopen it, hence copytruncate.
+### The path goes through the install prefix's logs symlink so it still matches after --relocate.
 install -d -m 755 %{buildroot}%{_sysconfdir}/logrotate.d
 cat > %{buildroot}%{_sysconfdir}/logrotate.d/%{name} << END
-%{logdir}/output.log {
+%{instprefix}/logs/output.log {
 	su opennms opennms
 	size 100M
 	rotate 4
