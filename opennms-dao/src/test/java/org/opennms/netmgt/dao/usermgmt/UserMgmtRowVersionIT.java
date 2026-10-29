@@ -654,4 +654,72 @@ public class UserMgmtRowVersionIT implements InitializingBean {
 
         assertEquals(before, version(VersionedTable.groups, group));
     }
+
+    @Test
+    public void testNoOpCategoryAuthorizationUpdateKeepsGroupVersion() {
+        final int group = createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        final int before = version(VersionedTable.groups, group);
+
+        assertEquals(1, update("UPDATE category_group SET groupid = groupid WHERE categoryid = ? AND groupid = ?", category, "ops"));
+
+        assertEquals(before, version(VersionedTable.groups, group));
+    }
+
+    @Test
+    public void testCategoryDeleteTakesTheGroupsLockBeforeAnyGroupRowLock() throws Exception {
+        // B holds the groups counter. A deletes a category that authorizes ops: its cascade must wait for the counter
+        // before it locks the ops row or the authorization row, as lockAll() writers take the counter before the rows.
+        // While A waits, C must be able to lock both; with the rows locked first, C times out and A could deadlock.
+        createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        final ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            final AtomicReference<String> groupRow = new AtomicReference<>();
+            final AtomicReference<String> authorizationRow = new AtomicReference<>();
+            final Future<Integer> delete = m_tx.execute(b -> {
+                m_sessionFactory.getCurrentSession().doWork(connection -> {
+                    try (java.sql.Statement statement = connection.createStatement()) {
+                        statement.executeQuery("SELECT version FROM usermgmt_version WHERE name = 'groups' FOR UPDATE").close();
+                    } catch (final java.sql.SQLException e) {
+                        throw new IllegalStateException(e);
+                    }
+                });
+                final Future<Integer> a = executor.submit(() -> update("DELETE FROM categories WHERE categoryid = ?", category));
+                try {
+                    waitUntilAnotherBackendWaitsForALock();
+                    executor.submit(() -> groupRow.set(tryLock("SELECT 1 FROM groups WHERE name = 'ops' FOR UPDATE"))).get(30, TimeUnit.SECONDS);
+                    executor.submit(() -> authorizationRow.set(tryLock("SELECT 1 FROM category_group WHERE groupid = 'ops' FOR UPDATE"))).get(30, TimeUnit.SECONDS);
+                } catch (final Exception e) {
+                    a.cancel(true);
+                    throw new IllegalStateException(e);
+                }
+                return a; // B commits on return and releases the groups counter
+            });
+            assertEquals(1, delete.get(30, TimeUnit.SECONDS).intValue());
+            assertEquals("ops row while the category delete waits for the groups counter", "not blocked", groupRow.get());
+            assertEquals("authorization row while the category delete waits for the groups counter", "not blocked", authorizationRow.get());
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    /** Runs the locking query in a new transaction with a short lock_timeout: "not blocked", or the SQLState of the failure. */
+    private String tryLock(final String sql) {
+        return m_tx.execute(status -> {
+            final AtomicReference<String> result = new AtomicReference<>();
+            m_sessionFactory.getCurrentSession().doWork(connection -> {
+                try (java.sql.Statement statement = connection.createStatement()) {
+                    statement.execute("SET LOCAL lock_timeout = '500ms'");
+                    statement.executeQuery(sql).close();
+                    result.set("not blocked");
+                } catch (final java.sql.SQLException e) {
+                    result.set(e.getSQLState());
+                }
+            });
+            return result.get();
+        });
+    }
 }
