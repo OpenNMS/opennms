@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
@@ -45,9 +44,6 @@ import com.google.common.net.InetAddresses;
 public class EifParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(EifParser.class);
-
-    // Reverse DNS for the hostname slot; replaced in tests so they do not depend on the host's resolver.
-    static Function<String, String> hostnameResolver = EifParser::resolveHostname;
 
     enum EifSeverity {
         FATAL, CRITICAL, MINOR, WARNING, OK, INFO, HARMLESS, UNKNOWN;
@@ -160,7 +156,12 @@ public class EifParser {
         } else if (!"".equals(eifSlotMap.get("hostname")) && eifSlotMap.get("hostname") != null) {
             String hostname = eifSlotMap.get("hostname");
             LOG.debug("Trying hostname for fqdn: {}",hostname);
-            fqdn = hostnameResolver.apply(hostname);
+            try {
+                fqdn = Address.getHostName(InetAddress.getByName(hostname));
+                LOG.debug("Using hostname for fqdn: {}",fqdn);
+            } catch (UnknownHostException uhe) {
+                LOG.error("UnknownHostException while resolving hostname {}",hostname);
+            }
         }
         // if a FQDN can't be found using fqhostname or hostname, fall back to the origin IP address
         if ("".equals(fqdn) && !"".equals(eifSlotMap.get("origin")) && eifSlotMap.get("origin") != null) {
@@ -205,16 +206,5 @@ public class EifParser {
         }
 
         return nodeId;
-    }
-
-    static String resolveHostname(String hostname) {
-        try {
-            String fqdn = Address.getHostName(InetAddress.getByName(hostname));
-            LOG.debug("Using hostname for fqdn: {}",fqdn);
-            return fqdn;
-        } catch (UnknownHostException uhe) {
-            LOG.error("UnknownHostException while resolving hostname {}",hostname);
-            return "";
-        }
     }
 }
