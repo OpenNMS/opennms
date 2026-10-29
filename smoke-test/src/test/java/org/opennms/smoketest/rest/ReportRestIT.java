@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
 import io.restassured.http.ContentType;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class ReportRestIT extends AbstractRestIT {
     private static final Logger LOG = LoggerFactory.getLogger(ReportRestIT.class);
 

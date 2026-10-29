@@ -31,8 +31,7 @@ import org.opennms.smoketest.stacks.IpcStrategy;
  * 
  * @author Seth
  */
-//@Category(MinionTests.class)
-@Category(org.opennms.smoketest.junit.FlakyTests.class)
+@Category(org.opennms.smoketest.junit.MinionTests.class)
 public class MinionHeartbeatOutageKafkaIT extends MinionHeartbeatOutageIT {
 
     @Override

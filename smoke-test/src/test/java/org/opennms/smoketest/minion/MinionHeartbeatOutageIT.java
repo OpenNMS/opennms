@@ -57,8 +57,7 @@ import org.opennms.smoketest.utils.TestContainerUtils;
  * 
  * @author Seth
  */
-@Category(org.opennms.smoketest.junit.FlakyTests.class)
-//@Category(org.opennms.smoketest.junit.MinionTests.class)
+@Category(org.opennms.smoketest.junit.MinionTests.class)
 public class MinionHeartbeatOutageIT {
 
     @Rule
