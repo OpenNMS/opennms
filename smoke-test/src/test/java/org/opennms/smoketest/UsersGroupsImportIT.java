@@ -96,6 +96,8 @@ public class UsersGroupsImportIT {
         // the import creates the user and the group, with its members, and skips the existing admin
         final ExecResult imported = importUsersGroups("--users", USERS_FILE, "--groups", GROUPS_FILE);
         assertEquals(imported.getStdout() + imported.getStderr(), 0, imported.getExitCode());
+        assertThat(imported.getStdout(), matchesPattern("(?s)(.*\\n)?Existing entries skipped:\\n {2}users: admin\\n.*"));
+        assertThat(imported.getStdout(), containsString("users: 1 imported, 0 overwritten, 1 existing skipped, 0 invalid skipped"));
         assertThat(imported.getStdout(), containsString("The import was committed."));
         final Response user = request("users/" + USER).get();
         assertEquals(200, user.getStatus());
@@ -106,10 +108,10 @@ public class UsersGroupsImportIT {
         JSON.readTree(group.readEntity(String.class)).get("users").forEach((JsonNode member) -> members.add(member.asText()));
         assertThat(members, hasItems(USER, "admin"));
 
-        // the overwrite of the entries that exist now needs a confirmation, and execInContainer has no console
+        // the overwrite of the entries that exist now needs a confirmation, and execInContainer has no terminal
         final ExecResult overwrite = importUsersGroups("--overwrite", "--users", USERS_FILE, "--groups", GROUPS_FILE);
         assertEquals(overwrite.getStdout() + overwrite.getStderr(), 3, overwrite.getExitCode());
-        assertThat(overwrite.getStderr(), containsString("There is no console to confirm the overwrite"));
+        assertThat(overwrite.getStderr(), containsString("Standard input or output is not a terminal"));
     }
 
     private ExecResult importUsersGroups(final String... arguments) throws Exception {

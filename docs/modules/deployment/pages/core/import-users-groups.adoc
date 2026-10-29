@@ -14,10 +14,22 @@ Use it in these cases:
 
 {page-component-title} can be running while you run the script.
 The script imports into the database only.
-It stops with an error if `etc/opennms.properties` sets `org.opennms.usermgmt.store=xml`.
+It stops with an error if `org.opennms.usermgmt.store=xml` is set.
+The script reads this setting from `etc/opennms.properties` and from the `.properties` files in `etc/opennms.properties.d/`.
 
 Run the script as the user that runs {page-component-title}.
 The script starts itself as that user when you run it as `root`.
+
+== Files
+
+The script reads the files as the user that runs {page-component-title}.
+That user must be able to read them.
+This also applies when you run the script as `root`.
+A file that only `root` can read, for example a file in `/root`, cannot be read.
+
+The files contain password hashes.
+Make them readable only by the user that runs {page-component-title}.
+Delete them after the import.
 
 == Usage
 
@@ -84,6 +96,8 @@ The script does not list it.
 
 The import is one transaction.
 If it fails, the script writes nothing.
+If the commit itself fails, the script cannot tell whether the import was written.
+Its error message says so.
 
 == Existing entries
 
@@ -106,6 +120,12 @@ Schedules are replaced.
 The memberships of a user in groups are not part of the user.
 They change only when you overwrite a group.
 
+NOTE: RTC sends availability data to the web UI as the user `rtc`.
+It uses the password in the property `opennms.rtc-client.http-post.password`.
+If you overwrite `rtc` with a different password, the web UI stops receiving this data.
+Set the property to the new password in a `.properties` file in `etc/opennms.properties.d/`.
+Then restart {page-component-title}.
+
 === Confirmation
 
 With `--overwrite`, the script lists the existing entries of your files, grouped by kind.
@@ -120,8 +140,10 @@ Any other answer stops the script with exit code `3`.
 The script asks nothing when no entry exists already.
 
 The script does not ask when you add `--quiet` or `--dry-run`.
-If the script has no console, for example when its input is a pipe, it cannot ask.
-It stops with exit code `3`.
+The script can ask only when its standard input and standard output are a terminal.
+If either is piped or redirected, it cannot ask.
+For example, it cannot ask when you pipe its output to `tee`.
+It then stops with exit code `3`.
 Add `--quiet` to overwrite in a script.
 
 The script checks the existing entries again inside the transaction.
@@ -134,6 +156,10 @@ The script applies the same rules as the REST API:
 
 * The `admin` user must keep the role `ROLE_ADMIN`.
 * At least one user must keep the role `ROLE_ADMIN`.
+
+The second rule applies only when a user held `ROLE_ADMIN` before the import.
+If no user held it, the script does not stop.
+It prints a warning that no user holds `ROLE_ADMIN`.
 
 An overwrite can break these rules.
 For example, the `admin` user in your file might not have `ROLE_ADMIN`.
@@ -157,11 +183,16 @@ The script cannot tell which kind of file it reads, so you choose.
 
 The script prints to standard output:
 
+* A warning for each file that holds no entries.
+Such a file is most likely the wrong file.
 * Each skipped entry with its reason, and each warning.
 * The existing entries that it skipped, or overwrote with `--overwrite`.
+An existing entry that fails a check is not overwritten and not listed here.
+The reason is in the skipped entries.
 * A summary for each kind.
 
 It prints errors to standard error.
+The script prints the result of the import after the transaction has ended.
 
 .Example summary
 ----
@@ -187,6 +218,7 @@ The script also returns `0` when it skipped entries.
 | `1`
 | An error.
 The script wrote nothing.
+If the commit itself failed, the import may or may not be written.
 
 | `2`
 | Bad arguments.
@@ -197,13 +229,22 @@ The script wrote nothing.
 
 == Example
 
+The examples use the files in a directory `/tmp/import`.
+Only the user `opennms` can read that directory.
+
+[source, shell]
+----
+sudo install -d -m 700 -o opennms /tmp/import
+sudo install -m 600 -o opennms users.xml groups.xml security-roles.properties /tmp/import
+----
+
 Run a dry run first.
 It shows what the import would do and writes nothing.
 
 [source, shell]
 ----
 sudo -u opennms $\{OPENNMS_HOME}/bin/import-users-groups --dry-run \
-  --users /tmp/users.xml --groups /tmp/groups.xml --security-roles /tmp/security-roles.properties
+  --users /tmp/import/users.xml --groups /tmp/import/groups.xml --security-roles /tmp/import/security-roles.properties
 ----
 
 Read the output.
@@ -213,7 +254,7 @@ Existing entries are skipped.
 [source, shell]
 ----
 sudo -u opennms $\{OPENNMS_HOME}/bin/import-users-groups \
-  --users /tmp/users.xml --groups /tmp/groups.xml --security-roles /tmp/security-roles.properties
+  --users /tmp/import/users.xml --groups /tmp/import/groups.xml --security-roles /tmp/import/security-roles.properties
 ----
 
 To replace the existing entries, add `--overwrite`.
@@ -222,5 +263,12 @@ The script asks for confirmation.
 [source, shell]
 ----
 sudo -u opennms $\{OPENNMS_HOME}/bin/import-users-groups --overwrite \
-  --users /tmp/users.xml --groups /tmp/groups.xml --security-roles /tmp/security-roles.properties
+  --users /tmp/import/users.xml --groups /tmp/import/groups.xml --security-roles /tmp/import/security-roles.properties
+----
+
+Delete the files when you are done.
+
+[source, shell]
+----
+sudo rm -r /tmp/import
 ----
