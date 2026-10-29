@@ -112,6 +112,7 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
     private SessionUtils m_sessionUtils;
 
     private final List<String> m_messages = new ArrayList<>();
+    private List<String> m_problems;
 
     private JdbcTemplate m_jdbc;
     private String m_previousHome;
@@ -385,6 +386,123 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
         assertEquals(xmlImport.existingEntries(), found);
     }
 
+    @Test
+    public void testOverwriteKeepsReferencesFromEntriesNotInTheFile() throws Exception {
+        writeUsers("<user><user-id>jane</user-id><full-name>Jane Smith</full-name><password>newpw</password></user>");
+
+        final UsersGroupsXmlImport xmlImport = importFiles(Existing.OVERWRITE, true);
+
+        assertEquals(Map.of("users", List.of("jane")), xmlImport.existingEntries());
+        m_sessionUtils.withReadOnlyTransaction(() -> {
+            assertEquals("Jane Smith", m_userDao.findByUsername("jane").getFullName());
+            // Ops and Night are not in the file, so they keep jane
+            assertEquals(List.of("jane"), usernames(m_groupDao.findByName("Ops").getMembers()));
+            assertEquals(List.of("jane"), m_onCallRoleDao.findByName("Night").getSchedules().stream()
+                    .map(s -> s.getUser().getUsername()).collect(Collectors.toList()));
+        });
+    }
+
+    @Test
+    public void testSkipLeavesExistingOnCallRole() throws Exception {
+        writeGroups("<roles><role name=\"Night\" membership-group=\"Ops\" supervisor=\"admin\" description=\"Nights\">"
+                + "<schedule name=\"admin\" type=\"daily\"><time begins=\"00:00:00\" ends=\"06:00:00\"/></schedule>"
+                + "</role></roles>");
+        final int nightVersion = version("oncall_roles", m_night);
+        final Map<String, List<String>> found;
+        try (final Connection connection = DataSourceFactory.getInstance().getConnection()) {
+            found = UsersGroupsXmlImport.findExisting(connection, users(), groups(), onCallRoles());
+        }
+
+        final UsersGroupsXmlImport xmlImport = importFiles(Existing.SKIP, true);
+
+        assertEquals(Map.of("on-call roles", List.of("Night")), found);
+        assertEquals(found, xmlImport.existingEntries());
+        assertEquals(nightVersion, version("oncall_roles", m_night));
+        m_sessionUtils.withReadOnlyTransaction(() -> {
+            final OnCallRole night = m_onCallRoleDao.findByName("Night");
+            assertEquals("Night shift", night.getDescription());
+            assertEquals(List.of("jane"), night.getSchedules().stream().map(s -> s.getUser().getUsername()).collect(Collectors.toList()));
+        });
+        assertTrue(m_messages.toString(), m_messages.contains("on-call roles: 0 imported, 0 overwritten, 1 existing skipped"));
+    }
+
+    @Test
+    public void testSecurityRolesSummaryHasOnlyImported() throws Exception {
+        m_jdbc.update("INSERT INTO security_roles (id, name, builtin) VALUES (nextval('security_roles_id_seq'), 'ROLE_CUSTOM', false)");
+        write(SECURITY_ROLES, "roles=custom, extra, admin");
+
+        importFiles(Existing.OVERWRITE, true);
+
+        assertEquals(m_messages.toString(), List.of("custom security roles: 1 imported"),
+                m_messages.stream().filter(m -> m.startsWith("custom security roles")).collect(Collectors.toList()));
+    }
+
+    @Test
+    public void testOverwriteTakingRoleAdminFromAdminIsAProblem() throws Exception {
+        // jane stays an administrator, so only the rule for admin is broken
+        grantRoleAdmin(m_jane);
+        writeUsers("<user><user-id>admin</user-id><password>adminpw</password><role>ROLE_USER</role></user>");
+
+        importFiles(Existing.OVERWRITE, true);
+
+        assertEquals(List.of("The admin user must keep the ROLE_ADMIN role."), m_problems);
+    }
+
+    @Test
+    public void testOverwriteLeavingNoAdministratorIsAProblem() throws Exception {
+        deleteAdmin();
+        grantRoleAdmin(m_jane);
+        writeUsers("<user><user-id>jane</user-id><password>janepw</password><role>ROLE_USER</role></user>");
+
+        importFiles(Existing.OVERWRITE, true);
+
+        assertEquals(List.of("At least one user must keep the ROLE_ADMIN role, but the import takes it from all who hold it: jane"), m_problems);
+    }
+
+    @Test
+    public void testUnknownRoleForAdminIsAProblem() throws Exception {
+        writeUsers("<user><user-id>admin</user-id><password>adminpw</password><role>ROLE_NOPE</role></user>");
+
+        importFiles(Existing.OVERWRITE, true);
+
+        assertTrue(m_messages.toString(), m_messages.contains("Skipped user 'admin': security role 'ROLE_NOPE' does not exist"));
+        assertEquals(List.of("The admin user must keep the ROLE_ADMIN role.",
+                "At least one user must keep the ROLE_ADMIN role, but the import takes it from all who hold it: admin"), m_problems);
+    }
+
+    @Test
+    public void testSkipNeverHasProblems() throws Exception {
+        writeUsers("<user><user-id>admin</user-id><password>adminpw</password><role>ROLE_USER</role></user>");
+
+        importFiles(Existing.SKIP, true);
+
+        assertEquals(List.of(), m_problems);
+        m_sessionUtils.withReadOnlyTransaction(() -> assertEquals(List.of(SecurityRoles.ROLE_ADMIN), roleNames(m_userDao.findByUsername("admin"))));
+    }
+
+    @Test
+    public void testNoAdministratorBeforeOnlyWarns() throws Exception {
+        deleteAdmin();
+        assertEquals(0, id("SELECT COUNT(*) FROM user_security_roles r JOIN security_roles s ON s.id = r.role_id WHERE s.name = ?", SecurityRoles.ROLE_ADMIN));
+        writeUsers("<user><user-id>bob</user-id><password>bobpw</password></user>");
+
+        importFiles(Existing.OVERWRITE, true);
+
+        assertEquals(List.of(), m_problems);
+        assertTrue(m_messages.toString(), m_messages.contains("Warning: No user holds ROLE_ADMIN."));
+    }
+
+    @Test
+    public void testNewAdministratorAfterNoneBeforeDoesNotWarn() throws Exception {
+        deleteAdmin();
+        writeUsers("<user><user-id>bob</user-id><password>bobpw</password><role>ROLE_ADMIN</role></user>");
+
+        importFiles(Existing.OVERWRITE, true);
+
+        assertEquals(List.of(), m_problems);
+        assertFalse(m_messages.toString(), m_messages.stream().anyMatch(m -> m.startsWith("Warning")));
+    }
+
     /** The files of {@link #testSkipLeavesExistingEntriesAndListsThem()}. */
     private void writeSkipFiles() throws Exception {
         writeUsers("<user><user-id>admin</user-id><full-name>Someone Else</full-name><password>other</password></user>"
@@ -393,7 +511,7 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
                 + "<group><name>Dev</name><user>admin</user><user>bob</user></group></groups>");
     }
 
-    /** Imports the files in one transaction, which it commits. */
+    /** Imports the files in one transaction, which it commits, and keeps the administrator problems in m_problems. */
     private UsersGroupsXmlImport importFiles(final Existing existing, final boolean decode) throws Exception {
         m_messages.clear();
         final List<String> securityRoles = UsersGroupsXmlImport.readSecurityRoles(new File(m_files, SECURITY_ROLES));
@@ -408,6 +526,7 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
             xmlImport.groups(groups);
             xmlImport.onCallRoles(onCallRoles);
             xmlImport.logSummary();
+            m_problems = xmlImport.administratorProblems();
             connection.commit();
             connection.setAutoCommit(true);
             return xmlImport;
@@ -443,6 +562,17 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
 
     private static void write(final File file, final String content) throws Exception {
         Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private void grantRoleAdmin(final int userId) {
+        m_jdbc.update("INSERT INTO user_security_roles (user_id, role_id) SELECT ?, id FROM security_roles WHERE name = ?", userId, SecurityRoles.ROLE_ADMIN);
+    }
+
+    /** Leaves no user with ROLE_ADMIN: admin is the only one the seed gives it. */
+    private void deleteAdmin() {
+        // Night's supervisor cannot be deleted
+        m_jdbc.update("UPDATE oncall_roles SET supervisor_user_id = ? WHERE id = ?", m_jane, m_night);
+        m_jdbc.update("DELETE FROM users WHERE id = ?", m_admin);
     }
 
     private int id(final String sql, final Object... args) {

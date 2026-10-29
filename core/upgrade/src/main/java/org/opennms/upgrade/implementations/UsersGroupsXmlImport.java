@@ -68,10 +68,10 @@ import org.opennms.netmgt.model.usermgmt.SecurityRoles;
  * {@code decode} is false. A file that repeats an entry uses the last one, with a warning. A custom security
  * role that is in the database already is left alone.</p>
  *
- * <p>Entries and values that the tables cannot hold are skipped with a message: a value longer than its column,
- * an unknown contact or schedule type, a second contact of a type, a reference to a user, group or security role
- * that does not exist, and a schedule without usable times. The messages go to the {@code messages} consumer,
- * one line each, without a trailing newline.</p>
+ * <p>Entries and values that the tables cannot hold are skipped with a message: an entry without a name or
+ * user-id, a value longer than its column, an unknown contact or schedule type, a second contact of a type, a
+ * reference to a user, group or security role that does not exist, and a schedule without usable times. The
+ * messages go to the {@code messages} consumer, one line each, without a trailing newline.</p>
  */
 public final class UsersGroupsXmlImport {
 
@@ -96,6 +96,8 @@ public final class UsersGroupsXmlImport {
     private static final String GROUPS = "groups";
     private static final String ONCALL_ROLES = "on-call roles";
     private static final String SECURITY_ROLES = "custom security roles";
+
+    private static final String ADMIN = "admin";
 
     // the column sizes in core/schema/src/main/liquibase/37.0.0/changelog.xml
     private static final int SECURITY_ROLE_NAME_LENGTH = 128;
@@ -129,6 +131,9 @@ public final class UsersGroupsXmlImport {
 
     private final Map<String, List<String>> m_existingEntries = new LinkedHashMap<>();
     private final Map<String, Counts> m_counts = new LinkedHashMap<>();
+    // for administratorProblems(): the users with ROLE_ADMIN before this run, and whether it overwrote admin
+    private final List<String> m_administratorsBefore;
+    private boolean m_adminOverwritten;
     private int m_skipped;
     private int m_warnings;
 
@@ -152,6 +157,7 @@ public final class UsersGroupsXmlImport {
         m_userIds = loadIds("SELECT username, id FROM users");
         m_groupIds = loadIds("SELECT name, id FROM groups");
         m_onCallRoleIds = loadIds("SELECT name, id FROM oncall_roles");
+        m_administratorsBefore = administrators();
     }
 
     /** @return the file as the type, or null if the file does not exist; a {@link RuntimeException} from JAXB passes through */
@@ -263,7 +269,7 @@ public final class UsersGroupsXmlImport {
         }
         for (final User user : users.values()) {
             final String username = user.getUserId();
-            final Integer existingId = existing(USERS, m_userIds, username);
+            final Integer existingId = recordExisting(USERS, m_userIds, username);
             if (existingId != null && m_existing == Existing.SKIP) {
                 // its id stays in m_userIds, so the groups and on-call roles of the files can refer to it
                 counts(USERS).m_existingSkipped++;
@@ -294,6 +300,9 @@ public final class UsersGroupsXmlImport {
                 update("DELETE FROM user_duty_schedules WHERE user_id = ?", userId);
                 update("DELETE FROM user_security_roles WHERE user_id = ?", userId);
                 counts(USERS).m_overwritten++;
+                if (ADMIN.equals(username)) {
+                    m_adminOverwritten = true;
+                }
             }
 
             contacts(userId, username, user.getContacts());
@@ -351,7 +360,7 @@ public final class UsersGroupsXmlImport {
         }
         for (final Group group : groups.values()) {
             final String name = group.getName();
-            final Integer existingId = existing(GROUPS, m_groupIds, name);
+            final Integer existingId = recordExisting(GROUPS, m_groupIds, name);
             if (existingId != null && m_existing == Existing.SKIP) {
                 // its id stays in m_groupIds, so the on-call roles of the files can refer to it
                 counts(GROUPS).m_existingSkipped++;
@@ -405,7 +414,7 @@ public final class UsersGroupsXmlImport {
         }
         for (final Role role : roles.values()) {
             final String name = role.getName();
-            final Integer existingId = existing(ONCALL_ROLES, m_onCallRoleIds, name);
+            final Integer existingId = recordExisting(ONCALL_ROLES, m_onCallRoleIds, name);
             if (existingId != null && m_existing == Existing.SKIP) {
                 counts(ONCALL_ROLES).m_existingSkipped++;
                 continue;
@@ -496,11 +505,53 @@ public final class UsersGroupsXmlImport {
         }
     }
 
+    /**
+     * Checks the rules of the v2 REST API ({@code UsersRestService}) on the database as this run left it: an
+     * overwritten admin keeps ROLE_ADMIN, and at least one user holds ROLE_ADMIN. Without an administrator nobody
+     * can manage users, and only SQL can repair that. Call it after all writes, in the same transaction; the caller
+     * rolls back when there are problems. A database where no user held ROLE_ADMIN before this run is not made
+     * worse by it, so that is only a warning to the messages.
+     *
+     * @return one line per broken rule; empty if both hold
+     */
+    public List<String> administratorProblems() throws SQLException {
+        final List<String> problems = new ArrayList<>();
+        final List<String> administrators = administrators();
+        if (m_adminOverwritten && !administrators.contains(ADMIN)) {
+            problems.add(String.format("The %s user must keep the %s role.", ADMIN, SecurityRoles.ROLE_ADMIN));
+        }
+        if (administrators.isEmpty()) {
+            if (m_administratorsBefore.isEmpty()) {
+                warn("No user holds %s.", SecurityRoles.ROLE_ADMIN);
+            } else {
+                problems.add(String.format("At least one user must keep the %s role, but the import takes it from all who hold it: %s",
+                        SecurityRoles.ROLE_ADMIN, String.join(", ", m_administratorsBefore)));
+            }
+        }
+        return problems;
+    }
+
+    /** @return the names of the users with ROLE_ADMIN, sorted */
+    private List<String> administrators() throws SQLException {
+        final List<String> usernames = new ArrayList<>();
+        try (final PreparedStatement statement = prepare("SELECT u.username FROM users u JOIN user_security_roles ur ON ur.user_id = u.id "
+                + "JOIN security_roles r ON r.id = ur.role_id WHERE r.name = ? ORDER BY u.username", SecurityRoles.ROLE_ADMIN);
+             final ResultSet rs = statement.executeQuery()) {
+            while (rs.next()) {
+                usernames.add(rs.getString(1));
+            }
+        }
+        return usernames;
+    }
+
     public void logSummary() {
         for (final Map.Entry<String, Counts> entry : m_counts.entrySet()) {
             final Counts counts = entry.getValue();
             if (m_existing == Existing.NONE_EXPECTED) {
                 log("%s: %d copied", entry.getKey(), counts.m_imported);
+            } else if (SECURITY_ROLES.equals(entry.getKey())) {
+                // one in the database already is left alone, and not listed
+                log("%s: %d imported", entry.getKey(), counts.m_imported);
             } else {
                 log("%s: %d imported, %d overwritten, %d existing skipped", entry.getKey(), counts.m_imported, counts.m_overwritten, counts.m_existingSkipped);
             }
@@ -519,11 +570,12 @@ public final class UsersGroupsXmlImport {
     }
 
     /**
-     * @return the id of the entry of this name that was in the database before this run, which is then listed in
-     *         {@link #existingEntries()}, or null if there is none. Each name comes here once per run, so an id in
-     *         the map is one from the database.
+     * Looks up the entry of this name that was in the database before this run and, if there is one, adds it to
+     * {@link #existingEntries()}. Each name comes here once per run, so an id in the map is one from the database.
+     *
+     * @return its id, or null if there is none or with {@link Existing#NONE_EXPECTED}
      */
-    private Integer existing(final String kind, final Map<String, Integer> ids, final String name) {
+    private Integer recordExisting(final String kind, final Map<String, Integer> ids, final String name) {
         if (m_existing == Existing.NONE_EXPECTED) {
             return null;
         }
