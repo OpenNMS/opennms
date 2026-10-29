@@ -484,6 +484,23 @@ install -d -m 755 %{buildroot}%{logdir}
 mv %{buildroot}%{instprefix}/logs/.readme %{buildroot}%{logdir}/
 rm -rf %{buildroot}%{instprefix}/logs
 
+### output.log holds the stdout of a non-systemd "opennms start"; log4j2 rotates the other logs.
+### The JVM keeps the file open and cannot reopen it, hence copytruncate.
+### The path goes through the install prefix's logs symlink so it still matches after --relocate.
+install -d -m 755 %{buildroot}%{_sysconfdir}/logrotate.d
+cat > %{buildroot}%{_sysconfdir}/logrotate.d/%{name} << END
+%{instprefix}/logs/output.log {
+	su opennms opennms
+	size 100M
+	rotate 4
+	compress
+	delaycompress
+	missingok
+	notifempty
+	copytruncate
+}
+END
+
 install -d -m 755 %{buildroot}%{sharedir}
 mv %{buildroot}%{instprefix}/share/* %{buildroot}%{sharedir}/
 rm -rf %{buildroot}%{instprefix}/share
@@ -621,6 +638,7 @@ rm -rf %{buildroot}
 %attr(755,opennms,opennms)	%{profiledir}/%{name}.sh
 %attr(755,opennms,opennms)	%{logdir}
 %attr(644,opennms,opennms)    %{_unitdir}/opennms.service
+%attr(644,root,root)	%config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
                         %config %{instprefix}/etc/custom.properties
 %attr(640,opennms,opennms)	%config(noreplace) %{instprefix}/etc/users.xml
 			%{instprefix}/data
