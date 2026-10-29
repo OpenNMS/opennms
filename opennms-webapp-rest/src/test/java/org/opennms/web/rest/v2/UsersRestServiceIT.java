@@ -1012,7 +1012,7 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     /** The query form tests commit names that the other tests of this class must not meet, and a failed one cannot clean up after itself. */
     @After
     public void purgeQueryFormRows() {
-        for (final String name : new String[] { "DOMAIN\\jdoe", "jdoe", "item", "item-2", "available-roles", "available-roles-2", "plain", "plain2" }) {
+        for (final String name : new String[] { "DOMAIN\\jdoe", "jdoe", "item", "item-2", "available-roles", "available-roles-2", "plain", "plain2", "ADMIN", "Rtc", "rTC", "Admin" }) {
             new JdbcTemplate(m_dataSource).update("delete from users where username = ?", name);
         }
     }
@@ -1162,6 +1162,32 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         }
         // the path form of a literal is the literal endpoint
         assertTrue(getJson("/users/available-roles", 200).startsWith("["));
+    }
+
+    @Test
+    public void testLookAlikesOfReservedUserIdsAreRefused() throws Exception {
+        for (final String name : new String[] { "ADMIN", "Rtc", "rTC" }) {
+            assertEquals("The user-id \"" + name + "\" is reserved.",
+                    exec(POST, "/users", "{\"userId\":\"" + name + "\",\"password\":\"x\"}", null, 400).getContentAsString());
+            assertEquals(0, rowCount("users", "username", name));
+        }
+        createUser("plain", u -> { });
+        final MockHttpServletResponse path = exec(POST, "/users/plain/rename", "{\"newUserId\":\"Admin\"}", null, 400);
+        assertEquals("The user-id \"Admin\" is reserved.", path.getContentAsString());
+        assertSame(path, exec(POST, "/users/item/rename" + byId("plain"), "{\"newUserId\":\"Admin\"}", null, 400));
+        assertEquals(1, rowCount("users", "username", "plain"));
+        // the exact name is not a look-alike: it exists
+        exec(POST, "/users", "{\"userId\":\"admin\",\"password\":\"x\"}", null, 409);
+    }
+
+    @Test
+    public void testExistingLookAlikeUserStaysManageable() throws Exception {
+        createUser("ADMIN", u -> u.setFullName("Old"));
+        final MockHttpServletResponse read = exec(GET, "/users/ADMIN", null, null, 200);
+        exec(PUT, "/users/ADMIN", "{\"fullName\":\"New\"}", read.getHeader("ETag"), 200);
+        assertEquals("New", column("ADMIN", "full_name"));
+        exec(DELETE, "/users/ADMIN", null, null, 204);
+        assertEquals(0, rowCount("users", "username", "ADMIN"));
     }
 
     private String getJson(final String url, final int expectedStatus) throws Exception {

@@ -150,9 +150,9 @@ import Add from '@opennms/onms-ui/icons/action/Add.vue'
 import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import KeyboardArrowDown from '@opennms/onms-ui/icons/hardware/KeyboardArrowDown.vue'
 import KeyboardArrowUp from '@opennms/onms-ui/icons/hardware/KeyboardArrowUp.vue'
-import { validateAdminComments, validateAdminName } from '@/lib/adminValidation'
+import { validateAdminComments, validateAdminName, validateReservedName } from '@/lib/adminValidation'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
-import { ManagedGroup, ManagedGroupCreate } from '@/types/groupAdmin'
+import { ManagedGroup, ManagedGroupCreate, PROTECTED_GROUP_NAMES } from '@/types/groupAdmin'
 
 // Rendered in place of the table (see ManageGroups); `group` is null when creating.
 // Emits `close` on Back, Cancel, a successful save, or a save rejected as stale.
@@ -178,7 +178,7 @@ const originalName = computed(() => props.group?.name ?? '')
 
 const addableUsers = computed(() => store.memberCandidates.filter(u => !members.value.includes(u)))
 
-const nameProblem = computed(() => (isEditing.value ? null : validateAdminName(name.value, 'group name')))
+const nameProblem = computed(() => (isEditing.value ? null : validateAdminName(name.value, 'group name') || validateReservedName(name.value, PROTECTED_GROUP_NAMES, 'group name')))
 
 // a hand-edited comment that predates this page stays editable: only
 // changed input is validated (the server grandfathers unchanged values too)

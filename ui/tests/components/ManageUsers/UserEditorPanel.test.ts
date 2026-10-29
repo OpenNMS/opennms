@@ -41,6 +41,15 @@ describe('UserEditorPanel.vue', () => {
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
   })
 
+  it('flags a look-alike of a reserved user id and disables saving', async () => {
+    await mountPanel()
+    await wrapper.find('[data-test="user-id-input"]').setValue('ADMIN')
+    await setPassword('secret')
+
+    expect(wrapper.find('#user-editor-id-error').text()).toBe('The user-id "ADMIN" is reserved.')
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
+  })
+
   it('flags an email without a domain part', async () => {
     await mountPanel()
     await wrapper.find('[data-test="user-id-input"]').setValue('jose')

@@ -170,6 +170,7 @@ public class UsersRestService implements UsersRestApi {
         if (userIdProblem != null) {
             throw m_support.badRequest(userIdProblem);
         }
+        checkNotReserved(userId);
         if (StringUtils.isBlank(request.getPassword())) {
             throw m_support.badRequest("A password is required.");
         }
@@ -299,6 +300,15 @@ public class UsersRestService implements UsersRestApi {
         return doRenameUser(securityContext, headers, userId, body);
     }
 
+    /** A look-alike of a protected name, such as ADMIN, would be mistaken for the system user; existing ones are left alone. */
+    private void checkNotReserved(final String userId) {
+        for (final String reserved : PROTECTED_USERS) {
+            if (reserved.equalsIgnoreCase(userId) && !reserved.equals(userId)) {
+                throw m_support.badRequest("The user-id \"" + userId + "\" is reserved.");
+            }
+        }
+    }
+
     private Response doRenameUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserRenameRequest body) {
         m_support.assertAdmin(securityContext, "User management");
         m_support.requireDatabaseStore();
@@ -313,6 +323,7 @@ public class UsersRestService implements UsersRestApi {
         if (userIdProblem != null) {
             throw m_support.badRequest(userIdProblem);
         }
+        checkNotReserved(newUserId);
         if (newUserId.equals(userId)) {
             throw m_support.badRequest("The newUserId is the same as the current userId.");
         }

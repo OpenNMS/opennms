@@ -175,6 +175,7 @@ public class GroupsRestService implements GroupsRestApi {
         if (nameProblem != null) {
             throw m_support.badRequest(nameProblem);
         }
+        checkNotReserved(name);
         try {
             m_support.lockForWrite();
             if (m_userGroupDao.findByName(name) != null) {
@@ -254,6 +255,15 @@ public class GroupsRestService implements GroupsRestApi {
         return doRenameGroup(securityContext, headers, name, body);
     }
 
+    /** A look-alike of a protected name, such as admin, would be mistaken for the system group; existing ones are left alone. */
+    private void checkNotReserved(final String name) {
+        for (final String reserved : PROTECTED_GROUPS) {
+            if (reserved.equalsIgnoreCase(name) && !reserved.equals(name)) {
+                throw m_support.badRequest("The group name \"" + name + "\" is reserved.");
+            }
+        }
+    }
+
     private Response doRenameGroup(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupRenameRequest body) {
         m_support.assertAdmin(securityContext, "Group management");
         m_support.requireDatabaseStore();
@@ -268,6 +278,7 @@ public class GroupsRestService implements GroupsRestApi {
         if (nameProblem != null) {
             throw m_support.badRequest(nameProblem);
         }
+        checkNotReserved(newName);
         if (newName.equals(name)) {
             throw m_support.badRequest("The newName is the same as the current name.");
         }

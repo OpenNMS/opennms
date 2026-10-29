@@ -959,7 +959,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     /** The query form tests commit names that the other tests of this class must not meet, and a failed one cannot clean up after itself. */
     @After
     public void purgeQueryFormRows() {
-        for (final String name : new String[] { "ops/east", "ops-east", "item", "item-2", "available-categories", "available-categories-2", "plain", "plain2" }) {
+        for (final String name : new String[] { "ops/east", "ops-east", "item", "item-2", "available-categories", "available-categories-2", "plain", "plain2", "admin", "ADMIN" }) {
             new JdbcTemplate(m_dataSource).update("delete from groups where name = ?", name);
         }
     }
@@ -1056,6 +1056,31 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals(message, exec(POST, "/groups", "{\"name\":\"ops/west\"}", null, 400).getContentAsString());
         assertEquals(1, groupRowCount(MIGRATED));
         assertEquals(0, groupRowCount("a\\b"));
+    }
+
+    @Test
+    public void testLookAlikesOfReservedGroupNamesAreRefused() throws Exception {
+        for (final String name : new String[] { "admin", "ADMIN" }) {
+            assertEquals("The group name \"" + name + "\" is reserved.",
+                    exec(POST, "/groups", "{\"name\":\"" + name + "\"}", null, 400).getContentAsString());
+            assertEquals(0, groupRowCount(name));
+        }
+        createGroup("plain", g -> { });
+        final MockHttpServletResponse path = exec(POST, "/groups/plain/rename", "{\"newName\":\"admin\"}", null, 400);
+        assertEquals("The group name \"admin\" is reserved.", path.getContentAsString());
+        assertSame(path, exec(POST, "/groups/item/rename" + byName("plain"), "{\"newName\":\"admin\"}", null, 400));
+        assertEquals(1, groupRowCount("plain"));
+        // the exact name is not a look-alike: it exists
+        exec(POST, "/groups", "{\"name\":\"Admin\"}", null, 409);
+    }
+
+    @Test
+    public void testExistingLookAlikeGroupStaysManageable() throws Exception {
+        createGroup("admin", g -> g.setComments("Old"));
+        final MockHttpServletResponse read = exec(GET, "/groups/admin", null, null, 200);
+        exec(PUT, "/groups/admin", "{\"name\":\"admin\",\"comments\":\"New\"}", read.getHeader("ETag"), 200);
+        exec(DELETE, "/groups/admin", null, null, 204);
+        assertEquals(0, groupRowCount("admin"));
     }
 
     @Test

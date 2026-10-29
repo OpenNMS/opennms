@@ -49,6 +49,23 @@ export const validateAdminName = (value: string, label: string): string | null =
   return null
 }
 
+/** Names the server reserves: the exact spelling exists, so look-alikes are refused. See UsersRestService.PROTECTED_USERS. */
+export const RESERVED_USER_IDS = ['admin', 'rtc']
+
+/**
+ * A new or renamed user-id or group name that equals a reserved name ignoring case, but not exactly,
+ * would be mistaken for the system entry; the server refuses it. The exact name is not flagged here:
+ * it is a duplicate, which the server reports as such.
+ */
+export const validateReservedName = (value: string, reserved: string[], label: 'user-id' | 'group name'): string | null => {
+  const trimmed = value.trim()
+  const lower = trimmed.toLowerCase()
+  if (reserved.some(name => name.toLowerCase() === lower && name !== trimmed)) {
+    return `The ${label} "${trimmed}" is reserved.`
+  }
+  return null
+}
+
 /**
  * User and group comments may not contain HTML markup characters nor exceed FREE_TEXT_LENGTH
  * characters. Callers skip this for a stored value sent back unchanged, as the server does.

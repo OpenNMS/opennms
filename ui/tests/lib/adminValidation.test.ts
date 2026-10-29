@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
   isPathAddressable,
+  RESERVED_USER_IDS,
   validateAdminComments,
   validateAdminName,
-  validateEmailShape
+  validateEmailShape,
+  validateReservedName
 } from '@/lib/adminValidation'
 
 describe('validateAdminName', () => {
@@ -94,5 +96,20 @@ describe('isPathAddressable', () => {
     expect(isPathAddressable('NOC/Primary')).toBe(false)
     expect(isPathAddressable('a\\b')).toBe(false)
     expect(isPathAddressable('a%b')).toBe(false)
+  })
+})
+
+describe('validateReservedName', () => {
+  it('refuses a look-alike of a reserved name, using the trimmed value', () => {
+    expect(validateReservedName('ADMIN', RESERVED_USER_IDS, 'user-id')).toBe('The user-id "ADMIN" is reserved.')
+    expect(validateReservedName(' rTC ', RESERVED_USER_IDS, 'user-id')).toBe('The user-id "rTC" is reserved.')
+    expect(validateReservedName('admin', ['Admin'], 'group name')).toBe('The group name "admin" is reserved.')
+  })
+
+  it('accepts the exact name, other names and empty values', () => {
+    expect(validateReservedName('admin', RESERVED_USER_IDS, 'user-id')).toBeNull()
+    expect(validateReservedName('administrator', RESERVED_USER_IDS, 'user-id')).toBeNull()
+    expect(validateReservedName('Admin', ['Admin'], 'group name')).toBeNull()
+    expect(validateReservedName('', RESERVED_USER_IDS, 'user-id')).toBeNull()
   })
 })

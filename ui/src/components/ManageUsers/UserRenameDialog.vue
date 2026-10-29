@@ -54,7 +54,7 @@ import { computed, ref, watch } from 'vue'
 import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
-import { validateAdminName } from '@/lib/adminValidation'
+import { RESERVED_USER_IDS, validateAdminName, validateReservedName } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 
 const props = defineProps<{
@@ -71,7 +71,7 @@ const newUserId = ref('')
 const saving = ref(false)
 const errorText = ref('')
 
-const nameProblem = computed(() => validateAdminName(newUserId.value, 'user-id'))
+const nameProblem = computed(() => validateAdminName(newUserId.value, 'user-id') || validateReservedName(newUserId.value, RESERVED_USER_IDS, 'user-id'))
 
 watch(
   () => props.visible,

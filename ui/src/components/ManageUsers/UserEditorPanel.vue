@@ -211,7 +211,7 @@ import DutyScheduleEditor from '@/components/ManageUsers/DutyScheduleEditor.vue'
 import FormField from '@/components/Common/FormField.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
-import { validateAdminComments, validateAdminName, validateEmailShape } from '@/lib/adminValidation'
+import { RESERVED_USER_IDS, validateAdminComments, validateAdminName, validateEmailShape, validateReservedName } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser, ManagedUserCreate } from '@/types/userAdmin'
 
@@ -266,7 +266,7 @@ const activeTab = ref<EditorTab>('user')
 const isEditing = computed(() => props.user !== null)
 const originalUserId = computed(() => props.user?.userId ?? '')
 
-const userIdProblem = computed(() => (isEditing.value ? null : validateAdminName(form.userId, 'user-id')))
+const userIdProblem = computed(() => (isEditing.value ? null : validateAdminName(form.userId, 'user-id') || validateReservedName(form.userId, RESERVED_USER_IDS, 'user-id')))
 
 // pre-existing values are never flagged (hand-edited users.xml may hold
 // forms these checks don't model); only changed input is validated

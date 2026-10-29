@@ -28,6 +28,14 @@ describe('GroupEditorPanel.vue', () => {
     vi.mocked(useGroupAdminStore).mockReturnValue(store)
   })
 
+  it('flags a look-alike of the reserved group name and disables saving', async () => {
+    await mountPanel()
+    await wrapper.find('[data-test="group-name-input"]').setValue('ADMIN')
+
+    expect(wrapper.text()).toContain('The group name "ADMIN" is reserved.')
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
+  })
+
   it('flags a group name with whitespace and disables saving', async () => {
     await mountPanel()
     await wrapper.find('[data-test="group-name-input"]').setValue('Test Group')
