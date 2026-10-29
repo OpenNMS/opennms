@@ -83,7 +83,7 @@
           .headTitle("Element")
           .breadcrumb("Search", "element/index.jsp")
           .breadcrumb("Node", "${nodeLink}")
-          .breadcrumb("Interface", "${fn:escapeXml(interfaceLink)}")
+          .breadcrumb("Interface", "${interfaceLink}")
           .breadcrumb("Rescan")
           .build(request);
 %>

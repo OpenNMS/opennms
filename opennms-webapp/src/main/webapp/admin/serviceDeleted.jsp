@@ -91,7 +91,7 @@
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
-          .headTitle(headTitle)
+          .headTitleText(headTitle)
           .breadcrumb("Search", "element/index.jsp")
           .breadcrumb("Node", "${nodeLink}")
           .breadcrumb("Interface", "${interfaceLink}")

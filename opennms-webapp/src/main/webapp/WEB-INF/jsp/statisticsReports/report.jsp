@@ -32,6 +32,7 @@
 <%@page language="java" contentType="text/html" session="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="ec" uri="http://www.extremecomponents.org" %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
@@ -69,7 +70,7 @@
 
     <form id="form" action="${relativeRequestPath}" method="post">
       <ec:table items="model.data" var="row"
-        action="${relativeRequestPath}?${pageContext.request.queryString}"
+        action="${fn:escapeXml(relativeRequestPath)}?${fn:escapeXml(pageContext.request.queryString)}"
         filterable="false"
         imagePath="images/table/compact/*.gif"
         tableId="reportList"

@@ -43,6 +43,7 @@ import org.opennms.web.controller.alarm.AlarmFilterController;
 import org.opennms.web.controller.event.EventController;
 import org.opennms.web.event.filter.*;
 import org.opennms.web.filter.Filter;
+import org.opennms.web.filter.NormalizedQueryParameters;
 import org.opennms.web.services.FilterFavoriteService;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -471,5 +472,22 @@ public class EventControllerTest  {
         request.addParameter("favoriteId", "1");
         request.addParameter("redirect", redirect);
         return eventController.deleteFavorite(request, new MockHttpServletResponse()).getViewName();
+    }
+
+    @Test
+    public void listAcceptsOnlyKnownDisplayValues() throws Exception {
+        when(m_webEventRepository.getMatchingEvents(any())).thenReturn(new Event[0]);
+
+        Assert.assertEquals("long", listAndGetDisplay("long"));
+        Assert.assertEquals("short", listAndGetDisplay("short"));
+        Assert.assertNull(listAndGetDisplay("\"><svg onload=alert(document.domain)>"));
+    }
+
+    private String listAndGetDisplay(final String display) throws Exception {
+        final MockHttpServletRequest request = new MockHttpServletRequest("GET", "/opennms/event/list");
+        request.setQueryString("display=" + display);
+        request.addParameter("display", display);
+        final ModelAndView mv = eventController.list(request, new MockHttpServletResponse());
+        return ((NormalizedQueryParameters) mv.getModel().get("parms")).getDisplay();
     }
 }

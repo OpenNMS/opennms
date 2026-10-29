@@ -101,11 +101,11 @@
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
-          .headTitle(category.getName())
+          .headTitleText(category.getName())
           .headTitle("Category")
           .headTitle("SLM")
           .breadcrumb("SLM", "rtc/index.jsp")
-          .breadcrumb(category.getName())
+          .breadcrumbText(category.getName())
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
