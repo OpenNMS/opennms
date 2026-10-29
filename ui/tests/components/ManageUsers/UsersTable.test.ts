@@ -124,6 +124,12 @@ describe('UsersAbout', () => {
     expect(text()).toContain('Change Password')
   })
 
+  it('explains the read-only tag as the ROLE_READONLY role, not as a page restriction', () => {
+    const t = text().replace(/\s+/g, ' ')
+    expect(t).toContain('A user with the ROLE_READONLY role carries a read-only tag next to its id: that account can view but not change anything in the web console.')
+    expect(t).not.toContain('cannot be changed through this page')
+  })
+
   it('names what the editor shows', () => {
     for (const word of ['Duty Schedules', 'time zone', 'TUI PIN', 'Pager Email', 'Comments']) {
       expect(text().toLowerCase()).toContain(word.toLowerCase())

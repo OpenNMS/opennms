@@ -11,8 +11,9 @@
     <p>
       Users are stored in the OpenNMS database and managed here or through the versioned
       <code>/api/v2/users</code> REST API. Passwords are always stored salted; they are never
-      shown or returned by the API. A user that cannot be changed through this page carries a
-      <em>read-only</em> tag next to its id.
+      shown or returned by the API. A user with the <em>ROLE_READONLY</em> role carries a
+      <em>read-only</em> tag next to its id: that account can view but not change anything in
+      the web console.
     </p>
   </div>
   <div class="help-section">
