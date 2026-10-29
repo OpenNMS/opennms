@@ -1,7 +1,7 @@
-import { mount } from '@vue/test-utils'
+import { enableAutoUnmount, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { nextTick } from 'vue'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import GroupsTable from '@/components/ManageGroups/GroupsTable.vue'
 import GroupEditorDialog from '@/components/ManageGroups/GroupEditorDialog.vue'
@@ -18,14 +18,18 @@ const store = vi.hoisted(() => ({
 
 vi.mock('@/stores/groupAdminStore', () => ({ useGroupAdminStore: () => store }))
 
+// the dialogs are teleported to the body; unmount each one, or a later test can find an earlier test's dialog
+enableAutoUnmount(afterEach)
+
 const group = { name: 'Ops', users: [], version: 3 }
 
+// each case: a mounted dialog, the store call its Save makes and the data-test of the dialog
 const cases = [
-  ['GroupEditorDialog', () => mount(GroupEditorDialog, { props: { visible: true, group }, global: { plugins: [PrimeVue] }}), store.updateGroup],
-  ['GroupRenameDialog', () => mount(GroupRenameDialog, { props: { visible: true, groupName: 'Ops', version: 3 }, global: { plugins: [PrimeVue] }}), store.renameGroup]
+  ['GroupEditorDialog', () => mount(GroupEditorDialog, { props: { visible: true, group }, global: { plugins: [PrimeVue] }}), store.updateGroup, 'group-editor-dialog'],
+  ['GroupRenameDialog', () => mount(GroupRenameDialog, { props: { visible: true, groupName: 'Ops', version: 3 }, global: { plugins: [PrimeVue] }}), store.renameGroup, 'group-rename-dialog']
 ] as const
 
-describe.each(cases)('%s', (_name, mountDialog, storeCall) => {
+describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest) => {
   beforeEach(() => vi.clearAllMocks())
 
   it('closes when the save is rejected as stale', async () => {
@@ -46,7 +50,10 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall) => {
     await nextTick()
 
     expect(wrapper.emitted('update:visible')).toBeUndefined()
-    expect(document.body.querySelector('[data-test="dialog-error"]')?.textContent).toBe('Something else went wrong')
+    // only the error of this dialog: the dialogs are teleported to the body
+    const errors = document.body.querySelectorAll(`[data-test="${dialogTest}"] [data-test="dialog-error"]`)
+    expect(errors).toHaveLength(1)
+    expect(errors[0].textContent).toBe('Something else went wrong')
   })
 
   it('does not close on the stale wording without the flag', async () => {
@@ -126,19 +133,23 @@ describe('GroupEditorDialog comment limit', () => {
 
   const mountEditor = (comments?: string) =>
     mount(GroupEditorDialog, { props: { visible: true, group: { ...group, comments }}, global: { plugins: [PrimeVue] }})
-  const vmOf = (wrapper: { vm: unknown }) => wrapper.vm as unknown as { comments: string, commentsProblem: string | null, save: () => Promise<void> }
+  const vmOf = (wrapper: { vm: unknown }) => wrapper.vm as unknown as { comments: string, commentsProblem: string | null, isValid: boolean, save: () => Promise<void> }
 
-  it('flags a new comment over 4096 characters', async () => {
+  it('flags a new comment over 4096 characters and blocks Save', async () => {
     const wrapper = mountEditor('short')
     vmOf(wrapper).comments = 'a'.repeat(4097)
     await nextTick()
 
     expect(vmOf(wrapper).commentsProblem).toContain('4096')
+    // the Save button is disabled by isValid
+    expect(vmOf(wrapper).isValid).toBe(false)
   })
 
   it('lets a stored comment over the limit be saved unchanged', async () => {
     const wrapper = mountEditor('a'.repeat(5000))
     await nextTick()
+    // the Save button is enabled by isValid
+    expect(vmOf(wrapper).isValid).toBe(true)
     await vmOf(wrapper).save()
 
     expect(vmOf(wrapper).commentsProblem).toBeNull()

@@ -1,7 +1,7 @@
-import { mount } from '@vue/test-utils'
+import { enableAutoUnmount, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { nextTick } from 'vue'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import UsersTable from '@/components/ManageUsers/UsersTable.vue'
 import UserEditorDialog from '@/components/ManageUsers/UserEditorDialog.vue'
@@ -20,16 +20,19 @@ const store = vi.hoisted(() => ({
 
 vi.mock('@/stores/userAdminStore', () => ({ useUserAdminStore: () => store }))
 
+// the dialogs are teleported to the body; unmount each one, or a later test can find an earlier test's dialog
+enableAutoUnmount(afterEach)
+
 const user = { userId: 'jdoe', fullName: 'J Doe', version: 3 }
 
-// each case: a mounted dialog and the store call its Save makes
+// each case: a mounted dialog, the store call its Save makes and the data-test of the dialog
 const cases = [
-  ['UserEditorDialog', () => mount(UserEditorDialog, { props: { visible: true, user }, global: { plugins: [PrimeVue] }}), store.updateUser],
-  ['UserRenameDialog', () => mount(UserRenameDialog, { props: { visible: true, userId: 'jdoe', version: 3 }, global: { plugins: [PrimeVue] }}), store.renameUser],
-  ['UserPasswordDialog', () => mount(UserPasswordDialog, { props: { visible: true, userId: 'jdoe', version: 3 }, global: { plugins: [PrimeVue] }}), store.setPassword]
+  ['UserEditorDialog', () => mount(UserEditorDialog, { props: { visible: true, user }, global: { plugins: [PrimeVue] }}), store.updateUser, 'user-editor-dialog'],
+  ['UserRenameDialog', () => mount(UserRenameDialog, { props: { visible: true, userId: 'jdoe', version: 3 }, global: { plugins: [PrimeVue] }}), store.renameUser, 'user-rename-dialog'],
+  ['UserPasswordDialog', () => mount(UserPasswordDialog, { props: { visible: true, userId: 'jdoe', version: 3 }, global: { plugins: [PrimeVue] }}), store.setPassword, 'user-password-dialog']
 ] as const
 
-describe.each(cases)('%s', (_name, mountDialog, storeCall) => {
+describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest) => {
   beforeEach(() => vi.clearAllMocks())
 
   it('closes when the save is rejected as stale', async () => {
@@ -50,7 +53,10 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall) => {
     await nextTick()
 
     expect(wrapper.emitted('update:visible')).toBeUndefined()
-    expect(document.body.querySelector('[data-test="dialog-error"]')?.textContent).toBe('Something else went wrong')
+    // only the error of this dialog: the dialogs are teleported to the body
+    const errors = document.body.querySelectorAll(`[data-test="${dialogTest}"] [data-test="dialog-error"]`)
+    expect(errors).toHaveLength(1)
+    expect(errors[0].textContent).toBe('Something else went wrong')
   })
 
   it('does not close on the stale wording without the flag', async () => {
@@ -158,6 +164,8 @@ describe('UserEditorDialog comment limit', () => {
     const stored = 'a'.repeat(5000)
     const wrapper = mountEditor(stored)
     await nextTick()
+    // the Save button is enabled by isValid
+    expect(vmOf(wrapper).isValid).toBe(true)
     await vmOf(wrapper).save()
 
     expect(vmOf(wrapper).commentsProblem).toBeNull()
