@@ -124,3 +124,8 @@ opennms:reload-daemon Threshd
 
 NOTE: A `Threshd` reload does not send a `reloadDaemonConfigSuccessful` or `reloadDaemonConfigFailed` event.
 If the reload fails, the logs contain the message `Unable to reload thresholding.`
+
+Notification rules work differently.
+Notifd evaluates the `<rule>` of a notification against the database for each event, so a node that starts to match a rule receives notices without a reload or a rescan.
+Notifd also checks the modification time of `notifications.xml` when an event arrives and re-reads the file if it changed, so an edited rule takes effect with the next event.
+To reload all notification configuration files at once, send a reload event with `daemonName` set to `Notifd`.

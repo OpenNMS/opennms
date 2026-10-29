@@ -168,6 +168,7 @@ Notifd evaluates the `<rule>` together with the event's node ID, interface, and 
 For example, `IPADDR != '0.0.0.0'` matches any event for a node that has an IP interface, while `(IPADDR IPLIKE 10.1.*.*)` matches only events for interfaces in that range.
 An event that has no node, interface, or service matches any rule, unless the rule has `strict="true"`.
 A `MATCH-ANY-UEI` notification is an exception: it matches such an event only if its rule is exactly `IPADDR != '0.0.0.0'` or `IPADDR IPLIKE *.*.*.*`.
+Because notifd evaluates the rule against the database for each event, a rule change or a node that starts to match applies to the next event, without a reload or a rescan (see xref:operation:deep-dive/admin/configuration/daemon-config-files.adoc#package-filter-changes[Package filter changes]).
 
 When an event names a node, interface, and service, notifd also checks that notices are enabled for that service on that interface, and it does not send a notice when they are turned off.
 
