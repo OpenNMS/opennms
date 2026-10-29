@@ -26,6 +26,8 @@
 
 const INVALID_NAME = /[&<>"`':/\\%?#\s\p{Z}\p{C}]/u
 const INVALID_COMMENTS = /[&<>"`']/
+// UserMgmtValidation.FREE_TEXT_LENGTH: comments longer than this are rejected, counted in code points once trimmed
+export const FREE_TEXT_LENGTH = 4096
 const EMAIL_SHAPE = /[^\s@]+@[^\s@]+/
 
 /**
@@ -47,10 +49,17 @@ export const validateAdminName = (value: string, label: string): string | null =
   return null
 }
 
-/** Group comments may not contain HTML markup characters. */
+/**
+ * User and group comments may not contain HTML markup characters nor exceed FREE_TEXT_LENGTH
+ * characters. Callers skip this for a stored value sent back unchanged, as the server does.
+ */
 export const validateAdminComments = (value: string): string | null => {
   if (value && INVALID_COMMENTS.test(value)) {
     return 'The comments must not contain the characters & < > " ` \''
+  }
+  // the server counts code points, not UTF-16 units
+  if (Array.from(value.trim()).length > FREE_TEXT_LENGTH) {
+    return `The comments must not be longer than ${FREE_TEXT_LENGTH} characters.`
   }
   return null
 }

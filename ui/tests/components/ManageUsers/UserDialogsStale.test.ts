@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
+import { nextTick } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import UsersTable from '@/components/ManageUsers/UsersTable.vue'
@@ -46,8 +47,10 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall) => {
     const wrapper = mountDialog()
 
     await (wrapper.vm as unknown as { save: () => Promise<void> }).save()
+    await nextTick()
 
     expect(wrapper.emitted('update:visible')).toBeUndefined()
+    expect(document.body.querySelector('[data-test="dialog-error"]')?.textContent).toBe('Something else went wrong')
   })
 
   it('does not close on the stale wording without the flag', async () => {
@@ -103,5 +106,61 @@ describe('version reaches the store', () => {
     await vm.confirmDelete()
 
     expect(store.deleteUser).toHaveBeenCalledWith('jdoe', 3)
+  })
+})
+
+// the rename reloads the list; the next edit must send the renamed id and the new version, not the old row
+describe('a rename followed by an edit', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it('sends the renamed user id and the new version', async () => {
+    store.users = [{ ...user }]
+    store.renameUser.mockImplementation(async () => {
+      // what the real store does on success: reload the list
+      store.users = [{ userId: 'jsmith', fullName: 'J Doe', version: 4 }]
+      return null
+    })
+    store.updateUser.mockResolvedValue(null)
+
+    const rename = mount(UserRenameDialog, { props: { visible: true, userId: 'jdoe', version: 3 }, global: { plugins: [PrimeVue] }})
+    ;(rename.vm as unknown as { newUserId: string }).newUserId = 'jsmith'
+    await (rename.vm as unknown as { save: () => Promise<void> }).save()
+    expect(rename.emitted('update:visible')?.at(-1)).toEqual([false])
+
+    const editor = mount(UserEditorDialog, { props: { visible: true, user: store.users[0] as typeof user }, global: { plugins: [PrimeVue] }})
+    await (editor.vm as unknown as { save: () => Promise<void> }).save()
+
+    expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({ userId: 'jsmith', version: 4 }))
+  })
+})
+
+describe('UserEditorDialog comment limit', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    store.updateUser.mockResolvedValue(null)
+  })
+
+  const mountEditor = (userComments?: string) =>
+    mount(UserEditorDialog, { props: { visible: true, user: { ...user, userComments }}, global: { plugins: [PrimeVue] }})
+  const vmOf = (wrapper: { vm: unknown }) => wrapper.vm as unknown as { form: { comments: string }, commentsProblem: string | null, isValid: boolean, save: () => Promise<void> }
+
+  it('flags a new comment over 4096 characters and blocks Save', async () => {
+    const wrapper = mountEditor('short')
+    vmOf(wrapper).form.comments = 'a'.repeat(4097)
+    await nextTick()
+
+    expect(vmOf(wrapper).commentsProblem).toContain('4096')
+    // the Save button is disabled by isValid
+    expect(vmOf(wrapper).isValid).toBe(false)
+  })
+
+  it('lets a stored comment over the limit be saved unchanged', async () => {
+    const stored = 'a'.repeat(5000)
+    const wrapper = mountEditor(stored)
+    await nextTick()
+    await vmOf(wrapper).save()
+
+    expect(vmOf(wrapper).commentsProblem).toBeNull()
+    expect(store.updateUser).toHaveBeenCalled()
   })
 })

@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
+import { nextTick } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import GroupsTable from '@/components/ManageGroups/GroupsTable.vue'
@@ -42,8 +43,10 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall) => {
     const wrapper = mountDialog()
 
     await (wrapper.vm as unknown as { save: () => Promise<void> }).save()
+    await nextTick()
 
     expect(wrapper.emitted('update:visible')).toBeUndefined()
+    expect(document.body.querySelector('[data-test="dialog-error"]')?.textContent).toBe('Something else went wrong')
   })
 
   it('does not close on the stale wording without the flag', async () => {
@@ -87,5 +90,58 @@ describe('version reaches the store', () => {
     await vm.confirmDelete()
 
     expect(store.deleteGroup).toHaveBeenCalledWith('Ops', 3)
+  })
+})
+
+// the rename reloads the list; the next edit must send the renamed name and the new version, not the old row
+describe('a rename followed by an edit', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it('sends the renamed group name and the new version', async () => {
+    store.groups = [{ ...group }]
+    store.renameGroup.mockImplementation(async () => {
+      // what the real store does on success: reload the list
+      store.groups = [{ name: 'Dev', users: [], version: 4 }]
+      return null
+    })
+    store.updateGroup.mockResolvedValue(null)
+
+    const rename = mount(GroupRenameDialog, { props: { visible: true, groupName: 'Ops', version: 3 }, global: { plugins: [PrimeVue] }})
+    ;(rename.vm as unknown as { newName: string }).newName = 'Dev'
+    await (rename.vm as unknown as { save: () => Promise<void> }).save()
+    expect(rename.emitted('update:visible')?.at(-1)).toEqual([false])
+
+    const editor = mount(GroupEditorDialog, { props: { visible: true, group: store.groups[0] as typeof group }, global: { plugins: [PrimeVue] }})
+    await (editor.vm as unknown as { save: () => Promise<void> }).save()
+
+    expect(store.updateGroup).toHaveBeenCalledWith(expect.objectContaining({ name: 'Dev', version: 4 }))
+  })
+})
+
+describe('GroupEditorDialog comment limit', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    store.updateGroup.mockResolvedValue(null)
+  })
+
+  const mountEditor = (comments?: string) =>
+    mount(GroupEditorDialog, { props: { visible: true, group: { ...group, comments }}, global: { plugins: [PrimeVue] }})
+  const vmOf = (wrapper: { vm: unknown }) => wrapper.vm as unknown as { comments: string, commentsProblem: string | null, save: () => Promise<void> }
+
+  it('flags a new comment over 4096 characters', async () => {
+    const wrapper = mountEditor('short')
+    vmOf(wrapper).comments = 'a'.repeat(4097)
+    await nextTick()
+
+    expect(vmOf(wrapper).commentsProblem).toContain('4096')
+  })
+
+  it('lets a stored comment over the limit be saved unchanged', async () => {
+    const wrapper = mountEditor('a'.repeat(5000))
+    await nextTick()
+    await vmOf(wrapper).save()
+
+    expect(vmOf(wrapper).commentsProblem).toBeNull()
+    expect(store.updateGroup).toHaveBeenCalled()
   })
 })
