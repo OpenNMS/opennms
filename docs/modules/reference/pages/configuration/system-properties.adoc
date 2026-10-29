@@ -196,7 +196,7 @@ Many of the properties here are documented with much greater detail in their rel
 | If `true`, `uei.opennms.org/troubleTicket/create` events are ignored for alarms with a severity of `Cleared`.
 
 | `opennms.web.base-url`
-| `null`
+| `%s://%x%c/`
 | Overrides the URL used for the HTML `<base>` tag, for example when the web UI runs behind a reverse proxy; the URL must end with `/` and supports the substitutions `%s` (scheme), `%h` and `%p` (host and port from the `Host` header), `%x` (host and port from the `X-Forwarded-Host`, `X-Host`, or `Host` header), and `%c` (context path).
 
 | `org.apache.kafka.sasl.oauthbearer.allowed.urls`
@@ -422,6 +422,7 @@ Many of the properties here are documented with much greater detail in their rel
 | `org.opennms.netmgt.jetty.https-port`
 | 8443
 | Port for the Jetty HTTPS listener; it takes effect only when the HTTPS connector is enabled in `jetty.xml`, and it does not disable the plain HTTP listener.
+Setting it also enables the HSTS header for `https://` requests.
 
 | `org.opennms.netmgt.jetty.port`
 | 8980
