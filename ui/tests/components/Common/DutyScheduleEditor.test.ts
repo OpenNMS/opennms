@@ -130,9 +130,37 @@ describe('DutyScheduleEditor.vue', () => {
       expect(wrapper.find('[data-test="duty-0-warning"]').exists()).toBe(false)
     })
 
-    it('does not warn about an overnight window', () => {
+    const OVERNIGHT = 'The begin time must be before the end time. Split overnight coverage into two schedules.'
+
+    it('rejects a new overnight row', async () => {
+      const wrapper = mountEditor([])
+      await wrapper.find('[data-test="add-duty-button"]').trigger('click')
+      await wrapper.find('[data-test="duty-0-day-Mo"]').trigger('click')
+      await wrapper.find('[data-test="duty-0-begin"]').setValue('20:00')
+      await wrapper.find('[data-test="duty-0-end"]').setValue('08:00')
+      expect(wrapper.find('[data-test="duty-0-overnight"]').text()).toBe(OVERNIGHT)
+      expect(validEmits(wrapper)?.at(-1)).toBe(false)
+    })
+
+    it('shows but tolerates a stored overnight row left unchanged', async () => {
       const wrapper = mountEditor(['Mo2000-800'])
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find('[data-test="duty-0-overnight"]').text()).toBe(OVERNIGHT)
+      expect(validEmits(wrapper)?.at(-1)).toBe(true)
+      expect(validEmits(wrapper)).not.toContain(false)
+    })
+
+    it('rejects a stored overnight row edited to another overnight time', async () => {
+      const wrapper = mountEditor(['Mo2000-800'])
+      await wrapper.find('[data-test="duty-0-begin"]').setValue('21:00')
+      expect(validEmits(wrapper)?.at(-1)).toBe(false)
+    })
+
+    it('treats 23:58 to 00:01 as overnight, not as a short window', () => {
+      const wrapper = mountEditor(['Mo2358-1'])
+      expect(wrapper.find('[data-test="duty-0-overnight"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="duty-0-warning"]').exists()).toBe(false)
+      expect(wrapper.text()).not.toContain('minutes long')
     })
 
     it('keeps valid true for a short window', async () => {

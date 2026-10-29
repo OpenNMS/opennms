@@ -52,7 +52,12 @@
           :data-test="`duty-${index}-error`"
         >Pick at least one day</small>
         <small
-          v-if="shortWindow(row) !== null"
+          v-if="isOvernight(row)"
+          :class="overnightBlocks(row) ? 'row-error' : 'row-warning'"
+          :data-test="`duty-${index}-overnight`"
+        >The begin time must be before the end time. Split overnight coverage into two schedules.</small>
+        <small
+          v-else-if="shortWindow(row) !== null"
           class="row-warning"
           :data-test="`duty-${index}-warning`"
         >This window is only {{ shortWindow(row) }} minutes long.</small>
@@ -155,24 +160,27 @@ const markEdited = (row: Row) => {
   row.original = null
 }
 
-const serialize = (): string[] =>
-  rows.value
-    .map((row) => {
-      if (row.raw !== null) {
-        return row.raw.trim()
-      }
-      if (row.original !== null) {
-        return row.original
-      }
-      // an incomplete row (no day, or a missing time) is not a valid schedule
-      // yet; keep it visible for editing but leave it out of the value
-      if (!row.days.length || !row.begin || !row.end) {
-        return ''
-      }
-      const days = DAYS.filter(day => row.days.includes(day)).join('')
-      return `${days}${toMilitary(row.begin)}-${toMilitary(row.end)}`
-    })
-    .filter(Boolean)
+const serializeRow = (row: Row): string => {
+  if (row.raw !== null) {
+    return row.raw.trim()
+  }
+  if (row.original !== null) {
+    return row.original
+  }
+  // an incomplete row (no day, or a missing time) is not a valid schedule
+  // yet; keep it visible for editing but leave it out of the value
+  if (!row.days.length || !row.begin || !row.end) {
+    return ''
+  }
+  const days = DAYS.filter(day => row.days.includes(day)).join('')
+  return `${days}${toMilitary(row.begin)}-${toMilitary(row.end)}`
+}
+
+const serialize = (): string[] => rows.value.map(serializeRow).filter(Boolean)
+
+// the schedules the parent handed us; the server grandfathers these unchanged
+// even when they are overnight, so they never block saving
+let stored = new Set<string>()
 
 // rebuild rows only when the incoming value differs from what we already
 // represent, so emitting our own serialization can't clobber in-progress edits
@@ -180,6 +188,7 @@ watch(
   () => props.modelValue,
   (value) => {
     if (JSON.stringify(serialize()) !== JSON.stringify(value ?? [])) {
+      stored = new Set((value ?? []).map(v => v.trim()))
       rows.value = (value ?? []).map(parse)
     }
   },
@@ -198,22 +207,31 @@ watch(rows, () => {
 // a form row (not raw text) with no day selected can't be serialized
 const hasDay = (row: Row): boolean => row.raw !== null || row.days.length > 0
 
+const minutesOf = (hhmm: string) => {
+  const [hours, minutes] = hhmm.split(':')
+  return Number.parseInt(hours, 10) * 60 + Number.parseInt(minutes, 10)
+}
+
+// v2 and notifd compare within one calendar day, so begin after end never
+// matches; the server rejects it for new or changed entries
+const isOvernight = (row: Row): boolean =>
+  row.raw === null && !!row.begin && !!row.end && minutesOf(row.begin) > minutesOf(row.end)
+
+const overnightBlocks = (row: Row): boolean =>
+  isOvernight(row) && !stored.has(serializeRow(row))
+
 // the window length in minutes when it is suspiciously short (5 or fewer), else
-// null; an end before the begin wraps past midnight. Advisory only.
+// null. Advisory only.
 const SHORT_WINDOW_MINUTES = 5
 const shortWindow = (row: Row): number | null => {
-  if (row.raw !== null || !row.begin || !row.end) {
+  if (row.raw !== null || !row.begin || !row.end || isOvernight(row)) {
     return null
   }
-  const minutesOf = (hhmm: string) => {
-    const [hours, minutes] = hhmm.split(':')
-    return Number.parseInt(hours, 10) * 60 + Number.parseInt(minutes, 10)
-  }
-  const length = (minutesOf(row.end) - minutesOf(row.begin) + 24 * 60) % (24 * 60)
+  const length = minutesOf(row.end) - minutesOf(row.begin)
   return length <= SHORT_WINDOW_MINUTES ? length : null
 }
 
-const valid = computed(() => rows.value.every(hasDay))
+const valid = computed(() => rows.value.every(row => hasDay(row) && !overnightBlocks(row)))
 
 watch(valid, value => emit('update:valid', value), { immediate: true })
 
