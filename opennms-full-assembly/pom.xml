@@ -330,7 +330,6 @@
                 <feature>kar</feature>
                 <feature>log</feature>
                 <feature>management</feature>
-                <feature>minimal</feature>
                 <feature>obr</feature>
                 <feature>package</feature>
                 <!-- Replaced by opennms-bridge-http-service -->
@@ -344,7 +343,6 @@
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
                 <feature>ssh/${karafSshdVersion}</feature>
-                <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
                 <feature>wrap</feature>
@@ -392,7 +390,6 @@
                 <feature>kar</feature>
                 <feature>log</feature>
                 <feature>management</feature>
-                <feature>minimal</feature>
                 <feature>obr</feature>
                 <feature>opennms-bridge-http-service</feature>
                 <feature>package</feature>
@@ -404,7 +401,6 @@
                 <feature>service-wrapper</feature>
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
-                <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
                 <feature>wrap</feature>

@@ -30,7 +30,7 @@ If the response is a valid NTP response, the service is considered available.
 | 123
 
 | retry
-| Number of attempts to get a response.
+| Number of retries after the first failed attempt to get a response.
 | 0
 
 | timeout

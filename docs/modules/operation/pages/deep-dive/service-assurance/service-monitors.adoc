@@ -10,3 +10,4 @@ Performance management processes collect metrics from nodes to generate graphs a
 == Supported monitors
 
 For information on supported monitors and how to configure them, see the xref:reference:service-assurance/introduction.adoc[Service Monitors reference section].
+To add a service to `poller-configuration.xml`, see xref:deep-dive/service-assurance/configuration.adoc#ga-pollerd-configuration-service-monitor-relation[How services, packages, and monitors relate].

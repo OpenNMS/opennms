@@ -144,3 +144,28 @@ Once added to `etc/http-datacollection-config.xml`, you can use the `collect` co
 ----
 opennms:collect org.opennms.netmgt.collectd.HttpCollector 127.0.0.1 collection=opennms-copyright port=8980
 ----
+
+== Service configuration example
+
+To schedule the collection, add a service to a package in `$\{OPENNMS_HOME}/etc/collectd-configuration.xml` and a matching `collector` entry.
+Collectd collects only from IP interfaces that are in the package and have a monitored service with the same name, for example one added through a requisition or a detector.
+
+This example collects the `opennms-copyright` collection from port 8980:
+
+[source, xml]
+----
+<package name="opennms-web" remote="false">
+  <filter>IPADDR != '0.0.0.0'</filter>
+  <service name="OpenNMS-Web" interval="300000" user-defined="false" status="on">
+    <parameter key="collection" value="opennms-copyright"/>
+    <parameter key="port" value="8980"/>
+    <parameter key="timeout" value="3000"/>
+    <parameter key="retry" value="2"/>
+    <parameter key="thresholding-enabled" value="true"/>
+  </service>
+</package>
+
+<collector service="OpenNMS-Web" class-name="org.opennms.netmgt.collectd.HttpCollector"/>
+----
+
+The `port` parameter applies only to URLs that do not set a port other than 80 in `http-datacollection-config.xml`.

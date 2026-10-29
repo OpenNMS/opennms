@@ -3,15 +3,15 @@
 
 [source, console]
 ----
-sudo cat /tmp/opennms-passwd.txt >> /etc/passwd && /
-sudo cat /tmp/opennms-group.txt >> /etc/group
+cat /tmp/opennms-passwd.txt | sudo tee -a /etc/passwd > /dev/null && \
+cat /tmp/opennms-group.txt | sudo tee -a /etc/group > /dev/null
 ----
 
 .Create log folder
 [source, console]
 ----
-sudo mkdir /var/log/opennms && /
-chown opennms. /var/log/opennms
+sudo mkdir /var/log/opennms && \
+sudo chown opennms:opennms /var/log/opennms
 ----
 
 .Restore OpenNMS {page-component-title} binaries, RRD archives, configurations
@@ -32,10 +32,9 @@ sudo systemctl daemon-reload
 ----
 
 .Install PostgreSQL database
-[source, console]
-----
-sudo apt -y install postgresql
-----
+
+Install PostgreSQL as described in the Debian/Ubuntu tab of xref:deployment:core/install.adoc#setup-postgresql[Set up PostgreSQL].
+You do not need to create the `opennms` database user or the database, because the database backup restores them.
 
 .Restore OpenNMS database
 [source, console]
@@ -46,7 +45,7 @@ sudo runuser -l postgres -c 'psql -f /tmp/opennms-postgres.dmp postgres'
 .Install OpenJDK
 [source, console]
 ----
-apt-get install openjdk-21-jdk
+sudo apt-get install openjdk-25-jdk
 sudo /opt/opennms/bin/runjava -s
 ----
 

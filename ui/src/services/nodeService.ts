@@ -23,6 +23,7 @@
 import { v2, rest } from './axiosInstances'
 import {
   NodeApiResponse,
+  NodeFilterRuleResult,
   SnmpInterfaceApiResponse,
   QueryParameters,
   IpInterfaceApiResponse,
@@ -34,6 +35,46 @@ import { queryParametersHandler } from './serviceHelpers'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 
 const endpoint = '/nodes'
+
+/**
+ * The nodes matching an OpenNMS filter rule (`catincRouters & location='Default'`),
+ * via the v1 endpoint: the filter engine lives there, not in v2.
+ *
+ * One request, bounded. A rule can match an entire estate, and the v1 endpoint
+ * serialises full nodes with every join, so it is asked for at most `max + 1`
+ * nodes; the endpoint counts the whole match regardless of the limit, and that
+ * count says whether the rule fits. One node past the limit is enough to know
+ * without a second round trip through the filter engine.
+ *
+ * The one failure worth telling apart is a rule the engine cannot parse, which the
+ * server reports as 400 with a fixed message; everything else is `failed`. That
+ * includes the server failing on a match too large to bind as an `IN` list, which
+ * no request from here can avoid: the caller words that case accordingly.
+ */
+const getNodesByFilterRule = async (rule: string, max: number): Promise<NodeFilterRuleResult> => {
+  try {
+    const resp = await rest.get(endpoint, {
+      params: { filterRule: rule, limit: max + 1, orderBy: 'label', order: 'asc' }
+    })
+
+    if (resp.status === 204 || !resp.data) {
+      return { nodes: [] }
+    }
+
+    const data = resp.data as NodeApiResponse
+    const nodes = data.node ?? []
+    const total = Math.max(data.totalCount ?? 0, nodes.length)
+
+    if (total > max) {
+      return { error: 'too-many', count: total }
+    }
+
+    return { nodes }
+  } catch (err) {
+    const status = (err as { response?: { status?: number }})?.response?.status
+    return { error: status === 400 ? 'invalid' : 'failed' }
+  }
+}
 
 const getNodes = async (queryParameters?: QueryParameters): Promise<NodeApiResponse | false> => {
   let endpointWithQueryString = ''
@@ -184,6 +225,7 @@ const getNodeAlarmStatus = async (id: string): Promise<ValidationResultWithPaylo
 
 export {
   getNodes,
+  getNodesByFilterRule,
   getNodeAlarmStatus,
   getNodeCriticalPath,
   getNodeById,

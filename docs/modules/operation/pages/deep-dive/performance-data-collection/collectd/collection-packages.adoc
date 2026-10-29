@@ -73,6 +73,74 @@ The following example illustrates collector package attributes that use some of 
 <3> Evaluate IPv4 rule to collect for all IPv4 interfaces in the given range.
 <4> Evaluate IPv6 rule to collect for all IPv6 interfaces in the given range.
 
+[[ga-coll-pack-ifalias]]
+=== Store interface data by ifAlias
+
+The SnmpCollector can also store interface metrics in a directory named after the interface's `ifAlias` value, grouped under a domain instead of under the node.
+This keeps the history of a circuit or link together when it moves to another interface or device, as long as the `ifAlias` stays the same.
+The following optional package elements control this behavior; the other collectors ignore them:
+
+[options="header"]
+[cols="1,3,1"]
+|===
+| Element
+| Description
+| Default
+
+| storeByIfAlias
+| Set to `true` to store interface metrics by domain and `ifAlias`, in addition to storing them under the node.
+The other elements in this table take effect only when this element is `true`.
+| false
+
+| ifAliasDomain
+| Name of the domain directory that holds the `ifAlias` directories.
+Set it to `nodeid` or `nodelabel` to use a separate domain for each node, named after the node ID or node label.
+| The package name
+
+| storeByNodeID
+| Controls whether interface metrics are also stored under the node. +
+`normal` stores them only for interfaces that are selected for data collection. +
+`true` stores them for interfaces that are selected for data collection and, when `storFlagOverride` is `true`, for any interface with a non-empty `ifAlias`. +
+`false` stores interface metrics only under the domain.
+| normal
+
+| storFlagOverride
+| Set to `true` to store metrics by `ifAlias` for every interface on the node that has a non-empty `ifAlias`, even when the interface is not selected for data collection (see the `snmpStorageFlag` setting of the SNMP collection).
+When `false`, metrics are stored by `ifAlias` only for interfaces that are selected for data collection.
+| false
+
+| ifAliasComment
+| A character or string that starts a comment in the `ifAlias` value.
+The comment string and any text after it are removed from the `ifAlias` before it is used as the directory name.
+An `ifAlias` that starts with the comment string is treated as empty, so it is not stored by `ifAlias` and `storFlagOverride` does not apply to it.
+| n/a
+|===
+
+Interfaces with an empty `ifAlias` are never stored by `ifAlias`.
+Characters in the `ifAlias` other than letters, digits, `-`, `.`, and `_` are replaced with `_` in the directory name.
+The stored data appears in the resource graphs under *Domain* resources.
+
+.Example package that stores interface metrics by `ifAlias`
+[source, xml]
+----
+<package name="circuits" remote="false">
+  <filter>IPADDR != '0.0.0.0'</filter>
+  <include-range begin="1.1.1.1" end="254.254.254.254"/>
+  <storeByIfAlias>true</storeByIfAlias> <1>
+  <storeByNodeID>normal</storeByNodeID>
+  <ifAliasDomain>circuits</ifAliasDomain> <2>
+  <storFlagOverride>true</storFlagOverride> <3>
+  <ifAliasComment>#</ifAliasComment> <4>
+  <service name="SNMP" interval="300000" user-defined="false" status="on">
+    <parameter key="collection" value="default"/>
+  </service>
+</package>
+----
+<1> Store interface metrics by domain and `ifAlias`.
+<2> Store the `ifAlias` directories under the `circuits` domain.
+<3> Store metrics for every interface that has an `ifAlias`, not only for interfaces selected for collection.
+<4> An `ifAlias` of `CUST-0042 # backup link` is stored as `CUST-0042`.
+
 [[ga-rrd-retention]]
 == Default metric retention
 
@@ -107,6 +175,7 @@ The collector and its related Java class must appear at the bottom of the `colle
 
 The following table lists service attributes common to all services.
 For a list of collector-specific parameters and their default values, refer to the specific collector listed in the xref:reference:performance-data-collection/introduction.adoc[] section.
+For the parameters that every collector accepts, such as `thresholding-enabled` and the Minion parameters, see xref:reference:performance-data-collection/introduction.adoc#ref-performance-data-collectors-common-parameters[Common configuration parameters].
 
 [caption=]
 .Common service attributes

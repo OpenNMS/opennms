@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class SnmpProfilesTest  extends XmlTestNoCastor<SnmpProfiles> {
+public class SnmpProfilesTest  extends XmlTest<SnmpProfiles> {
 
     public SnmpProfilesTest(SnmpProfiles sampleObject, String sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

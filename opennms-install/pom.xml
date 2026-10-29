@@ -163,6 +163,12 @@
       <version>${byteBuddyVersion}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy-agent</artifactId>
+      <version>${byteBuddyVersion}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

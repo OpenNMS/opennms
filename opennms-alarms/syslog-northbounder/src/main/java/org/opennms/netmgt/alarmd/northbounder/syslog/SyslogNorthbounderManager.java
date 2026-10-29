@@ -83,7 +83,7 @@ public class SyslogNorthbounderManager implements InitializingBean, Northbounder
      */
     private void registerNorthbounders() throws Exception {
         if (! m_configDao.getConfig().isEnabled()) {
-            LOG.warn("The Syslog NBI is globally disabled, the destinations won't be registered which means all the alarms will be rejected.");
+            LOG.info("The Syslog NBI is globally disabled, the destinations won't be registered which means all the alarms will be rejected.");
             return;
         }
         for (SyslogDestination syslogDestination : m_configDao.getConfig().getDestinations()) {

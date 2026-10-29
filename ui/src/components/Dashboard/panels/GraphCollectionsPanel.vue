@@ -22,8 +22,8 @@ License.
 
 <!--
   Dashboard panel replicating the legacy "KSC Reports" (Graph Collections)
-  search box: a typeahead over the rest/ksc list that opens the chosen
-  collection in the legacy custom view, matching the ksc-box.jsp behavior.
+  search box: a typeahead over the collection list that opens the chosen
+  collection's view page, matching the ksc-box.jsp behavior.
 -->
 <template>
   <div class="search-box">
@@ -43,7 +43,7 @@ License.
         <option
           v-for="collection in collections"
           :key="collection.id"
-          :value="collection.label"
+          :value="collection.title"
         />
       </datalist>
       <button
@@ -58,44 +58,58 @@ License.
       v-if="notFound"
       class="search-box__hint"
     >No graph collection with that name.</p>
+    <p
+      v-if="loadError"
+      class="search-box__hint"
+      data-test="load-error"
+    >{{ loadError }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import type { PanelComponentProps } from '@/types/dashboard'
-import { getGraphCollections, type GraphCollection } from '@/services/graphCollectionsService'
+import { getGraphCollections } from '@/services/graphCollectionsService'
+import type { GraphCollection } from '@/types/graphCollection'
 
-const props = defineProps<PanelComponentProps>()
+defineProps<PanelComponentProps>()
 
+const router = useRouter()
 const query = ref('')
 const notFound = ref(false)
+const loadError = ref('')
 const collections = ref<GraphCollection[]>([])
 
 const load = async () => {
-  collections.value = await getGraphCollections()
+  const result = await getGraphCollections()
+  if (result.success) {
+    collections.value = result.payload ?? []
+    loadError.value = ''
+  } else {
+    loadError.value = result.message
+  }
 }
 
-// Resolve the typed label to a report id and open the legacy custom view —
-// index.jsp ignores a report parameter entirely, so navigating there with the
-// raw text (the previous behavior) silently did nothing.
+// Resolve the typed title to a collection and open its view; an empty box opens the list.
 const open = () => {
   const text = query.value.trim().toLowerCase()
   if (!text) {
-    window.location.assign('/opennms/KSC/index.jsp')
+    router.push('/graph-collections')
     return
   }
-  const match = collections.value.find(c => c.label.toLowerCase() === text)
-    ?? collections.value.find(c => c.label.toLowerCase().includes(text))
+  const match = collections.value.find(c => c.title.toLowerCase() === text)
+    ?? collections.value.find(c => c.title.toLowerCase().includes(text))
   if (!match) {
     notFound.value = true
     return
   }
-  window.location.assign(`/opennms/KSC/customView.htm?type=custom&report=${match.id}`)
+  router.push(`/graph-collections/${match.id}`)
 }
 
+// Read once: the list carries every collection with all its graphs, and titles seldom change,
+// so the dashboard's refresh tick leaves it alone.
 onMounted(load)
-watch(() => props.refreshTick, load)
 </script>
 
 <style scoped lang="scss">

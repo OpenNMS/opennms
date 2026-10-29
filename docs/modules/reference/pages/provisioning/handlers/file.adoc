@@ -17,18 +17,27 @@ endif::[]
 
 To configure a file requisition, follow the steps in xref:reference:provisioning/handlers/introduction.adoc#create-req-def[Create an external requisition], but specify File as the type, and set the path, schedule, and rescan behavior.
 
+The path must be the absolute path to the requisition file on the system that reads the requisition, starting with `/` (for example, `/opt/requisitions/my-requisition.xml`).
+That system is the {page-component-title} server, or the Minion when the URL sets `location`.
+A relative path is resolved against the working directory of the process, not `$\{OPENNMS_HOME}/etc/imports`, and the UI rejects a path that does not start with `/` or that contains a `?` character.
+The file must be readable by the user that runs {page-component-title}.
+
+IMPORTANT: Do not store your source requisition files in `$\{OPENNMS_HOME}/etc/imports`.
+{page-component-title} uses that directory as its own backing store for requisitions, so files that you write there yourself can be overwritten and can cause import problems.
+To create, update, or read requisitions programmatically, use the xref:development:rest/requisitions.adoc[requisitions REST API].
+
 == Examples
 
 === Simple
 
 [source]
 ----
-file:///path/to/my/requisition.xml
+file:///opt/requisitions/my-requisition.xml
 ----
 
 === Using the generic handler
 
 [source]
 ----
-requisition://file?path=/path/to/my/requisition.xml;location=MINION
+requisition://file?path=/opt/requisitions/my-requisition.xml;location=MINION
 ----

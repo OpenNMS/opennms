@@ -49,7 +49,7 @@ If the node has an IP address that matches, the service will be flagged for the 
 
 3+| *Optional*
 
-| isSupported
+| supported
 | Must be set to `true` for detection to succeed.
 | true
 

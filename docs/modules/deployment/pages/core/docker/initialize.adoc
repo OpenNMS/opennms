@@ -37,3 +37,48 @@ docker compose exec horizon bin/config-tester -a <2>
 <1> Reports added/changed/removed files vs. pristine -- doesn't apply fixes.
 <2> Validates syntax/XML only -- won't catch removed or renamed properties.
 
+
+[[docker-install-plugins]]
+.Install plugins from KAR files
+
+Plugins such as the xref:deployment:time-series-storage/timeseries/prometheus-remotewrite.adoc[Prometheus RemoteWrite plugin] ship as Karaf archive (`.kar`) files.
+Karaf in the container installs KAR files that it finds in `/opt/opennms/deploy`.
+To install the plugin's feature on every start, add a file to `etc/featuresBoot.d` that names the feature and the KAR it depends on.
+
+. Create a `deploy` directory next to your `docker-compose.yml` file and copy the plugin's `.kar` file into it.
+. Create a file in `etc/featuresBoot.d` in your configuration volume, or in an overlay directory, with one line for the plugin's feature:
++
+[source, properties]
+----
+<feature-name> wait-for-kar=<kar-name> <1>
+----
+<1> Replace `<feature-name>` with the Karaf feature from the plugin's documentation, and `<kar-name>` with the KAR file name without the `.kar` extension.
+. Mount the KAR file into the deploy directory of the `horizon` service:
++
+[source, docker-compose.yml]
+----
+    volumes:
+      - data-opennms:/opennms-data
+      - data-config:/opt/opennms/etc
+      - ./deploy/<kar-name>.kar:/opt/opennms/deploy/<kar-name>.kar:ro
+----
+. Restart the container with `docker compose up -d`.
+
+The container copies files from the following overlay directories into the {page-component-title} home directory each time the container runs with the `-s`, `-i`, or `-f` option, which lets you add `featuresBoot.d` files and plugin configuration without editing the configuration volume:
+
+[options="header", cols="1,2"]
+|===
+| Mount point
+| Copied to
+
+| `/opt/opennms-overlay`
+| `/opt/opennms`, preserving the directory structure (for example, `etc/featuresBoot.d/my-plugin.boot` or `deploy/my-plugin.kar`).
+
+| `/opt/opennms-etc-overlay`
+| `/opt/opennms/etc`
+
+| `/opt/opennms-jetty-webinf-overlay`
+| `/opt/opennms/jetty-webapps/opennms/WEB-INF`
+|===
+
+NOTE: Files in an overlay replace files with the same name in the configuration volume on every start.

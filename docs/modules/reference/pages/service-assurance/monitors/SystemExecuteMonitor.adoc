@@ -70,8 +70,8 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 [source, xml]
 ----
-<parameter key="args" value="-i $\{ipaddr} -t $\{timeout}"/>
-<parameter key="args" value="http://$\{nodelabel}/$\{svcname}/static"/>
+<parameter key="args" value="-i ${ipaddr} -t ${timeout}"/>
+<parameter key="args" value="http://${nodelabel}/${svcname}/static"/>
 ----
 
 === Exit status example

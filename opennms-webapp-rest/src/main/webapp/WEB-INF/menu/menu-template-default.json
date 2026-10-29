@@ -44,7 +44,7 @@
         {
           "id": "kscReports",
           "name": "Graph Collections",
-          "url": "KSC/index.jsp",
+          "url": "ui/index.html#/graph-collections",
           "locationMatch": "ksc",
           "roles": null
         }

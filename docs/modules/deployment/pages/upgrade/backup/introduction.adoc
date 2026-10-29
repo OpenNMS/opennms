@@ -25,7 +25,7 @@ Please be aware that `/tmp` is not persisted, as most operating systems will del
 
 [{tabs}]
 ====
-CentOS/RHEL 8::
+CentOS/RHEL::
 +
 --
 include::centos-rhel8/backup-centos-rhel8.adoc[]

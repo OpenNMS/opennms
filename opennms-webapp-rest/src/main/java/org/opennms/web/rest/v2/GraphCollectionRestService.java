@@ -37,6 +37,7 @@ import java.util.TreeSet;
 import java.util.function.Supplier;
 
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -114,10 +115,7 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
     /** Legacy pages capped titles at 80 and 40 characters; this is a looser bound on the stored strings. */
     static final int MAX_TITLE_LENGTH = 255;
 
-    /**
-     * Shared with the legacy view page, which reads it through a Spring placeholder that cannot fall
-     * back between keys, so the key is not renamed until that page goes.
-     */
+    /** Kept under its historical key: it is user configuration in opennms.properties. */
     static final String DEFAULT_GRAPHS_PER_LINE_PROPERTY = "ksc.default.graphsPerLine";
 
     @Autowired
@@ -689,9 +687,18 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
 
     // -- plumbing --------------------------------------------------------------------------------
 
+    /**
+     * Error bodies are one plain-text message, or one problem per line, and say so: the class-level
+     * JSON content type would otherwise be stamped on them, and a client that goes by the header
+     * would not read them.
+     */
+    private static Response.ResponseBuilder plainText(final Response.ResponseBuilder builder, final String message) {
+        return builder.entity(message).type(MediaType.TEXT_PLAIN);
+    }
+
     private static Response denyReadOnly(final SecurityContext securityContext) {
         if (securityContext != null && securityContext.isUserInRole(Authentication.ROLE_READONLY)) {
-            return Response.status(Status.FORBIDDEN).entity("Graph collections are read-only for this user.").build();
+            return plainText(Response.status(Status.FORBIDDEN), "Graph collections are read-only for this user.").build();
         }
         return null;
     }
@@ -734,15 +741,15 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
         if (failed == null) {
             return null;
         }
-        return failed.entity("Graph collection " + collection.getId() + " has changed since it was read; fetch it again before writing.").build();
+        return plainText(failed, "Graph collection " + collection.getId() + " has changed since it was read; fetch it again before writing.").build();
     }
 
     private static Response notFound(final int id) {
-        return Response.status(Status.NOT_FOUND).entity("Graph collection " + id + " was not found.").build();
+        return plainText(Response.status(Status.NOT_FOUND), "Graph collection " + id + " was not found.").build();
     }
 
     private static Response badRequest(final String message) {
-        return Response.status(Status.BAD_REQUEST).entity(message).build();
+        return plainText(Response.status(Status.BAD_REQUEST), message).build();
     }
 
     /** One problem per line, so a single-problem body reads exactly as before. */
@@ -759,8 +766,7 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
 
     private static Response saveFailed(final Exception e) {
         LOG.error("Can't save the graph collections configuration", e);
-        return Response.status(Status.INTERNAL_SERVER_ERROR)
-                .entity("Can't save the graph collections configuration: " + e.getMessage()).build();
+        return plainText(Response.status(Status.INTERNAL_SERVER_ERROR), "Can't save the graph collections configuration: " + e.getMessage()).build();
     }
 
     /** After a failed save, drop the unsaved in-memory change so the next read matches the file. */

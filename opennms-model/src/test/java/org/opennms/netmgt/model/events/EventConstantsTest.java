@@ -36,6 +36,7 @@ import java.util.concurrent.Callable;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -353,12 +354,14 @@ public class EventConstantsTest {
 
     @Test
     public void testEventLegacyGmtDateParseLegacyFormatter() throws Exception {
+        assumeCompatLocaleData();
         System.setProperty("org.opennms.events.legacyFormatter", "true");
         parseText(m_legacyGmtText);
     }
 
     @Test
     public void testEventLegacyZoneDateParseLegacyFormatter() throws Exception {
+        assumeCompatLocaleData();
         System.setProperty("org.opennms.events.legacyFormatter", "true");
         parseText(m_legacyZoneText);
     }
@@ -377,12 +380,14 @@ public class EventConstantsTest {
 
     @Test
     public void testEventLegacyFullGmtDateParseLegacyFormatter() throws Exception {
+        assumeCompatLocaleData();
         System.setProperty("org.opennms.events.legacyFormatter", "true");
         parseText(m_legacyFullGmtText);
     }
 
     @Test
     public void testEventLegacyFullZoneDateParseLegacyFormatter() throws Exception {
+        assumeCompatLocaleData();
         System.setProperty("org.opennms.events.legacyFormatter", "true");
         parseText(m_legacyFullZoneText);
     }
@@ -401,6 +406,14 @@ public class EventConstantsTest {
         String formatted = EventConstants.getEventDatetimeFormatter().format(new Date(m_timestamp));
         LOG.debug("formatted date as " + m_testLocale.getDisplayLanguage() + ", " + m_testTimeZone.getID() + ": " + formatted + " (legacy)");
         assertEquals(m_testLocale + ": formatted string should equal " + m_gmtText, m_gmtText, formatted);
+    }
+
+    /**
+     * The localized legacy strings use the COMPAT (JRE) locale data. JDK 23 removed that data, so only the English strings still parse.
+     */
+    private void assumeCompatLocaleData() {
+        Assume.assumeTrue("JDK 23 and later have no COMPAT locale data for " + m_testLocale,
+                Locale.ENGLISH.getLanguage().equals(m_testLocale.getLanguage()));
     }
 
     private void parseText(final String text) throws ParseException {

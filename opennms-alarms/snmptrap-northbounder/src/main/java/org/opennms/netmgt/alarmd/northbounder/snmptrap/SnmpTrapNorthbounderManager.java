@@ -85,7 +85,7 @@ public class SnmpTrapNorthbounderManager implements InitializingBean, Northbound
      */
     private void registerNorthbounders() throws Exception {
         if (! m_configDao.getConfig().isEnabled()) {
-            LOG.warn("The SNMP Trap NBI is globally disabled, the destinations won't be registered which means all the alarms will be rejected.");
+            LOG.info("The SNMP Trap NBI is globally disabled, the destinations won't be registered which means all the alarms will be rejected.");
             return;
         }
         for (SnmpTrapSink sink : m_configDao.getConfig().getSnmpTrapSinks()) {

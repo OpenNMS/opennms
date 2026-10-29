@@ -52,7 +52,7 @@ opennms:collect -l MINION -n NODES=n1 -p org.opennms.netmgt.collectd.SnmpCollect
 ----
 +
 NOTE: The collection set is persisted using the RRD settings (step, heartbeat, RRAs, and base directory) from the collector's data collection configuration, just like a scheduled collection.
-Any JRB/RRD files that do not exist yet are created on the fly.
+Any RRD files that do not exist yet are created on the fly.
 Pass a `collection=<name>` attribute to persist using a data collection other than `default`.
 
 A complete list of options is available using the help command.

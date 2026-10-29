@@ -26,6 +26,10 @@ import { getNewsFeed } from './newsfeedService'
 import type { DashboardLayout, DashboardPanel } from '@/types/dashboard'
 import { createDefaultLayout, NEWSFEED_PANEL_TYPE } from '@/components/Dashboard/defaultLayout'
 
+// Panel types removed from the product on purpose. Unlike an unknown type, these
+// are dropped from stored layouts so the next save removes them for good.
+const REMOVED_PANEL_TYPES = new Set(['html-content'])
+
 // A stored document is arbitrary JSON (any admin/REST client can PUT it), so
 // coerce it into a complete, safe layout: fill missing top-level blocks from
 // the defaults and drop panels that are malformed or reference an unknown type.
@@ -41,6 +45,7 @@ export const normalizeLayout = (raw: unknown): DashboardLayout => {
       !!p && typeof p === 'object'
         && typeof (p as DashboardPanel).id === 'string'
         && typeof (p as DashboardPanel).type === 'string'
+        && !REMOVED_PANEL_TYPES.has((p as DashboardPanel).type)
         // keep panels whose type isn't in this instance's registry (e.g. a plugin
         // panel or an older/newer type) — they render as a "missing" placeholder
         // rather than being silently pruned and lost the next time the layout saves
