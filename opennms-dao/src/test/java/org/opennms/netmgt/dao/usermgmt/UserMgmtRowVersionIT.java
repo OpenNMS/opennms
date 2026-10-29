@@ -578,4 +578,80 @@ public class UserMgmtRowVersionIT implements InitializingBean {
         }
         fail("no backend started waiting for a lock within 10 s");
     }
+
+    private int createCategory(final int id, final String name) {
+        assertEquals(1, update("INSERT INTO categories (categoryid, categoryname) VALUES (?, ?)", id, name));
+        return id;
+    }
+
+    @Test
+    public void testCategoryAuthorizationInsertBumpsGroupVersion() {
+        final int group = createGroup("ops");
+        final int other = createGroup("dev");
+        final int category = createCategory(9001, "Edge");
+        final int before = version(VersionedTable.groups, group);
+        final int otherBefore = version(VersionedTable.groups, other);
+
+        assertEquals(1, update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops"));
+
+        assertBumped("group", before, VersionedTable.groups, group);
+        assertEquals(otherBefore, version(VersionedTable.groups, other));
+    }
+
+    @Test
+    public void testCategoryAuthorizationDeleteBumpsGroupVersion() {
+        final int group = createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        final int before = version(VersionedTable.groups, group);
+
+        assertEquals(1, update("DELETE FROM category_group WHERE categoryid = ? AND groupid = ?", category, "ops"));
+
+        assertBumped("group", before, VersionedTable.groups, group);
+    }
+
+    @Test
+    public void testCategoryDeleteBumpsAuthorizedGroupVersions() {
+        final int ops = createGroup("ops");
+        final int dev = createGroup("dev");
+        final int other = createGroup("other");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "dev");
+        final int opsBefore = version(VersionedTable.groups, ops);
+        final int devBefore = version(VersionedTable.groups, dev);
+        final int otherBefore = version(VersionedTable.groups, other);
+
+        // the authorizations go with the category (ON DELETE CASCADE)
+        assertEquals(1, update("DELETE FROM categories WHERE categoryid = ?", category));
+
+        assertBumped("ops", opsBefore, VersionedTable.groups, ops);
+        assertBumped("dev", devBefore, VersionedTable.groups, dev);
+        assertEquals(otherBefore, version(VersionedTable.groups, other));
+    }
+
+    @Test
+    public void testCategoryAuthorizationForUnknownGroupIsNoOp() {
+        final int group = createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        final int before = version(VersionedTable.groups, group);
+
+        assertEquals(1, update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "nobody"));
+
+        assertEquals(before, version(VersionedTable.groups, group));
+    }
+
+    @Test
+    public void testUnchangedCategoryAuthorizationsKeepGroupVersion() {
+        final int group = createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        final int before = version(VersionedTable.groups, group);
+
+        // a category changed or added without an authorization of the group is no change of the group
+        update("UPDATE categories SET categorydescription = 'edge' WHERE categoryid = ?", category);
+        createCategory(9002, "Core");
+
+        assertEquals(before, version(VersionedTable.groups, group));
+    }
 }

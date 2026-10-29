@@ -861,4 +861,43 @@ INSERT INTO usermgmt_initialized (initialized_by) SELECT 'liquibase' WHERE EXIST
         </rollback>
     </changeSet>
 
+    <!-- The category authorizations of a group live in category_group, outside the groups table, and its groupid is
+         the group name (no foreign key). Every writer of them (the v2 API, v1 /rest/groups/{g}/categories, deleting
+         a category, which cascades) must make a stale group editor get 412, so a change moves the version of the
+         named group. usermgmt_bump_row_version replaces the version + 1 with the next sequence value, and an
+         update that changes nothing does not bump. Lock order: the trigger updates only the one named groups
+         row and takes no usermgmt_version lock. A name of no group updates no row. -->
+    <changeSet author="stheleman" id="37.0.0-category-group-version">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1">SELECT count(*) FROM pg_proc WHERE proname = 'usermgmt_bump_for_category_group' AND pronamespace = current_schema()::regnamespace</sqlCheck>
+            </not>
+        </preConditions>
+
+        <createProcedure>
+CREATE OR REPLACE FUNCTION usermgmt_bump_for_category_group() RETURNS trigger AS $$
+BEGIN
+    IF TG_OP &lt;&gt; 'DELETE' THEN
+        UPDATE groups SET version = version + 1 WHERE name = NEW.groupid;
+    END IF;
+    IF TG_OP &lt;&gt; 'INSERT' AND (TG_OP = 'DELETE' OR OLD.groupid IS DISTINCT FROM NEW.groupid) THEN
+        UPDATE groups SET version = version + 1 WHERE name = OLD.groupid;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <sql>
+CREATE TRIGGER category_group_bump_group AFTER INSERT OR UPDATE OR DELETE ON category_group FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_for_category_group();
+        </sql>
+
+        <rollback>
+            <sql>
+DROP TRIGGER IF EXISTS category_group_bump_group ON category_group;
+DROP FUNCTION IF EXISTS usermgmt_bump_for_category_group();
+            </sql>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
