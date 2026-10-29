@@ -28,12 +28,19 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,6 +55,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.upgrade.implementations.DefaultUsersSeedOffline;
 import org.opennms.upgrade.support.UsersGroupsImportTool.Prompt;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -73,6 +81,8 @@ public class UsersGroupsImportToolIT implements TemporaryDatabaseAware<Temporary
     public TemporaryFolder m_home = new TemporaryFolder();
 
     private final List<String> m_questions = new ArrayList<>();
+    // what the tool printed while it held the usermgmt_version locks
+    private final List<String> m_printedUnderLock = new ArrayList<>();
     private ByteArrayOutputStream m_out;
     private ByteArrayOutputStream m_err;
 
@@ -162,6 +172,8 @@ public class UsersGroupsImportToolIT implements TemporaryDatabaseAware<Temporary
         assertEquals(3, run(answer(null), "--users", m_users.getPath(), "--overwrite"));
 
         assertTrue(err(), err().contains("--quiet"));
+        // System.console() is null when standard input or output is not a terminal
+        assertTrue(err(), err().contains("not a terminal"));
         assertEquals(before, snapshot());
     }
 
@@ -244,6 +256,106 @@ public class UsersGroupsImportToolIT implements TemporaryDatabaseAware<Temporary
     }
 
     @Test
+    public void testExistingEntryThatFailsACheckIsNotListedAsOverwritten() throws Exception {
+        final int admin = m_jdbc.queryForObject("SELECT id FROM users WHERE username = 'admin'", Integer.class);
+        final int group = m_jdbc.queryForObject("SELECT id FROM groups WHERE name = 'Admin'", Integer.class);
+        m_jdbc.update("INSERT INTO oncall_roles (id, name, description, membership_group_id, supervisor_user_id, created_time, last_modified) "
+                + "VALUES (nextval('oncall_roles_id_seq'), 'Night', 'Night shift', ?, ?, NOW(), NOW())", group, admin);
+        writeGroups("<roles><role name=\"Night\" membership-group=\"Admin\" supervisor=\"ghost\" description=\"Nights\">"
+                + "<schedule name=\"admin\" type=\"daily\"><time begins=\"00:00:00\" ends=\"06:00:00\"/></schedule></role></roles>");
+        final List<Object> before = snapshot();
+
+        // confirmed, the re-check under the locks still finds the entry that was asked about
+        assertEquals(err(), 0, run(answer("y"), "--groups", m_groups.getPath(), "--overwrite"));
+        assertTrue(m_questions.toString(), m_questions.get(0).contains("  on-call roles: Night\n"));
+        assertNotListedAsOverwritten();
+        assertEquals(before, snapshot());
+
+        assertEquals(err(), 0, run(this::unexpected, "--groups", m_groups.getPath(), "--overwrite", "--quiet"));
+        assertNotListedAsOverwritten();
+        assertEquals(before, snapshot());
+        assertEquals("Night shift", m_jdbc.queryForObject("SELECT description FROM oncall_roles WHERE name = 'Night'", String.class));
+    }
+
+    private void assertNotListedAsOverwritten() {
+        final List<String> lines = lines(out());
+        assertTrue(out(), lines.containsAll(List.of("Skipped on-call role 'Night': supervisor 'ghost' is not a user",
+                "on-call roles: 0 imported, 0 overwritten, 0 existing skipped, 1 invalid skipped")));
+        assertFalse(out(), lines.contains("Existing entries overwritten:"));
+        assertFalse(out(), lines.contains("  on-call roles: Night"));
+    }
+
+    @Test
+    public void testFileWithoutEntriesWarns() throws Exception {
+        // valid files, but empty: most likely the wrong ones (a users.xml given as a groups.xml fails to parse)
+        write(m_users, "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"/>");
+        writeGroups("");
+        final File securityRoles = new File(m_home.getRoot(), "import/security-roles.properties");
+        write(securityRoles, "# no roles\n");
+
+        final int exitCode = run(this::unexpected, "--users", m_users.getPath(), "--groups", m_groups.getPath(),
+                "--security-roles", securityRoles.getPath());
+
+        assertEquals(err(), 0, exitCode);
+        assertTrue(out(), lines(out()).containsAll(List.of("Warning: " + m_users.getPath() + " holds no users.",
+                "Warning: " + m_groups.getPath() + " holds no groups and no on-call roles.",
+                "Warning: " + securityRoles.getPath() + " holds no security roles.",
+                "The import was committed.")));
+    }
+
+    @Test
+    public void testNothingIsPrintedWhileTheLocksAreHeld() throws Exception {
+        writeUsers(user("admin", "New Admin", "ROLE_USER") + user("bob", "Bob", "ROLE_NOPE"));
+
+        // messages and a summary to standard output
+        assertEquals(err(), 0, run(this::unexpected, "--users", m_users.getPath()));
+        assertTrue(out(), out().contains("Skipped user 'bob': security role 'ROLE_NOPE' does not exist"));
+        // an administrator problem to standard error, after the messages
+        assertEquals(1, run(this::unexpected, "--users", m_users.getPath(), "--overwrite", "--quiet"));
+        assertTrue(err(), err().contains("The admin user must keep the ROLE_ADMIN role."));
+        assertTrue(out(), out().contains("Skipped user 'bob': security role 'ROLE_NOPE' does not exist"));
+
+        assertEquals(List.of(), m_printedUnderLock);
+        assertEquals(Integer.valueOf(1), m_jdbc.queryForObject("SELECT COUNT(*) FROM users WHERE username = 'bob'", Integer.class));
+        assertEquals("Administrator", fullName("admin"));
+    }
+
+    @Test
+    public void testFailedCommitDoesNotClaimNothingWasWritten() throws Exception {
+        writeUsers(user("bob", "Bob", "ROLE_USER"));
+        final DataSource dataSource = m_jdbc.getDataSource();
+        // a commit that fails on the way back: the database may have committed or not
+        final DataSource failingCommit = (DataSource) Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[] { DataSource.class },
+                (dataSourceProxy, dataSourceMethod, dataSourceArgs) -> {
+                    if (!"getConnection".equals(dataSourceMethod.getName())) {
+                        return invoke(dataSource, dataSourceMethod, dataSourceArgs);
+                    }
+                    final Connection connection = (Connection) invoke(dataSource, dataSourceMethod, dataSourceArgs);
+                    return Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[] { Connection.class }, (proxy, method, args) -> {
+                        if ("commit".equals(method.getName())) {
+                            connection.rollback();
+                            throw new SQLException("connection lost");
+                        }
+                        return invoke(connection, method, args);
+                    });
+                });
+
+        assertEquals(1, run(failingCommit, this::unexpected, "--users", m_users.getPath()));
+
+        assertTrue(err(), err().contains("may or may not have been written: connection lost"));
+        assertFalse(err(), err().contains("nothing was written"));
+        assertFalse(out(), out().contains("The import was committed."));
+    }
+
+    private static Object invoke(final Object target, final Method method, final Object[] args) throws Throwable {
+        try {
+            return method.invoke(target, args);
+        } catch (final InvocationTargetException e) {
+            throw e.getCause();
+        }
+    }
+
+    @Test
     public void testNoDecodeOption() throws Exception {
         // "a &amp; b" once the XML is parsed
         writeUsers(user("dan", "a &amp;amp; b", "ROLE_USER"));
@@ -263,11 +375,39 @@ public class UsersGroupsImportToolIT implements TemporaryDatabaseAware<Temporary
     }
 
     private int run(final Prompt prompt, final String... args) {
-        m_out = new ByteArrayOutputStream();
-        m_err = new ByteArrayOutputStream();
-        final UsersGroupsImportTool tool = new UsersGroupsImportTool(m_jdbc.getDataSource(), m_home.getRoot(), prompt,
+        return run(m_jdbc.getDataSource(), prompt, args);
+    }
+
+    private int run(final DataSource dataSource, final Prompt prompt, final String... args) {
+        m_out = new LockCheckingOutput();
+        m_err = new LockCheckingOutput();
+        final UsersGroupsImportTool tool = new UsersGroupsImportTool(dataSource, m_home.getRoot(), prompt,
                 new PrintStream(m_out, true, StandardCharsets.UTF_8), new PrintStream(m_err, true, StandardCharsets.UTF_8));
         return tool.run(args);
+    }
+
+    /** Keeps what the tool prints, and adds it to m_printedUnderLock when the usermgmt_version rows are locked. */
+    private final class LockCheckingOutput extends ByteArrayOutputStream {
+        @Override
+        public synchronized void write(final int b) {
+            checkLocks(String.valueOf((char) b));
+            super.write(b);
+        }
+
+        @Override
+        public synchronized void write(final byte[] b, final int off, final int len) {
+            checkLocks(new String(b, off, len, StandardCharsets.UTF_8));
+            super.write(b, off, len);
+        }
+
+        private void checkLocks(final String text) {
+            try {
+                // on a connection of its own, in a transaction of its own: the lock is released at once
+                m_jdbc.queryForList("SELECT name FROM usermgmt_version FOR UPDATE NOWAIT");
+            } catch (final CannotAcquireLockException e) {
+                m_printedUnderLock.add(text);
+            }
+        }
     }
 
     private Prompt answer(final String answer) {

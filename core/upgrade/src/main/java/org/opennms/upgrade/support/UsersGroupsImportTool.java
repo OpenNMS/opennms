@@ -167,6 +167,19 @@ public final class UsersGroupsImportTool {
         }
     }
 
+    /**
+     * What the import prints, kept until its transaction has ended: a reader of the output that is slow or stopped
+     * must not keep the usermgmt_version locks, which every user, group and password change of OpenNMS waits for.
+     */
+    private static final class Report {
+        // for standard output, and for standard error
+        private final List<String> m_lines = new ArrayList<>();
+        private final List<String> m_errors = new ArrayList<>();
+        // set before the commit: once it is sent, a failure does not tell whether the import was written
+        private boolean m_committing;
+        private boolean m_committed;
+    }
+
     /** The parsed files; a list is empty when its file is not given. */
     private static final class Input {
         private List<String> m_securityRoles = Collections.emptyList();
@@ -235,6 +248,7 @@ public final class UsersGroupsImportTool {
         if (input == null) {
             return ERROR;
         }
+        warnAboutEmptyFiles(arguments, input);
 
         Map<String, List<String>> confirmed = null;
         if (arguments.m_overwrite && !arguments.m_quiet && !arguments.m_dryRun) {
@@ -295,6 +309,19 @@ public final class UsersGroupsImportTool {
         }
     }
 
+    /** A file without entries is most likely the wrong file, for example --users and --groups swapped. */
+    private void warnAboutEmptyFiles(final Arguments arguments, final Input input) {
+        if (arguments.m_securityRoles != null && input.m_securityRoles.isEmpty()) {
+            m_out.println("Warning: " + arguments.m_securityRoles + " holds no security roles.");
+        }
+        if (arguments.m_users != null && input.m_users.isEmpty()) {
+            m_out.println("Warning: " + arguments.m_users + " holds no users.");
+        }
+        if (arguments.m_groups != null && input.m_groups.isEmpty() && input.m_onCallRoles.isEmpty()) {
+            m_out.println("Warning: " + arguments.m_groups + " holds no groups and no on-call roles.");
+        }
+    }
+
     /** Lists the existing entries and asks once; prints why when the answer is not yes. */
     private boolean confirm(final Map<String, List<String>> existing) {
         final StringBuilder question = new StringBuilder("These entries of the files exist in the database already:\n");
@@ -306,8 +333,9 @@ public final class UsersGroupsImportTool {
         question.append("Overwrite these ").append(count).append(" existing entries? [y/N]");
         final String answer = m_prompt.ask(question.toString());
         if (answer == null) {
-            m_err.println("There is no console to confirm the overwrite, so nothing was written. "
-                    + "Add --quiet to overwrite without asking, for example in a script.");
+            // System.console() is null when either of them is piped or redirected, for example to tee
+            m_err.println("Standard input or output is not a terminal (piped or redirected), so the overwrite cannot be confirmed "
+                    + "and nothing was written. Add --quiet to overwrite without asking.");
             return false;
         }
         final String trimmed = answer.trim();
@@ -323,11 +351,12 @@ public final class UsersGroupsImportTool {
         if (arguments.m_dryRun) {
             m_out.println("Dry run: the import runs in a transaction that is rolled back, so nothing is written.");
         }
+        final Report report = new Report();
+        final int exitCode;
         try (final Connection connection = m_dataSource.get().getConnection()) {
             connection.setAutoCommit(false);
-            final int exitCode;
             try {
-                exitCode = importInTransaction(connection, arguments, input, confirmed);
+                exitCode = importInTransaction(connection, arguments, input, confirmed, report);
             } catch (final SQLException | RuntimeException e) {
                 try {
                     connection.rollback();
@@ -339,33 +368,52 @@ public final class UsersGroupsImportTool {
             }
             // not in a finally block, where a failure on a lost connection would hide the real error
             connection.setAutoCommit(true);
-            return exitCode;
         } catch (final SQLException | RuntimeException e) {
-            m_err.println("The import failed, so nothing was written: " + message(e));
+            print(report);
+            if (report.m_committed) {
+                // the report ends with "The import was committed."; only the clean-up of the connection failed
+                m_err.println("The connection failed after the commit: " + message(e));
+                return OK;
+            }
+            if (report.m_committing) {
+                m_err.println("The commit failed, so the import may or may not have been written: " + message(e));
+            } else {
+                m_err.println("The import failed, so nothing was written: " + message(e));
+            }
             return ERROR;
         }
+        print(report);
+        return exitCode;
     }
 
-    /** Ends the transaction: commits, or rolls back for a dry run and when a check fails. */
-    private int importInTransaction(final Connection connection, final Arguments arguments, final Input input, final Map<String, List<String>> confirmed) throws SQLException {
+    /** Prints the report after the transaction: standard output first, as the errors come after the messages. */
+    private void print(final Report report) {
+        report.m_lines.forEach(m_out::println);
+        report.m_errors.forEach(m_err::println);
+    }
+
+    /** Ends the transaction: commits, or rolls back for a dry run and when a check fails. Prints only to the report. */
+    private int importInTransaction(final Connection connection, final Arguments arguments, final Input input, final Map<String, List<String>> confirmed,
+                                    final Report report) throws SQLException {
         // before the import reads anything: the managers and the REST API wait until the transaction ends, and
         // the import and its administrator check see the data that it writes over
         DatabasePasswords.lockAll(connection);
         final UsersGroupsXmlImport xmlImport = new UsersGroupsXmlImport(connection, arguments.m_overwrite ? Existing.OVERWRITE : Existing.SKIP,
-                arguments.m_decode, m_out::println);
+                arguments.m_decode, report.m_lines::add);
         xmlImport.securityRoles(input.m_securityRoles);
         xmlImport.users(input.m_users);
         xmlImport.groups(input.m_groups);
         xmlImport.onCallRoles(input.m_onCallRoles);
 
         if (confirmed != null) {
-            // created since the question: nothing is overwritten that the admin did not see
+            // created since the question: nothing is overwritten that the admin did not see. All existing entries,
+            // also those that fail a check, as findExisting() found them for the question
             final Map<String, List<String>> unconfirmed = notIn(xmlImport.existingEntries(), confirmed);
             if (!unconfirmed.isEmpty()) {
                 connection.rollback();
-                m_err.println("These entries were created after the confirmation, and were not confirmed to be overwritten:");
-                printEntries(m_err, unconfirmed);
-                m_err.println("Nothing was written. Run the import again.");
+                report.m_errors.add("These entries were created after the confirmation, and were not confirmed to be overwritten:");
+                addEntries(report.m_errors, unconfirmed);
+                report.m_errors.add("Nothing was written. Run the import again.");
                 return ERROR;
             }
         }
@@ -373,23 +421,26 @@ public final class UsersGroupsImportTool {
         final List<String> problems = xmlImport.administratorProblems();
         if (!problems.isEmpty()) {
             connection.rollback();
-            problems.forEach(m_err::println);
-            m_err.println("Nothing was written.");
+            report.m_errors.addAll(problems);
+            report.m_errors.add("Nothing was written.");
             return ERROR;
         }
         if (arguments.m_dryRun) {
             connection.rollback();
         } else {
+            report.m_committing = true;
             connection.commit();
+            report.m_committed = true;
         }
 
-        if (!xmlImport.existingEntries().isEmpty()) {
-            m_out.println("Existing entries " + (arguments.m_dryRun ? "that would be " : "") + (arguments.m_overwrite ? "overwritten:" : "skipped:"));
-            printEntries(m_out, xmlImport.existingEntries());
+        // only the entries that were overwritten, or skipped as existing: one that failed a check is not changed
+        if (!xmlImport.existingEntriesDone().isEmpty()) {
+            report.m_lines.add("Existing entries " + (arguments.m_dryRun ? "that would be " : "") + (arguments.m_overwrite ? "overwritten:" : "skipped:"));
+            addEntries(report.m_lines, xmlImport.existingEntriesDone());
         }
-        m_out.println(arguments.m_dryRun ? "Summary of what the import would do:" : "Summary:");
+        report.m_lines.add(arguments.m_dryRun ? "Summary of what the import would do:" : "Summary:");
         xmlImport.logSummary();
-        m_out.println(arguments.m_dryRun ? "Dry run: rolled back, nothing was written." : "The import was committed.");
+        report.m_lines.add(arguments.m_dryRun ? "Dry run: rolled back, nothing was written." : "The import was committed.");
         return OK;
     }
 
@@ -407,9 +458,9 @@ public final class UsersGroupsImportTool {
         return missing;
     }
 
-    private static void printEntries(final PrintStream stream, final Map<String, List<String>> entries) {
+    private static void addEntries(final List<String> lines, final Map<String, List<String>> entries) {
         for (final Map.Entry<String, List<String>> entry : entries.entrySet()) {
-            stream.println("  " + entry.getKey() + ": " + String.join(", ", entry.getValue()));
+            lines.add("  " + entry.getKey() + ": " + String.join(", ", entry.getValue()));
         }
     }
 

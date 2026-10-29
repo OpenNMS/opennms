@@ -80,14 +80,16 @@ public final class UsersGroupsXmlImport {
         /** The database has no user data, so there is nothing to meet. */
         NONE_EXPECTED,
         /**
-         * The entry in the database is left as it is and listed in {@link #existingEntries()}. The other entries of
-         * the files can still refer to it.
+         * The entry in the database is left as it is and listed in {@link #existingEntries()} and
+         * {@link #existingEntriesDone()}. The other entries of the files can still refer to it.
          */
         SKIP,
         /**
-         * The file's entry replaces it, and it is listed in {@link #existingEntries()}. The row is updated in place
-         * and keeps its id, so the rows that refer to it stay connected; its child rows (contacts, duty schedules,
-         * security roles of a user, members of a group, schedules of an on-call role) are replaced by the file's.
+         * The file's entry replaces it, and it is listed in {@link #existingEntries()}; also in
+         * {@link #existingEntriesDone()} unless the file's entry fails a check and the entry is left as it is. The
+         * row is updated in place and keeps its id, so the rows that refer to it stay connected; its child rows
+         * (contacts, duty schedules, security roles of a user, members of a group, schedules of an on-call role) are
+         * replaced by the file's.
          */
         OVERWRITE
     }
@@ -130,6 +132,8 @@ public final class UsersGroupsXmlImport {
     private final Map<String, Integer> m_onCallRoleIds;
 
     private final Map<String, List<String>> m_existingEntries = new LinkedHashMap<>();
+    // the existing entries that were skipped as existing or overwritten; not those skipped as invalid
+    private final Map<String, List<String>> m_existingEntriesDone = new LinkedHashMap<>();
     private final Map<String, Counts> m_counts = new LinkedHashMap<>();
     // for administratorProblems(): the users with ROLE_ADMIN before this run, and whether it overwrote admin
     private final List<String> m_administratorsBefore;
@@ -235,10 +239,20 @@ public final class UsersGroupsXmlImport {
 
     /**
      * @return kind ("users", "groups", "on-call roles") -> the names of the entries of the files that were in the
-     *         database already (skipped or overwritten), in file order; empty with {@link Existing#NONE_EXPECTED}
+     *         database already, in file order, also those that failed a check; the same as {@link #findExisting}
+     *         finds before the run. Empty with {@link Existing#NONE_EXPECTED}
      */
     public Map<String, List<String>> existingEntries() {
         return Collections.unmodifiableMap(m_existingEntries);
+    }
+
+    /**
+     * @return kind -> the names of the existing entries that were skipped (with {@link Existing#SKIP}) or overwritten
+     *         (with {@link Existing#OVERWRITE}), in file order. Unlike {@link #existingEntries()}, it leaves out an
+     *         existing entry that the overwrite left as it is because the file's entry failed a check.
+     */
+    public Map<String, List<String>> existingEntriesDone() {
+        return Collections.unmodifiableMap(m_existingEntriesDone);
     }
 
     private static <E extends Enum<E>> Set<String> names(final Class<E> type) {
@@ -283,6 +297,7 @@ public final class UsersGroupsXmlImport {
             if (existingId != null && m_existing == Existing.SKIP) {
                 // its id stays in m_userIds, so the groups and on-call roles of the files can refer to it
                 counts(USERS).m_existingSkipped++;
+                existingDone(USERS, username);
                 continue;
             }
             final String password = user.getPassword() == null ? null : user.getPassword().getEncryptedPassword();
@@ -311,6 +326,7 @@ public final class UsersGroupsXmlImport {
                 update("DELETE FROM user_duty_schedules WHERE user_id = ?", userId);
                 update("DELETE FROM user_security_roles WHERE user_id = ?", userId);
                 counts(USERS).m_overwritten++;
+                existingDone(USERS, username);
                 if (ADMIN.equals(username)) {
                     m_adminOverwritten = true;
                 }
@@ -377,6 +393,7 @@ public final class UsersGroupsXmlImport {
             if (existingId != null && m_existing == Existing.SKIP) {
                 // its id stays in m_groupIds, so the on-call roles of the files can refer to it
                 counts(GROUPS).m_existingSkipped++;
+                existingDone(GROUPS, name);
                 continue;
             }
             if (!fits(name, GROUP_NAME_LENGTH, "group", name, "the name")) {
@@ -399,6 +416,7 @@ public final class UsersGroupsXmlImport {
                 update("DELETE FROM group_members WHERE group_id = ?", groupId);
                 update("DELETE FROM group_duty_schedules WHERE group_id = ?", groupId);
                 counts(GROUPS).m_overwritten++;
+                existingDone(GROUPS, name);
             }
 
             // matched as is: users.xml trims user ids, but nothing trims group members
@@ -433,6 +451,7 @@ public final class UsersGroupsXmlImport {
             final Integer existingId = recordExisting(ONCALL_ROLES, m_onCallRoleIds, name);
             if (existingId != null && m_existing == Existing.SKIP) {
                 counts(ONCALL_ROLES).m_existingSkipped++;
+                existingDone(ONCALL_ROLES, name);
                 continue;
             }
             final Integer groupId = m_groupIds.get(role.getMembershipGroup());
@@ -465,6 +484,7 @@ public final class UsersGroupsXmlImport {
                 // their times go with them (ON DELETE CASCADE)
                 update("DELETE FROM oncall_schedules WHERE oncall_role_id = ?", roleId);
                 counts(ONCALL_ROLES).m_overwritten++;
+                existingDone(ONCALL_ROLES, name);
             }
 
             int position = 0;
@@ -622,6 +642,11 @@ public final class UsersGroupsXmlImport {
             m_existingEntries.computeIfAbsent(kind, k -> new ArrayList<>()).add(name);
         }
         return id;
+    }
+
+    /** Adds an existing entry that was skipped as existing or overwritten to {@link #existingEntriesDone()}. */
+    private void existingDone(final String kind, final String name) {
+        m_existingEntriesDone.computeIfAbsent(kind, k -> new ArrayList<>()).add(name);
     }
 
     private String decode(final String value) {

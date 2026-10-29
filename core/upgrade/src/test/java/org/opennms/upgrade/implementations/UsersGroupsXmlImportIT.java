@@ -183,6 +183,7 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
         final UsersGroupsXmlImport xmlImport = importFiles(Existing.SKIP, true);
 
         assertEquals(Map.of("users", List.of("admin"), "groups", List.of("Ops")), xmlImport.existingEntries());
+        assertEquals(xmlImport.existingEntries(), xmlImport.existingEntriesDone());
         assertEquals(adminVersion, version("users", m_admin));
         assertEquals(opsVersion, version("groups", m_ops));
         m_sessionUtils.withReadOnlyTransaction(() -> {
@@ -208,6 +209,7 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
         final UsersGroupsXmlImport xmlImport = importFiles(Existing.OVERWRITE, true);
 
         assertEquals(Map.of("users", List.of("jane"), "groups", List.of("Ops")), xmlImport.existingEntries());
+        assertEquals(xmlImport.existingEntries(), xmlImport.existingEntriesDone());
         m_sessionUtils.withReadOnlyTransaction(() -> {
             final UserAccount jane = m_userDao.findByUsername("jane");
             assertEquals(Integer.valueOf(m_jane), jane.getId());
@@ -237,6 +239,31 @@ public class UsersGroupsXmlImportIT implements TemporaryDatabaseAware<TemporaryD
         });
         assertTrue(m_messages.toString(), m_messages.contains("users: 0 imported, 1 overwritten, 0 existing skipped, 0 invalid skipped"));
         assertTrue(m_messages.toString(), m_messages.contains("groups: 0 imported, 1 overwritten, 0 existing skipped, 0 invalid skipped"));
+    }
+
+    @Test
+    public void testOverwriteLeavesExistingEntriesThatFailACheck() throws Exception {
+        writeUsers("<user><user-id>jane</user-id><password>" + "p".repeat(513) + "</password></user>");
+        writeGroups("<roles><role name=\"Night\" membership-group=\"Ops\" supervisor=\"ghost\" description=\"Nights\">"
+                + "<schedule name=\"admin\" type=\"daily\"><time begins=\"00:00:00\" ends=\"06:00:00\"/></schedule>"
+                + "</role></roles>");
+        final int janeVersion = version("users", m_jane);
+        final int nightVersion = version("oncall_roles", m_night);
+        final Map<String, List<String>> found;
+        try (final Connection connection = DataSourceFactory.getInstance().getConnection()) {
+            found = UsersGroupsXmlImport.findExisting(connection, users(), groups(), onCallRoles());
+        }
+
+        final UsersGroupsXmlImport xmlImport = importFiles(Existing.OVERWRITE, true);
+
+        // still found, for the check against the confirmed entries, but neither was overwritten
+        assertEquals(Map.of("users", List.of("jane"), "on-call roles", List.of("Night")), xmlImport.existingEntries());
+        assertEquals(found, xmlImport.existingEntries());
+        assertEquals(Map.of(), xmlImport.existingEntriesDone());
+        assertEquals(janeVersion, version("users", m_jane));
+        assertEquals(nightVersion, version("oncall_roles", m_night));
+        assertTrue(m_messages.toString(), m_messages.contains("users: 0 imported, 0 overwritten, 0 existing skipped, 1 invalid skipped"));
+        assertTrue(m_messages.toString(), m_messages.contains("on-call roles: 0 imported, 0 overwritten, 0 existing skipped, 1 invalid skipped"));
     }
 
     @Test
