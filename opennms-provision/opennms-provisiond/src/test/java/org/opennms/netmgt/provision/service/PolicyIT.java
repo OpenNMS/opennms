@@ -28,6 +28,7 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -130,7 +131,7 @@ public class PolicyIT extends ProvisioningITCase {
 
         m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/NMS-5414.xml"), Boolean.TRUE.toString());
         waitForEverything();
-        scanFinished.await();
+        assertTrue("import scan did not finish", scanFinished.await(5, TimeUnit.MINUTES));
 
         final OnmsNode node = m_nodeDao.get(nodeId);
         final Task scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation(), null).createTask();
