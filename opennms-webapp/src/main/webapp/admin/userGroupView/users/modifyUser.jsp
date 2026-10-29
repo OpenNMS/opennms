@@ -428,7 +428,7 @@
     <div class="form-row form-group">
           <label for="tuiPin" class="col-sm-2 col-form-label">Telephone PIN</label>
           <div class="col-sm-10">
-              <input class="form-control" id="tuiPin" type="text" name="tuiPin" value="<%= WebSecurityUtils.sanitizeString(tuiPin) %>" ng-non-bindable/>
+              <input class="form-control" id="tuiPin" type="text" name="tuiPin" value="<%= (tuiPin == null ? "" : Encode.forHtmlAttribute(tuiPin)) %>" ng-non-bindable/>
           </div>
     </div>
 
