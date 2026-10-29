@@ -51,3 +51,8 @@ Download any backup that you want to keep before you delete it.
 * The *Device Configs* page shows the most recently updated backup of each IP interface and configuration type.
 If you delete that backup, the page shows the next most recent one.
 If you delete all backups of an IP interface, the interface no longer appears on the page until the next backup attempt for it.
+
+{page-component-title} also deletes backups automatically in the following cases:
+
+* After a successful backup, it deletes the backups of that IP interface and service that are older than the `dcb:retention-period` metadata value (default `P1Y`, one year), except the most recent one (see xref:deep-dive/device-config-backup/dcb-requisition.adoc[]).
+* When an IP interface is deleted, it deletes all backups of that interface.
