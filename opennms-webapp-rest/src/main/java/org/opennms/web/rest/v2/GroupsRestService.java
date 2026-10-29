@@ -207,7 +207,6 @@ public class GroupsRestService implements GroupsRestApi {
             // store the name, so they move here, in the same transaction
             group.setName(newName);
             m_userGroupDao.saveOrUpdate(group);
-            m_userGroupDao.flush();
             m_groupService.moveCategoryAuthorizations(name, newName);
             m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.groups, group.getId());
@@ -240,7 +239,6 @@ public class GroupsRestService implements GroupsRestApi {
             }
             m_support.checkNotDestinationPathTarget("Group " + name, name);
             m_userGroupDao.delete(group);
-            m_userGroupDao.flush();
             // without this, a future group reusing the name would silently inherit the old authorizations
             m_groupService.clearCategoryAuthorizations(name);
             m_support.flushAndCheckConstraints();

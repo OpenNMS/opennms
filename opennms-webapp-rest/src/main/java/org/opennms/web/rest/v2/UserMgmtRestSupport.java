@@ -84,14 +84,22 @@ public class UserMgmtRestSupport {
     private static final String DEADLOCK = "40P01";
     private static final String SERIALIZATION_FAILURE = "40001";
 
+    /** The deferred constraints of the user-management tables, checked by {@link #flushAndCheckConstraints}. */
+    private static final String DEFERRED_CONSTRAINTS = "uk_user_contacts_user_type, uk_group_members_group_user";
+
     @Autowired
     private UserMgmtVersionDao m_versionDao;
 
     @Autowired
     private UserMgmtManagers m_managers;
 
+    /** Translates Hibernate's exceptions, e.g. a unique violation to DataIntegrityViolationException. */
+    private HibernateTemplate m_hibernateTemplate;
+
     @Autowired
-    private SessionFactory m_sessionFactory;
+    void setSessionFactory(final SessionFactory sessionFactory) {
+        m_hibernateTemplate = new HibernateTemplate(sessionFactory);
+    }
 
     /** The destination paths that notifd sends to. */
     static final Callable<Collection<Path>> NOTIFD_DESTINATION_PATHS = () -> {
@@ -144,16 +152,18 @@ public class UserMgmtRestSupport {
      * Writes out the pending changes and checks the deferred constraints now ({@code uk_user_contacts_user_type},
      * {@code uk_group_members_group_user}), so that a violation is thrown here, inside the service method, where
      * {@link #translate} turns it into an HTTP error, and not by the commit after the method returns, which would be
-     * a 500. Call it after a write's last change: the constraints stay immediate for the rest of the transaction.
+     * a 500. Only these two constraints are checked, and they are deferred again afterwards, so that later changes
+     * in the same transaction are checked at the next call or at the commit. Call it after a write's last change.
      * <p>
      * In READ COMMITTED, PostgreSQL raises neither a deadlock nor a serialization failure at COMMIT itself, so after
      * this the commit can only fail for connection-level reasons.
      */
     public void flushAndCheckConstraints() {
-        // the template translates Hibernate's exceptions, e.g. a unique violation to DataIntegrityViolationException
-        new HibernateTemplate(m_sessionFactory).execute(session -> {
+        m_hibernateTemplate.execute(session -> {
             session.flush();
-            session.createNativeQuery("SET CONSTRAINTS ALL IMMEDIATE").executeUpdate();
+            // setting a deferred constraint to IMMEDIATE checks the pending changes at once
+            session.createNativeQuery("SET CONSTRAINTS " + DEFERRED_CONSTRAINTS + " IMMEDIATE").executeUpdate();
+            session.createNativeQuery("SET CONSTRAINTS " + DEFERRED_CONSTRAINTS + " DEFERRED").executeUpdate();
             return null;
         });
     }

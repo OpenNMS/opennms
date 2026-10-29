@@ -72,7 +72,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -316,7 +315,7 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testDeferredDuplicateContactIsReportedBeforeTheCommit() throws Exception {
         createUser("dupcontact", u -> u.setContact(ContactType.email, "a@example.org", null));
         final UserMgmtRestSupport support = new UserMgmtRestSupport();
-        ReflectionTestUtils.setField(support, "m_sessionFactory", m_sessionFactory);
+        support.setSessionFactory(m_sessionFactory);
         final RuntimeException translated = new TransactionTemplate(m_transactionManager).execute(status -> {
             status.setRollbackOnly();
             final Session session = m_sessionFactory.getCurrentSession();

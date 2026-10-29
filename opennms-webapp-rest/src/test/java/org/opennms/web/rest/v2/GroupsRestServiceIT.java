@@ -68,7 +68,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -363,7 +362,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testDeferredDuplicateMemberIsReportedBeforeTheCommit() throws Exception {
         createGroup("dupmember", g -> g.getMembers().add(m_userAccountDao.findByUsername("admin")));
         final UserMgmtRestSupport support = new UserMgmtRestSupport();
-        ReflectionTestUtils.setField(support, "m_sessionFactory", m_sessionFactory);
+        support.setSessionFactory(m_sessionFactory);
         final RuntimeException translated = new TransactionTemplate(m_transactionManager).execute(status -> {
             status.setRollbackOnly();
             final Session session = m_sessionFactory.getCurrentSession();
@@ -382,6 +381,29 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertNotNull("the duplicate was not reported", translated);
         assertEquals(409, ((WebApplicationException) translated).getResponse().getStatus());
         assertEquals("The change conflicts with related data. Reload and try again.", ((WebApplicationException) translated).getResponse().getEntity());
+    }
+
+    /** After the check, the constraints are deferred again: a later duplicate is reported by the next check, not by its statement. */
+    @Test
+    public void testConstraintsAreDeferredAgainAfterTheCheck() throws Exception {
+        createGroup("deferagain", g -> g.getMembers().add(m_userAccountDao.findByUsername("admin")));
+        final UserMgmtRestSupport support = new UserMgmtRestSupport();
+        support.setSessionFactory(m_sessionFactory);
+        final RuntimeException reported = new TransactionTemplate(m_transactionManager).execute(status -> {
+            status.setRollbackOnly();
+            support.flushAndCheckConstraints();
+            final Session session = m_sessionFactory.getCurrentSession();
+            // an immediate constraint would refuse this statement
+            session.createNativeQuery("INSERT INTO group_members (group_id, user_id, position) SELECT g.id, u.id, 1 FROM groups g, users u"
+                    + " WHERE g.name = 'deferagain' AND u.username = 'admin'").executeUpdate();
+            try {
+                support.flushAndCheckConstraints();
+                return null;
+            } catch (final RuntimeException e) {
+                return e;
+            }
+        });
+        assertTrue(String.valueOf(reported), reported instanceof DataIntegrityViolationException);
     }
 
     /** A fresh database, so that the number of groups is known. */
