@@ -40,6 +40,10 @@
                     <excludes>
                         <exclude>**/*GwtTest.java</exclude>
                     </excludes>
+                    <systemPropertyVariables>
+                        <!-- verified against the jsoup shaded into jinjava by JinjavaHtmlFiltersTest -->
+                        <jsoupVersion>${jsoupVersion}</jsoupVersion>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>
@@ -220,9 +224,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.hubspot.jinjava</groupId>
-            <artifactId>jinjava</artifactId>
-            <version>2.7.6</version>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>org.opennms.dependencies.jinjava-shaded</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
