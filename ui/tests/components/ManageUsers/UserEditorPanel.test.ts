@@ -1,5 +1,6 @@
 import UserEditorPanel from '@/components/ManageUsers/UserEditorPanel.vue'
 import { useUserAdminStore } from '@/stores/userAdminStore'
+import { OnmsSelect } from '@opennms/onms-ui'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -20,6 +21,7 @@ describe('UserEditorPanel.vue', () => {
 
   const setPassword = async (value: string) => {
     await wrapper.find('[data-test="password-input"] input').setValue(value)
+    await wrapper.find('[data-test="password-confirm-input"] input').setValue(value)
   }
 
   beforeEach(() => {
@@ -183,6 +185,88 @@ describe('UserEditorPanel.vue', () => {
     await wrapper.setProps({ user: { userId: 'ana', dutySchedules: [], roles: [], version: 2 }})
     expect(wrapper.find('[data-test="email-input"]').isVisible()).toBe(true)
     wrapper.unmount()
+  })
+
+  describe('time zone', () => {
+    const saveUser = async () => {
+      await wrapper.find('[data-test="save-button"]').trigger('click')
+      await flushPromises()
+    }
+
+    it('sends an empty string when the time zone is cleared', async () => {
+      await mountPanel({ userId: 'jose', timeZoneId: 'America/New_York', dutySchedules: [], roles: [] })
+      wrapper.findComponent(OnmsSelect).vm.$emit('update:modelValue', null)
+      await flushPromises()
+      await saveUser()
+
+      expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({ timeZoneId: '' }))
+    })
+
+    it('sends the stored time zone when it is untouched', async () => {
+      await mountPanel({ userId: 'jose', timeZoneId: 'America/New_York', dutySchedules: [], roles: [] })
+      await saveUser()
+
+      expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({ timeZoneId: 'America/New_York' }))
+    })
+
+    it('offers a stored alias missing from the browser list, selected, and keeps it on save', async () => {
+      await mountPanel({ userId: 'jose', timeZoneId: 'US/Eastern', dutySchedules: [], roles: [] })
+      const select = wrapper.findComponent(OnmsSelect)
+
+      expect(select.props('options')).toContain('US/Eastern')
+      expect(select.props('modelValue')).toBe('US/Eastern')
+      await saveUser()
+
+      expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({ timeZoneId: 'US/Eastern' }))
+    })
+  })
+
+  describe('confirm password on create', () => {
+    const confirm = () => wrapper.find('[data-test="password-confirm-input"] input')
+    const saveDisabled = () => wrapper.find('[data-test="save-button"]').attributes('disabled')
+
+    it('keeps Save disabled and shows the mismatch message until the passwords match', async () => {
+      await mountPanel()
+      await wrapper.find('[data-test="user-id-input"]').setValue('jose')
+      await wrapper.find('[data-test="password-input"] input').setValue('secret')
+      expect(saveDisabled()).toBeDefined()
+
+      await confirm().setValue('secrex')
+      expect(wrapper.text()).toContain('Passwords do not match')
+      expect(saveDisabled()).toBeDefined()
+
+      await confirm().setValue('secret')
+      expect(wrapper.text()).not.toContain('Passwords do not match')
+      expect(saveDisabled()).toBeUndefined()
+    })
+
+    it('is not shown when editing a user', async () => {
+      await mountPanel({ userId: 'jose', dutySchedules: [], roles: [] })
+
+      expect(wrapper.find('[data-test="password-input"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="password-confirm-input"]').exists()).toBe(false)
+    })
+  })
+
+  describe('comments', () => {
+    it('is a textarea whose multi-line value round-trips unchanged', async () => {
+      await mountPanel({ userId: 'jose', userComments: 'line one\nline two', dutySchedules: [], roles: [] })
+      const input = wrapper.find('[data-test="comments-input"]')
+
+      expect(input.element.tagName).toBe('TEXTAREA')
+      expect((input.element as HTMLTextAreaElement).value).toBe('line one\nline two')
+    })
+
+    it('accepts a newly typed multi-line comment and sends its inner newlines', async () => {
+      await mountPanel({ userId: 'jose', dutySchedules: [], roles: [] })
+      await wrapper.find('[data-test="comments-input"]').setValue('  first\nsecond\n\nthird  ')
+
+      expect(wrapper.find('#user-editor-comments-error').exists()).toBe(false)
+      await wrapper.find('[data-test="save-button"]').trigger('click')
+      await flushPromises()
+
+      expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({ userComments: 'first\nsecond\n\nthird' }))
+    })
   })
 
   it('closes on Back and on Cancel without saving', async () => {

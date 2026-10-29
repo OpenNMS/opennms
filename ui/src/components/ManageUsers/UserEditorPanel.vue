@@ -60,6 +60,22 @@
                 />
               </FormField>
               <FormField
+                v-if="!isEditing"
+                label="Confirm Password"
+                for="user-editor-password-confirm"
+                required
+                :error="passwordMismatch ? 'Passwords do not match' : undefined"
+              >
+                <OnmsPassword
+                  v-model="form.passwordConfirm"
+                  inputId="user-editor-password-confirm"
+                  :feedback="false"
+                  toggleMask
+                  fluid
+                  data-test="password-confirm-input"
+                />
+              </FormField>
+              <FormField
                 label="Full Name"
                 for="user-editor-fullname"
               >
@@ -74,9 +90,12 @@
                 for="user-editor-comments"
                 :error="commentsProblem || undefined"
               >
-                <OnmsInputText
+                <OnmsTextarea
                   id="user-editor-comments"
                   v-model="form.comments"
+                  :rows="3"
+                  autoResize
+                  fluid
                   :invalid="!!commentsProblem"
                   data-test="comments-input"
                 />
@@ -207,7 +226,8 @@ import {
   OnmsTabList,
   OnmsTabPanel,
   OnmsTabPanels,
-  OnmsTabs
+  OnmsTabs,
+  OnmsTextarea
 } from '@opennms/onms-ui'
 
 import DutyScheduleEditor from '@/components/Common/DutyScheduleEditor.vue'
@@ -222,7 +242,7 @@ import { ManagedUser, ManagedUserCreate } from '@/types/userAdmin'
 
 // IANA zone ids for the time-zone picker; supportedValuesOf is present in the
 // app's target browsers, guarded so a missing implementation just yields no list
-const timeZoneOptions: string[] = (() => {
+const browserTimeZones: string[] = (() => {
   try {
     return (Intl as unknown as { supportedValuesOf(key: string): string[] }).supportedValuesOf('timeZone')
   } catch {
@@ -247,6 +267,7 @@ const { reportWrite } = useAdminWriteFeedback()
 const form = reactive({
   userId: '',
   password: '',
+  passwordConfirm: '',
   fullName: '',
   comments: '',
   email: '',
@@ -287,6 +308,14 @@ const pagerEmailProblem = computed(() =>
 const commentsProblem = computed(() =>
   changedOnly(form.comments, props.user?.userComments ?? '', validateAdminComments(form.comments)))
 
+// a stored zone the browser list lacks (an alias such as US/Eastern) must still show as selected
+const timeZoneOptions = computed(() => {
+  const stored = props.user?.timeZoneId
+  return stored && !browserTimeZones.includes(stored) ? [stored, ...browserTimeZones] : browserTimeZones
+})
+
+const passwordMismatch = computed(() => !isEditing.value && !!form.passwordConfirm && form.password !== form.passwordConfirm)
+
 const dutyValid = ref(true)
 
 const isValid = computed(() => {
@@ -296,7 +325,7 @@ const isValid = computed(() => {
   if (isEditing.value) {
     return true
   }
-  return !!form.userId.trim() && !!form.password
+  return !!form.userId.trim() && !!form.password && form.password === form.passwordConfirm
 })
 
 watch(
@@ -308,6 +337,7 @@ watch(
       Object.assign(form, {
         userId: props.user.userId,
         password: '',
+        passwordConfirm: '',
         fullName: props.user.fullName ?? '',
         comments: props.user.userComments ?? '',
         email: props.user.email ?? '',
@@ -326,7 +356,7 @@ watch(
       })
     } else {
       Object.assign(form, {
-        userId: '', password: '', fullName: '', comments: '', email: '', pagerEmail: '',
+        userId: '', password: '', passwordConfirm: '', fullName: '', comments: '', email: '', pagerEmail: '',
         workPhone: '', mobilePhone: '', homePhone: '', numericPagerService: '', numericPagerPin: '',
         textPagerService: '', textPagerPin: '', tuiPin: '', timeZoneId: null, dutySchedules: [], roles: []
       })
@@ -355,7 +385,8 @@ const save = async () => {
       textPagerService: form.textPagerService.trim(),
       textPagerPin: form.textPagerPin.trim(),
       tuiPin: form.tuiPin.trim(),
-      timeZoneId: form.timeZoneId,
+      // v2: null keeps the stored zone, '' clears it
+      timeZoneId: form.timeZoneId ?? (props.user?.timeZoneId ? '' : null),
       dutySchedules: form.dutySchedules.map(s => s.trim()).filter(Boolean),
       roles: [...form.roles]
     }
