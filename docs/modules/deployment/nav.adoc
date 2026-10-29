@@ -11,6 +11,7 @@
 ** xref:core/containers.adoc[]
 ** xref:core/setup-message-broker.adoc[]
 ** xref:core/admin-password-reset.adoc[]
+** xref:core/import-users-groups.adoc[]
 ** xref:core/installing-jdbc-driver.adoc[]
 
 * xref:minion/introduction.adoc[]

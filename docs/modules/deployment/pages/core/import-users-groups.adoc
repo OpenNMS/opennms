@@ -1,0 +1,226 @@
+
+[[import-users-groups]]
+= Import Users and Groups
+:description: Learn how to import users, groups, on-call roles and custom security roles from files into the {page-component-title} database on the command line.
+
+{page-component-title} stores users, groups, on-call roles and custom security roles in the database.
+The upgrade copies the files `users.xml`, `groups.xml` and `security-roles.properties` from `etc` into the database.
+Use the `import-users-groups` script to import such files at any other time.
+
+Use it in these cases:
+
+* You have files that were not in `etc` when you upgraded.
+* You move from the XML store (`org.opennms.usermgmt.store=xml`) to the database.
+
+{page-component-title} can be running while you run the script.
+The script imports into the database only.
+It stops with an error if `etc/opennms.properties` sets `org.opennms.usermgmt.store=xml`.
+
+Run the script as the user that runs {page-component-title}.
+The script starts itself as that user when you run it as `root`.
+
+== Usage
+
+[source, shell]
+----
+sudo -u opennms $\{OPENNMS_HOME}/bin/import-users-groups [--users FILE] [--groups FILE] [--security-roles FILE]
+                                                         [--overwrite] [--quiet] [--dry-run] [--no-decode] [--help]
+----
+
+Give at least one of the options `--users`, `--groups` and `--security-roles`.
+You can combine them.
+
+.Options
+[options="header"]
+[cols="1,3"]
+|===
+| Option | Description
+
+| `--users FILE`
+| A `users.xml` file.
+
+| `--groups FILE`
+| A `groups.xml` file.
+The script imports its groups and its on-call roles.
+
+| `--security-roles FILE`
+| A `security-roles.properties` file.
+
+| `--overwrite`
+| Replace the users, groups and on-call roles that exist already.
+The script asks for confirmation first.
+Without this option, it skips them and lists them.
+
+| `--quiet`
+| Overwrite without asking.
+Use it in scripts.
+It changes nothing else.
+
+| `--dry-run`
+| Run the import and roll it back.
+The script shows what it would do and writes nothing.
+It never asks for confirmation.
+
+| `--no-decode`
+| Import full names, contact info and service providers as they are.
+See <<import-users-groups-decode, HTML encoding>>.
+
+| `--help`
+| Print the usage.
+|===
+
+== Import rules
+
+The script imports security roles first, then users, groups and on-call roles.
+It runs the checks that the upgrade runs.
+It skips an entry that fails a check and prints the reason.
+
+The script resolves references against the database and the entries that it imports in the same run.
+References are group members, the group, supervisor and scheduled users of an on-call role, and the security roles of a user.
+A group in the file can list a user that exists in the database already.
+
+A security role in `security-roles.properties` that exists already is left alone.
+The script does not list it.
+
+The import is one transaction.
+If it fails, the script writes nothing.
+
+== Existing entries
+
+An entry exists when the database has a user with the same user name, a group with the same name or an on-call role with the same name.
+
+Without `--overwrite`, the script skips existing entries and lists them.
+It never changes existing data.
+
+With `--overwrite`, the script updates the existing entry in place.
+The entry keeps its ID, so group memberships, on-call schedules and destination paths stay connected.
+The entry from the file replaces all data of the existing entry:
+
+* A user: full name, comments, password, TUI PIN and time zone.
+Contacts, duty schedules and security roles are replaced.
+* A group: default map and comments.
+Members and duty schedules are replaced.
+* An on-call role: description, group and supervisor.
+Schedules are replaced.
+
+The memberships of a user in groups are not part of the user.
+They change only when you overwrite a group.
+
+=== Confirmation
+
+With `--overwrite`, the script lists the existing entries of your files, grouped by kind.
+Then it asks once:
+
+----
+Overwrite these N existing entries? [y/N]
+----
+
+Only `y` and `yes` continue.
+Any other answer stops the script with exit code `3`.
+The script asks nothing when no entry exists already.
+
+The script does not ask when you add `--quiet` or `--dry-run`.
+If the script has no console, for example when its input is a pipe, it cannot ask.
+It stops with exit code `3`.
+Add `--quiet` to overwrite in a script.
+
+The script checks the existing entries again inside the transaction.
+If an entry was created after your confirmation, the script writes nothing and exits with code `1`.
+
+== Administrators
+
+{page-component-title} must keep at least one administrator.
+The script applies the same rules as the REST API:
+
+* The `admin` user must keep the role `ROLE_ADMIN`.
+* At least one user must keep the role `ROLE_ADMIN`.
+
+An overwrite can break these rules.
+For example, the `admin` user in your file might not have `ROLE_ADMIN`.
+In that case the script rolls back the import, writes nothing and exits with code `1`.
+The message names the rule and the users that lost `ROLE_ADMIN`.
+A dry run runs the same check.
+
+[[import-users-groups-decode]]
+== HTML encoding
+
+Older versions of {page-component-title} stored full names, contact info and service providers HTML-encoded in `users.xml`.
+By default, the script decodes these values once, as the upgrade does.
+
+{page-component-title} 37 and later stores this text as entered when the XML store is used.
+For a `users.xml` from such a system, add `--no-decode`.
+The script then imports the values as they are.
+
+The script cannot tell which kind of file it reads, so you choose.
+
+== Output and exit codes
+
+The script prints to standard output:
+
+* Each skipped entry with its reason, and each warning.
+* The existing entries that it skipped, or overwrote with `--overwrite`.
+* A summary for each kind.
+
+It prints errors to standard error.
+
+.Example summary
+----
+Summary:
+users: 3 imported, 1 overwritten, 2 existing skipped, 1 invalid skipped
+custom security roles: 1 imported, 0 invalid skipped
+Entries skipped: 3, warnings: 0; see the messages above
+The import was committed.
+----
+
+A dry run says what the import would do and ends with `Dry run: rolled back, nothing was written.`
+
+.Exit codes
+[options="header"]
+[cols="1,3"]
+|===
+| Code | Meaning
+
+| `0`
+| The import, or the dry run, ran.
+The script also returns `0` when it skipped entries.
+
+| `1`
+| An error.
+The script wrote nothing.
+
+| `2`
+| Bad arguments.
+
+| `3`
+| The overwrite was not confirmed.
+|===
+
+== Example
+
+Run a dry run first.
+It shows what the import would do and writes nothing.
+
+[source, shell]
+----
+sudo -u opennms $\{OPENNMS_HOME}/bin/import-users-groups --dry-run \
+  --users /tmp/users.xml --groups /tmp/groups.xml --security-roles /tmp/security-roles.properties
+----
+
+Read the output.
+Then run the import without `--dry-run`.
+Existing entries are skipped.
+
+[source, shell]
+----
+sudo -u opennms $\{OPENNMS_HOME}/bin/import-users-groups \
+  --users /tmp/users.xml --groups /tmp/groups.xml --security-roles /tmp/security-roles.properties
+----
+
+To replace the existing entries, add `--overwrite`.
+The script asks for confirmation.
+
+[source, shell]
+----
+sudo -u opennms $\{OPENNMS_HOME}/bin/import-users-groups --overwrite \
+  --users /tmp/users.xml --groups /tmp/groups.xml --security-roles /tmp/security-roles.properties
+----

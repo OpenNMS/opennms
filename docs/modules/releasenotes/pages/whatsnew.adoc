@@ -115,6 +115,7 @@ See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-fil
 {page-component-title} now stores users, groups, on-call roles and custom security roles in the database.
 The upgrade copies `users.xml`, `groups.xml` and `security-roles.properties` into the database and copies the original files to `etc_archive/`.
 The data now lives in the database: manage it through the pages and the REST APIs.
+To import files that were not in `etc` at upgrade time, see xref:deployment:core/import-users-groups.adoc[Import Users and Groups].
 
 New REST v2 APIs manage them: xref:development:rest/users_v2.adoc[Users (v2)], xref:development:rest/groups_v2.adoc[Groups (v2)], xref:development:rest/security_roles.adoc[Security Roles] and xref:development:rest/oncall_roles.adoc[On-Call Roles].
 
