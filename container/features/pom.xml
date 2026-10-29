@@ -936,13 +936,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.eif-adapter</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
       <artifactId>org.opennms.core.ipc.rpc.commands</artifactId>
       <version>${project.version}</version>

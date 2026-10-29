@@ -247,6 +247,11 @@ If upgrading PostgreSQL to at least version 14 isn’t possible and you’re com
 Use this only as a last resort, since it may affect compatibility.
 Be aware that doing so takes you beyond supported configurations — here be dragons.
 
+=== EIF Adapter removed
+The IBM Tivoli Event Integration Facility (EIF) Adapter has been removed, together with the `eif-adapter` Karaf feature and the example `IBM.EIF.events.xml` event definitions.
+Before upgrading, remove `eif-adapter` from any `featuresBoot` list or `.boot` file in `$\{OPENNMS_HOME}/etc`, and delete `org.opennms.features.eifadapter.cfg` if you created one.
+To keep receiving these events, forward them to one of the other xref:operation:deep-dive/events/event-sources.adoc[event sources], such as syslog, the REST API, or Kafka.
+
 === CitrixDetector removed
 The CitrixDetector has been removed.
 Remove any detector that uses the class `org.opennms.netmgt.provision.detector.simple.CitrixDetector` from your foreign source definitions before upgrading.

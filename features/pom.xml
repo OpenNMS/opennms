@@ -167,9 +167,6 @@
     <!-- Correlation Feedback -->
     <module>situation-feedback</module>
 
-    <!-- Event Integration Facility Adapter -->
-    <module>eif-adapter</module>
-
     <!-- IfTtt integration -->
     <module>ifttt</module>
 

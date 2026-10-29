@@ -104,7 +104,6 @@
 *** xref:deep-dive/events/event-translator.adoc[]
 *** xref:deep-dive/events/scriptd.adoc[]
 *** xref:deep-dive/events/event-sources.adoc[]
-**** xref:deep-dive/events/sources/eif-adapter.adoc[]
 **** xref:deep-dive/events/sources/kafka.adoc[]
 **** xref:deep-dive/events/sources/rest.adoc[]
 **** xref:deep-dive/events/sources/sink-api.adoc[]
