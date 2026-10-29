@@ -278,7 +278,6 @@
           .headTitle("Node")
           .breadcrumb("Search", "element/index.jsp")
           .breadcrumb("Node")
-          .ngApp("onms-interfaces")
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
@@ -529,7 +528,7 @@ function confirmAssetEdit() {
     <div class="card-body">
       <ul class="list-unstyled mb-0">
         <li class="list-inline-item">
-          ${model.criticalPath}
+          <c:out value="${model.criticalPath}"/>
         </li>
       </ul> 
     </div>          
@@ -543,7 +542,9 @@ function confirmAssetEdit() {
     </jsp:include>
   </c:if>
 
-  <div id="onms-interfaces" class="card" ng-app="onms.default.apps">
+  <%-- AngularJS runs only inside this widget. The rest of the page shows values that a device can set,
+       and AngularJS must not evaluate them as expressions. --%>
+  <div id="onms-interfaces" class="card" ng-app="onms-interfaces">
     <div class="card-header">
         <span>Node Interfaces</span>
     </div>
@@ -557,9 +558,9 @@ function confirmAssetEdit() {
       <span>LLDP Information</span>
     </div>
     <table class="table table-sm">
-      <tr><th width="50%">chassis id</th><td width="50%">${model.lldp.lldpChassisId}</td></tr>
-      <tr><th width="50%">sysname</th><td width="50%">${model.lldp.lldpSysName}</td></tr>
-      <tr><th width="50%">last poll time</th><td width="50%">${model.lldp.lldpLastPollTime}</td></tr>
+      <tr><th width="50%">chassis id</th><td width="50%"><c:out value="${model.lldp.lldpChassisId}"/></td></tr>
+      <tr><th width="50%">sysname</th><td width="50%"><c:out value="${model.lldp.lldpSysName}"/></td></tr>
+      <tr><th width="50%">last poll time</th><td width="50%"><c:out value="${model.lldp.lldpLastPollTime}"/></td></tr>
     </table>
     </div>
     </c:if>
@@ -571,9 +572,9 @@ function confirmAssetEdit() {
       <span>CDP Information</span>
     </div>
     <table class="table table-sm">
-      <tr><th width="50%">global device id</th><td width="50%">${model.cdp.cdpGlobalDeviceId}</td></tr>
-      <tr><th width="50%">global run</th><td width="50%">${model.cdp.cdpGlobalRun}</td></tr>
-      <tr><th width="50%">last poll time</th><td width="50%">${model.cdp.cdpLastPollTime}</td></tr>
+      <tr><th width="50%">global device id</th><td width="50%"><c:out value="${model.cdp.cdpGlobalDeviceId}"/></td></tr>
+      <tr><th width="50%">global run</th><td width="50%"><c:out value="${model.cdp.cdpGlobalRun}"/></td></tr>
+      <tr><th width="50%">last poll time</th><td width="50%"><c:out value="${model.cdp.cdpLastPollTime}"/></td></tr>
     </table>
   </div>
   </c:if>
@@ -586,9 +587,9 @@ function confirmAssetEdit() {
       <span>OSPF Information</span>
     </div>
     <table class="table table-sm">
-      <tr><th width="50%">Router Id</th><td width="50%">${model.ospf.ospfRouterId}</td></tr>
-      <tr><th width="50%">Status</th><td width="50%">${model.ospf.ospfAdminStat} version:${model.ospf.ospfVersionNumber}</td></tr>
-      <tr><th>last poll time</th><td>${model.ospf.ospfLastPollTime}</td></tr>
+      <tr><th width="50%">Router Id</th><td width="50%"><c:out value="${model.ospf.ospfRouterId}"/></td></tr>
+      <tr><th width="50%">Status</th><td width="50%"><c:out value="${model.ospf.ospfAdminStat}"/> version:<c:out value="${model.ospf.ospfVersionNumber}"/></td></tr>
+      <tr><th>last poll time</th><td><c:out value="${model.ospf.ospfLastPollTime}"/></td></tr>
     </table>
   </div>
   </c:if>
@@ -600,9 +601,9 @@ function confirmAssetEdit() {
       <span>IS-IS Information</span>
     </div>
     <table class="table table-sm">
-      <tr><th width="50%">Sys ID</th><td width="50%">${model.isis.isisSysID}</td></tr>
-      <tr><th width="50%">Admin State</th><td width="50%">${model.isis.isisSysAdminState}</td></tr>
-      <tr><th width="50%">last poll time</th><td width="50%">${model.isis.isisLastPollTime}</td></tr>
+      <tr><th width="50%">Sys ID</th><td width="50%"><c:out value="${model.isis.isisSysID}"/></td></tr>
+      <tr><th width="50%">Admin State</th><td width="50%"><c:out value="${model.isis.isisSysAdminState}"/></td></tr>
+      <tr><th width="50%">last poll time</th><td width="50%"><c:out value="${model.isis.isisLastPollTime}"/></td></tr>
     </table>
     </div>
   </c:if>

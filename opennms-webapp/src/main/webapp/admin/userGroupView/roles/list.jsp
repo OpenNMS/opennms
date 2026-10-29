@@ -133,16 +133,16 @@
 				<td>
 				  <c:set var="supervisorUser">${role.defaultUser}</c:set>
 				  <c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set>
-				  <span title="${fullName}">${role.defaultUser}</span>
+				  <span title="${fn:escapeXml(fullName)}"><c:out value="${role.defaultUser}"/></span>
 				</td>
 				<td>
 					<c:forEach var="scheduledUser" items="${role.currentUsers}">
 						<c:set var="curUserName">${scheduledUser}</c:set>
 						<c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("curUserName").toString()) %></c:set>
-						<span title="${fullName}">${scheduledUser}</span>
+						<span title="${fn:escapeXml(fullName)}"><c:out value="${scheduledUser}"/></span>
 					</c:forEach>	
 				</td>
-				<td>${role.membershipGroup}</td>
+				<td><c:out value="${role.membershipGroup}"/></td>
 				<td><c:out value="${role.description}"/></td>
 				</tr>
 			</c:forEach>
