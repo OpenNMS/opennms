@@ -121,12 +121,13 @@ New REST v2 APIs manage them: xref:development:rest/users_v2.adoc[Users (v2)], x
 {page-component-title} stores text as entered and HTML-encodes it only when it shows the text.
 
 The upgrade decodes HTML entities in full names and contact values once.
+It also decodes the contact values that earlier releases recorded for sent notifications, which the *Users Notified* table of a notification and the notification REST APIs show.
 Some stored text can therefore still show entities such as `&amp;`:
 
 * On-call role names that were created with the role pages between August 2022 and March 2023.
   The role pages encoded their input in that period.
   The upgrade does not decode role names, because destination paths refer to roles by name.
-* Full names that were encoded more than once.
+* Full names and contact values that were encoded more than once.
 
 Edit these values to fix them.
 
