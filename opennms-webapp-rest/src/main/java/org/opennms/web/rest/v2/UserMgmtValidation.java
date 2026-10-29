@@ -86,16 +86,17 @@ final class UserMgmtValidation {
     }
 
     /**
-     * Rejects markup in incoming comments, unless they are the stored comments echoed back (modulo
-     * surrounding whitespace): stored values that today's rules would reject are grandfathered.
+     * Checks user or group comments: no markup, and at most {@link #FREE_TEXT_LENGTH} characters (see
+     * {@link #checkFreeText}). Comments that are the stored ones echoed back (modulo surrounding whitespace) pass:
+     * stored values that today's rules would reject are grandfathered.
      *
-     * @param stored the stored comments, or null when the object is being created
+     * @param stored the stored comments, or null when the object is being created or has none
      */
-    static void checkComments(final String incoming, final String stored, final boolean existing) {
-        if (incoming != null && INVALID_COMMENTS.matcher(incoming).find()
-                && (!existing || !textUnchanged(incoming, stored))) {
+    static void checkComments(final String owner, final String incoming, final String stored) {
+        if (incoming != null && INVALID_COMMENTS.matcher(incoming).find() && !textUnchanged(incoming, stored)) {
             throw new UserMgmtValidationException("The comments must not contain any HTML markup.");
         }
+        checkFreeText(owner, "comment", incoming, stored);
     }
 
     /**

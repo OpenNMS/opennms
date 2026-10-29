@@ -285,8 +285,7 @@ public class GroupsRestService implements GroupsRestApi {
         final String owner = owner(name);
         // stored values that today's rules would reject are grandfathered, so a migrated group stays editable
         final String storedComments = existing == null ? null : existing.getComments();
-        UserMgmtValidation.checkComments(dto.getComments(), storedComments, existing != null);
-        UserMgmtValidation.checkFreeText(owner, "comment", dto.getComments(), storedComments);
+        UserMgmtValidation.checkComments(owner, dto.getComments(), storedComments);
         List<UserAccount> members = null;
         if (dto.getUsers() != null) {
             final Set<String> seen = new LinkedHashSet<>();

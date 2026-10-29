@@ -109,6 +109,29 @@ public class UserMgmtValidationTest {
         assertFreeTextRejected(stored, null);
     }
 
+    private static void assertCommentsRejected(final String expectedMessage, final String incoming, final String stored) {
+        try {
+            UserMgmtValidation.checkComments("Group \"g\"", incoming, stored);
+            fail("expected a rejection");
+        } catch (final UserMgmtValidationException e) {
+            assertEquals(expectedMessage, e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCommentsCheckMarkupAndLength() {
+        final String markup = "The comments must not contain any HTML markup.";
+        UserMgmtValidation.checkComments("Group \"g\"", null, null);
+        UserMgmtValidation.checkComments("Group \"g\"", "plain text", null);
+        assertCommentsRejected(markup, "<b>x</b>", null);
+        assertCommentsRejected(markup, "<b>x</b>", "x");
+        assertCommentsRejected("Group \"g\": the comment is longer than 4096 characters.", "x".repeat(4097), null);
+        // stored markup and stored long comments are grandfathered
+        UserMgmtValidation.checkComments("Group \"g\"", " <b>x</b>\n", "<b>x</b>");
+        UserMgmtValidation.checkComments("Group \"g\"", "y".repeat(5000), "y".repeat(5000));
+        assertCommentsRejected(markup, "<b>x</b> changed", "<b>x</b>");
+    }
+
     @Test
     public void testTextUnchangedIgnoresSurroundingWhitespace() {
         assertTrue(UserMgmtValidation.textUnchanged(" a\n", "a"));

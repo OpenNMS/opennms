@@ -377,8 +377,7 @@ public class UsersRestService implements UsersRestApi {
     private List<SecurityRole> validateDtoFields(final UserDto dto, final UserAccount existing, final String userId) {
         final String owner = owner(userId);
         final String storedComments = existing == null ? null : existing.getComments();
-        UserMgmtValidation.checkComments(dto.getUserComments(), storedComments, existing != null);
-        UserMgmtValidation.checkFreeText(owner, "comment", dto.getUserComments(), storedComments);
+        UserMgmtValidation.checkComments(owner, dto.getUserComments(), storedComments);
         final String timeZoneId = StringUtils.trimToNull(dto.getTimeZoneId());
         if (timeZoneId != null) {
             try {
