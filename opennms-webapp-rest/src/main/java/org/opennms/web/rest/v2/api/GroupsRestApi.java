@@ -61,6 +61,12 @@ public interface GroupsRestApi {
     Response listGroups(@Context SecurityContext securityContext);
 
     @GET
+    @Path("available-categories")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "List the categories a group can be authorized for", operationId = "listAvailableCategories")
+    Response listAvailableCategories(@Context SecurityContext securityContext);
+
+    @GET
     @Path("{name}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get one group", operationId = "getGroup")

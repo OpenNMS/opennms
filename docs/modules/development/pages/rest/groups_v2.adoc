@@ -47,7 +47,12 @@ To use `If-Match`, send the version in quotes, or the `ETag` of a GET of the sin
 
 | /groups/\{name}
 | Get one group. The response carries an `ETag` header.
+
+| /groups/available-categories
+| Get the names of all categories a group can be authorized for, as a JSON array sorted ignoring case.
 |===
+
+NOTE: `available-categories` is a literal path, so a group with that name cannot be fetched with `GET /groups/available-categories`.
 
 == POSTs (adding data)
 
@@ -89,6 +94,10 @@ Returns `200` with the group and its `ETag`.
 In a PUT body, a field that is omitted is left as it is and a field set to an empty string is cleared.
 For `users` and `dutySchedules`, an omitted list is preserved and a present list, including `[]`, replaces the stored one.
 The order of `users` is kept, and notifications use it to decide who is escalated to first.
+
+`categories` works the same way: an omitted list leaves the authorizations alone and a present list, including `[]`, replaces them.
+Every name must be an existing category, otherwise the request fails with `400` and the message `Unknown category: <name>`; nothing is changed.
+A list that holds the same categories as before changes nothing, and the version stays the same.
 
 == DELETEs (removing data)
 
@@ -136,6 +145,10 @@ To detect concurrent edits, send the version in `If-Match`.
 | comments | Free-form comments. See <<group-text-rules>>.
 | users | Ordered list of member user ids. An unknown user returns `400`.
 | dutySchedules | List of duty schedule strings. See <<group-duty-schedules>>.
+| categories | Names of the categories the group is authorized for, sorted by name in responses.
+Members of the group see only nodes in these categories when ACLs are enabled (`org.opennms.web.aclsEnabled`).
+An unknown name returns `400`.
+Adding or removing an authorization changes the `version` of the group, including a change made by another client or by deleting the category.
 | version | Opaque row version, also sent as the `ETag`. Ignored on input.
 |===
 

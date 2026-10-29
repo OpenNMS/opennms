@@ -766,13 +766,192 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("after", m_groupManager.getGroup("seengroup").getComments().orElse(null));
     }
 
-    private void authorizeCategory(final String categoryName, final String groupName) {
+    @Test
+    public void testGetReturnsAuthorizedCategoriesSorted() throws Exception {
+        exec(POST, "/groups", "{\"name\":\"catsorted\"}", null, 201);
+        authorizeCategory("Servers", "catsorted");
+        authorizeCategory("Routers", "catsorted");
+
+        final JSONObject group = new JSONObject(getJson("/groups/catsorted", 200));
+        assertEquals(Arrays.asList("Routers", "Servers"), strings(group.getJSONArray("categories")));
+
+        final JSONArray list = new JSONArray(getJson("/groups", 200));
+        for (int i = 0; i < list.length(); i++) {
+            if ("catsorted".equals(list.getJSONObject(i).getString("name"))) {
+                assertEquals(Arrays.asList("Routers", "Servers"), strings(list.getJSONObject(i).getJSONArray("categories")));
+                return;
+            }
+        }
+        throw new AssertionError("catsorted is not in the list");
+    }
+
+    @Test
+    public void testCreateWithCategories() throws Exception {
+        createCategory("Servers");
+        createCategory("Routers");
+        final MockHttpServletResponse response = exec(POST, "/groups",
+                "{\"name\":\"catcreate\",\"categories\":[\"Servers\",\"Routers\"]}", null, 201);
+        assertEquals(Arrays.asList("Routers", "Servers"), strings(new JSONObject(response.getContentAsString()).getJSONArray("categories")));
+        assertEquals(Arrays.asList("Routers", "Servers"), authorizedCategories("catcreate"));
+    }
+
+    @Test
+    public void testUpdateReplacesCategories() throws Exception {
+        createCategory("Servers");
+        createCategory("Routers");
+        createCategory("Switches");
+        exec(POST, "/groups", "{\"name\":\"catreplace\",\"categories\":[\"Servers\",\"Routers\"]}", null, 201);
+
+        final MockHttpServletResponse response = exec(PUT, "/groups/catreplace",
+                "{\"name\":\"catreplace\",\"categories\":[\"Routers\",\"Switches\"]}", null, 200);
+        assertEquals(Arrays.asList("Routers", "Switches"), strings(new JSONObject(response.getContentAsString()).getJSONArray("categories")));
+        assertEquals(Arrays.asList("Routers", "Switches"), authorizedCategories("catreplace"));
+    }
+
+    @Test
+    public void testUpdateWithoutCategoriesKeepsThem() throws Exception {
+        authorizeCategory("Servers", "catkeep");
+        createGroup("catkeep", g -> { });
+        final int version = rowVersion("catkeep");
+
+        exec(PUT, "/groups/catkeep", "{\"name\":\"catkeep\",\"comments\":\"touched\"}", null, 200);
+
+        assertEquals(Arrays.asList("Servers"), authorizedCategories("catkeep"));
+        assertNotEquals(version, rowVersion("catkeep"));
+    }
+
+    @Test
+    public void testUpdateWithEmptyCategoriesClearsThem() throws Exception {
+        authorizeCategory("Servers", "catclear");
+        authorizeCategory("Routers", "catclear");
+        createGroup("catclear", g -> { });
+
+        final MockHttpServletResponse response = exec(PUT, "/groups/catclear", "{\"name\":\"catclear\",\"categories\":[]}", null, 200);
+        assertEquals(0, new JSONObject(response.getContentAsString()).getJSONArray("categories").length());
+        assertTrue(authorizedCategories("catclear").isEmpty());
+    }
+
+    @Test
+    public void testUnknownCategoryIs400() throws Exception {
+        createCategory("Servers");
+        exec(POST, "/groups", "{\"name\":\"catunknown\",\"categories\":[\"Servers\"]}", null, 201);
+        final int version = rowVersion("catunknown");
+
+        final MockHttpServletResponse response = exec(PUT, "/groups/catunknown",
+                "{\"name\":\"catunknown\",\"comments\":\"changed\",\"categories\":[\"Servers\",\"Nope\"]}", null, 400);
+        assertEquals("Unknown category: Nope", response.getContentAsString());
+        assertEquals(Arrays.asList("Servers"), authorizedCategories("catunknown"));
+        assertEquals(version, rowVersion("catunknown"));
+
+        final MockHttpServletResponse create = exec(POST, "/groups", "{\"name\":\"catunknown2\",\"categories\":[\"Nope\"]}", null, 400);
+        assertEquals("Unknown category: Nope", create.getContentAsString());
+        sendRequest(GET, "/groups/catunknown2", 404);
+    }
+
+    @Test
+    public void testUnchangedCategoriesKeepVersion() throws Exception {
+        createCategory("Servers");
+        createCategory("Routers");
+        exec(POST, "/groups", "{\"name\":\"catsame\",\"categories\":[\"Servers\",\"Routers\"]}", null, 201);
+        final String etag = exec(GET, "/groups/catsame", null, null, 200).getHeader("ETag");
+
+        final MockHttpServletResponse response = exec(PUT, "/groups/catsame",
+                "{\"name\":\"catsame\",\"categories\":[\"Routers\",\"Servers\"]}", etag, 200);
+        assertEquals(etag, response.getHeader("ETag"));
+    }
+
+    @Test
+    public void testChangedCategoriesBumpVersion() throws Exception {
+        createCategory("Servers");
+        createCategory("Routers");
+        exec(POST, "/groups", "{\"name\":\"catbump\",\"categories\":[\"Servers\"]}", null, 201);
+        final String etag = exec(GET, "/groups/catbump", null, null, 200).getHeader("ETag");
+
+        final MockHttpServletResponse response = exec(PUT, "/groups/catbump",
+                "{\"name\":\"catbump\",\"categories\":[\"Servers\",\"Routers\"]}", etag, 200);
+        assertNotEquals(etag, response.getHeader("ETag"));
+    }
+
+    @Test
+    public void testStaleWriteAfterCategoryChangeIs412() throws Exception {
+        createCategory("Servers");
+        exec(POST, "/groups", "{\"name\":\"catstale\"}", null, 201);
+        final String etag = exec(GET, "/groups/catstale", null, null, 200).getHeader("ETag");
+
+        // a v1-style write: straight into category_group, not through the API
+        new JdbcTemplate(m_dataSource).update(
+                "insert into category_group (categoryid, groupid) select categoryid, 'catstale' from categories where categoryname = 'Servers'");
+
+        exec(PUT, "/groups/catstale", "{\"name\":\"catstale\",\"comments\":\"late\"}", etag, 412);
+    }
+
+    @Test
+    public void testStaleWriteAfterCategoryDeleteIs412() throws Exception {
+        authorizeCategory("Doomed", "catdoomed");
+        createGroup("catdoomed", g -> { });
+        final String etag = exec(GET, "/groups/catdoomed", null, null, 200).getHeader("ETag");
+
         inTx(() -> {
-            final OnmsCategory category = new OnmsCategory(categoryName);
-            category.getAuthorizedGroups().add(groupName);
-            m_categoryDao.save(category);
+            m_categoryDao.delete(m_categoryDao.findByName("Doomed"));
             return null;
         });
+
+        exec(PUT, "/groups/catdoomed", "{\"name\":\"catdoomed\",\"categories\":[\"Doomed\"]}", etag, 412);
+    }
+
+    @Test
+    public void testAvailableCategories() throws Exception {
+        createCategory("Servers");
+        createCategory("routers");
+        createCategory("Switches");
+        final List<String> names = strings(new JSONArray(getJson("/groups/available-categories", 200)));
+        assertTrue(names.containsAll(Arrays.asList("Servers", "routers", "Switches")));
+        assertEquals(names.stream().sorted(String.CASE_INSENSITIVE_ORDER).collect(java.util.stream.Collectors.toList()), names);
+
+        setUser("nobody", new String[]{ "ROLE_USER" });
+        try {
+            sendRequest(GET, "/groups/available-categories", 403);
+        } finally {
+            setUser("admin", new String[]{ "ROLE_ADMIN" });
+        }
+    }
+
+    /** Commits the authorization, creating the category if it does not exist yet. */
+    private void authorizeCategory(final String categoryName, final String groupName) {
+        inTx(() -> {
+            OnmsCategory category = m_categoryDao.findByName(categoryName);
+            if (category == null) {
+                category = new OnmsCategory(categoryName);
+                category.getAuthorizedGroups().add(groupName);
+                m_categoryDao.save(category);
+            } else {
+                category.getAuthorizedGroups().add(groupName);
+            }
+            return null;
+        });
+    }
+
+    private void createCategory(final String categoryName) {
+        inTx(() -> {
+            if (m_categoryDao.findByName(categoryName) == null) {
+                m_categoryDao.save(new OnmsCategory(categoryName));
+            }
+            return null;
+        });
+    }
+
+    private List<String> authorizedCategories(final String group) {
+        return new JdbcTemplate(m_dataSource).queryForList(
+                "select c.categoryname from category_group g join categories c on c.categoryid = g.categoryid"
+                + " where g.groupid = ? order by c.categoryname", String.class, group);
+    }
+
+    private static List<String> strings(final JSONArray array) {
+        final List<String> values = new java.util.ArrayList<>();
+        for (int i = 0; i < array.length(); i++) {
+            values.add(array.getString(i));
+        }
+        return values;
     }
 
     private String getJson(final String url, final int expectedStatus) throws Exception {

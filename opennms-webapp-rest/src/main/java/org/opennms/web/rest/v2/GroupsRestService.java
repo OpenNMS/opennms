@@ -37,10 +37,12 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opennms.netmgt.config.UserMgmtJaxbMapper;
+import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
 import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.usermgmt.OnCallRole;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.netmgt.model.usermgmt.UserGroup;
@@ -87,20 +89,47 @@ public class GroupsRestService implements GroupsRestApi {
     @Autowired
     private GroupService m_groupService;
 
+    /** For validating the category names of a request. */
+    @Autowired
+    private CategoryDao m_categoryDao;
+
     @Override
     @Transactional(readOnly = true)
     public Response listGroups(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, "Group management");
         m_support.requireDatabaseStore();
         try {
+            // one pass over the categories, so that the number of statements does not grow with the groups
+            final Map<String, List<String>> categoriesByGroup = new HashMap<>();
+            for (final OnmsCategory category : m_categoryDao.findAll()) {
+                for (final String groupName : category.getAuthorizedGroups()) {
+                    categoriesByGroup.computeIfAbsent(groupName, k -> new ArrayList<>()).add(category.getName());
+                }
+            }
             final List<GroupDto> groups = new ArrayList<>();
             for (final UserGroup group : m_userGroupDao.findAll()) {
-                groups.add(toDto(group, group.getVersion()));
+                groups.add(toDto(group, group.getVersion(), categoriesByGroup.getOrDefault(group.getName(), List.of())));
             }
             groups.sort(Comparator.comparing(GroupDto::getName, String.CASE_INSENSITIVE_ORDER));
             return Response.ok(groups).build();
         } catch (final Exception e) {
             throw m_support.translate("read groups", e);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Response listAvailableCategories(final SecurityContext securityContext) {
+        m_support.assertAdmin(securityContext, "Group management");
+        m_support.requireDatabaseStore();
+        try {
+            final List<String> categories = m_categoryDao.findAll().stream()
+                    .map(OnmsCategory::getName)
+                    .sorted(String.CASE_INSENSITIVE_ORDER)
+                    .collect(Collectors.toList());
+            return Response.ok(categories).build();
+        } catch (final Exception e) {
+            throw m_support.translate("read categories", e);
         }
     }
 
@@ -112,7 +141,7 @@ public class GroupsRestService implements GroupsRestApi {
         try {
             final UserGroup group = load(name);
             final int version = group.getVersion();
-            return Response.ok(toDto(group, version)).tag(m_support.etag(version)).build();
+            return Response.ok(toDto(group, version, authorizedCategories(group.getName()))).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
             throw m_support.translate("read group", e);
         }
@@ -141,10 +170,11 @@ public class GroupsRestService implements GroupsRestApi {
             final UserGroup group = new UserGroup(name);
             applyDto(group, dto, members);
             m_userGroupDao.saveOrUpdate(group);
+            applyCategories(name, dto);
             m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.groups, group.getId());
             LOG.info("Group {} created by {}", name, UserMgmtValidation.principal(securityContext));
-            return Response.status(Status.CREATED).entity(toDto(group, version)).tag(m_support.etag(version)).build();
+            return Response.status(Status.CREATED).entity(toDto(group, version, authorizedCategories(group.getName()))).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
             throw m_support.translate("create group", e);
         }
@@ -168,9 +198,10 @@ public class GroupsRestService implements GroupsRestApi {
             final List<UserAccount> members = validateDtoFields(dto, group, name);
             applyDto(group, dto, members);
             m_userGroupDao.saveOrUpdate(group);
+            applyCategories(name, dto);
             m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.groups, group.getId());
-            return Response.ok(toDto(group, version)).tag(m_support.etag(version)).build();
+            return Response.ok(toDto(group, version, authorizedCategories(group.getName()))).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
             throw m_support.translate("update group", e);
         }
@@ -211,7 +242,7 @@ public class GroupsRestService implements GroupsRestApi {
             m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.groups, group.getId());
             LOG.info("Group {} renamed to {} by {}", name, newName, UserMgmtValidation.principal(securityContext));
-            return Response.ok(toDto(group, version)).tag(m_support.etag(version)).build();
+            return Response.ok(toDto(group, version, authorizedCategories(group.getName()))).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
             throw m_support.translate("rename group", e);
         }
@@ -264,13 +295,20 @@ public class GroupsRestService implements GroupsRestApi {
     }
 
     /** default-map is not exposed by the API. */
-    private static GroupDto toDto(final UserGroup group, final int version) {
+    private List<String> authorizedCategories(final String groupName) {
+        return m_groupService.getAuthorizedCategoriesAsString(groupName);
+    }
+
+    private static GroupDto toDto(final UserGroup group, final int version, final List<String> categories) {
         final GroupDto dto = new GroupDto();
         dto.setName(group.getName());
         dto.setVersion(version);
         dto.setComments(group.getComments());
         dto.setUsers(group.getMembers().stream().map(UserAccount::getUsername).collect(Collectors.toList()));
         dto.setDutySchedules(new ArrayList<>(group.getDutySchedules()));
+        dto.setCategories(categories.stream()
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList()));
         return dto;
     }
 
@@ -317,7 +355,22 @@ public class GroupsRestService implements GroupsRestApi {
             // migrated data never makes a group uneditable: see UserMgmtValidation.validateDutySchedules
             UserMgmtValidation.validateDutySchedules(owner, dto.getDutySchedules(), existing == null ? null : existing.getDutySchedules());
         }
+        if (dto.getCategories() != null) {
+            // the first unknown name in sorted order is the one reported
+            for (final String category : dto.getCategories().stream().sorted(Comparator.nullsFirst(Comparator.<String>naturalOrder())).collect(Collectors.toList())) {
+                if (category == null || m_categoryDao.findByName(category) == null) {
+                    throw new UserMgmtValidationException("Unknown category: " + category);
+                }
+            }
+        }
         return members;
+    }
+
+    /** Runs after the group row is saved; an omitted list leaves the authorizations alone, and an unchanged one writes nothing. */
+    private void applyCategories(final String name, final GroupDto dto) {
+        if (dto.getCategories() != null) {
+            m_groupService.setAuthorizedCategories(name, dto.getCategories());
+        }
     }
 
     /**
