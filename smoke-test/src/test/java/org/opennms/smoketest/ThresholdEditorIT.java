@@ -41,12 +41,12 @@ public class ThresholdEditorIT extends OpenNMSSeleniumIT {
     @Test
     public void a_testAllTextIsPresent() throws Exception {
         // main threshold page
-        assertEquals(1, countElementsMatchingCss("span.card-header"));
+        assertEquals(1, countElementsMatchingCss("div.card-header"));
         findElementByXpath("//span[text()='Threshold Configuration']");
         findElementByXpath("//button[@type='button' and text()='Reload Threshold Configuration']");
         // threshold group page
         clickElement(By.xpath("//a[contains(@href, 'groupName=cisco&editGroup')]"));
-        assertEquals(3, countElementsMatchingCss("span.card-header"));
+        assertEquals(3, countElementsMatchingCss("div.card-header"));
         findElementByXpath("//span[text()='Basic Thresholds']");
         findElementByXpath("//a[text()='Create New Threshold']");
         findElementByXpath("//span[text()='Expression-based Thresholds']");
