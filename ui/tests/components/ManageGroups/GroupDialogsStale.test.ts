@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import GroupsTable from '@/components/ManageGroups/GroupsTable.vue'
 import GroupEditorDialog from '@/components/ManageGroups/GroupEditorDialog.vue'
 import GroupRenameDialog from '@/components/ManageGroups/GroupRenameDialog.vue'
+import { useGroupAdminStore } from '@/stores/groupAdminStore'
 
 const store = vi.hoisted(() => ({
   updateGroup: vi.fn(),
@@ -16,7 +17,12 @@ const store = vi.hoisted(() => ({
   memberCandidates: [] as string[]
 }))
 
-vi.mock('@/stores/groupAdminStore', () => ({ useGroupAdminStore: () => store }))
+// reactive, so that a table re-renders its rows when a test replaces store.groups through useGroupAdminStore()
+vi.mock('@/stores/groupAdminStore', async () => {
+  const { reactive } = await import('vue')
+  const live = reactive(store)
+  return { useGroupAdminStore: () => live }
+})
 
 // the dialogs are teleported to the body; unmount each one, or a later test can find an earlier test's dialog
 enableAutoUnmount(afterEach)
@@ -100,25 +106,40 @@ describe('version reaches the store', () => {
   })
 })
 
-// the rename reloads the list; the next edit must send the renamed name and the new version, not the old row
+// the rename reloads the list; an edit opened from the table must then send the renamed name and the new version,
+// not the row the table showed before the rename
 describe('a rename followed by an edit', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('sends the renamed group name and the new version', async () => {
-    store.groups = [{ ...group }]
+    const live = useGroupAdminStore()
+    live.groups = [{ ...group }]
     store.renameGroup.mockImplementation(async () => {
       // what the real store does on success: reload the list
-      store.groups = [{ name: 'Dev', users: [], version: 4 }]
+      live.groups = [{ name: 'Dev', users: [], version: 4 }]
       return null
     })
     store.updateGroup.mockResolvedValue(null)
+    const table = mount(GroupsTable, { global: { plugins: [PrimeVue], directives: { tooltip: {}}}})
 
-    const rename = mount(GroupRenameDialog, { props: { visible: true, groupName: 'Ops', version: 3 }, global: { plugins: [PrimeVue] }})
+    // rename through the row's menu
+    await table.find('[data-test="group-actions-menu-button"]').trigger('click')
+    ;(table.vm as unknown as { rowMenuItems: { label: string, command: () => void }[] }).rowMenuItems
+      .find(item => item.label === 'Rename')!.command()
+    await nextTick()
+    const rename = table.findComponent(GroupRenameDialog)
+    expect(rename.props()).toMatchObject({ visible: true, groupName: 'Ops', version: 3 })
     ;(rename.vm as unknown as { newName: string }).newName = 'Dev'
     await (rename.vm as unknown as { save: () => Promise<void> }).save()
-    expect(rename.emitted('update:visible')?.at(-1)).toEqual([false])
+    await nextTick()
+    expect(rename.props('visible')).toBe(false)
 
-    const editor = mount(GroupEditorDialog, { props: { visible: true, group: store.groups[0] as typeof group }, global: { plugins: [PrimeVue] }})
+    // edit the reloaded row through its Edit button
+    const editButtons = table.findAll('[data-test="edit-group-button"]')
+    expect(editButtons).toHaveLength(1)
+    await editButtons[0].trigger('click')
+    const editor = table.findComponent(GroupEditorDialog)
+    expect(editor.props('visible')).toBe(true)
     await (editor.vm as unknown as { save: () => Promise<void> }).save()
 
     expect(store.updateGroup).toHaveBeenCalledWith(expect.objectContaining({ name: 'Dev', version: 4 }))

@@ -7,6 +7,7 @@ import UsersTable from '@/components/ManageUsers/UsersTable.vue'
 import UserEditorDialog from '@/components/ManageUsers/UserEditorDialog.vue'
 import UserPasswordDialog from '@/components/ManageUsers/UserPasswordDialog.vue'
 import UserRenameDialog from '@/components/ManageUsers/UserRenameDialog.vue'
+import { useUserAdminStore } from '@/stores/userAdminStore'
 
 const store = vi.hoisted(() => ({
   updateUser: vi.fn(),
@@ -18,7 +19,12 @@ const store = vi.hoisted(() => ({
   availableRoles: [] as string[]
 }))
 
-vi.mock('@/stores/userAdminStore', () => ({ useUserAdminStore: () => store }))
+// reactive, so that a table re-renders its rows when a test replaces store.users through useUserAdminStore()
+vi.mock('@/stores/userAdminStore', async () => {
+  const { reactive } = await import('vue')
+  const live = reactive(store)
+  return { useUserAdminStore: () => live }
+})
 
 // the dialogs are teleported to the body; unmount each one, or a later test can find an earlier test's dialog
 enableAutoUnmount(afterEach)
@@ -115,25 +121,40 @@ describe('version reaches the store', () => {
   })
 })
 
-// the rename reloads the list; the next edit must send the renamed id and the new version, not the old row
+// the rename reloads the list; an edit opened from the table must then send the renamed id and the new version,
+// not the row the table showed before the rename
 describe('a rename followed by an edit', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('sends the renamed user id and the new version', async () => {
-    store.users = [{ ...user }]
+    const live = useUserAdminStore()
+    live.users = [{ ...user }]
     store.renameUser.mockImplementation(async () => {
       // what the real store does on success: reload the list
-      store.users = [{ userId: 'jsmith', fullName: 'J Doe', version: 4 }]
+      live.users = [{ userId: 'jsmith', fullName: 'J Doe', version: 4 }]
       return null
     })
     store.updateUser.mockResolvedValue(null)
+    const table = mount(UsersTable, { global: { plugins: [PrimeVue], directives: { tooltip: {}}}})
 
-    const rename = mount(UserRenameDialog, { props: { visible: true, userId: 'jdoe', version: 3 }, global: { plugins: [PrimeVue] }})
+    // rename through the row's menu
+    await table.find('[data-test="user-actions-menu-button"]').trigger('click')
+    ;(table.vm as unknown as { rowMenuItems: { label: string, command: () => void }[] }).rowMenuItems
+      .find(item => item.label === 'Rename')!.command()
+    await nextTick()
+    const rename = table.findComponent(UserRenameDialog)
+    expect(rename.props()).toMatchObject({ visible: true, userId: 'jdoe', version: 3 })
     ;(rename.vm as unknown as { newUserId: string }).newUserId = 'jsmith'
     await (rename.vm as unknown as { save: () => Promise<void> }).save()
-    expect(rename.emitted('update:visible')?.at(-1)).toEqual([false])
+    await nextTick()
+    expect(rename.props('visible')).toBe(false)
 
-    const editor = mount(UserEditorDialog, { props: { visible: true, user: store.users[0] as typeof user }, global: { plugins: [PrimeVue] }})
+    // edit the reloaded row through its Edit button
+    const editButtons = table.findAll('[data-test="edit-user-button"]')
+    expect(editButtons).toHaveLength(1)
+    await editButtons[0].trigger('click')
+    const editor = table.findComponent(UserEditorDialog)
+    expect(editor.props('visible')).toBe(true)
     await (editor.vm as unknown as { save: () => Promise<void> }).save()
 
     expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({ userId: 'jsmith', version: 4 }))
