@@ -40,7 +40,9 @@ Error responses carry a plain-text message.
 | Resource | Description
 
 | /groups
-| Get every group.
+| Get every group, sorted by name and ignoring case.
+The response has no `ETag` header.
+Each item carries its `version`, but a `PUT` or `DELETE` takes the tag from a GET of the single group.
 
 | /groups/\{name}
 | Get one group. The response carries an `ETag` header.
@@ -129,12 +131,59 @@ To detect concurrent edits, send the version in `If-Match`.
 |===
 | Field | Description
 
-| name | Group name. Required on create.
-| comments | Free-form comments.
+| name | Group name. Required on create. See <<group-name-rules>>.
+| comments | Free-form comments. See <<group-text-rules>>.
 | users | Ordered list of member user ids. An unknown user returns `400`.
-| dutySchedules | List of duty schedule strings.
+| dutySchedules | List of duty schedule strings. See <<group-duty-schedules>>.
 | version | Opaque row version, also sent as the `ETag`. Ignored on input.
 |===
+
+[[group-name-rules]]
+== Group names
+
+A group name must not contain:
+
+* Markup characters: `&`, `<`, `>`, `"`, `` ` `` and `'`.
+* The characters `:`, `/`, `\`, `%`, `?` and `#`.
+* Whitespace.
+* Control or invisible characters.
+
+A group name must not be `.` or `..`.
+It is at most 256 characters long.
+The rules apply to `name` on create and to `newName` on rename.
+A group name that is already stored is not checked again.
+A violation returns `400`.
+
+[[group-text-rules]]
+== Comments
+
+The comments must not contain the characters `&`, `<`, `>`, `"`, `` ` `` and `'`.
+They are at most 4096 characters long, counted after leading and trailing whitespace is removed.
+A violation returns `400`.
+
+A stored value that breaks these rules stays valid while a `PUT` sends it back unchanged, apart from surrounding whitespace.
+This lets you edit other fields of a group that was stored before the rules existed.
+Any other value is checked.
+
+[[group-duty-schedules]]
+== Duty schedules
+
+A duty schedule is a string such as `MoWeFr800-1700`.
+It has these parts:
+
+* One to seven day tokens, each one of `Mo`, `Tu`, `We`, `Th`, `Fr`, `Sa` and `Su`.
+* The begin time, then `-`, then the end time.
+Each time is one to four digits in military format, for example `800` or `2359`.
+
+A time must be between `0` and `2359`, and its last two digits must be at most `59`.
+The begin time must not be after the end time.
+To cover a night, send two schedules, for example `MoTu2000-2359` and `TuWe0-800`.
+A schedule is at most 64 characters long.
+A blank schedule is rejected.
+A violation returns `400`.
+
+A schedule that is already stored on the group is kept as it is when you send it back, even if it breaks these rules.
+Only the schedules that are new to the request are checked.
 
 == Examples using cURL
 

@@ -43,6 +43,8 @@ Error responses carry a plain-text message.
 | /security-roles
 | Get every role: built-in roles first, then custom roles, each sorted by name.
 Each role carries `userCount`, the number of users that hold it.
+The response has no `ETag` header.
+Each item carries its `version`, but a `PUT` or `DELETE` takes the tag from a GET of the single role.
 
 | /security-roles/\{name}
 | Get one role. The response carries an `ETag` header and no `userCount`; use the list for the count.
@@ -59,6 +61,9 @@ Each role carries `userCount`, the number of users that hold it.
 | /security-roles
 | Create a custom role.
 The name is upper-cased, gets the `ROLE_` prefix when it lacks one, and may contain only `A-Z`, `0-9` and `_`.
+The name is at most 128 characters long.
+The response and the path of every later request use the normalized name: a role created as `auditor` is `ROLE_AUDITOR`.
+The description is at most 4096 characters long, counted after leading and trailing whitespace is removed.
 Returns `201 Created` with the role and its `ETag`, or `409` when it already exists.
 |===
 
@@ -73,6 +78,8 @@ Returns `201 Created` with the role and its `ETag`, or `409` when it already exi
 | /security-roles/\{name}
 | Update the description of a custom role.
 An omitted `description` is preserved and an empty one clears it.
+The description is limited to 4096 characters as on create.
+A stored description that is longer stays valid while a `PUT` sends it back unchanged, apart from surrounding whitespace.
 Returns `200` with the role and its `ETag`.
 |===
 
@@ -122,7 +129,7 @@ To detect concurrent edits, send the version in `If-Match`.
 | Field | Description
 
 | name | Role name, such as `ROLE_AUDITOR`. Required on create.
-| description | Description. Only writable on custom roles.
+| description | Description, at most 4096 characters. Only writable on custom roles.
 | builtin | `true` for a built-in role. Read-only.
 | userCount | Number of users that hold the role. Only in the list; read-only.
 | version | Opaque row version, also sent as the `ETag`. Ignored on input.
@@ -135,6 +142,8 @@ To detect concurrent edits, send the version in `If-Match`.
 curl -u admin:admin -X POST -H 'Content-Type: application/json' \
   -d '{"name": "auditor", "description": "Read-only auditing"}' \
   http://localhost:8980/opennms/api/v2/security-roles
+# 201 Created, ETag: "4817"
+# {"name": "ROLE_AUDITOR", "description": "Read-only auditing", "builtin": false, "version": 4817}
 
 curl -u admin:admin http://localhost:8980/opennms/api/v2/security-roles
 
