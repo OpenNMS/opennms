@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,6 +43,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.HtmlEncoding;
@@ -60,18 +62,40 @@ import org.opennms.netmgt.model.usermgmt.SecurityRoles;
  * One run of the copy of users.xml, groups.xml and security-roles.properties into the user management
  * tables, on one connection. The caller owns the transaction: it commits or rolls back.
  *
- * <p>Entries that the tables cannot hold are skipped with a message; see the migrator for the list.
- * The messages go to the {@code messages} consumer, one line each, without a trailing newline.</p>
+ * <p>The caller passes security roles, users, groups and on-call roles in that order, so that references
+ * resolve: they resolve against the database and the entries written in this run. Names and values are copied
+ * exactly, without trimming; full names, contact info and service providers are HTML-decoded once unless
+ * {@code decode} is false. A file that repeats an entry uses the last one, with a warning. A custom security
+ * role that is in the database already is left alone.</p>
+ *
+ * <p>Entries and values that the tables cannot hold are skipped with a message: a value longer than its column,
+ * an unknown contact or schedule type, a second contact of a type, a reference to a user, group or security role
+ * that does not exist, and a schedule without usable times. The messages go to the {@code messages} consumer,
+ * one line each, without a trailing newline.</p>
  */
 public final class UsersGroupsXmlImport {
 
-    /** What to do with a row that is already in the database. */
+    /** What to do with a user, group or on-call role whose name is already in the database. */
     public enum Existing {
         /** The database has no user data, so there is nothing to meet. */
         NONE_EXPECTED,
+        /**
+         * The entry in the database is left as it is and listed in {@link #existingEntries()}. The other entries of
+         * the files can still refer to it.
+         */
         SKIP,
+        /**
+         * The file's entry replaces it, and it is listed in {@link #existingEntries()}. The row is updated in place
+         * and keeps its id, so the rows that refer to it stay connected; its child rows (contacts, duty schedules,
+         * security roles of a user, members of a group, schedules of an on-call role) are replaced by the file's.
+         */
         OVERWRITE
     }
+
+    private static final String USERS = "users";
+    private static final String GROUPS = "groups";
+    private static final String ONCALL_ROLES = "on-call roles";
+    private static final String SECURITY_ROLES = "custom security roles";
 
     // the column sizes in core/schema/src/main/liquibase/37.0.0/changelog.xml
     private static final int SECURITY_ROLE_NAME_LENGTH = 128;
@@ -93,30 +117,41 @@ public final class UsersGroupsXmlImport {
     private static final Set<String> SCHEDULE_TYPES = names(OnCallSchedule.Type.class);
 
     private final Connection m_connection;
+    private final Existing m_existing;
+    private final boolean m_decode;
     private final Consumer<String> m_messages;
 
-    // name -> id, to resolve references; the database has no user data yet, only the built-in roles
+    // name -> id, to resolve references: the rows of the database, then also the rows written by this run
     private final Map<String, Integer> m_securityRoleIds;
-    private final Map<String, Integer> m_userIds = new HashMap<>();
-    private final Map<String, Integer> m_groupIds = new HashMap<>();
+    private final Map<String, Integer> m_userIds;
+    private final Map<String, Integer> m_groupIds;
+    private final Map<String, Integer> m_onCallRoleIds;
 
-    private final Map<String, Integer> m_counts = new LinkedHashMap<>();
+    private final Map<String, List<String>> m_existingEntries = new LinkedHashMap<>();
+    private final Map<String, Counts> m_counts = new LinkedHashMap<>();
     private int m_skipped;
     private int m_warnings;
 
+    private static final class Counts {
+        private int m_imported;
+        private int m_overwritten;
+        private int m_existingSkipped;
+    }
+
     /**
+     * @param decode whether full names, contact info and service providers are HTML-decoded once, as files written
+     *               before 37 need; a file written by the XML store of 37 or later holds them as they are
      * @param messages receives one line per message, without a trailing newline
      */
     public UsersGroupsXmlImport(final Connection connection, final Existing existing, final boolean decode, final Consumer<String> messages) throws SQLException {
-        if (existing != Existing.NONE_EXPECTED) {
-            throw new UnsupportedOperationException("existing: " + existing);
-        }
-        if (!decode) {
-            throw new UnsupportedOperationException("decode: false");
-        }
         m_connection = connection;
+        m_existing = existing;
+        m_decode = decode;
         m_messages = messages;
         m_securityRoleIds = loadIds("SELECT name, id FROM security_roles");
+        m_userIds = loadIds("SELECT username, id FROM users");
+        m_groupIds = loadIds("SELECT name, id FROM groups");
+        m_onCallRoleIds = loadIds("SELECT name, id FROM oncall_roles");
     }
 
     /** @return the file as the type, or null if the file does not exist; a {@link RuntimeException} from JAXB passes through */
@@ -151,6 +186,53 @@ public final class UsersGroupsXmlImport {
         return roles;
     }
 
+    /**
+     * Looks up which users, groups and on-call roles of the files are in the database, without writing.
+     *
+     * @return kind ("users", "groups", "on-call roles") -> the names, in file order; a kind without one is left out.
+     *         An import with {@link Existing#SKIP} or {@link Existing#OVERWRITE} on the same data finds the same.
+     */
+    public static Map<String, List<String>> findExisting(final Connection connection, final List<User> users, final List<Group> groups, final List<Role> roles) throws SQLException {
+        final Map<String, List<String>> existing = new LinkedHashMap<>();
+        findExisting(connection, existing, USERS, "SELECT EXISTS (SELECT 1 FROM users WHERE username = ?)",
+                users.stream().map(User::getUserId).collect(Collectors.toList()));
+        findExisting(connection, existing, GROUPS, "SELECT EXISTS (SELECT 1 FROM groups WHERE name = ?)",
+                groups.stream().map(Group::getName).collect(Collectors.toList()));
+        findExisting(connection, existing, ONCALL_ROLES, "SELECT EXISTS (SELECT 1 FROM oncall_roles WHERE name = ?)",
+                roles.stream().map(Role::getName).collect(Collectors.toList()));
+        return existing;
+    }
+
+    private static void findExisting(final Connection connection, final Map<String, List<String>> existing, final String kind, final String sql, final List<String> names) throws SQLException {
+        final List<String> found = new ArrayList<>();
+        try (final PreparedStatement statement = connection.prepareStatement(sql)) {
+            // once each, in the order of their first entry, as the import goes through them
+            for (final String name : new LinkedHashSet<>(names)) {
+                if (name == null || name.isEmpty()) {
+                    continue;
+                }
+                statement.setString(1, name);
+                try (final ResultSet rs = statement.executeQuery()) {
+                    rs.next();
+                    if (rs.getBoolean(1)) {
+                        found.add(name);
+                    }
+                }
+            }
+        }
+        if (!found.isEmpty()) {
+            existing.put(kind, found);
+        }
+    }
+
+    /**
+     * @return kind ("users", "groups", "on-call roles") -> the names of the entries of the files that were in the
+     *         database already (skipped or overwritten), in file order; empty with {@link Existing#NONE_EXPECTED}
+     */
+    public Map<String, List<String>> existingEntries() {
+        return Collections.unmodifiableMap(m_existingEntries);
+    }
+
     private static <E extends Enum<E>> Set<String> names(final Class<E> type) {
         final Set<String> names = new HashSet<>();
         EnumSet.allOf(type).forEach(e -> names.add(e.name()));
@@ -163,7 +245,7 @@ public final class UsersGroupsXmlImport {
             if (!m_securityRoleIds.containsKey(name) && fits(name, SECURITY_ROLE_NAME_LENGTH, "security role", name, "security-roles.properties")) {
                 m_securityRoleIds.put(name, insert("INSERT INTO security_roles (id, name, builtin, created_time, last_modified) "
                         + "VALUES (nextval('security_roles_id_seq'), ?, false, NOW(), NOW()) RETURNING id", name));
-                count("custom security roles");
+                counts(SECURITY_ROLES).m_imported++;
             }
         }
     }
@@ -181,21 +263,38 @@ public final class UsersGroupsXmlImport {
         }
         for (final User user : users.values()) {
             final String username = user.getUserId();
+            final Integer existingId = existing(USERS, m_userIds, username);
+            if (existingId != null && m_existing == Existing.SKIP) {
+                // its id stays in m_userIds, so the groups and on-call roles of the files can refer to it
+                counts(USERS).m_existingSkipped++;
+                continue;
+            }
             final String password = user.getPassword() == null ? null : user.getPassword().getEncryptedPassword();
             if (!fits(username, USERNAME_LENGTH, "user", username, "the user name") || !fits(password, PASSWORD_LENGTH, "user", username, "the password")) {
                 continue;
             }
-            final int userId = insert("INSERT INTO users (id, username, full_name, comments, password_hash, password_salted, tui_pin, time_zone_id, created_time, last_modified) "
-                            + "VALUES (nextval('users_id_seq'), ?, ?, ?, ?, ?, ?, ?, NOW(), NOW()) RETURNING id",
-                    username,
-                    valueOrNull(HtmlEncoding.decodeHtmlEncoded(user.getFullName().orElse(null)), FULL_NAME_LENGTH, "user", username, "full-name"),
-                    user.getUserComments().orElse(null),
-                    password,
-                    user.getPassword() != null && Boolean.TRUE.equals(user.getPassword().getSalt()),
-                    valueOrNull(user.getTuiPin().orElse(null), TUI_PIN_LENGTH, "user", username, "tui-pin"),
-                    valueOrNull(user.getTimeZoneId().map(ZoneId::getId).orElse(null), TIME_ZONE_ID_LENGTH, "user", username, "time-zone-id"));
-            m_userIds.put(username, userId);
-            count("users");
+            final String fullName = valueOrNull(decode(user.getFullName().orElse(null)), FULL_NAME_LENGTH, "user", username, "full-name");
+            final String comments = user.getUserComments().orElse(null);
+            final boolean salted = user.getPassword() != null && Boolean.TRUE.equals(user.getPassword().getSalt());
+            final String tuiPin = valueOrNull(user.getTuiPin().orElse(null), TUI_PIN_LENGTH, "user", username, "tui-pin");
+            final String timeZoneId = valueOrNull(user.getTimeZoneId().map(ZoneId::getId).orElse(null), TIME_ZONE_ID_LENGTH, "user", username, "time-zone-id");
+            final int userId;
+            if (existingId == null) {
+                userId = insert("INSERT INTO users (id, username, full_name, comments, password_hash, password_salted, tui_pin, time_zone_id, created_time, last_modified) "
+                                + "VALUES (nextval('users_id_seq'), ?, ?, ?, ?, ?, ?, ?, NOW(), NOW()) RETURNING id",
+                        username, fullName, comments, password, salted, tuiPin, timeZoneId);
+                m_userIds.put(username, userId);
+                counts(USERS).m_imported++;
+            } else {
+                // in place: memberships and on-call schedules refer to the id
+                userId = existingId;
+                update("UPDATE users SET full_name = ?, comments = ?, password_hash = ?, password_salted = ?, tui_pin = ?, time_zone_id = ?, last_modified = NOW() WHERE id = ?",
+                        fullName, comments, password, salted, tuiPin, timeZoneId, userId);
+                update("DELETE FROM user_contacts WHERE user_id = ?", userId);
+                update("DELETE FROM user_duty_schedules WHERE user_id = ?", userId);
+                update("DELETE FROM user_security_roles WHERE user_id = ?", userId);
+                counts(USERS).m_overwritten++;
+            }
 
             contacts(userId, username, user.getContacts());
             dutySchedules("INSERT INTO user_duty_schedules (user_id, position, schedule) VALUES (?, ?, ?)", userId, "user", username, user.getDutySchedules());
@@ -207,8 +306,8 @@ public final class UsersGroupsXmlImport {
         final Set<String> types = new HashSet<>();
         for (final Contact contact : contacts) {
             final String type = contact.getType();
-            final String info = HtmlEncoding.decodeHtmlEncoded(contact.getInfo().orElse(null));
-            final String provider = HtmlEncoding.decodeHtmlEncoded(contact.getServiceProvider().orElse(null));
+            final String info = decode(contact.getInfo().orElse(null));
+            final String provider = decode(contact.getServiceProvider().orElse(null));
             if (!CONTACT_TYPES.contains(type)) {
                 skip("user '%s': contact type '%s' is not known", username, type);
             } else if (!types.add(type)) {
@@ -228,8 +327,11 @@ public final class UsersGroupsXmlImport {
                 continue;
             }
             final Integer roleId = m_securityRoleIds.get(name);
-            if (roleId == null) {
+            if (roleId == null && m_existing == Existing.NONE_EXPECTED) {
+                // the migrator's database has only the built-in roles
                 skip("user '%s': security role '%s' is not built in and not in security-roles.properties", username, name);
+            } else if (roleId == null) {
+                skip("user '%s': security role '%s' does not exist", username, name);
             } else {
                 update("INSERT INTO user_security_roles (user_id, role_id) VALUES (?, ?)", userId, roleId);
             }
@@ -249,16 +351,32 @@ public final class UsersGroupsXmlImport {
         }
         for (final Group group : groups.values()) {
             final String name = group.getName();
+            final Integer existingId = existing(GROUPS, m_groupIds, name);
+            if (existingId != null && m_existing == Existing.SKIP) {
+                // its id stays in m_groupIds, so the on-call roles of the files can refer to it
+                counts(GROUPS).m_existingSkipped++;
+                continue;
+            }
             if (!fits(name, GROUP_NAME_LENGTH, "group", name, "the name")) {
                 continue;
             }
-            final int groupId = insert("INSERT INTO groups (id, name, default_map, comments, created_time, last_modified) "
-                            + "VALUES (nextval('groups_id_seq'), ?, ?, ?, NOW(), NOW()) RETURNING id",
-                    name,
-                    valueOrNull(group.getDefaultMap().orElse(null), DEFAULT_MAP_LENGTH, "group", name, "default-map"),
-                    group.getComments().orElse(null));
-            m_groupIds.put(name, groupId);
-            count("groups");
+            final String defaultMap = valueOrNull(group.getDefaultMap().orElse(null), DEFAULT_MAP_LENGTH, "group", name, "default-map");
+            final String comments = group.getComments().orElse(null);
+            final int groupId;
+            if (existingId == null) {
+                groupId = insert("INSERT INTO groups (id, name, default_map, comments, created_time, last_modified) "
+                                + "VALUES (nextval('groups_id_seq'), ?, ?, ?, NOW(), NOW()) RETURNING id",
+                        name, defaultMap, comments);
+                m_groupIds.put(name, groupId);
+                counts(GROUPS).m_imported++;
+            } else {
+                // in place: on-call roles refer to the id
+                groupId = existingId;
+                update("UPDATE groups SET default_map = ?, comments = ?, last_modified = NOW() WHERE id = ?", defaultMap, comments, groupId);
+                update("DELETE FROM group_members WHERE group_id = ?", groupId);
+                update("DELETE FROM group_duty_schedules WHERE group_id = ?", groupId);
+                counts(GROUPS).m_overwritten++;
+            }
 
             // matched as is: users.xml trims user ids, but nothing trims group members
             int position = 0;
@@ -287,6 +405,11 @@ public final class UsersGroupsXmlImport {
         }
         for (final Role role : roles.values()) {
             final String name = role.getName();
+            final Integer existingId = existing(ONCALL_ROLES, m_onCallRoleIds, name);
+            if (existingId != null && m_existing == Existing.SKIP) {
+                counts(ONCALL_ROLES).m_existingSkipped++;
+                continue;
+            }
             final Integer groupId = m_groupIds.get(role.getMembershipGroup());
             final Integer supervisorId = m_userIds.get(role.getSupervisor());
             if (groupId == null) {
@@ -300,10 +423,21 @@ public final class UsersGroupsXmlImport {
             if (!fits(name, ONCALL_ROLE_NAME_LENGTH, "on-call role", name, "the name")) {
                 continue;
             }
-            final int roleId = insert("INSERT INTO oncall_roles (id, name, description, membership_group_id, supervisor_user_id, created_time, last_modified) "
-                            + "VALUES (nextval('oncall_roles_id_seq'), ?, ?, ?, ?, NOW(), NOW()) RETURNING id",
-                    name, role.getDescription().orElse(null), groupId, supervisorId);
-            count("on-call roles");
+            final int roleId;
+            if (existingId == null) {
+                roleId = insert("INSERT INTO oncall_roles (id, name, description, membership_group_id, supervisor_user_id, created_time, last_modified) "
+                                + "VALUES (nextval('oncall_roles_id_seq'), ?, ?, ?, ?, NOW(), NOW()) RETURNING id",
+                        name, role.getDescription().orElse(null), groupId, supervisorId);
+                m_onCallRoleIds.put(name, roleId);
+                counts(ONCALL_ROLES).m_imported++;
+            } else {
+                roleId = existingId;
+                update("UPDATE oncall_roles SET description = ?, membership_group_id = ?, supervisor_user_id = ?, last_modified = NOW() WHERE id = ?",
+                        role.getDescription().orElse(null), groupId, supervisorId, roleId);
+                // their times go with them (ON DELETE CASCADE)
+                update("DELETE FROM oncall_schedules WHERE oncall_role_id = ?", roleId);
+                counts(ONCALL_ROLES).m_overwritten++;
+            }
 
             int position = 0;
             for (final Schedule schedule : role.getSchedules()) {
@@ -363,8 +497,13 @@ public final class UsersGroupsXmlImport {
     }
 
     public void logSummary() {
-        for (final Map.Entry<String, Integer> entry : m_counts.entrySet()) {
-            log("%s: %d copied", entry.getKey(), entry.getValue());
+        for (final Map.Entry<String, Counts> entry : m_counts.entrySet()) {
+            final Counts counts = entry.getValue();
+            if (m_existing == Existing.NONE_EXPECTED) {
+                log("%s: %d copied", entry.getKey(), counts.m_imported);
+            } else {
+                log("%s: %d imported, %d overwritten, %d existing skipped", entry.getKey(), counts.m_imported, counts.m_overwritten, counts.m_existingSkipped);
+            }
         }
         if (m_skipped > 0 || m_warnings > 0) {
             log("Entries skipped: %d, warnings: %d; see the messages above", m_skipped, m_warnings);
@@ -375,8 +514,28 @@ public final class UsersGroupsXmlImport {
         m_messages.accept(String.format(format, args));
     }
 
-    private void count(final String what) {
-        m_counts.merge(what, 1, Integer::sum);
+    private Counts counts(final String kind) {
+        return m_counts.computeIfAbsent(kind, k -> new Counts());
+    }
+
+    /**
+     * @return the id of the entry of this name that was in the database before this run, which is then listed in
+     *         {@link #existingEntries()}, or null if there is none. Each name comes here once per run, so an id in
+     *         the map is one from the database.
+     */
+    private Integer existing(final String kind, final Map<String, Integer> ids, final String name) {
+        if (m_existing == Existing.NONE_EXPECTED) {
+            return null;
+        }
+        final Integer id = ids.get(name);
+        if (id != null) {
+            m_existingEntries.computeIfAbsent(kind, k -> new ArrayList<>()).add(name);
+        }
+        return id;
+    }
+
+    private String decode(final String value) {
+        return m_decode ? HtmlEncoding.decodeHtmlEncoded(value) : value;
     }
 
     /** @return true if the value is null or fits its column; otherwise logs that the entry is skipped */
