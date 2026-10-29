@@ -27,3 +27,10 @@ export interface AdminWriteError {
   message: string
   stale: boolean
 }
+
+// Manage Users and Manage Groups: the table, or the editor panel in place of it.
+export enum AdminEditMode {
+  Table = 'table',
+  Edit = 'edit',
+  Create = 'create'
+}

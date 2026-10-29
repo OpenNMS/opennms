@@ -6,18 +6,25 @@
   </div>
   <div class="manage-groups-container">
     <h1 class="page-title">Manage Groups</h1>
-    <GroupsTable />
+    <GroupsTable v-if="store.editMode === AdminEditMode.Table" />
+    <GroupEditorPanel
+      v-else
+      :group="store.currentGroup"
+      @close="store.closeGroupEditor()"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import GroupEditorPanel from '@/components/ManageGroups/GroupEditorPanel.vue'
 import GroupsTable from '@/components/ManageGroups/GroupsTable.vue'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
+import { AdminEditMode } from '@/types/adminWrite'
 
 const menuStore = useMenuStore()
 const store = useGroupAdminStore()
@@ -33,6 +40,11 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 
 onMounted(async () => {
   await store.populate()
+})
+
+// the editor panel replaces the table on this route; leaving the page closes it
+onUnmounted(() => {
+  store.closeGroupEditor()
 })
 </script>
 

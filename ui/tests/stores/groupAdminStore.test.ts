@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
+import { AdminEditMode } from '@/types/adminWrite'
 import API from '@/services'
 import { ManagedGroup, ManagedGroupCreate, STALE_GROUP_MESSAGE, STALE_GROUP_RELOAD_FAILED_MESSAGE } from '@/types/groupAdmin'
 
@@ -161,5 +162,21 @@ describe('useGroupAdminStore', () => {
 
     expect(await store.renameGroup('NOC', 'x', 1)).toEqual({ message: 'Group \'x\' already exists.', stale: false })
     expect(API.getManagedGroups).not.toHaveBeenCalled()
+  })
+
+  it('opens the editor on a group or a new one, and closes it back to the table', () => {
+    expect(store.editMode).toBe(AdminEditMode.Table)
+
+    store.openGroupEditor(mockGroups[0])
+    expect(store.editMode).toBe(AdminEditMode.Edit)
+    expect(store.currentGroup).toEqual(mockGroups[0])
+
+    store.openGroupEditor(null)
+    expect(store.editMode).toBe(AdminEditMode.Create)
+    expect(store.currentGroup).toBeNull()
+
+    store.closeGroupEditor()
+    expect(store.editMode).toBe(AdminEditMode.Table)
+    expect(store.currentGroup).toBeNull()
   })
 })

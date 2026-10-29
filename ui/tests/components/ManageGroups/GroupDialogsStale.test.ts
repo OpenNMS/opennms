@@ -4,12 +4,13 @@ import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import GroupsTable from '@/components/ManageGroups/GroupsTable.vue'
-import GroupEditorDialog from '@/components/ManageGroups/GroupEditorDialog.vue'
+import GroupEditorPanel from '@/components/ManageGroups/GroupEditorPanel.vue'
 import GroupRenameDialog from '@/components/ManageGroups/GroupRenameDialog.vue'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 
 const store = vi.hoisted(() => ({
   updateGroup: vi.fn(),
+  openGroupEditor: vi.fn(),
   createGroup: vi.fn(),
   renameGroup: vi.fn(),
   deleteGroup: vi.fn(),
@@ -31,7 +32,6 @@ const group = { name: 'Ops', users: [], version: 3 }
 
 // each case: a mounted dialog, the store call its Save makes and the data-test of the dialog
 const cases = [
-  ['GroupEditorDialog', () => mount(GroupEditorDialog, { props: { visible: true, group }, global: { plugins: [PrimeVue] }}), store.updateGroup, 'group-editor-dialog'],
   ['GroupRenameDialog', () => mount(GroupRenameDialog, { props: { visible: true, groupName: 'Ops', version: 3 }, global: { plugins: [PrimeVue] }}), store.renameGroup, 'group-rename-dialog']
 ] as const
 
@@ -72,7 +72,42 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest) => {
   })
 })
 
-// the version of the row the dialog was opened on must reach the store, or the server cannot detect a stale write
+// the editor panel replaces the table; it is not teleported, so its error shows inside the wrapper
+describe('GroupEditorPanel save results', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  const mountPanel = () => mount(GroupEditorPanel, { props: { group }, global: { plugins: [PrimeVue] }})
+  const save = (wrapper: { vm: unknown }) => (wrapper.vm as { save: () => Promise<void> }).save()
+
+  it('closes when the save is rejected as stale', async () => {
+    // the text is irrelevant: only the stale flag closes the panel
+    store.updateGroup.mockResolvedValue({ message: 'any wording at all', stale: true })
+    const wrapper = mountPanel()
+    await save(wrapper)
+
+    expect(wrapper.emitted('close')).toHaveLength(1)
+  })
+
+  it('stays open and shows other errors', async () => {
+    store.updateGroup.mockResolvedValue({ message: 'Something else went wrong', stale: false })
+    const wrapper = mountPanel()
+    await save(wrapper)
+    await nextTick()
+
+    expect(wrapper.emitted('close')).toBeUndefined()
+    expect(wrapper.find('[data-test="save-error"]').text()).toBe('Something else went wrong')
+  })
+
+  it('does not close on the stale wording without the flag', async () => {
+    store.updateGroup.mockResolvedValue({ message: 'This group was changed by someone else. The list has been reloaded; reapply your change.', stale: false })
+    const wrapper = mountPanel()
+    await save(wrapper)
+
+    expect(wrapper.emitted('close')).toBeUndefined()
+  })
+})
+
+// the version of the row the editor was opened on must reach the store, or the server cannot detect a stale write
 describe('version reaches the store', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -81,8 +116,8 @@ describe('version reaches the store', () => {
     store.deleteGroup.mockResolvedValue(null)
   })
 
-  it('GroupEditorDialog sends the group with its version', async () => {
-    const wrapper = mount(GroupEditorDialog, { props: { visible: true, group }, global: { plugins: [PrimeVue] }})
+  it('GroupEditorPanel sends the group with its version', async () => {
+    const wrapper = mount(GroupEditorPanel, { props: { group }, global: { plugins: [PrimeVue] }})
     await (wrapper.vm as unknown as { save: () => Promise<void> }).save()
 
     expect(store.updateGroup).toHaveBeenCalledWith(expect.objectContaining({ name: 'Ops', version: 3 }))
@@ -134,26 +169,30 @@ describe('a rename followed by an edit', () => {
     await nextTick()
     expect(rename.props('visible')).toBe(false)
 
-    // edit the reloaded row through its Edit button
+    // edit the reloaded row through its Edit button: the table opens the editor on that row
     const editButtons = table.findAll('[data-test="edit-group-button"]')
     expect(editButtons).toHaveLength(1)
     await editButtons[0].trigger('click')
-    const editor = table.findComponent(GroupEditorDialog)
-    expect(editor.props('visible')).toBe(true)
+    expect(store.openGroupEditor).toHaveBeenCalledTimes(1)
+    const opened = store.openGroupEditor.mock.calls[0][0]
+    expect(opened).toMatchObject({ name: 'Dev', version: 4 })
+
+    // and the editor saves what it was opened on
+    const editor = mount(GroupEditorPanel, { props: { group: opened }, global: { plugins: [PrimeVue] }})
     await (editor.vm as unknown as { save: () => Promise<void> }).save()
 
     expect(store.updateGroup).toHaveBeenCalledWith(expect.objectContaining({ name: 'Dev', version: 4 }))
   })
 })
 
-describe('GroupEditorDialog comment limit', () => {
+describe('GroupEditorPanel comment limit', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     store.updateGroup.mockResolvedValue(null)
   })
 
   const mountEditor = (comments?: string) =>
-    mount(GroupEditorDialog, { props: { visible: true, group: { ...group, comments }}, global: { plugins: [PrimeVue] }})
+    mount(GroupEditorPanel, { props: { group: { ...group, comments }}, global: { plugins: [PrimeVue] }})
   const vmOf = (wrapper: { vm: unknown }) => wrapper.vm as unknown as { comments: string, commentsProblem: string | null, isValid: boolean, save: () => Promise<void> }
 
   it('flags a new comment over 4096 characters and blocks Save', async () => {

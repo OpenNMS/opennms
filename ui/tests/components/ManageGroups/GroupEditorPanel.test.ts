@@ -1,4 +1,4 @@
-import GroupEditorDialog from '@/components/ManageGroups/GroupEditorDialog.vue'
+import GroupEditorPanel from '@/components/ManageGroups/GroupEditorPanel.vue'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -6,27 +6,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/stores/groupAdminStore')
 
-// PrimeVue's Dialog teleports its content; a passthrough stub keeps the form
-// and footer in the wrapper so the dialog's own behavior can be asserted.
-const DialogStub = {
-  name: 'Dialog',
-  props: ['visible', 'header', 'modal'],
-  template: '<div v-if="visible"><slot /><slot name="footer" /></div>'
-}
-
-describe('GroupEditorDialog.vue', () => {
+describe('GroupEditorPanel.vue', () => {
   let wrapper: VueWrapper<any>
   let store: any
 
-  const mountDialog = async (group: any = null) => {
-    wrapper = mount(GroupEditorDialog, {
-      props: { visible: false, group },
-      global: {
-        plugins: [PrimeVue],
-        stubs: { Dialog: DialogStub }
-      }
+  const mountPanel = async (group: any = null) => {
+    wrapper = mount(GroupEditorPanel, {
+      props: { group },
+      global: { plugins: [PrimeVue] }
     })
-    await wrapper.setProps({ visible: true })
     await flushPromises()
   }
 
@@ -41,7 +29,7 @@ describe('GroupEditorDialog.vue', () => {
   })
 
   it('flags a group name with whitespace and disables saving', async () => {
-    await mountDialog()
+    await mountPanel()
     await wrapper.find('[data-test="group-name-input"]').setValue('Test Group')
 
     expect(wrapper.find('#group-editor-name-error').text()).toContain('must not contain')
@@ -50,7 +38,7 @@ describe('GroupEditorDialog.vue', () => {
   })
 
   it('flags markup in the comments and disables saving', async () => {
-    await mountDialog()
+    await mountPanel()
     await wrapper.find('[data-test="group-name-input"]').setValue('TestGroup')
     await wrapper.find('[data-test="group-comments-input"]').setValue('<b>styled</b>')
 
@@ -59,7 +47,7 @@ describe('GroupEditorDialog.vue', () => {
   })
 
   it('keeps a group with a pre-existing markup comment editable', async () => {
-    await mountDialog({ name: 'Legacy', comments: 'Bob\'s R&D team', users: [] })
+    await mountPanel({ name: 'Legacy', comments: 'Bob\'s R&D team', users: [] })
 
     expect(wrapper.find('#group-editor-comments-error').exists()).toBe(false)
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeUndefined()
@@ -69,37 +57,45 @@ describe('GroupEditorDialog.vue', () => {
   })
 
   it('submits a valid group and closes', async () => {
-    await mountDialog()
+    await mountPanel()
     await wrapper.find('[data-test="group-name-input"]').setValue('TestGroup')
     await wrapper.find('[data-test="group-comments-input"]').setValue('Test Group')
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()
 
     expect(store.createGroup).toHaveBeenCalledWith(expect.objectContaining({ name: 'TestGroup', comments: 'Test Group' }))
-    expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+    expect(wrapper.emitted('close')).toHaveLength(1)
   })
 
-  it('shows a server rejection inside the dialog and stays open', async () => {
+  it('shows a server rejection in the panel and stays open', async () => {
     store.createGroup.mockResolvedValue({ message: 'Group TestGroup already exists.', stale: false })
-    await mountDialog()
+    await mountPanel()
     await wrapper.find('[data-test="group-name-input"]').setValue('TestGroup')
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()
 
-    expect(wrapper.find('[data-test="dialog-error"]').text()).toContain('already exists')
-    expect(wrapper.emitted('update:visible') ?? []).toEqual([])
+    expect(wrapper.find('[data-test="save-error"]').text()).toContain('already exists')
+    expect(wrapper.emitted('close')).toBeUndefined()
   })
 
-  it('clears a previous error when reopened', async () => {
-    store.createGroup.mockResolvedValue({ message: 'rejected', stale: false })
-    await mountDialog()
-    await wrapper.find('[data-test="group-name-input"]').setValue('TestGroup')
+  it('reloads the form and clears a previous error when the group changes', async () => {
+    store.updateGroup.mockResolvedValue({ message: 'rejected', stale: false })
+    await mountPanel({ name: 'Ops', comments: 'old', users: [], version: 1 })
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()
-    expect(wrapper.find('[data-test="dialog-error"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="save-error"]').exists()).toBe(true)
 
-    await wrapper.setProps({ visible: false })
-    await wrapper.setProps({ visible: true })
-    expect(wrapper.find('[data-test="dialog-error"]').exists()).toBe(false)
+    await wrapper.setProps({ group: { name: 'Dev', comments: 'new', users: [], version: 2 }})
+    expect(wrapper.find('[data-test="save-error"]').exists()).toBe(false)
+    expect((wrapper.find('[data-test="group-comments-input"]').element as HTMLInputElement).value).toBe('new')
+  })
+
+  it('closes on Back and on Cancel without saving', async () => {
+    await mountPanel({ name: 'Ops', users: [], version: 1 })
+    await wrapper.find('[data-test="back-button"]').trigger('click')
+    await wrapper.find('[data-test="cancel-button"]').trigger('click')
+
+    expect(wrapper.emitted('close')).toHaveLength(2)
+    expect(store.updateGroup).not.toHaveBeenCalled()
   })
 })

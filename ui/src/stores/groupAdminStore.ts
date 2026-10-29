@@ -22,7 +22,7 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import API from '@/services'
-import { AdminWriteError } from '@/types/adminWrite'
+import { AdminEditMode, AdminWriteError } from '@/types/adminWrite'
 import { ManagedGroup, ManagedGroupCreate, STALE_GROUP_MESSAGE, STALE_GROUP_RELOAD_FAILED_MESSAGE } from '@/types/groupAdmin'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -31,6 +31,21 @@ export const useGroupAdminStore = defineStore('groupAdminStore', () => {
   const { showSnackBar } = useSnackbar()
   const groups = ref([] as ManagedGroup[])
   const memberCandidates = ref([] as string[])
+
+  const editMode = ref(AdminEditMode.Table)
+  // the group being edited; null while creating or on the table
+  const currentGroup = ref<ManagedGroup | null>(null)
+
+  // null opens the editor on a new group
+  const openGroupEditor = (group: ManagedGroup | null) => {
+    currentGroup.value = group
+    editMode.value = group ? AdminEditMode.Edit : AdminEditMode.Create
+  }
+
+  const closeGroupEditor = () => {
+    currentGroup.value = null
+    editMode.value = AdminEditMode.Table
+  }
 
   const getGroups = async () => {
     const result = await API.getManagedGroups()
@@ -94,6 +109,10 @@ export const useGroupAdminStore = defineStore('groupAdminStore', () => {
 
   return {
     groups,
+    editMode,
+    currentGroup,
+    openGroupEditor,
+    closeGroupEditor,
     memberCandidates,
     getGroups,
     getMemberCandidates,

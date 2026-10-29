@@ -4,13 +4,14 @@ import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import UsersTable from '@/components/ManageUsers/UsersTable.vue'
-import UserEditorDialog from '@/components/ManageUsers/UserEditorDialog.vue'
+import UserEditorPanel from '@/components/ManageUsers/UserEditorPanel.vue'
 import UserPasswordDialog from '@/components/ManageUsers/UserPasswordDialog.vue'
 import UserRenameDialog from '@/components/ManageUsers/UserRenameDialog.vue'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 
 const store = vi.hoisted(() => ({
   updateUser: vi.fn(),
+  openUserEditor: vi.fn(),
   createUser: vi.fn(),
   renameUser: vi.fn(),
   setPassword: vi.fn(),
@@ -33,7 +34,6 @@ const user = { userId: 'jdoe', fullName: 'J Doe', version: 3 }
 
 // each case: a mounted dialog, the store call its Save makes and the data-test of the dialog
 const cases = [
-  ['UserEditorDialog', () => mount(UserEditorDialog, { props: { visible: true, user }, global: { plugins: [PrimeVue] }}), store.updateUser, 'user-editor-dialog'],
   ['UserRenameDialog', () => mount(UserRenameDialog, { props: { visible: true, userId: 'jdoe', version: 3 }, global: { plugins: [PrimeVue] }}), store.renameUser, 'user-rename-dialog'],
   ['UserPasswordDialog', () => mount(UserPasswordDialog, { props: { visible: true, userId: 'jdoe', version: 3 }, global: { plugins: [PrimeVue] }}), store.setPassword, 'user-password-dialog']
 ] as const
@@ -75,7 +75,42 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest) => {
   })
 })
 
-// the version of the row the dialog was opened on must reach the store, or the server cannot detect a stale write
+// the editor panel replaces the table; it is not teleported, so its error shows inside the wrapper
+describe('UserEditorPanel save results', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  const mountPanel = () => mount(UserEditorPanel, { props: { user }, global: { plugins: [PrimeVue] }})
+  const save = (wrapper: { vm: unknown }) => (wrapper.vm as { save: () => Promise<void> }).save()
+
+  it('closes when the save is rejected as stale', async () => {
+    // the text is irrelevant: only the stale flag closes the panel
+    store.updateUser.mockResolvedValue({ message: 'any wording at all', stale: true })
+    const wrapper = mountPanel()
+    await save(wrapper)
+
+    expect(wrapper.emitted('close')).toHaveLength(1)
+  })
+
+  it('stays open and shows other errors', async () => {
+    store.updateUser.mockResolvedValue({ message: 'Something else went wrong', stale: false })
+    const wrapper = mountPanel()
+    await save(wrapper)
+    await nextTick()
+
+    expect(wrapper.emitted('close')).toBeUndefined()
+    expect(wrapper.find('[data-test="save-error"]').text()).toBe('Something else went wrong')
+  })
+
+  it('does not close on the stale wording without the flag', async () => {
+    store.updateUser.mockResolvedValue({ message: 'This user was changed by someone else. The list has been reloaded; reapply your change.', stale: false })
+    const wrapper = mountPanel()
+    await save(wrapper)
+
+    expect(wrapper.emitted('close')).toBeUndefined()
+  })
+})
+
+// the version of the row the editor was opened on must reach the store, or the server cannot detect a stale write
 describe('version reaches the store', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -87,8 +122,8 @@ describe('version reaches the store', () => {
 
   const save = (wrapper: { vm: unknown }) => (wrapper.vm as { save: () => Promise<void> }).save()
 
-  it('UserEditorDialog sends the user with its version', async () => {
-    await save(mount(UserEditorDialog, { props: { visible: true, user }, global: { plugins: [PrimeVue] }}))
+  it('UserEditorPanel sends the user with its version', async () => {
+    await save(mount(UserEditorPanel, { props: { user }, global: { plugins: [PrimeVue] }}))
 
     expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({ userId: 'jdoe', version: 3 }))
   })
@@ -149,26 +184,30 @@ describe('a rename followed by an edit', () => {
     await nextTick()
     expect(rename.props('visible')).toBe(false)
 
-    // edit the reloaded row through its Edit button
+    // edit the reloaded row through its Edit button: the table opens the editor on that row
     const editButtons = table.findAll('[data-test="edit-user-button"]')
     expect(editButtons).toHaveLength(1)
     await editButtons[0].trigger('click')
-    const editor = table.findComponent(UserEditorDialog)
-    expect(editor.props('visible')).toBe(true)
+    expect(store.openUserEditor).toHaveBeenCalledTimes(1)
+    const opened = store.openUserEditor.mock.calls[0][0]
+    expect(opened).toMatchObject({ userId: 'jsmith', version: 4 })
+
+    // and the editor saves what it was opened on
+    const editor = mount(UserEditorPanel, { props: { user: opened }, global: { plugins: [PrimeVue] }})
     await (editor.vm as unknown as { save: () => Promise<void> }).save()
 
     expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({ userId: 'jsmith', version: 4 }))
   })
 })
 
-describe('UserEditorDialog comment limit', () => {
+describe('UserEditorPanel comment limit', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     store.updateUser.mockResolvedValue(null)
   })
 
   const mountEditor = (userComments?: string) =>
-    mount(UserEditorDialog, { props: { visible: true, user: { ...user, userComments }}, global: { plugins: [PrimeVue] }})
+    mount(UserEditorPanel, { props: { user: { ...user, userComments }}, global: { plugins: [PrimeVue] }})
   const vmOf = (wrapper: { vm: unknown }) => wrapper.vm as unknown as { form: { comments: string }, commentsProblem: string | null, isValid: boolean, save: () => Promise<void> }
 
   it('flags a new comment over 4096 characters and blocks Save', async () => {

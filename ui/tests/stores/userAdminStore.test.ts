@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useUserAdminStore } from '@/stores/userAdminStore'
+import { AdminEditMode } from '@/types/adminWrite'
 import API from '@/services'
 import { ManagedUser, STALE_USER_MESSAGE, STALE_USER_RELOAD_FAILED_MESSAGE } from '@/types/userAdmin'
 
@@ -186,5 +187,21 @@ describe('useUserAdminStore', () => {
 
     expect(await store.renameUser('noc', 'x', 1)).toEqual({ message: 'User \'x\' already exists.', stale: false })
     expect(API.getManagedUsers).not.toHaveBeenCalled()
+  })
+
+  it('opens the editor on a user or a new one, and closes it back to the table', () => {
+    expect(store.editMode).toBe(AdminEditMode.Table)
+
+    store.openUserEditor(mockUsers[1])
+    expect(store.editMode).toBe(AdminEditMode.Edit)
+    expect(store.currentUser).toEqual(mockUsers[1])
+
+    store.openUserEditor(null)
+    expect(store.editMode).toBe(AdminEditMode.Create)
+    expect(store.currentUser).toBeNull()
+
+    store.closeUserEditor()
+    expect(store.editMode).toBe(AdminEditMode.Table)
+    expect(store.currentUser).toBeNull()
   })
 })

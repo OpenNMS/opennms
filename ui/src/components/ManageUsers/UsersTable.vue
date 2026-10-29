@@ -111,10 +111,6 @@
     </div>
   </TableCard>
 
-  <UserEditorDialog
-    v-model:visible="showEditor"
-    :user="userToEdit"
-  />
   <UserPasswordDialog
     v-model:visible="showPassword"
     :userId="actionUserId"
@@ -149,7 +145,6 @@ import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMen
 import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import UserEditorDialog from '@/components/ManageUsers/UserEditorDialog.vue'
 import UserPasswordDialog from '@/components/ManageUsers/UserPasswordDialog.vue'
 import UserRenameDialog from '@/components/ManageUsers/UserRenameDialog.vue'
 import UsersAbout from '@/components/ManageUsers/UsersAbout.vue'
@@ -162,8 +157,6 @@ import { ManagedUser, PROTECTED_USER_IDS } from '@/types/userAdmin'
 
 const store = useUserAdminStore()
 
-const showEditor = ref(false)
-const userToEdit = ref<ManagedUser | null>(null)
 const showPassword = ref(false)
 const showRename = ref(false)
 const actionUserId = ref('')
@@ -177,10 +170,8 @@ const emptyListContent = {
 
 const isProtected = (userId: string) => PROTECTED_USER_IDS.includes(userId)
 
-const openEditor = (user: ManagedUser | null) => {
-  userToEdit.value = user
-  showEditor.value = true
-}
+// the editor panel replaces this table (see ManageUsers)
+const openEditor = (user: ManagedUser | null) => store.openUserEditor(user)
 
 const openPassword = (user: ManagedUser) => {
   actionUserId.value = user.userId

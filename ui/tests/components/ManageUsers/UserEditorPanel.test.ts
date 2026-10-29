@@ -1,4 +1,4 @@
-import UserEditorDialog from '@/components/ManageUsers/UserEditorDialog.vue'
+import UserEditorPanel from '@/components/ManageUsers/UserEditorPanel.vue'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -6,25 +6,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/stores/userAdminStore')
 
-const DialogStub = {
-  name: 'Dialog',
-  props: ['visible', 'header', 'modal'],
-  template: '<div v-if="visible"><slot /><slot name="footer" /></div>'
-}
-
-describe('UserEditorDialog.vue', () => {
+describe('UserEditorPanel.vue', () => {
   let wrapper: VueWrapper<any>
   let store: any
 
-  const mountDialog = async (user: any = null) => {
-    wrapper = mount(UserEditorDialog, {
-      props: { visible: false, user },
-      global: {
-        plugins: [PrimeVue],
-        stubs: { Dialog: DialogStub }
-      }
+  const mountPanel = async (user: any = null) => {
+    wrapper = mount(UserEditorPanel, {
+      props: { user },
+      global: { plugins: [PrimeVue] }
     })
-    await wrapper.setProps({ visible: true })
     await flushPromises()
   }
 
@@ -43,7 +33,7 @@ describe('UserEditorDialog.vue', () => {
   })
 
   it('flags a user id with whitespace or reserved characters and disables saving', async () => {
-    await mountDialog()
+    await mountPanel()
     await wrapper.find('[data-test="user-id-input"]').setValue('jose anes')
     await setPassword('secret')
 
@@ -52,7 +42,7 @@ describe('UserEditorDialog.vue', () => {
   })
 
   it('flags an email without a domain part', async () => {
-    await mountDialog()
+    await mountPanel()
     await wrapper.find('[data-test="user-id-input"]').setValue('jose')
     await setPassword('secret')
     await wrapper.find('[data-test="email-input"]').setValue('not-an-email')
@@ -62,14 +52,14 @@ describe('UserEditorDialog.vue', () => {
   })
 
   it('requires a password before a new user can be saved', async () => {
-    await mountDialog()
+    await mountPanel()
     await wrapper.find('[data-test="user-id-input"]').setValue('jose')
 
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
   })
 
   it('creates a valid user and closes', async () => {
-    await mountDialog()
+    await mountPanel()
     await wrapper.find('[data-test="user-id-input"]').setValue('jose')
     await setPassword('secret')
     await wrapper.find('[data-test="email-input"]').setValue('jose@example.org')
@@ -77,11 +67,11 @@ describe('UserEditorDialog.vue', () => {
     await flushPromises()
 
     expect(store.createUser).toHaveBeenCalledWith(expect.objectContaining({ userId: 'jose', password: 'secret' }))
-    expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+    expect(wrapper.emitted('close')).toHaveLength(1)
   })
 
   it('loads and saves the phone, pager, PIN, time-zone and duty-schedule fields', async () => {
-    await mountDialog({
+    await mountPanel({
       userId: 'jose',
       workPhone: '555-1000',
       mobilePhone: '555-2000',
@@ -122,7 +112,7 @@ describe('UserEditorDialog.vue', () => {
   })
 
   it('builds a duty schedule from day toggles and the default times', async () => {
-    await mountDialog({ userId: 'jose', dutySchedules: [], roles: [] })
+    await mountPanel({ userId: 'jose', dutySchedules: [], roles: [] })
 
     await wrapper.find('[data-test="add-duty-button"]').trigger('click')
     for (const day of ['Mo', 'Tu', 'We', 'Th', 'Fr']) {
@@ -137,15 +127,49 @@ describe('UserEditorDialog.vue', () => {
     }))
   })
 
-  it('shows a server rejection inside the dialog and stays open', async () => {
+  it('shows a server rejection in the panel and stays open', async () => {
     store.createUser.mockResolvedValue({ message: 'User jose already exists.', stale: false })
-    await mountDialog()
+    await mountPanel()
     await wrapper.find('[data-test="user-id-input"]').setValue('jose')
     await setPassword('secret')
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()
 
-    expect(wrapper.find('[data-test="dialog-error"]').text()).toContain('already exists')
-    expect(wrapper.emitted('update:visible') ?? []).toEqual([])
+    expect(wrapper.find('[data-test="save-error"]').text()).toContain('already exists')
+    expect(wrapper.emitted('close')).toBeUndefined()
+  })
+
+  it('shows the user fields first and the duty schedules on their own tab', async () => {
+    // isVisible needs the panel in the document; the inactive tab is hidden with v-show
+    wrapper = mount(UserEditorPanel, {
+      props: { user: { userId: 'jose', dutySchedules: [], roles: [], version: 1 }},
+      global: { plugins: [PrimeVue] },
+      attachTo: document.body
+    })
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="email-input"]').isVisible()).toBe(true)
+    expect(wrapper.find('[data-test="roles-select"]').isVisible()).toBe(true)
+    expect(wrapper.find('[data-test="add-duty-button"]').isVisible()).toBe(false)
+
+    await wrapper.find('[data-test="tab-duty-schedules"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="add-duty-button"]').isVisible()).toBe(true)
+    expect(wrapper.find('[data-test="email-input"]').isVisible()).toBe(false)
+
+    // another user opens on the User tab again
+    await wrapper.setProps({ user: { userId: 'ana', dutySchedules: [], roles: [], version: 2 }})
+    expect(wrapper.find('[data-test="email-input"]').isVisible()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('closes on Back and on Cancel without saving', async () => {
+    await mountPanel({ userId: 'jose', dutySchedules: [], roles: [] })
+    await wrapper.find('[data-test="back-button"]').trigger('click')
+    await wrapper.find('[data-test="cancel-button"]').trigger('click')
+
+    expect(wrapper.emitted('close')).toHaveLength(2)
+    expect(store.updateUser).not.toHaveBeenCalled()
   })
 })

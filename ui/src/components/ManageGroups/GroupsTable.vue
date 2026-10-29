@@ -102,10 +102,6 @@
     </div>
   </TableCard>
 
-  <GroupEditorDialog
-    v-model:visible="showEditor"
-    :group="groupToEdit"
-  />
   <GroupRenameDialog
     v-model:visible="showRename"
     :groupName="actionGroupName"
@@ -135,7 +131,6 @@ import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMen
 import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import GroupEditorDialog from '@/components/ManageGroups/GroupEditorDialog.vue'
 import GroupRenameDialog from '@/components/ManageGroups/GroupRenameDialog.vue'
 import GroupsAbout from '@/components/ManageGroups/GroupsAbout.vue'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
@@ -147,8 +142,6 @@ import { ManagedGroup, PROTECTED_GROUP_NAMES } from '@/types/groupAdmin'
 
 const store = useGroupAdminStore()
 
-const showEditor = ref(false)
-const groupToEdit = ref<ManagedGroup | null>(null)
 const showRename = ref(false)
 const actionGroupName = ref('')
 const actionVersion = ref(0)
@@ -161,10 +154,8 @@ const emptyListContent = {
 
 const isProtected = (name: string) => PROTECTED_GROUP_NAMES.includes(name)
 
-const openEditor = (group: ManagedGroup | null) => {
-  groupToEdit.value = group
-  showEditor.value = true
-}
+// the editor panel replaces this table (see ManageGroups)
+const openEditor = (group: ManagedGroup | null) => store.openGroupEditor(group)
 
 const openRename = (group: ManagedGroup) => {
   actionGroupName.value = group.name

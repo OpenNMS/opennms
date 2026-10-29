@@ -22,7 +22,7 @@
 
 import useSnackbar from '@/composables/useSnackbar'
 import API from '@/services'
-import { AdminWriteError } from '@/types/adminWrite'
+import { AdminEditMode, AdminWriteError } from '@/types/adminWrite'
 import { ManagedUser, ManagedUserCreate, STALE_USER_MESSAGE, STALE_USER_RELOAD_FAILED_MESSAGE } from '@/types/userAdmin'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -31,6 +31,21 @@ export const useUserAdminStore = defineStore('userAdminStore', () => {
   const { showSnackBar } = useSnackbar()
   const users = ref([] as ManagedUser[])
   const availableRoles = ref([] as string[])
+
+  const editMode = ref(AdminEditMode.Table)
+  // the user being edited; null while creating or on the table
+  const currentUser = ref<ManagedUser | null>(null)
+
+  // null opens the editor on a new user
+  const openUserEditor = (user: ManagedUser | null) => {
+    currentUser.value = user
+    editMode.value = user ? AdminEditMode.Edit : AdminEditMode.Create
+  }
+
+  const closeUserEditor = () => {
+    currentUser.value = null
+    editMode.value = AdminEditMode.Table
+  }
 
   const getUsers = async () => {
     const result = await API.getManagedUsers()
@@ -103,6 +118,10 @@ export const useUserAdminStore = defineStore('userAdminStore', () => {
 
   return {
     users,
+    editMode,
+    currentUser,
+    openUserEditor,
+    closeUserEditor,
     availableRoles,
     getUsers,
     getAvailableRoles,
