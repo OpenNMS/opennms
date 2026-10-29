@@ -30,7 +30,6 @@
 		org.opennms.netmgt.config.notifications.*
 	"
 %>
-<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 
 <%!
@@ -97,12 +96,12 @@
 <form action="admin/notification/noticeWizard/notificationWizard"  method="post" name="newNotificationForm">
 	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_NOTIFS_FOR_UEI%>"/>
 	<input type="hidden" name="userAction" value="new"/>
-	<input type="hidden" name="uei" value="<%=WebSecurityUtils.sanitizeString(uei)%>"/>
+	<input type="hidden" name="uei" value="<%=Encode.forHtml(uei)%>"/>
 </form>
 
 <div class="card">
   <div class="card-header">
-    <span>Existing Notifications for UEI <%=WebSecurityUtils.sanitizeString(uei)%></span>
+    <span>Existing Notifications for UEI <%=Encode.forHtml(uei)%></span>
   </div>
       <table class="table table-sm">
       	 <tr><th>Name</th><th>Description</th><th>Rule</th><th>Destination path</th><th>Varbinds</th><th>Actions</th></tr>
@@ -117,10 +116,10 @@
           	String jsUrlName = Encode.forUriComponent(Encode.forJavaScript(notif.getName()));
       		%>
 	        <tr>
-	        	<td><%=WebSecurityUtils.sanitizeString(notif.getName())%></td>
-	        	<td><%=WebSecurityUtils.sanitizeString(notif.getDescription().orElse(""))%></td>
+	        	<td><%=Encode.forHtml(notif.getName())%></td>
+	        	<td><%=Encode.forHtml(notif.getDescription().orElse(""))%></td>
 	        	<td><%=Encode.forHtml(ruleContent)%></td>
-	        	<td><%=WebSecurityUtils.sanitizeString(notif.getDestinationPath())%></td>
+	        	<td><%=Encode.forHtml(notif.getDestinationPath())%></td>
 	        	<td><%=Encode.forHtml(varbindDescription)%></td>
 	        	<td><a href="javascript: void submitEditForm('<%=jsUrlName%>');">Edit</a></td>
 			</tr>
