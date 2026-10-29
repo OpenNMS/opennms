@@ -58,12 +58,17 @@ public final class DatabasePasswords {
                     }
                 }
                 connection.commit();
-            } catch (final SQLException | RuntimeException e) {
-                connection.rollback();
-                throw e;
-            } finally {
-                connection.setAutoCommit(autoCommit);
+            } catch (final Throwable t) {
+                // not in a finally: turning auto-commit back on would commit the update after an Error
+                try {
+                    connection.rollback();
+                    connection.setAutoCommit(autoCommit);
+                } catch (final Throwable rollbackFailure) {
+                    t.addSuppressed(rollbackFailure);
+                }
+                throw t;
             }
+            connection.setAutoCommit(autoCommit);
         }
     }
 

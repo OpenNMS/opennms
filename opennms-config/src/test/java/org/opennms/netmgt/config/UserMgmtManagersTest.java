@@ -22,17 +22,21 @@
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.opennms.netmgt.config.api.UserMgmtStore;
 import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.dao.api.SecurityRoleDao;
@@ -42,6 +46,9 @@ import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
 import org.springframework.transaction.PlatformTransactionManager;
 
 public class UserMgmtManagersTest {
+
+    @Rule
+    public TemporaryFolder m_home = new TemporaryFolder();
 
     @After
     public void tearDown() {
@@ -76,7 +83,7 @@ public class UserMgmtManagersTest {
 
     @Test
     public void testExpireAllIsNoOpInXmlMode() throws Exception {
-        final Path home = Files.createTempDirectory("usermgmt-home");
+        final Path home = m_home.getRoot().toPath();
         final Path etc = Files.createDirectory(home.resolve("etc"));
         Files.write(etc.resolve("users.xml"), ("<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><header><rev>1</rev>"
                 + "<created>now</created><mstation>m</mstation></header><users><user><user-id>admin</user-id><full-name>A</full-name><password>x</password></user></users></userinfo>").getBytes(StandardCharsets.UTF_8));
@@ -86,11 +93,16 @@ public class UserMgmtManagersTest {
         System.setProperty("opennms.home", home.toString());
         System.setProperty(UserMgmtStore.PROPERTY, "xml");
         try {
-            final UserMgmtVersionDao versionDao = mock(UserMgmtVersionDao.class);
-            final UserMgmtManagers managers = new UserMgmtManagers(mock(UserAccountDao.class), mock(UserGroupDao.class),
-                    mock(OnCallRoleDao.class), mock(SecurityRoleDao.class), versionDao, mock(PlatformTransactionManager.class));
+            final UserMgmtManagers managers = managers();
             managers.expireAll();
-            verifyNoInteractions(versionDao);
+            assertSame(UserFactory.getInstance(), managers.getUserManager());
+            assertSame(GroupFactory.getInstance(), managers.getGroupManager());
+            // expireAll() only reaches the database managers: xml mode must not have any
+            for (final Field field : UserMgmtManagers.class.getDeclaredFields()) {
+                field.setAccessible(true);
+                final Object value = field.get(managers);
+                assertFalse(field.getName(), value instanceof DbUserManager || value instanceof DbGroupManager);
+            }
         } finally {
             if (oldHome == null) {
                 System.clearProperty("opennms.home");
