@@ -22,6 +22,9 @@
 package org.opennms.smoketest.graph;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.After;
 import org.junit.Before;
@@ -42,6 +45,10 @@ import org.opennms.smoketest.utils.RestClient;
 public class GraphMLGraphProviderIT extends OpenNMSSeleniumIT {
 
     private static final String LABEL = "GraphML Topology Provider (test-graph)";
+
+    private static final Pattern CONTAINER_COUNT = Pattern.compile("(\\d+) registered Graph Container\\(s\\)");
+
+    private static final Pattern GRAPH_COUNT = Pattern.compile("(\\d+) registered Graph\\(s\\)");
 
     private final RestClient restClient = stack.opennms().getRestClient();
 
@@ -67,13 +74,25 @@ public class GraphMLGraphProviderIT extends OpenNMSSeleniumIT {
 
     @Test
     public void canExposeGraphML() throws InterruptedException {
-        karafShell.runCommand("opennms:graph-list", output -> output.contains("4 registered Graph Container(s)"));
+        // The number of built-in graph providers changes over time, so compare against the count before the import
+        final AtomicInteger containers = new AtomicInteger(-1);
+        final AtomicInteger graphs = new AtomicInteger(-1);
+        karafShell.runCommand("opennms:graph-list -a", output -> {
+            containers.set(count(output, CONTAINER_COUNT));
+            graphs.set(count(output, GRAPH_COUNT));
+            return containers.get() >= 0 && graphs.get() >= 0;
+        });
 
         importGraph();
 
-        karafShell.runCommand("opennms:graph-list -a", output -> output.contains("5 registered Graph Container(s)")
-                && output.contains("6 registered Graph(s)")
+        karafShell.runCommand("opennms:graph-list -a", output -> count(output, CONTAINER_COUNT) == containers.get() + 1
+                && count(output, GRAPH_COUNT) == graphs.get() + 1
                 && output.contains(LABEL));
+    }
+
+    private static int count(final String output, final Pattern pattern) {
+        final Matcher matcher = pattern.matcher(output);
+        return matcher.find() ? Integer.parseInt(matcher.group(1)) : -1;
     }
 
     private boolean existsGraph() {
