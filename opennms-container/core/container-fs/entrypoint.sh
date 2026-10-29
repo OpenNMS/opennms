@@ -134,8 +134,24 @@ isValidAddress() {
     done
     return 0
   fi
+  # Bracketed IPv6 literal ([::1]); InetAddress.getByName() accepts the brackets
+  if [[ "$value" =~ ^\[(.*:.*)\]$ ]]; then
+    value="${BASH_REMATCH[1]}"
+  fi
   # IPv6: hex groups of up to 4 digits, eight groups or fewer with a single "::"
   if [[ "$value" == *:* ]]; then
+    # Scoped address (fe80::1%eth0): validate the zone ID, then check the address part
+    if [[ "$value" == *%* ]]; then
+      [[ "${value#*%}" =~ ^[A-Za-z0-9._-]+$ ]] || return 1
+      value="${value%%[%]*}"
+    fi
+    # IPv4-mapped/compatible tail (::ffff:1.2.3.4) counts as two hex groups; Java 21 rejects a zone ID on these
+    if [[ "$value" =~ ^(.*:)([0-9]{1,3}(\.[0-9]{1,3}){3})$ ]]; then
+      [[ "$1" != *%* ]] || return 1
+      local head="${BASH_REMATCH[1]}" v4="${BASH_REMATCH[2]}"
+      isValidAddress "$v4" || return 1
+      value="${head}0:0"
+    fi
     [[ "$value" =~ ^[0-9a-fA-F:]+$ && "$value" != *:::* ]] || return 1
     [[ "${value#*::}" != *::* ]] || return 1
     local -a groups
@@ -150,13 +166,15 @@ isValidAddress() {
     fi
     return 0
   fi
-  # Hostname (RFC 1123): dot-separated labels of letters, digits and hyphens; not all-numeric
-  [[ "$value" =~ [A-Za-z] ]] || return 1
+  # Hostname (RFC 1123): dot-separated labels of letters, digits and hyphens; not all-numeric.
+  # Underscores and a trailing dot (FQDN) are also accepted, as the resolver allows both.
+  value="${value%.}"
+  [[ "$value" =~ [A-Za-z_] ]] || return 1
   local -a labels
   IFS='.' read -ra labels <<< "$value"
   [[ "$value" != .* && "$value" != *. && "$value" != *..* ]] || return 1
   for label in "${labels[@]}"; do
-    [[ "$label" =~ ^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$ ]] || return 1
+    [[ "$label" =~ ^[A-Za-z0-9_]([A-Za-z0-9_-]{0,61}[A-Za-z0-9_])?$ ]] || return 1
   done
   return 0
 }
@@ -167,6 +185,26 @@ validateAddress() {
   if ! isValidAddress "$value"; then
     echo "ERROR: ${name}='${value}' is not a valid address. Expected '*', an IP address, or a hostname." >&2
     exit ${E_INIT_CONFIG}
+  fi
+  # A named zone ID (fe80::1%eth0) only resolves when that interface has an IPv6 address of the same
+  # scope (link-local for fe80::/10, site-local for fec0::/10); otherwise InetAddress fails with
+  # "no such interface" / "no scope_id found" and Trapd does not start
+  local zone="${value#*%}" addr="${value#[}" scope=""
+  zone="${zone%]}"
+  if [[ "$value" == *%* && ! "$zone" =~ ^[0-9]+$ ]]; then
+    case "${addr,,}" in
+      fe[89ab]*) scope="20" ;;
+      fe[c-f]*)  scope="40" ;;
+    esac
+    # /proc/net/if_inet6 columns: address, ifindex, prefix length, scope, flags, interface name
+    if ! awk -v z="$zone" -v s="$scope" '$6 == z && (s == "" || $4 == s) { found = 1 } END { exit !found }' /proc/net/if_inet6 2>/dev/null; then
+      echo "ERROR: ${name}='${value}' names interface '${zone}', which has no matching IPv6 address in this container." >&2
+      exit ${E_INIT_CONFIG}
+    fi
+  fi
+  # Hostnames are resolved when Trapd starts; DNS may not be ready yet, so only warn here
+  if [[ "$value" != "*" && "$value" != *:* && "$value" =~ [A-Za-z_] ]] && ! getent ahosts "$value" > /dev/null 2>&1; then
+    echo "WARNING: ${name}='${value}' does not resolve yet; Trapd will fail to start if it still does not resolve then." >&2
   fi
 }
 
@@ -332,6 +370,23 @@ applyOverlayConfig() {
   fi
 
   applyLegacyConfdOverlays
+  warnIgnoredServiceToggles
+}
+
+# A service-configuration.xml left in a mounted etc/ by confd holds literal enabled="true|false" values,
+# which take precedence over the defaults, so the matching CORE_SERVICE_*_ENABLED variables are ignored.
+warnIgnoredServiceToggles() {
+  local svcConf="${OPENNMS_HOME}/etc/service-configuration.xml"
+  local var
+  local -a ignored=()
+  [[ -f "${svcConf}" ]] || return 0
+  for var in $(compgen -e | grep -E '^CORE_SERVICE_[A-Z0-9_]+_ENABLED$'); do
+    grep -Fq "env:${var}" "${svcConf}" || ignored+=("${var}")
+  done
+  if (( ${#ignored[@]} > 0 )); then
+    echo "WARNING: ${svcConf} has no placeholder for ${ignored[*]}, so these variables are ignored." >&2
+    echo "WARNING: The file may be left over from a confd-based image; replace it with ${OPENNMS_HOME}/share/etc-pristine/service-configuration.xml to use them." >&2
+  fi
 }
 
 # processEnvConfig removed every _confd.*.properties, so any still present came from an overlay.
