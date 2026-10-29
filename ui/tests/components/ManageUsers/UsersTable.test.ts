@@ -131,8 +131,14 @@ describe('UsersAbout', () => {
   })
 
   it('names what the editor shows', () => {
-    for (const word of ['Duty Schedules', 'time zone', 'TUI PIN', 'Pager Email', 'Comments']) {
+    for (const word of ['Duty Schedules', 'time zone', 'Telephone PIN', 'Pager Email', 'Comments']) {
       expect(text().toLowerCase()).toContain(word.toLowerCase())
     }
+    // the editor labels the field Telephone PIN
+    expect(text()).not.toContain('TUI PIN')
+  })
+
+  it('warns that destination paths do not follow a rename', () => {
+    expect(text().replace(/\s+/g, ' ')).toContain('Destination paths that target the user by name do not follow a rename; update them afterwards.')
   })
 })

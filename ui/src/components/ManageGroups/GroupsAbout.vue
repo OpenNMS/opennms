@@ -28,7 +28,8 @@
     <p>
       <strong>Add New Group</strong> creates a group; <strong>Edit</strong> changes it.
       <strong>Rename</strong> is in the row menu: the on-call roles that use the group and its
-      category authorizations follow the rename. <strong>Delete</strong> is refused while an
+      category authorizations follow the rename. Destination paths that target the group by
+      name do not follow a rename; update them afterwards. <strong>Delete</strong> is refused while an
       on-call role or a destination path uses the group; change or delete those first. The
       <em>Admin</em> group is a system group and cannot be deleted or renamed.
     </p>

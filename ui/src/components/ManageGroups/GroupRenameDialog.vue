@@ -20,7 +20,7 @@
         for="group-rename-new-name"
         required
         :error="nameProblem || undefined"
-        hint="On-call roles referencing this group follow the rename."
+        hint="On-call roles referencing this group follow the rename; destination paths that target the group by name do not."
       >
         <OnmsInputText
           id="group-rename-new-name"

@@ -20,7 +20,7 @@
         for="user-rename-new-id"
         required
         :error="nameProblem || undefined"
-        hint="Group memberships follow the rename."
+        hint="Group memberships follow the rename; destination paths that target the user by name do not."
       >
         <OnmsInputText
           id="user-rename-new-id"
@@ -56,8 +56,9 @@ import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
-import { RESERVED_USER_IDS, validateAdminName, validateReservedName } from '@/lib/adminValidation'
+import { validateAdminName, validateReservedName } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
+import { PROTECTED_USER_IDS } from '@/types/userAdmin'
 
 const props = defineProps<{
   visible: boolean
@@ -75,7 +76,7 @@ const newUserId = ref('')
 const saving = ref(false)
 const errorText = ref('')
 
-const nameProblem = computed(() => validateAdminName(newUserId.value, 'user-id') || validateReservedName(newUserId.value, RESERVED_USER_IDS, 'user-id'))
+const nameProblem = computed(() => validateAdminName(newUserId.value, 'user-id') || validateReservedName(newUserId.value, PROTECTED_USER_IDS, 'user-id'))
 
 watch(
   () => props.visible,

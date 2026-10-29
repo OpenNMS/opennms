@@ -21,7 +21,7 @@
     <p>
       The <strong>User</strong> tab holds the user id and, when you create a user, the initial
       password. Beside them: full name, comments, email, pager email, work, mobile and home
-      phone, the TUI PIN, the numeric pager service and PIN, the text pager service and PIN, the
+      phone, the Telephone PIN, the numeric pager service and PIN, the text pager service and PIN, the
       time zone, and the security roles. The <strong>Duty Schedules</strong> tab sets the days
       and hours at which the user can be notified. Use the filter above the table to find a
       user by id, full name, email or comments.
@@ -37,7 +37,8 @@
     </p>
     <p>
       <strong>Rename</strong> keeps group memberships intact: the user stays in all their
-      groups under the new id. <strong>Delete</strong> also removes the user from every group.
+      groups under the new id. Destination paths that target the user by name do not follow a
+      rename; update them afterwards. <strong>Delete</strong> also removes the user from every group.
       The <em>admin</em> and <em>rtc</em> accounts are system accounts and cannot be deleted
       or renamed.
     </p>

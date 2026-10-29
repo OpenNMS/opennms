@@ -91,6 +91,10 @@ describe('GroupsAbout', () => {
     expect(text()).toMatch(/refused while an on-call role or a destination path uses/)
   })
 
+  it('warns that destination paths do not follow a rename', () => {
+    expect(text().replace(/\s+/g, ' ')).toContain('Destination paths that target the group by name do not follow a rename; update them afterwards.')
+  })
+
   it('names the tabs of the editor and what a rename carries', () => {
     const t = text().toLowerCase()
     for (const word of ['duty schedules', 'categories', 'members', 'comments', 'on-call roles']) {
