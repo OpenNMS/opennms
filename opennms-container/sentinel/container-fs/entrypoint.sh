@@ -350,6 +350,8 @@ function handleLegacyConfd() {
 
 function validateEnvironment() {
     # Runs before anything is written, so an invalid value leaves the configuration untouched
+    # IPC_EXPLICIT records whether the environment chose the transport; if not, an overlay may (see applyFeatureBootTemplates)
+    IPC_EXPLICIT="true"
     case "${SENTINEL_IPC,,}" in
       kafka|jms)
         IPC_STRATEGY="${SENTINEL_IPC,,}"
@@ -360,6 +362,7 @@ function validateEnvironment() {
           IPC_STRATEGY="kafka"
         else
           IPC_STRATEGY="jms"
+          IPC_EXPLICIT="false"
         fi
         ;;
       *)
@@ -432,8 +435,27 @@ function applyFeatureBootTemplates() {
         echo "[Features] Enabled: ${template}"
     }
 
-    echo "[Features] IPC strategy set to ${IPC_STRATEGY}."
-    apply_template "sentinel-ipc-${IPC_STRATEGY}.boot" "sentinel-ipc.boot"
+    # Exclusions apply across all boot files, so writing the JMS default next to an
+    # overlay that selects Kafka would exclude both transports. Like the confd-based
+    # images, leave the IPC choice to the overlay unless the environment sets one.
+    # Overlays are applied after this runs, so their source directories are checked too.
+    # The extender reads every non-dot file in featuresBoot.d and does not trim lines.
+    local user_boot_files=(
+      "${FEATURES_BOOT_DIR}"/*
+      "${SENTINEL_OVERLAY_ETC}"/featuresBoot.d/*
+      "${SENTINEL_OVERLAY}"/etc/featuresBoot.d/*
+    )
+    if [[ "${IPC_EXPLICIT}" == "false" ]] && grep -E -q -s '^sentinel-(jms|kafka)([/[:space:]]|$)' "${user_boot_files[@]}"; then
+        echo "[Features] IPC strategy not set and a file in featuresBoot.d installs it, leaving IPC to that file."
+    else
+        local conflicting
+        conflicting=$(grep -E -l -s "^!sentinel-${IPC_STRATEGY}([/[:space:]]|$)" "${user_boot_files[@]}" || true)
+        if [ -n "${conflicting}" ]; then
+            echo "[Features][WARN] IPC strategy ${IPC_STRATEGY} is excluded by:" ${conflicting}
+        fi
+        echo "[Features] IPC strategy set to ${IPC_STRATEGY}."
+        apply_template "sentinel-ipc-${IPC_STRATEGY}.boot" "sentinel-ipc.boot"
+    fi
 
     if [[ "${SENTINEL_FLOWS_ENABLED,,}" == "true" ]]; then
         echo "[Features] Flow processing enabled."

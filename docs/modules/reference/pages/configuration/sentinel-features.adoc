@@ -372,12 +372,16 @@ The value is not case-sensitive, and the container refuses to start if it is not
 [options="header, autowidth"]
 |===
 | Value | Description
-| (unset) | Use Apache Kafka if `KAFKA_IPC_BOOTSTRAP_SERVERS` is set, otherwise JMS (ActiveMQ).
+| (unset) | Use Apache Kafka if `KAFKA_IPC_BOOTSTRAP_SERVERS` is set, otherwise JMS (ActiveMQ), unless a file in `featuresBoot.d` already installs the transport (see below).
 | `jms`   | Use JMS (ActiveMQ), even if Kafka variables are set.
 | `kafka` | Use Apache Kafka. Requires additional Kafka variables (see <<sentinel-kafka-config>>).
 |===
 
 The container installs the matching `sentinel-jms` or `sentinel-kafka` feature on every start.
+
+If neither `SENTINEL_IPC` nor `KAFKA_IPC_BOOTSTRAP_SERVERS` is set and a file in `featuresBoot.d` (including one provided through an overlay) installs `sentinel-jms` or `sentinel-kafka`, the container leaves the IPC choice to that file.
+Do not combine such a file with either variable: exclusions such as `!sentinel-jms` apply across all files in `featuresBoot.d`, so contradicting selections exclude both transports.
+The container logs a warning when a file excludes the transport selected by the variables.
 
 [[sentinel-kafka-config]]
 ==== Kafka configuration
