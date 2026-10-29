@@ -44,6 +44,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.BatchSize;
+
 /**
  * An on-call role: a notification rota, a {@code <role>} of groups.xml. Its members come from the membership
  * group, its supervisor is notified when nobody is on call, and its schedules say who is on call when.
@@ -84,6 +86,7 @@ public class OnCallRole implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "oncall_role_id", nullable = false)
     @OrderColumn(name = "position")
+    @BatchSize(size = 100)
     private List<OnCallSchedule> schedules = new ArrayList<>();
 
     @Temporal(TemporalType.TIMESTAMP)

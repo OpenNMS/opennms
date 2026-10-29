@@ -22,6 +22,7 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.sql.BatchUpdateException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,6 +54,7 @@ import org.opennms.web.api.Authentication;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -223,7 +226,7 @@ public class UserMgmtRestSupportTest {
     public void testEtagIsQuotedDecimal() {
         final EntityTag tag = m_support.etag(12);
         assertEquals("12", tag.getValue());
-        assertTrue(!tag.isWeak());
+        assertFalse(tag.isWeak());
         assertEquals("\"12\"", tag.toString());
     }
 
@@ -248,6 +251,67 @@ public class UserMgmtRestSupportTest {
             assertTrue(translated instanceof WebApplicationException);
             assertStatus(409, DEADLOCK_TEXT, (WebApplicationException) translated);
         }
+    }
+
+    @Test
+    public void testTranslateDeadlockDeepInTheCauseChainTo409() {
+        final SQLException deadlock = new SQLException("deadlock detected", "40P01");
+        final Exception e = new CannotAcquireLockException("could not execute statement",
+                new RuntimeException("wrapper", new IllegalStateException("another wrapper", deadlock)));
+        assertStatus(409, DEADLOCK_TEXT, (WebApplicationException) m_support.translate("save the user", e));
+    }
+
+    @Test
+    public void testTranslateDeadlockInTheNextExceptionChainTo409() {
+        // a JDBC batch reports the statement's own failure as the next exception of the BatchUpdateException
+        for (final String state : new String[] { "40P01", "40001" }) {
+            final BatchUpdateException batch = new BatchUpdateException("Batch entry 0 was aborted", "25P02", new int[0]);
+            batch.setNextException(new SQLException("current transaction is aborted", "25P02"));
+            batch.setNextException(new SQLException("deadlock detected", state));
+            final Exception e = new DataIntegrityViolationException("could not execute batch", batch);
+            assertStatus(409, DEADLOCK_TEXT, (WebApplicationException) m_support.translate("save the user", e));
+        }
+    }
+
+    @Test
+    public void testTranslateCommitTimeLockFailureTo409() {
+        // thrown by the transaction manager rather than as a DataAccessException
+        for (final String state : new String[] { "40P01", "40001" }) {
+            final BatchUpdateException batch = new BatchUpdateException("Batch entry 0 was aborted", "25P02", new int[0]);
+            batch.setNextException(new SQLException("could not serialize access", state));
+            final Exception e = new TransactionSystemException("Could not commit Hibernate transaction",
+                    new RuntimeException("commit failed", batch));
+            assertStatus(409, DEADLOCK_TEXT, (WebApplicationException) m_support.translate("save the user", e));
+        }
+        final Exception direct = new TransactionSystemException("Could not commit", new SQLException("deadlock detected", "40P01"));
+        assertStatus(409, DEADLOCK_TEXT, (WebApplicationException) m_support.translate("save the user", direct));
+    }
+
+    @Test
+    public void testTranslateOtherSqlStatesAreNotLockFailures() {
+        // a commit-time failure with any other state stays a 500, wherever the state is
+        final BatchUpdateException batch = new BatchUpdateException("Batch entry 0 was aborted", "25P02", new int[0]);
+        batch.setNextException(new SQLException("duplicate key value violates unique constraint", "23505"));
+        final Exception commit = new TransactionSystemException("Could not commit Hibernate transaction", batch);
+        assertStatus(500, "Can't save the user.", (WebApplicationException) m_support.translate("save the user", commit));
+        final Exception noState = new TransactionSystemException("Could not commit", new SQLException("connection reset"));
+        assertStatus(500, "Can't save the user.", (WebApplicationException) m_support.translate("save the user", noState));
+        // an integrity violation whose next exception is another integrity error keeps its own message
+        final BatchUpdateException fk = new BatchUpdateException("Batch entry 0 was aborted", "25P02", new int[0]);
+        fk.setNextException(new SQLException("violates foreign key constraint", "23503"));
+        assertStatus(409, "The change conflicts with related data. Reload and try again.",
+                (WebApplicationException) m_support.translate("delete the user", new DataIntegrityViolationException("could not execute batch", fk)));
+    }
+
+    @Test(timeout = 10000)
+    public void testTranslateStopsOnACycleInTheChains() {
+        final SQLException first = new SQLException("first", "08006");
+        final SQLException second = new SQLException("second", "08006", first);
+        first.initCause(second);
+        first.setNextException(second);
+        second.setNextException(first);
+        final Exception e = new TransactionSystemException("Could not commit", first);
+        assertStatus(500, "Can't save the user.", (WebApplicationException) m_support.translate("save the user", e));
     }
 
     @Test

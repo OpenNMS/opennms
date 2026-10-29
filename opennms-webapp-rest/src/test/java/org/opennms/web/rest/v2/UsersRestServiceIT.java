@@ -37,6 +37,8 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
@@ -113,6 +115,9 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private DataSource m_dataSource;
+
+    @Autowired
+    private SessionFactory m_sessionFactory;
 
     public UsersRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -249,6 +254,82 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals(version, rowVersion("longedit"));
         // the limit is 256 characters
         exec(PUT, "/users/longedit", "{\"userId\":\"longedit\",\"fullName\":\"" + "x".repeat(256) + "\"}", null, 200);
+    }
+
+    @Test
+    public void testCommentLimit() throws Exception {
+        final String limit = "x".repeat(4096);
+        final String tooLong = "x".repeat(4097);
+        exec(POST, "/users", "{\"userId\":\"freetext\",\"password\":\"pw\",\"userComments\":\"" + limit + "\"}", null, 201);
+        // surrounding whitespace is trimmed before the length is counted, as before storing
+        exec(PUT, "/users/freetext", "{\"userId\":\"freetext\",\"userComments\":\" " + limit + "\\n\"}", null, 200);
+        assertEquals(limit, column("freetext", "comments"));
+        final MockHttpServletResponse put = exec(PUT, "/users/freetext", "{\"userId\":\"freetext\",\"userComments\":\"" + tooLong + "\"}", null, 400);
+        assertEquals("User \"freetext\": the comment is longer than 4096 characters.", put.getContentAsString());
+        final MockHttpServletResponse post = exec(POST, "/users", "{\"userId\":\"freetext2\",\"password\":\"pw\",\"userComments\":\"" + tooLong + "\"}", null, 400);
+        assertEquals("User \"freetext2\": the comment is longer than 4096 characters.", post.getContentAsString());
+        sendRequest(GET, "/users/freetext2", 404);
+        assertEquals(limit, column("freetext", "comments"));
+        sendRequest(DELETE, "/users/freetext", 204);
+    }
+
+    @Test
+    public void testStoredLongCommentIsGrandfathered() throws Exception {
+        // written before the limit, e.g. by the JSPs or a migration
+        final String stored = "y".repeat(5000);
+        createUser("longcomment", u -> u.setComments(stored));
+        final int version = rowVersion("longcomment");
+
+        // echoed back unchanged, along with another change
+        exec(PUT, "/users/longcomment", "{\"userId\":\"longcomment\",\"userComments\":\"" + stored + "\",\"fullName\":\"Long\"}", null, 200);
+        assertEquals(stored, column("longcomment", "comments"));
+        assertEquals("Long", column("longcomment", "full_name"));
+        final int edited = rowVersion("longcomment");
+        assertNotEquals(version, edited);
+        exec(PUT, "/users/longcomment", "{\"userId\":\"longcomment\",\"userComments\":\"" + stored + "\"}", null, 200);
+        assertEquals(edited, rowVersion("longcomment"));
+
+        // but a changed comment over the limit is refused
+        exec(PUT, "/users/longcomment", "{\"userId\":\"longcomment\",\"userComments\":\"" + stored + "z\"}", null, 400);
+        assertEquals(stored, column("longcomment", "comments"));
+        assertEquals(edited, rowVersion("longcomment"));
+        sendRequest(DELETE, "/users/longcomment", 204);
+    }
+
+    @Test
+    public void testErrorsNameTheTrimmedUserId() throws Exception {
+        final MockHttpServletResponse response = exec(POST, "/users",
+                "{\"userId\":\" spaced \",\"password\":\"pw\",\"fullName\":\"" + "x".repeat(257) + "\"}", null, 400);
+        assertEquals("User \"spaced\": the full name is longer than 256 characters.", response.getContentAsString());
+    }
+
+    /** A fresh database, so that the number of users is known. */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testListStatementCountDoesNotGrowWithTheUsers() throws Exception {
+        createListedUsers(0, 2);
+        final long few = statements(() -> getJson("/users", 200));
+        createListedUsers(2, 7);
+        final long many = statements(() -> getJson("/users", 200));
+        assertTrue("no statement counted", few > 0);
+        assertEquals("statements for 3 users vs. 8 users", few, many);
+
+        // the lists keep their order
+        final JSONArray users = new JSONArray(getJson("/users", 200));
+        int listed = 0;
+        for (int i = 0; i < users.length(); i++) {
+            final JSONObject user = users.getJSONObject(i);
+            if (user.getString("userId").startsWith("listed")) {
+                listed++;
+                assertEquals("MoTu900-1000", user.getJSONArray("dutySchedules").getString(0));
+                assertEquals("Fr800-1700", user.getJSONArray("dutySchedules").getString(1));
+                assertEquals("SaSu100-200", user.getJSONArray("dutySchedules").getString(2));
+                assertEquals(user.getString("userId") + "@example.org", user.getString("email"));
+                assertEquals(Arrays.asList("ROLE_REST", "ROLE_USER"),
+                        Arrays.asList(user.getJSONArray("roles").getString(0), user.getJSONArray("roles").getString(1)));
+            }
+        }
+        assertEquals(7, listed);
     }
 
     @Test
@@ -955,5 +1036,38 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     private int rowCount(final String table, final String column, final String value) {
         return new JdbcTemplate(m_dataSource).queryForObject("select count(*) from " + table + " where " + column + " = ?", Integer.class, value);
+    }
+
+    /** Commits the users listed{from} to listed{to - 1}, each with contacts, duty schedules and roles. */
+    private void createListedUsers(final int from, final int to) {
+        for (int i = from; i < to; i++) {
+            final String username = "listed" + i;
+            createUser(username, u -> {
+                u.setContact(ContactType.email, username + "@example.org", null);
+                u.setContact(ContactType.workPhone, "555-0100", null);
+                u.getDutySchedules().addAll(Arrays.asList("MoTu900-1000", "Fr800-1700", "SaSu100-200"));
+                u.getSecurityRoles().add(m_securityRoleDao.findByName("ROLE_USER"));
+                u.getSecurityRoles().add(m_securityRoleDao.findByName("ROLE_REST"));
+            });
+        }
+    }
+
+    /** The SQL statements Hibernate prepares while the request runs. */
+    private long statements(final Call request) throws Exception {
+        final Statistics statistics = m_sessionFactory.getStatistics();
+        final boolean enabled = statistics.isStatisticsEnabled();
+        statistics.setStatisticsEnabled(true);
+        statistics.clear();
+        try {
+            request.run();
+            return statistics.getPrepareStatementCount();
+        } finally {
+            statistics.setStatisticsEnabled(enabled);
+        }
+    }
+
+    @FunctionalInterface
+    private interface Call {
+        void run() throws Exception;
     }
 }

@@ -35,18 +35,37 @@ import org.apache.commons.lang3.StringUtils;
 import org.opennms.netmgt.config.UserMgmtJaxbMapper;
 
 /**
- * Validation rules shared by the v2 user and group services (and the duty-schedule rule shared with
- * nothing else): the id/name characters, the comments rule with its grandfathering, and duty schedules.
+ * Validation rules shared by the v2 user-management services: the user id and group name characters, the comments
+ * markup rule (users and groups) and the free-text limit (user and group comments, on-call and security role
+ * descriptions), each with its grandfathering of stored values, the duty schedules (users and groups), and the column
+ * length checks. The rules for on-call role names and schedules are in {@link OnCallScheduleValidator}.
  */
 final class UserMgmtValidation {
 
-    /** Markup, the characters that are not safe in a URL path segment, and any whitespace, control or invisible character. */
+    /**
+     * The characters rejected in a user id or group name, and why:
+     * <ul>
+     * <li>{@code & < > " ` '}: markup, as the legacy servlets rejected it;</li>
+     * <li>{@code :}: it separates the user id from the password in HTTP basic authentication;</li>
+     * <li>{@code / \ % ? #}: the id is a URL path segment in every per-user and per-group endpoint;</li>
+     * <li>whitespace ({@code \s}, {@code \p{Z}}): it breaks the references to the id from groups, on-call roles and
+     * destination paths, and names that differ only in it look alike;</li>
+     * <li>control and invisible characters ({@code \p{C}}): names that differ only in them look alike.</li>
+     * </ul>
+     * Dot segments are rejected separately, in {@link #validateName}.
+     */
     private static final Pattern INVALID_NAME = Pattern.compile("[&<>\"`':/\\\\%?#\\s\\p{Z}\\p{C}]");
 
     private static final Pattern INVALID_COMMENTS = Pattern.compile("[&<>\"`']");
 
     /** Matches the schedule strings the duty evaluation parses, e.g. MoWeFr800-1700. */
     private static final Pattern DUTY_SCHEDULE = Pattern.compile("^((?:Mo|Tu|We|Th|Fr|Sa|Su){1,7})(\\d{1,4})-(\\d{1,4})$");
+
+    /**
+     * The most characters (code points, as for the columns) in a free text: user and group comments, on-call role and
+     * security role descriptions. Their columns are unbounded text, so this limit is the API's own.
+     */
+    static final int FREE_TEXT_LENGTH = 4096;
 
     private UserMgmtValidation() {
     }
@@ -74,13 +93,26 @@ final class UserMgmtValidation {
      */
     static void checkComments(final String incoming, final String stored, final boolean existing) {
         if (incoming != null && INVALID_COMMENTS.matcher(incoming).find()
-                && (!existing || !commentsUnchanged(incoming, stored))) {
+                && (!existing || !textUnchanged(incoming, stored))) {
             throw new UserMgmtValidationException("The comments must not contain any HTML markup.");
         }
     }
 
-    /** True when the incoming comments are the stored ones modulo surrounding whitespace; the stored value is then left untouched. */
-    static boolean commentsUnchanged(final String incoming, final String stored) {
+    /**
+     * Rejects a free text (comments, a description) longer than {@link #FREE_TEXT_LENGTH} once trimmed, as it would be
+     * stored, unless it is the stored value echoed back (modulo surrounding whitespace): a longer stored value, written
+     * before the limit, is grandfathered like markup in the comments.
+     *
+     * @param stored the stored value, or null when the object is being created
+     */
+    static void checkFreeText(final String owner, final String field, final String incoming, final String stored) {
+        if (incoming != null && !textUnchanged(incoming, stored)) {
+            checkLength(owner, field, StringUtils.trimToNull(incoming), FREE_TEXT_LENGTH);
+        }
+    }
+
+    /** True when the incoming text is the stored one modulo surrounding whitespace; the stored value is then left untouched. */
+    static boolean textUnchanged(final String incoming, final String stored) {
         return StringUtils.equals(StringUtils.trimToNull(incoming), StringUtils.trimToNull(stored));
     }
 

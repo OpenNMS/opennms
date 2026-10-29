@@ -140,9 +140,9 @@ public class SecurityRolesRestServiceIT extends AbstractSpringJerseyRestTestCase
         createRole("ROLE_ALPHA", "first custom");
         final JSONArray roles = new JSONArray(getJson("/security-roles", 200));
         final int builtins = SecurityRoles.BUILTIN_ROLES.size();
-        assertEquals(16, builtins);
         final List<String> expected = m_securityRoleDao.findBuiltin().stream().map(SecurityRole::getName).collect(Collectors.toList());
-        assertEquals(16, expected.size());
+        // the changelog seeds exactly the built-in roles that the code knows
+        assertEquals(builtins, expected.size());
         final List<String> names = new ArrayList<>();
         for (int i = 0; i < roles.length(); i++) {
             final JSONObject role = roles.getJSONObject(i);
@@ -265,10 +265,40 @@ public class SecurityRolesRestServiceIT extends AbstractSpringJerseyRestTestCase
         assertEquals("after", new JSONObject(getJson("/security-roles/ROLE_EDITME", 200)).getString("description"));
         // an empty description clears it; a mismatching body name is refused
         exec(PUT, "/security-roles/ROLE_EDITME", "{\"name\":\"ROLE_EDITME\",\"description\":\"\"}", null, 200);
-        assertFalse(new JSONObject(getJson("/security-roles/ROLE_EDITME", 200)).has("description")
-                && !new JSONObject(getJson("/security-roles/ROLE_EDITME", 200)).isNull("description"));
+        assertTrue(new JSONObject(getJson("/security-roles/ROLE_EDITME", 200)).isNull("description"));
         exec(PUT, "/security-roles/ROLE_EDITME", "{\"name\":\"ROLE_OTHER\",\"description\":\"x\"}", null, 400);
         exec(PUT, "/security-roles/ROLE_NOPE", "{\"description\":\"x\"}", null, 404);
+    }
+
+    @Test
+    public void testDescriptionLimit() throws Exception {
+        final String limit = "x".repeat(4096);
+        final String tooLong = "x".repeat(4097);
+        exec(POST, "/security-roles", "{\"name\":\"freetext\",\"description\":\"" + limit + "\"}", null, 201);
+        final MockHttpServletResponse put = exec(PUT, "/security-roles/ROLE_FREETEXT", "{\"description\":\"" + tooLong + "\"}", null, 400);
+        assertEquals("Security role \"ROLE_FREETEXT\": the description is longer than 4096 characters.", put.getContentAsString());
+        final MockHttpServletResponse post = exec(POST, "/security-roles", "{\"name\":\"freetext2\",\"description\":\"" + tooLong + "\"}", null, 400);
+        assertEquals("Security role \"ROLE_FREETEXT2\": the description is longer than 4096 characters.", post.getContentAsString());
+        sendRequest(GET, "/security-roles/ROLE_FREETEXT2", 404);
+        assertEquals(limit, new JSONObject(getJson("/security-roles/ROLE_FREETEXT", 200)).getString("description"));
+    }
+
+    @Test
+    public void testStoredLongDescriptionIsGrandfathered() throws Exception {
+        // written before the limit
+        final String stored = "y".repeat(5000);
+        createRole("ROLE_LONGTEXT", stored);
+        final int version = rowVersion("ROLE_LONGTEXT");
+
+        // echoed back unchanged, with surrounding whitespace that is not stored
+        exec(PUT, "/security-roles/ROLE_LONGTEXT", "{\"name\":\"ROLE_LONGTEXT\",\"description\":\" " + stored + "\"}", null, 200);
+        assertEquals(stored, new JSONObject(getJson("/security-roles/ROLE_LONGTEXT", 200)).getString("description"));
+        assertEquals(version, rowVersion("ROLE_LONGTEXT"));
+
+        // but a changed description over the limit is refused
+        exec(PUT, "/security-roles/ROLE_LONGTEXT", "{\"description\":\"" + stored + "z\"}", null, 400);
+        assertEquals(stored, new JSONObject(getJson("/security-roles/ROLE_LONGTEXT", 200)).getString("description"));
+        assertEquals(version, rowVersion("ROLE_LONGTEXT"));
     }
 
     @Test

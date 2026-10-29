@@ -22,8 +22,13 @@
 package org.opennms.web.rest.v2;
 
 import java.sql.SQLException;
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -228,7 +233,14 @@ public class UserMgmtRestSupport {
         }
     }
 
-    /** Returns the exception to throw for a failure while performing {@code action}. */
+    /**
+     * Returns the exception to throw for a failure while performing {@code action}.
+     * <p>
+     * A deadlock or serialization failure (SQL state 40P01 or 40001) anywhere in the cause chain, or in the
+     * next-exception chain of an {@link SQLException} (where a JDBC batch reports the statement's own failure), is a
+     * 409, whatever wraps it: a {@link DataAccessException} from a flush or a
+     * {@link org.springframework.transaction.TransactionSystemException} from a commit. No other SQL state is.
+     */
     public RuntimeException translate(final String action, final Exception e) {
         if (e instanceof WebApplicationException) {
             return (WebApplicationException) e;
@@ -239,7 +251,7 @@ public class UserMgmtRestSupport {
         if (e instanceof UserDataChangedException) {
             return conflict(e.getMessage());
         }
-        if (e instanceof DataAccessException && isLockFailure(e)) {
+        if (isLockFailure(e)) {
             return conflict("The data was changed at the same time by another request. Try again.");
         }
         if (e instanceof DataIntegrityViolationException) {
@@ -253,16 +265,28 @@ public class UserMgmtRestSupport {
         return error(Status.INTERNAL_SERVER_ERROR, "Can't " + action + ".");
     }
 
+    /** Walks the causes and the next exceptions of every SQLException among them, each exception once. */
     private static boolean isLockFailure(final Throwable e) {
-        Throwable cause = e;
-        while (cause != null) {
-            if (cause instanceof SQLException) {
-                final String state = ((SQLException) cause).getSQLState();
-                if (DEADLOCK.equals(state) || SERIALIZATION_FAILURE.equals(state)) {
+        final Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+        final Deque<Throwable> pending = new ArrayDeque<>();
+        pending.add(e);
+        while (!pending.isEmpty()) {
+            final Throwable current = pending.remove();
+            if (!seen.add(current)) {
+                continue;
+            }
+            if (current instanceof SQLException) {
+                final SQLException sql = (SQLException) current;
+                if (DEADLOCK.equals(sql.getSQLState()) || SERIALIZATION_FAILURE.equals(sql.getSQLState())) {
                     return true;
                 }
+                if (sql.getNextException() != null) {
+                    pending.add(sql.getNextException());
+                }
             }
-            cause = cause.getCause() == cause ? null : cause.getCause();
+            if (current.getCause() != null) {
+                pending.add(current.getCause());
+            }
         }
         return false;
     }

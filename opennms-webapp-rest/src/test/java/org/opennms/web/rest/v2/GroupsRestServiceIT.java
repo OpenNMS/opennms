@@ -35,6 +35,8 @@ import java.util.function.Supplier;
 import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
@@ -111,6 +113,9 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private DataSource m_dataSource;
+
+    @Autowired
+    private SessionFactory m_sessionFactory;
 
     public GroupsRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -305,6 +310,73 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         exec(PUT, "/groups/legacycomment", "{\"name\":\"legacycomment\",\"comments\":\"<b>new markup</b>\"}", null, 400);
 
         sendRequest(DELETE, "/groups/legacycomment", 204);
+    }
+
+    @Test
+    public void testCommentLimit() throws Exception {
+        final String limit = "x".repeat(4096);
+        final String tooLong = "x".repeat(4097);
+        exec(POST, "/groups", "{\"name\":\"freetext\",\"comments\":\"" + limit + "\"}", null, 201);
+        final MockHttpServletResponse put = exec(PUT, "/groups/freetext", "{\"name\":\"freetext\",\"comments\":\"" + tooLong + "\"}", null, 400);
+        assertEquals("Group \"freetext\": the comment is longer than 4096 characters.", put.getContentAsString());
+        // the error names the group as it would be stored, without the surrounding whitespace
+        final MockHttpServletResponse post = exec(POST, "/groups", "{\"name\":\" freetext2 \",\"comments\":\"" + tooLong + "\"}", null, 400);
+        assertEquals("Group \"freetext2\": the comment is longer than 4096 characters.", post.getContentAsString());
+        sendRequest(GET, "/groups/freetext2", 404);
+        assertEquals(limit, groupColumn("freetext", "comments"));
+        sendRequest(DELETE, "/groups/freetext", 204);
+    }
+
+    @Test
+    public void testStoredLongCommentIsGrandfathered() throws Exception {
+        // written before the limit, e.g. by the JSPs or a migration
+        final String stored = "y".repeat(5000);
+        createGroup("longcomment", g -> g.setComments(stored));
+        final int version = rowVersion("longcomment");
+
+        // echoed back unchanged, along with another change
+        exec(PUT, "/groups/longcomment", "{\"name\":\"longcomment\",\"comments\":\"" + stored + "\",\"users\":[\"admin\"]}", null, 200);
+        assertEquals(stored, groupColumn("longcomment", "comments"));
+        assertEquals(Arrays.asList("admin"), members("longcomment"));
+        final int edited = rowVersion("longcomment");
+        assertNotEquals(version, edited);
+        exec(PUT, "/groups/longcomment", "{\"name\":\"longcomment\",\"comments\":\"" + stored + "\"}", null, 200);
+        assertEquals(edited, rowVersion("longcomment"));
+
+        // but a changed comment over the limit is refused
+        exec(PUT, "/groups/longcomment", "{\"name\":\"longcomment\",\"comments\":\"" + stored + "z\"}", null, 400);
+        assertEquals(stored, groupColumn("longcomment", "comments"));
+        assertEquals(edited, rowVersion("longcomment"));
+        sendRequest(DELETE, "/groups/longcomment", 204);
+    }
+
+    /** A fresh database, so that the number of groups is known. */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testListStatementCountDoesNotGrowWithTheGroups() throws Exception {
+        createListedGroups(0, 2);
+        final long few = statements(() -> getJson("/groups", 200));
+        createListedGroups(2, 7);
+        final long many = statements(() -> getJson("/groups", 200));
+        assertTrue("no statement counted", few > 0);
+        assertEquals("statements for 3 groups vs. 8 groups", few, many);
+
+        // the members and duty schedules keep their order
+        final JSONArray groups = new JSONArray(getJson("/groups", 200));
+        int listed = 0;
+        for (int i = 0; i < groups.length(); i++) {
+            final JSONObject group = groups.getJSONObject(i);
+            final String name = group.getString("name");
+            if (name.startsWith("listed")) {
+                listed++;
+                final JSONArray users = group.getJSONArray("users");
+                assertEquals(Arrays.asList(name + "-c", name + "-a", name + "-b"),
+                        Arrays.asList(users.getString(0), users.getString(1), users.getString(2)));
+                final JSONArray schedules = group.getJSONArray("dutySchedules");
+                assertEquals(Arrays.asList("SaSu100-200", "MoTu900-1000"), Arrays.asList(schedules.getString(0), schedules.getString(1)));
+            }
+        }
+        assertEquals(7, listed);
     }
 
     @Test
@@ -726,5 +798,43 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         return new JdbcTemplate(m_dataSource).queryForList(
                 "select u.username from group_members m join groups g on g.id = m.group_id join users u on u.id = m.user_id"
                 + " where g.name = ? order by m.position", String.class, group);
+    }
+
+    /** Commits the groups listed{from} to listed{to - 1}, each with three members out of name order and two duty schedules. */
+    private void createListedGroups(final int from, final int to) {
+        for (int i = from; i < to; i++) {
+            final String name = "listed" + i;
+            for (final String suffix : Arrays.asList("-a", "-b", "-c")) {
+                createUser(name + suffix);
+            }
+            inTx(() -> {
+                final UserGroup group = new UserGroup(name);
+                for (final String suffix : Arrays.asList("-c", "-a", "-b")) {
+                    group.getMembers().add(m_userAccountDao.findByUsername(name + suffix));
+                }
+                group.getDutySchedules().addAll(Arrays.asList("SaSu100-200", "MoTu900-1000"));
+                m_userGroupDao.save(group);
+                return null;
+            });
+        }
+    }
+
+    /** The SQL statements Hibernate prepares while the request runs. */
+    private long statements(final Call request) throws Exception {
+        final Statistics statistics = m_sessionFactory.getStatistics();
+        final boolean enabled = statistics.isStatisticsEnabled();
+        statistics.setStatisticsEnabled(true);
+        statistics.clear();
+        try {
+            request.run();
+            return statistics.getPrepareStatementCount();
+        } finally {
+            statistics.setStatisticsEnabled(enabled);
+        }
+    }
+
+    @FunctionalInterface
+    private interface Call {
+        void run() throws Exception;
     }
 }

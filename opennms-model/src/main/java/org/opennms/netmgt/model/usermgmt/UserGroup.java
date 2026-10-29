@@ -44,11 +44,17 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.BatchSize;
+
 /**
  * A group of users: a {@code <group>} of groups.xml. Named apart from {@code OnmsGroup}, the REST/XML
  * representation, and from {@code org.opennms.netmgt.config.GroupDao}.
+ * <p>
+ * Lazy proxies and collections are loaded in batches ({@link BatchSize}), so that listing all groups, or all
+ * on-call roles with their membership groups, does not take a statement per group.
  */
 @Entity
+@BatchSize(size = 100)
 @Table(name = "groups")
 public class UserGroup implements Serializable {
 
@@ -80,12 +86,14 @@ public class UserGroup implements Serializable {
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     @OrderColumn(name = "position")
+    @BatchSize(size = 100)
     private List<UserAccount> members = new ArrayList<>();
 
     /** Duty schedules in the groups.xml format ({@code MoTuWe800-1700}), parsed by {@code DutySchedule}. */
     @ElementCollection
     @CollectionTable(name = "group_duty_schedules", joinColumns = @JoinColumn(name = "group_id"))
     @OrderColumn(name = "position")
+    @BatchSize(size = 100)
     @Column(name = "schedule", nullable = false, length = 64)
     private List<String> dutySchedules = new ArrayList<>();
 

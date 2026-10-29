@@ -32,7 +32,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
@@ -65,7 +64,7 @@ public interface OnCallRolesRestApi {
     @Path("{name}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get one on-call role", operationId = "getOnCallRole")
-    Response getOnCallRole(@Context SecurityContext securityContext, @Context Request request, @PathParam("name") String name);
+    Response getOnCallRole(@Context SecurityContext securityContext, @PathParam("name") String name);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

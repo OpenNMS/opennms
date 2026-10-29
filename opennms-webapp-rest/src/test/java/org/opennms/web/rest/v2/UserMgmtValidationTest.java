@@ -22,8 +22,10 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -73,6 +75,45 @@ public class UserMgmtValidationTest {
     @Test(expected = UserMgmtValidationException.class)
     public void testTooLongDutyScheduleIsRejected() {
         UserMgmtValidation.checkLength("u", "duty schedule", "x".repeat(300), 255);
+    }
+
+    private static void assertFreeTextRejected(final String incoming, final String stored) {
+        try {
+            UserMgmtValidation.checkFreeText("Group \"g\"", "comment", incoming, stored);
+            fail("expected a rejection");
+        } catch (final UserMgmtValidationException e) {
+            assertEquals("Group \"g\": the comment is longer than 4096 characters.", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testFreeTextLimit() {
+        assertEquals(4096, UserMgmtValidation.FREE_TEXT_LENGTH);
+        UserMgmtValidation.checkFreeText("Group \"g\"", "comment", null, null);
+        UserMgmtValidation.checkFreeText("Group \"g\"", "comment", "x".repeat(4096), null);
+        // counted as stored: trimmed, and in code points
+        UserMgmtValidation.checkFreeText("Group \"g\"", "comment", " " + "x".repeat(4096) + "\n", null);
+        UserMgmtValidation.checkFreeText("Group \"g\"", "comment", "\uD83D\uDE00".repeat(4096), null);
+        assertFreeTextRejected("x".repeat(4097), null);
+        assertFreeTextRejected("x".repeat(4097), "x".repeat(4096));
+        assertFreeTextRejected("\uD83D\uDE00".repeat(4097), null);
+    }
+
+    @Test
+    public void testStoredLongFreeTextIsGrandfathered() {
+        final String stored = "y".repeat(5000);
+        UserMgmtValidation.checkFreeText("Group \"g\"", "comment", stored, stored);
+        UserMgmtValidation.checkFreeText("Group \"g\"", "comment", " " + stored + "\n", stored);
+        assertFreeTextRejected(stored + "z", stored);
+        // on a create there is nothing stored to grandfather
+        assertFreeTextRejected(stored, null);
+    }
+
+    @Test
+    public void testTextUnchangedIgnoresSurroundingWhitespace() {
+        assertTrue(UserMgmtValidation.textUnchanged(" a\n", "a"));
+        assertTrue(UserMgmtValidation.textUnchanged("", null));
+        assertFalse(UserMgmtValidation.textUnchanged("a b", "ab"));
     }
 
     @Test

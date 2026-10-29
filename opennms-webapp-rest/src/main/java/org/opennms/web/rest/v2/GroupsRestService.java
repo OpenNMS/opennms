@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
@@ -107,7 +106,7 @@ public class GroupsRestService implements GroupsRestApi {
 
     @Override
     @Transactional(readOnly = true)
-    public Response getGroup(final SecurityContext securityContext, final Request request, final String name) {
+    public Response getGroup(final SecurityContext securityContext, final String name) {
         m_support.assertAdmin(securityContext, "Group management");
         m_support.requireDatabaseStore();
         try {
@@ -138,7 +137,7 @@ public class GroupsRestService implements GroupsRestApi {
                 throw m_support.conflict("Group " + name + " already exists.");
             }
             UserMgmtValidation.checkLength(owner(name), "group name", name, UserMgmtJaxbMapper.GROUP_NAME_LENGTH);
-            final List<UserAccount> members = validateDtoFields(dto, null);
+            final List<UserAccount> members = validateDtoFields(dto, null, name);
             final UserGroup group = new UserGroup(name);
             applyDto(group, dto, members);
             m_userGroupDao.saveOrUpdate(group);
@@ -166,7 +165,7 @@ public class GroupsRestService implements GroupsRestApi {
             m_support.lockForWrite();
             final UserGroup group = load(name, headers);
             m_support.checkIfMatch(headers, VersionedTable.groups, group.getId(), "Group " + name);
-            final List<UserAccount> members = validateDtoFields(dto, group);
+            final List<UserAccount> members = validateDtoFields(dto, group, name);
             applyDto(group, dto, members);
             m_userGroupDao.saveOrUpdate(group);
             m_userGroupDao.flush();
@@ -279,12 +278,15 @@ public class GroupsRestService implements GroupsRestApi {
      * Validates every field of the request BEFORE anything is applied, so a rejected request cannot
      * leave partial state anywhere.
      *
+     * @param name the group's name as it is or will be stored, for the error messages
      * @return the accounts of the members the request names, in request order, or null if it leaves the members alone
      */
-    private List<UserAccount> validateDtoFields(final GroupDto dto, final UserGroup existing) {
-        final String owner = owner(existing == null ? dto.getName().trim() : existing.getName());
+    private List<UserAccount> validateDtoFields(final GroupDto dto, final UserGroup existing, final String name) {
+        final String owner = owner(name);
         // stored values that today's rules would reject are grandfathered, so a migrated group stays editable
-        UserMgmtValidation.checkComments(dto.getComments(), existing == null ? null : existing.getComments(), existing != null);
+        final String storedComments = existing == null ? null : existing.getComments();
+        UserMgmtValidation.checkComments(dto.getComments(), storedComments, existing != null);
+        UserMgmtValidation.checkFreeText(owner, "comment", dto.getComments(), storedComments);
         List<UserAccount> members = null;
         if (dto.getUsers() != null) {
             final Set<String> seen = new LinkedHashSet<>();
@@ -326,7 +328,7 @@ public class GroupsRestService implements GroupsRestApi {
      * it drives the notification escalation order.
      */
     private static void applyDto(final UserGroup group, final GroupDto dto, final List<UserAccount> members) {
-        if (dto.getComments() != null && !UserMgmtValidation.commentsUnchanged(dto.getComments(), group.getComments())) {
+        if (dto.getComments() != null && !UserMgmtValidation.textUnchanged(dto.getComments(), group.getComments())) {
             group.setComments(StringUtils.trimToNull(dto.getComments()));
         }
         // an unchanged list is left alone, so that no row is rewritten and the version stays put

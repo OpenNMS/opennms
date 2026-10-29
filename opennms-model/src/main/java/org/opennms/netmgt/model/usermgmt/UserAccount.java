@@ -49,11 +49,17 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.BatchSize;
+
 /**
  * An OpenNMS user: a {@code <user>} of users.xml. Named apart from {@code OnmsUser}, the REST/XML
  * representation, which stays the API contract.
+ * <p>
+ * Lazy proxies and collections are loaded in batches ({@link BatchSize}), so that listing all users, or all
+ * on-call roles with their supervisors and schedule users, does not take a statement per user.
  */
 @Entity
+@BatchSize(size = 100)
 @Table(name = "users")
 public class UserAccount implements Serializable {
 
@@ -91,12 +97,14 @@ public class UserAccount implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id", nullable = false)
     @OrderBy("id")
+    @BatchSize(size = 100)
     private List<UserContact> contacts = new ArrayList<>();
 
     /** Duty schedules in the users.xml format ({@code MoTuWe800-1700}), parsed by {@code DutySchedule}. */
     @ElementCollection
     @CollectionTable(name = "user_duty_schedules", joinColumns = @JoinColumn(name = "user_id"))
     @OrderColumn(name = "position")
+    @BatchSize(size = 100)
     @Column(name = "schedule", nullable = false, length = 64)
     private List<String> dutySchedules = new ArrayList<>();
 
@@ -104,6 +112,7 @@ public class UserAccount implements Serializable {
     @JoinTable(name = "user_security_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @BatchSize(size = 100)
     private Set<SecurityRole> securityRoles = new LinkedHashSet<>();
 
     @Temporal(TemporalType.TIMESTAMP)

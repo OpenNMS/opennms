@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
@@ -67,7 +66,8 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * A schedule identical to one already stored on the role is grandfathered: it skips the format validation and
  * the membership check, so a role migrated from groups.xml stays editable. Every other schedule must be
- * valid for notifd and name a member of the membership group, which is all the JSP picker allows.
+ * valid for notifd and name a member of the membership group, which is all the JSP picker allows. A stored
+ * description longer than the free-text limit is grandfathered in the same way while it is sent back unchanged.
  *
  * Errors are thrown, never returned, so that a rejected request rolls back whatever it had done.
  */
@@ -110,7 +110,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
 
     @Override
     @Transactional(readOnly = true)
-    public Response getOnCallRole(final SecurityContext securityContext, final Request request, final String name) {
+    public Response getOnCallRole(final SecurityContext securityContext, final String name) {
         m_support.assertAdmin(securityContext, WHAT);
         m_support.requireDatabaseStore();
         try {
@@ -288,24 +288,32 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
      */
     private void applyDto(final OnCallRole role, final OnCallRoleDto dto, final boolean groupChanged) {
         final String owner = "On-call role \"" + role.getName() + "\"";
+        UserMgmtValidation.checkFreeText(owner, "description", dto.getDescription(), role.getDescription());
         final List<OnCallSchedule> schedules = dto.getSchedules() == null ? null : buildSchedules(role, owner, dto.getSchedules(), groupChanged);
+        // the stored schedules are kept when the request leaves them out or sends them back unchanged
         if (schedules == null && groupChanged) {
             checkMembers(role, role.getSchedules().stream().map(schedule -> schedule.getUser().getUsername()).collect(Collectors.toList()), true);
         }
         // a description left out of the body is preserved; an empty one is stored as null, as a manager would
-        if (dto.getDescription() != null) {
+        if (dto.getDescription() != null && !UserMgmtValidation.textUnchanged(dto.getDescription(), role.getDescription())) {
             role.setDescription(StringUtils.trimToNull(dto.getDescription()));
         }
-        // an unchanged list is left alone, so that no row is rewritten and the version stays put
-        if (schedules != null && !key(role.getSchedules()).equals(key(schedules))) {
+        if (schedules != null) {
             role.getSchedules().clear();
             role.getSchedules().addAll(schedules);
         }
     }
 
+    /**
+     * Validates the requested schedules and builds their entities, or returns null when they are the stored ones
+     * (compared as {@link #key}s), so that an unchanged list is left alone: no row is rewritten and the version
+     * stays put.
+     */
     private List<OnCallSchedule> buildSchedules(final OnCallRole role, final String owner, final List<OnCallScheduleDto> dtos,
                                                 final boolean groupChanged) {
         final Set<String> usernames = new HashSet<>();
+        final List<OnCallScheduleDto> requested = new ArrayList<>();
+        final List<Object> requestedKeys = new ArrayList<>();
         for (final OnCallScheduleDto dto : dtos) {
             if (dto == null) {
                 throw new UserMgmtValidationException(owner + ": a schedule must not be null.");
@@ -314,6 +322,13 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                 throw new UserMgmtValidationException(owner + ": a schedule needs a user.");
             }
             usernames.add(dto.getUser());
+            final OnCallScheduleDto normalized = normalized(dto);
+            requested.add(normalized);
+            requestedKeys.add(key(normalized));
+        }
+        final List<Object> stored = key(role.getSchedules());
+        if (requestedKeys.equals(stored)) {
+            return null;
         }
         final Map<String, UserAccount> accounts = new HashMap<>();
         if (!usernames.isEmpty()) {
@@ -321,12 +336,10 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                 accounts.put(account.getUsername(), account);
             }
         }
-        final List<Object> stored = key(role.getSchedules());
         final List<String> toCheck = new ArrayList<>();
 
         final List<OnCallSchedule> schedules = new ArrayList<>();
-        for (final OnCallScheduleDto raw : dtos) {
-            final OnCallScheduleDto dto = normalized(raw);
+        for (final OnCallScheduleDto dto : requested) {
             final UserAccount user = accounts.get(dto.getUser());
             if (user == null) {
                 throw new UserMgmtValidationException("Unknown user in a schedule: " + dto.getUser());
@@ -393,20 +406,25 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         return copy;
     }
 
-    /** A comparable form of a stored or built schedule: user, type and every time's id, day, begins and ends. */
+    /**
+     * A comparable form of the stored schedules: user, type and every time's id, day, begins and ends. The id and the
+     * day are normalized like the requested ones ({@link #normalized}), so that a stored empty day or id matches an
+     * omitted or blank one.
+     */
     private static List<Object> key(final List<OnCallSchedule> schedules) {
         final List<Object> keys = new ArrayList<>();
         for (final OnCallSchedule schedule : schedules) {
             final List<Object> times = new ArrayList<>();
             for (final OnCallScheduleTime time : schedule.getTimes()) {
-                times.add(Arrays.asList(time.getTimeId(), time.getDay(), time.getBegins(), time.getEnds()));
+                times.add(Arrays.asList(StringUtils.trimToNull(time.getTimeId()), StringUtils.trimToNull(time.getDay()),
+                        time.getBegins(), time.getEnds()));
             }
             keys.add(Arrays.asList(schedule.getUser().getUsername(), schedule.getType().name(), times));
         }
         return keys;
     }
 
-    /** The same form for a requested schedule; an unusable one (no times, a bad type) never equals a stored one. */
+    /** The same form for a requested, {@link #normalized} schedule; an unusable one (no times, a bad type) never equals a stored one. */
     private static Object key(final OnCallScheduleDto dto) {
         final List<Object> times = new ArrayList<>();
         if (dto.getTimes() != null) {

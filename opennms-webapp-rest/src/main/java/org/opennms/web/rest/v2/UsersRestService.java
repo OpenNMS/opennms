@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
@@ -113,7 +112,7 @@ public class UsersRestService implements UsersRestApi {
 
     @Override
     @Transactional(readOnly = true)
-    public Response getUser(final SecurityContext securityContext, final Request request, final String userId) {
+    public Response getUser(final SecurityContext securityContext, final String userId) {
         m_support.assertAdmin(securityContext, "User management");
         m_support.requireDatabaseStore();
         try {
@@ -166,7 +165,7 @@ public class UsersRestService implements UsersRestApi {
             }
             final UserAccount user = new UserAccount(userId);
             UserMgmtValidation.checkLength(owner(userId), "user name", userId, UserMgmtJaxbMapper.USERNAME_LENGTH);
-            final List<SecurityRole> roles = validateDtoFields(request, null);
+            final List<SecurityRole> roles = validateDtoFields(request, null, userId);
             user.setPasswordHash(UserManager.hashPassword(request.getPassword()));
             user.setPasswordSalted(true);
             applyDto(user, request, roles);
@@ -200,7 +199,7 @@ public class UsersRestService implements UsersRestApi {
             m_support.lockForWrite();
             final UserAccount user = load(userId, headers);
             m_support.checkIfMatch(headers, VersionedTable.users, user.getId(), "User " + userId);
-            final List<SecurityRole> roles = validateDtoFields(dto, user);
+            final List<SecurityRole> roles = validateDtoFields(dto, user, userId);
             if (roles != null && roles.stream().noneMatch(r -> Authentication.ROLE_ADMIN.equals(r.getName()))) {
                 checkNotLastAdministrator(user, "lose the " + Authentication.ROLE_ADMIN + " role");
             }
@@ -372,11 +371,14 @@ public class UsersRestService implements UsersRestApi {
      * Validates every field of the request BEFORE anything is applied, so a
      * rejected request cannot leave partial state anywhere.
      *
+     * @param userId the user's id as it is or will be stored, for the error messages
      * @return the security roles the request names, or null if it leaves the roles alone
      */
-    private List<SecurityRole> validateDtoFields(final UserDto dto, final UserAccount existing) {
-        final String owner = owner(existing == null ? dto.getUserId() : existing.getUsername());
-        UserMgmtValidation.checkComments(dto.getUserComments(), existing == null ? null : existing.getComments(), existing != null);
+    private List<SecurityRole> validateDtoFields(final UserDto dto, final UserAccount existing, final String userId) {
+        final String owner = owner(userId);
+        final String storedComments = existing == null ? null : existing.getComments();
+        UserMgmtValidation.checkComments(dto.getUserComments(), storedComments, existing != null);
+        UserMgmtValidation.checkFreeText(owner, "comment", dto.getUserComments(), storedComments);
         final String timeZoneId = StringUtils.trimToNull(dto.getTimeZoneId());
         if (timeZoneId != null) {
             try {
@@ -435,7 +437,7 @@ public class UsersRestService implements UsersRestApi {
         if (dto.getFullName() != null) {
             user.setFullName(StringUtils.trimToNull(dto.getFullName()));
         }
-        if (dto.getUserComments() != null && !UserMgmtValidation.commentsUnchanged(dto.getUserComments(), user.getComments())) {
+        if (dto.getUserComments() != null && !UserMgmtValidation.textUnchanged(dto.getUserComments(), user.getComments())) {
             user.setComments(StringUtils.trimToNull(dto.getUserComments()));
         }
         if (dto.getTuiPin() != null) {
