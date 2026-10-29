@@ -133,6 +133,9 @@ public class IndexPageIT extends OpenNMSSeleniumIT {
         enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
         enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
         clickElement(By.name("Login"));
+        // admin/admin lands on the password gate first; skipping it must still reach the deep link
+        wait.until((WebDriver d) -> !d.getCurrentUrl().contains("login.jsp"));
+        skipPasswordGate(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[text()='Event ID Not Found']")));
     }
 }
