@@ -114,7 +114,7 @@ Keep `useSpinner` / `useSnackbar` out of services and Pinia stores. Services mak
 - **Show feedback with `useActionFeedback`** (`src/composables/useActionFeedback.ts`). `withSpinner(action)` wraps a whole user action once: the spinner is a single on/off flag rather than a counter, so don't wrap each request inside the action. `report(result, successMsg?)` shows the failure message, or the success message followed by any follow-up `errors`, and returns `result.success`. Every error snackbar must set `error: true`; `report` and `showError` do that for you.
 - **Check `.success`, not truthiness.** Once a call returns a result object, `if (await store.save(...))` is always true, and the type-checker won't flag it.
 
-`notificationConfigService` / `notificationConfigStore` and `notificationService` / `notificationsStore` follow this pattern; older services still show snackbars themselves and should be migrated when touched.
+`notificationConfigService` / `notificationConfigStore`, `notificationService` / `notificationsStore`, `userAdminService` / `userAdminStore` and `groupAdminService` / `groupAdminStore` follow this pattern (the user and group admin components report writes with `useAdminWriteFeedback().reportWrite`); older services still show snackbars themselves and should be migrated when touched.
 
 ### Auto-imports
 

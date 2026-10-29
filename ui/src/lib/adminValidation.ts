@@ -49,9 +49,6 @@ export const validateAdminName = (value: string, label: string): string | null =
   return null
 }
 
-/** Names the server reserves: the exact spelling exists, so look-alikes are refused. See UsersRestService.PROTECTED_USERS. */
-export const RESERVED_USER_IDS = ['admin', 'rtc']
-
 /**
  * A new or renamed user-id or group name that equals a reserved name ignoring case, but not exactly,
  * would be mistaken for the system entry; the server refuses it. The exact name is not flagged here:
