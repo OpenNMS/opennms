@@ -1,4 +1,4 @@
-import DutyScheduleEditor from '@/components/ManageUsers/DutyScheduleEditor.vue'
+import DutyScheduleEditor from '@/components/Common/DutyScheduleEditor.vue'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { describe, it, expect } from 'vitest'
@@ -94,5 +94,52 @@ describe('DutyScheduleEditor.vue', () => {
     await wrapper.find('[data-test="duty-0-day-We"]').trigger('click')
 
     expect(wrapper.emitted('update:modelValue')?.at(-1)?.[0]).toEqual(['MoTuWe2000-800'])
+  })
+
+  describe('validation', () => {
+    const validEmits = (wrapper: ReturnType<typeof mountEditor>) =>
+      wrapper.emitted('update:valid')?.map(e => e[0])
+
+    it('flags a row with no day and clears it when a day is picked', async () => {
+      const wrapper = mountEditor([])
+      expect(validEmits(wrapper)?.at(-1)).toBe(true)
+
+      await wrapper.find('[data-test="add-duty-button"]').trigger('click')
+      expect(wrapper.find('[data-test="duty-0-error"]').text()).toBe('Pick at least one day')
+      expect(validEmits(wrapper)?.at(-1)).toBe(false)
+
+      await wrapper.find('[data-test="duty-0-day-Mo"]').trigger('click')
+      expect(wrapper.find('[data-test="duty-0-error"]').exists()).toBe(false)
+      expect(validEmits(wrapper)?.at(-1)).toBe(true)
+    })
+
+    it('becomes valid again when the dayless row is removed', async () => {
+      const wrapper = mountEditor([])
+      await wrapper.find('[data-test="add-duty-button"]').trigger('click')
+      await wrapper.find('[data-test="remove-duty-0"]').trigger('click')
+      expect(validEmits(wrapper)?.at(-1)).toBe(true)
+    })
+
+    it('warns about a window of 5 minutes', () => {
+      const wrapper = mountEditor(['Mo800-805'])
+      expect(wrapper.find('[data-test="duty-0-warning"]').text()).toBe('This window is only 5 minutes long.')
+    })
+
+    it('does not warn about a window of 6 minutes', () => {
+      const wrapper = mountEditor(['Mo800-806'])
+      expect(wrapper.find('[data-test="duty-0-warning"]').exists()).toBe(false)
+    })
+
+    it('does not warn about an overnight window', () => {
+      const wrapper = mountEditor(['Mo2000-800'])
+      expect(wrapper.find('[data-test="duty-0-warning"]').exists()).toBe(false)
+    })
+
+    it('keeps valid true for a short window', async () => {
+      const wrapper = mountEditor(['Mo800-805'])
+      await wrapper.vm.$nextTick()
+      expect(validEmits(wrapper)?.at(-1)).toBe(true)
+      expect(validEmits(wrapper)).not.toContain(false)
+    })
   })
 })

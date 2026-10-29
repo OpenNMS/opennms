@@ -167,7 +167,10 @@
               label="Duty Schedules"
               hint="Pick the days and the begin/end times for each coverage window."
             >
-              <DutyScheduleEditor v-model="form.dutySchedules" />
+              <DutyScheduleEditor
+                v-model="form.dutySchedules"
+                v-model:valid="dutyValid"
+              />
             </FormField>
           </OnmsTabPanel>
         </OnmsTabPanels>
@@ -207,7 +210,7 @@ import {
   OnmsTabs
 } from '@opennms/onms-ui'
 
-import DutyScheduleEditor from '@/components/ManageUsers/DutyScheduleEditor.vue'
+import DutyScheduleEditor from '@/components/Common/DutyScheduleEditor.vue'
 import FormField from '@/components/Common/FormField.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
@@ -284,8 +287,10 @@ const pagerEmailProblem = computed(() =>
 const commentsProblem = computed(() =>
   changedOnly(form.comments, props.user?.userComments ?? '', validateAdminComments(form.comments)))
 
+const dutyValid = ref(true)
+
 const isValid = computed(() => {
-  if (userIdProblem.value || emailProblem.value || pagerEmailProblem.value || commentsProblem.value) {
+  if (!dutyValid.value || userIdProblem.value || emailProblem.value || pagerEmailProblem.value || commentsProblem.value) {
     return false
   }
   if (isEditing.value) {

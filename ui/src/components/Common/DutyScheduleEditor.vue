@@ -45,6 +45,17 @@
           :data-test="`duty-${index}-end`"
           @input="markEdited(row)"
         >
+        <small
+          v-if="!hasDay(row)"
+          class="row-error"
+          role="alert"
+          :data-test="`duty-${index}-error`"
+        >Pick at least one day</small>
+        <small
+          v-if="shortWindow(row) !== null"
+          class="row-warning"
+          :data-test="`duty-${index}-warning`"
+        >This window is only {{ shortWindow(row) }} minutes long.</small>
       </template>
       <!-- a hand-edited entry the day/time form can't represent stays editable
            as raw text so it is never silently dropped -->
@@ -75,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import { OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 
@@ -87,6 +98,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:modelValue': [string[]]
+  'update:valid': [boolean]
 }>()
 
 // canonical day order; a schedule string concatenates a 1-7 subset of these
@@ -183,6 +195,28 @@ watch(rows, () => {
   }
 }, { deep: true })
 
+// a form row (not raw text) with no day selected can't be serialized
+const hasDay = (row: Row): boolean => row.raw !== null || row.days.length > 0
+
+// the window length in minutes when it is suspiciously short (5 or fewer), else
+// null; an end before the begin wraps past midnight. Advisory only.
+const SHORT_WINDOW_MINUTES = 5
+const shortWindow = (row: Row): number | null => {
+  if (row.raw !== null || !row.begin || !row.end) {
+    return null
+  }
+  const minutesOf = (hhmm: string) => {
+    const [hours, minutes] = hhmm.split(':')
+    return Number.parseInt(hours, 10) * 60 + Number.parseInt(minutes, 10)
+  }
+  const length = (minutesOf(row.end) - minutesOf(row.begin) + 24 * 60) % (24 * 60)
+  return length <= SHORT_WINDOW_MINUTES ? length : null
+}
+
+const valid = computed(() => rows.value.every(hasDay))
+
+watch(valid, value => emit('update:valid', value), { immediate: true })
+
 const toggleDay = (row: Row, day: string) => {
   markEdited(row)
   const at = row.days.indexOf(day)
@@ -232,6 +266,14 @@ const removeRow = (index: number) => {
     background: var(--p-inputtext-background, transparent);
     color: var(--p-inputtext-color, inherit);
     color-scheme: light dark;
+  }
+
+  .row-error {
+    color: var(--p-red-500, #d32f2f);
+  }
+
+  .row-warning {
+    color: var(--p-orange-500, #ed6c02);
   }
 
   .to {

@@ -136,6 +136,18 @@ describe('UserEditorPanel.vue', () => {
     }))
   })
 
+  it('disables Save while a duty schedule row has no day', async () => {
+    await mountPanel({ userId: 'jose', dutySchedules: [], roles: [] })
+    const save = () => wrapper.find('[data-test="save-button"]').attributes('disabled')
+    expect(save()).toBeUndefined()
+
+    await wrapper.find('[data-test="add-duty-button"]').trigger('click')
+    expect(save()).toBeDefined()
+
+    await wrapper.find('[data-test="duty-0-day-Mo"]').trigger('click')
+    expect(save()).toBeUndefined()
+  })
+
   it('shows a server rejection in the panel and stays open', async () => {
     store.createUser.mockResolvedValue({ message: 'User jose already exists.', stale: false })
     await mountPanel()
