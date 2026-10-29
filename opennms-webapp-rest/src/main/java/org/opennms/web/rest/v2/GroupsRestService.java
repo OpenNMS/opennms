@@ -365,11 +365,11 @@ public class GroupsRestService implements GroupsRestApi {
         return group;
     }
 
-    /** default-map is not exposed by the API. */
     private List<String> authorizedCategories(final String groupName) {
         return m_groupService.getAuthorizedCategoriesAsString(groupName);
     }
 
+    /** default-map is not exposed by the API. */
     private static GroupDto toDto(final UserGroup group, final int version, final List<String> categories) {
         final GroupDto dto = new GroupDto();
         dto.setName(group.getName());

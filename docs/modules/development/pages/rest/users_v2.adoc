@@ -179,6 +179,7 @@ A user id must not contain:
 
 A user id must not be `.` or `..`.
 It is at most 256 characters long.
+The ids `admin` and `rtc` are reserved: a create or rename to a case variant of either (for example `Admin` or `RTC`) returns `400` with the message `The user-id "<name>" is reserved.`
 The rules apply to `userId` on create and to `newUserId` on rename.
 A user id that is already stored is not checked again.
 A violation returns `400`.

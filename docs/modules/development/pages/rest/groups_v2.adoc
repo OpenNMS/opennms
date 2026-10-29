@@ -97,6 +97,7 @@ The order of `users` is kept, and notifications use it to decide who is escalate
 
 `categories` works the same way: an omitted list leaves the authorizations alone and a present list, including `[]`, replaces them.
 Every name must be an existing category, otherwise the request fails with `400` and the message `Unknown category: <name>`; nothing is changed.
+A category renamed while a client still holds its old name is unknown under that name: sending the old name returns `400` with `Unknown category: <old>`.
 A list that holds the same categories as before changes nothing, and the version stays the same.
 
 == DELETEs (removing data)
@@ -164,6 +165,7 @@ A group name must not contain:
 
 A group name must not be `.` or `..`.
 It is at most 256 characters long.
+The name `Admin` is reserved: a create or rename to a case variant of it (for example `admin`) returns `400` with the message `The group name "<name>" is reserved.`
 The rules apply to `name` on create and to `newName` on rename.
 A group name that is already stored is not checked again.
 A violation returns `400`.
