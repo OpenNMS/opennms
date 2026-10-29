@@ -148,6 +148,7 @@ import TableCard from '@/components/Common/TableCard.vue'
 import UserPasswordDialog from '@/components/ManageUsers/UserPasswordDialog.vue'
 import UserRenameDialog from '@/components/ManageUsers/UserRenameDialog.vue'
 import UsersAbout from '@/components/ManageUsers/UsersAbout.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
@@ -156,6 +157,7 @@ import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser, PROTECTED_USER_IDS } from '@/types/userAdmin'
 
 const store = useUserAdminStore()
+const { withSpinner, showError, showSuccess } = useActionFeedback()
 
 const showPassword = ref(false)
 const showRename = ref(false)
@@ -211,8 +213,18 @@ const toggleRowMenu = (event: Event, user: ManagedUser) => {
 }
 
 const confirmDelete = async () => {
-  if (userToDelete.value) {
-    await store.deleteUser(userToDelete.value.userId, userToDelete.value.version)
+  const user = userToDelete.value
+  if (user) {
+    const error = await withSpinner(() => store.deleteUser(user.userId, user.version))
+    if (error === null) {
+      showSuccess(`User '${user.userId}' deleted.`)
+      if (store.reloadError) {
+        showError(store.reloadError)
+      }
+    } else {
+      // the server's reason, or the stale message once the store has reloaded the list
+      showError(error.message)
+    }
   }
   showDeleteConfirmation.value = false
   userToDelete.value = null

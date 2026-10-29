@@ -21,12 +21,14 @@ import { computed, onMounted, onUnmounted } from 'vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import GroupEditorPanel from '@/components/ManageGroups/GroupEditorPanel.vue'
 import GroupsTable from '@/components/ManageGroups/GroupsTable.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 import { AdminEditMode } from '@/types/adminWrite'
 
 const menuStore = useMenuStore()
+const { withSpinner, report } = useActionFeedback()
 const store = useGroupAdminStore()
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
@@ -39,7 +41,7 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 })
 
 onMounted(async () => {
-  await store.populate()
+  report(await withSpinner(() => store.populate()))
 })
 
 // the editor panel replaces the table on this route; leaving the page closes it

@@ -133,6 +133,7 @@ import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import GroupRenameDialog from '@/components/ManageGroups/GroupRenameDialog.vue'
 import GroupsAbout from '@/components/ManageGroups/GroupsAbout.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
@@ -141,6 +142,7 @@ import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { ManagedGroup, PROTECTED_GROUP_NAMES } from '@/types/groupAdmin'
 
 const store = useGroupAdminStore()
+const { withSpinner, showError, showSuccess } = useActionFeedback()
 
 const showRename = ref(false)
 const actionGroupName = ref('')
@@ -188,8 +190,18 @@ const toggleRowMenu = (event: Event, group: ManagedGroup) => {
 }
 
 const confirmDelete = async () => {
-  if (groupToDelete.value) {
-    await store.deleteGroup(groupToDelete.value.name, groupToDelete.value.version)
+  const group = groupToDelete.value
+  if (group) {
+    const error = await withSpinner(() => store.deleteGroup(group.name, group.version))
+    if (error === null) {
+      showSuccess(`Group '${group.name}' deleted.`)
+      if (store.reloadError) {
+        showError(store.reloadError)
+      }
+    } else {
+      // the server's reason, or the stale message once the store has reloaded the list
+      showError(error.message)
+    }
   }
   showDeleteConfirmation.value = false
   groupToDelete.value = null

@@ -211,6 +211,7 @@ import DutyScheduleEditor from '@/components/ManageUsers/DutyScheduleEditor.vue'
 import FormField from '@/components/Common/FormField.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { RESERVED_USER_IDS, validateAdminComments, validateAdminName, validateEmailShape, validateReservedName } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser, ManagedUserCreate } from '@/types/userAdmin'
@@ -236,6 +237,7 @@ const emit = defineEmits<{
 }>()
 
 const store = useUserAdminStore()
+const { withSpinner, showError, showSuccess } = useActionFeedback()
 
 const form = reactive({
   userId: '',
@@ -350,11 +352,18 @@ const save = async () => {
       dutySchedules: form.dutySchedules.map(s => s.trim()).filter(Boolean),
       roles: [...form.roles]
     }
-    const error = props.user
-      ? await store.updateUser({ ...props.user, ...fields })
-      : await store.createUser({ ...fields, password: form.password })
-    // A stale save has already reloaded the list; close so the editor reopens on the fresh object and version.
-    if (error === null || error.stale) {
+    const error = await withSpinner(() => props.user
+      ? store.updateUser({ ...props.user, ...fields })
+      : store.createUser({ ...fields, password: form.password }))
+    if (error === null) {
+      showSuccess(props.user ? `User '${fields.userId}' updated.` : `User '${fields.userId}' created.`)
+      if (store.reloadError) {
+        showError(store.reloadError)
+      }
+      emit('close')
+    } else if (error.stale) {
+      // the store has already reloaded the list; close so the editor reopens on the fresh object and version
+      showError(error.message)
       emit('close')
     } else {
       errorText.value = error.message

@@ -54,6 +54,7 @@ import { computed, ref, watch } from 'vue'
 import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { validateAdminName, validateReservedName } from '@/lib/adminValidation'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { PROTECTED_GROUP_NAMES } from '@/types/groupAdmin'
@@ -67,6 +68,7 @@ const props = defineProps<{
 const emit = defineEmits(['update:visible'])
 
 const store = useGroupAdminStore()
+const { withSpinner, showError, showSuccess } = useActionFeedback()
 
 const newName = ref('')
 const saving = ref(false)
@@ -87,9 +89,17 @@ watch(
 const save = async () => {
   saving.value = true
   try {
-    const error = await store.renameGroup(props.groupName, newName.value.trim(), props.version)
-    // A stale save has already reloaded the list; close so the dialog reopens on the fresh object and version.
-    if (error === null || error.stale) {
+    const target = newName.value.trim()
+    const error = await withSpinner(() => store.renameGroup(props.groupName, target, props.version))
+    if (error === null) {
+      showSuccess(`Group '${props.groupName}' renamed to '${target}'.`)
+      if (store.reloadError) {
+        showError(store.reloadError)
+      }
+      emit('update:visible', false)
+    } else if (error.stale) {
+      // the store has already reloaded the list; close so the dialog reopens on the fresh object and version
+      showError(error.message)
       emit('update:visible', false)
     } else {
       errorText.value = error.message

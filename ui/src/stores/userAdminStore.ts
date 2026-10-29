@@ -20,17 +20,19 @@
 /// License.
 ///
 
-import useSnackbar from '@/composables/useSnackbar'
 import API from '@/services'
 import { AdminEditMode, AdminWriteError } from '@/types/adminWrite'
 import { ManagedUser, ManagedUserCreate, STALE_USER_MESSAGE, STALE_USER_RELOAD_FAILED_MESSAGE } from '@/types/userAdmin'
+import { createSuccessResponse, ValidationResult } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useUserAdminStore = defineStore('userAdminStore', () => {
-  const { showSnackBar } = useSnackbar()
   const users = ref([] as ManagedUser[])
   const availableRoles = ref([] as string[])
+  // why the list reload after the last successful write failed; '' when it succeeded.
+  // The write itself still returns null, so the caller reports both.
+  const reloadError = ref('')
 
   const editMode = ref(AdminEditMode.Table)
   // the user being edited; null while creating or on the table
@@ -47,73 +49,57 @@ export const useUserAdminStore = defineStore('userAdminStore', () => {
     editMode.value = AdminEditMode.Table
   }
 
-  const getUsers = async () => {
+  // a failed read keeps the previous list on screen
+  const getUsers = async (): Promise<ValidationResult> => {
     const result = await API.getManagedUsers()
-    if (result !== null) {
-      users.value = result
+    if (result.success) {
+      users.value = result.payload ?? []
     }
-    return result !== null
+    return result
   }
 
-  const getAvailableRoles = async () => {
-    availableRoles.value = await API.getAvailableUserRoles()
+  const getAvailableRoles = async (): Promise<ValidationResult> => {
+    const result = await API.getAvailableUserRoles()
+    if (result.success) {
+      availableRoles.value = result.payload ?? []
+    }
+    return result
   }
 
-  // A stale write means the list on screen is out of date: reload it, and say so only
-  // once the reload has succeeded. The caller gets the flag, not the text.
-  const reloadIfStale = async (error: AdminWriteError | null) => {
-    if (error?.stale) {
+  // After a write: a success reloads the list (and notes a failed reload in reloadError);
+  // a stale write means the list on screen is out of date, so it reloads too and words
+  // the stale message by whether that reload worked. The caller shows the result.
+  const afterWrite = async (error: AdminWriteError | null): Promise<AdminWriteError | null> => {
+    reloadError.value = ''
+    if (error === null) {
       const reloaded = await getUsers()
-      const message = reloaded ? STALE_USER_MESSAGE : STALE_USER_RELOAD_FAILED_MESSAGE
-      showSnackBar({ msg: message, error: true })
-      return { ...error, message }
+      reloadError.value = reloaded.success ? '' : reloaded.message
+      return null
+    }
+    if (error.stale) {
+      const reloaded = await getUsers()
+      return { ...error, message: reloaded.success ? STALE_USER_MESSAGE : STALE_USER_RELOAD_FAILED_MESSAGE }
     }
     return error
   }
 
-  const createUser = async (user: ManagedUserCreate) => {
-    const error = await API.createManagedUser(user)
-    if (error === null) {
-      await getUsers()
-    }
-    return error
-  }
+  const createUser = async (user: ManagedUserCreate) => afterWrite(await API.createManagedUser(user))
 
-  const updateUser = async (user: ManagedUser) => {
-    const error = await API.updateManagedUser(user)
-    if (error === null) {
-      await getUsers()
-    }
-    return await reloadIfStale(error)
-  }
+  const updateUser = async (user: ManagedUser) => afterWrite(await API.updateManagedUser(user))
 
-  const setPassword = async (userId: string, password: string, version: number) => {
-    const error = await API.setManagedUserPassword(userId, password, version)
-    if (error === null) {
-      // the password PUT bumps the version; reload so the next action sends the new one
-      await getUsers()
-    }
-    return await reloadIfStale(error)
-  }
+  // the password PUT bumps the version; the reload makes the next action send the new one
+  const setPassword = async (userId: string, password: string, version: number) =>
+    afterWrite(await API.setManagedUserPassword(userId, password, version))
 
-  const renameUser = async (userId: string, newUserId: string, version: number) => {
-    const error = await API.renameManagedUser(userId, newUserId, version)
-    if (error === null) {
-      await getUsers()
-    }
-    return await reloadIfStale(error)
-  }
+  const renameUser = async (userId: string, newUserId: string, version: number) =>
+    afterWrite(await API.renameManagedUser(userId, newUserId, version))
 
-  const deleteUser = async (userId: string, version: number) => {
-    const error = await API.deleteManagedUser(userId, version)
-    if (error === null) {
-      await getUsers()
-    }
-    return await reloadIfStale(error)
-  }
+  const deleteUser = async (userId: string, version: number) => afterWrite(await API.deleteManagedUser(userId, version))
 
-  const populate = async () => {
-    await Promise.all([getUsers(), getAvailableRoles()])
+  // fails with the message of the first read that failed
+  const populate = async (): Promise<ValidationResult> => {
+    const results = await Promise.all([getUsers(), getAvailableRoles()])
+    return results.find(r => !r.success) ?? createSuccessResponse()
   }
 
   return {
@@ -123,6 +109,7 @@ export const useUserAdminStore = defineStore('userAdminStore', () => {
     openUserEditor,
     closeUserEditor,
     availableRoles,
+    reloadError,
     getUsers,
     getAvailableRoles,
     createUser,

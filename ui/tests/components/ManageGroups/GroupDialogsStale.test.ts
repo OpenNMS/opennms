@@ -7,6 +7,7 @@ import GroupsTable from '@/components/ManageGroups/GroupsTable.vue'
 import GroupEditorPanel from '@/components/ManageGroups/GroupEditorPanel.vue'
 import GroupRenameDialog from '@/components/ManageGroups/GroupRenameDialog.vue'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
+import { STALE_GROUP_MESSAGE } from '@/types/groupAdmin'
 
 const store = vi.hoisted(() => ({
   updateGroup: vi.fn(),
@@ -14,6 +15,7 @@ const store = vi.hoisted(() => ({
   createGroup: vi.fn(),
   renameGroup: vi.fn(),
   deleteGroup: vi.fn(),
+  reloadError: '',
   groups: [] as unknown[],
   memberCandidates: [] as string[]
 }))
@@ -25,34 +27,50 @@ vi.mock('@/stores/groupAdminStore', async () => {
   return { useGroupAdminStore: () => live }
 })
 
+// the components give the feedback (the store and service give none)
+const showSnackBar = vi.hoisted(() => vi.fn())
+vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
+const spinner = vi.hoisted(() => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() }))
+vi.mock('@/composables/useSpinner', () => ({ default: () => spinner }))
+
 // the dialogs are teleported to the body; unmount each one, or a later test can find an earlier test's dialog
 enableAutoUnmount(afterEach)
 
 const group = { name: 'Ops', users: [], version: 3 }
 
-// each case: a mounted dialog, the store call its Save makes and the data-test of the dialog
+type DialogVm = { save: () => Promise<void>, newName: string }
+
+// each case: a mounted dialog, the store call its Save makes, the data-test of the dialog,
+// how to fill it in and its success message
 const cases = [
-  ['GroupRenameDialog', () => mount(GroupRenameDialog, { props: { visible: true, groupName: 'Ops', version: 3 }, global: { plugins: [PrimeVue] }}), store.renameGroup, 'group-rename-dialog']
+  ['GroupRenameDialog', () => mount(GroupRenameDialog, { props: { visible: true, groupName: 'Ops', version: 3 }, global: { plugins: [PrimeVue] }}), store.renameGroup, 'group-rename-dialog',
+    (vm: DialogVm) => {
+      vm.newName = 'Dev'
+    }, 'Group \'Ops\' renamed to \'Dev\'.']
 ] as const
 
-describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest) => {
-  beforeEach(() => vi.clearAllMocks())
-
-  it('closes when the save is rejected as stale', async () => {
-    // the text is irrelevant: only the stale flag closes the dialog
-    storeCall.mockResolvedValue({ message: 'any wording at all', stale: true })
-    const wrapper = mountDialog()
-
-    await (wrapper.vm as unknown as { save: () => Promise<void> }).save()
-
-    expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest, fill, successMsg) => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    store.reloadError = ''
   })
 
-  it('stays open and shows other errors', async () => {
+  it('closes when the save is rejected as stale, and shows the stale text once', async () => {
+    storeCall.mockResolvedValue({ message: STALE_GROUP_MESSAGE, stale: true })
+    const wrapper = mountDialog()
+
+    await (wrapper.vm as unknown as DialogVm).save()
+
+    expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+    expect(showSnackBar).toHaveBeenCalledTimes(1)
+    expect(showSnackBar).toHaveBeenCalledWith({ msg: STALE_GROUP_MESSAGE, error: true })
+  })
+
+  it('stays open and shows other errors in the dialog only', async () => {
     storeCall.mockResolvedValue({ message: 'Something else went wrong', stale: false })
     const wrapper = mountDialog()
 
-    await (wrapper.vm as unknown as { save: () => Promise<void> }).save()
+    await (wrapper.vm as unknown as DialogVm).save()
     await nextTick()
 
     expect(wrapper.emitted('update:visible')).toBeUndefined()
@@ -60,35 +78,66 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest) => {
     const errors = document.body.querySelectorAll(`[data-test="${dialogTest}"] [data-test="dialog-error"]`)
     expect(errors).toHaveLength(1)
     expect(errors[0].textContent).toBe('Something else went wrong')
+    expect(showSnackBar).not.toHaveBeenCalled()
   })
 
   it('does not close on the stale wording without the flag', async () => {
-    storeCall.mockResolvedValue({ message: 'This group was changed by someone else. The list has been reloaded; reapply your change.', stale: false })
+    storeCall.mockResolvedValue({ message: STALE_GROUP_MESSAGE, stale: false })
     const wrapper = mountDialog()
 
-    await (wrapper.vm as unknown as { save: () => Promise<void> }).save()
+    await (wrapper.vm as unknown as DialogVm).save()
 
     expect(wrapper.emitted('update:visible')).toBeUndefined()
+    expect(showSnackBar).not.toHaveBeenCalled()
+  })
+
+  it('closes on success and says so, with the spinner around the save', async () => {
+    storeCall.mockResolvedValue(null)
+    const wrapper = mountDialog()
+    fill(wrapper.vm as unknown as DialogVm)
+
+    await (wrapper.vm as unknown as DialogVm).save()
+
+    expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: successMsg }]])
+    expect(spinner.startSpinner).toHaveBeenCalledTimes(1)
+    expect(spinner.stopSpinner).toHaveBeenCalledTimes(1)
+  })
+
+  it('on success whose reload failed, says both', async () => {
+    storeCall.mockImplementation(async () => {
+      store.reloadError = 'Failed to load groups.'
+      return null
+    })
+    const wrapper = mountDialog()
+    fill(wrapper.vm as unknown as DialogVm)
+
+    await (wrapper.vm as unknown as DialogVm).save()
+
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: successMsg }], [{ msg: 'Failed to load groups.', error: true }]])
   })
 })
 
 // the editor panel replaces the table; it is not teleported, so its error shows inside the wrapper
 describe('GroupEditorPanel save results', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    store.reloadError = ''
+  })
 
   const mountPanel = () => mount(GroupEditorPanel, { props: { group }, global: { plugins: [PrimeVue] }})
   const save = (wrapper: { vm: unknown }) => (wrapper.vm as { save: () => Promise<void> }).save()
 
-  it('closes when the save is rejected as stale', async () => {
-    // the text is irrelevant: only the stale flag closes the panel
-    store.updateGroup.mockResolvedValue({ message: 'any wording at all', stale: true })
+  it('closes when the save is rejected as stale, and shows the stale text once', async () => {
+    store.updateGroup.mockResolvedValue({ message: STALE_GROUP_MESSAGE, stale: true })
     const wrapper = mountPanel()
     await save(wrapper)
 
     expect(wrapper.emitted('close')).toHaveLength(1)
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: STALE_GROUP_MESSAGE, error: true }]])
   })
 
-  it('stays open and shows other errors', async () => {
+  it('stays open and shows other errors in the panel only', async () => {
     store.updateGroup.mockResolvedValue({ message: 'Something else went wrong', stale: false })
     const wrapper = mountPanel()
     await save(wrapper)
@@ -96,14 +145,99 @@ describe('GroupEditorPanel save results', () => {
 
     expect(wrapper.emitted('close')).toBeUndefined()
     expect(wrapper.find('[data-test="save-error"]').text()).toBe('Something else went wrong')
+    expect(showSnackBar).not.toHaveBeenCalled()
   })
 
   it('does not close on the stale wording without the flag', async () => {
-    store.updateGroup.mockResolvedValue({ message: 'This group was changed by someone else. The list has been reloaded; reapply your change.', stale: false })
+    store.updateGroup.mockResolvedValue({ message: STALE_GROUP_MESSAGE, stale: false })
     const wrapper = mountPanel()
     await save(wrapper)
 
     expect(wrapper.emitted('close')).toBeUndefined()
+    expect(showSnackBar).not.toHaveBeenCalled()
+  })
+
+  it('closes on an update and says so, with the spinner around the save', async () => {
+    store.updateGroup.mockResolvedValue(null)
+    const wrapper = mountPanel()
+    await save(wrapper)
+
+    expect(wrapper.emitted('close')).toHaveLength(1)
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: 'Group \'Ops\' updated.' }]])
+    expect(spinner.startSpinner).toHaveBeenCalledTimes(1)
+    expect(spinner.stopSpinner).toHaveBeenCalledTimes(1)
+  })
+
+  it('closes on a create and says so', async () => {
+    store.createGroup.mockResolvedValue(null)
+    const wrapper = mount(GroupEditorPanel, { props: { group: null }, global: { plugins: [PrimeVue] }})
+    const vm = wrapper.vm as unknown as { name: string, save: () => Promise<void> }
+    vm.name = 'Dev'
+    await vm.save()
+
+    expect(wrapper.emitted('close')).toHaveLength(1)
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: 'Group \'Dev\' created.' }]])
+  })
+
+  it('on success whose reload failed, says both', async () => {
+    store.updateGroup.mockImplementation(async () => {
+      store.reloadError = 'Failed to load groups.'
+      return null
+    })
+    const wrapper = mountPanel()
+    await save(wrapper)
+
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: 'Group \'Ops\' updated.' }], [{ msg: 'Failed to load groups.', error: true }]])
+  })
+})
+
+describe('GroupsTable delete results', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    store.reloadError = ''
+  })
+
+  const deleteFromTable = async () => {
+    const wrapper = mount(GroupsTable, { shallow: true, global: { plugins: [PrimeVue], directives: { tooltip: {}}}})
+    const vm = wrapper.vm as unknown as { askDelete: (g: typeof group) => void, confirmDelete: () => Promise<void>, showDeleteConfirmation: boolean }
+    vm.askDelete(group)
+    await vm.confirmDelete()
+    return vm
+  }
+
+  it('says the group was deleted', async () => {
+    store.deleteGroup.mockResolvedValue(null)
+    const vm = await deleteFromTable()
+
+    expect(vm.showDeleteConfirmation).toBe(false)
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: 'Group \'Ops\' deleted.' }]])
+    expect(spinner.startSpinner).toHaveBeenCalledTimes(1)
+    expect(spinner.stopSpinner).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows a failed delete with the server text', async () => {
+    store.deleteGroup.mockResolvedValue({ message: 'Group \'Ops\' cannot be deleted.', stale: false })
+    const vm = await deleteFromTable()
+
+    expect(vm.showDeleteConfirmation).toBe(false)
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: 'Group \'Ops\' cannot be deleted.', error: true }]])
+  })
+
+  it('shows a stale delete with the stale text once', async () => {
+    store.deleteGroup.mockResolvedValue({ message: STALE_GROUP_MESSAGE, stale: true })
+    await deleteFromTable()
+
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: STALE_GROUP_MESSAGE, error: true }]])
+  })
+
+  it('on success whose reload failed, says both', async () => {
+    store.deleteGroup.mockImplementation(async () => {
+      store.reloadError = 'Failed to load groups.'
+      return null
+    })
+    await deleteFromTable()
+
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: 'Group \'Ops\' deleted.' }], [{ msg: 'Failed to load groups.', error: true }]])
   })
 })
 

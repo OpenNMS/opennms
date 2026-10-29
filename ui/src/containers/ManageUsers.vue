@@ -21,12 +21,14 @@ import { computed, onMounted, onUnmounted } from 'vue'
 import UserEditorPanel from '@/components/ManageUsers/UserEditorPanel.vue'
 import UsersTable from '@/components/ManageUsers/UsersTable.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useMenuStore } from '@/stores/menuStore'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { BreadCrumb } from '@/types'
 import { AdminEditMode } from '@/types/adminWrite'
 
 const menuStore = useMenuStore()
+const { withSpinner, report } = useActionFeedback()
 const store = useUserAdminStore()
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
@@ -39,7 +41,7 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 })
 
 onMounted(async () => {
-  await store.populate()
+  report(await withSpinner(() => store.populate()))
 })
 
 // the editor panel replaces the table on this route; leaving the page closes it

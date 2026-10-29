@@ -69,6 +69,7 @@ import { ref, watch } from 'vue'
 import { OnmsButton, OnmsDialog, OnmsPassword } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 
 const props = defineProps<{
@@ -80,6 +81,7 @@ const props = defineProps<{
 const emit = defineEmits(['update:visible'])
 
 const store = useUserAdminStore()
+const { withSpinner, showError, showSuccess } = useActionFeedback()
 
 const password = ref('')
 const confirmation = ref('')
@@ -100,9 +102,16 @@ watch(
 const save = async () => {
   saving.value = true
   try {
-    const error = await store.setPassword(props.userId, password.value, props.version)
-    // A stale save has already reloaded the list; close so the dialog reopens on the fresh object and version.
-    if (error === null || error.stale) {
+    const error = await withSpinner(() => store.setPassword(props.userId, password.value, props.version))
+    if (error === null) {
+      showSuccess(`Password changed for '${props.userId}'.`)
+      if (store.reloadError) {
+        showError(store.reloadError)
+      }
+      emit('update:visible', false)
+    } else if (error.stale) {
+      // the store has already reloaded the list; close so the dialog reopens on the fresh object and version
+      showError(error.message)
       emit('update:visible', false)
     } else {
       errorText.value = error.message
