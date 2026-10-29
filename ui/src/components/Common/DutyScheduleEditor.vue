@@ -4,7 +4,7 @@
       v-if="!rows.length"
       class="no-schedules"
       data-test="no-duty-schedules"
-    >No duty schedules; this user is available at all times.</p>
+    >No duty schedules: always on duty.</p>
     <div
       v-for="(row, index) in rows"
       :key="row.id"
@@ -51,6 +51,12 @@
           role="alert"
           :data-test="`duty-${index}-error`"
         >Pick at least one day</small>
+        <small
+          v-if="!hasTimes(row)"
+          class="row-error"
+          role="alert"
+          :data-test="`duty-${index}-time-error`"
+        >Pick a begin and an end time</small>
         <small
           v-if="isOvernight(row)"
           :class="overnightBlocks(row) ? 'row-error' : 'row-warning'"
@@ -160,6 +166,15 @@ const markEdited = (row: Row) => {
   row.original = null
 }
 
+// a form row (not raw text) with no day selected can't be serialized
+const hasDay = (row: Row): boolean => row.raw !== null || row.days.length > 0
+
+// a native time input can be emptied; a form row needs both times
+const hasTimes = (row: Row): boolean => row.raw !== null || (!!row.begin && !!row.end)
+
+// complete: raw text, or at least one day plus a begin and an end time
+const isComplete = (row: Row): boolean => hasDay(row) && hasTimes(row)
+
 const serializeRow = (row: Row): string => {
   if (row.raw !== null) {
     return row.raw.trim()
@@ -167,9 +182,10 @@ const serializeRow = (row: Row): string => {
   if (row.original !== null) {
     return row.original
   }
-  // an incomplete row (no day, or a missing time) is not a valid schedule
-  // yet; keep it visible for editing but leave it out of the value
-  if (!row.days.length || !row.begin || !row.end) {
+  // an incomplete row is not a valid schedule yet; keep it visible for editing
+  // but leave it out of the value. valid stays false while it is there, so it
+  // can't be silently dropped on save
+  if (!isComplete(row)) {
     return ''
   }
   const days = DAYS.filter(day => row.days.includes(day)).join('')
@@ -204,9 +220,6 @@ watch(rows, () => {
   }
 }, { deep: true })
 
-// a form row (not raw text) with no day selected can't be serialized
-const hasDay = (row: Row): boolean => row.raw !== null || row.days.length > 0
-
 const minutesOf = (hhmm: string) => {
   const [hours, minutes] = hhmm.split(':')
   return Number.parseInt(hours, 10) * 60 + Number.parseInt(minutes, 10)
@@ -231,7 +244,7 @@ const shortWindow = (row: Row): number | null => {
   return length <= SHORT_WINDOW_MINUTES ? length : null
 }
 
-const valid = computed(() => rows.value.every(row => hasDay(row) && !overnightBlocks(row)))
+const valid = computed(() => rows.value.every(row => isComplete(row) && !overnightBlocks(row)))
 
 watch(valid, value => emit('update:valid', value), { immediate: true })
 

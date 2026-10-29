@@ -64,7 +64,8 @@ describe('DutyScheduleEditor.vue', () => {
 
   it('shows the empty hint when there are no schedules', () => {
     const wrapper = mountEditor([])
-    expect(wrapper.find('[data-test="no-duty-schedules"]').exists()).toBe(true)
+    // generic: the editor serves users and groups alike
+    expect(wrapper.find('[data-test="no-duty-schedules"]').text()).toBe('No duty schedules: always on duty.')
   })
 
   // The server only grandfathers legacy schedule strings byte-identically, so
@@ -118,6 +119,41 @@ describe('DutyScheduleEditor.vue', () => {
       await wrapper.find('[data-test="add-duty-button"]').trigger('click')
       await wrapper.find('[data-test="remove-duty-0"]').trigger('click')
       expect(validEmits(wrapper)?.at(-1)).toBe(true)
+    })
+
+    it('flags a parsed row whose begin time is cleared, and keeps it visible', async () => {
+      const wrapper = mountEditor(['Mo800-1700'])
+      await wrapper.vm.$nextTick()
+      expect(validEmits(wrapper)?.at(-1)).toBe(true)
+
+      await wrapper.find('[data-test="duty-0-begin"]').setValue('')
+
+      expect(wrapper.find('[data-test="duty-row-0"]').exists()).toBe(true)
+      expect(wrapper.find('[data-test="duty-0-time-error"]').text()).toBe('Pick a begin and an end time')
+      expect(validEmits(wrapper)?.at(-1)).toBe(false)
+
+      await wrapper.find('[data-test="duty-0-begin"]').setValue('09:00')
+      expect(wrapper.find('[data-test="duty-0-time-error"]').exists()).toBe(false)
+      expect(validEmits(wrapper)?.at(-1)).toBe(true)
+      expect(wrapper.emitted('update:modelValue')?.at(-1)?.[0]).toEqual(['Mo900-1700'])
+    })
+
+    it('flags a new row whose end time is cleared', async () => {
+      const wrapper = mountEditor([])
+      await wrapper.find('[data-test="add-duty-button"]').trigger('click')
+      await wrapper.find('[data-test="duty-0-day-Mo"]').trigger('click')
+      expect(validEmits(wrapper)?.at(-1)).toBe(true)
+
+      await wrapper.find('[data-test="duty-0-end"]').setValue('')
+
+      expect(wrapper.find('[data-test="duty-0-time-error"]').text()).toBe('Pick a begin and an end time')
+      expect(validEmits(wrapper)?.at(-1)).toBe(false)
+    })
+
+    it('does not flag the times of a complete or raw row', () => {
+      const wrapper = mountEditor(['Mo800-1700', 'weird-legacy-entry'])
+      expect(wrapper.find('[data-test="duty-0-time-error"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="duty-1-time-error"]').exists()).toBe(false)
     })
 
     it('warns about a window of 5 minutes', () => {
