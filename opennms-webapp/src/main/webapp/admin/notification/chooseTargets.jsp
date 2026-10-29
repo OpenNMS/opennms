@@ -151,7 +151,7 @@
 
 
 <h2><%=(newPath.getName() != null ? "Editing path: "
-                            + newPath.getName() + "<br/>" : "")%></h2>
+                            + Encode.forHtml(newPath.getName()) + "<br/>" : "")%></h2>
 
 <form method="post" name="targets"
 action="admin/notification/destinationWizard" >

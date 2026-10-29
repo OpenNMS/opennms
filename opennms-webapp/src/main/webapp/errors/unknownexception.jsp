@@ -169,39 +169,39 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   <table class="table table-sm table-bordered">
     <tr>
       <th>Locale</th>
-      <td><%=request.getLocale()%></td>
+      <td><%=Encode.forHtml(String.valueOf(request.getLocale()))%></td>
     </tr>
     <tr>
       <th>Method</th>
-      <td><%=request.getMethod()%></td>
+      <td><%=Encode.forHtml(request.getMethod())%></td>
     </tr>
     <tr>
       <th>Path Info</th>
-      <td><%=request.getPathInfo()%></td>
+      <td><%=Encode.forHtml(request.getPathInfo())%></td>
     </tr>
     <tr>
       <th>Path Info (translated)</th>
-      <td><%=request.getPathTranslated()%></td>
+      <td><%=Encode.forHtml(request.getPathTranslated())%></td>
     </tr>
     <tr>
       <th>Protocol</th>
-      <td><%=request.getProtocol()%></td>
+      <td><%=Encode.forHtml(request.getProtocol())%></td>
     </tr>
     <tr>
       <th>URI</th>
-      <td><%=request.getRequestURI()%></td>
+      <td><%=Encode.forHtml(request.getRequestURI())%></td>
     </tr>
     <tr>
       <th>URL</th>
-      <td><%=request.getRequestURL()%></td>
+      <td><%=Encode.forHtml(String.valueOf(request.getRequestURL()))%></td>
     </tr>
     <tr>
       <th>Scheme</th>
-      <td><%=request.getScheme()%></td>
+      <td><%=Encode.forHtml(request.getScheme())%></td>
     </tr>
     <tr>
       <th>Server Name</th>
-      <td><%=request.getServerName()%></td>
+      <td><%=Encode.forHtml(request.getServerName())%></td>
     </tr>
     <tr>
       <th>Server Port</th>
@@ -241,7 +241,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
     </tr>
     <tr>
       <th>User Agent:</th>
-      <td><%=request.getHeader( "User-Agent" )%></td>
+      <td><%=Encode.forHtml(request.getHeader( "User-Agent" ))%></td>
     </tr>
   </table>
 </div> <!-- panel -->
