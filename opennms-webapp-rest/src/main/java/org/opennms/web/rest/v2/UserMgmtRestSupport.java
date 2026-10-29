@@ -49,6 +49,7 @@ import org.opennms.netmgt.config.api.UserMgmtStore;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
+import org.hibernate.SessionFactory;
 import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,14 +57,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * Shared plumbing for the v2 user-management services (users, groups, security roles, on-call roles):
- * the admin and store-mode checks, the write lock with its after-commit manager expiry, the destination path check, the
- * ETag / If-Match handling, and the translation of exceptions to HTTP errors.
+ * the admin and store-mode checks, the write lock with its after-commit manager expiry, the deferred-constraint check
+ * before the commit, the destination path check, the ETag / If-Match handling, and the translation of exceptions to
+ * HTTP errors.
  *
  * Every error is thrown, never returned as a Response, so that the surrounding transaction rolls back.
  */
@@ -86,6 +89,9 @@ public class UserMgmtRestSupport {
 
     @Autowired
     private UserMgmtManagers m_managers;
+
+    @Autowired
+    private SessionFactory m_sessionFactory;
 
     /** The destination paths that notifd sends to. */
     static final Callable<Collection<Path>> NOTIFD_DESTINATION_PATHS = () -> {
@@ -131,6 +137,24 @@ public class UserMgmtRestSupport {
             public void afterCommit() {
                 m_managers.expireAll();
             }
+        });
+    }
+
+    /**
+     * Writes out the pending changes and checks the deferred constraints now ({@code uk_user_contacts_user_type},
+     * {@code uk_group_members_group_user}), so that a violation is thrown here, inside the service method, where
+     * {@link #translate} turns it into an HTTP error, and not by the commit after the method returns, which would be
+     * a 500. Call it after a write's last change: the constraints stay immediate for the rest of the transaction.
+     * <p>
+     * In READ COMMITTED, PostgreSQL raises neither a deadlock nor a serialization failure at COMMIT itself, so after
+     * this the commit can only fail for connection-level reasons.
+     */
+    public void flushAndCheckConstraints() {
+        // the template translates Hibernate's exceptions, e.g. a unique violation to DataIntegrityViolationException
+        new HibernateTemplate(m_sessionFactory).execute(session -> {
+            session.flush();
+            session.createNativeQuery("SET CONSTRAINTS ALL IMMEDIATE").executeUpdate();
+            return null;
         });
     }
 

@@ -130,7 +130,7 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
             UserMgmtValidation.checkFreeText(owner(name), "description", dto.getDescription(), null);
             final SecurityRole role = new SecurityRole(name, StringUtils.trimToNull(dto.getDescription()));
             m_securityRoleDao.saveOrUpdate(role);
-            m_securityRoleDao.flush();
+            m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.security_roles, role.getId());
             LOG.info("Security role {} created by {}", name, UserMgmtValidation.principal(securityContext));
             return Response.status(Status.CREATED).entity(toDto(role, null, version)).tag(m_support.etag(version)).build();
@@ -166,7 +166,7 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
                 role.setDescription(StringUtils.trimToNull(dto.getDescription()));
             }
             m_securityRoleDao.saveOrUpdate(role);
-            m_securityRoleDao.flush();
+            m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.security_roles, role.getId());
             return Response.ok(toDto(role, null, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
@@ -197,7 +197,7 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
                         + "; remove it from them first.");
             }
             m_securityRoleDao.delete(role);
-            m_securityRoleDao.flush();
+            m_support.flushAndCheckConstraints();
             LOG.info("Security role {} deleted by {}", name, UserMgmtValidation.principal(securityContext));
             return Response.noContent().build();
         } catch (final Exception e) {

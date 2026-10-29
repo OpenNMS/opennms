@@ -149,7 +149,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
             final OnCallRole role = new OnCallRole(name, loadGroup(dto.getMembershipGroup()), loadSupervisor(dto.getSupervisor()));
             applyDto(role, dto, false);
             m_onCallRoleDao.saveOrUpdate(role);
-            m_onCallRoleDao.flush();
+            m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.oncall_roles, role.getId());
             LOG.info("On-call role {} created by {}", name, UserMgmtValidation.principal(securityContext));
             return Response.status(Status.CREATED).entity(toDto(role, version)).tag(m_support.etag(version)).build();
@@ -183,7 +183,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
             }
             applyDto(role, dto, !previousGroupId.equals(role.getMembershipGroup().getId()));
             m_onCallRoleDao.saveOrUpdate(role);
-            m_onCallRoleDao.flush();
+            m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.oncall_roles, role.getId());
             return Response.ok(toDto(role, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
@@ -217,7 +217,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
             // destination paths refer to roles by name and are not updated, as for group renames and the JSP page
             role.setName(newName);
             m_onCallRoleDao.saveOrUpdate(role);
-            m_onCallRoleDao.flush();
+            m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.oncall_roles, role.getId());
             LOG.info("On-call role {} renamed to {} by {}", name, newName, UserMgmtValidation.principal(securityContext));
             return Response.ok(toDto(role, version)).tag(m_support.etag(version)).build();
@@ -240,7 +240,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                 m_support.checkNotDestinationPathTarget("On-call role " + name, name);
             }
             m_onCallRoleDao.delete(role);
-            m_onCallRoleDao.flush();
+            m_support.flushAndCheckConstraints();
             LOG.info("On-call role {} deleted by {}", name, UserMgmtValidation.principal(securityContext));
             return Response.noContent().build();
         } catch (final Exception e) {

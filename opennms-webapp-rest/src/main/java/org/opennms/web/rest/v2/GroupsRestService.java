@@ -141,7 +141,7 @@ public class GroupsRestService implements GroupsRestApi {
             final UserGroup group = new UserGroup(name);
             applyDto(group, dto, members);
             m_userGroupDao.saveOrUpdate(group);
-            m_userGroupDao.flush();
+            m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.groups, group.getId());
             LOG.info("Group {} created by {}", name, UserMgmtValidation.principal(securityContext));
             return Response.status(Status.CREATED).entity(toDto(group, version)).tag(m_support.etag(version)).build();
@@ -168,7 +168,7 @@ public class GroupsRestService implements GroupsRestApi {
             final List<UserAccount> members = validateDtoFields(dto, group, name);
             applyDto(group, dto, members);
             m_userGroupDao.saveOrUpdate(group);
-            m_userGroupDao.flush();
+            m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.groups, group.getId());
             return Response.ok(toDto(group, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
@@ -209,6 +209,7 @@ public class GroupsRestService implements GroupsRestApi {
             m_userGroupDao.saveOrUpdate(group);
             m_userGroupDao.flush();
             m_groupService.moveCategoryAuthorizations(name, newName);
+            m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.groups, group.getId());
             LOG.info("Group {} renamed to {} by {}", name, newName, UserMgmtValidation.principal(securityContext));
             return Response.ok(toDto(group, version)).tag(m_support.etag(version)).build();
@@ -242,6 +243,7 @@ public class GroupsRestService implements GroupsRestApi {
             m_userGroupDao.flush();
             // without this, a future group reusing the name would silently inherit the old authorizations
             m_groupService.clearCategoryAuthorizations(name);
+            m_support.flushAndCheckConstraints();
             LOG.info("Group {} deleted by {}", name, UserMgmtValidation.principal(securityContext));
             return Response.noContent().build();
         } catch (final Exception e) {

@@ -33,8 +33,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.sql.DataSource;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;
 import org.json.JSONArray;
@@ -59,12 +61,14 @@ import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.netmgt.model.usermgmt.UserGroup;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -348,6 +352,36 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals(stored, groupColumn("longcomment", "comments"));
         assertEquals(edited, rowVersion("longcomment"));
         sendRequest(DELETE, "/groups/longcomment", 204);
+    }
+
+    /**
+     * The unique (group, member) constraint is deferred, so a duplicate member is checked at commit, after the service method has returned, where a violation would be a 500.
+     * {@link UserMgmtRestSupport#flushAndCheckConstraints}, which every write calls after its last change, checks it
+     * inside the method instead, so that {@link UserMgmtRestSupport#translate} answers 409.
+     */
+    @Test
+    public void testDeferredDuplicateMemberIsReportedBeforeTheCommit() throws Exception {
+        createGroup("dupmember", g -> g.getMembers().add(m_userAccountDao.findByUsername("admin")));
+        final UserMgmtRestSupport support = new UserMgmtRestSupport();
+        ReflectionTestUtils.setField(support, "m_sessionFactory", m_sessionFactory);
+        final RuntimeException translated = new TransactionTemplate(m_transactionManager).execute(status -> {
+            status.setRollbackOnly();
+            final Session session = m_sessionFactory.getCurrentSession();
+            session.createNativeQuery("INSERT INTO group_members (group_id, user_id, position) SELECT g.id, u.id, 1 FROM groups g, users u"
+                    + " WHERE g.name = 'dupmember' AND u.username = 'admin'").executeUpdate();
+            // deferred: neither the statement nor a flush reports the duplicate
+            session.flush();
+            try {
+                support.flushAndCheckConstraints();
+                return null;
+            } catch (final RuntimeException e) {
+                assertTrue(e.toString(), e instanceof DataIntegrityViolationException);
+                return support.translate("save", e);
+            }
+        });
+        assertNotNull("the duplicate was not reported", translated);
+        assertEquals(409, ((WebApplicationException) translated).getResponse().getStatus());
+        assertEquals("The change conflicts with related data. Reload and try again.", ((WebApplicationException) translated).getResponse().getEntity());
     }
 
     /** A fresh database, so that the number of groups is known. */

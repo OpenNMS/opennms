@@ -170,7 +170,7 @@ public class UsersRestService implements UsersRestApi {
             user.setPasswordSalted(true);
             applyDto(user, request, roles);
             m_userAccountDao.saveOrUpdate(user);
-            m_userAccountDao.flush();
+            m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.users, user.getId());
             LOG.info("User {} created by {}", userId, UserMgmtValidation.principal(securityContext));
             return Response.status(Status.CREATED).entity(toDto(user, version)).tag(m_support.etag(version)).build();
@@ -205,7 +205,7 @@ public class UsersRestService implements UsersRestApi {
             }
             applyDto(user, dto, roles);
             m_userAccountDao.saveOrUpdate(user);
-            m_userAccountDao.flush();
+            m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.users, user.getId());
             return Response.ok(toDto(user, version)).tag(m_support.etag(version)).build();
         } catch (final Exception e) {
@@ -228,7 +228,7 @@ public class UsersRestService implements UsersRestApi {
             user.setPasswordHash(UserManager.hashPassword(body.getPassword()));
             user.setPasswordSalted(true);
             m_userAccountDao.saveOrUpdate(user);
-            m_userAccountDao.flush();
+            m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.users, user.getId());
             LOG.info("Password changed for user {} by {}", userId, UserMgmtValidation.principal(securityContext));
             return Response.noContent().tag(m_support.etag(version)).build();
@@ -267,7 +267,7 @@ public class UsersRestService implements UsersRestApi {
             // memberships, supervisors and schedules reference the id and follow the new name
             user.setUsername(newUserId);
             m_userAccountDao.saveOrUpdate(user);
-            m_userAccountDao.flush();
+            m_support.flushAndCheckConstraints();
             final int version = m_support.version(VersionedTable.users, user.getId());
             LOG.info("User {} renamed to {} by {}", userId, newUserId, UserMgmtValidation.principal(securityContext));
             return Response.ok(toDto(user, version)).tag(m_support.etag(version)).build();
@@ -304,7 +304,7 @@ public class UsersRestService implements UsersRestApi {
                 m_support.checkNotDestinationPathTarget("User " + userId, userId);
             }
             m_userAccountDao.delete(user);
-            m_userAccountDao.flush();
+            m_support.flushAndCheckConstraints();
             LOG.info("User {} deleted by {}", userId, UserMgmtValidation.principal(securityContext));
             return Response.noContent().build();
         } catch (final Exception e) {

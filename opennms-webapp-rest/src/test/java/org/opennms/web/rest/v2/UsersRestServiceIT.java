@@ -35,8 +35,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;
 import org.json.JSONArray;
@@ -64,12 +66,14 @@ import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.netmgt.model.usermgmt.UserGroup;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -301,6 +305,36 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final MockHttpServletResponse response = exec(POST, "/users",
                 "{\"userId\":\" spaced \",\"password\":\"pw\",\"fullName\":\"" + "x".repeat(257) + "\"}", null, 400);
         assertEquals("User \"spaced\": the full name is longer than 256 characters.", response.getContentAsString());
+    }
+
+    /**
+     * The unique (user, contact type) constraint is deferred, so a second contact of a type is checked at commit, after the service method has returned, where a violation would be a 500.
+     * {@link UserMgmtRestSupport#flushAndCheckConstraints}, which every write calls after its last change, checks it
+     * inside the method instead, so that {@link UserMgmtRestSupport#translate} answers 409.
+     */
+    @Test
+    public void testDeferredDuplicateContactIsReportedBeforeTheCommit() throws Exception {
+        createUser("dupcontact", u -> u.setContact(ContactType.email, "a@example.org", null));
+        final UserMgmtRestSupport support = new UserMgmtRestSupport();
+        ReflectionTestUtils.setField(support, "m_sessionFactory", m_sessionFactory);
+        final RuntimeException translated = new TransactionTemplate(m_transactionManager).execute(status -> {
+            status.setRollbackOnly();
+            final Session session = m_sessionFactory.getCurrentSession();
+            session.createNativeQuery("INSERT INTO user_contacts (id, user_id, contact_type, info) SELECT nextval('user_contacts_id_seq'), u.id, 'email', 'b@example.org'"
+                    + " FROM users u WHERE u.username = 'dupcontact'").executeUpdate();
+            // deferred: neither the statement nor a flush reports the duplicate
+            session.flush();
+            try {
+                support.flushAndCheckConstraints();
+                return null;
+            } catch (final RuntimeException e) {
+                assertTrue(e.toString(), e instanceof DataIntegrityViolationException);
+                return support.translate("save", e);
+            }
+        });
+        assertNotNull("the duplicate was not reported", translated);
+        assertEquals(409, ((WebApplicationException) translated).getResponse().getStatus());
+        assertEquals("The change conflicts with related data. Reload and try again.", ((WebApplicationException) translated).getResponse().getEntity());
     }
 
     /** A fresh database, so that the number of users is known. */
