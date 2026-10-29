@@ -102,12 +102,14 @@ public class UserMgmtXssIT extends AbstractRestIT {
 
     private static final String DESCRIPTION = "<script>window.__xss=3</script> \"quoted\" 'single' <img src=x onerror=window.__xss=4>";
 
-    // A destination path name with markup, and with quotes that break out of a JS string. The wizard refuses spaces in
-    // a path name, and the API refuses / \ and %, so the element has no spaces. It has no ; either, which the path of
-    // the API request to read and delete it could not hold.
+    // A destination path name with tags, an ampersand, both quotes and JS-string breakouts. The wizard refuses spaces
+    // in a path name and the API refuses /, \, % and control characters, so the tags have no attributes. "&amp" without
+    // the ; is still a character reference to a browser, followed by a character that is neither = nor a letter or
+    // digit: a page that decodes the name once more shows "&", one that encodes it twice shows "&amp;amp", and a page
+    // that does not encode it loses the tags. The name has no ; or +, so the path of an API request holds it as is.
     private static final String DESTINATION_PATH_PREFIX = "xssp";
     private static final String DESTINATION_PATH = DESTINATION_PATH_PREFIX
-            + "<img/src='x'/onerror=window.__xss=9>'-(window.__xss=10)-'\"-(window.__xss=11)-\"";
+            + "&<u>&amp'-(window.__xss=10)-'\"-(window.__xss=11)-\"<b>x";
 
     // the shared objects are created by the first test and removed after the last one
     private static boolean fixturesAttempted;
@@ -211,12 +213,17 @@ public class UserMgmtXssIT extends AbstractRestIT {
 
     @AfterClass
     public static void removeFixtures() throws SQLException {
-        if (fixturesAttempted) {
-            cleanUp();
-            deleteDestinationPaths();
-        }
+        // a test ran, so RestAssured points at the stack; the paths go even if the other objects could not
+        final boolean testsRan = fixturesAttempted;
         fixturesAttempted = false;
         fixtureError = null;
+        if (testsRan) {
+            try {
+                cleanUp();
+            } finally {
+                deleteDestinationPaths();
+            }
+        }
     }
 
     /** Removes every object of the test that exists; an object that does not exist is not an error. */
