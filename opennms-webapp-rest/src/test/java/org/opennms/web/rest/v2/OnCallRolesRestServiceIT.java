@@ -437,8 +437,7 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("text", description("rota10"));
         exec(PUT, "/oncall-roles/rota10", "{\"description\":\"\"}", null, 200);
         assertNull(description("rota10"));
-        final JSONObject json = new JSONObject(getJson("/oncall-roles/rota10", 200));
-        assertTrue(!json.has("description") || json.isNull("description"));
+        assertTrue(new JSONObject(getJson("/oncall-roles/rota10", 200)).isNull("description"));
     }
 
     @Test
