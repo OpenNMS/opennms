@@ -1,3 +1,7 @@
+NOTE: Debian does not install UFW by default.
+To use the following commands, install it with `sudo apt install ufw` and enable it with `sudo ufw enable`.
+Allow SSH (`sudo ufw allow ssh`) before you enable UFW on a remote system, or you might lose your connection.
+
 .Enable Masquerade to allow port forwarding
 [source, console]
 sudo vi /etc/ufw/before.rules
