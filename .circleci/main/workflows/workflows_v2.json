@@ -6,7 +6,8 @@
                 "build-debian",
                 "build-rpm",
                 "integration-test",
-                "oci"
+                "oci",
+                "select-tests"
             ]
         },
         "smoke": {
@@ -19,7 +20,8 @@
                 "integration-test",
                 "smoke-test-core",
                 "smoke-test-minion",
-                "smoke-test-sentinel"
+                "smoke-test-sentinel",
+                "select-tests"
             ]
         },
         "rpms": {
@@ -593,6 +595,24 @@
             "requires": [
                 "integration-test-with-coverage"
             ]
+        },
+        "select-tests": {
+            "context": [
+                "CircleCI",
+                "anthropic-api"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "develop",
+                        "/^master-.*/",
+                        "/^release-.*/",
+                        "/^foundation-.*/",
+                        "/^merge-.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
         }
     }
 }
