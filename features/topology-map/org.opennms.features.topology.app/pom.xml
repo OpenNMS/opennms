@@ -40,6 +40,10 @@
                     <excludes>
                         <exclude>**/*GwtTest.java</exclude>
                     </excludes>
+                    <systemPropertyVariables>
+                        <!-- verified against the jsoup shaded into jinjava by JinjavaHtmlFiltersTest -->
+                        <jsoupVersion>${jsoupVersion}</jsoupVersion>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>
