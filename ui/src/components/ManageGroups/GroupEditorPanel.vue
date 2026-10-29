@@ -22,104 +22,149 @@
         role="alert"
         data-test="save-error"
       >{{ errorText }}</div>
-      <div class="form-column">
-        <FormField
-          v-if="!isEditing"
-          label="Group Name"
-          for="group-editor-name"
-          required
-          :error="nameProblem || undefined"
-        >
-          <OnmsInputText
-            id="group-editor-name"
-            v-model="name"
-            :invalid="!!nameProblem"
-            data-test="group-name-input"
-          />
-        </FormField>
-        <FormField
-          label="Comments"
-          for="group-editor-comments"
-          :error="commentsProblem || undefined"
-        >
-          <OnmsInputText
-            id="group-editor-comments"
-            v-model="comments"
-            :invalid="!!commentsProblem"
-            data-test="group-comments-input"
-          />
-        </FormField>
+      <OnmsTabs v-model:value="activeTab" data-test="group-editor-tabs">
+        <OnmsTabList>
+          <OnmsTab value="group" data-test="tab-group">Group</OnmsTab>
+          <OnmsTab value="duty" data-test="tab-duty-schedules">Duty Schedules</OnmsTab>
+          <OnmsTab value="categories" data-test="tab-categories">Categories</OnmsTab>
+        </OnmsTabList>
+        <OnmsTabPanels>
+          <OnmsTabPanel value="group">
+            <div class="form-column">
+              <FormField
+                v-if="!isEditing"
+                label="Group Name"
+                for="group-editor-name"
+                required
+                :error="nameProblem || undefined"
+              >
+                <OnmsInputText
+                  id="group-editor-name"
+                  v-model="name"
+                  :invalid="!!nameProblem"
+                  data-test="group-name-input"
+                />
+              </FormField>
+              <FormField
+                label="Comments"
+                for="group-editor-comments"
+                :error="commentsProblem || undefined"
+              >
+                <OnmsTextarea
+                  id="group-editor-comments"
+                  v-model="comments"
+                  :rows="3"
+                  autoResize
+                  fluid
+                  :invalid="!!commentsProblem"
+                  data-test="group-comments-input"
+                />
+              </FormField>
 
-        <div class="members-section">
-          <div class="members-header">
-            <span class="members-title">Members</span>
-            <span class="members-hint">Order matters: it is the notification escalation order.</span>
-          </div>
-          <div class="add-member-row">
+              <div class="members-section">
+                <div class="members-header">
+                  <span class="members-title">Members</span>
+                  <span class="members-hint">Order matters: it is the notification escalation order.</span>
+                </div>
+                <div class="add-member-row">
+                  <FormField
+                    label="Add users"
+                    for="group-editor-add-member"
+                  >
+                    <OnmsMultiSelect
+                      v-model="membersToAdd"
+                      inputId="group-editor-add-member"
+                      :options="addableUsers"
+                      display="chip"
+                      :showToggleAll="false"
+                      filter
+                      fluid
+                      data-test="add-member-select"
+                    />
+                  </FormField>
+                  <OnmsButton
+                    variant="outlined"
+                    label="Add"
+                    data-test="add-member-button"
+                    :disabled="!membersToAdd.length"
+                    @click="addMembers"
+                  />
+                </div>
+                <ul
+                  v-if="members.length"
+                  class="member-list"
+                  data-test="member-list"
+                >
+                  <li
+                    v-for="(member, index) in members"
+                    :key="member"
+                    class="member-row"
+                  >
+                    <span class="member-order">{{ index + 1 }}.</span>
+                    <span class="member-name">{{ member }}</span>
+                    <span class="member-actions">
+                      <OnmsIconButton
+                        :icon="KeyboardArrowUp"
+                        :aria-label="`Move ${member} up`"
+                        data-test="move-up-button"
+                        :disabled="index === 0"
+                        @click="move(index, -1)"
+                      />
+                      <OnmsIconButton
+                        :icon="KeyboardArrowDown"
+                        :aria-label="`Move ${member} down`"
+                        data-test="move-down-button"
+                        :disabled="index === members.length - 1"
+                        @click="move(index, 1)"
+                      />
+                      <OnmsIconButton
+                        severity="danger"
+                        :icon="Cancel"
+                        :aria-label="`Remove ${member}`"
+                        data-test="remove-member-button"
+                        @click="members.splice(index, 1)"
+                      />
+                    </span>
+                  </li>
+                </ul>
+                <p
+                  v-else
+                  class="no-members"
+                >No members yet.</p>
+              </div>
+            </div>
+          </OnmsTabPanel>
+          <OnmsTabPanel value="duty">
             <FormField
-              label="Add user"
-              for="group-editor-add-member"
+              label="Duty Schedules"
+              hint="Pick the days and the begin/end times for each coverage window."
             >
-              <OnmsSelect
-                v-model="memberToAdd"
-                labelId="group-editor-add-member"
-                :options="addableUsers"
-                filter
-                data-test="add-member-select"
+              <DutyScheduleEditor
+                v-model="dutySchedules"
+                v-model:valid="dutyValid"
               />
             </FormField>
-            <OnmsIconButton
-              variant="outlined"
-              :icon="Add"
-              aria-label="Add member"
-              data-test="add-member-button"
-              :disabled="!memberToAdd"
-              @click="addMember"
-            />
-          </div>
-          <ul
-            v-if="members.length"
-            class="member-list"
-            data-test="member-list"
-          >
-            <li
-              v-for="(member, index) in members"
-              :key="member"
-              class="member-row"
+          </OnmsTabPanel>
+          <OnmsTabPanel value="categories">
+            <FormField
+              label="Categories"
+              for="group-editor-categories"
+              hint="Used when ACLs are enabled (org.opennms.web.aclsEnabled): members of this group see only nodes in these categories."
             >
-              <span class="member-order">{{ index + 1 }}.</span>
-              <span class="member-name">{{ member }}</span>
-              <span class="member-actions">
-                <OnmsIconButton
-                  :icon="KeyboardArrowUp"
-                  :aria-label="`Move ${member} up`"
-                  data-test="move-up-button"
-                  :disabled="index === 0"
-                  @click="move(index, -1)"
-                />
-                <OnmsIconButton
-                  :icon="KeyboardArrowDown"
-                  :aria-label="`Move ${member} down`"
-                  data-test="move-down-button"
-                  :disabled="index === members.length - 1"
-                  @click="move(index, 1)"
-                />
-                <OnmsIconButton
-                  severity="danger"
-                  :icon="Cancel"
-                  :aria-label="`Remove ${member}`"
-                  data-test="remove-member-button"
-                  @click="members.splice(index, 1)"
-                />
-              </span>
-            </li>
-          </ul>
-          <p
-            v-else
-            class="no-members"
-          >No members yet.</p>
-        </div>
-      </div>
+              <OnmsMultiSelect
+                v-model="categories"
+                inputId="group-editor-categories"
+                :options="store.availableCategories"
+                display="chip"
+                :showToggleAll="false"
+                filter
+                fluid
+                data-test="categories-select"
+              />
+            </FormField>
+          </OnmsTabPanel>
+        </OnmsTabPanels>
+      </OnmsTabs>
     </div>
     <div class="panel-footer">
       <OnmsButton
@@ -141,12 +186,24 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import {
+  OnmsButton,
+  OnmsIcon,
+  OnmsIconButton,
+  OnmsInputText,
+  OnmsMultiSelect,
+  OnmsTab,
+  OnmsTabList,
+  OnmsTabPanel,
+  OnmsTabPanels,
+  OnmsTabs,
+  OnmsTextarea
+} from '@opennms/onms-ui'
 
+import DutyScheduleEditor from '@/components/Common/DutyScheduleEditor.vue'
 import FormField from '@/components/Common/FormField.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
-import Add from '@opennms/onms-ui/icons/action/Add.vue'
 import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import KeyboardArrowDown from '@opennms/onms-ui/icons/hardware/KeyboardArrowDown.vue'
 import KeyboardArrowUp from '@opennms/onms-ui/icons/hardware/KeyboardArrowUp.vue'
@@ -173,9 +230,15 @@ const { reportWrite } = useAdminWriteFeedback()
 const name = ref('')
 const comments = ref('')
 const members = ref<string[]>([])
-const memberToAdd = ref<string | null>(null)
+const membersToAdd = ref<string[]>([])
+const dutySchedules = ref<string[]>([])
+const categories = ref<string[]>([])
+const dutyValid = ref(true)
 const saving = ref(false)
 const errorText = ref('')
+
+type EditorTab = 'group' | 'duty' | 'categories'
+const activeTab = ref<EditorTab>('group')
 
 const isEditing = computed(() => props.group !== null)
 const originalName = computed(() => props.group?.name ?? '')
@@ -190,31 +253,36 @@ const commentsProblem = computed(() =>
   comments.value.trim() === (props.group?.comments ?? '').trim() ? null : validateAdminComments(comments.value))
 
 const isValid = computed(() =>
-  (isEditing.value || !!name.value.trim()) && !nameProblem.value && !commentsProblem.value)
+  dutyValid.value && (isEditing.value || !!name.value.trim()) && !nameProblem.value && !commentsProblem.value)
 
 watch(
   () => props.group,
   () => {
     errorText.value = ''
-    memberToAdd.value = null
+    activeTab.value = 'group'
+    membersToAdd.value = []
     if (props.group) {
       name.value = props.group.name
       comments.value = props.group.comments ?? ''
       members.value = [...(props.group.users ?? [])]
+      dutySchedules.value = [...(props.group.dutySchedules ?? [])]
+      categories.value = [...(props.group.categories ?? [])]
     } else {
       name.value = ''
       comments.value = ''
       members.value = []
+      dutySchedules.value = []
+      categories.value = []
     }
   },
   { immediate: true }
 )
 
-const addMember = () => {
-  if (memberToAdd.value && !members.value.includes(memberToAdd.value)) {
-    members.value.push(memberToAdd.value)
-  }
-  memberToAdd.value = null
+// the chosen users join the end of the list in the order the candidates are listed
+const addMembers = () => {
+  const chosen = store.memberCandidates.filter(u => membersToAdd.value.includes(u) && !members.value.includes(u))
+  members.value.push(...chosen)
+  membersToAdd.value = []
 }
 
 const move = (index: number, delta: number) => {
@@ -231,12 +299,17 @@ const move = (index: number, delta: number) => {
 const save = async () => {
   saving.value = true
   try {
-    // spread the original so fields this form doesn't expose (duty
-    // schedules) round-trip untouched; default-map is preserved server-side
+    // spread the original so a group that came without categories (absent means
+    // "leave alone") is not given an empty list unless the user chose some;
+    // default-map is preserved server-side
     const fields: ManagedGroupCreate = {
       name: isEditing.value ? originalName.value : name.value.trim(),
       comments: comments.value.trim(),
-      users: [...members.value]
+      users: [...members.value],
+      dutySchedules: dutySchedules.value.map(s => s.trim()).filter(Boolean)
+    }
+    if (props.group?.categories !== undefined || categories.value.length > 0 || !props.group) {
+      fields.categories = [...categories.value].sort()
     }
     const error = await withSpinner(() => props.group
       ? store.updateGroup({ ...props.group, ...fields })
@@ -303,7 +376,8 @@ const save = async () => {
   padding-top: 0.5rem;
 
   :deep(input),
-  :deep(.p-select) {
+  :deep(textarea),
+  :deep(.p-multiselect) {
     width: 100%;
   }
 }

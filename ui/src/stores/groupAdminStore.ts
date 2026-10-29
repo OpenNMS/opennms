@@ -30,6 +30,7 @@ import { ref } from 'vue'
 export const useGroupAdminStore = defineStore('groupAdminStore', () => {
   const groups = ref([] as ManagedGroup[])
   const memberCandidates = ref([] as string[])
+  const availableCategories = ref([] as string[])
   // why the list reload after the last successful write failed; '' when it succeeded.
   // The write itself still returns null, so the caller reports both.
   const reloadError = ref('')
@@ -66,6 +67,14 @@ export const useGroupAdminStore = defineStore('groupAdminStore', () => {
     return result
   }
 
+  const getAvailableCategories = async (): Promise<ValidationResult> => {
+    const result = await API.getAvailableGroupCategories()
+    if (result.success) {
+      availableCategories.value = result.payload ?? []
+    }
+    return result
+  }
+
   // After a write: a success reloads the list (and notes a failed reload in reloadError);
   // a stale write means the list on screen is out of date, so it reloads too and words
   // the stale message by whether that reload worked. The caller shows the result.
@@ -94,7 +103,7 @@ export const useGroupAdminStore = defineStore('groupAdminStore', () => {
 
   // fails with the message of the first read that failed
   const populate = async (): Promise<ValidationResult> => {
-    const results = await Promise.all([getGroups(), getMemberCandidates()])
+    const results = await Promise.all([getGroups(), getMemberCandidates(), getAvailableCategories()])
     return results.find(r => !r.success) ?? createSuccessResponse()
   }
 
@@ -105,9 +114,11 @@ export const useGroupAdminStore = defineStore('groupAdminStore', () => {
     openGroupEditor,
     closeGroupEditor,
     memberCandidates,
+    availableCategories,
     reloadError,
     getGroups,
     getMemberCandidates,
+    getAvailableCategories,
     createGroup,
     updateGroup,
     renameGroup,

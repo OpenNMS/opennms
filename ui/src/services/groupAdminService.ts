@@ -68,6 +68,16 @@ const getGroupMemberCandidates = async (): Promise<ValidationResultWithPayload<s
   }
 }
 
+// category picker options: the names of the categories a group can be limited to
+const getAvailableGroupCategories = async (): Promise<ValidationResultWithPayload<string[]>> => {
+  try {
+    const resp = await v2.get(`${endpoint}/available-categories`)
+    return createResultWithPayload(true, '', Array.isArray(resp.data) ? resp.data : [])
+  } catch (err: any) {
+    return createResultWithPayload<string[]>(false, errorMessage(err, 'Failed to load available categories.'))
+  }
+}
+
 const createManagedGroup = async (group: ManagedGroupCreate): Promise<AdminWriteError | null> => {
   try {
     await v2.post(endpoint, group)
@@ -110,6 +120,7 @@ const deleteManagedGroup = async (name: string, version: number): Promise<AdminW
 export {
   createManagedGroup,
   deleteManagedGroup,
+  getAvailableGroupCategories,
   getGroupMemberCandidates,
   getManagedGroups,
   renameManagedGroup,

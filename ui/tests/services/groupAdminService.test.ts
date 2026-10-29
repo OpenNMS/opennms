@@ -159,6 +159,27 @@ describe('groupAdminService reads', () => {
   })
 })
 
+describe('groupAdminService available categories', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('reads the category names as the payload', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ data: ['Routers', 'Servers'] })
+
+    expect(await svc.getAvailableGroupCategories()).toEqual({ success: true, message: '', payload: ['Routers', 'Servers'] })
+    expect(v2.get).toHaveBeenCalledWith('/groups/available-categories')
+  })
+
+  it('fails with the server text, else a default', async () => {
+    vi.mocked(v2.get).mockRejectedValue({ response: { status: 503, data: UNAVAILABLE }})
+    expect(await svc.getAvailableGroupCategories()).toEqual(expect.objectContaining({ success: false, message: UNAVAILABLE }))
+
+    vi.mocked(v2.get).mockRejectedValue(new Error('Network Error'))
+    expect(await svc.getAvailableGroupCategories()).toEqual(expect.objectContaining({ success: false, message: 'Failed to load available categories.' }))
+  })
+})
+
 describe('groupAdminService feedback', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -169,6 +190,7 @@ describe('groupAdminService feedback', () => {
     const calls = [
       () => svc.getManagedGroups(),
       () => svc.getGroupMemberCandidates(),
+      () => svc.getAvailableGroupCategories(),
       () => svc.createManagedGroup({ name: 'x' }),
       () => svc.updateManagedGroup({ name: 'x', version: 1 }),
       () => svc.renameManagedGroup('x', 'y', 1),

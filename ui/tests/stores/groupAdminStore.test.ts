@@ -18,6 +18,7 @@ vi.mock('@/services', () => ({
   default: {
     getManagedGroups: vi.fn(),
     getGroupMemberCandidates: vi.fn(),
+    getAvailableGroupCategories: vi.fn(),
     createManagedGroup: vi.fn(),
     updateManagedGroup: vi.fn(),
     renameManagedGroup: vi.fn(),
@@ -37,6 +38,7 @@ describe('useGroupAdminStore', () => {
     setActivePinia(createPinia())
     store = useGroupAdminStore()
     vi.clearAllMocks()
+    vi.mocked(API.getAvailableGroupCategories).mockResolvedValue(loaded([]))
   })
 
   afterEach(() => {
@@ -46,16 +48,30 @@ describe('useGroupAdminStore', () => {
   it('should start empty', () => {
     expect(store.groups).toEqual([])
     expect(store.memberCandidates).toEqual([])
+    expect(store.availableCategories).toEqual([])
   })
 
-  it('populate should load groups and member candidates', async () => {
+  it('populate should load groups, member candidates and available categories', async () => {
     vi.mocked(API.getManagedGroups).mockResolvedValue(loaded(mockGroups))
     vi.mocked(API.getGroupMemberCandidates).mockResolvedValue(loaded(['admin', 'first', 'second']))
+    vi.mocked(API.getAvailableGroupCategories).mockResolvedValue(loaded(['Routers', 'Servers']))
 
     expect(await store.populate()).toEqual(expect.objectContaining({ success: true }))
 
     expect(store.groups).toEqual(mockGroups)
     expect(store.memberCandidates).toEqual(['admin', 'first', 'second'])
+    expect(store.availableCategories).toEqual(['Routers', 'Servers'])
+  })
+
+  it('populate reports a failed category read and keeps the earlier categories', async () => {
+    vi.mocked(API.getManagedGroups).mockResolvedValue(loaded(mockGroups))
+    vi.mocked(API.getGroupMemberCandidates).mockResolvedValue(loaded(['admin']))
+    vi.mocked(API.getAvailableGroupCategories).mockResolvedValue(loaded(['Routers']))
+    await store.populate()
+
+    vi.mocked(API.getAvailableGroupCategories).mockResolvedValue(failed('Failed to load available categories.'))
+    expect(await store.populate()).toEqual(expect.objectContaining({ success: false, message: 'Failed to load available categories.' }))
+    expect(store.availableCategories).toEqual(['Routers'])
   })
 
   it('populate reports a failed read with its message', async () => {
