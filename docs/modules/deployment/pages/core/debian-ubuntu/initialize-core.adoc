@@ -40,10 +40,6 @@ sudo systemctl enable --now opennms
 
 .Allow connection to the web UI from your network
 
-NOTE: Debian does not install UFW by default.
-To use the following commands, install it with `sudo apt install ufw` and enable it with `sudo ufw enable`.
-Allow SSH (`sudo ufw allow ssh`) before you enable UFW on a remote system, or you might lose your connection.
-
 If you are using Uncomplicated Firewall (UFW) as your host firewall, you can allow access to the web user interface with the command:
 
 [source, console]
