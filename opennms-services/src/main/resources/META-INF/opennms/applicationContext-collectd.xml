@@ -21,7 +21,24 @@
 
     <bean id="daemon" class="org.opennms.netmgt.collectd.Collectd">
       <property name="eventIpcManager" ref="eventIpcManager"/>
+      <property name="metricRegistry" ref="collectdMetricRegistry"/>
     </bean>
+
+    <bean id="collectdMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+    <bean id="collectdMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
+      <constructor-arg ref="collectdMetricRegistry"/>
+    </bean>
+
+    <bean id="collectdMetricRegistryDomainedJmxReporterBuilder" factory-bean="collectdMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+      <constructor-arg value="org.opennms.netmgt.collectd"/>
+    </bean>
+
+    <bean id="collectdMetricRegistryJmxReporter"
+          factory-bean="collectdMetricRegistryDomainedJmxReporterBuilder"
+          factory-method="build"
+          init-method="start"
+          destroy-method="stop" />
 
     <bean id="collectionAgentFactory" class="org.opennms.netmgt.collectd.DefaultSnmpCollectionAgentFactory" />
     <onmsgi:service interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" ref="collectionAgentFactory" />
