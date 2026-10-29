@@ -41,7 +41,6 @@ import io.restassured.http.ContentType;
 /**
  * Verifies if exposing a GraphProvider will result in an exposed GraphContainerProvider
  */
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class GraphProviderIT extends OpenNMSSeleniumIT {
 
     private KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());

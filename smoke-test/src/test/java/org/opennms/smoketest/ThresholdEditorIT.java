@@ -30,7 +30,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.Select;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class ThresholdEditorIT extends OpenNMSSeleniumIT {
     @Before
     public void setUp() throws Exception {

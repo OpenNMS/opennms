@@ -30,7 +30,6 @@ import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -42,7 +41,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * 1. Verifies that the scheduled outage text is correctly displayed. See LTS-233.
  * 2. Verifies that special characters can be used in scheduled outage names. See LTS-234.
  */
-@org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
 public class ScheduledOutageIT extends OpenNMSSeleniumIT {
 
     @Before
@@ -170,19 +168,16 @@ public class ScheduledOutageIT extends OpenNMSSeleniumIT {
         }
     }
 
-    @Ignore("flapping")
     @Test
     public void testNormalOutageName() throws Exception {
         testCharactersInName("My-Outage-123");
     }
 
-    @Ignore("flapping")
     @Test
     public void testWeirdOutageName() throws Exception {
         testCharactersInName("M?y#O;u.t-a&amp;g&e 1 2 3*");
     }
 
-    @Ignore("flapping")
     @Test
     public void testOutageTypeChange() throws Exception {
         // Visit the scheduled outage page.
