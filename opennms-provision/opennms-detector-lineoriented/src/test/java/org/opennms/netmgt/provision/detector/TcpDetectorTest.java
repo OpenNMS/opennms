@@ -77,8 +77,7 @@ public class TcpDetectorTest {
 
     private void intializeNullBannerDetector() {
         setServiceName("TCP");
-        // Longer than the server's 500 ms read timeout: success depends on seeing the server close first.
-        setTimeout(2000);
+        setTimeout(500);
         setBanner(null);
 
         initializeDetector();
