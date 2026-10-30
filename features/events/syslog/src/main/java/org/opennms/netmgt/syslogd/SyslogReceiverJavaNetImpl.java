@@ -203,7 +203,7 @@ public class SyslogReceiverJavaNetImpl extends SinkDispatchingSyslogReceiver {
                 m_packetsReceived.mark();
 
                 // Create a metric for the Syslog packet size
-                packetSizeHistogram.update(length);
+                packetSizeHistogram.update(pkt.getLength());
 
                 final SyslogConnection connection = new SyslogConnection(pkt, true);
                 m_dispatcher.send(connection);
