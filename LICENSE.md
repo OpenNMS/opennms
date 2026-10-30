@@ -26,6 +26,14 @@ For more information contact:
     OpenNMS(R) Licensing <license@opennms.com>
     http://www.opennms.com/
 
+Documentation
+=============
+
+The documentation in the docs/ directory is Copyright (C) 2015-2026
+The OpenNMS Group, Inc. and is licensed under the Creative Commons
+Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0).
+See docs/LICENSE or https://creativecommons.org/licenses/by-sa/4.0/
+
 Special Cases
 =============
 
