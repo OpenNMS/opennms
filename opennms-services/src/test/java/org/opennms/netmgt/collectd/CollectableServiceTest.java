@@ -283,6 +283,31 @@ public class CollectableServiceTest {
     }
 
     /**
+     * An unexpected exception from a collector puts its type and message in the dataCollectionFailed
+     * reason, so the cause is visible without the DEBUG log. See NMS-12719.
+     */
+    @Test
+    public void failedEventReasonNamesTheUnexpectedCause() throws CollectionInitializationException, CollectionException, IOException {
+        EventIpcManager eventIpcManager = mock(EventIpcManager.class);
+        EventIpcManagerFactory.setIpcManager(eventIpcManager);
+
+        createCollectableService();
+        when(spec.collect(any())).thenThrow(new IllegalStateException("No resource type found with name 'nodeExporterNetstat'!"));
+
+        service.run();
+
+        ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(eventIpcManager, times(1)).sendNow(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
+        assertEquals(EventConstants.DATA_COLLECTION_FAILED_EVENT_UEI, event.getUei());
+        final String reason = event.getParm("reason").getValue().getContent();
+        assertTrue(reason, reason.endsWith(": IllegalStateException: No resource type found with name 'nodeExporterNetstat'!"));
+
+        // the failure is logged at ERROR by design
+        MockLogAppender.resetState();
+    }
+
+    /**
      * Only the transition emits, so a service that keeps collecting successfully stays quiet after the
      * first pass rather than sending an event per collection cycle.
      */
