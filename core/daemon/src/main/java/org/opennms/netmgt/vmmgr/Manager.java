@@ -81,7 +81,7 @@ public class Manager implements ManagerMBean {
      *  Register shutdown hook to handle SIGTERM signal for the process.
      */
     public void init() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> { LOG.info("got sigterm, stopping"); stop(); }));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> { LOG.info("got sigterm, stopping"); stop(LifecycleEvents.REASON_SIGNAL); }));
         doTestLoadLibraries();
     }
 
@@ -90,6 +90,10 @@ public class Manager implements ManagerMBean {
      */
     @Override
     public synchronized void stop() {
+        stop(LifecycleEvents.REASON_REQUESTED);
+    }
+
+    private synchronized void stop(final String reason) {
         if (stopInitiated.get()) {
             return;
         }
@@ -105,6 +109,8 @@ public class Manager implements ManagerMBean {
         } catch (Exception | ServiceConfigurationError e) {
             LOG.warn("Failed to signal lifecycle hooks during shutdown", e);
         }
+
+        LifecycleEvents.sendStopping(reason);
 
         Logging.withPrefix(LOG4J_CATEGORY, () -> {
             for (MBeanServer server : getMBeanServers()) {
@@ -135,7 +141,7 @@ public class Manager implements ManagerMBean {
 
     public synchronized void stop(int processExitCode) {
         exitCode.set(processExitCode);
-        stop();
+        stop(processExitCode == 0 ? LifecycleEvents.REASON_REQUESTED : LifecycleEvents.REASON_STARTUP_FAILED);
     }
 
     private void stop(MBeanServer server) {
