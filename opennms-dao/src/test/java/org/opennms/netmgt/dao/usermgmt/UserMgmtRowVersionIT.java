@@ -631,6 +631,25 @@ public class UserMgmtRowVersionIT implements InitializingBean {
     }
 
     @Test
+    public void testMovingACategoryAuthorizationBumpsBothGroups() {
+        final int ops = createGroup("ops");
+        final int dev = createGroup("dev");
+        final int other = createGroup("other");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        final int opsBefore = version(VersionedTable.groups, ops);
+        final int devBefore = version(VersionedTable.groups, dev);
+        final int otherBefore = version(VersionedTable.groups, other);
+
+        // the old group loses the authorization and the new one gains it
+        assertEquals(1, update("UPDATE category_group SET groupid = ? WHERE categoryid = ? AND groupid = ?", "dev", category, "ops"));
+
+        assertBumped("ops", opsBefore, VersionedTable.groups, ops);
+        assertBumped("dev", devBefore, VersionedTable.groups, dev);
+        assertEquals(otherBefore, version(VersionedTable.groups, other));
+    }
+
+    @Test
     public void testCategoryAuthorizationForUnknownGroupIsNoOp() {
         final int group = createGroup("ops");
         final int category = createCategory(9001, "Edge");
@@ -701,6 +720,43 @@ public class UserMgmtRowVersionIT implements InitializingBean {
             assertEquals(1, delete.get(30, TimeUnit.SECONDS).intValue());
             assertEquals("ops row while the category delete waits for the groups counter", "not blocked", groupRow.get());
             assertEquals("authorization row while the category delete waits for the groups counter", "not blocked", authorizationRow.get());
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    @Test
+    public void testCategoryDeleteTakesTheCountersBeforeTheCategoryRow() throws Exception {
+        // B holds the groups counter. A deletes a category: it must wait for the counters before it locks the
+        // categories row. While A waits, C must be able to take the key share lock that the foreign key check of a
+        // category_group insert takes, as a v2 write holding the counters would; with the categories row locked
+        // first, C times out, and that v2 write would deadlock with A.
+        createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        final ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            final AtomicReference<String> categoryRow = new AtomicReference<>();
+            final Future<Integer> delete = m_tx.execute(b -> {
+                m_sessionFactory.getCurrentSession().doWork(connection -> {
+                    try (java.sql.Statement statement = connection.createStatement()) {
+                        statement.executeQuery("SELECT version FROM usermgmt_version WHERE name = 'groups' FOR UPDATE").close();
+                    } catch (final java.sql.SQLException e) {
+                        throw new IllegalStateException(e);
+                    }
+                });
+                final Future<Integer> a = executor.submit(() -> update("DELETE FROM categories WHERE categoryid = ?", category));
+                try {
+                    waitUntilAnotherBackendWaitsForALock();
+                    executor.submit(() -> categoryRow.set(tryLock("SELECT 1 FROM categories WHERE categoryid = " + category + " FOR KEY SHARE"))).get(30, TimeUnit.SECONDS);
+                } catch (final Exception e) {
+                    a.cancel(true);
+                    throw new IllegalStateException(e);
+                }
+                return a; // B commits on return and releases the groups counter
+            });
+            assertEquals(1, delete.get(30, TimeUnit.SECONDS).intValue());
+            assertEquals("categories row while the category delete waits for the counters", "not blocked", categoryRow.get());
         } finally {
             executor.shutdownNow();
         }

@@ -923,4 +923,28 @@ DROP FUNCTION IF EXISTS usermgmt_lock_for_category_group();
         </rollback>
     </changeSet>
 
+    <!-- Deleting a category locks its categories row before the cascade reaches category_group, whose statement
+         trigger then waits for the usermgmt_version counters. A v2 group write holds those counters (lockAll()) and,
+         when it authorizes the group for that same category, inserts a category_group row whose foreign key check
+         waits for the categories row: a deadlock. Taking the counters, in the lockAll() order, before any categories
+         row is locked gives the delete the same order as the writers. Only a delete needs it: an update of a category
+         keeps its key, so it does not conflict with the foreign key check. -->
+    <changeSet author="stheleman" id="37.0.0-categories-lock-versions">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1">SELECT count(*) FROM pg_trigger WHERE tgname = 'categories_lock_versions' AND tgrelid = 'categories'::regclass</sqlCheck>
+            </not>
+        </preConditions>
+
+        <sql>
+CREATE TRIGGER categories_lock_versions BEFORE DELETE ON categories FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_lock_for_category_group();
+        </sql>
+
+        <rollback>
+            <sql>
+DROP TRIGGER IF EXISTS categories_lock_versions ON categories;
+            </sql>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
