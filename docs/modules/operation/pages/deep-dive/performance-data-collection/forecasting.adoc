@@ -119,23 +119,29 @@ The Gaussian-residual approximation also assumes the model's errors are roughly 
 Highly bursty metrics can violate that assumption and produce bounds that are too tight in calm periods or too loose during spikes.
 ====
 
-If the in-sample residuals are all zero (typical for a perfectly flat metric) sigma is zero, the bounds collapse onto the fit line, and a banner is shown explaining this.
+If the in-sample residuals are all zero (typical for a perfectly flat metric) sigma is zero and the bounds collapse onto the fit line, while the forecast itself still renders.
 
 == Limitations and warnings
 
-The forecast page surfaces a yellow banner above the graph when one of the following conditions is detected:
+The forecast page surfaces a yellow banner above the graph when one of the following conditions is detected.
+The historical data line still renders; the banner explains why the forecast overlay is missing or degenerate.
 
 [cols="1,3"]
 |===
 | Condition | What it means
 
+| Could not load data for the selected metric
+| The measurements query returned no data.
+This commonly happens when the graph is new, has gaps, or the history window extends before collection started.
+Widen the *Training Start* window or pick a different metric.
+
 | Forecast could not be produced
-| The selected history window has fewer than two usable samples.
-This commonly happens when the graph is new, has gaps, or the window extends before collection started.
+| The response has no `HWFit` column, usually because the selected training window does not have enough historical data.
 
 | Forecast produced no valid values
-| {page-component-title} ran the filter pipeline but every output sample is `NaN`.
+| The filter pipeline ran but every fit sample is `NaN`.
 Typical cause: the upstream `Chomp` and `Outlier` filters removed too many points.
+A metric that reaches zero within its season is also reported here, because the multiplicative Holt-Winters model cannot forecast through a zero.
 
 | Confidence bounds have zero width
 | The in-sample residuals had no variance, so the upper and lower bounds coincide with the fit line.

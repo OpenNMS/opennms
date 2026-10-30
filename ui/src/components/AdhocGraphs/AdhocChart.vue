@@ -103,7 +103,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import GraphDataTable from '@/components/Resources/GraphDataTable.vue'
 import HtmlLegendPlugin from '@/components/Resources/plugins/HtmlLegendPlugin'
-import { formatTimestamps } from '@/components/Resources/utils/LegendFormatter'
+import { formatTimestamps } from '@/components/Resources/utils/legendFormatter'
 import { GraphMetricsResponse, StartEndTime } from '@/types'
 import { AdhocExpression, AdhocGraphConfig, AdhocSeries } from '@/types/adhocGraph'
 import { useAppStore } from '@/stores/appStore'
