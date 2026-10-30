@@ -36,8 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 
 /**
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
@@ -46,8 +44,6 @@ import com.codahale.metrics.MetricRegistry;
  */
 public class SyslogReceiverJavaNetImpl extends SinkDispatchingSyslogReceiver {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverJavaNetImpl.class);
-    
-    private static final MetricRegistry METRICS = new MetricRegistry();
 
     private static final int SOCKET_TIMEOUT = 500;
 
@@ -123,9 +119,7 @@ public class SyslogReceiverJavaNetImpl extends SinkDispatchingSyslogReceiver {
         // get the context
         m_context = Thread.currentThread();
 
-        // Create some metrics
-        Meter packetMeter = METRICS.meter(MetricRegistry.name(getClass(), "packets"));
-        Histogram packetSizeHistogram = METRICS.histogram(MetricRegistry.name(getClass(), "packetSize"));
+        Histogram packetSizeHistogram = getMetricRegistry().histogram("packetSize");
 
         if (m_stop) {
             LOG.debug("Stop flag set before thread started, exiting");
@@ -206,7 +200,7 @@ public class SyslogReceiverJavaNetImpl extends SinkDispatchingSyslogReceiver {
                 m_dgSock.receive(pkt);
 
                 // Increment the packet counter
-                packetMeter.mark();
+                m_packetsReceived.mark();
 
                 // Create a metric for the Syslog packet size
                 packetSizeHistogram.update(length);
