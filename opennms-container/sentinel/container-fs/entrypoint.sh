@@ -10,7 +10,10 @@
 # Cause false/positives
 # shellcheck disable=SC2086
 
-set -e
+set -eE
+
+# shellcheck disable=SC2064
+trap 'rc=$?; echo "[Startup][ERROR] entrypoint failed at line ${LINENO} (exit=${rc})"; exit ${rc}' ERR
 
 umask 002
 export SENTINEL_HOME="/opt/sentinel"
@@ -18,10 +21,21 @@ export KARAF_HOME="${SENTINEL_HOME}"
 
 SENTINEL_OVERLAY_ETC="/opt/sentinel-etc-overlay"
 SENTINEL_OVERLAY="/opt/sentinel-overlay"
-CONFD_KEY_STORE="${SENTINEL_HOME}/sentinel-config.yaml"
-CONFD_CONFIG_DIR="${SENTINEL_HOME}/confd"
-CONFD_BIN="/usr/bin/confd"
-CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
+# Image-owned config lives outside the /opt/sentinel/etc volume so that it is
+# still present when an existing etc volume is reused across image upgrades.
+CONTAINER_CONFIG_ETC="${SENTINEL_HOME}/container-fs/etc"
+FEATURES_BOOT_DIR="${SENTINEL_HOME}/etc/featuresBoot.d"
+FEATURES_BOOT_TEMPLATES_DIR="${CONTAINER_CONFIG_ETC}/featuresBoot.d/templates"
+# No longer supported; configuration is taken from environment variables instead
+LEGACY_CONFD_KEY_STORE="${SENTINEL_HOME}/sentinel-config.yaml"
+
+# Flow adapter configuration
+#
+# Set SENTINEL_FLOWS_ENABLED=true to install the sentinel-flows feature stack.
+# Define individual adapters by overlaying one org.opennms.features.telemetry.adapters-<name>.cfg
+# file per adapter into ${SENTINEL_HOME}/etc/ (see sentinel-etc-overlay), the same convention
+# already used for Minion listener config. See sentinel-features.adoc for the file format.
+SENTINEL_FLOWS_ENABLED="${SENTINEL_FLOWS_ENABLED:-false}"
 
 # Prometheus JMX Exporter Configuration
 #
@@ -33,8 +47,7 @@ CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
 # - All other settings are optional and have sensible defaults
 #
 # Default behavior:
-# - Configuration is managed via confd templates
-# - Template uses key/values from /java/agent/prom-jmx-exporter
+# - Configuration is managed via environment variables, which can be set in the Dockerfile, via docker run -e, or in a docker-compose file.
 PROM_JMX_EXPORTER_ENABLED="${PROM_JMX_EXPORTER_ENABLED:-false}" # required
 PROM_JMX_EXPORTER_JAR="${PROM_JMX_EXPORTER_JAR:-/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar}"
 PROM_JMX_EXPORTER_PORT="${PROM_JMX_EXPORTER_PORT:-9299}"
@@ -51,6 +64,7 @@ export JAVA_OPTS="$JAVA_OPTS -Djdk.util.zip.disableZip64ExtraFieldValidation=tru
 
 # Error codes
 E_ILLEGAL_ARGS=126
+E_INIT_CONFIG=127
 
 # Help function used in error messages and -h option
 usage() {
@@ -93,11 +107,380 @@ setCredentials() {
   rsync --out-format="%n %C" ${SENTINEL_HOME}/etc/scv.jce /keystore/.
 }
 
+function updateConfig() {
+    local key=$1
+    local value=$2
+    local file=$3
+    # Optional: name of the environment variable the value came from. A line that
+    # already resolves that variable through an ${env:<name>...} placeholder is
+    # left alone, so the value keeps tracking the environment across restarts.
+    local env_name=${4:-}
+
+    if [[ "$value" == *'${'* ]]; then
+        echo "[Configuring][WARN] value for '$key' contains '\${', which Karaf expands as a placeholder when it reads '$file'"
+    fi
+
+    # A file mounted read-only (e.g. from a ConfigMap) can't be changed. Skip it rather
+    # than failing the start, but say loudly that the value was not applied.
+    if ! isWritable "$file"; then
+        echo "[Configuring][WARN] '$file' is read-only, '$key'${env_name:+ from ${env_name}} NOT applied"
+        return 0
+    fi
+
+    # If config exists in file, replace it (also uncommenting it). Otherwise, append to file.
+    # Key and value are passed through the environment and compared literally,
+    # so values may contain any character (e.g. '@', '&' or '\').
+    touch "$file"
+    local result rc
+    result=$(KEY="$key" VALUE="$value" ENV_NAME="$env_name" awk '
+        BEGIN {
+            key = ENVIRON["KEY"]
+            placeholder = (ENVIRON["ENV_NAME"] != "") ? "${env:" ENVIRON["ENV_NAME"] : ""
+
+            # Encode the value so Karaf reads it back unchanged. Karaf unescapes
+            # backslashes twice (once when parsing the properties file, once more
+            # during ${...} substitution), so a literal "\" must be written as "\\\\".
+            # Control characters use properties escapes, and a leading space is
+            # escaped so it is not stripped.
+            raw = ENVIRON["VALUE"]; value = ""
+            for (i = 1; i <= length(raw); i++) {
+                c = substr(raw, i, 1)
+                if (c == "\\")      value = value "\\\\\\\\"
+                else if (c == "\n") value = value "\\n"
+                else if (c == "\r") value = value "\\r"
+                else if (c == "\t") value = value "\\t"
+                else if (c == " " && i == 1) value = value "\\ "
+                else                value = value c
+            }
+        }
+        {
+            line = $0
+            sub(/^#?[ \t]*/, "", line)
+            rest = substr(line, length(key) + 1)
+            if (substr(line, 1, length(key)) == key && rest ~ /^[ \t]*=/) {
+                found = 1
+                current = rest
+                sub(/^[ \t]*=[ \t]*/, "", current)
+                if (placeholder != "" && index(current, placeholder) == 1) {
+                    kept = 1
+                    print
+                } else {
+                    print key "=" value
+                }
+                next
+            }
+            print
+        }
+        END {
+            if (!found) print key "=" value
+            exit kept ? 3 : 0
+        }
+    ' "$file") && rc=0 || rc=$?
+
+    case "$rc" in
+      0) ;;
+      3) echo "[Configuring] '$key' in '$file' is resolved from \${env:${env_name}}, left unchanged"; return 0 ;;
+      *) return "$rc" ;;
+    esac
+    # Rewrite in place to keep the file's ownership and permissions
+    printf '%s\n' "$result" > "$file"
+    CONFIG_WRITTEN=true
+    # Omit $value here, in case there is sensitive information
+    echo "[Configuring] '$key' in '$file'"
+}
+
+function isWritable() {
+    # An existing file must be writable itself, a new one needs a writable directory
+    if [ -e "$1" ]; then
+        [ -w "$1" ]
+    else
+        [ -w "$(dirname "$1")" ]
+    fi
+}
+
+function resetConfig() {
+    # Undo a value written from an environment variable that is no longer set: restore
+    # the image default for the key if the image ships one, otherwise remove the key.
+    local key=$1
+    local file=$2
+    local seed
+    seed="${CONTAINER_CONFIG_ETC}/$(basename "$file")"
+
+    [ -f "$file" ] || return 0
+    if [ ! -w "$file" ]; then
+        echo "[Configuring][WARN] '$file' is read-only, '$key' NOT reset although its environment variable is no longer set"
+        return 0
+    fi
+    local result
+    result=$(KEY="$key" SEED="$seed" awk '
+        function matches(l,   rest) {
+            sub(/^#?[ \t]*/, "", l)
+            rest = substr(l, length(key) + 1)
+            return substr(l, 1, length(key)) == key && rest ~ /^[ \t]*=/
+        }
+        BEGIN {
+            key = ENVIRON["KEY"]
+            # The image default for the key, if the image ships this file
+            while ((getline l < ENVIRON["SEED"]) > 0) {
+                if (matches(l)) { default_line = l; have_default = 1; break }
+            }
+        }
+        matches($0) { if (have_default && !restored) { print default_line; restored = 1 } next }
+        { print }
+    ' "$file")
+
+    if [ -n "$result" ]; then
+      printf '%s\n' "$result" > "$file"
+    else
+      : > "$file"
+    fi
+    echo "[Configuring] '$key' in '$file' reset, its environment variable is no longer set"
+}
+
+# Records which keys were written from which environment variable, so a key can be
+# reset once its variable is removed. Stored next to the files it describes.
+ENV_MANAGED_KEYS="${SENTINEL_HOME}/etc/.container-env-keys"
+APPLIED_ENV_KEYS=()
+
+function applyEnvConfig() {
+    local env_var=$1
+    local key=$2
+    local file=$3
+
+    CONFIG_WRITTEN=false
+    updateConfig "$key" "${!env_var}" "$file" "$env_var"
+    if [[ "$CONFIG_WRITTEN" == "true" ]]; then
+        APPLIED_ENV_KEYS+=("${env_var}"$'\t'"${key}"$'\t'"${file}")
+    fi
+}
+
+function parseEnvironment() {
+    local env_var ipc_name es_key
+    APPLIED_ENV_KEYS=()
+
+    # compgen -e lists variable names only, so multi-line values are handled correctly
+    while IFS= read -r env_var; do
+        if [[ $env_var =~ ^KAFKA_IPC_ ]]; then
+            ipc_name=$(echo "${env_var#KAFKA_IPC_}" | tr '[:upper:]' '[:lower:]' | tr _ .)
+            applyEnvConfig "$env_var" "$ipc_name" "${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg"
+            applyEnvConfig "$env_var" "$ipc_name" "${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg"
+        fi
+
+        # Only known names are mapped. A catch-all would also pick up the variables
+        # Kubernetes injects for a Service named "elasticsearch" (ELASTICSEARCH_PORT=tcp://...).
+        if [[ $env_var =~ ^ELASTICSEARCH_ ]]; then
+            case "${env_var#ELASTICSEARCH_}" in
+              URL)            es_key="elasticUrl" ;;
+              INDEX_STRATEGY) es_key="elasticIndexStrategy" ;;
+              REPLICAS)       es_key="settings.index.number_of_replicas" ;;
+              CONN_TIMEOUT)   es_key="connTimeout" ;;
+              READ_TIMEOUT)   es_key="readTimeout" ;;
+              USER)           es_key="globalElasticUser" ;;
+              PASSWORD)       es_key="globalElasticPassword" ;;
+              *)
+                echo "[Configuring] Ignoring unrecognized variable ${env_var}"
+                continue
+                ;;
+            esac
+            applyEnvConfig "$env_var" "$es_key" "${SENTINEL_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg"
+        fi
+
+        # The image-provided ${env:...} placeholders already track these variables; the
+        # mapping only matters for files that still hold a literal value from older images.
+        case "$env_var" in
+          OPENNMS_INSTANCE_ID)
+            applyEnvConfig "$env_var" "org.opennms.instance.id" "${SENTINEL_HOME}/etc/custom.system.properties"
+            ;;
+          POSTGRES_JDBC_URL)
+            applyEnvConfig "$env_var" "datasource.url" "${SENTINEL_HOME}/etc/org.opennms.netmgt.distributed.datasource.cfg"
+            ;;
+        esac
+    done < <(compgen -e)
+
+    resetRemovedEnvConfig
+}
+
+function resetRemovedEnvConfig() {
+    # Reset keys written on an earlier start from variables that are no longer set
+    local entry env_var key file
+    # Keyed by key and file only, so a key written again on this start is never reset
+    local -A applied=()
+    for entry in "${APPLIED_ENV_KEYS[@]}"; do
+      applied["${entry#*$'\t'}"]=1
+    done
+
+    if [ -f "${ENV_MANAGED_KEYS}" ]; then
+      while IFS=$'\t' read -r env_var key file; do
+        [ -n "$key" ] || continue
+        if [ -z "${applied["${key}"$'\t'"${file}"]:-}" ]; then
+          resetConfig "$key" "$file"
+        fi
+      done < "${ENV_MANAGED_KEYS}"
+    fi
+
+    if [ "${#APPLIED_ENV_KEYS[@]}" -gt 0 ]; then
+      printf '%s\n' "${APPLIED_ENV_KEYS[@]}" > "${ENV_MANAGED_KEYS}"
+    else
+      rm -f "${ENV_MANAGED_KEYS}"
+    fi
+}
+
+function handleLegacyConfd() {
+    # confd and sentinel-config.yaml are gone; refuse to start rather than silently
+    # ignoring a configuration the user still expects to be applied.
+    if [ -f "${LEGACY_CONFD_KEY_STORE}" ]; then
+        echo "[Startup][ERROR] Found ${LEGACY_CONFD_KEY_STORE}, which is no longer supported."
+        echo "[Startup][ERROR] Configure Sentinel through environment variables or etc overlays instead and remove the file."
+        exit ${E_INIT_CONFIG}
+    fi
+
+    # Files rendered by confd in earlier images persist in the etc/deploy volumes.
+    # A stale ipc-strategy.boot would combine with the new feature boot files and can
+    # exclude every IPC transport, so remove them.
+    local legacy_file
+    for legacy_file in \
+      "${FEATURES_BOOT_DIR}/ipc-strategy.boot" \
+      "${SENTINEL_HOME}/deploy/confd-flows-feature.xml"; do
+      if [ -f "${legacy_file}" ]; then
+        echo "[Startup] Removing legacy confd-generated file ${legacy_file}"
+        rm -f "${legacy_file}"
+      fi
+    done
+}
+
+function validateEnvironment() {
+    # Runs before anything is written, so an invalid value leaves the configuration untouched
+    # IPC_EXPLICIT records whether the environment chose the transport; if not, an overlay may (see applyFeatureBootTemplates)
+    IPC_EXPLICIT="true"
+    case "${SENTINEL_IPC,,}" in
+      kafka|jms)
+        IPC_STRATEGY="${SENTINEL_IPC,,}"
+        ;;
+      "")
+        # Same default as the confd-based images: Kafka once a bootstrap server is configured
+        if [ -n "${KAFKA_IPC_BOOTSTRAP_SERVERS:-}" ]; then
+          IPC_STRATEGY="kafka"
+        else
+          IPC_STRATEGY="jms"
+          IPC_EXPLICIT="false"
+        fi
+        ;;
+      *)
+        echo "[Startup][ERROR] Invalid SENTINEL_IPC '${SENTINEL_IPC}', expected 'jms' or 'kafka'."
+        exit ${E_ILLEGAL_ARGS}
+        ;;
+    esac
+
+    case "${SENTINEL_FLOWS_ENABLED,,}" in
+      true|false) ;;
+      *)
+        echo "[Startup][ERROR] Invalid SENTINEL_FLOWS_ENABLED '${SENTINEL_FLOWS_ENABLED}', expected 'true' or 'false'."
+        exit ${E_ILLEGAL_ARGS}
+        ;;
+    esac
+}
+
+function seedContainerConfig() {
+    # Install image-provided config files that are missing from etc. Existing files are
+    # never overwritten, so values persisted by earlier starts (e.g. the Sentinel id)
+    # and user edits survive container recreation and image upgrades.
+    local src
+    for src in "${CONTAINER_CONFIG_ETC}"/*.cfg; do
+      [ -f "${src}" ] || continue
+      if [ ! -f "${SENTINEL_HOME}/etc/$(basename "${src}")" ]; then
+        echo "[Startup] Installing default $(basename "${src}")"
+        cp "${src}" "${SENTINEL_HOME}/etc/"
+      fi
+    done
+
+    # custom.system.properties usually exists already and holds settings of its own,
+    # so instead of installing it whole, add each image-provided property it is missing.
+    local file="${SENTINEL_HOME}/etc/custom.system.properties"
+    local line key
+    src="${CONTAINER_CONFIG_ETC}/custom.system.properties"
+    [ -f "${src}" ] || return 0
+    while IFS= read -r line; do
+      [[ "${line}" =~ ^[[:space:]]*([^#[:space:]=]+)[[:space:]]*= ]] || continue
+      key="${BASH_REMATCH[1]}"
+      if [ -f "${file}" ] && grep -E -q "^[[:space:]]*${key//./\\.}[[:space:]]*=" "${file}"; then
+        continue
+      fi
+      if ! isWritable "${file}"; then
+        echo "[Startup][WARN] '${file}' is read-only, default ${key} NOT installed"
+        continue
+      fi
+      # Make sure the property starts on a line of its own
+      if [ -s "${file}" ] && [ -n "$(tail -c 1 "${file}")" ]; then
+        echo >> "${file}"
+      fi
+      echo "[Startup] Installing default ${key} in $(basename "${file}")"
+      printf '%s\n' "${line}" >> "${file}"
+    done < "${src}"
+}
+
+function applyFeatureBootTemplates() {
+    local managed_boot_files=(
+      "sentinel-ipc.boot"
+      "sentinel-flows.boot"
+    )
+    local boot_file
+    for boot_file in "${managed_boot_files[@]}"; do
+      rm -f "${FEATURES_BOOT_DIR}/${boot_file}"
+    done
+
+    apply_template() {
+        local template="$1"
+        local name="${2:-$1}"
+        cp "${FEATURES_BOOT_TEMPLATES_DIR}/${template}" "${FEATURES_BOOT_DIR}/${name}"
+        echo "[Features] Enabled: ${template}"
+    }
+
+    # Exclusions apply across all boot files, so writing the JMS default next to an
+    # overlay that selects Kafka would exclude both transports. Like the confd-based
+    # images, leave the IPC choice to the overlay unless the environment sets one.
+    # Overlays are applied after this runs, so their source directories are checked too.
+    # The extender reads every non-dot file in featuresBoot.d and does not trim lines.
+    # Unmatched globs stay literal, so keep only existing files: otherwise grep's exit
+    # status depends on whether its implementation reports a match or the missing path.
+    local user_boot_files=()
+    local candidate
+    for candidate in \
+      "${FEATURES_BOOT_DIR}"/* \
+      "${SENTINEL_OVERLAY_ETC}"/featuresBoot.d/* \
+      "${SENTINEL_OVERLAY}"/etc/featuresBoot.d/*; do
+      [ -f "${candidate}" ] && user_boot_files+=("${candidate}")
+    done
+    # With no files, grep would read stdin, so only run it when there is something to check.
+    if [[ "${IPC_EXPLICIT}" == "false" ]] && [ ${#user_boot_files[@]} -gt 0 ] \
+        && grep -E -q -s '^sentinel-(jms|kafka)([/[:space:]]|$)' "${user_boot_files[@]}"; then
+        echo "[Features] IPC strategy not set and a file in featuresBoot.d installs it, leaving IPC to that file."
+    else
+        local conflicting=""
+        if [ ${#user_boot_files[@]} -gt 0 ]; then
+            conflicting=$(grep -E -l -s "^!sentinel-${IPC_STRATEGY}([/[:space:]]|$)" "${user_boot_files[@]}" || true)
+        fi
+        if [ -n "${conflicting}" ]; then
+            echo "[Features][WARN] IPC strategy ${IPC_STRATEGY} is excluded by:" ${conflicting}
+        fi
+        echo "[Features] IPC strategy set to ${IPC_STRATEGY}."
+        apply_template "sentinel-ipc-${IPC_STRATEGY}.boot" "sentinel-ipc.boot"
+    fi
+
+    if [[ "${SENTINEL_FLOWS_ENABLED,,}" == "true" ]]; then
+        echo "[Features] Flow processing enabled."
+        apply_template "sentinel-flows.boot"
+    fi
+}
+
 initConfig() {
     if [ ! -d ${SENTINEL_HOME} ]; then
         echo "OpenNMS Sentinel home directory doesn't exist in ${SENTINEL_HOME}."
         exit ${E_ILLEGAL_ARGS}
     fi
+
+    validateEnvironment
+    handleLegacyConfd
+    seedContainerConfig
 
     if [ ! -f ${SENTINEL_HOME}/etc/configured ]; then
         # Create SSH Key-Pair to use with the Karaf Shell
@@ -115,24 +498,30 @@ initConfig() {
         sed -i "/^rmiRegistryHost/s/=.*/= 0.0.0.0/" ${SENTINEL_HOME}/etc/org.apache.karaf.management.cfg
         sed -i "/^rmiServerHost/s/=.*/= 0.0.0.0/" ${SENTINEL_HOME}/etc/org.apache.karaf.management.cfg
 
-        # Set Sentinel location and connection to OpenNMS instance
-        SENTINEL_CONFIG=${SENTINEL_HOME}/etc/org.opennms.sentinel.controller.cfg
-        echo "location = ${SENTINEL_LOCATION}" > ${SENTINEL_CONFIG}
-        echo "id = ${SENTINEL_ID:=$(uuidgen)}" >> ${SENTINEL_CONFIG}
-        echo "broker-url = ${OPENNMS_BROKER_URL}" >> ${SENTINEL_CONFIG}
-
-        # Configure datasource
-        DB_CONFIG=${SENTINEL_HOME}/etc/org.opennms.netmgt.distributed.datasource.cfg
-        echo "datasource.url = jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}" > ${DB_CONFIG}
-        echo "datasource.username = ${POSTGRES_USER}" >> ${DB_CONFIG}
-        echo "datasource.password = ${POSTGRES_PASSWORD}" >> ${DB_CONFIG}
-        echo "datasource.databaseName = ${POSTGRES_DB}" >> ${DB_CONFIG}
-
         # Mark as configured
         echo "Configured $(date)" > ${SENTINEL_HOME}/etc/configured
     else
         echo "OpenNMS Sentinel is already configured, skipped."
     fi
+
+    # Location, broker-url, and the datasource are resolved from the environment
+    # via ${env:...} placeholders in the image-provided
+    # org.opennms.sentinel.controller.cfg / org.opennms.netmgt.distributed.datasource.cfg.
+    # Volumes created by earlier images keep the literal values written back then.
+    #
+    # The id must stay stable across restarts, even if SENTINEL_ID is changed or
+    # removed later, so it's persisted once, whenever the file has none yet:
+    # SENTINEL_ID if set, otherwise a random one.
+    local controller_cfg="${SENTINEL_HOME}/etc/org.opennms.sentinel.controller.cfg"
+    if ! grep -E -q "^[[:space:]]*id[[:space:]]*=" "${controller_cfg}"; then
+        updateConfig "id" "${SENTINEL_ID:-$(uuidgen)}" "${controller_cfg}"
+    fi
+
+    # Re-applied on every start (not gated by the configured marker) so that
+    # environment-driven config takes effect on container restarts, matching
+    # the old confd behavior where templates were re-rendered on every start.
+    parseEnvironment
+    applyFeatureBootTemplates
 }
 
 applyOverlayConfig() {
@@ -149,15 +538,6 @@ applyOverlayConfig() {
     rsync -r --out-format="%n %C" ${SENTINEL_OVERLAY}/* ${SENTINEL_HOME}/. || exit ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${SENTINEL_OVERLAY}. Use default configuration."
-  fi 
-}
-
-applyConfd() {
-  if [ -f "${CONFD_KEY_STORE}" ]; then
-    echo "Found a configuration key store, applying configuration via confd."
-    runConfd
-  else
-    echo "No configuration key store present, skipping confd configuration."
   fi
 }
 
@@ -181,17 +561,6 @@ start() {
     exec ./karaf server ${SENTINEL_DEBUG}
 }
 
-runConfd() {
-  # Create any directories that confd might write to
-  while IFS= read -r dir; do
-    local dirToCreate="$SENTINEL_HOME"/"$dir"
-    echo "Creating $dirToCreate so confd can write to it"
-    mkdir -p "$dirToCreate"
-  done < "$CONFD_CONFIG_DIR"/directories
-
-  "$CONFD_BIN" -onetime -config-file "$CONFD_CONFIG_FILE"
-}
-
 # Evaluate arguments for build script.
 if [[ "${#}" == 0 ]]; then
     usage
@@ -204,7 +573,6 @@ while getopts csdfh flag; do
         c)
             useEnvCredentials
             initConfig
-            applyConfd
             applyOverlayConfig
             applyKarafDebugLogging
             start
@@ -215,14 +583,12 @@ while getopts csdfh flag; do
         d)
             SENTINEL_DEBUG="debug"
             initConfig
-            applyConfd
             applyOverlayConfig
             applyKarafDebugLogging
             start
             ;;
         f)
             initConfig
-            applyConfd
             applyOverlayConfig
             applyKarafDebugLogging
             start
