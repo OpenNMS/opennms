@@ -24,8 +24,12 @@
       >{{ errorText }}</div>
       <OnmsTabs v-model:value="activeTab" data-test="group-editor-tabs">
         <OnmsTabList>
-          <OnmsTab value="group" data-test="tab-group">Group</OnmsTab>
-          <OnmsTab value="duty" data-test="tab-duty-schedules">Duty Schedules</OnmsTab>
+          <OnmsTab value="group" data-test="tab-group">
+            Group<TabProblemMarker v-if="groupTabProblem" />
+          </OnmsTab>
+          <OnmsTab value="duty" data-test="tab-duty-schedules">
+            Duty Schedules<TabProblemMarker v-if="!dutyValid" />
+          </OnmsTab>
           <OnmsTab value="categories" data-test="tab-categories">Categories</OnmsTab>
         </OnmsTabList>
         <OnmsTabPanels>
@@ -202,6 +206,7 @@ import {
 
 import DutyScheduleEditor from '@/components/Common/DutyScheduleEditor.vue'
 import FormField from '@/components/Common/FormField.vue'
+import TabProblemMarker from '@/components/Common/TabProblemMarker.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
@@ -251,6 +256,9 @@ const nameProblem = computed(() => (isEditing.value ? null : validateAdminName(n
 // changed input is validated (the server grandfathers unchanged values too)
 const commentsProblem = computed(() =>
   comments.value.trim() === (props.group?.comments ?? '').trim() ? null : validateAdminComments(comments.value))
+
+// the checks that show a message on the Group tab; marks the tab, since Save is disabled from any tab
+const groupTabProblem = computed(() => !!(nameProblem.value || commentsProblem.value))
 
 const isValid = computed(() =>
   dutyValid.value && (isEditing.value || !!name.value.trim()) && !nameProblem.value && !commentsProblem.value)

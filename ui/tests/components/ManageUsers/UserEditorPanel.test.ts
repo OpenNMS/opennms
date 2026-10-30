@@ -270,6 +270,43 @@ describe('UserEditorPanel.vue', () => {
     })
   })
 
+  describe('tab problem markers', () => {
+    const marker = (tab: string) => wrapper.find(`[data-test="${tab}"] [data-test="tab-problem-marker"]`)
+
+    it('shows none on a new, empty form', async () => {
+      await mountPanel()
+      expect(marker('tab-user').exists()).toBe(false)
+      expect(marker('tab-duty-schedules').exists()).toBe(false)
+    })
+
+    it('marks the User tab while one of its fields fails a check', async () => {
+      await mountPanel()
+      await wrapper.find('[data-test="user-id-input"]').setValue('jose')
+      await setPassword('secret')
+      expect(marker('tab-user').exists()).toBe(false)
+
+      await wrapper.find('[data-test="email-input"]').setValue('not-an-email')
+      expect(marker('tab-user').exists()).toBe(true)
+      expect(marker('tab-user').attributes('aria-label')).toBe('Fix the errors on this tab to save.')
+      expect(marker('tab-duty-schedules').exists()).toBe(false)
+      await wrapper.find('[data-test="email-input"]').setValue('jose@example.org')
+      expect(marker('tab-user').exists()).toBe(false)
+
+      await wrapper.find('[data-test="password-confirm-input"] input').setValue('secrex')
+      expect(marker('tab-user').exists()).toBe(true)
+    })
+
+    it('marks the Duty Schedules tab while a row is incomplete', async () => {
+      await mountPanel({ userId: 'jose', dutySchedules: [], roles: [] })
+      await wrapper.find('[data-test="add-duty-button"]').trigger('click')
+      expect(marker('tab-duty-schedules').exists()).toBe(true)
+      expect(marker('tab-user').exists()).toBe(false)
+
+      await wrapper.find('[data-test="duty-0-day-Mo"]').trigger('click')
+      expect(marker('tab-duty-schedules').exists()).toBe(false)
+    })
+  })
+
   it('closes on Back and on Cancel without saving', async () => {
     await mountPanel({ userId: 'jose', dutySchedules: [], roles: [] })
     await wrapper.find('[data-test="back-button"]').trigger('click')

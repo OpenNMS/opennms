@@ -24,8 +24,12 @@
       >{{ errorText }}</div>
       <OnmsTabs v-model:value="activeTab" data-test="user-editor-tabs">
         <OnmsTabList>
-          <OnmsTab value="user" data-test="tab-user">User</OnmsTab>
-          <OnmsTab value="duty" data-test="tab-duty-schedules">Duty Schedules</OnmsTab>
+          <OnmsTab value="user" data-test="tab-user">
+            User<TabProblemMarker v-if="userTabProblem" />
+          </OnmsTab>
+          <OnmsTab value="duty" data-test="tab-duty-schedules">
+            Duty Schedules<TabProblemMarker v-if="!dutyValid" />
+          </OnmsTab>
         </OnmsTabList>
         <OnmsTabPanels>
           <OnmsTabPanel value="user">
@@ -232,6 +236,7 @@ import {
 
 import DutyScheduleEditor from '@/components/Common/DutyScheduleEditor.vue'
 import FormField from '@/components/Common/FormField.vue'
+import TabProblemMarker from '@/components/Common/TabProblemMarker.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
@@ -317,6 +322,10 @@ const timeZoneOptions = computed(() => {
 const passwordMismatch = computed(() => !isEditing.value && !!form.passwordConfirm && form.password !== form.passwordConfirm)
 
 const dutyValid = ref(true)
+
+// the checks that show a message on the User tab; marks the tab, since Save is disabled from either tab
+const userTabProblem = computed(() =>
+  !!(userIdProblem.value || emailProblem.value || pagerEmailProblem.value || commentsProblem.value || passwordMismatch.value))
 
 const isValid = computed(() => {
   if (!dutyValid.value || userIdProblem.value || emailProblem.value || pagerEmailProblem.value || commentsProblem.value) {

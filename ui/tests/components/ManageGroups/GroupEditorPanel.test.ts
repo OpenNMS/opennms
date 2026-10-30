@@ -122,6 +122,7 @@ describe('GroupEditorPanel.vue', () => {
     }
 
     const save = () => wrapper.find('[data-test="save-button"]')
+    const marker = (tab: string) => wrapper.find(`[data-test="${tab}"] [data-test="tab-problem-marker"]`)
     const categorySelect = (): VueWrapper<any> => wrapper.findComponent('[data-test="categories-select"]') as VueWrapper<any>
     const memberSelect = (): VueWrapper<any> => wrapper.findComponent('[data-test="add-member-select"]') as VueWrapper<any>
 
@@ -256,11 +257,32 @@ describe('GroupEditorPanel.vue', () => {
       await flushPromises()
       expect(wrapper.find('[data-test="group-comments-input"]').isVisible()).toBe(true)
       expect(save().attributes('disabled')).toBeDefined()
+      // the cue for the disabled Save sits on the tab that holds the problem
+      expect(marker('tab-duty-schedules').exists()).toBe(true)
+      expect(marker('tab-group').exists()).toBe(false)
 
       await wrapper.find('[data-test="tab-duty-schedules"]').trigger('click')
       await flushPromises()
       await wrapper.find('[data-test="duty-0-day-Mo"]').trigger('click')
       expect(save().attributes('disabled')).toBeUndefined()
+      expect(marker('tab-duty-schedules').exists()).toBe(false)
+      wrapper.unmount()
+    })
+
+    it('marks the Group tab while its name or comments fail their checks', async () => {
+      await mountAttached()
+      expect(marker('tab-group').exists()).toBe(false)
+
+      await wrapper.find('[data-test="group-name-input"]').setValue('Test Group')
+      expect(marker('tab-group').exists()).toBe(true)
+      expect(marker('tab-group').attributes('aria-label')).toBe('Fix the errors on this tab to save.')
+      await wrapper.find('[data-test="group-name-input"]').setValue('TestGroup')
+      expect(marker('tab-group').exists()).toBe(false)
+
+      await wrapper.find('[data-test="group-comments-input"]').setValue('<b>styled</b>')
+      expect(marker('tab-group').exists()).toBe(true)
+      expect(marker('tab-duty-schedules').exists()).toBe(false)
+      expect(marker('tab-categories').exists()).toBe(false)
       wrapper.unmount()
     })
   })
