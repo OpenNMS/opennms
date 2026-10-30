@@ -111,8 +111,8 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
 
     @Test
     public void testGroupWritesRightAfterACategoryChange() throws Exception {
-        // the category change moves the groups counter after the group manager has saved: the manager must not take
-        // that for a change by another process (before the fix: 500, "User data was changed by another process")
+        // a category authorization is not cached by the group manager, so its change must not make the manager's next
+        // save fail with "User data was changed by another process" (a 500)
         createGroup("dbcats");
         createCategory("Edge");
         sendRequest(PUT, "/groups/dbcats/categories/Edge", 204);
@@ -124,6 +124,51 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
         sendRequest(DELETE, "/groups/dbcats/categories/Edge", 204);
         sendPut("/groups/dbcats", "comments=After another", 204);
         assertTrue(authorizedCategories("dbcats").isEmpty());
+    }
+
+    @Test
+    public void testGroupWritesRightAfterTheCategoryEndpointsChangeAuthorizations() throws Exception {
+        // the category endpoints change category_group without the group manager
+        createGroup("dbcats");
+        createCategory("Edge");
+        int version = version("dbcats");
+
+        // a form update cannot set authorizedGroups (304), so it is no category_group writer
+        sendPut("/categories/Edge", "authorizedGroups=dbcats", 304);
+        assertTrue(authorizedCategories("dbcats").isEmpty());
+
+        sendRequest(PUT, "/categories/Edge/groups/dbcats", 204);
+        assertEquals(List.of("Edge"), authorizedCategories("dbcats"));
+        version = assertNewVersion("dbcats", version);
+        sendPut("/groups/dbcats", "comments=After an authorization", 204);
+        version = assertNewVersion("dbcats", version);
+
+        sendRequest(DELETE, "/categories/Edge/groups/dbcats", 204);
+        version = assertNewVersion("dbcats", version);
+        sendPut("/groups/dbcats", "comments=After a withdrawal", 204);
+        sendRequest(PUT, "/categories/Edge/groups/dbcats", 204);
+        version = version("dbcats");
+
+        sendRequest(DELETE, "/categories/Edge", 204);
+        assertTrue(authorizedCategories("dbcats").isEmpty());
+        version = assertNewVersion("dbcats", version);
+        sendPut("/groups/dbcats", "comments=After a delete", 204);
+        assertEquals("After a delete", new JdbcTemplate(m_dataSource).queryForObject("select comments from groups where name = 'dbcats'", String.class));
+    }
+
+    @Test
+    public void testRenameAndDeleteRightAfterACategoryChange() throws Exception {
+        createGroup("dbcats");
+        createGroup("other");
+        createCategory("Edge");
+        sendRequest(PUT, "/groups/dbcats/categories/Edge", 204);
+
+        sendRequest(DELETE, "/groups/dbcats", 204);
+        assertTrue(authorizedCategories("dbcats").isEmpty());
+        sendPut("/groups/other", "comments=After a delete", 204);
+        sendRequest(PUT, "/groups/other/categories/Edge", 204);
+        sendPut("/groups/other", "comments=Again", 204);
+        assertEquals(List.of("Edge"), authorizedCategories("other"));
     }
 
     @Test

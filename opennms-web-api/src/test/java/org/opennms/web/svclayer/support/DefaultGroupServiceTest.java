@@ -26,7 +26,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -40,18 +39,14 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.config.GroupDao;
-import org.opennms.netmgt.config.UserMgmtManagers;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public class DefaultGroupServiceTest {
 
     private CategoryDao m_categoryDao;
     private GroupDao m_groupDao;
-    private UserMgmtManagers m_managers;
     private DefaultGroupService m_service;
     private OnmsCategory m_first;
     private OnmsCategory m_second;
@@ -63,8 +58,6 @@ public class DefaultGroupServiceTest {
         m_service = new DefaultGroupService();
         ReflectionTestUtils.setField(m_service, "m_categoryDao", m_categoryDao);
         ReflectionTestUtils.setField(m_service, "m_groupDao", m_groupDao);
-        m_managers = mock(UserMgmtManagers.class);
-        ReflectionTestUtils.setField(m_service, "m_managers", m_managers);
         m_first = new OnmsCategory("First");
         m_second = new OnmsCategory("Second");
         m_first.getAuthorizedGroups().add("old");
@@ -116,8 +109,6 @@ public class DefaultGroupServiceTest {
         // a category the group already had is not looked up again
         verify(m_categoryDao, never()).findByName("First", false);
         verifyNoInteractions(m_groupDao);
-        // outside a transaction, the managers are expired at once
-        verify(m_managers).expireAll();
     }
 
     @Test
@@ -145,23 +136,6 @@ public class DefaultGroupServiceTest {
         assertTrue(m_first.getAuthorizedGroups().contains("old"));
         assertFalse(m_second.getAuthorizedGroups().contains("old"));
         verify(m_categoryDao).findByName("Gone", false);
-    }
-
-    @Test
-    public void testCategoryChangesExpireTheManagersWhenTheTransactionCommits() {
-        TransactionSynchronizationManager.initSynchronization();
-        try {
-            m_service.moveCategoryAuthorizations("old", "new");
-            m_service.clearCategoryAuthorizations("new");
-            verify(m_managers, never()).expireAll();
-
-            for (final TransactionSynchronization synchronization : TransactionSynchronizationManager.getSynchronizations()) {
-                synchronization.afterCommit();
-            }
-            verify(m_managers, atLeastOnce()).expireAll();
-        } finally {
-            TransactionSynchronizationManager.clearSynchronization();
-        }
     }
 
     @Test

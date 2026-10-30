@@ -48,6 +48,7 @@ import org.opennms.netmgt.dao.api.SecurityRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
 import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
+import org.opennms.netmgt.dao.api.UserMgmtVersionDao.Domain;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
 import org.opennms.netmgt.model.usermgmt.ContactType;
 import org.opennms.netmgt.model.usermgmt.OnCallRole;
@@ -647,6 +648,59 @@ public class UserMgmtRowVersionIT implements InitializingBean {
         assertBumped("ops", opsBefore, VersionedTable.groups, ops);
         assertBumped("dev", devBefore, VersionedTable.groups, dev);
         assertEquals(otherBefore, version(VersionedTable.groups, other));
+    }
+
+    /** The counter is how the in-memory managers notice a change of what they cache; they cache no category authorizations. */
+    private long groupsCounter() {
+        return m_tx.execute(status -> m_versionDao.getVersion(Domain.groups));
+    }
+
+    @Test
+    public void testCategoryAuthorizationChangesKeepTheGroupsCounter() {
+        createUser("alice");
+        final int group = createGroup("ops");
+        createGroup("dev");
+        final int category = createCategory(9001, "Edge");
+        long counter = groupsCounter();
+        int before = version(VersionedTable.groups, group);
+
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        update("UPDATE category_group SET groupid = ? WHERE categoryid = ?", "dev", category);
+        update("UPDATE category_group SET groupid = ? WHERE categoryid = ?", "ops", category);
+        update("DELETE FROM categories WHERE categoryid = ?", category);
+
+        assertEquals("groups counter after category authorization changes", counter, groupsCounter());
+        assertBumped("group", before, VersionedTable.groups, group);
+
+        // a change of what the managers cache still moves it, right after: the setting is off again
+        before = version(VersionedTable.groups, group);
+        assertEquals(1, update("INSERT INTO group_members (group_id, user_id, position) SELECT ?, id, 0 FROM users WHERE username = 'alice'", group));
+        assertTrue("groups counter after a member change", groupsCounter() > counter);
+        assertBumped("group", before, VersionedTable.groups, group);
+        counter = groupsCounter();
+        assertEquals(1, update("UPDATE groups SET comments = 'changed' WHERE id = ?", group));
+        assertTrue("groups counter after a group change", groupsCounter() > counter);
+    }
+
+    @Test
+    public void testCategoryAuthorizationAndAMemberInOneTransactionMoveTheCounter() {
+        createUser("alice");
+        final int group = createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        final long counter = groupsCounter();
+
+        // the setting is transaction-local: the category trigger must turn it off again for the member insert
+        m_tx.execute(status -> {
+            m_sessionFactory.getCurrentSession().doWork(connection -> {
+                try (java.sql.Statement statement = connection.createStatement()) {
+                    statement.executeUpdate("INSERT INTO category_group (categoryid, groupid) VALUES (" + category + ", 'ops')");
+                    statement.executeUpdate("INSERT INTO group_members (group_id, user_id, position) SELECT " + group + ", id, 0 FROM users WHERE username = 'alice'");
+                }
+            });
+            return null;
+        });
+
+        assertTrue("groups counter after a member change in the same transaction", groupsCounter() > counter);
     }
 
     @Test

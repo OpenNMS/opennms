@@ -927,8 +927,10 @@ DROP FUNCTION IF EXISTS usermgmt_lock_for_category_group();
          trigger then waits for the usermgmt_version counters. A v2 group write holds those counters (lockAll()) and,
          when it authorizes the group for that same category, inserts a category_group row whose foreign key check
          waits for the categories row: a deadlock. Taking the counters, in the lockAll() order, before any categories
-         row is locked gives the delete the same order as the writers. Only a delete needs it: an update of a category
-         keeps its key, so it does not conflict with the foreign key check. -->
+         row is locked gives the delete the same order as the v2 writers. A transaction that updates a category row and
+         then its authorizations (v1 PUT /categories/{c} with authorizedGroups) takes the row first, so it can still
+         deadlock with a concurrent delete of that same category; PostgreSQL then aborts one of them. An update alone
+         takes no counter, so it only waits. -->
     <changeSet author="stheleman" id="37.0.0-categories-lock-versions">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -944,6 +946,77 @@ CREATE TRIGGER categories_lock_versions BEFORE DELETE ON categories FOR EACH STA
             <sql>
 DROP TRIGGER IF EXISTS categories_lock_versions ON categories;
             </sql>
+        </rollback>
+    </changeSet>
+
+    <!-- The usermgmt_version counters tell the in-memory user and group managers that data they cache changed: a
+         manager refuses to save when the groups counter moved since it read, and reloads instead. The managers cache
+         no category authorizations, so a category_group change must not move the counter, or every writer of
+         category_group that bypasses the managers (deleting a category, v1 /rest/categories, node categories) would
+         make the next group save through a manager fail with "User data was changed by another process". The group's
+         row version still moves, so that a v2 editor holding the group gets 412. The row trigger marks its own UPDATE
+         of groups with a transaction-local setting, which usermgmt_increment_version skips: the statement trigger of
+         that UPDATE fires at the end of it, while the setting is on. The counter locks are still taken, for the lock
+         order. -->
+    <changeSet author="stheleman" id="37.0.0-category-group-keeps-counters">
+        <createProcedure>
+CREATE OR REPLACE FUNCTION usermgmt_increment_version() RETURNS trigger AS $$
+BEGIN
+    IF current_setting('usermgmt.category_group_bump', true) = 'on' THEN
+        RETURN NULL;
+    END IF;
+    UPDATE usermgmt_version SET version = version + 1 WHERE name = TG_ARGV[0];
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <createProcedure>
+CREATE OR REPLACE FUNCTION usermgmt_bump_for_category_group() RETURNS trigger AS $$
+BEGIN
+    PERFORM 1 FROM usermgmt_version WHERE name = 'groups' FOR UPDATE;
+    IF TG_OP = 'UPDATE' AND NEW IS NOT DISTINCT FROM OLD THEN
+        RETURN NULL;
+    END IF;
+    PERFORM set_config('usermgmt.category_group_bump', 'on', true);
+    IF TG_OP &lt;&gt; 'DELETE' THEN
+        UPDATE groups SET version = version + 1 WHERE name = NEW.groupid;
+    END IF;
+    IF TG_OP &lt;&gt; 'INSERT' AND (TG_OP = 'DELETE' OR OLD.groupid IS DISTINCT FROM NEW.groupid) THEN
+        UPDATE groups SET version = version + 1 WHERE name = OLD.groupid;
+    END IF;
+    PERFORM set_config('usermgmt.category_group_bump', 'off', true);
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <rollback>
+            <createProcedure>
+CREATE OR REPLACE FUNCTION usermgmt_increment_version() RETURNS trigger AS $$
+BEGIN
+    UPDATE usermgmt_version SET version = version + 1 WHERE name = TG_ARGV[0];
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+            </createProcedure>
+            <createProcedure>
+CREATE OR REPLACE FUNCTION usermgmt_bump_for_category_group() RETURNS trigger AS $$
+BEGIN
+    PERFORM 1 FROM usermgmt_version WHERE name = 'groups' FOR UPDATE;
+    IF TG_OP = 'UPDATE' AND NEW IS NOT DISTINCT FROM OLD THEN
+        RETURN NULL;
+    END IF;
+    IF TG_OP &lt;&gt; 'DELETE' THEN
+        UPDATE groups SET version = version + 1 WHERE name = NEW.groupid;
+    END IF;
+    IF TG_OP &lt;&gt; 'INSERT' AND (TG_OP = 'DELETE' OR OLD.groupid IS DISTINCT FROM NEW.groupid) THEN
+        UPDATE groups SET version = version + 1 WHERE name = OLD.groupid;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+            </createProcedure>
         </rollback>
     </changeSet>
 
