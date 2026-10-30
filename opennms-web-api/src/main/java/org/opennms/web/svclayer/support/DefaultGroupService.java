@@ -33,6 +33,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.UserMgmtManagers;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -45,6 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public class DefaultGroupService implements InitializingBean, GroupService {
 
@@ -62,6 +65,9 @@ public class DefaultGroupService implements InitializingBean, GroupService {
     
     @Autowired
     private UserManager m_userDao;
+
+    @Autowired
+    private UserMgmtManagers m_managers;
 
     public DefaultGroupService() {
         System.out.println("init...");
@@ -128,6 +134,7 @@ public class DefaultGroupService implements InitializingBean, GroupService {
 
     @Override
     public void moveCategoryAuthorizations(String oldName, String newName) {
+        expireManagersOnCommit();
         // the categories of the old name replace whatever the new name was authorized on before
         final List<OnmsCategory> oldCategories = new ArrayList<>(m_categoryDao.getCategoriesWithAuthorizedGroup(oldName));
         clearCategoryAuthorizations(newName);
@@ -139,6 +146,7 @@ public class DefaultGroupService implements InitializingBean, GroupService {
 
     @Override
     public void clearCategoryAuthorizations(String name) {
+        expireManagersOnCommit();
         for (OnmsCategory category : m_categoryDao.getCategoriesWithAuthorizedGroup(name)) {
             category.getAuthorizedGroups().remove(name);
         }
@@ -243,6 +251,7 @@ public class DefaultGroupService implements InitializingBean, GroupService {
 
     @Override
     public void setAuthorizedCategories(String groupName, Collection<String> categoryNames) {
+        expireManagersOnCommit();
         final Set<String> wanted = new HashSet<>(categoryNames);
         final Set<String> current = new HashSet<>();
         for (OnmsCategory category : m_categoryDao.getCategoriesWithAuthorizedGroup(groupName)) {
@@ -260,5 +269,24 @@ public class DefaultGroupService implements InitializingBean, GroupService {
                 }
             }
         }
+    }
+
+    /**
+     * A change of category_group moves the group's version and the groups counter (37.0.0-category-group-version)
+     * when the caller's transaction flushes it, which is after the group manager has saved or reloaded in its own
+     * transaction (saveGroup, renameGroup and deleteGroup write the categories next to the group). Unless it is
+     * expired, the manager would take the moved counter for a change by another process and refuse its next save.
+     */
+    private void expireManagersOnCommit() {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            m_managers.expireAll();
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                m_managers.expireAll();
+            }
+        });
     }
 }
