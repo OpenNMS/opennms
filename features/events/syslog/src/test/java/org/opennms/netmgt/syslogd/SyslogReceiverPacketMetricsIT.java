@@ -29,6 +29,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.awaitility.Awaitility;
 import org.junit.Test;
@@ -88,8 +89,12 @@ public class SyslogReceiverPacketMetricsIT {
                 client.syslog(SyslogClient.LOG_DEBUG, "warm-up");
                 return metrics.meter(SinkDispatchingSyslogReceiver.PACKETS_RECEIVED).getCount() > 0;
             });
-            // let warm-up packets still in flight arrive before taking the baseline
-            Thread.sleep(1000);
+            // take the baseline only once warm-up packets still in flight have all been counted
+            final AtomicLong previous = new AtomicLong(-1);
+            Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).until(() -> {
+                final long count = metrics.meter(SinkDispatchingSyslogReceiver.PACKETS_RECEIVED).getCount();
+                return count == previous.getAndSet(count);
+            });
             final long before = metrics.meter(SinkDispatchingSyslogReceiver.PACKETS_RECEIVED).getCount();
             for (int i = 0; i < PACKETS; i++) {
                 client.syslog(SyslogClient.LOG_DEBUG, "packet " + i);
