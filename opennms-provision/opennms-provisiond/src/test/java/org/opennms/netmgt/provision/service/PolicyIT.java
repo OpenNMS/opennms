@@ -22,33 +22,35 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
+import java.net.InetAddress;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.events.api.model.IEvent;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -60,23 +62,16 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-dns.xml",
         "classpath:/META-INF/opennms/applicationContext-snmp-profile-mapper.xml",
         "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath*:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/mockForeignSourceContext.xml",
+        "classpath:/importerServiceTest.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
-@Ignore("This test flaps because it doesn't account for provision ordering correctly")
-public class PolicyIT {
-
-    public static interface BackgroundTask {
-        public void await() throws InterruptedException;
-    }
-
-    @Autowired
-    private JdbcTemplate m_jdbcTemplate;
+@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
+public class PolicyIT extends ProvisioningITCase {
 
     @Autowired
     private Provisioner m_provisioner;
@@ -85,7 +80,13 @@ public class PolicyIT {
     private ResourceLoader m_resourceLoader;
 
     @Autowired
-    private MockEventIpcManager m_eventSubscriber;
+    private MockNodeDao m_nodeDao;
+
+    @Autowired
+    private SnmpInterfaceDao m_snmpInterfaceDao;
+
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
 
     @Before
     public void setUp() {
@@ -105,15 +106,16 @@ public class PolicyIT {
         policy2.addParameter("action", "ENABLE_SNMP_POLL");
         policy2.addParameter("matchBehavior", "ANY_PARAMETER");
 
-        System.err.println(policy1.toString());
-        System.err.println(policy2.toString());
-
         fs.addPolicy(policy1);
-
         fs.addPolicy(policy2);
 
         mfsr.putDefaultForeignSource(fs);
         m_provisioner.getProvisionService().setForeignSourceRepository(mfsr);
+        m_provisioner.getProvisionService().setHostnameResolver(new HostnameResolver() {
+            @Override public CompletableFuture<String> getHostnameAsync(final InetAddress addr, final String location) {
+                return CompletableFuture.completedFuture("opennms-com");
+            }
+        });
     }
 
     @Test
@@ -123,118 +125,40 @@ public class PolicyIT {
             @JUnitSnmpAgent(host="10.102.251.200", port=161, resource="classpath:/snmpwalk-NMS-5414.properties"),
             @JUnitSnmpAgent(host="10.211.140.149", port=161, resource="classpath:/snmpwalk-NMS-5414.properties")
     })
-    //@Repeat()
-    //@Transactional Do not use transactional because it freezes the database and makes it impossible to check for 
-    // values created in other transactions (unless you are lucky - which sometimes we are not)
     public void testSnmpPollPolicy() throws Exception {
-        try {
-            // Create a BackgroundTask to wait for the provisioning group import to complete
-            final BackgroundTask eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
+        final int nodeId = m_nodeDao.getNextNodeId();
+        final CountDownLatch scanFinished = anticipateEvents(1, EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI);
 
-            // Import the provisioning group
-            m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/NMS-5414.xml"), Boolean.TRUE.toString());
-            int nodeId = getNodeId();
-            eventRecieved.await();
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/NMS-5414.xml"), Boolean.TRUE.toString());
+        waitForEverything();
+        assertTrue("import scan did not finish", scanFinished.await(5, TimeUnit.MINUTES));
 
-            final NodeScan scan = m_provisioner.createNodeScan(nodeId, getForeignSource(nodeId), getForeignId(nodeId), new OnmsMonitoringLocation(), null);
-            runScan(scan);
+        final OnmsNode node = m_nodeDao.get(nodeId);
+        final Task scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation(), null).createTask();
+        scan.schedule();
+        scan.waitFor();
+        waitForEverything();
 
+        // MatchingSnmpInterfacePolicy on ifDescr "Trunk 1" polls an interface that has no IP address
+        assertPolled(nodeId, 8193, "P");
+        assertEquals(0, ipAddressesOn(8193).size());
+        // MatchingIpInterfacePolicy on 10.102.* polls the SNMP interface behind 10.102.251.200
+        assertPolled(nodeId, 10600, "P");
+        assertTrue(ipAddressesOn(10600).contains("10.102.251.200"));
+        // Neither policy matches Trunk 2
+        assertPolled(nodeId, 8194, "N");
 
-            Integer snmpIfId = findMatchingSnmpIf("ifDescr", "Trunk 1");
-
-            assertEquals(1, getNodeId(snmpIfId));
-            assertEquals(8193, getIfIndex(snmpIfId));
-            assertEquals(0, getIpInterfaceCount(snmpIfId));
-            assertEquals("P", getPollSetting(snmpIfId));
-
-            snmpIfId = findMatchingSnmpIf("ifDescr", "VLAN 600 L3");
-
-            assertEquals(1, getNodeId(snmpIfId));
-            assertEquals(10600, getIfIndex(snmpIfId));
-            assertEquals(1, getIpInterfaceCount(snmpIfId));
-            assertEquals("P", getPollSetting(snmpIfId));
-
-            snmpIfId = findMatchingSnmpIf("ifName", "ifc3 (Slot: 1 Port: 3)");
-
-            assertEquals(1, getNodeId(snmpIfId));
-            assertEquals(3, getIfIndex(snmpIfId));
-            assertEquals(1, getIpInterfaceCount(snmpIfId));
-            assertEquals("P", getPollSetting(snmpIfId));
-
-            assertEquals(3, countSnmpIfsWithPollSetting("P"));
-            System.err.println("Completed Successfully");
-        } catch (AssertionError e) {
-            throw e;
-        }
-
+        assertEquals(2, m_snmpInterfaceDao.findAll().stream().filter(snmpIf -> "P".equals(snmpIf.getPoll())).count());
     }
 
-    private int countSnmpIfsWithPollSetting(String pollSetting) {
-        return m_jdbcTemplate.queryForObject("select count(*) from snmpinterface where snmppoll = ?", Integer.class, pollSetting).intValue();
+    private void assertPolled(final int nodeId, final int ifIndex, final String expected) {
+        assertEquals("snmpPoll of ifIndex " + ifIndex, expected, m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, ifIndex).getPoll());
     }
 
-    private Integer findMatchingSnmpIf(String property, String value) {
-        String columnName = "snmp"+property.toLowerCase();
-        return m_jdbcTemplate.queryForObject("select id from snmpinterface where "+columnName+" ilike ?", Integer.class, "%"+value+"%");
+    private List<String> ipAddressesOn(final int ifIndex) {
+        return m_ipInterfaceDao.findAll().stream()
+                .filter(ipIf -> ipIf.getSnmpInterface() != null && Integer.valueOf(ifIndex).equals(ipIf.getSnmpInterface().getIfIndex()))
+                .map(ipIf -> InetAddressUtils.str(ipIf.getIpAddress()))
+                .collect(Collectors.toList());
     }
-
-    private String getPollSetting(Integer snmpIfId) {
-        return m_jdbcTemplate.queryForObject("select snmppoll from snmpinterface where id = ?", String.class, snmpIfId);
-    }
-
-    private int getIpInterfaceCount(Integer snmpIfId) {
-        return m_jdbcTemplate.queryForObject("select count(*) from ipinterface where snmpinterfaceid = ?", Integer.class, snmpIfId);
-    }
-
-    private int getIfIndex(Integer snmpIfId) {
-        return m_jdbcTemplate.queryForObject("select snmpifindex from snmpinterface where id = ?", Integer.class, snmpIfId);
-    }
-
-    private int getNodeId(Integer snmpIfId) {
-        return m_jdbcTemplate.queryForObject("select nodeId from snmpinterface where id = ?", Integer.class, snmpIfId);
-    }
-
-    private int getNodeId() {
-        return m_jdbcTemplate.queryForObject("select nodeId from node order by nodelabel limit 1", Integer.class);
-    }
-
-    private String getForeignId(Integer nodeId) {
-        return m_jdbcTemplate.queryForObject("select foreignId from node where nodeid = ?", String.class, nodeId);
-    }
-
-    private String getForeignSource(Integer nodeId) {
-        return m_jdbcTemplate.queryForObject("select foreignSource from node where nodeid = ?", String.class, nodeId);
-    }
-
-    public void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
-        final Task t = scan.createTask();
-        t.schedule();
-        t.waitFor();
-    }
-
-    private BackgroundTask anticipateEvents(String... ueis) {
-        final CountDownLatch eventRecieved = new CountDownLatch(1);
-        m_eventSubscriber.addEventListener(new EventListener() {
-
-            @Override
-            public void onEvent(IEvent e) {
-                eventRecieved.countDown();
-            }
-
-            @Override
-            public String getName() {
-                return "Test Initial Setup";
-            }
-        }, Arrays.asList(ueis));
-
-        return new BackgroundTask() {
-
-            @Override
-            public void await() throws InterruptedException {
-                eventRecieved.await();
-            }
-        };
-
-    }
-
 }

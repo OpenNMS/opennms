@@ -23,6 +23,7 @@ package org.opennms.web.rest.v2;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import org.opennms.netmgt.config.api.DataCollectionConfigLookupUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Collect;
@@ -169,9 +170,26 @@ public class DataCollectionConfPersistenceService {
         return snmpCollectionMibGroupDao.findAllMibGroupNames();
     }
 
+    public List<String> getAllSystemDefNames() {
+        return snmpCollectionSystemDefDao.findAllSystemDefNames();
+    }
+
+    public List<SnmpCollectionMibGroupDto> findMibGroupsByName(final String name) {
+        return SnmpCollectionMibGroupDto.fromEntity(snmpCollectionMibGroupDao.findAllByName(name));
+    }
+
+    public List<SnmpCollectionResourceTypeDto> findResourceTypesByName(final String name) {
+        return SnmpCollectionResourceTypeDto.fromEntity(snmpCollectionResourceTypeDao.findAllByName(name));
+    }
+
+    public List<SnmpCollectionSystemDefDto> findSystemDefsByName(final String name) {
+        return toSystemDefDtos(snmpCollectionSystemDefDao.findAllByName(name));
+    }
+
     @Transactional
     public Integer addMibGroupToSnmpCollectionSources(final SnmpCollectionSource snmpCollectionSource, final SnmpCollectionMibGroupDto request) {
         SnmpDataCollectionSyncToDb.requireNotPluginSourced(snmpCollectionSource, "Add MibGroup");
+        requireValidIfType(request.getIfType());
         final var entity = SnmpCollectionMibGroupDto.updateEntity(new SnmpCollectionMibGroup(), request);
         entity.setCollectionSource(snmpCollectionSource);
         return snmpCollectionMibGroupDao.save(entity);
@@ -219,6 +237,17 @@ public class DataCollectionConfPersistenceService {
         }
     }
 
+    /**
+     * The collector compares the ifType list items as text and does not trim them.
+     * Thus an ifType such as "6, 22" or "06" never matches an interface.
+     */
+    private static void requireValidIfType(final String ifType) {
+        if (!DataCollectionConfigLookupUtils.isValidIfType(ifType)) {
+            throw new IllegalArgumentException("Invalid ifType '" + ifType
+                    + "'. Use all, ignore, an ifType number or a comma-separated list of ifType numbers without spaces, for example 6,22");
+        }
+    }
+
     @Transactional
     public void updateMibGroup(
             final Integer id, final Integer snmpCollectionSourceId,
@@ -226,6 +255,7 @@ public class DataCollectionConfPersistenceService {
 
         requirePathMatchesDto("MibGroup", id, snmpCollectionSourceId,
                 request.getId(), request.getCollectionSourceId());
+        requireValidIfType(request.getIfType());
 
         SnmpDataCollectionSyncToDb.requireNotPluginSourced(requireSource(snmpCollectionSourceId), "Update MibGroup");
 

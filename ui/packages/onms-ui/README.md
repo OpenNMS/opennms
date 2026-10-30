@@ -165,6 +165,15 @@ Where these diverge from PrimeVue, deliberately:
 - **`OnmsTieredMenu`** renders a nested `items` array as hover-opened submenus,
   where `OnmsMenu` flattens it under a heading. Popup by default; open via the
   exposed `toggle(event)`. Both reuse `OnmsMenuItem`, which already nests.
+- **`OnmsMenubar`** (added later, NMS-20303) is the inline, horizontal form:
+  top-level items in a row, each opening its nested `items` as a dropdown. It
+  takes the same `OnmsMenuItem` model, forwards `#item`, and adds `#start` and
+  `#end` for content around the items. An item with `target: '_blank'` gets
+  `rel="noopener noreferrer"`, which PrimeVue does not add.
+- **`OnmsPaginator`** (added later, NMS-20303) is paging controls on their own,
+  for content that is not an `OnmsTable` (which has its own). `page` emits the
+  same `OnmsTablePageEvent` as `OnmsTable`, rather than PrimeVue's
+  `PageState`.
 - **`OnmsColorPicker`** is a composite, not a thin wrapper: a swatch grid in an
   `OnmsPopover` with PrimeVue's spectrum picker behind a "Custom" toggle, since
   4.5.5 offers no swatch surface. `format` is baked to `'hex'` and the value
@@ -392,6 +401,20 @@ second-to-last path segment), the version handshake, and the dev harness
 [`packages/onms-ui-example-plugin`](../onms-ui-example-plugin/README.md), a
 real externalized plugin built with the toolchain a third-party author would
 use.
+
+## Chromeless app shell
+
+`useOnmsChromeless()` lets a page or plugin hide the host's menu bar, side
+menu and footer, e.g. for a wall display. `enterChromeless()` turns it on until
+the next route change, `exitChromeless()` or Escape, so a page that wants it
+calls `enterChromeless()` when it mounts (in `onActivated` if it is kept
+alive). `isChromeless` is a readonly ref for a toggle's state. Escape is
+ignored while a dialog, drawer, popover or popup menu is open, and while focus
+is in a text field. The state is module-level, like `useOnmsToast`, so host
+and plugins share it through `window.OnmsUI`.
+
+`useOnmsChromelessHost()` is for the host only: `App.vue` calls it once to
+sync routes marked `meta.chromeless` and install the Escape handler.
 
 ## Sanctioned direct-PrimeVue exceptions
 

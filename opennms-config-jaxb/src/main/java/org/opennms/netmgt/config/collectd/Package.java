@@ -315,6 +315,15 @@ public class Package implements Serializable {
         return m_includeUrls.remove(url);
     }
 
+    /**
+     * Whether the address passes the package's specific/include-range/exclude-range
+     * rules. The filter is evaluated separately.
+     */
+    public boolean addressInRanges(final String addr) {
+        final boolean hasSpecific = hasSpecificUrl(addr, hasSpecific(new IPAddress(addr).toOctets()));
+        return hasSpecific || (hasIncludeRange(addr) && !hasExcludeRange(addr));
+    }
+
     public boolean hasSpecificUrl(final String iface, final boolean hasSpecific) {
         if (hasSpecific) {
             return true;

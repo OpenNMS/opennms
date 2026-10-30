@@ -25,14 +25,17 @@ import { flushPromises, mount } from '@vue/test-utils'
 import GraphCollectionsPanel from '@/components/Dashboard/panels/GraphCollectionsPanel.vue'
 import { TimeframePreset } from '@/types/dashboard'
 
+const getGraphCollections = vi.fn()
 vi.mock('@/services/graphCollectionsService', () => ({
-  getGraphCollections: vi.fn().mockResolvedValue([
-    { id: 7, label: 'Core Routers' },
-    { id: 9, label: 'Branch Uplinks' }
-  ])
+  getGraphCollections: () => getGraphCollections()
 }))
 
-const assign = vi.fn()
+const push = vi.fn()
+vi.mock('vue-router', () => ({ useRouter: () => ({ push }) }))
+
+const collection = (id: number, title: string) => ({
+  id, title, showTimespanButton: false, showGraphtypeButton: false, graphsPerLine: 0, graphs: []
+})
 
 const mountPanel = async () => {
   const wrapper = mount(GraphCollectionsPanel, {
@@ -50,19 +53,21 @@ const mountPanel = async () => {
 
 describe('GraphCollectionsPanel', () => {
   beforeEach(() => {
-    assign.mockClear()
-    // window.location.assign is not writable in jsdom; replace location wholesale
-    vi.stubGlobal('location', { ...window.location, assign })
+    push.mockClear()
+    getGraphCollections.mockClear()
+    getGraphCollections.mockResolvedValue({
+      success: true,
+      message: '',
+      payload: [collection(7, 'Core Routers'), collection(9, 'Branch Uplinks')]
+    })
   })
 
-  it('resolves the typed name to a report id and opens the custom view', async () => {
-    // KSC/index.jsp ignores a report parameter entirely — navigating there with
-    // raw text (the old behavior) silently did nothing
+  it('resolves the typed title to a collection and opens its view', async () => {
     const wrapper = await mountPanel()
     await wrapper.find('input').setValue('core routers')
     await wrapper.find('form').trigger('submit')
 
-    expect(assign).toHaveBeenCalledWith('/opennms/KSC/customView.htm?type=custom&report=7')
+    expect(push).toHaveBeenCalledWith('/graph-collections/7')
   })
 
   it('falls back to a substring match', async () => {
@@ -70,7 +75,7 @@ describe('GraphCollectionsPanel', () => {
     await wrapper.find('input').setValue('branch')
     await wrapper.find('form').trigger('submit')
 
-    expect(assign).toHaveBeenCalledWith('/opennms/KSC/customView.htm?type=custom&report=9')
+    expect(push).toHaveBeenCalledWith('/graph-collections/9')
   })
 
   it('shows a hint instead of navigating when nothing matches', async () => {
@@ -78,7 +83,7 @@ describe('GraphCollectionsPanel', () => {
     await wrapper.find('input').setValue('no-such-collection')
     await wrapper.find('form').trigger('submit')
 
-    expect(assign).not.toHaveBeenCalled()
+    expect(push).not.toHaveBeenCalled()
     expect(wrapper.text()).toContain('No graph collection with that name.')
   })
 
@@ -86,6 +91,20 @@ describe('GraphCollectionsPanel', () => {
     const wrapper = await mountPanel()
     await wrapper.find('form').trigger('submit')
 
-    expect(assign).toHaveBeenCalledWith('/opennms/KSC/index.jsp')
+    expect(push).toHaveBeenCalledWith('/graph-collections')
+  })
+
+  it('reads the list once and leaves the refresh tick alone', async () => {
+    const wrapper = await mountPanel()
+    await wrapper.setProps({ refreshTick: 1 })
+    await flushPromises()
+    expect(getGraphCollections).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows the load failure instead of an empty list', async () => {
+    getGraphCollections.mockResolvedValue({ success: false, message: 'Failed to load the graph collections.' })
+    const wrapper = await mountPanel()
+
+    expect(wrapper.find('[data-test="load-error"]').text()).toBe('Failed to load the graph collections.')
   })
 })

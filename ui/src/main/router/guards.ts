@@ -21,10 +21,28 @@
 ///
 
 import { until } from '@vueuse/core'
-import { Ref } from 'vue'
-import { NavigationGuard } from 'vue-router'
+import { MaybeRefOrGetter, toValue } from 'vue'
+import { NavigationGuard, RouteLocationNormalized } from 'vue-router'
 import useRole from '@/composables/useRole'
 import useSnackbar from '@/composables/useSnackbar'
+
+// The guards below take only (to, from): vue-router waits for a next() call from any guard
+// that declares a third parameter, and these return their decision instead.
+const decide = async (
+  isReady: MaybeRefOrGetter<boolean>,
+  isAllowed: MaybeRefOrGetter<boolean>,
+  deniedMsg: string,
+  from: RouteLocationNormalized
+) => {
+  await until(isReady).toBe(true)
+
+  if (toValue(isAllowed)) {
+    return true
+  }
+
+  useSnackbar().showSnackBar({ msg: deniedMsg, error: true })
+  return from.matched.length ? false : '/'
+}
 
 /**
  * beforeEnter guard for a route that is only allowed once some state has
@@ -39,23 +57,28 @@ import useSnackbar from '@/composables/useSnackbar'
  * The redirect is returned rather than done with router.push() inside the
  * guard: an in-app navigation is cancelled, leaving the user where they were;
  * the first navigation of a fresh load has nowhere to stay, so it goes home.
+ *
+ * Guards are built once, when the routes are defined, so pass getters that
+ * look up their store when called rather than refs held from module load: a
+ * held ref stays bound to the pinia that was active when it was made.
  */
-export const requireCondition = (isReady: Ref<boolean>, isAllowed: Ref<boolean>, deniedMsg: string): NavigationGuard =>
-  async (_to, from) => {
-    await until(isReady).toBe(true)
+export const requireCondition = (
+  isReady: MaybeRefOrGetter<boolean>,
+  isAllowed: MaybeRefOrGetter<boolean>,
+  deniedMsg: string
+): NavigationGuard =>
+  (_to, from) => decide(isReady, isAllowed, deniedMsg, from)
 
-    if (isAllowed.value) {
-      return true
-    }
-
-    useSnackbar().showSnackBar({ msg: deniedMsg, error: true })
-    return from.matched.length ? false : '/'
-  }
+type RoleName = Exclude<keyof ReturnType<typeof useRole>, 'rolesAreLoaded'>
 
 /**
  * beforeEnter guard for a route restricted to a role, e.g.
- * `beforeEnter: requireRole(adminRole, 'Must be admin to ...')`.
+ * `beforeEnter: requireRole('adminRole', 'Must be admin to ...')`.
+ * The roles are read when the navigation runs, from the active pinia.
  * (authStore sets `loaded` even when whoAmI fails, so this cannot hang.)
  */
-export const requireRole = (hasRole: Ref<boolean>, deniedMsg: string): NavigationGuard =>
-  requireCondition(useRole().rolesAreLoaded, hasRole, deniedMsg)
+export const requireRole = (role: RoleName, deniedMsg: string): NavigationGuard =>
+  (_to, from) => {
+    const roles = useRole()
+    return decide(roles.rolesAreLoaded, roles[role], deniedMsg, from)
+  }

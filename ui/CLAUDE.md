@@ -51,6 +51,7 @@ Occasionally `rm assets/*.*` in the target directories to clear stale hashed fil
 
 - **Main SPA** (`src/main/`, `vite.config.ts`) — full application served at `/opennms/ui`, built to `src/main/dist/`
 - **Menu app** (`src/menu/`, `vite.config.menu.ts`) — embeds into legacy JSP/Vaadin pages at `/opennms/ui-components`, built to `src/menu/dist-menu/`
+  - Its files are for logged-in users only (a plain 401 otherwise). `vite.config.anonymous.ts` (run by `build:menu`) also builds `assets/anonymous-pages.css` from the menu's global stylesheets (`onms-base`, `onms-theme`, `opennms-styles`). It is the one anonymous file, which `bootstrap.jsp` links on pages seen without login. A new global element style in those stylesheets reaches both.
 
 Both share `src/components/`, `src/services/`, `src/stores/`, and `src/composables/` but have separate entry points and build configs. The Java `SpaRoutingFilter` serves `index.html` for non-asset URLs; routing uses `createWebHashHistory('/opennms/ui')`.
 

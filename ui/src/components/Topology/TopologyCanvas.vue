@@ -38,12 +38,53 @@ License.
     @mousemove="onCanvasMouseMove"
     @contextmenu.prevent
   >
-    <div v-if="store.showCanvasStats" class="topology-canvas-stats">
+    <div v-if="store.showCanvasStats" class="topology-canvas-stats" :class="{ 'is-top': parkedIds.size > 0 }">
       <span>Nodes: {{ placedCount }}</span>
       <span>Links: {{ linkCount }}</span>
       <span>Labels: {{ store.labels.length }}</span>
       <span>Selected: {{ store.selectedIds.length }}</span>
     </div>
+    <!-- Geographic map (geomap background): a non-interactive Leaflet map set
+         to the sigma camera after every render, under nodes placed at their
+         asset lat/long. -->
+    <div v-if="geoShown" class="topology-geomap-layer" :class="{ 'is-dark': appStore.theme === 'open-dark' }">
+      <!-- Leaflet's own element, with no bindings: Vue patching its class
+           attribute would strip the classes Leaflet adds (leaflet-container
+           clips the tiles), and the map would spill over the page. -->
+      <div ref="geomapEl" class="topology-geomap-map" />
+    </div>
+    <!-- Nodes without a location are parked on this strip; see placeParkedNodes. -->
+    <div
+      v-if="parkedIds.size > 0"
+      class="topology-geomap-parking"
+      :style="{ height: parking.height + 'px', '--parking-row': parking.rowHeight + 'px' }"
+    >
+      <span class="topology-geomap-parking__caption">No location</span>
+    </div>
+    <!-- Above the canvases, unlike the strip itself, so it can be clicked. -->
+    <div v-if="parkedIds.size > 0 && parking.pages > 1" class="topology-geomap-pager" :style="{ '--parking-row': parking.rowHeight + 'px' }">
+      <OnmsIconButton
+        :icon="ChevronLeft"
+        icon-size="1.25rem"
+        title="Previous page of nodes without a location"
+        :disabled="parkingPage === 0"
+        @click="stepParkingPage(-1)"
+      />
+      <span class="topology-geomap-pager__count">{{ parkingPage + 1 }} / {{ parking.pages }}</span>
+      <OnmsIconButton
+        :icon="ChevronRight"
+        icon-size="1.25rem"
+        title="Next page of nodes without a location"
+        :disabled="parkingPage >= parking.pages - 1"
+        @click="stepParkingPage(1)"
+      />
+    </div>
+    <p v-if="geoShown && geomapUnavailable === 'unconfigured'" class="topology-geomap-empty">
+      No map tile server is configured (gwt.openlayers.url in opennms.properties).
+    </p>
+    <p v-else-if="geoShown && geomapUnavailable === 'failed'" class="topology-geomap-empty">
+      Could not load the map settings. Turn the geographic background off and on to retry.
+    </p>
     <!-- Background image (floor plan / rack diagram), positioned in graph
          coordinates and re-projected each frame so it pans/zooms with the
          nodes. Sits below the (transparent) sigma canvases; only intercepts
@@ -105,12 +146,16 @@ License.
       </p>
     </div>
     <div v-show="webglAvailable" ref="canvasEl" class="topology-canvas" />
+    <!-- Tile attribution, above the canvases so its links can be followed; the
+         tile licences ask for it to be shown. From the server's own config. -->
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <div v-if="geoShown && geomapAttribution" class="topology-geomap-attribution" v-html="geomapAttribution" />
     <div class="topology-labels-layer">
       <!-- Labels are reactively positioned in viewport space via
            cameraVersion (bumped on sigma's afterRender); references it
            in the style binding so Vue re-evaluates each render. -->
       <div
-        v-for="label in store.labels"
+        v-for="label in visibleLabels"
         :key="label.id"
         class="topology-label"
         :class="{ 'is-selected': store.selectedIds.includes(label.id), 'is-editing': editingLabelId === label.id }"
@@ -244,6 +289,27 @@ import { computeEdgeCurvatures, layoutDiscoveredGraph, layoutHierarchyGraph,
 } from '@/components/Topology/layout'
 import { computeGhostLinks, type LinkHint } from '@/components/Topology/linkHints'
 import { assetUrl } from '@/services/topologyService'
+import { getGeolocationConfig } from '@/services/geolocationService'
+import {
+  WORLD_HALF_EXTENT,
+  fanOut,
+  geoToGraph,
+  graphToGeo,
+  parkedLabelLimit,
+  parkingLayout,
+  parkingPages,
+  tileZoomFor,
+  unwrapLongitudes,
+  DARK_TILE_FILTER,
+  type ExportMapResult,
+  type GraphPoint
+} from '@/components/Topology/geo'
+import DOMPurify from 'dompurify'
+import { OnmsIconButton } from '@opennms/onms-ui'
+import ChevronLeft from '@opennms/onms-ui/icons/navigation/ChevronLeft.vue'
+import ChevronRight from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 import type {
   CanvasLink,
   CanvasLinkBinding,
@@ -489,7 +555,7 @@ const FINE_ZOOMING_RATIO = Math.pow(ZOOMING_RATIO, 0.25)
  * Shift+wheel as a horizontal delta that sigma's own handler discards.
  */
 const onFineZoomWheel = (e: WheelEvent) => {
-  if (!e.shiftKey || !sigma || !canvasEl.value) {
+  if (!e.shiftKey || !sigma || !canvasEl.value || !allows().moveCamera) {
     return
   }
   const delta = e.deltaY !== 0 ? e.deltaY : e.deltaX
@@ -580,6 +646,14 @@ const mountSigma = (g: Graph) => {
         ?? (paletteId !== null && /^\d+$/.test(paletteId) ? Number(paletteId) : null)
       // All nodes render at the store's (density-defaulted, slider-adjustable) size.
       let res: typeof attrs = { ...attrs, size: store.nodeSize }
+      if (parkedIds.value.has(node)) {
+        // The strip is laid out for labels on the right, and sigma would
+        // otherwise drop labels it judges crowded.
+        res = { ...res, label: parkedLabels.get(node) ?? res.label, fullLabel: res.label, labelPlacement: 'right', forceLabel: true }
+        if (parkedHidden.has(node)) {
+          res = { ...res, hidden: true }
+        }
+      }
       if (resolvedNodeId !== null) {
         const severity = store.severities[resolvedNodeId]
         if (severity) {
@@ -615,6 +689,11 @@ const mountSigma = (g: Graph) => {
     // fattest/clearest target. _selected is set by the selection watcher;
     // hover is tracked in hoveredLinkId via enter/leaveEdge.
     edgeReducer: (edge, attrs) => {
+      // Two parked nodes sit side by side in the strip, where a link between
+      // them says nothing about place and is drawn straight through their labels.
+      if (geoActive && parkedIds.value.has(g.source(edge)) && parkedIds.value.has(g.target(edge))) {
+        return { ...attrs, hidden: true }
+      }
       // Emphasis is carried by color against a neutral base, not by fading the
       // rest: every link stays legible, and the emphasized one is a different
       // color rather than the same color slightly thicker.
@@ -658,6 +737,14 @@ const mountSigma = (g: Graph) => {
     // reappears at the size it had before, without changing the user's
     // zoom/pan (which is why we deliberately don't fitCamera here).
     sigma.resize()
+    geomap?.invalidateSize({ animate: false })
+    // A new size needs the map re-centered even when the canvas view is the same.
+    lastGeomapView = null
+    placeParkedNodes()
+    if (geoActive) {
+      // The camera is locked to the fitted frame, so a new size needs a new fit.
+      fitCamera(false)
+    }
     sigma.refresh()
   })
   resizeObserver.observe(canvasEl.value)
@@ -667,7 +754,12 @@ const mountSigma = (g: Graph) => {
   applyViewStyle()
   // A webfont that lands after the first frame would leave canvas labels in
   // the fallback face; sigma does not watch for it, so repaint once it does.
-  document.fonts?.ready.then(() => sigma?.refresh())
+  document.fonts?.ready.then(() => {
+    // Widths measured in the fallback face are wrong once the webfont is in.
+    fittedLabels.clear()
+    arrangementKey = ''
+    sigma?.refresh()
+  })
 }
 
 /**
@@ -675,7 +767,12 @@ const mountSigma = (g: Graph) => {
  * palette; loadView replaces this when a saved view is opened.
  */
 const initGraph = () => {
+  resetGeoLayout()
   graph = new Graph()
+  graphIsView = true
+  graphViewId = store.currentView?.id
+  graph.on('nodeAdded', onGeoNodeAdded)
+  graph.on('nodeDropped', scheduleGeoLayout)
   linkCount.value = 0
   placedCount.value = 0
   draggedNode = null
@@ -703,8 +800,8 @@ const serialize = (): Pick<TopologyView, 'nodes' | 'links' | 'viewport'> => {
         id,
         nodeId,
         label: (attrs.label as string) ?? '',
-        x: attrs.x as number,
-        y: attrs.y as number,
+        x: manualPositions.get(id)?.x ?? (attrs.x as number),
+        y: manualPositions.get(id)?.y ?? (attrs.y as number),
         color: attrs.color as string | undefined,
         iconOverride: (attrs.iconOverride as string | undefined) || undefined
       })
@@ -765,7 +862,12 @@ const loadView = (view: TopologyView) => {
       })
     }
   }
+  resetGeoLayout()
   graph = g
+  graphIsView = true
+  graphViewId = view.id
+  g.on('nodeAdded', onGeoNodeAdded)
+  g.on('nodeDropped', scheduleGeoLayout)
   linkCount.value = g.size
   draggedNode = null
   dragStartPos = null
@@ -805,6 +907,7 @@ const loadView = (view: TopologyView) => {
       // would otherwise re-frame and push tall content off-screen.
     }
   }
+  syncGeoMode()
 }
 
 /**
@@ -825,7 +928,7 @@ const loadView = (view: TopologyView) => {
  * shapes and the background image. Shapes and the background are rects with
  * graph y pointing up, so each spans [y - height, y].
  */
-const setContentBBox = () => {
+const setContentBBox = (extra: GraphPoint[] = []) => {
   if (!sigma || !graph) {
     return
   }
@@ -846,11 +949,20 @@ const setContentBBox = () => {
     }
     count++
   }
-  graph.forEachNode((_id, a) => extend(a.x as number, a.y as number))
-  for (const l of store.labels) {
+  graph.forEachNode((id, a) => {
+    // On the map, frame true locations: not parked nodes, nor fanned-out offsets.
+    const p = geoActive ? geoTruePositions.get(id) : { x: a.x as number, y: a.y as number }
+    if (p) {
+      extend(p.x, p.y)
+    }
+  })
+  for (const l of visibleLabels.value) {
     extend(l.x, l.y)
   }
-  if (store.discoveredGraph === null) {
+  for (const p of extra) {
+    extend(p.x, p.y)
+  }
+  if (store.discoveredGraph === null && !geoActive) {
     for (const shape of store.shapes) {
       extend(shape.x, shape.y)
       extend(shape.x + shape.width, shape.y - shape.height)
@@ -861,13 +973,18 @@ const setContentBBox = () => {
       extend(bg.x + bg.width, bg.y - bg.height)
     }
   }
-  if (count === 0) {
+  if (count === 0 && geoActive) {
+    sigma.setCustomBBox({ x: [-WORLD_HALF_EXTENT, WORLD_HALF_EXTENT], y: [-WORLD_HALF_EXTENT, WORLD_HALF_EXTENT] })
+  } else if (count === 0) {
     sigma.setCustomBBox({ x: [-DEFAULT_BBOX, DEFAULT_BBOX], y: [-DEFAULT_BBOX, DEFAULT_BBOX] })
   } else {
     // Pad ~15% (floored) so edge nodes and their labels aren't clipped.
     const padX = Math.max((maxX - minX) * 0.15, 120)
     const padY = Math.max((maxY - minY) * 0.15, 120)
-    sigma.setCustomBBox({ x: [minX - padX, maxX + padX], y: [minY - padY, maxY + padY] })
+    const { height } = sigma.getDimensions()
+    const stripShare = parking.value.height > 0 && height > 0 ? Math.min(0.5, (parking.value.height + 24) / height) : 0
+    const stripPad = ((maxY - minY + 2 * padY) * stripShare) / (1 - stripShare)
+    sigma.setCustomBBox({ x: [minX - padX, maxX + padX], y: [minY - padY - stripPad, maxY + padY] })
   }
   // setCustomBBox only schedules a render; the coordinate normalization is
   // rebuilt in process(), which a bounds change alone never triggers.
@@ -880,7 +997,8 @@ const setContentBBox = () => {
  * avoids duplicating the customBBox mapping fitCamera relies on.
  */
 const centerOnNode = (id: string) => {
-  if (!sigma || !graph || !graph.hasNode(id)) {
+  // On the geomap the camera stays on the fitted frame, which shows every node.
+  if (!sigma || !graph || !graph.hasNode(id) || !allows().moveCamera) {
     return
   }
   const pos = sigma.getNodeDisplayData(id)
@@ -900,11 +1018,37 @@ const centerOnNode = (id: string) => {
  */
 const fitCamera = (animate = true) => {
   // A view can hold a background or shapes and no nodes yet; those still fit.
-  if (!sigma || !graph || (graph.order === 0 && !backgroundVisible.value && store.shapes.length === 0)) {
+  if (!sigma || !graph || (graph.order === 0 && !backgroundVisible.value && store.shapes.length === 0 && !geoActive)) {
     return
   }
   setContentBBox()
   const target = { x: 0.5, y: 0.5, ratio: 1, angle: 0 }
+  if (geoActive) {
+    // The geomap locks the camera, and a locked camera ignores setState too,
+    // so the fit lifts the lock for its own move. No animation: every frame
+    // of one is a setState.
+    const camera = sigma.getCamera()
+    camera.enabledPanning = true
+    camera.enabledZooming = true
+    camera.enabledRotation = true
+    camera.setState(target)
+    // Fanned-out groups are sized in screen px, so they only have a size once
+    // framed: widen the frame to take them in, and again as zooming out grows them.
+    for (let pass = 0; pass < 3; pass++) {
+      const spread = fannedPositions()
+      if (spread.every(([, v]) => insideFrame(v))) {
+        break
+      }
+      setContentBBox(spread.map(([, v]) => sigma!.viewportToGraph(v)))
+      camera.setState(target)
+    }
+    // The settings still say locked; only the camera's own flags were lifted, so
+    // restore those rather than re-apply the settings, which refreshes the scene.
+    camera.enabledPanning = false
+    camera.enabledZooming = false
+    camera.enabledRotation = false
+    return
+  }
   if (animate) {
     sigma.getCamera().animate(target, { duration: 300 })
   } else {
@@ -976,7 +1120,9 @@ const loadDiscoveredGraph = (dg: DiscoveredGraph) => {
       })
     }
   }
+  resetGeoLayout()
   graph = g
+  graphIsView = false
   linkCount.value = g.size
   placedCount.value = positioned.length
   draggedNode = null
@@ -1045,8 +1191,9 @@ const attachInteractionHandlers = (s: Sigma, g: Graph) => {
   }
 
   s.on('downNode', (e) => {
-    // No node dragging in View mode (read-only canvas).
-    if (!store.isEditMode) {
+    // No node dragging in View mode (read-only canvas), nor on the geomap,
+    // where a node's position is its asset location.
+    if (!store.isEditMode || !allows().dragNodes) {
       return
     }
     draggedNode = e.node
@@ -1084,6 +1231,9 @@ const attachInteractionHandlers = (s: Sigma, g: Graph) => {
       if (Math.abs(x1 - x0) > 3 || Math.abs(y1 - y0) > 3) {
         const inside: string[] = []
         graph.forEachNode((nodeId) => {
+          if (parkedHidden.has(nodeId)) {
+            return
+          }
           const gx = graph!.getNodeAttribute(nodeId, 'x') as number
           const gy = graph!.getNodeAttribute(nodeId, 'y') as number
           const v = toViewport({ x: gx, y: gy })
@@ -1094,7 +1244,7 @@ const attachInteractionHandlers = (s: Sigma, g: Graph) => {
         // Labels live outside the graphology graph but share the same
         // graph coordinate system; project each and test against the
         // rubber band rectangle the same way.
-        for (const label of store.labels) {
+        for (const label of visibleLabels.value) {
           const v = toViewport({ x: label.x, y: label.y })
           if (v.x >= x0 && v.x <= x1 && v.y >= y0 && v.y <= y1) {
             inside.push(label.id)
@@ -1252,7 +1402,8 @@ const attachInteractionHandlers = (s: Sigma, g: Graph) => {
     // Double-click on empty stage creates a new free-standing label at
     // the cursor's graph coordinates and enters edit mode. Edit mode only;
     // in View mode let sigma's default double-click zoom happen.
-    if (!store.isEditMode) {
+    // Labels are hidden on the geomap, so one made there would be lost.
+    if (!store.isEditMode || !allows().annotate) {
       return
     }
     const original = e.event.original as MouseEvent | undefined
@@ -1273,6 +1424,10 @@ const attachInteractionHandlers = (s: Sigma, g: Graph) => {
   // re-projects in lock-step with sigma's WebGL render.
   s.on('afterRender', () => {
     cameraVersion.value++
+    syncGeomap()
+    // After the render rather than on camera 'updated': a fit can change the
+    // coordinate frame without moving the camera, as on reload.
+    placeParkedNodes()
   })
 }
 
@@ -1756,7 +1911,7 @@ const deleteSelected = () => {
   if (!graph || !store.isEditMode) {
     return
   }
-  const ids = store.selectedIds.slice()
+  const ids = store.selectedIds.filter(id => !parkedHidden.has(id))
   if (ids.length === 0) {
     return
   }
@@ -2022,6 +2177,8 @@ onBeforeUnmount(() => {
     sigma.kill()
     sigma = null
   }
+  destroyGeomap()
+  store.setGeomapShown(false)
 })
 
 /**
@@ -2295,7 +2452,7 @@ const newShapeId = () => `${SHAPE_PREFIX}${Date.now()}-${shapeIdSequence++}`
 
 /** Shapes render for custom views only (discovered graphs are read-only). */
 const visibleShapes = computed<CanvasShape[]>(() =>
-  store.discoveredGraph === null ? store.shapes : []
+  store.discoveredGraph === null && !geoShown.value ? store.shapes : []
 )
 
 /** The shape's graph rect projected to viewport px (same math as the background). */
@@ -2483,6 +2640,9 @@ const clampToCanvas = (x: number, y: number) => {
 }
 
 const onShapeDrawStart = (event: MouseEvent) => {
+  if (!allows().annotate) {
+    return
+  }
   shapeDrawOverlayRect = (event.currentTarget as HTMLElement).getBoundingClientRect()
   const p = clampToCanvas(event.clientX, event.clientY)
   shapeDraft.value = { x1: p.x, y1: p.y, x2: p.x, y2: p.y }
@@ -2597,10 +2757,10 @@ const HOVER_HALO_DARK = 'rgba(38, 44, 69, 0.85)'
  * geometry; below and above center the text under or over the node.
  */
 const labelAnchor = (
-  data: { x: number; y: number; size: number },
+  data: { x: number; y: number; size: number; labelPlacement?: string },
   labelSize: number
 ): { x: number; y: number; align: 'left' | 'center' } => {
-  switch (store.labelPlacement) {
+  switch (data.labelPlacement ?? store.labelPlacement) {
     case 'bottom':
       return { x: data.x, y: data.y + data.size + labelSize + 2, align: 'center' }
     case 'top':
@@ -2630,9 +2790,11 @@ const drawPlacedNodeLabel = (
 
 const drawThemedNodeHover = (
   context: CanvasRenderingContext2D,
-  data: { x: number; y: number; size: number; label?: string | null },
+  hovered: { x: number; y: number; size: number; label?: string | null; labelPlacement?: string; fullLabel?: string },
   settings: { labelSize: number; labelFont: string; labelWeight: string; labelColor: { color?: string }}
 ) => {
+  // A parked node's label is truncated to its slot; hover shows all of it.
+  const data = hovered.fullLabel ? { ...hovered, label: hovered.fullLabel } : hovered
   const { labelSize: size, labelFont: font, labelWeight: weight } = settings
   context.font = `${weight} ${size}px ${font}`
 
@@ -2646,7 +2808,7 @@ const drawThemedNodeHover = (
   context.shadowColor = 'rgba(0, 0, 0, 0.35)'
 
   const PADDING = 2
-  if (typeof data.label === 'string' && store.labelPlacement === 'right') {
+  if (typeof data.label === 'string' && (data.labelPlacement ?? store.labelPlacement) === 'right') {
     const textWidth = context.measureText(data.label).width
     const boxWidth = Math.round(textWidth + 5)
     const boxHeight = Math.round(size + 2 * PADDING)
@@ -2831,7 +2993,113 @@ const backgroundImageEl = ref<HTMLImageElement>()
  * canvas at its on-screen rect. Free-standing labels and annotation shapes are
  * DOM overlays too and are not yet included.
  */
-const exportImage = async (fileName: string, format: 'png' | 'jpeg' = 'png'): Promise<void> => {
+const TILE_EXPORT_TIMEOUT_MS = 10_000
+let exporting = false
+
+/** A tile loaded again as a CORS image, or null if refused or not in time. */
+const loadCorsTile = (src: string): Promise<HTMLImageElement | null> => new Promise((resolve) => {
+  const img = new Image()
+  const timer = setTimeout(() => {
+    img.src = ''
+    resolve(null)
+  }, TILE_EXPORT_TIMEOUT_MS)
+  img.crossOrigin = 'anonymous'
+  img.onload = () => {
+    clearTimeout(timer)
+    resolve(img)
+  }
+  img.onerror = () => {
+    clearTimeout(timer)
+    resolve(null)
+  }
+  img.src = src
+})
+
+/** How much of the map made it into an export. */
+type TilesDrawn = 'all' | 'some' | 'none'
+
+/**
+ * Draw the geomap's tiles where they sit on screen. The page's own tiles would
+ * taint the canvas, so each is loaded again as a CORS image (fetch() is barred
+ * by the page's connect-src). Only tiles on the canvas are fetched: Leaflet also
+ * keeps a buffer of off-screen tiles and, mid-zoom, the old level's.
+ */
+const drawGeomapTiles = async (ctx: CanvasRenderingContext2D, ratio: number): Promise<TilesDrawn> => {
+  const el = geomapEl.value
+  if (!el) {
+    return 'none'
+  }
+  const origin = el.getBoundingClientRect()
+  const tiles = Array.from(el.querySelectorAll<HTMLImageElement>('img.leaflet-tile-loaded'))
+    .map(img => ({ img, rect: img.getBoundingClientRect() }))
+    .filter(({ img, rect }) => rect.right > origin.left && rect.left < origin.right
+      && rect.bottom > origin.top && rect.top < origin.bottom
+      && Number(getComputedStyle(img).opacity) > 0)
+  const loaded = await Promise.all(tiles.map(async ({ img, rect }) => ({ rect, image: await loadCorsTile(img.src) })))
+  ctx.save()
+  try {
+    if (appStore.theme === 'open-dark') {
+      ctx.filter = DARK_TILE_FILTER
+    }
+    for (const { rect, image } of loaded) {
+      if (image) {
+        ctx.drawImage(image, (rect.left - origin.left) * ratio, (rect.top - origin.top) * ratio, rect.width * ratio, rect.height * ratio)
+      }
+    }
+  } finally {
+    // The filter must not reach the scene drawn after the tiles.
+    ctx.restore()
+  }
+  const drawn = loaded.filter(t => t.image !== null).length
+  return drawn === loaded.length ? 'all' : drawn === 0 ? 'none' : 'some'
+}
+
+/** The parking strip and the tile attribution, as the page shows them. */
+const drawGeomapOverlays = (ctx: CanvasRenderingContext2D, ratio: number, width: number, height: number) => {
+  const css = getComputedStyle(document.documentElement)
+  const surface = css.getPropertyValue('--onms-surface').trim() || '#ffffff'
+  const muted = css.getPropertyValue('--onms-secondary-text-on-surface').trim() || '#666666'
+  const font = css.getPropertyValue('--onms-font-family').trim() || 'sans-serif'
+  if (parking.value.height > 0) {
+    const top = (height - parking.value.height) * ratio
+    ctx.globalAlpha = 0.85
+    ctx.fillStyle = surface
+    ctx.fillRect(0, top, width * ratio, parking.value.height * ratio)
+    ctx.globalAlpha = 1
+    ctx.fillStyle = muted
+    ctx.font = `600 ${12 * ratio}px ${font}`
+    ctx.textBaseline = 'middle'
+    ctx.fillText('No location', 12 * ratio, top + (6 + parking.value.rowHeight / 2) * ratio)
+  }
+  const attribution = new DOMParser().parseFromString(geomapAttribution.value, 'text/html').body.textContent?.trim()
+  if (attribution) {
+    ctx.fillStyle = muted
+    ctx.font = `${11 * ratio}px ${font}`
+    ctx.textAlign = 'right'
+    ctx.textBaseline = 'top'
+    ctx.fillText(attribution, (width - 6) * ratio, 4 * ratio)
+    ctx.textAlign = 'left'
+  }
+}
+
+/**
+ * Resolves 'map-omitted' when the geomap is on but none of its tiles could be
+ * drawn, 'map-partial' when only some could.
+ */
+const exportImage = async (fileName: string, format: 'png' | 'jpeg' = 'png'): Promise<ExportMapResult> => {
+  // A second click while tiles are fetched would start a second export.
+  if (!sigma || exporting) {
+    return
+  }
+  exporting = true
+  try {
+    return await renderExport(fileName, format)
+  } finally {
+    exporting = false
+  }
+}
+
+const renderExport = async (fileName: string, format: 'png' | 'jpeg'): Promise<ExportMapResult> => {
   if (!sigma) {
     return
   }
@@ -2860,6 +3128,13 @@ const exportImage = async (fileName: string, format: 'png' | 'jpeg' = 'png'): Pr
     ctx.drawImage(image, rect.left * ratio, rect.top * ratio, rect.width * ratio, rect.height * ratio)
     ctx.globalAlpha = 1
   }
+  let tilesDrawn: TilesDrawn = 'all'
+  if (geoActive && geomap) {
+    const { width, height } = sigma.getDimensions()
+    const ratio = out.width / width
+    tilesDrawn = await drawGeomapTiles(ctx, ratio)
+    drawGeomapOverlays(ctx, ratio, width, height)
+  }
   ctx.drawImage(scene, 0, 0)
   const blob = await new Promise<Blob | null>(resolve => out.toBlob(resolve, `image/${format}`))
   if (!blob) {
@@ -2875,7 +3150,496 @@ const exportImage = async (fileName: string, format: 'png' | 'jpeg' = 'png'): Pr
   anchor.click()
   anchor.remove()
   setTimeout(() => URL.revokeObjectURL(url), 10_000)
+  return tilesDrawn === 'none' ? 'map-omitted' : tilesDrawn === 'some' ? 'map-partial' : undefined
 }
+
+/* ---------- Geomap background ---------- */
+
+// Labels and boxes are placed in the hand-drawn layout's coordinates, which
+// mean nothing on the map, so they are hidden while it is on.
+const visibleLabels = computed<CanvasLabel[]>(() => (geoShown.value ? [] : store.labels))
+
+// While the map owns node x/y, the hand-placed positions are kept here so that
+// saving, and turning the map off, both use the layout the user drew.
+const manualPositions = new Map<string, GraphPoint>()
+const parkedIds = ref<Set<string>>(new Set())
+// Projected asset locations, before any fan-out; what the fit frames.
+const geoTruePositions = new Map<string, GraphPoint>()
+let geoActive = false
+// geoActive for the template and the other panels.
+const geoShown = ref(false)
+const setGeoActive = (on: boolean) => {
+  geoActive = on
+  geoShown.value = on
+  store.setGeomapShown(on)
+}
+// The map is for custom views only: a discovered graph can be on the canvas
+// while currentView still names a geomap view, e.g. mid-switch to Custom.
+let graphIsView = false
+// The view the canvas graph was loaded from; openView names the next view
+// before its graph is loaded, and the old graph must not take its background.
+let graphViewId: string | undefined
+let addedOnMap = 0
+
+/**
+ * What the user may do on the canvas. The geomap keeps the camera on the fitted
+ * frame, owns node positions (they are asset locations), and hides labels and
+ * shapes, so it allows none of it. Interactions ask here rather than check for
+ * the geomap themselves: a new one has this one place to consult.
+ */
+interface CanvasAllows {
+  /** Pan, zoom or re-center the camera. */
+  moveCamera: boolean
+  /** Drag nodes to new positions. */
+  dragNodes: boolean
+  /** Add labels and draw shapes. */
+  annotate: boolean
+}
+const FREE_CANVAS: CanvasAllows = { moveCamera: true, dragNodes: true, annotate: true }
+const GEOMAP_CANVAS: CanvasAllows = { moveCamera: false, dragNodes: false, annotate: false }
+const allows = (): CanvasAllows => (geoActive ? GEOMAP_CANVAS : FREE_CANVAS)
+
+/** The geomap view is fixed on the fitted frame: no panning or zooming. */
+const applyCameraLock = () => {
+  const free = allows().moveCamera
+  sigma?.setSetting('enableCameraPanning', free)
+  sigma?.setSetting('enableCameraZooming', free)
+  sigma?.setSetting('enableCameraRotation', free)
+}
+
+const resetGeoLayout = () => {
+  setGeoActive(false)
+  manualPositions.clear()
+  geoTruePositions.clear()
+  parkedIds.value = new Set()
+  // placeParkedNodes only runs while the map is on, so it cannot clear these.
+  parkedHidden.clear()
+  parkedLabels.clear()
+  parkedPageOf.clear()
+  parking.value = { height: 0, rowHeight: 0, pages: 1 }
+  parkingPage.value = 0
+  arrangementKey = ''
+  addedOnMap = 0
+}
+
+/** Every node's location has been looked up, so the layout is final and worth framing. */
+const locationsSettled = (): boolean => {
+  let settled = true
+  graph?.forEachNode((id) => {
+    const nodeId = nodeIdFromPlacedId(id)
+    if (nodeId !== null && !(nodeId in store.nodeLocations) && !store.nodeLocationFailures.has(nodeId)) {
+      settled = false
+    }
+  })
+  return settled
+}
+
+/**
+ * Located nodes go to their lat/long and the rest to the parking strip (see
+ * placeParkedNodes). A node whose lookup is still pending stays put; one whose
+ * lookup failed is parked until a retry finds it.
+ */
+const applyGeoLayout = () => {
+  if (!graph || !geoActive) {
+    return
+  }
+  const g = graph
+  const locatedIds: string[] = []
+  const locations: import('@/components/Topology/geo').GeoPoint[] = []
+  const parked: string[] = []
+  g.forEachNode((id) => {
+    const nodeId = nodeIdFromPlacedId(id)
+    const location = nodeId !== null ? store.nodeLocations[nodeId] : null
+    if (location) {
+      locatedIds.push(id)
+      locations.push(location)
+    } else if (location === null || nodeId === null || store.nodeLocationFailures.has(nodeId)) {
+      parked.push(id)
+    }
+  })
+  geoTruePositions.clear()
+  unwrapLongitudes(locations).forEach((location, i) => {
+    const p = geoToGraph(location)
+    geoTruePositions.set(locatedIds[i], p)
+    g.mergeNodeAttributes(locatedIds[i], p)
+  })
+  parkedIds.value = new Set(parked)
+  geoLayoutVersion++
+  // Sized first so the fit can keep the located nodes clear of it.
+  placeParkedNodes()
+  if (locationsSettled()) {
+    fitCamera(false)
+  }
+}
+
+const parking = ref<{ height: number, rowHeight: number, pages: number }>({ height: 0, rowHeight: 0, pages: 1 })
+// The strip page on show; clamped to the pages there are.
+const parkingPage = ref(0)
+// Truncated label per parked node, and the parked nodes left out for want of room.
+const parkedLabels = new Map<string, string>()
+const parkedHidden = new Set<string>()
+let measureContext: CanvasRenderingContext2D | null = null
+// Measured labels by font, limit and text: this runs after every render.
+const fittedLabels = new Map<string, { text: string, width: number }>()
+let arrangeFollowUp = false
+let fittedLimit = 0
+// Inputs of the last arrangement pass, and the strip page each parked node is on.
+let arrangementKey = ''
+const parkedPageOf = new Map<string, number>()
+// Bumped whenever the geo layout is recomputed, so the arrangement follows.
+let geoLayoutVersion = 0
+
+/** A label cut to `maxWidth` px with an ellipsis, and its drawn width. */
+const fitLabel = (ctx: CanvasRenderingContext2D, label: string, maxWidth: number): { text: string, width: number } => {
+  const key = `${ctx.font}|${maxWidth}|${label}`
+  const cached = fittedLabels.get(key)
+  if (cached) {
+    return cached
+  }
+  let fitted = { text: label, width: ctx.measureText(label).width }
+  if (fitted.width > maxWidth) {
+    let lo = 0
+    let hi = label.length
+    while (lo < hi) {
+      const mid = Math.ceil((lo + hi) / 2)
+      if (ctx.measureText(label.slice(0, mid) + '…').width <= maxWidth) {
+        lo = mid
+      } else {
+        hi = mid - 1
+      }
+    }
+    const text = label.slice(0, lo) + '…'
+    fitted = { text, width: ctx.measureText(text).width }
+  }
+  fittedLabels.set(key, fitted)
+  return fitted
+}
+
+watch(() => store.selectedIds, (ids) => {
+  const page = ids.length === 1 ? parkedPageOf.get(ids[0]) : undefined
+  if (page !== undefined && page !== parkingPage.value) {
+    parkingPage.value = page
+    sigma?.refresh()
+  }
+})
+
+const stepParkingPage = (delta: number) => {
+  parkingPage.value = Math.max(0, Math.min(parking.value.pages - 1, parkingPage.value + delta))
+  // The next render re-lays the strip for the new page.
+  sigma?.refresh()
+}
+
+/** Viewport position of each located node, with overlapping ones fanned out. */
+const fannedPositions = (): [string, GraphPoint][] => {
+  if (!sigma || !graph) {
+    return []
+  }
+  const g = graph
+  const located = [...geoTruePositions.entries()].filter(([id]) => g.hasNode(id))
+  const spread = fanOut(located.map(([, p]) => toViewport(p)), 2 * sigma.scaleSize(store.nodeSize) + 6)
+  return located.map(([id], i) => [id, spread[i]])
+}
+
+/** A viewport point with room for its node, clear of the edges and the parking strip. */
+const insideFrame = (v: GraphPoint): boolean => {
+  if (!sigma) {
+    return true
+  }
+  const { width, height } = sigma.getDimensions()
+  const margin = sigma.scaleSize(store.nodeSize) + 8
+  return v.x >= margin && v.x <= width - margin && v.y >= margin && v.y <= height - parking.value.height - margin
+}
+
+/** Move a node only on a real change: this runs after every render, and each write schedules another. */
+const moveTo = (g: Graph, id: string, p: GraphPoint) => {
+  const a = g.getNodeAttributes(id)
+  if (Math.abs((a.x as number) - p.x) > 1e-6 || Math.abs((a.y as number) - p.y) > 1e-6) {
+    g.mergeNodeAttributes(id, p)
+  }
+}
+
+/**
+ * Screen-space arrangement on the map, re-derived after every render: nodes
+ * that would overlap are fanned out around their shared location, and nodes
+ * without one go on the parking strip at the bottom of the canvas.
+ */
+const placeParkedNodes = () => {
+  if (!sigma || !graph || !geoActive) {
+    return
+  }
+  const s = sigma
+  const g = graph
+  // The arrangement depends only on these; hover and status renders change none.
+  const camera = s.getCamera().getState()
+  const { width: w, height: h } = s.getDimensions()
+  const labels = [...parkedIds.value].map(id => (g.hasNode(id) ? g.getNodeAttribute(id, 'label') : '')).join('\u0000')
+  const key = [camera.x, camera.y, camera.ratio, w, h, store.nodeSize, geoLayoutVersion, parkingPage.value,
+    JSON.stringify(s.getCustomBBox()), labels].join('|')
+  if (key === arrangementKey) {
+    return
+  }
+  arrangementKey = key
+  const radius = s.scaleSize(store.nodeSize)
+  for (const [id, v] of fannedPositions()) {
+    moveTo(g, id, s.viewportToGraph(v))
+  }
+
+  const previousHidden = [...parkedHidden].join('|')
+  const previousLabels = [...parkedLabels.values()].join('|')
+  const previousHeight = parking.value.height
+  parkedHidden.clear()
+  parkedPageOf.clear()
+  if (parkedIds.value.size === 0) {
+    if (previousHeight !== 0) {
+      parking.value = { height: 0, rowHeight: 0, pages: 1 }
+    }
+    return
+  }
+  const ids = [...parkedIds.value]
+    .filter(id => g.hasNode(id))
+    .sort((a, b) => String(g.getNodeAttribute(a, 'label')).localeCompare(String(g.getNodeAttribute(b, 'label'))))
+  const { width, height } = s.getDimensions()
+  const limit = parkedLabelLimit(width, radius)
+  if (limit !== fittedLimit) {
+    // Entries for other widths would only pile up through a resize.
+    fittedLabels.clear()
+    fittedLimit = limit
+  }
+  parkedLabels.clear()
+  measureContext ??= document.createElement('canvas').getContext('2d')
+  const widths = ids.map((id) => {
+    const label = String(g.getNodeAttribute(id, 'label') ?? '')
+    if (!measureContext) {
+      parkedLabels.set(id, label)
+      return Math.min(label.length * 7, limit)
+    }
+    measureContext.font = `${s.getSetting('labelWeight')} ${s.getSetting('labelSize')}px ${s.getSetting('labelFont')}`
+    const fitted = fitLabel(measureContext, label, limit)
+    parkedLabels.set(id, fitted.text)
+    return fitted.width
+  })
+  // Nodes on other pages of the strip are hidden, links and all.
+  const starts = parkingPages(widths, width, height, radius)
+  const page = Math.min(parkingPage.value, starts.length - 1)
+  if (page !== parkingPage.value) {
+    parkingPage.value = page
+  }
+  const start = starts[page]
+  const end = starts[page + 1] ?? ids.length
+  const paged = starts.length > 1
+  const layout = parkingLayout(widths.slice(start, end), width, height, radius, 3, paged)
+  // Every page takes the first page's height, so paging never moves the map.
+  const stripHeight = paged ? parkingLayout(widths.slice(0, starts[1]), width, height, radius, 3, true).height : layout.height
+  const shift = stripHeight - layout.height
+  ids.forEach((id, i) => {
+    parkedPageOf.set(id, starts.findLastIndex(first => first <= i))
+    const slot = i >= start && i < end ? layout.slots[i - start] : undefined
+    if (slot) {
+      moveTo(g, id, s.viewportToGraph({ x: slot.x, y: slot.y - shift }))
+    } else {
+      parkedHidden.add(id)
+    }
+  })
+  if (stripHeight !== previousHeight || starts.length !== parking.value.pages) {
+    parking.value = { height: stripHeight, rowHeight: layout.rowHeight, pages: starts.length }
+  }
+  // Which nodes are hidden is read by the node reducer, and the strip's height
+  // by the fit; a change to either needs a pass outside this render.
+  // A renamed label is drawn by the reducer too, from parkedLabels.
+  const hiddenChanged = [...parkedHidden].join('|') !== previousHidden
+    || [...parkedLabels.values()].join('|') !== previousLabels
+  const heightChanged = stripHeight !== previousHeight
+  if ((hiddenChanged || heightChanged) && !arrangeFollowUp) {
+    arrangeFollowUp = true
+    requestAnimationFrame(() => {
+      arrangeFollowUp = false
+      if (heightChanged && locationsSettled()) {
+        fitCamera(false)
+      } else {
+        sigma?.refresh()
+      }
+    })
+  }
+}
+
+const syncGeoMode = () => {
+  // Another view is being opened: its loadView syncs, and this graph is replaced.
+  // An unsaved view has no id, and keeps none of its own once saved.
+  if (graphViewId !== undefined && graphViewId !== store.currentView?.id) {
+    return
+  }
+  const wanted = store.isGeomap && graphIsView
+  if (!graph || wanted === geoActive) {
+    return
+  }
+  const g = graph
+  // Undo entries record positions in the layout they were made in, which the
+  // switch replaces.
+  clearHistory()
+  if (wanted) {
+    // Boxes are hidden on the map; drawing one there would lose it.
+    store.setShapeDrawMode(false)
+    manualPositions.clear()
+    g.forEachNode((id, a) => manualPositions.set(id, { x: a.x as number, y: a.y as number }))
+    setGeoActive(true)
+    applyCameraLock()
+    // Every node again, now that the graph is this view's: asset edits show up.
+    void store.refreshNodeLocations(true)
+    applyGeoLayout()
+    return
+  }
+  g.forEachNode((id) => {
+    const p = manualPositions.get(id)
+    if (p) {
+      g.mergeNodeAttributes(id, p)
+    }
+  })
+  resetGeoLayout()
+  applyCameraLock()
+  fitCamera(false)
+}
+
+/**
+ * A node added on the map has no hand-placed position, so give it one beside
+ * the existing layout, stacked in a column, for when the map is turned off.
+ */
+const manualSpotForNewNode = (): GraphPoint => {
+  const points = [...manualPositions.values()]
+  if (points.length === 0) {
+    return { x: 0, y: -80 * addedOnMap++ }
+  }
+  const maxX = Math.max(...points.map(p => p.x))
+  const maxY = Math.max(...points.map(p => p.y))
+  return { x: maxX + 150, y: maxY - 80 * addedOnMap++ }
+}
+
+let geoLayoutQueued = false
+// Batched: an undo can restore or remove a node and its neighbors in one go.
+const scheduleGeoLayout = () => {
+  if (!geoActive || geoLayoutQueued) {
+    return
+  }
+  geoLayoutQueued = true
+  queueMicrotask(() => {
+    geoLayoutQueued = false
+    applyGeoLayout()
+  })
+}
+
+const onGeoNodeAdded = ({ key }: { key: string }) => {
+  if (!geoActive) {
+    return
+  }
+  if (!manualPositions.has(key)) {
+    manualPositions.set(key, manualSpotForNewNode())
+  }
+  scheduleGeoLayout()
+}
+
+// Sync, so the graph owns the saved id before the watcher below compares ids.
+watch(() => store.lastSavedViewId, (id) => {
+  if (id !== undefined && graphIsView) {
+    graphViewId = id
+  }
+}, { flush: 'sync' })
+watch([() => store.isGeomap, () => store.currentView?.id], () => syncGeoMode())
+watch(() => store.nodeLocations, () => applyGeoLayout())
+watch(parkedIds, () => sigma?.refresh())
+
+const geomapEl = ref<HTMLDivElement>()
+const geomapUnavailable = ref<'failed' | 'unconfigured' | null>(null)
+const geomapAttribution = ref('')
+// The canvas view the map was last moved to, in graph units and tile zoom.
+let lastGeomapView: { x: number, y: number, zoom: number } | null = null
+let geomap: L.Map | null = null
+
+/**
+ * Point the map at what the canvas shows: its center is the viewport center's
+ * location, and its (fractional) zoom is the one that draws a graph unit at
+ * the size the camera currently draws it.
+ */
+const syncGeomap = () => {
+  if (!geomap || !sigma) {
+    return
+  }
+  const { width, height } = sigma.getDimensions()
+  if (!width || !height) {
+    return
+  }
+  const center = sigma.viewportToGraph({ x: width / 2, y: height / 2 })
+  const probe = sigma.viewportToGraph({ x: width / 2 + 1000, y: height / 2 })
+  const unitsPerPixel = Math.hypot(probe.x - center.x, probe.y - center.y) / 1000
+  if (!(unitsPerPixel > 0)) {
+    return
+  }
+  // This runs after every render, hover included; moving the map only when the
+  // view changed keeps Leaflet from re-laying its tiles each time.
+  const zoom = tileZoomFor(1 / unitsPerPixel)
+  const last = lastGeomapView
+  if (last && Math.abs(last.zoom - zoom) < 1e-9
+    && Math.hypot(last.x - center.x, last.y - center.y) / unitsPerPixel < 0.05) {
+    return
+  }
+  lastGeomapView = { x: center.x, y: center.y, zoom }
+  const { lat, lon } = graphToGeo(center)
+  geomap.setView([lat, lon], zoom, { animate: false })
+}
+
+const createGeomap = async (el: HTMLDivElement) => {
+  // Cached per install, so toggling the map costs one request in total.
+  const config = await getGeolocationConfig()
+  if (geomap || geomapEl.value !== el) {
+    return
+  }
+  if (config === false || !config.tileServerUrl) {
+    geomapUnavailable.value = config === false ? 'failed' : 'unconfigured'
+    return
+  }
+  geomapUnavailable.value = null
+  geomapAttribution.value = DOMPurify.sanitize(config.options?.attribution ?? '')
+  // The canvas drives the map, so every Leaflet interaction and animation is off.
+  geomap = L.map(el, {
+    zoomControl: false,
+    // The sigma canvases sit over the map, so Leaflet's own attribution could
+    // not be clicked; the canvas shows it in a layer above them instead.
+    attributionControl: false,
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
+    touchZoom: false,
+    zoomSnap: 0,
+    zoomAnimation: false,
+    fadeAnimation: false,
+    markerZoomAnimation: false,
+    minZoom: -4,
+    maxZoom: 24
+  })
+  // Past the tile server's own range the nearest tiles are scaled, so the map
+  // keeps following the camera instead of clamping and drifting off the nodes.
+  L.tileLayer(config.tileServerUrl, {
+    attribution: config.options?.attribution ?? '',
+    minZoom: -4,
+    maxZoom: 24,
+    minNativeZoom: 0,
+    maxNativeZoom: 19
+  }).addTo(geomap)
+  syncGeomap()
+}
+
+const destroyGeomap = () => {
+  geomap?.remove()
+  geomap = null
+  lastGeomapView = null
+}
+
+watch(geomapEl, (el) => {
+  destroyGeomap()
+  if (el) {
+    void createGeomap(el)
+  }
+})
 
 defineExpose({
   // Reset to the default centered view, but zoomed out slightly so the
@@ -2985,6 +3749,98 @@ defineExpose({
   position: absolute;
   pointer-events: none;
   user-select: none;
+}
+
+/* isolation keeps Leaflet's own pane z-indexes (200-1000) under the canvas. */
+.topology-geomap-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  isolation: isolate;
+  z-index: 0;
+}
+
+.topology-geomap-map {
+  position: absolute;
+  inset: 0;
+}
+
+.topology-geomap-layer.is-dark :deep(.leaflet-tile) {
+  filter: v-bind(DARK_TILE_FILTER);
+}
+
+.topology-geomap-parking {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* height and --parking-row come from parkingLayout in geo.ts */
+  background: color-mix(in srgb, var(--onms-surface) 85%, transparent);
+  border-top: 1px dashed var(--onms-border-on-surface);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.topology-geomap-parking__caption,
+.topology-geomap-pager__count {
+  line-height: var(--parking-row);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--onms-secondary-text-on-surface);
+}
+
+.topology-geomap-parking__caption {
+  position: absolute;
+  top: 6px;
+  left: 0.75rem;
+}
+
+.topology-geomap-pager {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 6px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  height: var(--parking-row);
+}
+
+.topology-canvas-stats.is-top {
+  top: 0.5rem;
+  bottom: auto;
+  right: auto;
+  left: 0.5rem;
+}
+
+.topology-geomap-attribution {
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  right: 0;
+  z-index: 5;
+  max-width: 60%;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.7rem;
+  color: var(--onms-secondary-text-on-surface);
+  background: color-mix(in srgb, var(--onms-surface) 80%, transparent);
+  border-bottom-left-radius: 4px;
+}
+
+.topology-geomap-attribution :deep(a) {
+  pointer-events: auto;
+}
+
+.topology-geomap-empty {
+  position: absolute;
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 0.85em;
+  color: var(--onms-secondary-text-on-surface);
+  pointer-events: none;
 }
 
 .topology-background-layer.is-adjusting {

@@ -19,16 +19,6 @@ Most installations require no action, but there are behavior and compatibility c
 custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
 See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
 
-=== Spring, Hibernate, and Camel platform upgrade
-The core application frameworks have been upgraded to currently supported versions:
-Spring Framework 5.3, Spring Security 5.8, Hibernate 5.6, Hibernate Validator 6.2, and Apache Camel 3.22.
-The OpenNMS-patched forks of Spring, Spring Security, and Hibernate have been removed in favor of stock releases,
-and Eclipse Gemini Blueprint has been replaced by an OpenNMS Spring OSGi extender.
-
-Most installations require no action, but there are behavior and compatibility changes for installations with
-custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
-See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
-
 === Trends removed
 The Trends page has been removed from the Dashboards menu and from the product. `etc/trend-configuration.xml` is no longer read and can be deleted.
 
@@ -50,6 +40,14 @@ Existing rows in the `statisticsreport` tables are left in place and continue to
 The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
 After upgrade, manage SNMP data collection through the *Administration -> Manage SNMP Data Collection Config* page (or the REST API under `/api/v2/datacollectionconf`).
 Direct edits to the archived XML files no longer take effect.
+
+=== SNMP MIB compiler: new UI and REST API
+The SNMP MIB compiler has a new Vue UI and a REST API under `/api/v2/mibs`.
+Use the *SNMP MIB Compiler (New UI)* page to upload, view, edit, compile, and delete MIB files.
+From a compiled MIB, you can generate event definitions, an SNMP data collection group, and graph templates.
+Generated event definitions and data collection groups are stored in the database, the same as manual uploads on the event configuration and SNMP data collection pages.
+Graph templates are written to `etc/snmp-graph.properties.d/`.
+The legacy MIB compiler page remains available.
 
 === Snmp Config file `snmp-config.xml` moved to DB with new UI
 The contents of `snmp-config.xml` are migrated into the database during the upgrade process,
@@ -143,6 +141,14 @@ This includes more reliable rendering with reduced load times as well as expecte
 === Karaf shell pubkey auth
 Support has been added for configuring Karaf shell authentication using ssh public keys.
 
+=== Poll and collection timing metrics
+Pollerd and Collectd now publish timers over JMX, both overall and per service name, under `org.opennms.netmgt.poller:name=polls*` and `org.opennms.netmgt.collectd:name=collections*`.
+They report average, minimum, and maximum poll and collection times along with polls and collections per second.
+The overall timers combine every service, so the per-service timers are generally more useful for timing.
+Failed polls and collections are timed as well, often at their full timeout including retries, and poll times include any Minion queueing, so a few unreachable nodes can raise a service's average.
+The average, minimum, and maximum are weighted toward recent values, but a single slow poll can remain the maximum for up to about half a day.
+OpenNMS collects them about itself and graphs them under the *Pollerd Poll Stats* and *Collectd Collection Stats* resources.
+
 == Breaking changes
 
 === Kafka SASL/OAUTHBEARER endpoint URLs are blocked by default
@@ -171,24 +177,54 @@ See xref:operation:deep-dive/notifications/strategies/webhook.adoc#migrating-fro
 The XMPP notification strategies have been removed and `xmpp-configuration.properties` is ignored.
 Existing `users.xml` files with `xmppAddress` contacts still load, but no notifications are sent to them.
 
+=== PercDetector removed
+The PercDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.snmp.PercDetector` from your foreign source definitions before upgrading.
+The xref:reference:service-assurance/monitors/PercMonitor.adoc[PercMonitor] is unchanged; to keep monitoring a PERC array, add the PERC service to nodes in their requisitions, or detect it with an xref:reference:provisioning/detectors/SnmpDetector.adoc[SnmpDetector] on the OID `.1.3.6.1.4.1.3582.1.1.2.1.3.0.0`.
+
 === IRCcat notification strategy removed
 The IRCcat notification strategy, the stock `ircCat` notification command, and the `irccat.host` and `irccat.port` system properties have been removed.
 An `ircCat` command left in an existing `notificationCommands.xml` still loads, but notices routed to it fail when sent.
 
+=== OpenManageChassisDetector removed
+The OpenManageChassisDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.snmp.OpenManageChassisDetector` from your foreign source definitions before upgrading.
+The xref:reference:service-assurance/monitors/OpenManageChassisMonitor.adoc[OpenManageChassisMonitor] is unchanged; to keep monitoring the chassis status, add the Dell_OpenManageChassis service to nodes in their requisitions, or detect it with an xref:reference:provisioning/detectors/SnmpDetector.adoc[SnmpDetector] on the OID `.1.3.6.1.4.1.674.10892.1.200.10.1.4.1`.
+
 === Asterisk notification strategy removed
 The Asterisk notification strategy, the AsteriskGateway daemon, the stock `callHomePhone`, `callMobilePhone`, and `callWorkPhone` notification commands, and the `asterisk-configuration.properties` and `ami-config.xml` files have been removed.
 Those commands left in an existing `notificationCommands.xml` still load, but notices routed to them fail when sent.
+
+=== OmsaStorageDetector removed
+The OmsaStorageDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.snmp.OmsaStorageDetector` from your foreign source definitions before upgrading.
+The xref:reference:service-assurance/monitors/OmsaStorageMonitor.adoc[OmsaStorageMonitor] is unchanged; to keep monitoring OMSA storage, add the service to nodes in their requisitions, or detect it with an xref:reference:provisioning/detectors/SnmpDetector.adoc[SnmpDetector] on the OID `.1.3.6.1.4.1.674.10893.1.20.140.1.1.19.1`.
 
 === SAML and OpenID SSO support removed
 Spring Security 5.8 has no compatible SAML/OpenID extension libraries, so they are no longer shipped.
 If single sign-on is enabled through a custom `spring-security.d/*.xml` file, the web application fails to start after the upgrade — this affects *all* logins, not just SSO.
 See xref:spring-hibernate-upgrade.adoc#spring-hibernate-upgrade[Spring, Hibernate, and Camel Platform Upgrade] for this and other upgrade-related compatibility changes.
 
+=== MSExchangeDetector removed
+The MSExchangeDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.msexchange.MSExchangeDetector` from your foreign source definitions before upgrading.
+Use the xref:reference:provisioning/detectors/WsmanWqlDetector.adoc[WsmanWqlDetector] or the xref:reference:provisioning/detectors/Win32ServiceDetector.adoc[Win32ServiceDetector] to detect Microsoft Exchange services instead.
+
 === WMI integration removed
 The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.
 
+=== NotesHttpDetector removed
+The NotesHttpDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.simple.NotesHttpDetector` from your foreign source definitions before upgrading.
+To detect a Lotus Notes or HCL Domino web server, use the xref:reference:provisioning/detectors/HttpDetector.adoc[HttpDetector] instead.
+
 === JoeSNMP removed
 The SNMP implementation JoeSNMP was removed in OpenNMS {page-component-title}.
+
+=== NrpeDetector removed
+The NrpeDetector has been removed, and the default foreign source no longer includes the NRPE detector.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.simple.NrpeDetector` from your foreign source definitions, including a customized `default-foreign-source.xml`, before upgrading.
+The xref:reference:service-assurance/monitors/NrpeMonitor.adoc[NrpeMonitor] is unchanged; to keep monitoring NRPE checks, add the NRPE services to nodes in their requisitions.
 
 === C3P0 connection pool removed
 The C3P0 connection pool factory (`org.opennms.core.db.C3P0ConnectionFactory`) and
@@ -196,6 +232,11 @@ The C3P0 connection pool factory (`org.opennms.core.db.C3P0ConnectionFactory`) a
 
 If your `opennms-datasources.xml` explicitly sets `factory="org.opennms.core.db.C3P0ConnectionFactory"`,
 remove that attribute before upgrading.
+
+=== SmbDetector removed
+The SmbDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.smb.SmbDetector` from your foreign source definitions before upgrading.
+The xref:reference:service-assurance/monitors/SmbMonitor.adoc[SmbMonitor] is unchanged; to keep monitoring SMB, add the SMB service to nodes in their requisitions, or detect it with a xref:reference:provisioning/detectors/TcpDetector.adoc[TcpDetector] on port 445.
 
 === At least PostgreSQL 14.0 is required
 
@@ -206,6 +247,11 @@ If upgrading PostgreSQL to at least version 14 isn’t possible and you’re com
 Use this only as a last resort, since it may affect compatibility.
 Be aware that doing so takes you beyond supported configurations — here be dragons.
 
+=== CitrixDetector removed
+The CitrixDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.simple.CitrixDetector` from your foreign source definitions before upgrading.
+The xref:reference:service-assurance/monitors/CitrixMonitor.adoc[CitrixMonitor] is unchanged; to keep monitoring the ICA protocol, add the service to nodes in their requisitions, or detect it with a xref:reference:provisioning/detectors/TcpDetector.adoc[TcpDetector] on port 1494.
+
 === Prometheus RemoteWrite plugin (formerly Cortex TSS plugin)
 
 The OpenNMS Cortex TSS plugin has been renamed to the Prometheus RemoteWrite plugin to reflect that it works with any Prometheus `remote_write`-compatible time series store, not just Cortex.
@@ -215,6 +261,11 @@ IMPORTANT: If you previously configured the plugin via `$\{OPENNMS_HOME}/etc/org
 
 The Karaf feature is now `opennms-plugins-prometheus-remotewrite` (previously `opennms-plugins-cortex-tss`), and the KAR file is `opennms-prometheus-remotewrite-plugin` (previously `opennms-cortex-tss-plugin`).
 See xref:deployment:time-series-storage/timeseries/prometheus-remotewrite.adoc[the Prometheus RemoteWrite plugin documentation] for details.
+
+=== DominoIIOPDetector removed
+The DominoIIOPDetector has been removed.
+Remove any detector that uses the class `org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector` from your foreign source definitions before upgrading.
+The DominoIIOPMonitor is unchanged; to keep monitoring Domino IIOP, add the DominoIIOP service to nodes in their requisitions, or detect it with a xref:reference:provisioning/detectors/TcpDetector.adoc[TcpDetector] on port 63148.
 
 === Newts and Cassandra time series storage deprecated
 
@@ -243,6 +294,10 @@ The asset fields `password`, `enable` and `snmpcommunity` are now write-only in 
 === Raw SQL query parameter requires ROLE_ADMIN
 The raw SQL `query` parameter of the v1 REST API now requires `ROLE_ADMIN`.
 
+=== DOCTYPE rejected in requisition and foreign-source XML
+Requisition and foreign-source XML that contains a `DOCTYPE` is now rejected on import.
+Remove the `DOCTYPE` from requisitions that external tools write, or set the system property `org.opennms.provision.requisition.allowDoctype=true` to accept it.
+
 === Ops Board and Wallboard removed
 
 The Vaadin-based Ops Board (operator board) and Wallboard, their dashlets, and the *Wallboard Configuration* admin page have been removed.
@@ -255,15 +310,19 @@ There is no drop-in replacement.
 
 The `Actiond` daemon and its configuration `etc/actiond-configuration.xml` have been removed. Actiond-related event fields will still validate but are ignored.
 
-=== KSC Reports renamed to Graph Collections
+=== KSC Reports replaced by Graph Collections
 
-The feature formerly labeled *KSC Reports* is now *Graph Collections* throughout the web UI (the main-menu entry, page titles, breadcrumbs, the *Add to Graph Collection* dialog, and the home-page section) and the documentation.
+The feature formerly labeled *KSC Reports* is now *Graph Collections* throughout the web UI and the documentation, and its pages have moved to the Vue UI under `ui/index.html#/graph-collections`.
+The list, view, editor and the *Add to Graph Collection* dialog on the resource graphs pages are all new; a collection can be created from a blank form, as a copy of another, from the on-the-fly collection of a node, or straight from the dialog when adding a graph.
 The global search category formerly named *KSC Report* is now *Graph Collection*.
 
-This is a user-facing label change only.
-The underlying configuration file (`etc/ksc-performance-reports.xml`), the REST endpoints under `/rest/ksc`, the `KSC/*.jsp` page URLs, and the internal identifiers are unchanged, so existing reports, saved bookmarks, and API integrations continue to work without modification.
+The legacy `KSC/*.jsp` pages and `KSC/*.htm` controllers have been removed.
+`KSC/index.jsp` and `KSC/customView.htm` redirect to the new list and view pages, with the report, timespan and graph type parameters carried over, so bookmarks and links to a report keep working; the legacy editor URLs do not redirect.
+The view page refreshes itself every five minutes, as the legacy page did.
+The REST API under `/rest/ksc` has been removed; use the xref:development:rest/graph_collections.adoc[Graph Collections API] under `/api/v2/graph-collections` instead.
+The configuration file `etc/ksc-performance-reports.xml` and the `ksc.default.graphsPerLine` property are unchanged, so existing reports keep working.
 
-NOTE: Update any of your own documentation, runbooks, training material, or UI automation that refers to *KSC Reports* by name — including tests that match on the old menu label or the *KSC Report* search category — to use *Graph Collections*.
+NOTE: Update any of your own documentation, runbooks, training material, UI automation or API integrations that refer to *KSC Reports*, the `KSC/` page URLs or the `/rest/ksc` endpoints.
 
 === BeanShell integration deprecated
 
@@ -285,4 +344,7 @@ The deprecated JMS-Northbounder plugin was removed in this release.
 
 === Juniper TCA Collector plugin (plugin-collector-juniper-tca) removed
 The deprecated Juniper TCA Collector plugin was removed in this release.
+
+=== New Karaf shell commands for mananging foreign sources, requisitions, detectors, and nodes.
+New commands have been added to the Karaf shell for provisioning workflows, specifically: `add-detector-to-fsd`, `add-requisitioned-node`, `delete-detector-from-foreignsource`, `delete-requisitioned-node`, `delete-requisition`, `import-requisition`, `show-foreignsource-definition`, `show-requisition`, and `synchronize-requisition`.
 

@@ -96,10 +96,11 @@
       </Routes>
     </Routing>
 
-    <!-- Plain default format logging on stdout -->
+    <!-- Plain default format logging on stdout. bin/opennms sets -Dopennms.log.console.prefix to add a
+         timestamp only when stdout goes to output.log; journald and containers timestamp it themselves. -->
     <Console name="ConsolePlain" target="SYSTEM_OUT" follow="true">
       <PatternLayout>
-        <pattern>[%p] %m%n</pattern>
+        <pattern>\${sys:opennms.log.console.prefix:-}[%p] %m%n</pattern>
       </PatternLayout>
     </Console>
 
@@ -288,7 +289,6 @@
       <DynamicThresholdFilter key="prefix" defaultThreshold="DEBUG">
         <!-- always leave instrumentation logging at INFO -->
         <KeyValuePair key="instrumentation"      value="INFO" />
-        <KeyValuePair key="access-point-monitor" value="DEBUG" />
         <KeyValuePair key="ackd"                 value="DEBUG" />
         <KeyValuePair key="alarmd"               value="DEBUG" />
         <KeyValuePair key="archiver"             value="DEBUG" />

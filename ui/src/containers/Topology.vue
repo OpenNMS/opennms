@@ -658,7 +658,17 @@ const onExport = () => {
   const base = isDiscovered.value
     ? `topology-${sourceSlug.value}${variantKey.value ? '-' + variantKey.value : ''}`
     : `topology-${store.currentView?.name ?? 'view'}`
-  void canvasRef.value?.exportImage(base.replace(/[^\w.-]+/g, '-'))
+  void Promise.resolve(canvasRef.value?.exportImage(base.replace(/[^\w.-]+/g, '-'))).then((result) => {
+    if (result === 'map-omitted' || result === 'map-partial') {
+      showToast({
+        message: result === 'map-omitted'
+          ? 'Exported without the map: its tiles could not be copied from the tile server.'
+          : 'Exported with part of the map missing: some tiles could not be copied from the tile server.',
+        severity: 'warn',
+        timeout: 6000
+      })
+    }
+  })
 }
 const stepSzl = (delta: number) =>
   navFocus(store.focusNodeId, Math.max(0, Math.min(10, store.semanticZoomLevel + delta)))

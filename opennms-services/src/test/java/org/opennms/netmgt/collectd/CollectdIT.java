@@ -25,12 +25,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -40,12 +43,14 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.After;
 import org.junit.Before;
@@ -81,17 +86,20 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.collection.api.CollectionTimedOut;
-import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.dao.mock.UnimplementedMonitoredServiceDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.scheduler.mock.MockScheduler;
@@ -116,6 +124,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 public class CollectdIT {
+    private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipIfDao;
     private FilterDao m_filterDao;
     private Collectd m_collectd;
@@ -173,8 +182,6 @@ public class CollectdIT {
 
     @Before
     public void setUp() throws Exception {
-        NodeDao m_nodeDao;
-
         MockLogAppender.setupLogging();
 
         Resource threshdResource = new ClassPathResource("/etc/thresholds.xml");
@@ -235,26 +242,32 @@ public class CollectdIT {
     }
 
     private static Package getCollectionPackageThatMatchesSNMP() {
+        return getCollectionPackage("pkg", "default", "SNMP");
+    }
+
+    private static Package getCollectionPackage(String name, String collection, String svcName) {
         Package pkg = new Package();
-        pkg.setName("pkg");
+        pkg.setName(name);
         Filter filter = new Filter();
         filter.setContent("IPADDR IPLIKE *.*.*.*");
         pkg.setFilter(filter);
+        addService(pkg, svcName, collection);
+        return pkg;
+    }
+
+    private static void addService(Package pkg, String svcName, String collection) {
         Service svc = new Service();
         pkg.addService(svc);
-        svc.setName("SNMP");
+        svc.setName(svcName);
         svc.setStatus("on");
         Parameter parm = new Parameter();
         parm.setKey("collection");
-        parm.setValue("default");
+        parm.setValue(collection);
         svc.addParameter(parm);
         parm = new Parameter();
         parm.setKey("thresholding-enabled");
         parm.setValue("true");
         svc.addParameter(parm);
-        svc.setStatus("on");
-
-        return pkg;
     }
 
     @After
@@ -395,6 +408,60 @@ public class CollectdIT {
     }
 
     /**
+     * NMS-20493: a configured collector whose class never registers (e.g. WMI after its removal in 36)
+     * must not keep other services from collecting, and its own services must be skipped.
+     */
+    @Test
+    public void testUnavailableCollectorDoesNotBlockOtherCollectors() throws Exception {
+        OnmsIpInterface iface = getInterface();
+
+        setupCollector("SNMP");
+        Collector wmi = new Collector();
+        wmi.setService("WMI");
+        wmi.setClassName("org.opennms.netmgt.collectd.WmiCollector");
+        List<Collector> collectors = new ArrayList<>(m_collectdConfigFactory.getCollectors());
+        collectors.add(wmi);
+        when(m_collectdConfigFactory.getCollectors()).thenReturn(collectors);
+
+        setupInterface(iface);
+        setupTransactionManager();
+
+        Package pkg = getCollectionPackageThatMatchesSNMP();
+        Service wmiSvc = new Service();
+        wmiSvc.setName("WMI");
+        wmiSvc.setStatus("on");
+        pkg.addService(wmiSvc);
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(pkg));
+        when(m_collectdConfigFactory.interfaceInPackage(iface, pkg)).thenReturn(true);
+
+        ThresholdingService mockThresholdingService = mock(ThresholdingService.class);
+        when(mockThresholdingService.createSession(anyInt(), anyString(), anyString(), isA(ServiceParameters.class))
+             ).thenReturn(mock(ThresholdingSession.class));
+        m_collectd.setThresholdingService(mockThresholdingService);
+
+        m_collectd.afterPropertiesSet();
+        m_collectd.start();
+
+        // Runs the scheduling task for SNMP, which creates its CollectableService
+        m_scheduler.next();
+
+        assertEquals("collectable service count", 1, m_collectd.getCollectableServiceCount());
+        // MockScheduler ignores isReady(), so check it directly: this is what LegacyScheduler polls
+        assertTrue("SNMP service must be ready despite the unavailable WMI collector",
+                m_collectd.getCollectableServices().get(0).isReady());
+        // Event-driven scheduling (e.g. nodeGainedService) of the WMI service must skip it, not fail
+        assertTrue(m_collectd.getSpecificationsForInterface(iface, "WMI").isEmpty());
+
+        m_collectd.stop();
+
+        MockLogAppender.assertLogMatched(Level.WARN, "not available yet");
+        MockLogAppender.resetState();
+
+        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
+        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+    }
+
+    /**
      * A successful collection stamps collectlastgood on the service's ifservices row and leaves
      * collectlastfail alone. This drives the real chain: Collectd wiring, CollectableService,
      * the transaction template, and the MonitoredServiceDao update by primary key.
@@ -501,6 +568,324 @@ public class CollectdIT {
         verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
     }
 
+    /**
+     * NMS-20432: a service rejected when it was first scheduled (sysObjectId still null
+     * because the agent was unreachable during import) is scheduled by the
+     * reinitializePrimarySnmpInterface event that the next successful rescan sends.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testReinitializeSchedulesServiceRejectedAtStartup() throws Exception {
+        ServiceCollector svcCollector = mock(ServiceCollector.class);
+        doThrow(new CollectionInitializationException("No sysObjectId"))
+            .doNothing()
+            .when(svcCollector).validateAgent(isA(CollectionAgent.class), isA(Map.class));
+        when(svcCollector.getEffectiveLocation(anyString())).thenReturn(LocationUtils.DEFAULT_LOCATION_NAME);
+
+        setupCollector("SNMP", svcCollector);
+
+        OnmsIpInterface iface = getInterface();
+        new OnmsMonitoredService(iface, new OnmsServiceType("SNMP"));
+
+        setupInterface(iface);
+        when(m_nodeDao.get(1)).thenReturn(iface.getNode());
+        when(m_filterDao.isValid(eq("192.168.1.1"), anyString())).thenReturn(true);
+        setupTransactionManager();
+
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
+        when(m_collectdConfigFactory.interfaceInPackage(iface, getCollectionPackageThatMatchesSNMP())).thenReturn(true);
+
+        ThresholdingService mockThresholdingService = mock(ThresholdingService.class);
+        when(mockThresholdingService.createSession(anyInt(), anyString(), anyString(), isA(ServiceParameters.class))
+             ).thenReturn(mock(ThresholdingSession.class));
+        m_collectd.setThresholdingService(mockThresholdingService);
+
+        m_collectd.afterPropertiesSet();
+        m_collectd.start();
+        m_scheduler.next();
+
+        assertEquals("rejected at startup", 0, m_collectd.getCollectableServices().size());
+
+        final Event reinit = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond")
+            .setNodeid(1)
+            .setInterface(addr("192.168.1.1"))
+            .getEvent();
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinit));
+
+        assertEquals("scheduled by the rescan's reinitialize event", 1, m_collectd.getCollectableServices().size());
+
+        // a second rescan updates the existing service instead of adding another
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinit));
+        assertEquals(1, m_collectd.getCollectableServices().size());
+
+        m_collectd.stop();
+
+        verify(m_filterDao, times(1)).isValid(eq("192.168.1.1"), anyString());
+        verify(m_filterDao, times(1)).flushActiveIpAddressListCache();
+        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
+        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+    }
+
+    /**
+     * NMS-20432: until its next run, a service marked for reparenting keeps the old node id.
+     * A reinitialize event for the new node in that window must not schedule a second collector.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testReinitializeDuringReparentDoesNotScheduleDuplicate() throws Exception {
+        setupCollector("SNMP");
+
+        OnmsIpInterface iface = getInterface();
+        new OnmsMonitoredService(iface, new OnmsServiceType("SNMP"));
+
+        OnmsNode newNode = new OnmsNode();
+        newNode.setId(2);
+        OnmsIpInterface reparented = new OnmsIpInterface(InetAddressUtils.getInetAddress("192.168.1.1"), newNode);
+        reparented.setId(1);
+        new OnmsMonitoredService(reparented, new OnmsServiceType("SNMP"));
+
+        setupInterface(iface);
+        when(m_nodeDao.get(2)).thenReturn(newNode);
+        when(m_filterDao.isValid(eq("192.168.1.1"), anyString())).thenReturn(true);
+        setupTransactionManager();
+
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(getCollectionPackageThatMatchesSNMP()));
+        when(m_collectdConfigFactory.interfaceInPackage(any(OnmsIpInterface.class), eq(getCollectionPackageThatMatchesSNMP()))).thenReturn(true);
+
+        ThresholdingService mockThresholdingService = mock(ThresholdingService.class);
+        when(mockThresholdingService.createSession(anyInt(), anyString(), anyString(), isA(ServiceParameters.class))
+             ).thenReturn(mock(ThresholdingSession.class));
+        m_collectd.setThresholdingService(mockThresholdingService);
+
+        m_collectd.afterPropertiesSet();
+        m_collectd.start();
+        m_scheduler.next();
+        assertEquals(1, m_collectd.getCollectableServices().size());
+
+        final Event reparent = new EventBuilder(EventConstants.INTERFACE_REPARENTED_EVENT_UEI, "test")
+            .setNodeid(2)
+            .setInterface(addr("192.168.1.1"))
+            .addParam(EventConstants.PARM_OLD_NODEID, "1")
+            .addParam(EventConstants.PARM_NEW_NODEID, "2")
+            .getEvent();
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reparent));
+
+        final Event reinit = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond")
+            .setNodeid(2)
+            .setInterface(addr("192.168.1.1"))
+            .getEvent();
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinit));
+
+        assertEquals("the moving collector counts for the new node", 1, m_collectd.getCollectableServices().size());
+
+        m_collectd.stop();
+
+        verify(m_filterDao, never()).isValid(anyString(), anyString());
+        verify(m_filterDao, never()).flushActiveIpAddressListCache();
+        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
+        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+    }
+
+    /**
+     * NMS-20432: a rejected service is retried even when another service on the same
+     * address is already collected.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testReinitializeSchedulesRejectedServiceNextToCollectedOne() throws Exception {
+        ServiceCollector svcCollector = mock(ServiceCollector.class);
+        final AtomicBoolean snmpRejected = new AtomicBoolean(false);
+        doAnswer(invocation -> {
+            Map<String, Object> params = invocation.getArgument(1);
+            if ("snmp".equals(params.get("collection")) && snmpRejected.compareAndSet(false, true)) {
+                throw new CollectionInitializationException("No sysObjectId");
+            }
+            return null;
+        }).when(svcCollector).validateAgent(isA(CollectionAgent.class), isA(Map.class));
+        when(svcCollector.getEffectiveLocation(anyString())).thenReturn(LocationUtils.DEFAULT_LOCATION_NAME);
+
+        setupCollectors(svcCollector, "SNMP", "WS-Man");
+
+        OnmsIpInterface iface = getInterface();
+        new OnmsMonitoredService(iface, new OnmsServiceType("SNMP"));
+        new OnmsMonitoredService(iface, new OnmsServiceType("WS-Man"));
+
+        setupInterface(iface);
+        when(m_ipIfDao.findByServiceType("WS-Man")).thenReturn(Collections.singletonList(iface));
+        when(m_nodeDao.get(1)).thenReturn(iface.getNode());
+        when(m_filterDao.isValid(eq("192.168.1.1"), anyString())).thenReturn(true);
+        setupTransactionManager();
+
+        Package pkg = getCollectionPackage("pkg", "snmp", "SNMP");
+        addService(pkg, "WS-Man", "wsman");
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(pkg));
+        when(m_collectdConfigFactory.interfaceInPackage(iface, pkg)).thenReturn(true);
+
+        ThresholdingService mockThresholdingService = mock(ThresholdingService.class);
+        when(mockThresholdingService.createSession(anyInt(), anyString(), anyString(), isA(ServiceParameters.class))
+             ).thenReturn(mock(ThresholdingSession.class));
+        m_collectd.setThresholdingService(mockThresholdingService);
+
+        m_collectd.afterPropertiesSet();
+        m_collectd.start();
+        // one scheduleCollector entry per collector
+        m_scheduler.next();
+        m_scheduler.next();
+
+        assertEquals("only WS-Man scheduled at startup", 1, m_collectd.getCollectableServices().size());
+        assertEquals("WS-Man", m_collectd.getCollectableServices().iterator().next().getServiceName());
+
+        final Event reinit = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond")
+            .setNodeid(1)
+            .setInterface(addr("192.168.1.1"))
+            .getEvent();
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinit));
+
+        assertEquals("SNMP scheduled next to WS-Man", 2, m_collectd.getCollectableServices().size());
+
+        m_collectd.stop();
+
+        verify(m_filterDao, times(1)).isValid(eq("192.168.1.1"), anyString());
+        verify(m_filterDao, times(1)).flushActiveIpAddressListCache();
+        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
+        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+    }
+
+    /**
+     * NMS-20432: a service collected in one package and rejected in another is retried
+     * for the package that rejected it.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testReinitializeSchedulesServiceRejectedInSecondPackage() throws Exception {
+        ServiceCollector svcCollector = mock(ServiceCollector.class);
+        final AtomicBoolean rejected = new AtomicBoolean(false);
+        doAnswer(invocation -> {
+            Map<String, Object> params = invocation.getArgument(1);
+            if ("rejected".equals(params.get("collection")) && rejected.compareAndSet(false, true)) {
+                throw new CollectionInitializationException("No sysObjectId");
+            }
+            return null;
+        }).when(svcCollector).validateAgent(isA(CollectionAgent.class), isA(Map.class));
+        when(svcCollector.getEffectiveLocation(anyString())).thenReturn(LocationUtils.DEFAULT_LOCATION_NAME);
+
+        setupCollector("SNMP", svcCollector);
+
+        OnmsIpInterface iface = getInterface();
+        new OnmsMonitoredService(iface, new OnmsServiceType("SNMP"));
+
+        setupInterface(iface);
+        when(m_nodeDao.get(1)).thenReturn(iface.getNode());
+        when(m_filterDao.isValid(eq("192.168.1.1"), anyString())).thenReturn(true);
+        setupTransactionManager();
+
+        Package accepting = getCollectionPackage("accepting", "default", "SNMP");
+        Package rejecting = getCollectionPackage("rejecting", "rejected", "SNMP");
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Arrays.asList(accepting, rejecting));
+        when(m_collectdConfigFactory.interfaceInPackage(eq(iface), any(Package.class))).thenReturn(true);
+
+        ThresholdingService mockThresholdingService = mock(ThresholdingService.class);
+        when(mockThresholdingService.createSession(anyInt(), anyString(), anyString(), isA(ServiceParameters.class))
+             ).thenReturn(mock(ThresholdingSession.class));
+        m_collectd.setThresholdingService(mockThresholdingService);
+
+        m_collectd.afterPropertiesSet();
+        m_collectd.start();
+        m_scheduler.next();
+
+        assertEquals("only the accepting package scheduled at startup", 1, m_collectd.getCollectableServices().size());
+        assertEquals("accepting", m_collectd.getCollectableServices().iterator().next().getPackageName());
+
+        final Event reinit = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond")
+            .setNodeid(1)
+            .setInterface(addr("192.168.1.1"))
+            .getEvent();
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinit));
+
+        assertEquals("rejecting package scheduled too", 2, m_collectd.getCollectableServices().size());
+
+        m_collectd.stop();
+
+        verify(m_filterDao, times(1)).isValid(eq("192.168.1.1"), anyString());
+        verify(m_filterDao, times(1)).flushActiveIpAddressListCache();
+        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
+        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+    }
+
+    /**
+     * NMS-20432: a rejected service whose package filter does not admit the interface
+     * does not flush the filter cache on every rescan.
+     */
+    @Test
+    public void testReinitializeDoesNotFlushWhenFilterRejectsInterface() throws Exception {
+        setupRejectedSnmp(getCollectionPackageThatMatchesSNMP());
+        when(m_filterDao.isValid(eq("192.168.1.1"), anyString())).thenReturn(false);
+
+        sendReinitialize(1);
+        assertEquals(0, m_collectd.getCollectableServices().size());
+
+        m_collectd.stop();
+
+        verify(m_filterDao, times(1)).isValid(eq("192.168.1.1"), anyString());
+        verify(m_filterDao, never()).flushActiveIpAddressListCache();
+        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
+        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+    }
+
+    /**
+     * NMS-20432: a package whose specific/range rules exclude the interface is not
+     * consulted at all, so its filter is neither queried nor flushed.
+     */
+    @Test
+    public void testReinitializeDoesNotFlushWhenRangeExcludesInterface() throws Exception {
+        Package pkg = getCollectionPackageThatMatchesSNMP();
+        pkg.addSpecific("10.0.0.1");
+        setupRejectedSnmp(pkg);
+
+        sendReinitialize(1);
+        assertEquals(0, m_collectd.getCollectableServices().size());
+
+        m_collectd.stop();
+
+        verify(m_filterDao, never()).isValid(anyString(), anyString());
+        verify(m_filterDao, never()).flushActiveIpAddressListCache();
+        verify(m_eventIpcManager, times(1)).addEventListener(eq(m_collectd), (Collection<String>)isA(Collection.class));
+        verify(m_eventIpcManager, times(1)).removeEventListener(m_collectd);
+    }
+
+    /** One SNMP service on 192.168.1.1 that the collector always rejects, with the given package. */
+    @SuppressWarnings("unchecked")
+    private void setupRejectedSnmp(Package pkg) throws Exception {
+        ServiceCollector svcCollector = mock(ServiceCollector.class);
+        doThrow(new CollectionInitializationException("No sysObjectId"))
+            .when(svcCollector).validateAgent(isA(CollectionAgent.class), isA(Map.class));
+        when(svcCollector.getEffectiveLocation(anyString())).thenReturn(LocationUtils.DEFAULT_LOCATION_NAME);
+
+        setupCollector("SNMP", svcCollector);
+
+        OnmsIpInterface iface = getInterface();
+        new OnmsMonitoredService(iface, new OnmsServiceType("SNMP"));
+
+        setupInterface(iface);
+        when(m_nodeDao.get(1)).thenReturn(iface.getNode());
+        setupTransactionManager();
+
+        when(m_collectdConfigFactory.getPackages()).thenReturn(Collections.singletonList(pkg));
+
+        m_collectd.afterPropertiesSet();
+        m_collectd.start();
+        m_scheduler.next();
+        assertEquals("rejected at startup", 0, m_collectd.getCollectableServices().size());
+    }
+
+    private void sendReinitialize(int nodeId) {
+        final Event reinit = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond")
+            .setNodeid(nodeId)
+            .setInterface(addr("192.168.1.1"))
+            .getEvent();
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinit));
+    }
+
     @SuppressWarnings("unchecked")
     private static <K> Collection<K> isACollection(Class<K> innerClass) {
         return isA(Collection.class);
@@ -571,15 +956,23 @@ public class CollectdIT {
     }
 
     private void setupCollector(String svcName, ServiceCollector svcCollector) throws CollectionInitializationException {
+        setupCollectors(svcCollector, svcName);
+    }
+
+    private void setupCollectors(ServiceCollector svcCollector, String... svcNames) throws CollectionInitializationException {
         MockServiceCollector.setDelegate(svcCollector);
 
-        // Tell the config to use the MockServiceCollector for the specified service
-        Collector collector = new Collector();
-        collector.setService(svcName);
-        collector.setClassName(MockServiceCollector.class.getName());
+        // Tell the config to use the MockServiceCollector for the specified services
+        List<Collector> collectors = new ArrayList<>();
+        for (String svcName : svcNames) {
+            Collector collector = new Collector();
+            collector.setService(svcName);
+            collector.setClassName(MockServiceCollector.class.getName());
+            collectors.add(collector);
+        }
 
         m_collectdConfigFactory = mock(CollectdConfigFactory.class);
-        when(m_collectdConfigFactory.getCollectors()).thenReturn(Collections.singletonList(collector));
+        when(m_collectdConfigFactory.getCollectors()).thenReturn(collectors);
         when(m_collectdConfigFactory.getThreads()).thenReturn(1);
 
         m_collectd.setCollectdConfigFactory(m_collectdConfigFactory);

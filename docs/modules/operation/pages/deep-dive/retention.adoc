@@ -1,4 +1,4 @@
-When using RRD/JRB storage, data is stored in the file system using a RRD-type strategy.
+When using RRDtool storage, data is stored in the file system using a RRD-type strategy.
 With this "round robin" storage, data is kept in aggregated time buckets, with the latest bucket overwriting the oldest bucket.
 Multiple collections within the time period for a bucket will cause the data to be consolidated based on the type of bucket.
 

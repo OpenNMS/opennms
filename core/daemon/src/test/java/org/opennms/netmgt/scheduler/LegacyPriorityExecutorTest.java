@@ -272,4 +272,18 @@ public class LegacyPriorityExecutorTest {
         assertTrue("Task should have been executed after backoff delays", completed);
         assertTrue("Task should have been checked for readiness multiple times", readyCallCount.get() >= readyAfterCalls);
     }
+
+    @Test
+    public void testSetThreads() {
+        LegacyPriorityExecutor executor = new LegacyPriorityExecutor("ResizeTest", 2, 5);
+        assertEquals(2, executor.getThreads());
+
+        executor.setThreads(3);
+        assertEquals(3, executor.getThreads());
+
+        executor.setThreads(0);
+        assertEquals(1, executor.getThreads());
+
+        executor.stop();
+    }
 }

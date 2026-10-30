@@ -21,12 +21,12 @@
 ///
 
 import { requireCondition, requireRole } from '@/main/router/guards'
-import useRole from '@/composables/useRole'
 import { useAuthStore } from '@/stores/authStore'
 import { WhoAmIResponse } from '@/types'
 import { createTestingPinia } from '@pinia/testing'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import { nextTick, ref } from 'vue'
+import { flushPromises } from '@vue/test-utils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { ref } from 'vue'
 import { RouteLocationNormalized, START_LOCATION } from 'vue-router'
 
 const { showSnackBar } = vi.hoisted(() => ({ showSnackBar: vi.fn() }))
@@ -39,19 +39,14 @@ const to = { path: '/notifications-config', matched: [{}] } as unknown as RouteL
 const fromInApp = { path: '/notifications', matched: [{}] } as unknown as RouteLocationNormalized
 const fromFreshLoad = START_LOCATION
 
-const run = (from: RouteLocationNormalized) => {
-  const { adminRole } = useRole()
-  const guard = requireRole(adminRole, 'Must be admin.') as (...args: unknown[]) => Promise<unknown>
-  return guard(to, from, () => undefined)
-}
+// Built once for the file, as the router builds its guards once at module load,
+// while each test below gets a fresh pinia.
+const adminGuard = requireRole('adminRole', 'Must be admin.') as (...args: unknown[]) => Promise<unknown>
+const run = (from: RouteLocationNormalized) => adminGuard(to, from, () => undefined)
 
 describe('requireRole', () => {
-  // useRole caches the auth store at module level, so keep one pinia for the file
-  beforeAll(() => {
-    createTestingPinia()
-  })
-
   beforeEach(() => {
+    createTestingPinia()
     const authStore = useAuthStore()
     authStore.loaded = true
     authStore.whoAmI = { roles: ['ROLE_USER'] } as WhoAmIResponse
@@ -74,6 +69,17 @@ describe('requireRole', () => {
     expect(await run(fromFreshLoad)).toBe('/')
   })
 
+  it('reads the pinia that is active when the navigation runs', async () => {
+    expect(await run(fromInApp)).toBe(false)
+
+    createTestingPinia()
+    const authStore = useAuthStore()
+    authStore.loaded = true
+    authStore.whoAmI = { roles: ['ROLE_ADMIN'] } as WhoAmIResponse
+
+    expect(await run(fromInApp)).toBe(true)
+  })
+
   it('waits for the roles before deciding, so the page never mounts first', async () => {
     const authStore = useAuthStore()
     authStore.loaded = false
@@ -82,7 +88,7 @@ describe('requireRole', () => {
     const pending = run(fromFreshLoad).then((result) => {
       decided = result
     })
-    await nextTick()
+    await flushPromises()
     expect(decided).toBe('pending')
 
     authStore.whoAmI = { roles: ['ROLE_ADMIN'] } as WhoAmIResponse
@@ -123,7 +129,7 @@ describe('requireCondition', () => {
     const pending = run(fromFreshLoad).then((result) => {
       decided = result
     })
-    await nextTick()
+    await flushPromises()
     expect(decided).toBe('pending')
 
     allowed.value = true
@@ -131,5 +137,16 @@ describe('requireCondition', () => {
     await pending
 
     expect(decided).toBe(true)
+  })
+
+  it('takes getters, read when the navigation runs', async () => {
+    const state = ref({ ready: true, allowed: false })
+    const guard = requireCondition(() => state.value.ready, () => state.value.allowed, 'Not allowed.') as
+      (...args: unknown[]) => Promise<unknown>
+
+    expect(await guard(to, fromInApp, () => undefined)).toBe(false)
+
+    state.value = { ready: true, allowed: true }
+    expect(await guard(to, fromInApp, () => undefined)).toBe(true)
   })
 })

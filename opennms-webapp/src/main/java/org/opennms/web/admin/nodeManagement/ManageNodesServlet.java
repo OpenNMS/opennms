@@ -23,12 +23,7 @@ package org.opennms.web.admin.nodeManagement;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -44,7 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.NotificationFactory;
@@ -70,8 +64,6 @@ public class ManageNodesServlet extends HttpServlet {
     private static final String UPDATE_SERVICE = "UPDATE ifservices SET status = ? FROM ipInterface INNER JOIN node ON ipInterface.nodeId = node.nodeId WHERE ifServices.ipInterfaceId = ipInterface.id AND node.nodeId = ? AND ipInterface.ipAddr = ? AND ifServices.serviceId = ?";
 
     private static final String DELETE_SERVICE_OUTAGES = "DELETE FROM outages WHERE ifregainedservice IS NULL AND ifserviceid IN (SELECT ifServices.id FROM ifServices, ipInterface, node WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = node.nodeId AND node.nodeId = ? AND ipInterface.ipAddr = ? AND ifServices.serviceId = ?)"; 
-
-    private static final String INCLUDE_FILE_NAME = "include";
 
     /** Constant <code>NOTICE_NAME="Email-Reporting"</code> */
     public static final String NOTICE_NAME = "Email-Reporting";
@@ -108,9 +100,6 @@ public class ManageNodesServlet extends HttpServlet {
             serviceList = Arrays.asList(request.getParameterValues("serviceCheck"));
         }
 
-        // the list of interfaces that need to be put into the URL file
-        List<String> addToURL = new ArrayList<>();
-
         List<String> unmanageInterfacesList = new ArrayList<>();
         List<String> manageInterfacesList = new ArrayList<>();
 
@@ -128,11 +117,6 @@ public class ManageNodesServlet extends HttpServlet {
                 for (int j = 0; j < allNodes.size(); j++) {
                     ManagedInterface curInterface = allNodes.get(j);
                     String intKey = curInterface.getNodeid() + "-" + curInterface.getAddress();
-
-                    // see if this interface needs added to the url list
-                    if (interfaceList.contains(intKey)) {
-                        addToURL.add(curInterface.getAddress());
-                    }
 
                     // determine what is managed and unmanged
                     if (interfaceList.contains(intKey) && curInterface.getStatus().equals("unmanaged")) {
@@ -209,9 +193,6 @@ public class ManageNodesServlet extends HttpServlet {
                 if (unmanageInterfacesList.size() > 0)
                     unmanageInterfaces(unmanageInterfacesList, connection);
 
-                // update the packages url file
-                writeURLFile(addToURL);
-
                 connection.commit();
             } finally { // close off the db connection
                 connection.setAutoCommit(true);
@@ -221,9 +202,6 @@ public class ManageNodesServlet extends HttpServlet {
         } finally {
             d.cleanUp();
         }
-
-        // send the event to restart SCM
-        sendSCMRestartEvent();
 
         // forward the request for proper display
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/manageNodesFinish.jsp");
@@ -277,43 +255,6 @@ public class ManageNodesServlet extends HttpServlet {
         Statement update = connection.createStatement();
         update.executeUpdate(query.toString());
         update.close();
-    }
-
-    /**
-     */
-    private void sendSCMRestartEvent() throws ServletException {
-        EventBuilder bldr = new EventBuilder("uei.opennms.org/internal/restartSCM", "web ui");
-
-        sendEvent(bldr.getEvent());
-    }
-
-    /**
-     */
-    // FIXME: This is totally the wrong place to be doing this.
-    // FIXME: This is totally the wrong place to be doing this.
-    private void writeURLFile(List<String> interfaceList) throws ServletException {
-        String path = System.getProperty("opennms.home") + File.separator + "etc" + File.separator;
-
-        String fileName = path + INCLUDE_FILE_NAME;
-
-        Writer fileWriter = null;
-        FileOutputStream fos = null;
-        try {
-        	fos = new FileOutputStream(fileName);
-        	fileWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
-
-            for (int i = 0; i < interfaceList.size(); i++) {
-                fileWriter.write((String) interfaceList.get(i) + System.getProperty("line.separator"));
-            }
-
-            // write out the file and close
-            fileWriter.flush();
-        } catch (IOException e) {
-            throw new ServletException("Error writing the include url file " + fileName + ": " + e.getMessage(), e);
-        } finally {
-        	IOUtils.closeQuietly(fileWriter);
-        	IOUtils.closeQuietly(fos);
-        }
     }
 
     /**

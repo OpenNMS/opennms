@@ -20,8 +20,9 @@
 /// License.
 ///
 
-import { rest } from './axiosInstances'
-import { QueryParameters, IfServiceApiResponse } from '@/types'
+import { rest, v2 } from './axiosInstances'
+import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
+import { QueryParameters, IfServiceApiResponse, NodeLinkService } from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
 
 const endpoint = '/ifservices'
@@ -46,4 +47,28 @@ const getNodeIfServices = async (queryParameters?: QueryParameters): Promise<IfS
   }
 }
 
-export { getNodeIfServices }
+/**
+ * The node's monitored services of the given types, with the address each runs on -- for the
+ * Node Details Services menu. One v2 query for all of them.
+ */
+const getNodeServicesByName = async (nodeId: string, serviceNames: string[]): Promise<ValidationResultWithPayload<NodeLinkService[]>> => {
+  const names = serviceNames.map(name => `serviceType.name==${name}`).join(',')
+
+  try {
+    const resp = await v2.get(`${endpoint}?limit=0&_s=node.id==${nodeId};(${names})`)
+
+    if (resp.status === 204 || !resp.data) {
+      return createResultWithPayload(true, '', [])
+    }
+
+    const services: NodeLinkService[] = (resp.data.service ?? [])
+      .map((s: any) => ({ serviceName: s.serviceType?.name, ipAddress: s.ipAddress }))
+      .filter((s: NodeLinkService) => s.serviceName && s.ipAddress)
+
+    return createResultWithPayload(true, '', services)
+  } catch (_err) {
+    return createResultWithPayload<NodeLinkService[]>(false, `Unable to load the services on node ${nodeId}`)
+  }
+}
+
+export { getNodeIfServices, getNodeServicesByName }

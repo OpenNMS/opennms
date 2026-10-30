@@ -56,6 +56,15 @@ public interface SnmpCollectionSystemDefDao extends OnmsDao<SnmpCollectionSystem
 
     SnmpCollectionSystemDef findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer  id);
 
+    /**
+     * Find the system definitions with this exact name in all sources. Names are not
+     * unique across sources, so the result can contain more than one entry.
+     * The owning source is fetched with each entry.
+     */
+    List<SnmpCollectionSystemDef> findAllByName(String name);
+
+    List<String> findAllSystemDefNames();
+
     void updateSystemDefEnabledFlag(Integer snmpDataCollectionSourceId, List<Integer> ids, boolean enabled);
 
 }

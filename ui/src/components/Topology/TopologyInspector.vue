@@ -85,13 +85,24 @@ License.
           <div class="ti-heading">
             <span class="ti-group-title">Background</span>
           </div>
-          <div class="ti-heading">
+          <div class="ti-row">
+            <label class="ti-toggle-label" for="ti-geomap">Geographic Background</label>
+            <OnmsToggleSwitch
+              input-id="ti-geomap"
+              :model-value="isGeomapBackground"
+              @update:model-value="setGeomapBackground"
+            />
+            <TopologyInfoTip
+              text="Shows a map and places nodes at their asset latitude/longitude. Nodes without one are parked below; labels and boxes are hidden."
+            />
+          </div>
+          <div v-if="!isGeomapBackground" class="ti-heading">
             <span class="ti-label">Image</span>
             <TopologyInfoTip
               text="Pick an image or upload one. On the canvas, drag the image to move it and drag its corner to resize it."
             />
           </div>
-          <div v-if="backgroundAssets.length > 0" class="ti-icon-grid">
+          <div v-if="!isGeomapBackground && backgroundAssets.length > 0" class="ti-icon-grid">
             <button
               v-for="asset in backgroundAssets"
               :key="asset.id"
@@ -104,7 +115,7 @@ License.
               <img :src="assetUrl(asset.id)" :alt="asset.name" />
             </button>
           </div>
-          <div class="ti-row">
+          <div v-if="!isGeomapBackground" class="ti-row">
             <OnmsButton label="Upload image…" size="small" variant="text" @click="bgFileInput?.click()" />
           </div>
           <input
@@ -114,7 +125,7 @@ License.
             class="ti-hidden-input"
             @change="onBackgroundFileChosen"
           />
-          <template v-if="store.background?.ref">
+          <template v-if="!isGeomapBackground && store.background?.ref">
             <div class="ti-row">
               <label class="ti-row-label" for="ti-bg-opacity">Opacity</label>
               <input
@@ -431,7 +442,7 @@ License.
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { OnmsButton, OnmsCard, OnmsColorPicker, OnmsInputNumber, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCard, OnmsColorPicker, OnmsInputNumber, OnmsInputText, OnmsToggleSwitch } from '@opennms/onms-ui'
 import { useTopologyStore } from '@/stores/topologyStore'
 import { isLabelId, isShapeId, nodeIdFromPlacedId } from '@/components/Topology/nodeIds'
 import { severityColor } from '@/components/Topology/severity'
@@ -464,6 +475,7 @@ import {
 import DOMPurify from 'dompurify'
 import type { Node } from '@/types'
 import type { CanvasLinkBinding, DiscoveredNeighbor } from '@/types/topology'
+import { assetLocation, type GeoPoint } from '@/components/Topology/geo'
 
 
 /** Minimal read/write surface the canvas exposes (via defineExpose). */
@@ -618,32 +630,12 @@ const labelFontSize = computed<number>({
 const nodeDetail = ref<Node | null>(null)
 
 /**
- * One coordinate, or null when the asset does not really carry it. Number() is
- * not enough on its own: the nodes API sends an unset asset field as JSON null,
- * and Number(null) is 0 rather than NaN, so a node with a longitude and no
- * latitude was being plotted on the equator.
- */
-const coordinate = (value: unknown): number | null => {
-  if (value === null || value === undefined || value === '') {
-    return null
-  }
-  const n = Number(value)
-  return Number.isFinite(n) ? n : null
-}
-
-/**
  * Asset coordinates, when the node has them. Read off the node the inspector
- * already fetched, so the map costs no extra request. A node with only one of
- * the two is not placeable and is treated as having none.
+ * already fetched, so the map costs no extra request.
  */
-const geoPosition = computed<{ lat: number, lon: number } | null>(() => {
-  const asset = nodeDetail.value?.assetRecord as
-    { latitude?: number | string, longitude?: number | string } | undefined
-  const lat = coordinate(asset?.latitude)
-  const lon = coordinate(asset?.longitude)
-  // 0,0 is the null island, not a location anyone provisioned.
-  return lat !== null && lon !== null && (lat !== 0 || lon !== 0) ? { lat, lon } : null
-})
+const geoPosition = computed<GeoPoint | null>(() =>
+  assetLocation(nodeDetail.value?.assetRecord as { latitude?: unknown, longitude?: unknown } | undefined)
+)
 
 /** City and state if the asset names them, so the map has a caption. */
 const geoPlace = computed<string>(() => {
@@ -883,6 +875,20 @@ const onBackgroundOpacity = (event: Event) => {
 }
 
 const removeBackground = () => store.setBackground(undefined)
+
+const isGeomapBackground = computed(() => store.background?.type === 'geomap')
+
+/** The map replaces the image without discarding it, so turning the map off brings the image back. */
+const setGeomapBackground = (on: boolean) => {
+  const current = store.background
+  if (on) {
+    store.setBackground({ ...current, type: 'geomap' })
+  } else {
+    store.setBackground(current?.ref ? { ...current, type: 'image' } : undefined)
+    // Clearing the background leaves the Background tool; this was a toggle inside it.
+    store.setBackgroundAdjustMode(true)
+  }
+}
 
 /* ---- Shape (annotation frame) editing, store-backed ---- */
 const shape = computed(() =>
@@ -1325,6 +1331,11 @@ const linkLabel = computed<string>({
 .ti-range {
   flex: 1 1 auto;
   min-width: 0;
+}
+
+.ti-toggle-label {
+  flex: 1 1 auto;
+  font-size: 0.8rem;
 }
 
 .ti-check {

@@ -349,7 +349,7 @@ sub find_git {
 }
 
 sub get_minimum_java {
-	my $minimum_java = '21';
+	my $minimum_java = '25';
 
 	my $pomfile = File::Spec->catfile($PREFIX, 'pom.xml');
 	if (-e $pomfile) {
@@ -368,7 +368,7 @@ sub get_minimum_java {
 
 # Set maximum Java version to 22
 sub get_maximum_java {
-	return 22;
+	return 26;
 }
 
 sub get_version_from_java {

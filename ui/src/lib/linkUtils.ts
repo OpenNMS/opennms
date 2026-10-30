@@ -92,3 +92,8 @@ export const outageDetailLink = (baseHref: string, outageId: string | number) =>
  */
 export const nodeOutageListLink = (baseHref: string, nodeId: string | number, outageType?: string) =>
   `${baseHref}${OUTAGE_LIST_PATH}?filter=node%3D${nodeId}${outageType ? `&outtype=${outageType}` : ''}`
+
+// The legacy alarm detail page, and the legacy alarm list filtered to one node.
+export const alarmDetailLink = (baseHref: string, alarmId: string | number) => `${baseHref}alarm/detail.htm?id=${alarmId}`
+
+export const nodeAlarmListLink = (baseHref: string, nodeId: string | number) => `${baseHref}alarm/list.htm?filter=node%3D${nodeId}`

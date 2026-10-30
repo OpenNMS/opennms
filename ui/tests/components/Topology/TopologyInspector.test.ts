@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { OnmsColorPicker } from '@opennms/onms-ui'
+import { OnmsColorPicker, OnmsToggleSwitch } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -452,5 +452,45 @@ describe('TopologyInspector link interface state', () => {
   it('asks for the interface enlinkd named, on the link\'s source node', async () => {
     await mountWithLink({ ifIndex: 2, ifOperStatus: 1 })
     expect(vi.mocked(getInterfaceState)).toHaveBeenCalledWith(1, 2)
+  })
+})
+
+describe('TopologyInspector geomap background', () => {
+  const mountBackground = async (background: Record<string, unknown>) => {
+    const wrapper = mount(TopologyInspector, {
+      props: { canvas: null },
+      global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })] }
+    })
+    const store = useTopologyStore()
+    store.currentView = {
+      id: 'v1', name: 'v1', nodes: [], links: [], labels: [],
+      viewport: { zoom: 1, panX: 0, panY: 0 }, background
+    } as never
+    store.isEditMode = true as never
+    store.selectedIds = [] as never
+    store.setBackgroundAdjustMode(true)
+    await flushPromises()
+    const toggle = wrapper.findAllComponents(OnmsToggleSwitch).find(t => t.props('inputId') === 'ti-geomap')
+    expect(toggle, 'no geomap toggle rendered').toBeTruthy()
+    return { store, toggle: toggle! }
+  }
+
+  it('keeps the Background tool open when the map is turned off', async () => {
+    const { store, toggle } = await mountBackground({ type: 'geomap' })
+    toggle.vm.$emit('update:modelValue', false)
+    await flushPromises()
+    expect(store.background).toBeUndefined()
+    expect(store.isBackgroundAdjustMode).toBe(true)
+  })
+
+  it('brings the image back when the map is turned off', async () => {
+    const image = { type: 'image', ref: 'asset:a1', x: -300, y: 200, width: 600, height: 400, opacity: 0.5 }
+    const { store, toggle } = await mountBackground(image)
+    toggle.vm.$emit('update:modelValue', true)
+    await flushPromises()
+    expect(store.background).toEqual({ ...image, type: 'geomap' })
+    toggle.vm.$emit('update:modelValue', false)
+    await flushPromises()
+    expect(store.background).toEqual(image)
   })
 })

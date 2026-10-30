@@ -151,7 +151,7 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
 
             $scope.refresh();
         }])
-        .controller('GrafanaEndpointModalController', ['$scope', '$uibModalInstance', '$sce', 'GrafanaEndpointsService', 'endpoint', function($scope, $uibModalInstance, $sce, GrafanaEndpointsService, endpoint) {
+        .controller('GrafanaEndpointModalController', ['$scope', '$uibModalInstance', 'GrafanaEndpointsService', 'endpoint', function($scope, $uibModalInstance, GrafanaEndpointsService, endpoint) {
             $scope.uidRegex = '[a-zA-Z0-9]+[a-zA-Z0-9_-]*';
             $scope.endpoint = endpoint || {revealApiKey: false};
             $scope.buttonName = $scope.endpoint.id ? 'Update' : 'Create';
@@ -195,7 +195,7 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
                 }, function(response) {
                     $scope.verification.state = 'failure';
                     if (response.status === 400 && response.data && response.data.message) {
-                        $scope.verification.result = $sce.trustAsHtml(response.data.message);
+                        $scope.verification.result = response.data.message;
                     } else {
                         $scope.verification.result = 'Something went wrong';
                     }

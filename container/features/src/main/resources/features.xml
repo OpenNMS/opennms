@@ -329,6 +329,10 @@
         <bundle dependency="true">mvn:io.netty/netty-codec-xml/${netty4Version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
     </feature>
+    <feature name="opennms-core-camel-hardening" version="${project.version}" description="OpenNMS :: Core :: Camel :: Hardening">
+        <feature>camel-core</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.camel.hardening/${project.version}</bundle>
+    </feature>
     <feature name="opennms-core-daemon" version="${project.version}" description="OpenNMS :: Core :: Daemon">
         <feature>activemq-client</feature>
         <feature>asm</feature>
@@ -364,6 +368,7 @@
     </feature>
     <feature name="opennms-distributed-core-jms" description="OpenNMS :: Distributed :: Core :: JMS" version="${project.version}">
         <feature>camel-jms</feature>
+        <feature>opennms-core-camel-hardening</feature>
         <feature>activemq-client</feature>
         <feature>jms</feature>
         <feature version="[5.3,5.4)">spring</feature>
@@ -500,6 +505,7 @@
         <bundle>mvn:org.opennms.core.ipc.sink.camel/org.opennms.core.ipc.sink.camel.client/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-ipc-sink-camel-server" version="${project.version}" description="OpenNMS :: Core :: IPC :: Sink :: Camel :: Server">
+        <feature>opennms-core-camel-hardening</feature>
         <feature>opennms-core-ipc-sink-camel-common</feature>
         <bundle>mvn:org.opennms.core.ipc.sink.camel/org.opennms.core.ipc.sink.camel.server/${project.version}</bundle>
     </feature>
@@ -544,6 +550,7 @@
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-ipc-rpc-jms" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: JMS Impl.">
+        <feature>opennms-core-camel-hardening</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
         <feature>opennms-dao-api</feature>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.jms-impl/${project.version}</bundle>
@@ -910,7 +917,7 @@
         <feature>jolokia-client</feature>
         <feature>json-simple</feature>
         <feature>jcifs</feature>
-        <feature>ssh</feature>
+        <feature version="${karafSshdVersion}">ssh</feature>
         <feature>opennms-core-web</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
         <feature>opennms-dhcpd</feature>
@@ -1292,7 +1299,7 @@
         <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.vaadin-components/widgetset/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.themes/onms-default-theme/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features/org.opennms.features.mib-compiler/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.mib-compiler/org.opennms.features.mib-compiler.parser/${project.version}</bundle>
         <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
     </feature>
     <feature name="osgi-nrtg-api" version="${project.version}" description="OpenNMS :: Features :: NRTG :: Features :: API">
@@ -1799,7 +1806,10 @@
         <bundle>mvn:org.opennms.features.config.rest/org.opennms.features.config.rest.impl/${project.version}</bundle>
     </feature>
     <feature name="opennms-config-management-osgi-del" description="OpenNMS :: Features :: Config :: Osgi :: Delegate" version="${project.version}">
-        <bundle>mvn:org.opennms.features.config.osgi/org.opennms.features.config.osgi.del/${project.version}</bundle>
+        <!-- start-level must match etc/startup.properties: otherwise a later feature install that was
+             computed before the framework reached level 80 stops this bundle to raise its start level,
+             taking ConfigurationAdmin (felix.cm.pm) down with it while the new bundles start -->
+        <bundle start-level="9">mvn:org.opennms.features.config.osgi/org.opennms.features.config.osgi.del/${project.version}</bundle>
     </feature>
     <feature name="opennms-config-management-osgi-cm" description="OpenNMS :: Features :: Config :: Osgi :: CM" version="${project.version}">
         <feature>opennms-config-management</feature>
@@ -1836,6 +1846,7 @@
     </feature>
 
     <feature name="opennms-core-ipc-twin-jms" description="OpenNMS :: Core :: IPC :: Twin :: JMS" version="${project.version}">
+        <feature>opennms-core-camel-hardening</feature>
         <feature>camel-blueprint</feature>
         <feature>camel-jms</feature>
         <feature version="[5.3,5.4)">spring</feature>

@@ -256,6 +256,7 @@ binary-indep: build install
 	dh_testroot
 	dh_systemd_enable --name=opennms --no-enable
 	dh_systemd_start --name=opennms --no-restart-after-upgrade
+	dh_installlogrotate --name=opennms
 	dh_installman
 	dh_installdebconf
 	dh_link

@@ -1,7 +1,9 @@
 import TrapdAdvancedConfiguration from '@/components/TrapdConfiguration/TrapdAdvancedConfiguration.vue'
 import { validateTrapdJson, validateTrapdXml } from '@/lib/trapdValidator'
 import { downloadTrapdConfig, uploadTrapdConfiguration } from '@/services/trapdConfigurationService'
+import { useAuthStore } from '@/stores/authStore'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
+import { WhoAmIResponse } from '@/types'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
@@ -20,20 +22,6 @@ vi.mock('@/composables/useSnackbar', () => ({
 vi.mock('@/composables/useDownload', () => ({
   default: () => ({ downloadFile: downloadFileMock })
 }))
-
-// useRole returns computed refs, so the component accesses them via .value; the mock must do the same.
-vi.mock('@/composables/useRole', async () => {
-  const { computed } = await import('vue')
-  return {
-    default: () => ({
-      adminRole: computed(() => true),
-      filesystemEditorRole: computed(() => false),
-      dcbRole: computed(() => false),
-      snmpRole: computed(() => true),
-      rolesAreLoaded: computed(() => true)
-    })
-  }
-})
 
 vi.mock('@/composables/useSpinner', () => ({
   default: () => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() })
@@ -144,12 +132,25 @@ describe('TrapdAdvancedConfiguration.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     setActivePinia(createTestingPinia({ stubActions: true }))
+    const authStore = useAuthStore()
+    authStore.whoAmI = { roles: ['ROLE_ADMIN'] } as WhoAmIResponse
+    authStore.loaded = true
     trapStore = useTrapdConfigStore()
     trapStore.fetchTrapConfig = vi.fn().mockResolvedValue(undefined)
     validateTrapdXmlMock.mockReturnValue({ valid: true, errors: [] })
     validateTrapdJsonMock.mockReturnValue({ valid: true, errors: [] })
     uploadTrapdConfigurationMock.mockResolvedValue(undefined)
     downloadTrapdConfigMock.mockResolvedValue({ data: 'content', headers: {}} as any)
+  })
+
+  it('disables upload and download for a non-admin user', () => {
+    useAuthStore().whoAmI = { roles: ['ROLE_USER'] } as WhoAmIResponse
+
+    const wrapper = mountComponent()
+    expect(wrapper.text()).toContain('You need Admin access')
+    for (const testId of ['upload-xml-button', 'upload-json-button', 'download-xml-button', 'download-json-button']) {
+      expect(wrapper.find(`[data-test="${testId}"]`).attributes('disabled')).toBeDefined()
+    }
   })
 
   it('renders all upload and download buttons', () => {

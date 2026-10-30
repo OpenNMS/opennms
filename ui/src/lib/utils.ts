@@ -55,6 +55,15 @@ export const ellipsify = (text: string, count: number) => {
   return text
 }
 
+/** The text of an HTML fragment, without its markup -- for a tooltip or a title attribute. */
+export const htmlToText = (html?: string | null): string => {
+  if (!html) {
+    return ''
+  }
+
+  return (new DOMParser().parseFromString(html, 'text/html').body.textContent ?? '').replace(/\s+/g, ' ').trim()
+}
+
 /**
  * Returns whether the object has at least one valid (non-empty) string property.
  */

@@ -22,7 +22,6 @@
 package org.opennms.netmgt.config;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
-import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -375,15 +374,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
         // that it is in the include range and is not excluded
         //
 
-        byte[] addr = toIpAddrBytes(iface);
-
-        boolean has_range_include = pkg.hasIncludeRange(iface);
-        boolean has_specific = pkg.hasSpecific(addr);
-
-        has_specific = pkg.hasSpecificUrl(iface, has_specific);
-        boolean has_range_exclude = pkg.hasExcludeRange(iface);
-
-        boolean packagePassed = has_specific || (has_range_include && !has_range_exclude);
+        boolean packagePassed = pkg.addressInRanges(iface);
         if(packagePassed) {
             LOG.info("interfaceInPackage: Interface {} passed filter and specific/range for package {}?: {}", iface, pkg.getName(), packagePassed);
         } else {

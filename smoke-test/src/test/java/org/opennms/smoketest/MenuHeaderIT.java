@@ -66,8 +66,9 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("Dashboards", "Database Reports");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[@data-name='report-templates']")));
 
+        // the Vue Graph Collections page (ui/index.html#/graph-collections)
         clickMenuItem("Dashboards", "Graph Collections");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Customized Reports']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[contains(@class, 'card-title') and normalize-space(text())='Graph Collections']")));
 
         clickMenuItem("Dashboards", "Surveillance Dashboard");
         driver.switchTo().frame(findElementByXpath("/html/body/div//iframe"));
@@ -374,7 +375,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // testAllFormsArePresent()
         reportsPage();
         findElementByName("resourceGraphs");
-        findElementByName("kscReports");
+        findElementByName("graphCollections");
 
         // testAllLinks
         reportsPage();
@@ -384,8 +385,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         reportsPage();
         findElementByLink("Graph Collections (Performance, Nodes, Domains)").click();
-        findElementByXpath("//div[@class='card-header']/span[text()='Customized Reports']");
-        findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
+        // the Vue Graph Collections page (ui/index.html#/graph-collections)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[contains(@class, 'card-title') and normalize-space(text())='Graph Collections']")));
 
         reportsPage();
         findElementByLink("Database Reports").click();

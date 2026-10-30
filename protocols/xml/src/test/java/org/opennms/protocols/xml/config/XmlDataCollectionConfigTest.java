@@ -30,7 +30,7 @@ import java.util.Collection;
 
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.netmgt.collection.api.AttributeType;
 
 /**
@@ -38,7 +38,7 @@ import org.opennms.netmgt.collection.api.AttributeType;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class XmlDataCollectionConfigTest extends XmlTestNoCastor<XmlDataCollectionConfig> {
+public class XmlDataCollectionConfigTest extends XmlTest<XmlDataCollectionConfig> {
 
     private final XmlDataCollectionConfig sampleObject;
 

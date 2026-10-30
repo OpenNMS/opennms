@@ -57,3 +57,43 @@ export const formatInDisplayZone = (
   pattern?: string,
   zone?: string
 ): string => formatInTimeZone(value, zone ?? displayTimeZone(), pattern ?? displayDateFormat())
+
+// date-fns tokens that belong to the time of day rather than the date.
+const TIME_TOKENS = new Set(['H', 'h', 'K', 'k', 'm', 's', 'S', 'a', 'b', 'B'])
+
+/**
+ * Split a date-fns pattern into its date part and its time part, at the first time-of-day token
+ * outside a quoted literal: 'yyyy-MM-dd\'T\'HH:mm:ssxxx' gives 'yyyy-MM-dd' and 'HH:mm:ssxxx'.
+ * Whatever separates the two (spaces, a comma, a dash, an @, a quoted 'T') is dropped. A pattern with no time
+ * tokens is all date; time is then empty.
+ */
+export const splitDateTimePattern = (pattern: string): { date: string, time: string } => {
+  let quoted = false
+
+  for (let i = 0; i < pattern.length; i++) {
+    const c = pattern[i]
+
+    if (c === '\'') {
+      quoted = !quoted
+    } else if (!quoted && TIME_TOKENS.has(c)) {
+      const date = pattern.slice(0, i).replace(/(\s|[,@-]|'[^']*')+$/, '').trim()
+
+      return { date, time: pattern.slice(i).trim() }
+    }
+  }
+
+  return { date: pattern, time: '' }
+}
+
+/**
+ * An instant as two strings in the display zone and format -- the date, and the time with its
+ * zone -- for a narrow column that shows them on two lines.
+ */
+export const formatDateAndTimeInDisplayZone = (value: number | Date): { date: string, time: string } => {
+  const { date, time } = splitDateTimePattern(displayDateFormat())
+
+  return {
+    date: date ? formatInDisplayZone(value, date) : '',
+    time: time ? formatInDisplayZone(value, time) : ''
+  }
+}

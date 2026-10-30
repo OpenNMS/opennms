@@ -21,6 +21,15 @@
     License.
 
 --%>
+<%@ page import="org.opennms.web.springframework.security.LoginRedirects" %>
+<%
+  // This page is only for a login with the default admin password (see OpenNMSAuthSuccessHandler).
+  // Otherwise go to the main page, as PasswordGateActionServlet does.
+  if (!LoginRedirects.isPasswordGatePending(request.getSession(false))) {
+    response.sendRedirect(LoginRedirects.buildTargetUrl(request, null, null));
+    return;
+  }
+%>
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Password Gate" />
   <jsp:param name="quiet" value="true" />

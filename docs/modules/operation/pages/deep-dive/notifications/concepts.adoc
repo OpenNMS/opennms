@@ -89,11 +89,12 @@ Because of this, the default administrators group is called "Admin"—case matte
 Within a step, each target is associated with one or more notification commands.
 If multiple commands are selected, they will run at the same time.
 
-Each step also has an auto-notify switch which you may set to `off`, `on`, or `auto`.
-This switch specifies the logic used when deciding whether to send a notice for an automatically acknowledged notification to a target that was not on duty when the notification was generated.
-If the switch is `off`, notices will never be sent to the target.
-If the switch is `on`, notices will always be sent to the target.
-If the switch is set to `auto`, the system deploys heuristics aimed at "doing the right thing."
+Each target also has an auto-notify switch which you may set to `off`, `on`, or `auto` (the default).
+The switch decides whether the target receives a resolution notice when the notification is automatically acknowledged.
+If the switch is `off`, resolution notices are never sent to the target.
+If the switch is `on`, they are always sent.
+If the switch is `auto`, they are sent only if nobody acknowledged the notification before it was automatically acknowledged.
+For more information, see <<automatic-acknowledgment>>.
 
 == Variable bindings filters
 
@@ -147,3 +148,126 @@ In this example, Business Service Monitoring problem events would only trigger n
 <1> Event parameter name to filter
 <2> Value to match for the specified event parameter.
 If the value starts with a `~`, it will be processed as a regular expression, otherwise it will be a string match.
+
+[[event-matching]]
+== Matching events to notifications
+
+Notifd checks every event against the notifications defined in `notifications.xml`.
+It ignores events whose definition sets `dest="donotpersist"` on `logmsg` or `auto-clean="true"` in `alarm-data`.
+While notifications are turned off globally, or when the event sets `notify="false"` on `logmsg`, notifd creates no notices for the event, but it still processes it for automatic acknowledgment.
+
+A notification matches an event when all of the following conditions are true:
+
+* The notification's `status` is `on`.
+* The notification's `<uei>` equals the event's UEI, is `MATCH-ANY-UEI`, or starts with `~` and the rest is a regular expression that matches the whole UEI.
+* The optional `<event-severity>` regular expression matches the event's severity, ignoring case.
+* The `<rule>` filter matches the node, interface, and service of the event (see below).
+* The optional `<varbind>` filter matches an event parameter (see <<variable-bindings-filters>>).
+
+Notifd evaluates the `<rule>` together with the event's node ID, interface, and service, so the rule must select the node, interface, and service that the event refers to.
+For example, `IPADDR != '0.0.0.0'` matches any event for a node that has an IP interface, while `(IPADDR IPLIKE 10.1.*.*)` matches only events for interfaces in that range.
+An event that has no node, interface, or service matches any rule, unless the rule has `strict="true"`.
+A `MATCH-ANY-UEI` notification is an exception: it matches such an event only if its rule is exactly `IPADDR != '0.0.0.0'` or `IPADDR IPLIKE *.*.*.*`.
+
+When an event names a node, interface, and service, notifd also checks that notices are enabled for that service on that interface, and it does not send a notice when they are turned off.
+
+=== One event, several notifications
+
+The `match-all` attribute in `notifd-configuration.xml` decides what happens when more than one notification matches:
+
+* With `match-all="true"`, the default in a new installation, every matching notification produces its own notice, with its own notice ID, destination path, and messages.
+* With `match-all="false"`, only the first matching notification in `notifications.xml` produces a notice.
+
+With `match-all="true"`, adding a notification for a UEI that already has one adds a second notice rather than replacing the first.
+To send a set of nodes' notices only to a specific team, narrow the rule of the general notification as well, as shown in xref:operation:deep-dive/notifications/route-by-node.adoc[Send Notifications for Specific Nodes to Specific Users].
+
+=== After a match
+
+For each matching notification, notifd records a notice and schedules it on the destination path.
+Notifd does not send the notice if a scheduled outage listed in the `outage-calendar` elements of `notifd-configuration.xml` applies to the node or interface; the notice is still recorded.
+If the destination path has no targets, notifd sends a `uei.opennms.org/internal/notificationWithoutUsers` event instead of a notice.
+
+[[automatic-acknowledgment]]
+== Automatic acknowledgment
+
+When a problem resolves, notifd can acknowledge the notices for that problem automatically.
+An acknowledged notice stops: steps of its destination path that have not run yet, such as escalations, are not sent.
+
+The `<auto-acknowledge>` rules in `notifd-configuration.xml` pair a resolving event with the problem event it resolves:
+
+[source, xml]
+----
+<auto-acknowledge resolution-prefix="RESOLVED: " uei="uei.opennms.org/nodes/nodeUp" acknowledge="uei.opennms.org/nodes/nodeDown">
+   <match>nodeid</match>
+</auto-acknowledge>
+----
+
+When an event with the UEI in `uei` arrives, notifd looks for the most recent notice created by an event with the UEI in `acknowledge` whose fields named in `<match>` are equal to those of the resolving event.
+It then acknowledges every notice created by that problem event, recording `auto-acknowledged` as the user who answered.
+A `<match>` can name `nodeid`, `interfaceid`, or `serviceid`, or an event parameter as `parm[name]` or `parm[#position]`.
+
+The default configuration pairs the following events:
+
+[options="header"]
+[cols="2,2,1"]
+|===
+| Resolving Event
+| Acknowledged Notices
+| Matched On
+
+| `serviceResponsive`
+| `serviceUnresponsive`
+| node, interface, service
+
+| `nodeRegainedService`
+| `nodeLostService`
+| node, interface, service
+
+| `interfaceUp`
+| `interfaceDown`
+| node, interface
+
+| `nodeUp`
+| `nodeDown`
+| node
+
+| `wideSpreadOutageResolved`
+| `wideSpreadOutage`
+| node, interface, service
+|===
+
+=== Resolution notices
+
+Unless the rule sets `notify="false"`, notifd then sends a resolution notice to each user who received the original notice, using the same notification commands.
+Users that the notice never reached, such as escalation targets whose step had not run yet, do not receive a resolution notice.
+The subject, text message, and numeric message are those of the original notice with the `resolution-prefix` (by default `RESOLVED: `) in front.
+Set `numeric-skip-resolution-prefix="true"` on `notifd-configuration` to leave the numeric message without the prefix.
+
+The target's auto-notify switch in the destination path decides whether that user gets the resolution notice:
+
+[options="header"]
+[cols="1,3"]
+|===
+| Auto-notify
+| Resolution Notice
+
+| `on`
+| Always sent.
+
+| `auto`
+| Sent only if no user acknowledged the notice before it was automatically acknowledged.
+This is the default.
+
+| `off`
+| Never sent.
+|===
+
+Resolution notices are sent only while notifications are turned on globally.
+
+=== Acknowledgment based on alarms
+
+An optional `<auto-acknowledge-alarm>` element acknowledges notices through alarms instead of UEI pairs.
+When a resolution event arrives (an event whose `alarm-data` has `alarm-type="2"`) and no `<auto-acknowledge>` rule matched it, notifd acknowledges the notices of every event that belongs to the alarm whose reduction key equals the event's `clear-key`, or its reduction key if the event has no clear key.
+List `<uei>` elements inside it to limit it to those resolving events.
+It accepts the same `resolution-prefix` and `notify` attributes as `<auto-acknowledge>`.
+The default configuration does not include this element.

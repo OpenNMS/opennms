@@ -86,7 +86,7 @@ public class EmailNorthbounderManager implements InitializingBean, Northbounder,
      */
     private void registerNorthbounders() throws Exception {
         if (! m_configDao.getConfig().isEnabled()) {
-            LOG.warn("The Email NBI is globally disabled, the destinations won't be registered which means all the alarms will be rejected.");
+            LOG.info("The Email NBI is globally disabled, the destinations won't be registered which means all the alarms will be rejected.");
             return;
         }
         for (EmailDestination destination : m_configDao.getConfig().getEmailDestinations()) {

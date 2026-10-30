@@ -69,7 +69,10 @@ public abstract class AbstractBasePasswordChangeActionServlet extends HttpServle
         return isPasswordComplexityValid && !isPasswordWithSameCharacters;
     }
 
-    protected void verifyAndChangePassword(UserManager userFactory, HttpSession userSession, User user,
+    /**
+     * @return true if the password was changed and the response was sent to nextUrl
+     */
+    protected boolean verifyAndChangePassword(UserManager userFactory, HttpSession userSession, User user,
                                            HttpServletRequest request, HttpServletResponse response,
                                            String currentPassword, String newPassword,
                                            String redoUrl,
@@ -79,6 +82,7 @@ public abstract class AbstractBasePasswordChangeActionServlet extends HttpServle
             // passwords don't match, have user redo
             RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(redoUrl);
             dispatcher.forward(request, response);
+            return false;
         } else {
             if (this.validatePassword(newPassword)) {
                 final Password pass = new Password();
@@ -101,6 +105,7 @@ public abstract class AbstractBasePasswordChangeActionServlet extends HttpServle
                     RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(nextUrl);
                     dispatcher.forward(request, response);
                 }
+                return true;
             } else {
                 throw new ServletException("Error saving user " + user.getUserId() + ":::Password complexity is not correct! Please use at least 12 characters, consisting of 1 special character, 1 upper case letter, 1 lower case letter and 1 number. Identical strings with 6 or more characters in a row are also not allowed.");
             }

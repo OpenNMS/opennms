@@ -25,9 +25,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class TokenAuthConfigurationTest extends XmlTestNoCastor<TokenAuthConfiguration> {
+public class TokenAuthConfigurationTest extends XmlTest<TokenAuthConfiguration> {
 
     public TokenAuthConfigurationTest(final TokenAuthConfiguration sampleObject,
                                                final String sampleXml,

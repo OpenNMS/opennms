@@ -64,14 +64,15 @@ License.
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
-import { getCurrentOutages, outageServiceName, type CurrentOutage } from '@/services/outageService'
+import { getCurrentOutages, outageServiceName } from '@/services/outageService'
+import { Outage } from '@/types'
 import { buildFilterClauses } from '../filter'
 
 const props = defineProps<PanelComponentProps>()
 
 const loading = ref(true)
 const failed = ref(false)
-const outages = ref<CurrentOutage[]>([])
+const outages = ref<Outage[]>([])
 
 const serviceName = outageServiceName
 

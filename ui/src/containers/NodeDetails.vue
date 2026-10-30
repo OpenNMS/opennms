@@ -9,13 +9,16 @@
       <div class="heading">
         <h2>Node Details for {{ nodeTitle }}</h2>
       </div>
-      <NodeActionsDropdown
-        v-if="nodeLoaded"
-        :baseHref="baseHref"
-        :node="nodeStore.node"
-        :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
-        :triggerNodeInfo="onNodeInfo"
-      />
+      <div class="header-controls">
+        <OnmsSelectButton
+          v-model="activeTab"
+          :options="tabOptions"
+          option-label="label"
+          option-value="value"
+          aria-label="Node details view"
+          data-test="node-details-tab-select"
+        />
+      </div>
     </div>
     <div
       v-if="nodeLoaded"
@@ -23,38 +26,32 @@
     >
       <div class="onms-col-12">
         <NodeDetailsHeader :node="nodeStore.node" />
+        <NodeDetailsLinks
+          :baseHref="baseHref"
+          :node="nodeStore.node"
+          :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
+          :existsInRequisition="nodeStore.existsInRequisition"
+          :services="nodeStore.linkServices"
+          :triggerNodeInfo="onNodeInfo"
+        />
       </div>
     </div>
 
     <!--
-      One row of two columns, each stacking its own panels, rather than a row per pair of panels.
-      A row is a grid track, so its height is that of its tallest panel: with a row per pair, a
-      short panel left a gap beneath it until the next row could start -- most visibly under
-      Notifications, waiting on the much taller Availability panel beside it.
-
-      The panels need no nested .onms-row of their own. They are block-level and fill the column
-      already, and the cards carry their own bottom margin, so nesting a fresh 12-column grid per
-      panel would add a grid to configure without changing the result.
+      KeepAlive so a tab mounts -- and its tables fetch -- only when first shown, then keeps its
+      paging and sorting when the user switches away and back. A hidden tab does not follow the
+      route (see useActiveNodeId): it refreshes for the node on screen when it is shown again.
     -->
-    <div class="onms-row">
-      <div class="onms-col-6">
-        <NodeAvailabilityGraph
-          v-if="nodeLoaded"
-          :node="nodeStore.node"
-          :base-href="baseHref"
-        />
-        <InterfacesTabs />
-      </div>
-      <div class="onms-col-6">
-        <NodeNotificationsPanel
-          v-if="nodeLoaded"
-          :node="nodeStore.node"
-          :base-href="baseHref"
-        />
-        <EventsTable />
-        <OutagesTable />
-      </div>
-    </div>
+    <KeepAlive>
+      <NodeDetailsMainTab
+        v-if="activeTab === 'main'"
+        :node="nodeStore.node"
+        :nodeLoaded="nodeLoaded"
+        :baseHref="baseHref"
+      />
+      <NodeDetailsAdditionalTab v-else-if="activeTab === 'additional'" />
+      <NodeDetailsNetworkTab v-else />
+    </KeepAlive>
 
     <NodeDetailsDialog
       :visible="dialogVisible"
@@ -66,23 +63,22 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
+import { OnmsSelectButton } from '@opennms/onms-ui'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import NodeActionsDropdown from '@/components/Nodes/NodeActionsDropdown.vue'
-import EventsTable from '@/components/Nodes/EventsTable.vue'
-import InterfacesTabs from '@/components/Nodes/InterfacesTabs.vue'
-import NodeAvailabilityGraph from '@/components/Nodes/NodeAvailabilityGraph.vue'
+import NodeDetailsAdditionalTab from '@/components/Nodes/NodeDetailsAdditionalTab.vue'
 import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
 import NodeDetailsHeader from '@/components/Nodes/NodeDetailsHeader.vue'
-import NodeNotificationsPanel from '@/components/Nodes/NodeNotificationsPanel.vue'
-import OutagesTable from '@/components/Nodes/OutagesTable.vue'
-import { useEventStore } from '@/stores/eventStore'
+import NodeDetailsLinks from '@/components/Nodes/NodeDetailsLinks.vue'
+import NodeDetailsMainTab from '@/components/Nodes/NodeDetailsMainTab.vue'
+import NodeDetailsNetworkTab from '@/components/Nodes/NodeDetailsNetworkTab.vue'
+import useRole from '@/composables/useRole'
 import { useMenuStore } from '@/stores/menuStore'
-import { useNodeStore } from '@/stores/nodeStore'
+import { NodeDetailsTab, useNodeStore } from '@/stores/nodeStore'
 import { BreadCrumb, Node } from '@/types'
 
-const eventStore = useEventStore()
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
+const { provisionRole } = useRole()
 
 const props = defineProps({
   id: {
@@ -91,6 +87,17 @@ const props = defineProps({
 })
 
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
+
+const tabOptions: { label: string, value: NodeDetailsTab }[] = [
+  { label: 'Main', value: 'main' },
+  { label: 'Additional', value: 'additional' },
+  { label: 'Network', value: 'network' }
+]
+
+const activeTab = computed<NodeDetailsTab>({
+  get: () => nodeStore.nodeDetailsTab,
+  set: tab => nodeStore.setNodeDetailsTab(tab)
+})
 
 // The node attributes now live behind the actions menu's Info... rather than in a panel of their
 // own. The dialog takes the node it is given; this page only ever has one, so the handler
@@ -133,20 +140,28 @@ const fetchNode = async () => {
   }
 
   nodeStore.getNodeSnmpPrimaryInterface(props.id)
+  nodeStore.getNodeCriticalPath(props.id)
+  nodeStore.getNodeLinkServices(props.id)
 
   await nodeStore.getNodeById({ id: props.id } as Node)
-
-  // The events table fetches by node id itself and only replaces its rows on success, so a
-  // node that could not be fetched would otherwise keep the previous node's events on screen.
-  // Events are the event store's to clear, so the page asks rather than reaching across.
-  if (nodeStore.nodeLoadFailed) {
-    eventStore.clearEvents()
-  }
 }
 
 onMounted(fetchNode)
 
 watch(() => props.id, fetchNode)
+
+// The Edit in Requisition action needs to know whether the node is in its requisition, which the
+// node payload does not say. Asked once the node has loaded, and only of a user who could use
+// the answer; roles can arrive after the node, so both are followed.
+watch(
+  [() => (nodeStore.nodeLoaded ? nodeStore.node : undefined), provisionRole],
+  ([node, canEdit]) => {
+    if (node && canEdit) {
+      nodeStore.getNodeExistsInRequisition(node)
+    }
+  },
+  { immediate: true }
+)
 
 defineExpose({ fetchNode })
 </script>
@@ -161,6 +176,12 @@ defineExpose({ fetchNode })
     align-items: center;
     margin-bottom: 1.25em;
     padding: 0;
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75em;
+    }
   }
 }
 </style>

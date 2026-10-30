@@ -38,17 +38,21 @@
         :rowsPerPageOptions="[10, 20, 50, 100]"
         data-test="outages-table"
       >
-        <OnmsColumn field="name" header="Name" sortable />
+        <OnmsColumn field="name" header="Name" sortable>
+          <template #body="{ data }"><span class="wrap-cell" data-test="outage-name">{{ data.name }}</span></template>
+        </OnmsColumn>
         <OnmsColumn field="type" header="Type" sortable>
           <template #body="{ data }">{{ data.type ?? '--' }}</template>
         </OnmsColumn>
         <OnmsColumn header="Nodes/Interfaces">
           <template #body="{ data }">
-            <span :title="selectionTitle(data)">{{ selectionSummary(data) }}</span>
+            <span class="wrap-cell" :title="selectionTitle(data)">{{ selectionSummary(data) }}</span>
           </template>
         </OnmsColumn>
         <OnmsColumn header="Times">
-          <template #body="{ data }">{{ (data.time ?? []).length }}</template>
+          <template #body="{ data }">
+            <span class="wrap-cell" :title="timesTitle(data)" data-test="outage-times">{{ timesSummary(data) }}</span>
+          </template>
         </OnmsColumn>
         <OnmsColumn header="Notifications">
           <template #body="{ data }"><AppliedMark :on="data.applies?.notifications" /></template>
@@ -98,18 +102,21 @@
       data-test="create-dialog"
       @update:visible="(value: boolean) => { if (!value) closeCreateDialog() }"
     >
-      <FormField label="Name" for="new-outage-name" :error="createError">
-        <OnmsInputText
-          id="new-outage-name"
-          v-model="newName"
-          placeholder="Outage name"
-          fluid
-          data-test="new-name"
-          @keyup.enter="createOutage"
-        />
-      </FormField>
+      <div class="dialog-body">
+        <FormField label="Name" for="new-outage-name" :error="createError">
+          <OnmsInputText
+            id="new-outage-name"
+            v-model="newName"
+            placeholder="Outage name"
+            fluid
+            autofocus
+            data-test="new-name"
+            @keyup.enter="createOutage"
+          />
+        </FormField>
+      </div>
       <div class="dialog-actions">
-        <OnmsButton variant="text" label="Cancel" data-test="create-cancel" @click="closeCreateDialog" />
+        <OnmsButton variant="ghost" label="Cancel" data-test="create-cancel" @click="closeCreateDialog" />
         <OnmsButton label="Create" :disabled="!newName.trim()" data-test="create-confirm" @click="createOutage" />
       </div>
     </OnmsDialog>
@@ -132,7 +139,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, onMounted, ref } from 'vue'
+import { computed, h, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsDialog, OnmsIconButton, OnmsInputText, OnmsTable } from '@opennms/onms-ui'
@@ -150,9 +157,11 @@ import {
   getNodeLabels,
   getOutageApplicability,
   getScheduledOutages,
+  outageNameProblem,
   scheduledOutageErrorMessage
 } from '@/services/scheduledOutagesService'
-import { ScheduledOutage } from '@/types/scheduledOutage'
+import { describeOutageTime } from '@/components/ScheduledOutages/outageTime'
+import { OutageType, ScheduledOutage } from '@/types/scheduledOutage'
 import { BreadCrumb } from '@/types'
 
 interface OutageRow extends ScheduledOutage {
@@ -181,6 +190,10 @@ const nodeLabels = ref<Record<number, string>>({})
 const loading = ref(true)
 const newName = ref('')
 const createError = ref('')
+// an error about the previous name would otherwise linger while the user fixes it
+watch(newName, () => {
+  createError.value = ''
+})
 const loadError = ref('')
 // kept separate from loadError, which the post-action reload resets
 const actionError = ref('')
@@ -252,6 +265,20 @@ const selectionTitle = (o: ScheduledOutage): string => [
   ...(o.interface ?? []).map(i => i.address)
 ].join(', ')
 
+// The spans themselves rather than a count, so a weekly day is visible here too.
+const timeLabels = (o: ScheduledOutage): string[] =>
+  o.type ? (o.time ?? []).map(t => describeOutageTime(o.type as OutageType, t)) : []
+
+const timesSummary = (o: ScheduledOutage): string => {
+  const labels = timeLabels(o)
+  if (!labels.length) {
+    return '--'
+  }
+  return labels.length > 2 ? `${labels.slice(0, 2).join('; ')}; +${labels.length - 2} more` : labels.join('; ')
+}
+
+const timesTitle = (o: ScheduledOutage): string => timeLabels(o).join('\n')
+
 const showCreateDialog = ref(false)
 
 const openCreateDialog = () => {
@@ -268,6 +295,11 @@ const createOutage = () => {
   const name = newName.value.trim()
   createError.value = ''
   if (!name) {
+    return
+  }
+  const problem = outageNameProblem(name)
+  if (problem) {
+    createError.value = problem
     return
   }
   if (outages.value.some(o => o.name === name)) {
@@ -301,6 +333,13 @@ const confirmDelete = async () => {
 
 <style scoped lang="scss">
 .scheduled-outages {
+  padding: 0 2px 2rem 2px;
+
+  // the card only pads vertically; give the header and table room at the sides
+  :deep(.table-card) {
+    padding: 1.5rem;
+  }
+
   .header {
     display: flex;
     align-items: flex-start;
@@ -324,11 +363,12 @@ const confirmDelete = async () => {
     color: var(--p-text-muted-color);
   }
 
-  .dialog-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    margin-top: 1rem;
+  // an unbroken name or label would otherwise widen the table past the page
+  // and push the actions column out of view
+  .wrap-cell {
+    display: inline-block;
+    max-width: 24rem;
+    overflow-wrap: anywhere;
   }
 
   .action-container {
@@ -349,5 +389,20 @@ const confirmDelete = async () => {
   :deep(.mark.unknown) {
     color: var(--p-text-muted-color);
   }
+}
+
+// the create dialog is teleported to <body>, so these cannot sit under .scheduled-outages
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 0.5rem;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
 }
 </style>

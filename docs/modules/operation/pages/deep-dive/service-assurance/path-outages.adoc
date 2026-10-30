@@ -28,7 +28,7 @@ image::service-assurance/02_path-outage.png["Network architecture diagram displa
 From the perspective of the monitoring system, a router named `default-gw-01` is on the critical path to reach two networks.
 If `default-gw-01` is down, it is not possible to reach any node in the two networks behind it.
 In this case, an administrator should receive only one notification for `default-gw-01`; notifications for the other nodes behind it should not be generated.
-Building this configuration in {page-component-title} requires the following information:
+Building this configuration in {page-component-title} requires the following information (for the general procedure, see xref:deep-dive/provisioning/directed-discovery.adoc#requisition-node-parent[Set a node's parent]):
 
 Parent Foreign Source:: The foreign source where the parent node is defined.
 If the parent node is in the same requisition as the child node, this field can be left blank.
