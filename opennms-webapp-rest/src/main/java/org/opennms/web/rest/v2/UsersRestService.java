@@ -119,13 +119,11 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional(readOnly = true)
     public Response getUserByQuery(final SecurityContext securityContext, final String userId) {
-        m_support.checkQueryTarget(securityContext, "User management", "userId", userId);
         return doGetUser(securityContext, userId);
     }
 
     private Response doGetUser(final SecurityContext securityContext, final String userId) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
+        m_support.checkTarget(securityContext, "User management", "userId", userId);
         try {
             final UserAccount user = load(userId);
             // the version of the row read for the body, not a second read: a newer version with an older body would let
@@ -166,7 +164,7 @@ public class UsersRestService implements UsersRestApi {
         if (userIdProblem != null) {
             throw m_support.badRequest(userIdProblem);
         }
-        checkNotReserved(userId);
+        m_support.checkNotLookAlike(userId, PROTECTED_USERS, "user-id");
         if (StringUtils.isBlank(request.getPassword())) {
             throw m_support.badRequest("A password is required.");
         }
@@ -200,13 +198,11 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional
     public Response updateUserByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserDto dto) {
-        m_support.checkQueryTarget(securityContext, "User management", "userId", userId);
         return doUpdateUser(securityContext, headers, userId, dto);
     }
 
     private Response doUpdateUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserDto dto) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
+        m_support.checkTarget(securityContext, "User management", "userId", userId);
         if (dto == null) {
             throw m_support.badRequest("A user body is required.");
         }
@@ -245,13 +241,11 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional
     public Response setUserPasswordByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserPasswordRequest body) {
-        m_support.checkQueryTarget(securityContext, "User management", "userId", userId);
         return doSetPassword(securityContext, headers, userId, body);
     }
 
     private Response doSetPassword(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserPasswordRequest body) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
+        m_support.checkTarget(securityContext, "User management", "userId", userId);
         if (body == null || StringUtils.isBlank(body.getPassword())) {
             throw m_support.badRequest("A password is required.");
         }
@@ -280,22 +274,11 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional
     public Response renameUserByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserRenameRequest body) {
-        m_support.checkQueryTarget(securityContext, "User management", "userId", userId);
         return doRenameUser(securityContext, headers, userId, body);
     }
 
-    /** A look-alike of a protected name, such as ADMIN, would be mistaken for the system user; existing ones are left alone. */
-    private void checkNotReserved(final String userId) {
-        for (final String reserved : PROTECTED_USERS) {
-            if (reserved.equalsIgnoreCase(userId) && !reserved.equals(userId)) {
-                throw m_support.badRequest("The user-id \"" + userId + "\" is reserved.");
-            }
-        }
-    }
-
     private Response doRenameUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserRenameRequest body) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
+        m_support.checkTarget(securityContext, "User management", "userId", userId);
         if (body == null || StringUtils.isBlank(body.getNewUserId())) {
             throw m_support.badRequest("A newUserId is required.");
         }
@@ -307,7 +290,7 @@ public class UsersRestService implements UsersRestApi {
         if (userIdProblem != null) {
             throw m_support.badRequest(userIdProblem);
         }
-        checkNotReserved(newUserId);
+        m_support.checkNotLookAlike(newUserId, PROTECTED_USERS, "user-id");
         if (newUserId.equals(userId)) {
             throw m_support.badRequest("The newUserId is the same as the current userId.");
         }
@@ -340,13 +323,11 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional
     public Response deleteUserByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String userId) {
-        m_support.checkQueryTarget(securityContext, "User management", "userId", userId);
         return doDeleteUser(securityContext, headers, userId);
     }
 
     private Response doDeleteUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
+        m_support.checkTarget(securityContext, "User management", "userId", userId);
         if (PROTECTED_USERS.contains(userId)) {
             throw m_support.badRequest("The system user " + userId + " cannot be deleted.");
         }

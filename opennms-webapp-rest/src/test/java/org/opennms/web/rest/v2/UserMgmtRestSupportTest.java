@@ -36,6 +36,7 @@ import java.sql.BatchUpdateException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Set;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.EntityTag;
@@ -133,13 +134,13 @@ public class UserMgmtRestSupportTest {
     }
 
     @Test
-    public void testCheckQueryTarget() {
+    public void testCheckTarget() {
         final SecurityContext admin = mock(SecurityContext.class);
         when(admin.isUserInRole(Authentication.ROLE_ADMIN)).thenReturn(true);
-        m_support.checkQueryTarget(admin, "User management", "userId", "DOMAIN\\jdoe");
+        m_support.checkTarget(admin, "User management", "userId", "DOMAIN\\jdoe");
         for (final String blank : new String[] { null, "", " " }) {
             try {
-                m_support.checkQueryTarget(admin, "User management", "userId", blank);
+                m_support.checkTarget(admin, "User management", "userId", blank);
                 fail("expected 400 for '" + blank + "'");
             } catch (final WebApplicationException e) {
                 assertStatus(400, "userId is required", e);
@@ -147,18 +148,33 @@ public class UserMgmtRestSupportTest {
         }
         // without the admin role, a missing parameter is still a 403, never a 400
         try {
-            m_support.checkQueryTarget(mock(SecurityContext.class), "Group management", "name", null);
+            m_support.checkTarget(mock(SecurityContext.class), "Group management", "name", null);
             fail("expected 403");
         } catch (final WebApplicationException e) {
             assertStatus(403, "Group management requires the admin role.", e);
         }
         System.setProperty("org.opennms.usermgmt.store", "xml");
         try {
-            m_support.checkQueryTarget(admin, "Group management", "name", null);
+            m_support.checkTarget(admin, "Group management", "name", null);
             fail("expected 503");
         } catch (final WebApplicationException e) {
             assertEquals(503, e.getResponse().getStatus());
         }
+    }
+
+    @Test
+    public void testCheckNotLookAlike() {
+        for (final String lookAlike : new String[] { "ADMIN", "Admin", "aDmIn" }) {
+            try {
+                m_support.checkNotLookAlike(lookAlike, Set.of("admin", "rtc"), "user-id");
+                fail("expected 400 for " + lookAlike);
+            } catch (final WebApplicationException e) {
+                assertStatus(400, "The user-id \"" + lookAlike + "\" is reserved.", e);
+            }
+        }
+        // the protected name itself is a duplicate, reported as such elsewhere; other names pass
+        m_support.checkNotLookAlike("admin", Set.of("admin", "rtc"), "user-id");
+        m_support.checkNotLookAlike("administrator", Set.of("admin", "rtc"), "user-id");
     }
 
     @Test

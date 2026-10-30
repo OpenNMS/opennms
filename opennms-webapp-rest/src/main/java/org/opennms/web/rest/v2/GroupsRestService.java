@@ -140,13 +140,11 @@ public class GroupsRestService implements GroupsRestApi {
     @Override
     @Transactional(readOnly = true)
     public Response getGroupByQuery(final SecurityContext securityContext, final String name) {
-        m_support.checkQueryTarget(securityContext, "Group management", "name", name);
         return doGetGroup(securityContext, name);
     }
 
     private Response doGetGroup(final SecurityContext securityContext, final String name) {
-        m_support.assertAdmin(securityContext, "Group management");
-        m_support.requireDatabaseStore();
+        m_support.checkTarget(securityContext, "Group management", "name", name);
         try {
             final UserGroup group = load(name);
             final int version = group.getVersion();
@@ -169,7 +167,7 @@ public class GroupsRestService implements GroupsRestApi {
         if (nameProblem != null) {
             throw m_support.badRequest(nameProblem);
         }
-        checkNotReserved(name);
+        m_support.checkNotLookAlike(name, PROTECTED_GROUPS, "group name");
         try {
             m_support.lockForWrite();
             if (m_userGroupDao.findByName(name) != null) {
@@ -199,13 +197,11 @@ public class GroupsRestService implements GroupsRestApi {
     @Override
     @Transactional
     public Response updateGroupByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupDto dto) {
-        m_support.checkQueryTarget(securityContext, "Group management", "name", name);
         return doUpdateGroup(securityContext, headers, name, dto);
     }
 
     private Response doUpdateGroup(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupDto dto) {
-        m_support.assertAdmin(securityContext, "Group management");
-        m_support.requireDatabaseStore();
+        m_support.checkTarget(securityContext, "Group management", "name", name);
         if (dto == null) {
             throw m_support.badRequest("A group body is required.");
         }
@@ -237,22 +233,11 @@ public class GroupsRestService implements GroupsRestApi {
     @Override
     @Transactional
     public Response renameGroupByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupRenameRequest body) {
-        m_support.checkQueryTarget(securityContext, "Group management", "name", name);
         return doRenameGroup(securityContext, headers, name, body);
     }
 
-    /** A look-alike of a protected name, such as admin, would be mistaken for the system group; existing ones are left alone. */
-    private void checkNotReserved(final String name) {
-        for (final String reserved : PROTECTED_GROUPS) {
-            if (reserved.equalsIgnoreCase(name) && !reserved.equals(name)) {
-                throw m_support.badRequest("The group name \"" + name + "\" is reserved.");
-            }
-        }
-    }
-
     private Response doRenameGroup(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupRenameRequest body) {
-        m_support.assertAdmin(securityContext, "Group management");
-        m_support.requireDatabaseStore();
+        m_support.checkTarget(securityContext, "Group management", "name", name);
         if (body == null || StringUtils.isBlank(body.getNewName())) {
             throw m_support.badRequest("A newName is required.");
         }
@@ -264,7 +249,7 @@ public class GroupsRestService implements GroupsRestApi {
         if (nameProblem != null) {
             throw m_support.badRequest(nameProblem);
         }
-        checkNotReserved(newName);
+        m_support.checkNotLookAlike(newName, PROTECTED_GROUPS, "group name");
         if (newName.equals(name)) {
             throw m_support.badRequest("The newName is the same as the current name.");
         }
@@ -299,13 +284,11 @@ public class GroupsRestService implements GroupsRestApi {
     @Override
     @Transactional
     public Response deleteGroupByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name) {
-        m_support.checkQueryTarget(securityContext, "Group management", "name", name);
         return doDeleteGroup(securityContext, headers, name);
     }
 
     private Response doDeleteGroup(final SecurityContext securityContext, final HttpHeaders headers, final String name) {
-        m_support.assertAdmin(securityContext, "Group management");
-        m_support.requireDatabaseStore();
+        m_support.checkTarget(securityContext, "Group management", "name", name);
         if (PROTECTED_GROUPS.contains(name)) {
             throw m_support.badRequest("The system group " + name + " cannot be deleted.");
         }

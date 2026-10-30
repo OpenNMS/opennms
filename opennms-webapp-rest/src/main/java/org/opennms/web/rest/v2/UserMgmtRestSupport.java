@@ -130,17 +130,31 @@ public class UserMgmtRestSupport {
     }
 
     /**
-     * The checks of an endpoint that takes the user id or group name in a query parameter, run before the method
-     * it shares with the path form: the admin and store checks come first, so that a caller without the admin role
-     * gets 403 and not 400 for a missing parameter.
+     * The checks of a per-user or per-group endpoint, path or query form: the admin role, the database store, and a
+     * user id or group name, which the query form can leave out. The admin and store checks come first, so that a
+     * caller without the admin role gets 403 and not 400 for a missing parameter.
      *
      * @param param the name of the query parameter, for the message
      */
-    public void checkQueryTarget(final SecurityContext securityContext, final String what, final String param, final String value) {
+    public void checkTarget(final SecurityContext securityContext, final String what, final String param, final String value) {
         assertAdmin(securityContext, what);
         requireDatabaseStore();
         if (StringUtils.isBlank(value)) {
             throw badRequest(param + " is required");
+        }
+    }
+
+    /**
+     * Refuses a new user id or group name that equals a protected name ignoring case, but not exactly, such as ADMIN:
+     * it would be mistaken for the system entry. Existing look-alikes are left alone.
+     *
+     * @param label what the name is called in the message, e.g. "user-id" or "group name"
+     */
+    public void checkNotLookAlike(final String name, final Collection<String> protectedNames, final String label) {
+        for (final String reserved : protectedNames) {
+            if (reserved.equalsIgnoreCase(name) && !reserved.equals(name)) {
+                throw badRequest("The " + label + " \"" + name + "\" is reserved.");
+            }
         }
     }
 
