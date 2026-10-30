@@ -314,9 +314,9 @@
         {
           "id": "manageApplications",
           "name": "Manage Applications",
-          "url": "admin/applications.htm",
+          "url": "ui/index.html#/admin/applications",
           "locationMatch": "",
-          "roles": null
+          "roles": ["ROLE_ADMIN"]
         }
       ]
     },

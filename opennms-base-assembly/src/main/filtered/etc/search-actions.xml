@@ -224,7 +224,7 @@
     </action>
     <action>
         <label>Manage Applications</label>
-        <url>admin/applications.htm</url>
+        <url>ui/index.html#/admin/applications</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>

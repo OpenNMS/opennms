@@ -53,7 +53,7 @@ public class ApplicationRestServiceTest {
 
         EventProxy proxy = mock(EventProxy.class);
         ApplicationDao dao = new MockApplicationDao();
-        ApplicationRestService service = new ApplicationRestService(dao, proxy);
+        ApplicationRestService service = new ApplicationRestService(dao, proxy, null, null);
         UriInfo uriInfo = mock(UriInfo.class);
         when(uriInfo.getRequestUriBuilder()).thenReturn(new UriBuilderMock());
 

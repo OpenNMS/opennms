@@ -227,7 +227,7 @@
       <div class="card-body">
         <ul class="list-unstyled mb-0">
             <li><a href="ui/index.html#/distributed-monitoring?tab=locations">Manage Monitoring Locations</a></li>
-            <li><a href="admin/applications.htm">Manage Applications</a></li>
+            <li><a href="ui/index.html#/admin/applications">Manage Applications</a></li>
             <li><a href="ui/index.html#/distributed-monitoring?tab=minions">Manage Minions</a></li>
         </ul>
       </div> <!-- card-body -->
