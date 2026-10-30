@@ -22,6 +22,7 @@
 package org.opennms.install;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -1216,18 +1217,28 @@ public class Installer {
             libraryProps.put("opennms.library.jrrd2", jrrd2_path);
         }
 
-        File f = null;
+        final Path file = Paths.get(m_opennms_home, "etc", LIBRARY_PROPERTY_FILE);
+        final byte[] content = formatWithoutTimestamp(libraryProps);
         try {
-            f = new File(m_opennms_home + File.separator + "etc" + File.separator + LIBRARY_PROPERTY_FILE);
-            if(!f.createNewFile()) {
-                LOG.warn("Could not create file: {}", f.getPath());
+            if (Files.isRegularFile(file) && Arrays.equals(Files.readAllBytes(file), content)) {
+                return;
             }
-            FileOutputStream os = new FileOutputStream(f);
-            libraryProps.store(os, null);
+            Files.write(file, content);
         } catch (IOException e) {
-            System.out.println("unable to write to " + f.getPath());
+            System.out.println("unable to write to " + file);
             throw e;
         }
+    }
+
+    /**
+     * Same output as {@link Properties#store(java.io.OutputStream, String)} without the
+     * leading date comment, so unchanged properties produce identical bytes.
+     */
+    static byte[] formatWithoutTimestamp(final Properties props) throws IOException {
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        props.store(buffer, null);
+        final String content = buffer.toString(StandardCharsets.ISO_8859_1);
+        return content.substring(content.indexOf('\n') + 1).getBytes(StandardCharsets.ISO_8859_1);
     }
 
     /**

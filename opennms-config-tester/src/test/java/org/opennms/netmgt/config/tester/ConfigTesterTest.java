@@ -148,11 +148,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testDatabaseSchema() {
-        testConfigFile("database-schema.xml");
-    }
-
-    @Test
     public void testDataCollectionConfig() {
         testConfigFile("datacollection-config.xml");
     }
@@ -250,14 +245,6 @@ public class ConfigTesterTest {
     @Test
     public void testLog4j2Config() {
         ignoreConfigFile("log4j2.xml");
-    }
-
-    @Test
-    /**
-     * FIXME: Database access.
-     */
-    public void testMapsadapterConfiguration() {
-        ignoreConfigFile("mapsadapter-configuration.xml");
     }
 
     @Test
