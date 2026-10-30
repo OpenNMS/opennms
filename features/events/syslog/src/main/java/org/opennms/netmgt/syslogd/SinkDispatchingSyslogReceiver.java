@@ -33,9 +33,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+
 public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(SinkDispatchingSyslogReceiver.class);
+
+    public static final String PACKETS_RECEIVED = "packetsReceived";
 
     @Autowired
     private DistPollerDao m_distPollerDao;
@@ -46,6 +51,10 @@ public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
     private final SyslogdConfig m_config;
 
     protected AsyncDispatcher<SyslogConnection> m_dispatcher;
+
+    private MetricRegistry m_metricRegistry = new MetricRegistry();
+
+    protected Meter m_packetsReceived = m_metricRegistry.meter(PACKETS_RECEIVED);
 
     public SinkDispatchingSyslogReceiver(SyslogdConfig config) {
         m_config = Objects.requireNonNull(config);
@@ -79,5 +88,14 @@ public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
 
     public void setMessageDispatcherFactory(MessageDispatcherFactory messageDispatcherFactory) {
         m_messageDispatcherFactory = messageDispatcherFactory;
+    }
+
+    public MetricRegistry getMetricRegistry() {
+        return m_metricRegistry;
+    }
+
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        m_metricRegistry = Objects.requireNonNull(metricRegistry);
+        m_packetsReceived = m_metricRegistry.meter(PACKETS_RECEIVED);
     }
 }
