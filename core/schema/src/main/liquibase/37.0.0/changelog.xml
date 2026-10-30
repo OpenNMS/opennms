@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- Uploaded copies of APC.events.xml: only rows still carrying the shipped, wrong clear-key are
+         changed, so a definition the user edited by hand is left alone. NOW() is fixed for the
+         changeset's transaction, so the source update matches only the rows rewritten here. -->
+    <changeSet author="janes" id="37.0.0-apc-communicationEstablished-clear-key">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="eventconf_events"/>
+        </preConditions>
+        <sql>
+            UPDATE eventconf_events
+            SET xml_content = REPLACE(
+                xml_content,
+                'clear-key="uei.opennms.org/vendor/APC/traps/upsOnBattery:%dpname%:%nodeid%:%interface%"',
+                'clear-key="uei.opennms.org/vendor/APC/traps/communicationLost:%dpname%:%nodeid%:%interface%"'
+            ),
+            last_modified = NOW()
+            WHERE uei = 'uei.opennms.org/vendor/APC/traps/communicationEstablished'
+            AND POSITION('clear-key="uei.opennms.org/vendor/APC/traps/upsOnBattery:%dpname%:%nodeid%:%interface%"' IN xml_content) > 0;
+            UPDATE eventconf_sources SET last_modified = NOW()
+            WHERE id IN (SELECT source_id FROM eventconf_events
+                         WHERE uei = 'uei.opennms.org/vendor/APC/traps/communicationEstablished'
+                         AND last_modified = NOW());
+        </sql>
+    </changeSet>
+
+    <!-- Nothing sends or handles this event; rows a user has edited are left alone. -->
+    <changeSet author="janes" id="37.0.0-remove-unused-syslogdConfigChange">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="eventconf_events"/>
+        </preConditions>
+        <sql>
+            DELETE FROM eventconf_events
+            WHERE uei = 'uei.opennms.org/internal/syslogdConfigChange'
+            AND modified_by = 'system-migration'
+            AND source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.config.events');
+            UPDATE eventconf_events e SET event_order = r.rn
+            FROM (SELECT id, ROW_NUMBER() OVER (ORDER BY event_order, id) AS rn
+                  FROM eventconf_events
+                  WHERE source_id = (SELECT id FROM eventconf_sources WHERE name = 'opennms.config.events')) r
+            WHERE e.id = r.id AND e.event_order &lt;&gt; r.rn;
+            UPDATE eventconf_sources s
+            SET event_count = (SELECT COUNT(*) FROM eventconf_events e WHERE e.source_id = s.id),
+                last_modified = NOW()
+            WHERE s.name = 'opennms.config.events';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

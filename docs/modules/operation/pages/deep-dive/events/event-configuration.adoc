@@ -247,14 +247,18 @@ API documentation is available via Swagger UI at `http://<opennms-host>:8980/ope
 Key operations include:
 
 * `POST /api/v2/eventconf/upload` - Upload event configuration files (an included `eventconf.xml` sets the source order).
+* `GET /api/v2/eventconf/filter` - Search events by UEI, vendor, or source-name substring.
 * `GET /api/v2/eventconf/filter/sources` - List and filter event sources.
-* `GET /api/v2/eventconf/filter/\{sourceId}/events` - Get events for a source; omitting `limit` (or passing 0) returns every match in one page.
+* `GET /api/v2/eventconf/filter/\{sourceId}/events` - Get events for a source.
 * `GET /api/v2/eventconf/sources/\{sourceId}/events?uei=...` - Resolve events by their exact UEI, with ids and XML content.
 * `PUT /api/v2/eventconf/sources/\{sourceId}/events` - Create or update one event by its identity (exact UEI plus equal mask).
 * `GET /api/v2/eventconf/sources/ordered` and `PUT /api/v2/eventconf/sources/order` - Read and replace the source evaluation order.
 * `GET`/`PUT /api/v2/eventconf/sources/\{sourceId}/events/ordered|order` - Read and replace the event order within a source.
 * `PATCH /api/v2/eventconf/sources/status` - Enable/disable sources.
 * `DELETE /api/v2/eventconf/sources` - Delete event sources (refused for the catch-all and `opennms`-vendor sources).
+
+On every `/filter` endpoint, `offset` and `limit` are optional.
+`offset` defaults to 0, and omitting `limit` (or passing 0) returns every match, so pass a `limit` when you search a large event catalog.
 
 === A few tips
 
