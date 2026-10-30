@@ -2,10 +2,9 @@
   <div class="onms-row">
     <div class="onms-col-12 container">
       <div class="graph-actions">
-        <OnmsIconButton
+        <DownloadButton
           v-if="graphData"
-          variant="outlined"
-          :icon="DownloadFile"
+          format="CSV"
           data-test="csv-download-btn"
           title="Download this graph's data as CSV"
           @click="downloadCsv"
@@ -15,7 +14,7 @@
           :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
           target="_blank"
         >
-          <OnmsButton variant="outlined">Open</OnmsButton>
+          <OnmsButton variant="outlined" label="Open" />
         </router-link>
         <OnmsButton
           v-if="canAddToCollection && canEditCollections"
@@ -74,8 +73,8 @@ import { Chart, registerables } from 'chart.js'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import HtmlLegendPlugin from './plugins/HtmlLegendPlugin'
 import { format } from 'd3'
-import { OnmsButton, OnmsIconButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
-import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
+import { OnmsButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
+import DownloadButton from '@/components/Common/DownloadButton.vue'
 import { PropType, computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import AddToGraphCollectionDialog from '@/components/GraphCollections/AddToGraphCollectionDialog.vue'
 import useRole from '@/composables/useRole'
@@ -393,7 +392,17 @@ onBeforeUnmount(() => {
   right: 70px;
   z-index: 1;
   display: flex;
+  align-items: stretch;
   gap: 0.5rem;
+
+  // every action is as tall as the labeled download button
+  > a {
+    display: flex;
+  }
+
+  :deep(.p-button) {
+    min-height: var(--onms-action-button-height, 3.5rem);
+  }
 }
 .lc {
   @include onms-body-small;

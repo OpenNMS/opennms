@@ -15,6 +15,13 @@
           </div>
         </div>
         <div class="header-actions">
+          <DownloadButton
+            v-if="collection?.graphs.length"
+            format="PDF"
+            data-test="gc-pdf-download"
+            title="Download the graphs of this collection as a PDF"
+            @click="downloadPdf"
+          />
           <router-link v-if="isStored" to="/graph-collections">
             <OnmsButton variant="outlined" label="All collections" data-test="gc-back" />
           </router-link>
@@ -70,7 +77,9 @@
         </FormField>
       </div>
 
-      <GraphCollectionGrid v-if="collection?.graphs.length" :collection="collection" />
+      <div ref="graphsRef">
+        <GraphCollectionGrid v-if="collection?.graphs.length" :collection="collection" />
+      </div>
     </TableCard>
   </div>
 </template>
@@ -84,6 +93,9 @@ import { OnmsButton, OnmsSelect } from '@opennms/onms-ui'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import FormField from '@/components/Common/FormField.vue'
 import TableCard from '@/components/Common/TableCard.vue'
+import DownloadButton from '@/components/Common/DownloadButton.vue'
+import { exportGraphsToPdf } from '@/components/Resources/utils/graphExport'
+import useSnackbar from '@/composables/useSnackbar'
 import GraphCollectionGrid from '@/components/GraphCollections/GraphCollectionGrid.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useRole from '@/composables/useRole'
@@ -130,6 +142,20 @@ const loadError = ref('')
 const refreshFailed = ref(false)
 
 const isStored = computed(() => !!props.id)
+
+const graphsRef = ref<HTMLElement | null>(null)
+const { showSnackBar } = useSnackbar()
+
+const downloadPdf = () => {
+  if (!graphsRef.value) {
+    return
+  }
+  const exported = exportGraphsToPdf(graphsRef.value, collection.value?.title || 'Graph Collection',
+    canvas => canvas.closest<HTMLElement>('[data-pdf-caption]')?.dataset.pdfCaption)
+  if (!exported) {
+    showSnackBar({ msg: 'No graphs are ready to export yet.' })
+  }
+}
 
 // the legacy "customize" of a node report: start a new stored collection from these graphs
 const saveAsRoute = computed(() => {
@@ -251,6 +277,21 @@ watch(() => [props.id, props.kind, props.source, route.query.timespan, route.que
     justify-content: space-between;
     gap: 1rem;
     margin-bottom: 0.5rem;
+  }
+
+  // every header action is as tall as the labeled download button
+  .header-actions {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+
+    > a {
+      display: flex;
+    }
+
+    :deep(.p-button) {
+      min-height: var(--onms-action-button-height, 3.5rem);
+    }
   }
 
   .card-title {
