@@ -24,9 +24,11 @@ package org.opennms.web.rest.v2;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -119,8 +121,8 @@ public class GroupsRestService implements GroupsRestApi {
         m_support.assertAdmin(securityContext, "Group management");
         m_support.requireDatabaseStore();
         try {
-            final List<String> categories = m_categoryDao.findAll().stream()
-                    .map(OnmsCategory::getName)
+            // the names only: findAll() would also fill the DAO's per-thread cache with entities of this closed session
+            final List<String> categories = m_categoryDao.getAllCategoryNames().stream()
                     .sorted(String.CASE_INSENSITIVE_ORDER)
                     .collect(Collectors.toList());
             return Response.ok(categories).build();
@@ -409,10 +411,15 @@ public class GroupsRestService implements GroupsRestApi {
         if (dto.getCategories() != null) {
             // the first unknown name in sorted order is the one reported; read past the DAO's cache, which can still
             // hold a category deleted since, so that a write racing the delete is refused instead of dropping it
-            for (final String category : dto.getCategories().stream().sorted(Comparator.nullsFirst(Comparator.<String>naturalOrder())).collect(Collectors.toList())) {
-                if (category == null || m_categoryDao.findByName(category, false) == null) {
-                    throw new UserMgmtValidationException("Unknown category: " + category);
-                }
+            if (dto.getCategories().contains(null)) {
+                throw new UserMgmtValidationException("Unknown category: null");
+            }
+            final Set<String> known = m_categoryDao.findByNames(new HashSet<>(dto.getCategories())).stream()
+                    .map(OnmsCategory::getName)
+                    .collect(Collectors.toSet());
+            final Optional<String> unknown = dto.getCategories().stream().filter(category -> !known.contains(category)).sorted().findFirst();
+            if (unknown.isPresent()) {
+                throw new UserMgmtValidationException("Unknown category: " + unknown.get());
             }
         }
         return members;

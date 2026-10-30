@@ -22,6 +22,8 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,5 +148,17 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
             names.computeIfAbsent((String) row[0], k -> new ArrayList<>()).add((String) row[1]);
         }
         return names;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<OnmsCategory> findByNames(final Collection<String> names) {
+        if (names.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return getSessionFactory().getCurrentSession()
+                .createQuery("select distinct category from OnmsCategory as category left join fetch category.authorizedGroups where category.name in (:names)", OnmsCategory.class)
+                .setParameterList("names", names)
+                .list();
     }
 }

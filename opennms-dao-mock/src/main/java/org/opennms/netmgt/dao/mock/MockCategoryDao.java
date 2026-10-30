@@ -22,6 +22,7 @@
 package org.opennms.netmgt.dao.mock;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,11 @@ public class MockCategoryDao extends AbstractMockDao<OnmsCategory, Integer> impl
 
     @Override
     public List<String> getAllCategoryNames() {
-        throw new UnsupportedOperationException("Not yet implemented!");
+        final List<String> names = new ArrayList<>();
+        for (final OnmsCategory cat : findAll()) {
+            names.add(cat.getName());
+        }
+        return names;
     }
 
     @Override
@@ -99,6 +104,17 @@ public class MockCategoryDao extends AbstractMockDao<OnmsCategory, Integer> impl
             }
         }
         return names;
+    }
+
+    @Override
+    public List<OnmsCategory> findByNames(final Collection<String> names) {
+        final List<OnmsCategory> found = new ArrayList<>();
+        for (final OnmsCategory cat : findAll()) {
+            if (names.contains(cat.getName())) {
+                found.add(cat);
+            }
+        }
+        return found;
     }
 
 }

@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.dao.api;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -79,4 +80,13 @@ public interface CategoryDao extends OnmsDao<OnmsCategory, Integer> {
      * @return the category names of each group, in no particular order
      */
     Map<String, List<String>> getCategoryNamesByAuthorizedGroup();
+
+    /**
+     * The categories with these names, with their authorized groups, read in one query and past the DAO's cache, which
+     * can hold a category from an earlier session. A name of no category is left out. The authorized groups come in the
+     * same query, so adding a group to them costs no further SELECT.
+     *
+     * @return the categories found, in no particular order
+     */
+    List<OnmsCategory> findByNames(Collection<String> names);
 }

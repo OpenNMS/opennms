@@ -252,13 +252,10 @@ public class DefaultGroupService implements InitializingBean, GroupService {
                 category.getAuthorizedGroups().remove(groupName);
             }
         }
-        for (String categoryName : wanted) {
-            if (!current.contains(categoryName)) {
-                OnmsCategory category = m_categoryDao.findByName(categoryName, false);
-                if (category != null) {
-                    category.getAuthorizedGroups().add(groupName);
-                }
-            }
+        wanted.removeAll(current);
+        // one query for all the new ones; a name of no category is left out
+        for (OnmsCategory category : m_categoryDao.findByNames(wanted)) {
+            category.getAuthorizedGroups().add(groupName);
         }
     }
 }

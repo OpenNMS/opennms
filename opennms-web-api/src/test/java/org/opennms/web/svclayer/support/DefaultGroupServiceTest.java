@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -99,15 +100,15 @@ public class DefaultGroupServiceTest {
     public void testSetAuthorizedCategoriesReplacesTheSet() {
         final OnmsCategory third = new OnmsCategory("Third");
         third.getAuthorizedGroups().add("other");
-        when(m_categoryDao.findByName("Third", false)).thenReturn(third);
+        when(m_categoryDao.findByNames(Set.of("Third"))).thenReturn(List.of(third));
 
         m_service.setAuthorizedCategories("old", Arrays.asList("First", "Third"));
 
         assertTrue(m_first.getAuthorizedGroups().contains("old"));
         assertFalse(m_second.getAuthorizedGroups().contains("old"));
         assertEquals(Set.of("old", "other"), third.getAuthorizedGroups());
-        // a category the group already had is not looked up again
-        verify(m_categoryDao, never()).findByName("First", false);
+        // one lookup, of the category the group did not have yet
+        verify(m_categoryDao).findByNames(Set.of("Third"));
         verifyNoInteractions(m_groupDao);
     }
 
@@ -117,6 +118,7 @@ public class DefaultGroupServiceTest {
 
         assertEquals(Set.of("old"), m_first.getAuthorizedGroups());
         assertEquals(Set.of("old"), m_second.getAuthorizedGroups());
+        verify(m_categoryDao).findByNames(Set.of());
         verify(m_categoryDao, never()).findByName(anyString(), anyBoolean());
     }
 
@@ -135,7 +137,7 @@ public class DefaultGroupServiceTest {
 
         assertTrue(m_first.getAuthorizedGroups().contains("old"));
         assertFalse(m_second.getAuthorizedGroups().contains("old"));
-        verify(m_categoryDao).findByName("Gone", false);
+        verify(m_categoryDao).findByNames(Set.of("Gone"));
     }
 
     @Test

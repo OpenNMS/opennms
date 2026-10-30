@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -837,6 +838,41 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 assertEquals(8, groups.getJSONObject(i).getJSONArray("categories").length());
             }
         }
+    }
+
+    @Test
+    public void testAvailableCategoriesLeavesTheCategoryCacheAlone() throws Exception {
+        createCategory("Uncached");
+        // the DAO's cache is per thread, and the requests of this test run on the test's thread
+        inTx(() -> {
+            m_categoryDao.clear();
+            return null;
+        });
+        getJson("/groups/available-categories", 200);
+        // a category cached by the request would come from its closed session, with a lazy collection it cannot load
+        assertEquals(0, (int) inTx(() -> m_categoryDao.findByName("Uncached").getAuthorizedGroups().size()));
+    }
+
+    @Test
+    public void testSaveStatementCountDoesNotGrowWithTheCategories() throws Exception {
+        final List<String> all = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            createCategory("save" + i);
+            all.add("save" + i);
+        }
+        exec(POST, "/groups", "{\"name\":\"catsave\",\"categories\":[\"save0\"]}", null, 201);
+        final long unchangedFew = statements(() -> exec(PUT, "/groups/catsave", "{\"categories\":[\"save0\"]}", null, 200));
+        final long addedMany = statements(() -> exec(PUT, "/groups/catsave", new JSONObject().put("categories", all).toString(), null, 200));
+        final long unchangedMany = statements(() -> exec(PUT, "/groups/catsave", new JSONObject().put("categories", all).toString(), null, 200));
+        assertEquals(all, authorizedCategories("catsave"));
+        exec(PUT, "/groups/catsave", "{\"categories\":[]}", null, 200);
+        final long addedOne = statements(() -> exec(PUT, "/groups/catsave", "{\"categories\":[\"save0\"]}", null, 200));
+
+        assertTrue("no statement counted", unchangedFew > 0);
+        assertEquals("statements of an unchanged save, 1 category vs. 8 categories", unchangedFew, unchangedMany);
+        // beyond the reads, an added authorization costs its own INSERT: 7 added vs. 1 added
+        assertEquals("statements to add 7 categories vs. 1 category, less the 6 extra INSERTs", addedOne, addedMany - 6);
+        assertEquals(List.of("save0"), authorizedCategories("catsave"));
     }
 
     @Test
