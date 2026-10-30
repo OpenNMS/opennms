@@ -255,6 +255,9 @@ public interface ProvisionService {
     OnmsNode createUndiscoveredNode(String ipAddress, String foreignSource, String location, String monitorKey);
 
     @Transactional
+    boolean updateRequisitionForNewSuspect(final String addrString, final OnmsNode node);
+
+    @Transactional
     OnmsNode getNode(Integer nodeId);
 
     public HostnameResolver getHostnameResolver();
