@@ -26,6 +26,8 @@ The filter is evaluated first and is required.
 This package is used for all IP interfaces that do not have `0.0.0.0` as an assigned IP address and is required.
 <3> Allows you to specify if the configuration of services is applied on a range of IP interfaces (IPv4 or IPv6).
 
+Pollerd evaluates package filters when it schedules a service, so send a Pollerd reload event or restart {page-component-title} after you change a package (see xref:deep-dive/admin/configuration/daemon-config-files.adoc#package-filter-changes[Package filter changes]).
+
 Instead of using `include-range`, you can add one or more specific IP interfaces:
 
 [source, xml]

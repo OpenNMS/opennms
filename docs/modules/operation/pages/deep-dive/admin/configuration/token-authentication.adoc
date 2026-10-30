@@ -289,7 +289,7 @@ mail.smtp.auth.mechanisms=XOAUTH2
 The raw `mail.smtp.auth.mechanisms` line passes through to the mail session unchanged and is required: the mail client never attempts XOAUTH2 unless the mechanism is selected explicitly.
 The token is fetched at connection time, so a cached token that has been refreshed is picked up automatically.
 
-For mail paths driven by `javamail-configuration.xml` (reportd, the email northbounder), the equivalent configuration on a `sendmail-config` with `use-authentication="true"` is (element order matters; `javamail-property` precedes the host and auth elements):
+For mail paths driven by `javamail-configuration.xml` (the email northbounder), the equivalent configuration on a `sendmail-config` with `use-authentication="true"` is (element order matters; `javamail-property` precedes the host and auth elements):
 
 [source, xml]
 ----

@@ -29,6 +29,7 @@ NOTE: `remote="false"` means that the services in this package are tested only f
 Each package must have a `filter` tag that performs the initial test to see if an interface is eligible to be included in a package.
 Filters operate on interfaces (not nodes).
 Each package can have only one `filter` tag.
+Collectd evaluates package filters when it schedules an interface, so send a Collectd reload event or restart {page-component-title} after you change a package (see xref:deep-dive/admin/configuration/daemon-config-files.adoc#package-filter-changes[Package filter changes]).
 
 The following tags are also available for an interface filter:
 

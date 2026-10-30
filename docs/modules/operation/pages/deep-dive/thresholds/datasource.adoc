@@ -132,3 +132,5 @@ To complete the example, the thresholding package definition from `$OPENNMS_HOME
       </service>
    </package>
 -----
+
+After you change a thresholding package, send a `Threshd` reload event or restart {page-component-title} (see xref:deep-dive/admin/configuration/daemon-config-files.adoc#package-filter-changes[Package filter changes]).
