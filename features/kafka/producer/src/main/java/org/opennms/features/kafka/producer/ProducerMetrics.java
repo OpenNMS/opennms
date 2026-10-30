@@ -25,6 +25,9 @@ import java.util.Locale;
 import java.util.function.Supplier;
 
 import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.LockFreeExponentiallyDecayingReservoir;
+import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
@@ -38,6 +41,8 @@ public class ProducerMetrics {
     public static final String PREFIX = "messages";
 
     private final MetricRegistry registry;
+    // Racy lazy init is safe: the registry returns the same metrics for a name and TypeMetrics is immutable.
+    private final TypeMetrics[] byType = new TypeMetrics[KafkaProducerManager.MessageType.values().length];
 
     public ProducerMetrics(final MetricRegistry registry) {
         this.registry = registry;
@@ -51,32 +56,55 @@ public class ProducerMetrics {
         return MetricRegistry.name(PREFIX, type.name().toLowerCase(Locale.ROOT), metric);
     }
 
+    private TypeMetrics of(final KafkaProducerManager.MessageType type) {
+        TypeMetrics metrics = byType[type.ordinal()];
+        if (metrics == null) {
+            metrics = new TypeMetrics(registry, type);
+            byType[type.ordinal()] = metrics;
+        }
+        return metrics;
+    }
+
     /** Time spent turning the OpenNMS object into a Kafka record. */
     public Timer build(final KafkaProducerManager.MessageType type) {
-        return registry.timer(name(type, "build"));
+        return of(type).build;
     }
 
     /** Kafka acknowledged the record. */
     public void sent(final KafkaProducerManager.MessageType type) {
-        registry.meter(name(type, "sent")).mark();
+        of(type).sent.mark();
     }
 
     /** The send failed, either immediately or in Kafka's completion callback. */
     public void failed(final KafkaProducerManager.MessageType type) {
-        registry.meter(name(type, "failed")).mark();
+        of(type).failed.mark();
     }
 
-    /** The record was discarded because the send queue was full. */
+    /** The record was discarded because the send queue was full; registered on first drop so unqueued types never show it. */
     public void dropped(final KafkaProducerManager.MessageType type) {
         registry.counter(name(type, "dropped")).inc();
     }
 
     /** Size of the record value in bytes; deletes (tombstones) count as 0. */
     public void size(final KafkaProducerManager.MessageType type, final byte[] value) {
-        registry.histogram(name(type, "size")).update(value == null ? 0 : value.length);
+        of(type).size.update(value == null ? 0 : value.length);
     }
 
     public void registerSendQueueSize(final Supplier<Integer> size) {
         registry.gauge(MetricRegistry.name(PREFIX, "sendQueueSize"), () -> (Gauge<Integer>) size::get);
+    }
+
+    private static final class TypeMetrics {
+        private final Timer build;
+        private final Meter sent;
+        private final Meter failed;
+        private final Histogram size;
+
+        private TypeMetrics(final MetricRegistry registry, final KafkaProducerManager.MessageType type) {
+            build = registry.timer(name(type, "build"), () -> new Timer(LockFreeExponentiallyDecayingReservoir.builder().build()));
+            sent = registry.meter(name(type, "sent"));
+            failed = registry.meter(name(type, "failed"));
+            size = registry.histogram(name(type, "size"), () -> new Histogram(LockFreeExponentiallyDecayingReservoir.builder().build()));
+        }
     }
 }

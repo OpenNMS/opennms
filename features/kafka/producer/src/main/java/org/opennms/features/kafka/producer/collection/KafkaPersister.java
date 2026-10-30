@@ -279,21 +279,28 @@ public class KafkaPersister implements Persister {
         if (metrics != null) {
             metrics.size(MessageType.METRIC, payload);
         }
-        producer.send(record, (recordMetadata, e) -> {
-            if (e != null) {
-                if (metrics != null) {
-                    metrics.failed(MessageType.METRIC);
+        try {
+            producer.send(record, (recordMetadata, e) -> {
+                if (e != null) {
+                    if (metrics != null) {
+                        metrics.failed(MessageType.METRIC);
+                    }
+                    LOG.warn("Failed to send record to producer: {}.", record, e);
+                    return;
                 }
-                LOG.warn("Failed to send record to producer: {}.", record, e);
-                return;
-            }
+                if (metrics != null) {
+                    metrics.sent(MessageType.METRIC);
+                }
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("persisted collection {} to kafka with key {}", collectionSetProto.toString(), key);
+                }
+            });
+        } catch (RuntimeException e) {
             if (metrics != null) {
-                metrics.sent(MessageType.METRIC);
+                metrics.failed(MessageType.METRIC);
             }
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("persisted collection {} to kafka with key {}", collectionSetProto.toString(), key);
-            }
-        });
+            throw e;
+        }
     }
 
     private String deriveKeyFromCollectionSet(CollectionSetProtos.CollectionSet collectionSetProto) {

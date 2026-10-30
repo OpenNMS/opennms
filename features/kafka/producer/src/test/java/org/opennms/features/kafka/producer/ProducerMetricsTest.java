@@ -23,14 +23,21 @@ package org.opennms.features.kafka.producer;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.MockProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.common.errors.TimeoutException;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.junit.After;
 import org.junit.Test;
@@ -92,7 +99,51 @@ public class ProducerMetricsTest {
         assertEquals(0, registry.meter("messages.alarm_feedback.sent").getCount());
     }
 
-    private OpennmsKafkaProducer start(final MockProducer<byte[], byte[]> producer) throws Exception {
+    @Test
+    public void countsEventsThatCannotBeRequeuedAfterATimeout() throws Exception {
+        final List<Callback> callbacks = new CopyOnWriteArrayList<>();
+        final CountDownLatch release = new CountDownLatch(1);
+        @SuppressWarnings("unchecked")
+        final Producer<byte[], byte[]> producer = mock(Producer.class);
+        when(producer.send(any(), any())).thenAnswer(invocation -> {
+            callbacks.add(invocation.getArgument(1));
+            if (callbacks.size() == 2) {
+                // hold the sender thread so the next record stays in the queue
+                release.await();
+            }
+            return null;
+        });
+        // only records on the event topic are re-queued after a timeout
+        kafkaProducer = start(producer, 1, "alarm-feedback");
+        try {
+            kafkaProducer.handleAlarmFeedback(Collections.singletonList(feedback()));
+            kafkaProducer.handleAlarmFeedback(Collections.singletonList(feedback()));
+            await().atMost(10, TimeUnit.SECONDS).until(() -> callbacks.size() == 2);
+            kafkaProducer.handleAlarmFeedback(Collections.singletonList(feedback()));
+            await().atMost(10, TimeUnit.SECONDS).until(() -> (Integer) registry.getGauges().get("messages.sendQueueSize").getValue() == 1);
+
+            callbacks.get(0).onCompletion(null, new TimeoutException("broker offline"));
+
+            assertEquals(1, registry.meter("messages.alarm_feedback.failed").getCount());
+            assertEquals(1, registry.counter("messages.alarm_feedback.dropped").getCount());
+        } finally {
+            release.countDown();
+        }
+    }
+
+    @Test
+    public void reusesTheMetricsOfAMessageType() {
+        final ProducerMetrics metrics = new ProducerMetrics(registry);
+        assertSame(metrics.build(MessageType.EVENT), metrics.build(MessageType.EVENT));
+        assertSame(registry.timer("messages.event.build"), metrics.build(MessageType.EVENT));
+    }
+
+    private OpennmsKafkaProducer start(final Producer<byte[], byte[]> producer) throws Exception {
+        return start(producer, 10, null);
+    }
+
+    private OpennmsKafkaProducer start(final Producer<byte[], byte[]> producer, final int queueCapacity,
+                                       final String eventTopic) throws Exception {
         final KafkaProducerManager manager = mock(KafkaProducerManager.class);
         when(manager.hasConfigurationForMessageType(any())).thenReturn(true);
         when(manager.getProducerForMessageType(any())).thenReturn(producer);
@@ -102,7 +153,8 @@ public class ProducerMetricsTest {
         final OpennmsKafkaProducer kafkaProducer = new OpennmsKafkaProducer(mapper, mock(NodeCache.class), manager,
                 mock(EventSubscriptionService.class), mock(OnmsTopologyDao.class), 1);
         kafkaProducer.setAlarmFeedbackTopic("alarm-feedback");
-        kafkaProducer.setKafkaSendQueueCapacity(10);
+        kafkaProducer.setEventTopic(eventTopic);
+        kafkaProducer.setKafkaSendQueueCapacity(queueCapacity);
         kafkaProducer.setMetricRegistry(registry);
         kafkaProducer.init();
         return kafkaProducer;

@@ -36,7 +36,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.producer.MockProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.hamcrest.Matchers;
@@ -291,6 +293,24 @@ public class KafkaPersisterRoutingTest {
         }
 
         assertEquals(producer.history().size(), metricRegistry.meter("messages.metric.failed").getCount());
+        assertEquals(0, metricRegistry.meter("messages.metric.sent").getCount());
+    }
+
+    @Test
+    public void countsSendsThatThrowImmediately() throws UnknownHostException {
+        @SuppressWarnings("unchecked")
+        final Producer<String, byte[]> throwing = Mockito.mock(Producer.class);
+        when(throwing.send(any(), any())).thenThrow(new KafkaException("producer closed"));
+        final KafkaPersister persister = persister(routerRoutingInterfacesTo(DEFAULT_TOPIC));
+        persister.setProducer(throwing);
+
+        try {
+            persister.visitCollectionSet(interfaceCollectionSet(1));
+        } catch (KafkaException expected) {
+            // the persister still reports the failure to its caller
+        }
+
+        assertEquals(1, metricRegistry.meter("messages.metric.failed").getCount());
         assertEquals(0, metricRegistry.meter("messages.metric.sent").getCount());
     }
 }

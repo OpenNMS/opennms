@@ -494,7 +494,8 @@ The producer counts and times the messages it sends, per message type, and expos
 admin@opennms()> opennms:metrics-display -m org.opennms.features.kafka.producer
 ----
 
-In each metric name, _type_ is `event`, `alarm`, `node`, `alarm_feedback`, `topology_vertex`, `topology_edge`, or `metric` (collected performance data).
+In each metric name, _type_ is `event`, `alarm`, `node`, `alarm_feedback`, `topology_edge`, or `metric` (collected performance data).
+Topology vertices are forwarded as `node` records.
 
 [options="header" cols="1,1,3"]
 |===
@@ -509,10 +510,11 @@ In each metric name, _type_ is `event`, `alarm`, `node`, `alarm_feedback`, `topo
 | messages._type_.failed
 | Meter
 | Records whose send failed, either immediately or when Kafka rejected them (for example, a collection set larger than the broker's maximum message size).
+A failed `event` record is not necessarily lost: when the send times out, the event is put back at the front of the send queue and counts as `sent` once Kafka accepts it.
 
 | messages._type_.dropped
 | Counter
-| Records discarded because the send queue (`kafkaSendQueueCapacity`) was full.
+| Records discarded because the send queue (`kafkaSendQueueCapacity`) was full, including events that could not be put back after a timeout.
 Not used for `metric`, which is sent without the queue.
 
 | messages._type_.build

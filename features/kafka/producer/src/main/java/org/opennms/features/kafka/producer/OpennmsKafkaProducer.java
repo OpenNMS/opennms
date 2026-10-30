@@ -438,6 +438,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
                                 if (producerRecord != null &&
                                         this.eventTopic.equalsIgnoreCase(producerRecord.topic())) {
                                     if(!kafkaSendDeque.offerFirst(kafkaRecord)) {
+                                        metrics.dropped(messageType);
                                         RATE_LIMITED_LOGGER.warn("Dropped a Kafka record due to queue capacity being full.");
                                     }
                                 }
