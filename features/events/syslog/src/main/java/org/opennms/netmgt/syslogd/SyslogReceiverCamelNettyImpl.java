@@ -168,6 +168,7 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
 
                         @Override
                         public void process(Exchange exchange) throws Exception {
+                            m_packetsReceived.mark();
                             final ByteBuf buffer = exchange.getIn().getBody(ByteBuf.class);
 
                             // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
@@ -180,6 +181,7 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
 
                         @Override
                         public boolean process(Exchange exchange, AsyncCallback callback) {
+                            m_packetsReceived.mark();
                             final ByteBuf buffer = exchange.getIn().getBody(ByteBuf.class);
 
                             // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 

@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
@@ -85,11 +86,13 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
     private final Timer consumerTimer;
     private final Timer toEventTimer;
     private final Timer broadcastTimer;
+    private final Meter messagesReceived;
 
     public SyslogSinkConsumer(MetricRegistry registry) {
         consumerTimer = registry.timer("consumer");
         toEventTimer = registry.timer("consumer.toevent");
         broadcastTimer = registry.timer("consumer.broadcast");
+        messagesReceived = registry.meter("consumer.messagesReceived");
         String cacheConfig = System.getProperty(dnsCacheConfigProperty, defaultCacheConfig);
         dnsCache = CacheBuilder.from(cacheConfig).recordStats().build();
         registry.register("dnsCacheSize", (Gauge<Long>) () -> dnsCache.size());
@@ -104,6 +107,7 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
 
     @Override
     public void handleMessage(SyslogMessageLogDTO syslogDTO) {
+        messagesReceived.mark(syslogDTO.getMessages().size());
         try (Context consumerCtx = consumerTimer.time()) {
             try (MDCCloseable mdc = Logging.withPrefixCloseable(Syslogd.LOG4J_CATEGORY)) {
                 // Convert the Syslog UDP messages to Events
