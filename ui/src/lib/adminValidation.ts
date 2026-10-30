@@ -90,16 +90,16 @@ export const isPathAddressable = (name: string): boolean => !/[/\\%]/.test(name)
 /** Field hint for a name that fails isPathAddressable. */
 export const UNADDRESSABLE_NAME_HINT = 'The name must not contain / \\ or %'
 
-/**
- * Loose shape check: every comma-separated recipient must contain a
- * local@domain somewhere, which also accepts RFC-5322 display-name forms
- * like `Bill Smith <bill@example.com>`.
- */
 // The mismatch message of a password and its confirmation, for the create form and the change-password
 // dialog. An empty confirmation is not a mismatch yet: the user has not typed it.
 export const validatePasswordConfirmation = (password: string, confirmation: string): string | null =>
   confirmation && password !== confirmation ? 'Passwords do not match' : null
 
+/**
+ * Loose shape check: every comma-separated recipient must contain a
+ * local@domain somewhere, which also accepts RFC-5322 display-name forms
+ * like `Bill Smith <bill@example.com>`.
+ */
 export const validateEmailShape = (value: string, label: string): string | null => {
   const trimmed = value.trim()
   if (!trimmed) {

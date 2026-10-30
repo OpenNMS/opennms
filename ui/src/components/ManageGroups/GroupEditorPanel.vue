@@ -261,7 +261,7 @@ const nameProblem = computed(() => (isEditing.value ? null : validateAdminName(n
 const commentsProblem = computed(() =>
   comments.value.trim() === (props.group?.comments ?? '').trim() ? null : validateAdminComments(comments.value))
 
-// the order of the server's lists of categories
+// categories sorted ignoring case, close to the server's order (Java's CASE_INSENSITIVE_ORDER differs for accents)
 const ignoringCase = (a: string, b: string) => a.localeCompare(b, undefined, { sensitivity: 'base' })
 
 // a stored category the list lacks (created after the list was loaded, or the list failed to load) is
