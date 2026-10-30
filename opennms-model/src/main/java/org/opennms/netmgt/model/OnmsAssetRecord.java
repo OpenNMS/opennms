@@ -201,6 +201,11 @@ public class OnmsAssetRecord implements Serializable {
     /**
      * identifier field
      */
+    private String m_email;
+
+    /**
+     * identifier field
+     */
     private String m_vendorAssetNumber;
 
     /**
@@ -818,6 +823,25 @@ public class OnmsAssetRecord implements Serializable {
      */
     public void setVendorFax(final String vendorfax) {
         m_vendorFax = vendorfax;
+    }
+
+    /**
+     * --# email            : One or more contact email addresses, separated by semicolons.
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name = "email")
+    public String getEmail() {
+        return m_email;
+    }
+
+    /**
+     * <p>setEmail</p>
+     *
+     * @param email a {@link java.lang.String} object.
+     */
+    public void setEmail(final String email) {
+        m_email = email;
     }
 
     /**
@@ -1698,6 +1722,7 @@ public class OnmsAssetRecord implements Serializable {
         .add("connection", getConnection())
         .add("vendorphone", getVendorPhone())
         .add("vendorfax", getVendorFax())
+        .add("email", getEmail())
         .add("vendorassetnumber", getVendorAssetNumber())
         .add("userlastmodified", getLastModifiedBy())
         .add("lastmodifieddate", getLastModifiedDate())

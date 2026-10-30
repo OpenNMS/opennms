@@ -132,7 +132,8 @@ public class ExportAssetsServlet extends HttpServlet {
 		"Rack unit height",
                 "Country",
                 "Longitude",
-                "Latitude"
+                "Latitude",
+                "Email"
         };
         
         out.writeNext(header);
@@ -204,6 +205,7 @@ public class ExportAssetsServlet extends HttpServlet {
             entries.add(asset.getCountry());
             entries.add(asset.getLongitude());
             entries.add(asset.getLatitude());
+            entries.add(asset.getEmail());
             
             out.writeNext(entries.toArray(new String[0]));
         }
