@@ -98,7 +98,7 @@
                 <li> (256) Address2
                 <li> (64) City
                 <li> (64) State
-                <li> (64) ZIP Code
+                <li> (64) Postal Code
                 <li> (64) Building
                 <li> (64) Floor
                 <li> (64) Room

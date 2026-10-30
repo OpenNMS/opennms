@@ -542,7 +542,7 @@ public class AssetModel {
         new String[] { "Vendor Asset Number", "vendorAssetNumber" }, 
         new String[] { "Vendor Fax", "vendorFax" }, 
         new String[] { "Vendor Phone", "vendorPhone" }, 
-        new String[] { "ZIP Code", "zip" },
+        new String[] { "Postal Code", "zip" },
         new String[] { "Username", "username" },
         new String[] { "Connection type", "connection" },
         new String[] { "Auto Enable", "autoenable" },
