@@ -22,6 +22,7 @@
 package org.opennms.netmgt.dao.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.criterion.Criterion;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -70,4 +71,12 @@ public interface CategoryDao extends OnmsDao<OnmsCategory, Integer> {
      * @return a {@link java.util.List} object.
      */
     List<OnmsCategory> getCategoriesWithAuthorizedGroup(String groupName);
+
+    /**
+     * The names of the categories every group is authorized for, keyed by group name, read in one query.
+     * A group without an authorization has no entry.
+     *
+     * @return the category names of each group, in no particular order
+     */
+    Map<String, List<String>> getCategoryNamesByAuthorizedGroup();
 }

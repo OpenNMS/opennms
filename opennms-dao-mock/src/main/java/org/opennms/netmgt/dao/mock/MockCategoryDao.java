@@ -21,7 +21,10 @@
  */
 package org.opennms.netmgt.dao.mock;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hibernate.criterion.Criterion;
@@ -85,6 +88,17 @@ public class MockCategoryDao extends AbstractMockDao<OnmsCategory, Integer> impl
     @Override
     public List<OnmsCategory> getCategoriesWithAuthorizedGroup(final String groupName) {
         throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public Map<String, List<String>> getCategoryNamesByAuthorizedGroup() {
+        final Map<String, List<String>> names = new HashMap<>();
+        for (final OnmsCategory cat : findAll()) {
+            for (final String group : cat.getAuthorizedGroups()) {
+                names.computeIfAbsent(group, k -> new ArrayList<>()).add(cat.getName());
+            }
+        }
+        return names;
     }
 
 }

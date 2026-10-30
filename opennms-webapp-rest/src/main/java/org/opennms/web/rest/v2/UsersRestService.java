@@ -119,11 +119,7 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional(readOnly = true)
     public Response getUserByQuery(final SecurityContext securityContext, final String userId) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
-        if (StringUtils.isBlank(userId)) {
-            throw m_support.badRequest("userId is required");
-        }
+        m_support.checkQueryTarget(securityContext, "User management", "userId", userId);
         return doGetUser(securityContext, userId);
     }
 
@@ -204,11 +200,7 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional
     public Response updateUserByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserDto dto) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
-        if (StringUtils.isBlank(userId)) {
-            throw m_support.badRequest("userId is required");
-        }
+        m_support.checkQueryTarget(securityContext, "User management", "userId", userId);
         return doUpdateUser(securityContext, headers, userId, dto);
     }
 
@@ -253,11 +245,7 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional
     public Response setUserPasswordByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserPasswordRequest body) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
-        if (StringUtils.isBlank(userId)) {
-            throw m_support.badRequest("userId is required");
-        }
+        m_support.checkQueryTarget(securityContext, "User management", "userId", userId);
         return doSetPassword(securityContext, headers, userId, body);
     }
 
@@ -292,11 +280,7 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional
     public Response renameUserByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserRenameRequest body) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
-        if (StringUtils.isBlank(userId)) {
-            throw m_support.badRequest("userId is required");
-        }
+        m_support.checkQueryTarget(securityContext, "User management", "userId", userId);
         return doRenameUser(securityContext, headers, userId, body);
     }
 
@@ -356,11 +340,7 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional
     public Response deleteUserByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String userId) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
-        if (StringUtils.isBlank(userId)) {
-            throw m_support.badRequest("userId is required");
-        }
+        m_support.checkQueryTarget(securityContext, "User management", "userId", userId);
         return doDeleteUser(securityContext, headers, userId);
     }
 

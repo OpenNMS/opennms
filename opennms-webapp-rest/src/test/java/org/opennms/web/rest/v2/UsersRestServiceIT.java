@@ -31,7 +31,9 @@ import static org.junit.Assert.assertTrue;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -801,6 +803,13 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
             sendRequest(GET, "/users", 403);
             exec(POST, "/users", "{\"userId\":\"x\",\"password\":\"x\"}", null, 403);
             sendRequest(DELETE, "/users/admin", 403);
+            // the query form checks the role before the parameter
+            sendRequest(GET, "/users/item?userId=admin", 403);
+            sendRequest(GET, "/users/item", 403);
+            exec(PUT, "/users/item?userId=admin", "{\"fullName\":\"x\"}", null, 403);
+            exec(PUT, "/users/item/password?userId=admin", "{\"password\":\"x\"}", null, 403);
+            exec(POST, "/users/item/rename?userId=admin", "{\"newUserId\":\"x\"}", null, 403);
+            sendRequest(DELETE, "/users/item?userId=admin", 403);
         } finally {
             setUser("admin", new String[]{ "ROLE_ADMIN" });
         }
@@ -1009,11 +1018,25 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("changed comment", column("jsp2", "comments"));
     }
 
-    /** The query form tests commit names that the other tests of this class must not meet, and a failed one cannot clean up after itself. */
+    /** The user ids the running test commits; see {@link #committing}. */
+    private final Set<String> m_committed = new LinkedHashSet<>();
+
+    /**
+     * Registers the user ids a test commits, which the other tests of this class (one database) must not meet: they
+     * are deleted after the test, even a failed one. An id that already exists was left behind by another test, and
+     * fails here rather than being erased.
+     */
+    private void committing(final String... userIds) {
+        for (final String userId : userIds) {
+            assertEquals(userId + " was left behind by another test", 0, rowCount("users", "username", userId));
+            m_committed.add(userId);
+        }
+    }
+
     @After
-    public void purgeQueryFormRows() {
-        for (final String name : new String[] { "DOMAIN\\jdoe", "jdoe", "item", "item-2", "available-roles", "available-roles-2", "plain", "plain2", "ADMIN", "Rtc", "rTC", "Admin" }) {
-            new JdbcTemplate(m_dataSource).update("delete from users where username = ?", name);
+    public void deleteCommittedUsers() {
+        for (final String userId : m_committed) {
+            new JdbcTemplate(m_dataSource).update("delete from users where username = ?", userId);
         }
     }
 
@@ -1026,6 +1049,7 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testQueryFormLifecycle() throws Exception {
+        committing(MIGRATED, "jdoe");
         createUser(MIGRATED, u -> u.setFullName("John Doe"));
 
         final MockHttpServletResponse read = exec(GET, "/users/item" + byId(MIGRATED), null, null, 200);
@@ -1056,6 +1080,7 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testQueryFormStaleIs412() throws Exception {
+        committing(MIGRATED, "jdoe");
         createUser(MIGRATED, u -> { });
         final String stale = exec(GET, "/users/item" + byId(MIGRATED), null, null, 200).getHeader("ETag");
         exec(PUT, "/users/item" + byId(MIGRATED), "{\"fullName\":\"Second\"}", null, 200);
@@ -1084,6 +1109,7 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testQueryFormSameAsPathForm() throws Exception {
+        committing("plain", "plain2");
         createUser("plain", u -> u.setFullName("Plain"));
         createUser("plain2", u -> { });
         final MockHttpServletResponse path = exec(GET, "/users/plain", null, null, 200);
@@ -1113,11 +1139,14 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testQueryFormCannotCreateOrRenameToUnaddressable() throws Exception {
+        committing(MIGRATED, "a\\b", "a%b", "DOMAIN\\jdoe2");
         createUser(MIGRATED, u -> { });
         final String message = "The userId must not contain markup, whitespace, control or invisible characters, or the characters : / \\ % ? #";
         assertEquals(message, exec(POST, "/users/item/rename" + byId(MIGRATED), "{\"newUserId\":\"a\\\\b\"}", null, 400).getContentAsString());
         assertEquals(message, exec(POST, "/users", "{\"userId\":\"a\\\\b\",\"password\":\"x\"}", null, 400).getContentAsString());
         assertEquals(message, exec(POST, "/users", "{\"userId\":\"DOMAIN\\\\jdoe2\",\"password\":\"x\"}", null, 400).getContentAsString());
+        assertEquals(message, exec(POST, "/users/item/rename" + byId(MIGRATED), "{\"newUserId\":\"a%b\"}", null, 400).getContentAsString());
+        assertEquals(0, rowCount("users", "username", "a%b"));
         assertEquals(1, rowCount("users", "username", MIGRATED));
         assertEquals(0, rowCount("users", "username", "a\\b"));
     }
@@ -1149,6 +1178,7 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testQueryFormReachesLiteralNames() throws Exception {
+        committing("item", "item-2", "available-roles", "available-roles-2");
         createUser("item", u -> u.setFullName("An item"));
         createUser("available-roles", u -> u.setFullName("Some roles"));
         for (final String name : new String[] { "item", "available-roles" }) {
@@ -1166,6 +1196,7 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testLookAlikesOfReservedUserIdsAreRefused() throws Exception {
+        committing("ADMIN", "Rtc", "rTC", "plain", "Admin");
         for (final String name : new String[] { "ADMIN", "Rtc", "rTC" }) {
             assertEquals("The user-id \"" + name + "\" is reserved.",
                     exec(POST, "/users", "{\"userId\":\"" + name + "\",\"password\":\"x\"}", null, 400).getContentAsString());
@@ -1182,6 +1213,7 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testExistingLookAlikeUserStaysManageable() throws Exception {
+        committing("ADMIN");
         createUser("ADMIN", u -> u.setFullName("Old"));
         final MockHttpServletResponse read = exec(GET, "/users/ADMIN", null, null, 200);
         exec(PUT, "/users/ADMIN", "{\"fullName\":\"New\"}", read.getHeader("ETag"), 200);

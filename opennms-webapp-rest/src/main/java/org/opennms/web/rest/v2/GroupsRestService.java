@@ -99,13 +99,9 @@ public class GroupsRestService implements GroupsRestApi {
         m_support.assertAdmin(securityContext, "Group management");
         m_support.requireDatabaseStore();
         try {
-            // one pass over the categories, so that the number of statements does not grow with the groups
-            final Map<String, List<String>> categoriesByGroup = new HashMap<>();
-            for (final OnmsCategory category : m_categoryDao.findAll()) {
-                for (final String groupName : category.getAuthorizedGroups()) {
-                    categoriesByGroup.computeIfAbsent(groupName, k -> new ArrayList<>()).add(category.getName());
-                }
-            }
+            // one query for every authorization, so that the number of statements grows with neither the groups
+            // nor the categories
+            final Map<String, List<String>> categoriesByGroup = m_categoryDao.getCategoryNamesByAuthorizedGroup();
             final List<GroupDto> groups = new ArrayList<>();
             for (final UserGroup group : m_userGroupDao.findAll()) {
                 groups.add(toDto(group, group.getVersion(), categoriesByGroup.getOrDefault(group.getName(), List.of())));
@@ -142,11 +138,7 @@ public class GroupsRestService implements GroupsRestApi {
     @Override
     @Transactional(readOnly = true)
     public Response getGroupByQuery(final SecurityContext securityContext, final String name) {
-        m_support.assertAdmin(securityContext, "Group management");
-        m_support.requireDatabaseStore();
-        if (StringUtils.isBlank(name)) {
-            throw m_support.badRequest("name is required");
-        }
+        m_support.checkQueryTarget(securityContext, "Group management", "name", name);
         return doGetGroup(securityContext, name);
     }
 
@@ -205,11 +197,7 @@ public class GroupsRestService implements GroupsRestApi {
     @Override
     @Transactional
     public Response updateGroupByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupDto dto) {
-        m_support.assertAdmin(securityContext, "Group management");
-        m_support.requireDatabaseStore();
-        if (StringUtils.isBlank(name)) {
-            throw m_support.badRequest("name is required");
-        }
+        m_support.checkQueryTarget(securityContext, "Group management", "name", name);
         return doUpdateGroup(securityContext, headers, name, dto);
     }
 
@@ -247,11 +235,7 @@ public class GroupsRestService implements GroupsRestApi {
     @Override
     @Transactional
     public Response renameGroupByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name, final GroupRenameRequest body) {
-        m_support.assertAdmin(securityContext, "Group management");
-        m_support.requireDatabaseStore();
-        if (StringUtils.isBlank(name)) {
-            throw m_support.badRequest("name is required");
-        }
+        m_support.checkQueryTarget(securityContext, "Group management", "name", name);
         return doRenameGroup(securityContext, headers, name, body);
     }
 
@@ -313,11 +297,7 @@ public class GroupsRestService implements GroupsRestApi {
     @Override
     @Transactional
     public Response deleteGroupByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name) {
-        m_support.assertAdmin(securityContext, "Group management");
-        m_support.requireDatabaseStore();
-        if (StringUtils.isBlank(name)) {
-            throw m_support.badRequest("name is required");
-        }
+        m_support.checkQueryTarget(securityContext, "Group management", "name", name);
         return doDeleteGroup(securityContext, headers, name);
     }
 

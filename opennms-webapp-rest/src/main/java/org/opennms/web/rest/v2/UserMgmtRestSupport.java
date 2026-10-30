@@ -42,6 +42,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.UserDataChangedException;
@@ -125,6 +126,21 @@ public class UserMgmtRestSupport {
         if (!UserMgmtStore.isDatabase()) {
             throw error(Status.SERVICE_UNAVAILABLE,
                     "User management through this API needs " + UserMgmtStore.PROPERTY + "=" + UserMgmtStore.DB + ".");
+        }
+    }
+
+    /**
+     * The checks of an endpoint that takes the user id or group name in a query parameter, run before the method
+     * it shares with the path form: the admin and store checks come first, so that a caller without the admin role
+     * gets 403 and not 400 for a missing parameter.
+     *
+     * @param param the name of the query parameter, for the message
+     */
+    public void checkQueryTarget(final SecurityContext securityContext, final String what, final String param, final String value) {
+        assertAdmin(securityContext, what);
+        requireDatabaseStore();
+        if (StringUtils.isBlank(value)) {
+            throw badRequest(param + " is required");
         }
     }
 

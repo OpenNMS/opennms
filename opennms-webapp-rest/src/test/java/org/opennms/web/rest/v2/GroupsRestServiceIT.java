@@ -30,7 +30,9 @@ import static org.junit.Assert.assertTrue;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -688,6 +690,12 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
             sendRequest(GET, "/groups", 403);
             exec(POST, "/groups", "{\"name\":\"x\"}", null, 403);
             sendRequest(DELETE, "/groups/Admin", 403);
+            // the query form checks the role before the parameter
+            sendRequest(GET, "/groups/item?name=Admin", 403);
+            sendRequest(GET, "/groups/item", 403);
+            exec(PUT, "/groups/item?name=Admin", "{\"comments\":\"x\"}", null, 403);
+            exec(POST, "/groups/item/rename?name=Admin", "{\"newName\":\"x\"}", null, 403);
+            sendRequest(DELETE, "/groups/item?name=Admin", 403);
         } finally {
             setUser("admin", new String[]{ "ROLE_ADMIN" });
         }
@@ -785,6 +793,50 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
             }
         }
         throw new AssertionError("catsorted is not in the list");
+    }
+
+    @Test
+    public void testCategoriesSortIgnoringCase() throws Exception {
+        exec(POST, "/groups", "{\"name\":\"catcase\"}", null, 201);
+        for (final String category : Arrays.asList("Servers", "routers", "Firewalls")) {
+            authorizeCategory(category, "catcase");
+        }
+        // a case-sensitive sort would put routers last
+        final List<String> expected = Arrays.asList("Firewalls", "routers", "Servers");
+
+        assertEquals(expected, strings(new JSONObject(getJson("/groups/catcase", 200)).getJSONArray("categories")));
+        final JSONArray list = new JSONArray(getJson("/groups", 200));
+        for (int i = 0; i < list.length(); i++) {
+            if ("catcase".equals(list.getJSONObject(i).getString("name"))) {
+                assertEquals(expected, strings(list.getJSONObject(i).getJSONArray("categories")));
+                return;
+            }
+        }
+        throw new AssertionError("catcase is not in the list");
+    }
+
+    /** A fresh database, so that the number of categories is known. */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testListStatementCountDoesNotGrowWithTheCategories() throws Exception {
+        createListedGroups(0, 2);
+        authorizeCategory("cat0", "listed0");
+        authorizeCategory("cat0", "listed1");
+        final long few = statements(() -> getJson("/groups", 200));
+        for (int i = 1; i < 8; i++) {
+            authorizeCategory("cat" + i, "listed0");
+            authorizeCategory("cat" + i, "listed1");
+        }
+        final long many = statements(() -> getJson("/groups", 200));
+        assertTrue("no statement counted", few > 0);
+        assertEquals("statements for 1 category vs. 8 categories", few, many);
+
+        final JSONArray groups = new JSONArray(getJson("/groups", 200));
+        for (int i = 0; i < groups.length(); i++) {
+            if (groups.getJSONObject(i).getString("name").startsWith("listed")) {
+                assertEquals(8, groups.getJSONObject(i).getJSONArray("categories").length());
+            }
+        }
     }
 
     @Test
@@ -921,7 +973,8 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     /** Commits the authorization, creating the category if it does not exist yet. */
     private void authorizeCategory(final String categoryName, final String groupName) {
         inTx(() -> {
-            OnmsCategory category = m_categoryDao.findByName(categoryName);
+            // not from the DAO's cache: a cached category is detached, and a change to it would be lost
+            OnmsCategory category = m_categoryDao.findByName(categoryName, false);
             if (category == null) {
                 category = new OnmsCategory(categoryName);
                 category.getAuthorizedGroups().add(groupName);
@@ -956,10 +1009,24 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         return values;
     }
 
-    /** The query form tests commit names that the other tests of this class must not meet, and a failed one cannot clean up after itself. */
+    /** The group names the running test commits; see {@link #committing}. */
+    private final Set<String> m_committed = new LinkedHashSet<>();
+
+    /**
+     * Registers the group names a test commits, which the other tests of this class (one database) must not meet:
+     * they are deleted after the test, even a failed one. A name that already exists was left behind by another test,
+     * and fails here rather than being erased.
+     */
+    private void committing(final String... names) {
+        for (final String name : names) {
+            assertEquals(name + " was left behind by another test", 0, groupRowCount(name));
+            m_committed.add(name);
+        }
+    }
+
     @After
-    public void purgeQueryFormRows() {
-        for (final String name : new String[] { "ops/east", "ops-east", "item", "item-2", "available-categories", "available-categories-2", "plain", "plain2", "admin", "ADMIN" }) {
+    public void deleteCommittedGroups() {
+        for (final String name : m_committed) {
             new JdbcTemplate(m_dataSource).update("delete from groups where name = ?", name);
         }
     }
@@ -973,6 +1040,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testQueryFormLifecycle() throws Exception {
+        committing(MIGRATED, "ops-east");
         createGroup(MIGRATED, g -> g.setComments("East"));
 
         final MockHttpServletResponse read = exec(GET, "/groups/item" + byName(MIGRATED), null, null, 200);
@@ -996,6 +1064,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testQueryFormStaleIs412() throws Exception {
+        committing(MIGRATED, "ops-east");
         createGroup(MIGRATED, g -> { });
         final String stale = exec(GET, "/groups/item" + byName(MIGRATED), null, null, 200).getHeader("ETag");
         exec(PUT, "/groups/item" + byName(MIGRATED), "{\"comments\":\"Second\"}", null, 200);
@@ -1021,6 +1090,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testQueryFormSameAsPathForm() throws Exception {
+        committing("plain", "plain2");
         createGroup("plain", g -> g.setComments("Plain"));
         createGroup("plain2", g -> { });
         final MockHttpServletResponse path = exec(GET, "/groups/plain", null, null, 200);
@@ -1049,17 +1119,21 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testQueryFormCannotCreateOrRenameToUnaddressable() throws Exception {
+        committing(MIGRATED, "a\\b", "a%b", "ops/west");
         createGroup(MIGRATED, g -> { });
         final String message = exec(POST, "/groups/item/rename" + byName(MIGRATED), "{\"newName\":\"a\\\\b\"}", null, 400).getContentAsString();
         assertEquals("The group name must not contain markup, whitespace, control or invisible characters, or the characters : / \\ % ? #", message);
         assertEquals(message, exec(POST, "/groups", "{\"name\":\"a\\\\b\"}", null, 400).getContentAsString());
         assertEquals(message, exec(POST, "/groups", "{\"name\":\"ops/west\"}", null, 400).getContentAsString());
+        assertEquals(message, exec(POST, "/groups/item/rename" + byName(MIGRATED), "{\"newName\":\"a%b\"}", null, 400).getContentAsString());
+        assertEquals(0, groupRowCount("a%b"));
         assertEquals(1, groupRowCount(MIGRATED));
         assertEquals(0, groupRowCount("a\\b"));
     }
 
     @Test
     public void testLookAlikesOfReservedGroupNamesAreRefused() throws Exception {
+        committing("admin", "ADMIN", "plain");
         for (final String name : new String[] { "admin", "ADMIN" }) {
             assertEquals("The group name \"" + name + "\" is reserved.",
                     exec(POST, "/groups", "{\"name\":\"" + name + "\"}", null, 400).getContentAsString());
@@ -1076,6 +1150,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testExistingLookAlikeGroupStaysManageable() throws Exception {
+        committing("admin");
         createGroup("admin", g -> g.setComments("Old"));
         final MockHttpServletResponse read = exec(GET, "/groups/admin", null, null, 200);
         exec(PUT, "/groups/admin", "{\"name\":\"admin\",\"comments\":\"New\"}", read.getHeader("ETag"), 200);
@@ -1094,6 +1169,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testQueryFormReachesLiteralNames() throws Exception {
+        committing("item", "item-2", "available-categories", "available-categories-2");
         createGroup("item", g -> g.setComments("An item"));
         createGroup("available-categories", g -> g.setComments("Some categories"));
         for (final String name : new String[] { "item", "available-categories" }) {

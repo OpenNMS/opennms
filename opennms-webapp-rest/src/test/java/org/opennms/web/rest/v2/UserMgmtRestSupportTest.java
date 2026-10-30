@@ -133,6 +133,35 @@ public class UserMgmtRestSupportTest {
     }
 
     @Test
+    public void testCheckQueryTarget() {
+        final SecurityContext admin = mock(SecurityContext.class);
+        when(admin.isUserInRole(Authentication.ROLE_ADMIN)).thenReturn(true);
+        m_support.checkQueryTarget(admin, "User management", "userId", "DOMAIN\\jdoe");
+        for (final String blank : new String[] { null, "", " " }) {
+            try {
+                m_support.checkQueryTarget(admin, "User management", "userId", blank);
+                fail("expected 400 for '" + blank + "'");
+            } catch (final WebApplicationException e) {
+                assertStatus(400, "userId is required", e);
+            }
+        }
+        // without the admin role, a missing parameter is still a 403, never a 400
+        try {
+            m_support.checkQueryTarget(mock(SecurityContext.class), "Group management", "name", null);
+            fail("expected 403");
+        } catch (final WebApplicationException e) {
+            assertStatus(403, "Group management requires the admin role.", e);
+        }
+        System.setProperty("org.opennms.usermgmt.store", "xml");
+        try {
+            m_support.checkQueryTarget(admin, "Group management", "name", null);
+            fail("expected 503");
+        } catch (final WebApplicationException e) {
+            assertEquals(503, e.getResponse().getStatus());
+        }
+    }
+
+    @Test
     public void testCheckIfMatchStaleThrows412() {
         when(m_versionDao.getRowVersion(VersionedTable.users, 5)).thenReturn(7);
         try {
