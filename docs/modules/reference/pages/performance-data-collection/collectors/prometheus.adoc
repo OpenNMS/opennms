@@ -3,10 +3,15 @@
 = PrometheusCollector
 :description: Learn how to configure the PrometheusCollector in OpenNMS {page-component-title} to collect performance data via HTTP(S) using the Prometheus Exposition format.
 
-The PrometheusCollector collects performance metrics via HTTP(S) using the text-based https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format[Prometheus Exposition format].
-Many applications have adopted it and it is in the process of being standardized in the https://openmetrics.io/[OpenMetrics] project.
+The PrometheusCollector collects performance metrics via HTTP(S), supporting both the classic https://github.com/prometheus/docs/blob/main/docs/instrumenting/exposition_formats.md#prometheus-text-format[Prometheus Text Format] and the newer https://github.com/prometheus/docs/blob/main/docs/specs/om/open_metrics_spec.md[OpenMetrics 1.0 Text Format].
+
+It can scrape endpoints that provide either format or both. When both are available, it automatically prioritizes OpenMetrics. This protocol negotiation is performed via quality/priority values in the HTTP header `Accept`.
 
 This collector provides tools for parsing and mapping the metrics to the collection model used by {page-component-title}.
+
+=== Limitations
+
+The PrometheusCollector only processes a subset of the metric types defined in both formats, namely counters and gauges. Histograms and summaries are *not* supported and will be ignored. Metric timestamps are also ignored.
 
 == Collector facts
 
