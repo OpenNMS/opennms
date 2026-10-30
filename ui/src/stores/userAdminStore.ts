@@ -21,6 +21,7 @@
 ///
 
 import API from '@/services'
+import { reloadAfterWrite } from '@/services/adminWrite'
 import { AdminEditMode, AdminWriteResult } from '@/types/adminWrite'
 import { ManagedUser, ManagedUserCreate, STALE_USER_MESSAGE, STALE_USER_RELOAD_FAILED_MESSAGE } from '@/types/userAdmin'
 import { createSuccessResponse, ValidationResult } from '@/types/validation'
@@ -63,20 +64,9 @@ export const useUserAdminStore = defineStore('userAdminStore', () => {
     return result
   }
 
-  // After a write: a success reloads the list (a failed reload goes in the result's errors);
-  // a stale write means the list on screen is out of date, so it reloads too and words
-  // the stale message by whether that reload worked. The caller shows the result.
-  const afterWrite = async (result: AdminWriteResult): Promise<AdminWriteResult> => {
-    if (result.success) {
-      const reloaded = await getUsers()
-      return reloaded.success ? result : { ...result, errors: [reloaded.message] }
-    }
-    if (result.stale) {
-      const reloaded = await getUsers()
-      return { ...result, message: reloaded.success ? STALE_USER_MESSAGE : STALE_USER_RELOAD_FAILED_MESSAGE }
-    }
-    return result
-  }
+  // reloads the list after a write, and words a stale write's message by whether that reload worked
+  const afterWrite = (result: AdminWriteResult) => reloadAfterWrite(result, getUsers,
+    { reloaded: STALE_USER_MESSAGE, reloadFailed: STALE_USER_RELOAD_FAILED_MESSAGE })
 
   const createUser = async (user: ManagedUserCreate) => afterWrite(await API.createManagedUser(user))
 

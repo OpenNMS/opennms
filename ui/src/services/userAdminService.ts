@@ -25,19 +25,12 @@ import { ManagedUser, ManagedUserCreate } from '@/types/userAdmin'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { adminItemConfig, adminItemUrl } from './adminItemUrl'
 import { v2 } from './axiosInstances'
+import { adminWriteError } from './adminWrite'
 import { serverMessage } from './serverMessage'
 
 // Reads return a ValidationResultWithPayload and writes an AdminWriteResult; the
 // component that started the action shows any feedback.
 const endpoint = '/users'
-
-// A 412 is reported by flag only; the store words the stale message once the list has been reloaded.
-const writeError = (err: any, fallback: string): AdminWriteResult => {
-  if (err?.response?.status === 412) {
-    return { success: false, message: '', stale: true }
-  }
-  return { success: false, message: serverMessage(err, fallback), stale: false }
-}
 
 const getManagedUsers = async (): Promise<ValidationResultWithPayload<ManagedUser[]>> => {
   try {
@@ -62,7 +55,7 @@ const createManagedUser = async (user: ManagedUserCreate): Promise<AdminWriteRes
     await v2.post(endpoint, user)
     return adminWriteSuccess()
   } catch (err: any) {
-    return writeError(err, `Failed to create user '${user.userId}'.`)
+    return adminWriteError(err, `Failed to create user '${user.userId}'.`)
   }
 }
 
@@ -72,7 +65,7 @@ const updateManagedUser = async (user: ManagedUser): Promise<AdminWriteResult> =
     await v2.put(target.url, user, adminItemConfig(target, user.version))
     return adminWriteSuccess()
   } catch (err: any) {
-    return writeError(err, `Failed to update user '${user.userId}'.`)
+    return adminWriteError(err, `Failed to update user '${user.userId}'.`)
   }
 }
 
@@ -82,7 +75,7 @@ const setManagedUserPassword = async (userId: string, password: string, version:
     await v2.put(target.url, { password }, adminItemConfig(target, version))
     return adminWriteSuccess()
   } catch (err: any) {
-    return writeError(err, `Failed to change the password for '${userId}'.`)
+    return adminWriteError(err, `Failed to change the password for '${userId}'.`)
   }
 }
 
@@ -92,7 +85,7 @@ const renameManagedUser = async (userId: string, newUserId: string, version: num
     await v2.post(target.url, { newUserId }, adminItemConfig(target, version))
     return adminWriteSuccess()
   } catch (err: any) {
-    return writeError(err, `Failed to rename user '${userId}'.`)
+    return adminWriteError(err, `Failed to rename user '${userId}'.`)
   }
 }
 
@@ -102,7 +95,7 @@ const deleteManagedUser = async (userId: string, version: number): Promise<Admin
     await v2.delete(target.url, adminItemConfig(target, version))
     return adminWriteSuccess()
   } catch (err: any) {
-    return writeError(err, `Failed to delete user '${userId}'.`)
+    return adminWriteError(err, `Failed to delete user '${userId}'.`)
   }
 }
 

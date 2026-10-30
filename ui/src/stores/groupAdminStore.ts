@@ -21,6 +21,7 @@
 ///
 
 import API from '@/services'
+import { reloadAfterWrite } from '@/services/adminWrite'
 import { AdminEditMode, AdminWriteResult } from '@/types/adminWrite'
 import { ManagedGroup, ManagedGroupCreate, STALE_GROUP_MESSAGE, STALE_GROUP_RELOAD_FAILED_MESSAGE } from '@/types/groupAdmin'
 import { createSuccessResponse, ValidationResult } from '@/types/validation'
@@ -72,20 +73,9 @@ export const useGroupAdminStore = defineStore('groupAdminStore', () => {
     return result
   }
 
-  // After a write: a success reloads the list (a failed reload goes in the result's errors);
-  // a stale write means the list on screen is out of date, so it reloads too and words
-  // the stale message by whether that reload worked. The caller shows the result.
-  const afterWrite = async (result: AdminWriteResult): Promise<AdminWriteResult> => {
-    if (result.success) {
-      const reloaded = await getGroups()
-      return reloaded.success ? result : { ...result, errors: [reloaded.message] }
-    }
-    if (result.stale) {
-      const reloaded = await getGroups()
-      return { ...result, message: reloaded.success ? STALE_GROUP_MESSAGE : STALE_GROUP_RELOAD_FAILED_MESSAGE }
-    }
-    return result
-  }
+  // reloads the list after a write, and words a stale write's message by whether that reload worked
+  const afterWrite = (result: AdminWriteResult) => reloadAfterWrite(result, getGroups,
+    { reloaded: STALE_GROUP_MESSAGE, reloadFailed: STALE_GROUP_RELOAD_FAILED_MESSAGE })
 
   const createGroup = async (group: ManagedGroupCreate) => afterWrite(await API.createManagedGroup(group))
 

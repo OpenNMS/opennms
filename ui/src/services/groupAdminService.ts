@@ -25,19 +25,12 @@ import { ManagedGroup, ManagedGroupCreate } from '@/types/groupAdmin'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { adminItemConfig, adminItemUrl } from './adminItemUrl'
 import { v2 } from './axiosInstances'
+import { adminWriteError } from './adminWrite'
 import { serverMessage } from './serverMessage'
 
 // Reads return a ValidationResultWithPayload and writes an AdminWriteResult; the
 // component that started the action shows any feedback.
 const endpoint = '/groups'
-
-// A 412 is reported by flag only; the store words the stale message once the list has been reloaded.
-const writeError = (err: any, fallback: string): AdminWriteResult => {
-  if (err?.response?.status === 412) {
-    return { success: false, message: '', stale: true }
-  }
-  return { success: false, message: serverMessage(err, fallback), stale: false }
-}
 
 const getManagedGroups = async (): Promise<ValidationResultWithPayload<ManagedGroup[]>> => {
   try {
@@ -74,7 +67,7 @@ const createManagedGroup = async (group: ManagedGroupCreate): Promise<AdminWrite
     await v2.post(endpoint, group)
     return adminWriteSuccess()
   } catch (err: any) {
-    return writeError(err, `Failed to create group '${group.name}'.`)
+    return adminWriteError(err, `Failed to create group '${group.name}'.`)
   }
 }
 
@@ -84,7 +77,7 @@ const updateManagedGroup = async (group: ManagedGroup): Promise<AdminWriteResult
     await v2.put(target.url, group, adminItemConfig(target, group.version))
     return adminWriteSuccess()
   } catch (err: any) {
-    return writeError(err, `Failed to update group '${group.name}'.`)
+    return adminWriteError(err, `Failed to update group '${group.name}'.`)
   }
 }
 
@@ -94,7 +87,7 @@ const renameManagedGroup = async (name: string, newName: string, version: number
     await v2.post(target.url, { newName }, adminItemConfig(target, version))
     return adminWriteSuccess()
   } catch (err: any) {
-    return writeError(err, `Failed to rename group '${name}'.`)
+    return adminWriteError(err, `Failed to rename group '${name}'.`)
   }
 }
 
@@ -104,7 +97,7 @@ const deleteManagedGroup = async (name: string, version: number): Promise<AdminW
     await v2.delete(target.url, adminItemConfig(target, version))
     return adminWriteSuccess()
   } catch (err: any) {
-    return writeError(err, `Failed to delete group '${name}'.`)
+    return adminWriteError(err, `Failed to delete group '${name}'.`)
   }
 }
 
