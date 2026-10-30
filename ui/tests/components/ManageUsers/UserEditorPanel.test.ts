@@ -151,6 +151,19 @@ describe('UserEditorPanel.vue', () => {
     expect(save()).toBeUndefined()
   })
 
+  it('drops an unfinished duty row of one user when the panel switches to another', async () => {
+    await mountPanel({ userId: 'jose', dutySchedules: [], roles: [] })
+    await wrapper.find('[data-test="add-duty-button"]').trigger('click')
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
+
+    // both users have no schedules, so the incoming value alone does not change
+    await wrapper.setProps({ user: { userId: 'ana', dutySchedules: [], roles: [] }})
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="duty-row-0"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeUndefined()
+  })
+
   it('shows a server rejection in the panel and stays open', async () => {
     store.createUser.mockResolvedValue({ message: 'User jose already exists.', stale: false })
     await mountPanel()

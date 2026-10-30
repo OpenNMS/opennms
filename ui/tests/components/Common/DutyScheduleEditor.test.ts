@@ -118,7 +118,7 @@ describe('DutyScheduleEditor.vue', () => {
       const wrapper = mountEditor([])
       await wrapper.find('[data-test="add-duty-button"]').trigger('click')
       await wrapper.find('[data-test="remove-duty-0"]').trigger('click')
-      expect(validEmits(wrapper)?.at(-1)).toBe(true)
+      expect(validEmits(wrapper)).toEqual([true, false, true])
     })
 
     it('flags a parsed row whose begin time is cleared, and keeps it visible', async () => {
@@ -197,6 +197,32 @@ describe('DutyScheduleEditor.vue', () => {
       expect(wrapper.find('[data-test="duty-0-overnight"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="duty-0-warning"]').exists()).toBe(false)
       expect(wrapper.text()).not.toContain('minutes long')
+    })
+
+    const EMPTY_WINDOW = 'The begin and end times are the same, so this window never matches. Pick a later end time.'
+
+    it('rejects a new row whose begin and end are the same, instead of calling it 0 minutes long', async () => {
+      const wrapper = mountEditor([])
+      await wrapper.find('[data-test="add-duty-button"]').trigger('click')
+      await wrapper.find('[data-test="duty-0-day-Mo"]').trigger('click')
+      await wrapper.find('[data-test="duty-0-end"]').setValue('09:00')
+
+      expect(wrapper.find('[data-test="duty-0-empty-window"]').text()).toBe(EMPTY_WINDOW)
+      expect(wrapper.find('[data-test="duty-0-warning"]').exists()).toBe(false)
+      expect(wrapper.text()).not.toContain('0 minutes long')
+      expect(validEmits(wrapper)?.at(-1)).toBe(false)
+
+      await wrapper.find('[data-test="duty-0-end"]').setValue('09:01')
+      expect(wrapper.find('[data-test="duty-0-empty-window"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="duty-0-warning"]').text()).toBe('This window is only 1 minute long.')
+      expect(validEmits(wrapper)?.at(-1)).toBe(true)
+    })
+
+    it('shows but tolerates a stored row whose begin and end are the same', async () => {
+      const wrapper = mountEditor(['Mo900-900'])
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find('[data-test="duty-0-empty-window"]').text()).toBe(EMPTY_WINDOW)
+      expect(validEmits(wrapper)).not.toContain(false)
     })
 
     it('keeps valid true for a short window', async () => {

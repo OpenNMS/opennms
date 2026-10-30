@@ -144,6 +144,7 @@
               hint="Pick the days and the begin/end times for each coverage window."
             >
               <DutyScheduleEditor
+                :key="dutyEditorKey"
                 v-model="dutySchedules"
                 v-model:valid="dutyValid"
               />
@@ -239,6 +240,9 @@ const membersToAdd = ref<string[]>([])
 const dutySchedules = ref<string[]>([])
 const categories = ref<string[]>([])
 const dutyValid = ref(true)
+// a new group gets a fresh schedule editor: an unfinished row is not part of the value, so two groups
+// without schedules look alike to the editor, and it would keep the row of the previous one
+const dutyEditorKey = ref(0)
 const saving = ref(false)
 const errorText = ref('')
 
@@ -268,6 +272,7 @@ watch(
   () => {
     errorText.value = ''
     activeTab.value = 'group'
+    dutyEditorKey.value++
     membersToAdd.value = []
     if (props.group) {
       name.value = props.group.name

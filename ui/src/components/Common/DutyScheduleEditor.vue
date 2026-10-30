@@ -63,10 +63,15 @@
           :data-test="`duty-${index}-overnight`"
         >The begin time must be before the end time. Split overnight coverage into two schedules.</small>
         <small
+          v-else-if="isEmptyWindow(row)"
+          :class="emptyWindowBlocks(row) ? 'row-error' : 'row-warning'"
+          :data-test="`duty-${index}-empty-window`"
+        >The begin and end times are the same, so this window never matches. Pick a later end time.</small>
+        <small
           v-else-if="shortWindow(row) !== null"
           class="row-warning"
           :data-test="`duty-${index}-warning`"
-        >This window is only {{ shortWindow(row) }} minutes long.</small>
+        >This window is only {{ shortWindow(row) }} {{ shortWindow(row) === 1 ? 'minute' : 'minutes' }} long.</small>
       </template>
       <!-- a hand-edited entry the day/time form can't represent stays editable
            as raw text so it is never silently dropped -->
@@ -233,18 +238,27 @@ const isOvernight = (row: Row): boolean =>
 const overnightBlocks = (row: Row): boolean =>
   isOvernight(row) && !stored.has(serializeRow(row))
 
+// notifd matches a window inclusively, so one that begins and ends at the same minute matches
+// only that instant: in practice the owner is never on duty. v2 accepts it, so a stored one is
+// left alone, like an overnight one
+const isEmptyWindow = (row: Row): boolean =>
+  row.raw === null && !!row.begin && !!row.end && minutesOf(row.begin) === minutesOf(row.end)
+
+const emptyWindowBlocks = (row: Row): boolean =>
+  isEmptyWindow(row) && !stored.has(serializeRow(row))
+
 // the window length in minutes when it is suspiciously short (5 or fewer), else
 // null. Advisory only.
 const SHORT_WINDOW_MINUTES = 5
 const shortWindow = (row: Row): number | null => {
-  if (row.raw !== null || !row.begin || !row.end || isOvernight(row)) {
+  if (row.raw !== null || !row.begin || !row.end || isOvernight(row) || isEmptyWindow(row)) {
     return null
   }
   const length = minutesOf(row.end) - minutesOf(row.begin)
   return length <= SHORT_WINDOW_MINUTES ? length : null
 }
 
-const valid = computed(() => rows.value.every(row => isComplete(row) && !overnightBlocks(row)))
+const valid = computed(() => rows.value.every(row => isComplete(row) && !overnightBlocks(row) && !emptyWindowBlocks(row)))
 
 watch(valid, value => emit('update:valid', value), { immediate: true })
 

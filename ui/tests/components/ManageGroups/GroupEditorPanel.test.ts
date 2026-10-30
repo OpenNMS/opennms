@@ -100,6 +100,19 @@ describe('GroupEditorPanel.vue', () => {
     expect((wrapper.find('[data-test="group-comments-input"]').element as HTMLInputElement).value).toBe('new')
   })
 
+  it('drops an unfinished duty row of one group when the panel switches to another', async () => {
+    await mountPanel({ name: 'Ops', users: [], dutySchedules: [], version: 1 })
+    await wrapper.find('[data-test="add-duty-button"]').trigger('click')
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
+
+    // both groups have no schedules, so the incoming value alone does not change
+    await wrapper.setProps({ group: { name: 'Dev', users: [], dutySchedules: [], version: 1 }})
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="duty-row-0"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeUndefined()
+  })
+
   it('closes on Back and on Cancel without saving', async () => {
     await mountPanel({ name: 'Ops', users: [], version: 1 })
     await wrapper.find('[data-test="back-button"]').trigger('click')

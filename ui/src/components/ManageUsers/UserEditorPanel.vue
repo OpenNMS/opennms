@@ -191,6 +191,7 @@
               hint="Pick the days and the begin/end times for each coverage window."
             >
               <DutyScheduleEditor
+                :key="dutyEditorKey"
                 v-model="form.dutySchedules"
                 v-model:valid="dutyValid"
               />
@@ -322,6 +323,9 @@ const timeZoneOptions = computed(() => {
 const passwordMismatch = computed(() => !isEditing.value && !!form.passwordConfirm && form.password !== form.passwordConfirm)
 
 const dutyValid = ref(true)
+// a new user gets a fresh schedule editor: an unfinished row is not part of the value, so two users
+// without schedules look alike to the editor, and it would keep the row of the previous one
+const dutyEditorKey = ref(0)
 
 // the checks that show a message on the User tab; marks the tab, since Save is disabled from either tab
 const userTabProblem = computed(() =>
@@ -342,6 +346,7 @@ watch(
   () => {
     errorText.value = ''
     activeTab.value = 'user'
+    dutyEditorKey.value++
     if (props.user) {
       Object.assign(form, {
         userId: props.user.userId,
