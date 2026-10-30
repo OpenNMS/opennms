@@ -30,6 +30,7 @@ import java.util.ServiceLoader;
 import javax.management.MBeanServer;
 
 import org.opennms.core.logging.Logging;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.InvokeAtType;
 import org.opennms.netmgt.config.service.Service;
@@ -138,7 +139,11 @@ public class Starter {
     }
 
     private void start() {
-        LOG.info("Beginning startup");
+        final SystemInfoUtils systemInfo = new SystemInfoUtils();
+        final String packageDescription = valueOrDefault(systemInfo.getPackageDescription(), "OpenNMS");
+        final String displayVersion = valueOrDefault(systemInfo.getDisplayVersion(), "unknown");
+        LOG.info("Beginning startup of {} version {} (Java {} {}, {})", packageDescription, displayVersion,
+                System.getProperty("java.version"), System.getProperty("java.vendor"), System.getProperty("os.name"));
 
         // Constructing the Invoker registers the SIGUSR1 status handler; it must
         // exist before a lifecycle hook can block this thread, or a routine
@@ -198,6 +203,10 @@ public class Starter {
             }
         }
 
-        LOG.info("Startup complete");
+        LOG.info("Startup complete for {} version {}", packageDescription, displayVersion);
+    }
+
+    private static String valueOrDefault(final String value, final String defaultValue) {
+        return value == null || value.isEmpty() ? defaultValue : value;
     }
 }
