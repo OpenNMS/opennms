@@ -149,6 +149,11 @@ Failed polls and collections are timed as well, often at their full timeout incl
 The average, minimum, and maximum are weighted toward recent values, but a single slow poll can remain the maximum for up to about half a day.
 OpenNMS collects them about itself and graphs them under the *Pollerd Poll Stats* and *Collectd Collection Stats* resources.
 
+=== Email asset field
+Node assets have a new `email` field for one or more contact email addresses, separated by semicolons.
+It is in the *Location* section of the asset editor next to *Admin*, which checks the address format, and it is available in requisitions, the REST API, asset import and export, global search, filter rules, and as the `${asset:email}` metadata value.
+Asset CSV files exported before this change still import as before; the email column is optional and comes last.
+
 == Breaking changes
 
 === Kafka SASL/OAUTHBEARER endpoint URLs are blocked by default

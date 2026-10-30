@@ -151,6 +151,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                         .map(ASSET, "room", (a) -> Optional.ofNullable(a.getRoom()))
                         .map(ASSET, "vendor-phone", (a) -> Optional.ofNullable(a.getVendorPhone()))
                         .map(ASSET, "vendor-fax", (a) -> Optional.ofNullable(a.getVendorFax()))
+                        .map(ASSET, "email", (a) -> Optional.ofNullable(a.getEmail()))
                         .map(ASSET, "vendor-asset-number", (a) -> Optional.ofNullable(a.getVendorAssetNumber()))
                         .map(ASSET, "username", (a) -> Optional.ofNullable(a.getUsername()))
                         .map(ASSET, "password", (a) -> Optional.ofNullable(a.getPassword()))

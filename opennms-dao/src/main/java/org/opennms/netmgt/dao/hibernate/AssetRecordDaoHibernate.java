@@ -137,6 +137,7 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
         projList.add(Projections.alias(Projections.property("vendor"), "vendor"));
         projList.add(Projections.alias(Projections.property("vendorAssetNumber"), "vendorAssetNumber"));
         projList.add(Projections.alias(Projections.property("vendorFax"), "vendorFax"));
+        projList.add(Projections.alias(Projections.property("email"), "email"));
         projList.add(Projections.alias(Projections.property("vendorPhone"), "vendorPhone"));
         projList.add(Projections.alias(Projections.property("geolocation.zip"), "zip"));
 

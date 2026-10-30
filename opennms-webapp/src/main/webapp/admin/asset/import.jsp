@@ -146,6 +146,10 @@
                 <li> (32) Admin
                 <li> (32) SNMP Community
                 <li> (2) Rack unit height
+                <li> (32) Country
+                <li> (11) Longitude
+                <li> (11) Latitude
+                <li> Email
               </ol>
 	</div> <!-- column -->
     </div> <!-- row -->

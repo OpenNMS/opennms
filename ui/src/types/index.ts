@@ -195,6 +195,7 @@ export interface NodeAssetRecord {
   vendor?: string | null
   vendorAssetNumber?: string | null
   vendorFax?: string | null
+  email?: string | null
   vendorPhone?: string | null
   zip?: string | null
 }
