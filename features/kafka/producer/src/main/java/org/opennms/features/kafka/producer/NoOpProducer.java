@@ -31,6 +31,7 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.MetricName;
 import org.apache.kafka.common.PartitionInfo;
+import org.apache.kafka.common.Uuid;
 import org.apache.kafka.common.Metric;
 import org.apache.kafka.common.errors.ProducerFencedException;
 import org.slf4j.Logger;
@@ -95,6 +96,11 @@ public class NoOpProducer<K,V> implements Producer<K,V> {
     @Override
     public Map<MetricName, ? extends Metric> metrics() {
         return Collections.emptyMap();
+    }
+
+    @Override
+    public Uuid clientInstanceId(Duration timeout) {
+        throw new UnsupportedOperationException("No-op producer does not support client telemetry");
     }
 
     @Override

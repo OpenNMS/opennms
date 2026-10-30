@@ -66,7 +66,7 @@ public class FormProcGraphController extends AbstractController implements Initi
         String action = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.action.toString()));
         String timespan = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.timespan.toString()));
         String graphtype = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.graphtype.toString()));
-        String title = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.title.toString()));
+        String title = request.getParameter(Parameters.title.toString());
         String g_index = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.graphindex.toString()));
         int graph_index = WebSecurityUtils.safeParseInt(g_index);
         graph_index--; 

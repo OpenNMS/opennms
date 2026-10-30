@@ -109,7 +109,6 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | assetRecord.description | String | Description
 | assetRecord.displayCategory | String | Display Category
 | assetRecord.division | String | Division
-| assetRecord.enable | String | Enable
 | assetRecord.floor | String | Floor
 | assetRecord.hdd1 | String | HDD 1
 | assetRecord.hdd2 | String | HDD 2
@@ -132,7 +131,6 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | assetRecord.notifyCategory | String | Notify Category
 | assetRecord.numpowersupplies | String | Number of Power Supplies
 | assetRecord.operatingSystem | String | Operating System
-| assetRecord.password | String | Password
 | assetRecord.pollerCategory | String | Poller Category
 | assetRecord.port | String | Port
 | assetRecord.rack | String | Rack
@@ -142,7 +140,6 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | assetRecord.room | String | Room
 | assetRecord.serialNumber | String | Serial Number
 | assetRecord.slot | String | Slot
-| assetRecord.snmpcommunity | String | SNMP Community
 | assetRecord.storagectrl | String | Storage Controller
 | assetRecord.supportPhone | String | Support Phone
 | assetRecord.thresholdCategory | String | Threshold Category

@@ -34,21 +34,16 @@ const enum Roles {
 
 type Role = typeof Roles[keyof typeof Roles]
 
-const authStore = computed(() => useAuthStore())
-
-const roles = computed(() => authStore.value.whoAmI.roles)
-const rolesAreLoaded = computed(() => authStore.value.loaded)
-
+// The auth store is looked up on every read, never held at module level: a module-level
+// store stays bound to the first pinia it saw. The lookup is also lazy, so useRole() can be
+// called before pinia is installed (the router does this at module load).
 const hasOneOf = (...rolesToCheck: Role[]) => {
-  for (const role of rolesToCheck) {
-    if (roles.value.includes(role)) {
-      return true
-    }
-  }
-  return false
+  const roles = useAuthStore().whoAmI.roles
+  return rolesToCheck.some(role => roles.includes(role))
 }
 
 const useRole = () => {
+  const rolesAreLoaded = computed<boolean>(() => useAuthStore().loaded)
   const adminRole = computed<boolean>(() => hasOneOf(Roles.ROLE_ADMIN))
   const filesystemEditorRole = computed<boolean>(() => hasOneOf(Roles.ROLE_FILESYSTEM_EDITOR))
   const dcbRole = computed<boolean>(() => hasOneOf(Roles.ROLE_ADMIN, Roles.ROLE_REST, Roles.ROLE_DEVICE_CONFIG_BACKUP))

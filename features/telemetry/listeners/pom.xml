@@ -41,5 +41,10 @@
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

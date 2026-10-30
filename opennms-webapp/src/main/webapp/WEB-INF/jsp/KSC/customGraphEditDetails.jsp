@@ -99,16 +99,16 @@
       <table class="table">
         <tr>
           <td align="right" class="w-25">
-            ${resultSet.title}
+            <c:out value="${resultSet.title}"/>
             <br/>
               <c:if test="${!empty resultSet.resource.parent}">
                 ${resultSet.resource.parent.resourceType.label}:
                 <c:choose>
                   <c:when test="${!empty resultSet.resource.parent.link}">
-                    <a href="<c:url value='${resultSet.resource.parent.link}'/>">${resultSet.resource.parent.label}</a>
+                    <a href="<c:url value='${resultSet.resource.parent.link}'/>"><c:out value="${resultSet.resource.parent.label}"/></a>
                   </c:when>
                   <c:otherwise>
-                    ${resultSet.resource.parent.label}
+                    <c:out value="${resultSet.resource.parent.label}"/>
                   </c:otherwise>
                 </c:choose>
                 <br />
@@ -116,10 +116,10 @@
               ${resultSet.resource.resourceType.label}:
               <c:choose>
                 <c:when test="${!empty resultSet.resource.link}">
-                  <a href="<c:url value='${resultSet.resource.link}'/>">${resultSet.resource.label}</a>
+                  <a href="<c:url value='${resultSet.resource.link}'/>"><c:out value="${resultSet.resource.label}"/></a>
                 </c:when>
                 <c:otherwise>
-                  ${resultSet.resource.label}
+                  <c:out value="${resultSet.resource.label}"/>
                 </c:otherwise>
               </c:choose>
             <br/>
@@ -143,7 +143,7 @@
             <input type="hidden" name="<%=FormProcGraphController.Parameters.action%>" value="none" />
             <div class="form-group">
               <label>Title</label>
-              <input class="form-control" type="text" name="<%=FormProcGraphController.Parameters.title%>" value="${resultSet.title}" size="40" maxlength="40"/>
+              <input class="form-control" type="text" name="<%=FormProcGraphController.Parameters.title%>" value="<c:out value='${resultSet.title}'/>" size="40" maxlength="40"/>
             </div>
             <div class="form-group">
               <label>Timespan</label>

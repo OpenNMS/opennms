@@ -1,9 +1,14 @@
 import { UploadEventFileType } from '@/types/eventConfig'
 import { XMLValidator } from 'fast-xml-parser'
 
-export const MAX_FILES_UPLOAD = 10
+export type EventConfigFileValidation = {
+  isValid: boolean
+  errors: string[]
+  // for a valid eventconf.xml ordering manifest: its <event-file> entry count
+  eventFileEntries?: number
+}
 
-export const validateEventConfigFile = async (file: File) => {
+export const validateEventConfigFile = async (file: File): Promise<EventConfigFileValidation> => {
   // eventconf.xml is a special ordering file — validate XML and presence of <event-file> entries
   if (file.name.toLowerCase() === 'eventconf.xml') {
     try {
@@ -29,7 +34,7 @@ export const validateEventConfigFile = async (file: File) => {
       if (eventFileElements.length === 0) {
         return { isValid: false, errors: ['No <event-file> entries found in eventconf.xml'] }
       }
-      return { isValid: true, errors: [] }
+      return { isValid: true, errors: [], eventFileEntries: eventFileElements.length }
     } catch (error) {
       return { isValid: false, errors: [`Error reading eventconf.xml: ${error instanceof Error ? error.message : 'Unknown error'}`] }
     }

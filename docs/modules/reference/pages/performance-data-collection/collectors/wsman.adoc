@@ -59,7 +59,7 @@ Once validated, add the agent-specific details to the {page-component-title} con
 
 === Troubleshooting and commands
 
-For troubleshooting, there is a set of commands you can use in Powershell, verified on Microsoft Windows Server 2012.
+For troubleshooting, there is a set of commands you can use in PowerShell, verified on Microsoft Windows Server 2012.
 
 .Enable WinRM in PowerShell
 [source, shell]
@@ -315,7 +315,7 @@ The Enumerate commands can include an optional `filter` to filter the records an
 
 When you configure a filter, you must also specify the dialect.
 
-The resource type the group uses must of be of type `node` or a generic resource type.
+The resource type the group uses must be of type `node` or a generic resource type.
 Interface-level resources are not supported.
 
 With a generic resource type, you cannot use the `IndexStorageStrategy` since records have no implicit index.
@@ -349,7 +349,7 @@ Use the following attribute definition to achieve this:
 === Special attributes
 
 A group can contain the placeholder attribute `ElementCount` that, during collection, will be populated with the total number of results returned for that group.
-Use this to threshold on the number results returned by an enumeration.
+Use this to threshold on the number of results returned by an enumeration.
 
 [source, xml]
 ----

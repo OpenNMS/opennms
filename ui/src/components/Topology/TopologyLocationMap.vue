@@ -67,6 +67,7 @@ import markerIconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png'
 import markerShadowUrl from 'leaflet/dist/images/marker-shadow.png'
 import { getGeolocationConfig } from '@/services/geolocationService'
 import { useAppStore } from '@/stores/appStore'
+import { DARK_TILE_FILTER } from '@/components/Topology/geo'
 
 /**
  * A small map of one node's position, for the inspector. Matches what the Vaadin
@@ -151,7 +152,7 @@ onMounted(async () => {
 }
 
 .tlm-dark :deep(.leaflet-tile) {
-  filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9) saturate(0.85);
+  filter: v-bind(DARK_TILE_FILTER);
 }
 
 /* Leaflet hardcodes a white attribution strip, which stays white through the

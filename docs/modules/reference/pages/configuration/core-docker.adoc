@@ -37,7 +37,7 @@ via `JAVA_OPTS`, e.g. `JAVA_OPTS="-Djava.io.tmpdir=/some/path -Dactivemq.data=/s
 | Environment variable                       | Description                                                                       | Required | Default value
 | `OPENNMS_DBNAME`                           | Database name used for {page-component-title} Core instance                       | required | -
 | `OPENNMS_DBUSER`                           | Username with access to the database                                              | required | -
-| `OPENNMS_DBPASS`                           | Password for user with acccess to the database                                    | required | -
+| `OPENNMS_DBPASS`                           | Password for user with access to the database                                    | required | -
 | `POSTGRES_HOST`                            | Host with the PostgreSQL server instance running                                  | required | -
 | `POSTGRES_USER`                            | PostgreSQL super user to initialize database schema specified in `OPENNMS_DBNAME` | required | -
 | `POSTGRES_PASSWORD`                        | PostgreSQL super user password                                                    | required | -

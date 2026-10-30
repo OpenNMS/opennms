@@ -1,19 +1,47 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
 import {
   mapDataCollectionSourceFromServer,
+  mapSnmpCollectionMibGroupFromServer,
   mapSnmpCollectionMibGroupResponseFromServer,
+  mapSnmpCollectionResourceTypeFromServer,
   mapSnmpCollectionResourceTypeResponseFromServer,
+  mapSnmpCollectionSystemDefFromServer,
   mapSnmpCollectionSystemDefResponseFromServer,
   mapSnmpDataCollectionSourceNamesAndIdsResponseFromServer,
   mapSnmpDataCollectionSourceResponseFromServer,
   mapUploadedDataCollectionFilesResponseFromServer
 } from '@/mappers/snmpDataCollection.mapper'
 import {
+  SnmpCollectionMibGroup,
   SnmpCollectionMibGroupPayload,
   SnmpCollectionMibGroupResponse,
   SnmpCollectionProfile,
+  SnmpCollectionResourceType,
   SnmpCollectionResourceTypePayload,
   SnmpCollectionResourceTypeResponse,
   SnmpCollectionSource,
+  SnmpCollectionSystemDef,
   SnmpCollectionSystemDefPayload,
   SnmpCollectionSystemDefResponse,
   SnmpDataCollectionSourceNamesAndIds,
@@ -309,6 +337,61 @@ export const getAllResourceTypeNames = async (): Promise<string[]> => {
     throw error
   }
 }
+
+/**
+ * Makes a GET request to the REST endpoint to retrieve a list of all SNMP data collection system definition names.
+ *
+ * @returns {Promise<string[]>} A promise that resolves to the names of all system definitions.
+ */
+export const getAllSystemDefNames = async (): Promise<string[]> => {
+  const endpoint = '/datacollectionconf/systemdefs/names'
+
+  try {
+    const response = await v2.get(endpoint)
+
+    if (response.status === 200) {
+      return response.data as string[]
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error fetching SNMP data collection system definition names:', error)
+    throw error
+  }
+}
+
+// Returns the response body, or an empty list when no source defines the name (404).
+const findByName = async (kind: 'mibgroups' | 'resourcetypes' | 'systemdefs', name: string): Promise<any[]> => {
+  // The name is a query parameter, because a name can contain '/' or be '.' or '..'.
+  try {
+    const response = await v2.get(`/datacollectionconf/${kind}/by-name`, { params: { name }})
+    return Array.isArray(response.data) ? response.data : []
+  } catch (error: any) {
+    if (error?.response?.status === 404) {
+      return []
+    }
+    console.error(`Error finding SNMP data collection ${kind} with name '${name}':`, error)
+    throw error
+  }
+}
+
+/**
+ * Finds the MIB groups with this exact name in all sources. A name can exist in more than one source.
+ */
+export const findMibGroupsByName = async (name: string): Promise<SnmpCollectionMibGroup[]> =>
+  (await findByName('mibgroups', name)).map(mapSnmpCollectionMibGroupFromServer)
+
+/**
+ * Finds the resource types with this exact name in all sources. A name can exist in more than one source.
+ */
+export const findResourceTypesByName = async (name: string): Promise<SnmpCollectionResourceType[]> =>
+  (await findByName('resourcetypes', name)).map(mapSnmpCollectionResourceTypeFromServer)
+
+/**
+ * Finds the system definitions with this exact name in all sources. A name can exist in more than one source.
+ */
+export const findSystemDefsByName = async (name: string): Promise<SnmpCollectionSystemDef[]> =>
+  (await findByName('systemdefs', name)).map(mapSnmpCollectionSystemDefFromServer)
 
 /**
  * Makes a GET request to the REST endpoint to retrieve a list of all SNMP data collection MIB group names.

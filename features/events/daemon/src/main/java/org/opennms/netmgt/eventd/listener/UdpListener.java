@@ -23,6 +23,7 @@ package org.opennms.netmgt.eventd.listener;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.config.api.EventdConfig;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -45,6 +46,11 @@ import io.netty.handler.logging.LoggingHandler;
 
 public class UdpListener {
     private static final Logger LOG = LoggerFactory.getLogger(UdpListener.class);
+
+    // No quiet period: the channel is closed before the group shuts down, so no new tasks arrive.
+    // Netty's default quiet period of 2 s per group delays every daemon stop.
+    private static final long SHUTDOWN_QUIET_PERIOD_MS = 0;
+    private static final long SHUTDOWN_TIMEOUT_MS = 1000;
 
     private EventLoopGroup bossGroup;
     private ChannelFuture future;
@@ -84,9 +90,8 @@ public class UdpListener {
 
     public void stop() throws InterruptedException {
         LOG.info("Closing channel...");
-        ChannelFuture cf = future.channel().closeFuture();
+        future.channel().close().sync();
         LOG.info("Closing boss group...");
-        bossGroup.shutdownGracefully().sync();
-        cf.sync();
+        bossGroup.shutdownGracefully(SHUTDOWN_QUIET_PERIOD_MS, SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS).sync();
     }
 }

@@ -2,7 +2,7 @@
 = Monitoring with Prometheus
 
 Running OpenNMS {page-component-title} components in a larger monitoring application stack requires monitoring.
-To give people operating these components a unified view, a Prometheus compatible metrics endpoint can be exposed for the Core, Minion and Sentinel applications which allows engineers insights for sizing, troubleshooting and capacity planing.
+To give people operating these components a unified view, a Prometheus compatible metrics endpoint can be exposed for the Core, Minion and Sentinel applications which allows engineers insights for sizing, troubleshooting and capacity planning.
 We recommend using the https://github.com/prometheus/jmx_exporter[JMX Prometheus Exporter] agent which exposes our JMX management beans as a Prometheus compatible metrics endpoint.
 
 == Native application deployment

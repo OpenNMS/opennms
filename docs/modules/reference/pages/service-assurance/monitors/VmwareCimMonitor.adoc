@@ -5,7 +5,7 @@
 This monitor is part of the VMware integration provided by Provisiond.
 The monitor is specialized to test the health status provided from all host system (host) sensor data.
 
-This monitor only runs on VMware hosts and only if the power state "on".
+This monitor only runs on VMware hosts and only if the power state is "on".
 It does not apply to virtual machines.
 
 This monitor requires hosts be imported with Provisiond and the VMware import.

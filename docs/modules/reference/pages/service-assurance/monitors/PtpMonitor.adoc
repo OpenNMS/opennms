@@ -3,7 +3,7 @@
 :description: Learn how to configure and use the PtpMonitor in OpenNMS {page-component-title} to monitor the correct PTP port state for an interface.
 
 The Precision Time Protocol allows the precise synchronization of clocks in measurement and control systems implemented with packet-based networks.
-THE PRP monitor allows you to test the port state of SNMP-enabled interfaces using the https://www.rfc-editor.org/info/rfc8173[PTP MIB defined in RFC 8173].
+The PTP monitor allows you to test the port state of SNMP-enabled interfaces using the https://www.rfc-editor.org/info/rfc8173[PTP MIB defined in RFC 8173].
 During the poll, it queries the device for the available clock-ports and their states and compares with a given expected state.
 If the state equals the desired state the service is considered up and down otherwise.
 The following states are available:

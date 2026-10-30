@@ -50,8 +50,8 @@ See xref:operation:deep-dive/admin/configuration/daemon-config-files.adoc[] sect
 | `CORE_SERVICE_EVENTTRANSLATOR_ENABLED=true`
 
 | Eventd
-| Receives and writes event information.
-| - (always enabled)
+| Receives and writes event information. Eventd is always enabled and cannot be disabled.
+| -
 
 | JettyServer
 | The Jetty server provides the {page-component-title} web user interface.

@@ -73,6 +73,8 @@
       <column name="serviceID"/>
       <column name="lastGood"/>
       <column name="lastFail"/>
+      <column name="collectLastGood"/>
+      <column name="collectLastFail"/>
    </table>
    <table name="assets">
       <join column="nodeID" table="ipInterface" table-column="nodeID"/>

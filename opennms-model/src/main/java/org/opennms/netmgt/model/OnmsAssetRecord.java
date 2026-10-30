@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -44,6 +45,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
@@ -62,6 +64,12 @@ import com.google.common.base.MoreObjects;
 @Table(name = "assets")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsAssetRecord implements Serializable {
+
+    /**
+     * Credential properties. REST input can set them. REST output, search and query filters must not expose them.
+     */
+    public static final Set<String> WRITE_ONLY_PROPERTIES = Set.of("password", "enable", "snmpcommunity");
+
     private static final long serialVersionUID = -8259333820682056097L;
 
     /**
@@ -1162,6 +1170,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlJavaTypeAdapter(WriteOnlyAdapter.class)
     @Column(name = "password")
     public String getPassword() {
         return m_password;
@@ -1181,6 +1190,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlJavaTypeAdapter(WriteOnlyAdapter.class)
     @Column(name = "enable")
     public String getEnable() {
         return m_enable;
@@ -1284,6 +1294,7 @@ public class OnmsAssetRecord implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlJavaTypeAdapter(WriteOnlyAdapter.class)
     @Column(name = "snmpcommunity", length = 1)
     public String getSnmpcommunity() {
         return m_snmpcommunity;
@@ -1683,8 +1694,6 @@ public class OnmsAssetRecord implements Serializable {
         .add("floor", getFloor())
         .add("room", getRoom())
         .add("username", getUsername())
-        .add("password", getPassword())
-        .add("enable", getEnable())
         .add("autoenable", getAutoenable())
         .add("connection", getConnection())
         .add("vendorphone", getVendorPhone())
@@ -1716,7 +1725,6 @@ public class OnmsAssetRecord implements Serializable {
         .add("inputpower", getInputpower())
         .add("additionalhardware", getAdditionalhardware())
         .add("admin", getAdmin())
-        .add("snmpcommunity", getSnmpcommunity())
         .add("rackunitheight", getRackunitheight())
         .toString();
     }

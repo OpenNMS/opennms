@@ -94,11 +94,11 @@ The data contains metadata and is structured as a list of `key:value` pairs.
 
 === Service
 For any interface that needs to enable OpenConfig streaming, we need to add a service on a given interface.
-This denotes `service-name` in above configuration which is defined as `OpenConfig`.
+This denotes `service-name` in the above configuration which is defined as `OpenConfig`.
 
 === Packages
 At least one package must be present for the connector to function.
-Use multiple packages to customize the parameter's subsets of nodes.
+Use multiple packages to customize the parameters for subsets of nodes.
 
 The `filter` element is optional.
 If missing, all services with the given name will be considered.
@@ -287,7 +287,7 @@ Options are `gnmi` or `jti`.
 
 === Scripting
 
-The script will be invoked for every OpenConfig stream data that is received and successfully decoded.
+The script will be invoked for every OpenConfig stream data message that is received and successfully decoded.
 
 The following globals will be passed to the script:
 

@@ -31,7 +31,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.ServiceRef;
 import org.opennms.netmgt.telemetry.config.model.ConnectorTwinConfig;
 import org.opennms.netmgt.telemetry.daemon.LocationPublisher;
 import org.opennms.netmgt.telemetry.daemon.LocationPublisherManager;
@@ -93,20 +92,12 @@ public class OpenConfigLocationPublisherTest {
     }
 
     @Test
-    public void testOpenConfigTwinPublisher_publish_and_remove_flow_using_real_ServiceRef() throws Exception {
-        InetAddress addr;
-        try {
-            addr = InetAddressUtils.addr("10.0.0.5");
-        } catch (NoClassDefFoundError | Exception e) {
-            addr = InetAddress.getByName("10.0.0.5");
-        }
-
-        ServiceRef srv = new ServiceRef(100, addr, "OpenConfigService", "LOC-TEST");
-
+    public void testOpenConfigTwinPublisher_publish_and_remove_flow() throws Exception {
         List<Map<String, String>> params = Collections.singletonList(Collections.singletonMap("k", "v"));
         String nodeConnectorKey = "nk-xyz";
+        ConnectorTwinConfig.ConnectorConfig cfg = new ConnectorTwinConfig.ConnectorConfig(100, "10.0.0.5", nodeConnectorKey, params);
 
-        openConfigTwinPublisher.publishConfig(srv, params, nodeConnectorKey, "OpenConfig");
+        openConfigTwinPublisher.publishConfigs("LOC-TEST", Collections.singletonList(cfg), Collections.emptyList(), "OpenConfig");
 
         LocationPublisher lp = locationPublisherManager.getOrCreate("LOC-TEST");
         assertNotNull(lp);
@@ -119,7 +110,7 @@ public class OpenConfigLocationPublisherTest {
         Object session = getPrivateField(lp, "session");
         assertNotNull("session should be created after publish", session);
 
-        openConfigTwinPublisher.removeConfig(srv, nodeConnectorKey);
+        openConfigTwinPublisher.publishConfigs("LOC-TEST", Collections.emptyList(), Collections.singletonList(nodeConnectorKey), "OpenConfig");
 
         LocationPublisher lpAfter = locationPublisherManager.getOrCreate("LOC-TEST");
         @SuppressWarnings("rawtypes")
@@ -153,7 +144,7 @@ public class OpenConfigLocationPublisherTest {
             cfg = new ConnectorTwinConfig.ConnectorConfig(999, "1.1.1.1", "ck-1", Collections.emptyList());
         }
 
-        p1.addConfigAndPublish(cfg);
+        p1.updateConfigsAndPublish(Collections.singletonList(cfg), Collections.emptyList());
         assertTrue("p1 must have configs", p1.hasConfigs());
 
         locationPublisherManager.forceCloseAll();

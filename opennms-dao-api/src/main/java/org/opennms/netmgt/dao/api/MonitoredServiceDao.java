@@ -22,6 +22,7 @@
 package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -121,4 +122,24 @@ public interface MonitoredServiceDao extends LegacyOnmsDao<OnmsMonitoredService,
      * @return a {@link java.util.List} object.
      */
     List<OnmsMonitoredService> findAllServicesForScheduling();
+
+    /**
+     * Sets the completion time of the most recent successful data collection for a service
+     * with a single UPDATE by primary key, without loading the entity.
+     *
+     * @param ifServiceId the ifservices primary key
+     * @param timestamp the collection completion time
+     * @return the number of rows updated: 1, or 0 if the service no longer exists
+     */
+    int updateCollectLastGood(int ifServiceId, Date timestamp);
+
+    /**
+     * Sets the completion time of the most recent failed data collection for a service
+     * with a single UPDATE by primary key, without loading the entity.
+     *
+     * @param ifServiceId the ifservices primary key
+     * @param timestamp the collection completion time
+     * @return the number of rows updated: 1, or 0 if the service no longer exists
+     */
+    int updateCollectLastFail(int ifServiceId, Date timestamp);
 }

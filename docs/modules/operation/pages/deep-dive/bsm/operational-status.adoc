@@ -16,6 +16,6 @@ Event log messages have the following information:
 * `businessServiceName`: The business service name.
 * `id`: The business service identifier.
 * `prevSeverityId`: The ID of the event's previous severity.
-* `prevSeverityLabel`: The the event's previous severity label.
+* `prevSeverityLabel`: The event's previous severity label.
 * `newSeverityId`: The ID of the event's new severity.
 * `newSeverityLabel`: The event's new severity label.

@@ -74,7 +74,7 @@ The `maxSize` is not used with the `HikariCPConnectionFactory`, which is depreca
 
 If you change the max pool size, make sure you also update the `max_connections`.
 You typically set this in `PG_HOME/data/postgresql.conf`, but you may also use the `ALTER SYSTEM` syntax.
-You must restart the PostgreSQL server to take effect.
+You must restart the PostgreSQL server for the change to take effect.
 
 NOTE: You may find https://pgtune.leopard.in.ua/[PGTune] useful to calculate configuration parameters for PostgreSQL.
 As with all third-party tools, we do not endorse or guarantee it.
@@ -198,7 +198,7 @@ The default user credentials are as follows:
 * *Password:* `admin`
 
 When you try to sign in with these credentials, {page-component-title} prompts you to change your password.
-Although you can also skip this action and sign in with default the credentials, we strongly recommend that you change the `admin` account's password to a secure one.
+Although you can also skip this action and sign in with the default credentials, we strongly recommend that you change the `admin` account's password to a secure one.
 
 . Type your current password.
 . Type your new password and confirm it.

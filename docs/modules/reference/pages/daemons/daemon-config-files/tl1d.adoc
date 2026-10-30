@@ -28,5 +28,5 @@ Handles processing of xref:operation:deep-dive/events/sources/tl1.adoc[TL1 messa
 | Description
 
 | tl1d.log
-| Logs relating to Tl1 message parsing.
+| Logs relating to TL1 message parsing.
 |===

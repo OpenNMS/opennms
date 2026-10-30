@@ -25,6 +25,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
@@ -44,6 +45,7 @@ import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.DatagramVersion;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.SampleDatagram;
+import org.opennms.netmgt.telemetry.protocols.common.utils.ShutdownUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +54,9 @@ import io.netty.buffer.ByteBuf;
 public class SFlowUdpParser implements UdpParser, Dispatchable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SFlowUdpParser.class);
+
+    /** How long a stop waits for the records that are still in the executor. */
+    static final Duration SHUTDOWN_TIMEOUT = Duration.ofSeconds(5);
 
     private static final int DEFAULT_NUM_THREADS = Runtime.getRuntime().availableProcessors() * 2;
 
@@ -210,7 +215,7 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
 
     @Override
     public void stop() {
-        executor.shutdown();
+        ShutdownUtils.shutdownAndAwait(executor, name, SHUTDOWN_TIMEOUT);
     }
 
     public int getThreads() {

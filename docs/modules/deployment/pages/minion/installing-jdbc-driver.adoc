@@ -45,7 +45,7 @@ sudo vi deploy/jdbc-mysql.xml
 <2> The bundle is named `mysql-bundle`, and the version number is set to `8.0.30`.
 <3> Bundle to download version `8.0.30` with Maven from official repositories.
 
-As soon you write the file, Karaf picks up the feature and tries to install it.
+As soon as you write the file, Karaf picks up the feature and tries to install it.
 You can troubleshoot the installation using `$\{MINION_HOME}/data/log/karaf.log`.
 
 .Connect to the Karaf shell
@@ -69,7 +69,7 @@ mysql-bundle   | 8.0.22   | x        | Started     | opennms-{page-component-ver
 
 == Example features files for common JDBC drivers
 
-.MS SQLServer using 12.10.1.jre11
+.Microsoft SQL Server using 12.10.1.jre11
 [source, console]
 [subs="verbatim,attributes"]
 ----

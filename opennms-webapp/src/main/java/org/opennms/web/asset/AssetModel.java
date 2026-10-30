@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -325,7 +326,7 @@ public class AssetModel {
 
         columnName = WebSecurityUtils.sanitizeDbColumnName(columnName);
 
-        if (!VALID_SQL_STATEMENTS.containsKey(columnName.toLowerCase())) {
+        if (!VALID_SQL_STATEMENTS.containsKey(columnName.toLowerCase(Locale.ROOT))) {
             return new MatchingAsset[0];
         }
 
@@ -333,7 +334,7 @@ public class AssetModel {
         try {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement(VALID_SQL_STATEMENTS.get(columnName.toLowerCase()));
+            PreparedStatement stmt = conn.prepareStatement(VALID_SQL_STATEMENTS.get(columnName.toLowerCase(Locale.ROOT)));
             d.watch(stmt);
             stmt.setString(1, "%" + searchText.toLowerCase() + "%");
 
@@ -500,7 +501,9 @@ public class AssetModel {
 
     /**
      * Hard-coded (for now) list of human-readable asset columns and the
-     * corresponding database column.
+     * corresponding database column. Credential columns (password, enable,
+     * snmpcommunity) are deliberately left out: this list is also the search
+     * allowlist, and search results echo the matched value.
      */
     private static final String[][] s_columns = sort(new String[][] {
         new String[] { "Address 1", "address1" },
@@ -541,8 +544,6 @@ public class AssetModel {
         new String[] { "Vendor Phone", "vendorPhone" }, 
         new String[] { "ZIP Code", "zip" },
         new String[] { "Username", "username" },
-        new String[] { "Password", "password" },
-        new String[] { "Enable Password", "enable" },
         new String[] { "Connection type", "connection" },
         new String[] { "Auto Enable", "autoenable" },
         new String[] { "Cpu", "cpu" },        
@@ -558,7 +559,6 @@ public class AssetModel {
         new String[] { "Inputpower", "inputpower" },
         new String[] { "Additional hardware", "additionalhardware" },
         new String[] { "Admin", "admin" },
-        new String[] { "SNMP community", "snmpcommunity" },
 	    new String[] { "Rack unit height", "rackunitheight" },
         new String[] { "GeoLocation Longitude", "longitude" },
         new String[] { "GeoLocation Latitude", "latitude" },
@@ -567,8 +567,16 @@ public class AssetModel {
     });
 
     private static final Map<String, String> VALID_SQL_STATEMENTS = Arrays.stream(s_columns)
-            .map(entry -> entry[1].toLowerCase())
+            .map(entry -> entry[1].toLowerCase(Locale.ROOT))
             .collect(Collectors.toMap(e -> e, e -> String.format("SELECT ASSETS.NODEID, NODE.NODELABEL, ASSETS.%s FROM ASSETS, NODE WHERE LOWER(ASSETS.%s) LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL", e, e)));
+
+    /**
+     * Returns true if the given name is one of the asset columns in {@link #getColumns()},
+     * compared case-insensitively.
+     */
+    public static boolean isColumnValid(final String columnName) {
+        return columnName != null && VALID_SQL_STATEMENTS.containsKey(columnName.toLowerCase(Locale.ROOT));
+    }
 
     private Float safeFloat(final String value) {
         if (StringUtils.hasLength(value)) {

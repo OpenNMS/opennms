@@ -178,7 +178,7 @@ Where these diverge from PrimeVue, deliberately:
 
 ## Icons
 
-The icon set (262 template-only SVG SFCs, originally vendored from FeatherDS)
+The icon set (template-only SVG SFCs, originally vendored from FeatherDS)
 lives at `packages/onms-ui/src/icons/<category>/<Name>.vue`, alongside the
 `OnmsIcon` wrapper that renders it. It moved here from `ui/src/components/icons/`
 in NMS-20243: under the old `@/components/icons/...` path it was reachable only
@@ -193,7 +193,7 @@ import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 
 The 12 category directories (`account`, `action`, `communication`, `content`,
 `datavis`, `file`, `hardware`, `medical`, `navigation`, `network`,
-`notification`, `status`) are part of the path. They matter: 22 basenames
+`notification`, `status`) are part of the path. They matter: several basenames
 (`Server`, `Cloud`, `Security`, `Group`, `Build`, `Code`, `Cancel`, …) appear in
 more than one category, so the category is what disambiguates them.
 
@@ -202,7 +202,7 @@ more than one category, so the category is what disambiguates them.
 Deliberate, and load-bearing. `ui/src/main/main.ts` does
 `import * as OnmsUI` and assigns that namespace object to `window.OnmsUI`. A
 namespace object cannot be tree-shaken — so **anything reachable from
-`index.ts` ships to every user unconditionally**. Exporting 262 icons from the
+`index.ts` ships to every user unconditionally**. Exporting every icon from the
 barrel would force the entire set into the core bundle even though a typical
 screen uses a handful.
 
@@ -309,9 +309,10 @@ The prop mounts the directive on the button itself, with no remount when the
 text arrives late — the wrapper handles that (see above). When `tooltip` is set
 the native `title` attribute is dropped, so the browser's own tooltip doesn't
 duplicate the rich one; `title`, if given, still names the button for assistive
-tech, and a `tooltip`-only button is named from the tooltip text. Positioning
-modifiers (`v-onms-tooltip.top`) have no prop equivalent — a call site needing
-one keeps using the directive.
+tech, and a `tooltip`-only button is named from the tooltip text. Placement is
+the `tooltipPosition` prop (`top`, `bottom`, `left`, `right`; default `right`),
+which the wrapper hands to the directive as its modifier — a button at the
+viewport's edge otherwise gets its tooltip squeezed against that edge.
 
 ## OnmsDatePicker: dates, times, and time-only (NMS-20280)
 
@@ -389,6 +390,20 @@ second-to-last path segment), the version handshake, and the dev harness
 [`packages/onms-ui-example-plugin`](../onms-ui-example-plugin/README.md), a
 real externalized plugin built with the toolchain a third-party author would
 use.
+
+## Chromeless app shell
+
+`useOnmsChromeless()` lets a page or plugin hide the host's menu bar, side
+menu and footer, e.g. for a wall display. `enterChromeless()` turns it on until
+the next route change, `exitChromeless()` or Escape, so a page that wants it
+calls `enterChromeless()` when it mounts (in `onActivated` if it is kept
+alive). `isChromeless` is a readonly ref for a toggle's state. Escape is
+ignored while a dialog, drawer, popover or popup menu is open, and while focus
+is in a text field. The state is module-level, like `useOnmsToast`, so host
+and plugins share it through `window.OnmsUI`.
+
+`useOnmsChromelessHost()` is for the host only: `App.vue` calls it once to
+sync routes marked `meta.chromeless` and install the Escape handler.
 
 ## Sanctioned direct-PrimeVue exceptions
 

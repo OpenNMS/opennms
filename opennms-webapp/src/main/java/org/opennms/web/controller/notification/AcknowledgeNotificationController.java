@@ -56,7 +56,7 @@ public class AcknowledgeNotificationController extends AbstractController implem
     private String m_redirectView;
 
     private RedirectRestricter redirectRestricter = RedirectRestricter.builder()
-            .allowRedirect("notification/detail.jsp")
+            .allowRedirect("/notification/detail.jsp")
             .build();
     
     /**
@@ -86,6 +86,8 @@ public class AcknowledgeNotificationController extends AbstractController implem
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_redirectView, "redirectView must be set");
         Assert.notNull(m_webNotificationRepository, "webNotificationRepository must be set");
+        // State-changing action: accept only POST so CSRF protection applies and a cross-site GET cannot trigger it.
+        setSupportedMethods(new String[] { "POST" });
     }
 
     /**
@@ -103,10 +105,8 @@ public class AcknowledgeNotificationController extends AbstractController implem
             throw new MissingParameterException("notices", required);
         }
 
-        String currentUser = request.getParameter("curUser");
-        if (currentUser == null) {
-            currentUser = request.getRemoteUser();
-        }
+        // Always acknowledge as the logged-in user. A client-supplied user name would let a user act as another user.
+        final String currentUser = request.getRemoteUser();
 
         List<Integer> noticeIds = new ArrayList<>();
         for (String noticeIdString : noticeIdStrings) {

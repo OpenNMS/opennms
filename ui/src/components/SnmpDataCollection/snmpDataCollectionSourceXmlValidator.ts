@@ -1,4 +1,4 @@
-import { VALID_MIB_OBJ_TYPES } from '@/lib/constants'
+import { IF_TYPE_LIST_PATTERN, VALID_MIB_OBJ_TYPES } from '@/lib/constants'
 import { UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
 import { XMLValidator } from 'fast-xml-parser'
 
@@ -268,9 +268,8 @@ export const validateGroupElement = (group: Element, groupNumber: number): strin
   }
 
   const ifTypeLower = ifType.toLowerCase()
-  const isNumericIfType = /^\d+$/.test(ifType)
-  if (!VALID_IF_TYPES.includes(ifTypeLower) && !isNumericIfType) {
-    return `Group "${name}": invalid "ifType" value "${ifType}". Expected "all", "ignore", or numeric`
+  if (!VALID_IF_TYPES.includes(ifTypeLower) && !IF_TYPE_LIST_PATTERN.test(ifType)) {
+    return `Group "${name}": invalid "ifType" value "${ifType}". Expected "all", "ignore", an ifType number or a comma-separated list of ifType numbers. The collector does not remove spaces or leading zeros, so "6, 22" and "06" never match`
   }
 
   const mibObjs = group.querySelectorAll('mibObj')

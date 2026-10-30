@@ -92,9 +92,8 @@ public class JdbcAgentState {
         
         LOG.info("Loaded JDBC driver");
 
-        // Get the JDBC url host part
+        // Get the JDBC url host part. Do not log the URL. A JDBC URL can contain credentials.
         m_dbUrl = DBTools.constructUrl(ParameterMap.getKeyedString(parameters, "url", DBTools.DEFAULT_URL), m_address);
-        LOG.debug("JDBC url: {}", m_dbUrl);
 
         String dbUser = ParameterMap.getKeyedString(parameters, "user", DBTools.DEFAULT_DATABASE_USER);
         String dbPass = ParameterMap.getKeyedString(parameters, "password", DBTools.DEFAULT_DATABASE_PASSWORD);
@@ -116,7 +115,7 @@ public class JdbcAgentState {
             }
             return con;
         } catch(SQLException e) {
-            throw new JdbcCollectorException("Unable to connect to JDBC URL: '" + m_dbUrl +"'", e);
+            throw new JdbcCollectorException("Unable to connect to JDBC database on host '" + m_address + "'", e);
         }
     }
     

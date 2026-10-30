@@ -38,6 +38,7 @@ import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
+import org.opennms.web.rest.v2.model.EventConfEventMoveRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,14 +48,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -75,13 +75,10 @@ public class EventConfPersistenceService {
     @Autowired
     private EventConfDao eventConfDao;
 
-    private final ExecutorService eventConfExecutor =
-            EventConfServiceHelper.createEventConfExecutor("load-eventConf-%d");
-
     @PostConstruct
     public void init() {
         // Asynchronously load events from DB in order to not to block startup
-        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao, eventConfExecutor);
+        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -102,8 +99,86 @@ public class EventConfPersistenceService {
         EventConfSource eventConfSource = eventConfSourceDao.lockForUpdate(sourceId);
         Long eventConfId = EventConfServiceHelper.saveEvent(eventConfEventDao, eventConfSource, event, userName, now);
         eventConfSource.setEventCount(eventConfEventDao.countBySourceId(sourceId));
+        eventConfSource.setLastModified(now);
         eventConfSourceDao.saveOrUpdate(eventConfSource);
         return eventConfId;
+    }
+
+    /** The source's events whose UEI matches {@code uei} exactly, in evaluation order. */
+    @Transactional(readOnly = true)
+    public List<EventConfEvent> findEventsBySourceIdAndUei(final Long sourceId, final String uei) {
+        if (eventConfSourceDao.get(sourceId) == null) {
+            throw new EntityNotFoundException("EventConfSource not found for id: " + sourceId);
+        }
+        return eventConfEventDao.findByUeiAndSourceId(uei, sourceId);
+    }
+
+    /** What {@link #upsertEventConfSourceEvent} did, and to which row. */
+    public static final class EventUpsertResult {
+        public enum Outcome { CREATED, UPDATED, UNCHANGED }
+
+        public final Outcome outcome;
+        public final Long id;
+        public final Integer eventOrder;
+
+        EventUpsertResult(final Outcome outcome, final Long id, final Integer eventOrder) {
+            this.outcome = outcome;
+            this.id = id;
+            this.eventOrder = eventOrder;
+        }
+    }
+
+    /**
+     * Creates or updates one event by its identity within the source: the exact UEI plus an equal mask.
+     * The first event (in evaluation order) with that identity is rewritten in place, keeping its id,
+     * position and enabled flag; when its stored definition already equals {@code desired}, nothing is
+     * written. Without a match the event is appended, like a plain add. Runs under the source's row
+     * lock, so it is serialized with uploads, deletes and reorders of the same source.
+     */
+    @Transactional
+    public EventUpsertResult upsertEventConfSourceEvent(final Long sourceId, final String userName, final Event desired) {
+        final Date now = new Date();
+        final EventConfSource source = eventConfSourceDao.lockForUpdate(sourceId);
+
+        EventConfEvent match = null;
+        Event matchParsed = null;
+        for (final EventConfEvent candidate : eventConfEventDao.findByUeiAndSourceId(desired.getUei(), sourceId)) {
+            final Event parsed;
+            try {
+                parsed = JaxbUtils.unmarshal(Event.class, candidate.getXmlContent());
+            } catch (RuntimeException e) {
+                LOG.warn("Skipping event {} of source {} during upsert: its stored XML does not parse", candidate.getId(), sourceId, e);
+                continue;
+            }
+            if (java.util.Objects.equals(desired.getMask(), parsed.getMask())) {
+                match = candidate;
+                matchParsed = parsed;
+                break;
+            }
+        }
+
+        if (match == null) {
+            final Long id = EventConfServiceHelper.saveEvent(eventConfEventDao, source, desired, userName, now);
+            source.setEventCount(eventConfEventDao.countBySourceId(sourceId));
+            source.setLastModified(now);
+            eventConfSourceDao.saveOrUpdate(source);
+            return new EventUpsertResult(EventUpsertResult.Outcome.CREATED, id, eventConfEventDao.get(id).getEventOrder());
+        }
+        if (desired.equals(matchParsed)) {
+            return new EventUpsertResult(EventUpsertResult.Outcome.UNCHANGED, match.getId(), match.getEventOrder());
+        }
+        match.setUei(desired.getUei());
+        match.setEventLabel(desired.getEventLabel());
+        match.setDescription(desired.getDescr());
+        match.setSeverity(EventConfServiceHelper.getValidSeverity(desired.getSeverity()));
+        match.setXmlContent(JaxbUtils.marshal(desired));
+        match.setLastModified(now);
+        match.setModifiedBy(userName);
+        eventConfEventDao.saveOrUpdate(match);
+        // the source's lastModified tracks changes to the source or any of its events
+        source.setLastModified(now);
+        eventConfSourceDao.saveOrUpdate(source);
+        return new EventUpsertResult(EventUpsertResult.Outcome.UPDATED, match.getId(), match.getEventOrder());
     }
 
     public List<EventConfEvent>  findEventConfByFilters(String uei, String vendor, String sourceName, int offset, int limit) {
@@ -111,45 +186,69 @@ public class EventConfPersistenceService {
     }
 
     @Transactional
-    public void updateSourceAndEventEnabled(final EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload) {
-        eventConfSourceDao.updateEnabledFlag(eventConfSrcEnableDisablePayload.getSourceIds(),eventConfSrcEnableDisablePayload.getEnabled(),eventConfSrcEnableDisablePayload.getCascadeToEvents());
+    public void updateSourceAndEventEnabled(final EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload, final String userName) {
+        eventConfSourceDao.updateEnabledFlag(eventConfSrcEnableDisablePayload.getSourceIds(),
+                eventConfSrcEnableDisablePayload.getEnabled(), eventConfSrcEnableDisablePayload.getCascadeToEvents(), userName);
     }
 
 
     @Transactional
     public void deleteEventConfSources(EventConfSourceDeletePayload eventConfSourceDeletePayload) throws Exception {
+        // the catch-all (nothing recreates it) and the stock opennms sources are not deletable,
+        // matching the rule the UI applies
+        final List<String> refused = new ArrayList<>();
+        for (final Long id : eventConfSourceDeletePayload.getSourceIds()) {
+            final EventConfSource source = eventConfSourceDao.get(id);
+            if (source == null) {
+                continue; // deleteBySourceIds reports unknown ids
+            }
+            if (EventConfSource.CATCH_ALL_SOURCE_NAME.equals(source.getName())
+                    || EventConfSource.VENDOR_OPENNMS.equalsIgnoreCase(source.getVendor())) {
+                refused.add(source.getName());
+            }
+        }
+        if (!refused.isEmpty()) {
+            throw new IllegalArgumentException("These sources are part of the stock configuration and cannot be deleted; disable them instead: "
+                    + String.join(", ", refused));
+        }
         eventConfSourceDao.deleteBySourceIds(eventConfSourceDeletePayload.getSourceIds());
     }
 
     @Transactional
-    public void enableDisableConfSourcesEvents(final Long sourceId, final EnableDisableConfSourceEventsPayload enableDisableConfSourceEventsPayload) {
-        eventConfEventDao.updateEventEnabledFlag(sourceId,enableDisableConfSourceEventsPayload.getEventsIds(),enableDisableConfSourceEventsPayload.isEnable());
+    public void enableDisableConfSourcesEvents(final Long sourceId, final EnableDisableConfSourceEventsPayload enableDisableConfSourceEventsPayload, final String userName) {
+        // lock first (same order as every other event mutation), then stamp the source: its
+        // lastModified tracks changes to the source or any of its events
+        final EventConfSource source = eventConfSourceDao.lockForUpdate(sourceId);
+        eventConfEventDao.updateEventEnabledFlag(sourceId, enableDisableConfSourceEventsPayload.getEventsIds(),
+                enableDisableConfSourceEventsPayload.isEnable(), userName);
+        source.setLastModified(new Date());
+        eventConfSourceDao.saveOrUpdate(source);
     }
 
 
+    /** @throws EntityNotFoundException on an unknown source or event, for the REST layer's 404 */
     @Transactional
-    public void updateEventConfEvent(final Long sourceId, final Long eventId, EventConfEventEditRequest payload) {
-
-        try {
-            // Keep deleteEventsForSource's compaction out while this event is rewritten, so the
-            // eventOrder we hold cannot be stale by the time it is flushed
-            eventConfSourceDao.lockForUpdate(sourceId);
-            EventConfEvent eventConfEvent = eventConfEventDao.findBySourceIdAndEventId(sourceId,eventId);
-            if (eventConfEvent == null) {
-                throw new EntityNotFoundException(String.format("EventConfEvent not found for eventId=%d", eventId));
-            }
-            eventConfEvent.setUei(payload.getEvent().getUei());
-            eventConfEvent.setEventLabel(payload.getEvent().getEventLabel());
-            eventConfEvent.setDescription(payload.getEvent().getDescr());
-            eventConfEvent.setEnabled(payload.getEnabled());
-            eventConfEvent.setXmlContent(JaxbUtils.marshal(payload.getEvent()));
-            eventConfEvent.setLastModified(new Date());
-            eventConfEvent.setSeverity(EventConfServiceHelper.getValidSeverity(payload.getEvent().getSeverity()));
-            eventConfEventDao.saveOrUpdate(eventConfEvent);
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to update EventConfEvent XML for eventId=" + eventId, e);
+    public void updateEventConfEvent(final Long sourceId, final Long eventId, EventConfEventEditRequest payload, final String userName) {
+        final Date now = new Date();
+        // Keep deleteEventsForSource's compaction out while this event is rewritten, so the
+        // eventOrder we hold cannot be stale by the time it is flushed
+        final EventConfSource source = eventConfSourceDao.lockForUpdate(sourceId);
+        EventConfEvent eventConfEvent = eventConfEventDao.findBySourceIdAndEventId(sourceId,eventId);
+        if (eventConfEvent == null) {
+            throw new EntityNotFoundException(String.format("EventConfEvent not found for eventId=%d", eventId));
         }
+        eventConfEvent.setUei(payload.getEvent().getUei());
+        eventConfEvent.setEventLabel(payload.getEvent().getEventLabel());
+        eventConfEvent.setDescription(payload.getEvent().getDescr());
+        eventConfEvent.setEnabled(payload.getEnabled());
+        eventConfEvent.setXmlContent(JaxbUtils.marshal(payload.getEvent()));
+        eventConfEvent.setLastModified(now);
+        eventConfEvent.setModifiedBy(userName);
+        eventConfEvent.setSeverity(EventConfServiceHelper.getValidSeverity(payload.getEvent().getSeverity()));
+        eventConfEventDao.saveOrUpdate(eventConfEvent);
+        // the source's lastModified tracks changes to the source or any of its events
+        source.setLastModified(now);
+        eventConfSourceDao.saveOrUpdate(source);
     }
 
     /**
@@ -215,17 +314,208 @@ public class EventConfPersistenceService {
             assigned.put(EventConfSource.CATCH_ALL_SOURCE_NAME, 1);
         }
 
-        final Date now = new Date();
+        // a position change is not a content change, so lastModified stays untouched
         assigned.forEach((name, fileOrder) -> {
             final EventConfSource source = byName.get(name);
             if (!fileOrder.equals(source.getFileOrder())) {
                 source.setFileOrder(fileOrder);
-                source.setLastModified(now);
                 eventConfSourceDao.saveOrUpdate(source);
             }
         });
         LOG.info("Renumbered {} event-conf sources from an eventconf.xml with {} entries", assigned.size(), eventConfOrder.size());
         return assigned;
+    }
+
+    /**
+     * Rewrites the complete evaluation order of the sources from an explicit id list: the first id is
+     * evaluated first ({@code fileOrder = N+1}), the last gets 2, and the catch-all stays pinned at 1.
+     * The list must name every non-catch-all source exactly once; a source added concurrently surfaces
+     * as a missing-source error.
+     *
+     * @return the number of sources whose position actually changed
+     * @throws IllegalArgumentException on duplicates, a listed catch-all, or missing sources
+     * @throws EntityNotFoundException  on an id that matches no source
+     */
+    @Transactional
+    public int reorderEventConfSources(final List<Long> orderedSourceIds) {
+        if (orderedSourceIds == null || orderedSourceIds.isEmpty()) {
+            throw new IllegalArgumentException("sourceIds must not be empty");
+        }
+        final Set<Long> unique = new HashSet<>(orderedSourceIds);
+        if (unique.size() != orderedSourceIds.size()) {
+            throw new IllegalArgumentException("sourceIds must not contain duplicates");
+        }
+
+        // same lock (and lock order) as the eventconf.xml renumbering and the bulk source operations
+        eventConfSourceDao.lockFileOrders();
+        final List<EventConfSource> existing = eventConfSourceDao.findAllByFileOrder();
+        final Map<Long, EventConfSource> byId = new LinkedHashMap<>();
+        existing.forEach(source -> byId.put(source.getId(), source));
+
+        for (final Long id : orderedSourceIds) {
+            final EventConfSource source = byId.get(id);
+            if (source == null) {
+                throw new EntityNotFoundException("EventConfSource not found for id: " + id);
+            }
+            if (EventConfSource.CATCH_ALL_SOURCE_NAME.equals(source.getName())) {
+                throw new IllegalArgumentException(EventConfSource.CATCH_ALL_SOURCE_NAME
+                        + " is pinned as the last evaluated source and cannot be reordered");
+            }
+        }
+        final List<String> missing = existing.stream()
+                .filter(source -> !EventConfSource.CATCH_ALL_SOURCE_NAME.equals(source.getName()))
+                .filter(source -> !unique.contains(source.getId()))
+                .map(EventConfSource::getName)
+                .collect(Collectors.toList());
+        if (!missing.isEmpty()) {
+            throw new IllegalArgumentException("The order must list every source exactly once; missing: "
+                    + String.join(", ", missing));
+        }
+
+        int nextOrder = orderedSourceIds.size() + 1; // down to 2; 1 stays the catch-all's slot
+        int updated = 0;
+        for (final Long id : orderedSourceIds) {
+            final EventConfSource source = byId.get(id);
+            final Integer fileOrder = nextOrder--;
+            if (!fileOrder.equals(source.getFileOrder())) {
+                // a position change is not a content change, so lastModified stays untouched
+                source.setFileOrder(fileOrder);
+                eventConfSourceDao.saveOrUpdate(source);
+                updated++;
+            }
+        }
+        LOG.info("Reordered {} event-conf sources ({} positions changed)", orderedSourceIds.size(), updated);
+        return updated;
+    }
+
+    /**
+     * Moves one event within its source's evaluation order. Range shifts and the single-row set are
+     * bulk updates against the {@code (source_id, event_order)} index, never a whole-source renumbering;
+     * the deferred unique constraint tolerates the intermediate duplicates. Runs under the source's row
+     * lock, so uploads, appends, deletes and other moves on the same source are serialized with it.
+     * <p>
+     * Assumes each source's {@code event_order} runs dense 1..N: every write path keeps it that way
+     * (uploads and the full-list reorder renumber 1..N, appends use max+1, deletes compact).
+     *
+     * @return the event's resulting position (unchanged for an edge no-op)
+     * @throws EntityNotFoundException  on an unknown source or event
+     * @throws IllegalArgumentException on an unknown mode or an out-of-range position
+     */
+    @Transactional
+    public int moveEventConfEvent(final Long sourceId, final Long eventId, final EventConfEventMoveRequest request) {
+        final EventConfEventMoveRequest.Mode mode = request.resolveMode();
+        eventConfSourceDao.lockForUpdate(sourceId);
+        final EventConfEvent event = eventConfEventDao.findBySourceIdAndEventId(sourceId, eventId);
+        if (event == null) {
+            throw new EntityNotFoundException(String.format("EventConfEvent not found for sourceId=%d, eventId=%d", sourceId, eventId));
+        }
+        final int current = event.getEventOrder();
+        final int count = eventConfEventDao.countBySourceId(sourceId);
+
+        switch (mode) {
+            case UP: {
+                final EventConfEvent neighbour = eventConfEventDao.findNeighbourByOrder(sourceId, current, true);
+                return neighbour == null ? current : swapEventOrder(sourceId, event, neighbour);
+            }
+            case DOWN: {
+                final EventConfEvent neighbour = eventConfEventDao.findNeighbourByOrder(sourceId, current, false);
+                return neighbour == null ? current : swapEventOrder(sourceId, event, neighbour);
+            }
+            case TOP:
+                return moveEventToPosition(sourceId, eventId, current, 1);
+            case BOTTOM:
+                return moveEventToPosition(sourceId, eventId, current, count);
+            case POSITION: {
+                final Integer target = request.getPosition();
+                if (target == null || target < 1 || target > count) {
+                    throw new IllegalArgumentException("position must be between 1 and " + count);
+                }
+                return moveEventToPosition(sourceId, eventId, current, target);
+            }
+            default:
+                throw new IllegalArgumentException("Unsupported mode: " + mode);
+        }
+    }
+
+    /** The source's events in evaluation order, without their XML payloads (see the DAO method). */
+    public List<Object[]> findEventOrderSummaries(final Long sourceId) {
+        return eventConfEventDao.findEventOrderSummaries(sourceId);
+    }
+
+    /**
+     * Rewrites the complete evaluation order of one source's events from an explicit id list: the
+     * first id becomes {@code eventOrder} 1. The list must name every event of the source exactly
+     * once; an event added concurrently surfaces as a missing-event error. Runs under the source's
+     * row lock.
+     *
+     * @return the number of events whose position actually changed
+     * @throws IllegalArgumentException on duplicates or missing events
+     * @throws EntityNotFoundException  on an unknown source or an id that matches no event of it
+     */
+    @Transactional
+    public int reorderEventConfEvents(final Long sourceId, final List<Long> orderedEventIds) {
+        if (orderedEventIds == null || orderedEventIds.isEmpty()) {
+            throw new IllegalArgumentException("eventIds must not be empty");
+        }
+        final Set<Long> unique = new HashSet<>(orderedEventIds);
+        if (unique.size() != orderedEventIds.size()) {
+            throw new IllegalArgumentException("eventIds must not contain duplicates");
+        }
+
+        eventConfSourceDao.lockForUpdate(sourceId);
+        final Map<Long, Integer> orderById = new LinkedHashMap<>();
+        final Map<Long, String> labelById = new LinkedHashMap<>();
+        for (final Object[] summary : eventConfEventDao.findEventOrderSummaries(sourceId)) {
+            orderById.put((Long) summary[0], (Integer) summary[5]);
+            labelById.put((Long) summary[0], (String) summary[2]);
+        }
+
+        for (final Long id : orderedEventIds) {
+            if (!orderById.containsKey(id)) {
+                throw new EntityNotFoundException(String.format("EventConfEvent not found for sourceId=%d, eventId=%d", sourceId, id));
+            }
+        }
+        final List<String> missing = orderById.keySet().stream()
+                .filter(id -> !unique.contains(id))
+                .map(labelById::get)
+                .collect(Collectors.toList());
+        if (!missing.isEmpty()) {
+            final String shown = missing.stream().limit(10).collect(Collectors.joining(", "));
+            throw new IllegalArgumentException("The order must list every event of the source exactly once; missing: "
+                    + shown + (missing.size() > 10 ? " (+" + (missing.size() - 10) + " more)" : ""));
+        }
+
+        int updated = 0;
+        for (int i = 0; i < orderedEventIds.size(); i++) {
+            final Long id = orderedEventIds.get(i);
+            final int target = i + 1;
+            if (orderById.get(id) == null || orderById.get(id) != target) {
+                eventConfEventDao.updateEventOrder(sourceId, id, target);
+                updated++;
+            }
+        }
+        LOG.info("Reordered the {} events of source {} ({} positions changed)", orderedEventIds.size(), sourceId, updated);
+        return updated;
+    }
+
+    private int moveEventToPosition(final Long sourceId, final Long eventId, final int current, final int target) {
+        if (target == current) {
+            return current;
+        }
+        if (target < current) {
+            eventConfEventDao.shiftEventOrder(sourceId, target, current - 1, 1);
+        } else {
+            eventConfEventDao.shiftEventOrder(sourceId, current + 1, target, -1);
+        }
+        eventConfEventDao.updateEventOrder(sourceId, eventId, target);
+        return target;
+    }
+
+    private int swapEventOrder(final Long sourceId, final EventConfEvent event, final EventConfEvent neighbour) {
+        final int target = neighbour.getEventOrder();
+        eventConfEventDao.updateEventOrder(sourceId, event.getId(), target);
+        eventConfEventDao.updateEventOrder(sourceId, neighbour.getId(), event.getEventOrder());
+        return target;
     }
 
     private EventConfSource createOrUpdateSource(final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
@@ -260,14 +550,9 @@ public class EventConfPersistenceService {
         eventConfEventDao.saveAll(eventEntities);
     }
 
-    @PreDestroy
-    public void shutdown() {
-        eventConfExecutor.shutdown();
-    }
-
     public  void reloadEventsIntoMemory() {
         // Schedule reload only AFTER transaction commits
-        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao, eventConfExecutor);
+        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
     }
 
     public Map<String, Object> filterConfEventsBySourceId(Long sourceId, String eventFilter, String eventSortBy,
@@ -289,6 +574,13 @@ public class EventConfPersistenceService {
         // Lock the source before looking at anything (throws EntityNotFoundException if it is gone):
         // appenders and other deleters wait here, so the event set read below is the one we decide on
         final EventConfSource source = eventConfSourceDao.lockForUpdate(sourceId);
+        // stock content can be disabled but not deleted, the same rule the UI applies; for the
+        // catch-all this also keeps the match-all fallback definitions intact
+        if (EventConfSource.CATCH_ALL_SOURCE_NAME.equals(source.getName())
+                || EventConfSource.VENDOR_OPENNMS.equalsIgnoreCase(source.getVendor())) {
+            throw new IllegalArgumentException("Events of the stock source '" + source.getName()
+                    + "' cannot be deleted; disable them instead");
+        }
         final Set<Long> databaseEventIds = source.getEvents()
                 .stream()
                 .map(EventConfEvent::getId)
@@ -304,8 +596,11 @@ public class EventConfPersistenceService {
         }
         final int deleteCount = existingEventIds.size();
 
-        // Decide on the rows actually present under the lock, never on the eventCount column
-        if (deleteCount == databaseEventIds.size()) {
+        // Decide on the rows actually present under the lock, never on the eventCount column.
+        // The catch-all source row must survive even when its last event goes: deleting it would
+        // silently remove the match-all fallback and nothing recreates it.
+        if (deleteCount == databaseEventIds.size()
+                && !EventConfSource.CATCH_ALL_SOURCE_NAME.equals(source.getName())) {
             LOG.info("Deleting entire sourceId={} as all {} events are removed.", sourceId, deleteCount);
             eventConfSourceDao.delete(source);
         } else {
@@ -314,6 +609,8 @@ public class EventConfPersistenceService {
             final int remaining = eventConfEventDao.countBySourceId(sourceId);
             LOG.info("Deleted {} events from sourceId={} (remaining count={})", deleteCount, sourceId, remaining);
             source.setEventCount(remaining);
+            // the source's lastModified tracks changes to the source or any of its events
+            source.setLastModified(new Date());
             eventConfSourceDao.saveOrUpdate(source);
         }
     }

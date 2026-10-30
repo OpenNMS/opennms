@@ -63,6 +63,6 @@ In this configuration example, every node whose `sysoid` equals `.1.3.6.1.4.1.9.
 The adapter will get the OID value `.1.3.6.1.4.1.9.9.661.1.3.2.1.8` and place the value in the "region" field in the asset database.
 
 You may want to snmpwalk your target nodes and see if there are any interesting identifiers or string values that you would like to see in an asset field first.
-Once you identify the `mibObjs` to use, add them under a package that matches the device `sysoid`, {page-component-title} will be set to start collecting data.
+Once you identify the `mibObjs` to use, add them under a package that matches the device `sysoid`, and {page-component-title} will be set to start collecting data.
 
 NOTE: You may specify any number of `<sysoid>` or `<sysoidMask>` tags in the config file.

@@ -1,6 +1,7 @@
 import {
   mapEventConfEventEditRequest,
   mapEventConfigEventsResponseFromServer,
+  mapEventConfigEventSummaryFromServer,
   mapEventConfigSourceFromServer,
   mapEventConfSourceResponseFromServer,
   mapUploadedEventConfigFilesResponseFromServer,
@@ -8,7 +9,9 @@ import {
 } from '@/mappers/eventConfig.mapper'
 import {
   EventConfigEventsResponse,
+  EventConfigEventSummary,
   EventConfigFilesUploadResponse,
+  EventConfigMutationResult,
   EventConfigSource,
   EventConfigSourcesResponse,
   UploadedSourceNamesResponse
@@ -195,6 +198,9 @@ export const filterEventConfigSources = async (
     })
     if (response.status === 200) {
       return mapEventConfSourceResponseFromServer(response.data)
+    } else if (response.status === 204) {
+      // the server answers 204 when nothing matches; an empty page, not an error
+      return { sources: [], totalRecords: 0 }
     } else {
       throw new Error(`Unexpected response status: ${response.status}`)
     }
@@ -236,6 +242,9 @@ export const filterEventConfigEvents = async (
     })
     if (response.status === 200) {
       return mapEventConfigEventsResponseFromServer(response.data)
+    } else if (response.status === 204) {
+      // the server answers 204 when nothing matches; an empty page, not an error
+      return { events: [], totalRecords: 0 }
     } else {
       throw new Error(`Unexpected response status: ${response.status}`)
     }
@@ -392,6 +401,101 @@ export const addEventConfigSource = async (
 
     // For network errors or other unexpected errors, return 500
     return 500
+  }
+}
+
+/**
+ * Makes a GET request to the REST endpoint to fetch all event configuration sources, unpaged,
+ * in evaluation order: the first entry is evaluated first, the catch-all source comes last.
+ *
+ * @returns A promise that resolves to the ordered list of `EventConfigSource` objects.
+ */
+export const getOrderedEventConfigSources = async (): Promise<EventConfigSource[]> => {
+  const endpoint = '/eventconf/sources/ordered'
+  try {
+    const response = await v2.get(endpoint)
+    if (response.status === 200) {
+      return (response.data as any[]).map(source => mapEventConfigSourceFromServer(source))
+    }
+    throw new Error(`Unexpected response status: ${response.status}`)
+  } catch (error) {
+    console.error('Error fetching ordered event config sources:', error)
+    throw error
+  }
+}
+
+/**
+ * Makes a PUT request to the REST endpoint to replace the complete evaluation order of the sources.
+ *
+ * @param sourceIds Every non-catch-all source id exactly once, first entry evaluated first.
+ * @returns A promise resolving to the outcome; on a 400/404 `message` carries the server's explanation
+ * (for example which sources are missing from the list).
+ */
+export const updateEventConfigSourcesOrder = async (sourceIds: number[]): Promise<EventConfigMutationResult> => {
+  const endpoint = '/eventconf/sources/order'
+  try {
+    const response = await v2.put(endpoint, { sourceIds })
+    return { ok: response.status === 200, status: response.status, message: '' }
+  } catch (error) {
+    console.error('Error updating event config source order:', error)
+    if (axios.isAxiosError(error) && error.response) {
+      return {
+        ok: false,
+        status: error.response.status,
+        message: typeof error.response.data === 'string' ? error.response.data : ''
+      }
+    }
+    return { ok: false, status: 0, message: '' }
+  }
+}
+
+/**
+ * Makes a GET request to the REST endpoint to fetch one source's events, unpaged, in evaluation
+ * order (first entry evaluated first), without their XML payloads.
+ *
+ * @param sourceId The ID of the event configuration source whose events are listed.
+ * @returns A promise that resolves to the ordered list of `EventConfigEventSummary` objects.
+ */
+export const getOrderedEventConfigEvents = async (sourceId: number): Promise<EventConfigEventSummary[]> => {
+  const endpoint = `/eventconf/sources/${sourceId}/events/ordered`
+  try {
+    const response = await v2.get(endpoint)
+    if (response.status === 200) {
+      return (response.data as any[]).map(event => mapEventConfigEventSummaryFromServer(event))
+    }
+    throw new Error(`Unexpected response status: ${response.status}`)
+  } catch (error) {
+    console.error('Error fetching ordered event config events:', error)
+    throw error
+  }
+}
+
+/**
+ * Makes a PUT request to the REST endpoint to replace the complete evaluation order of one
+ * source's events.
+ *
+ * @param sourceId The ID of the event configuration source whose events are reordered.
+ * @param eventIds Every event id of the source exactly once, first entry evaluated first.
+ * @returns A promise resolving to the outcome; on a 400/404 `message` carries the server's explanation.
+ */
+export const updateEventConfigEventsOrder = async (
+  sourceId: number,
+  eventIds: number[]
+): Promise<EventConfigMutationResult> => {
+  const endpoint = `/eventconf/sources/${sourceId}/events/order`
+  try {
+    const response = await v2.put(endpoint, { eventIds })
+    return { ok: response.status === 200, status: response.status, message: '' }
+  } catch (error) {
+    console.error('Error updating event config event order:', error)
+    if (axios.isAxiosError(error) && error.response) {
+      return {
+        ok: false,
+        status: error.response.status,
+        message: typeof error.response.data === 'string' ? error.response.data : ''
+      }
+    }
+    return { ok: false, status: 0, message: '' }
   }
 }
 

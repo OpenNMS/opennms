@@ -1,6 +1,6 @@
 = Name of the Detector
 
-A summary what the detector is doing.
+A summary of what the detector does.
 
 == Detector facts
 

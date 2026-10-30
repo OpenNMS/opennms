@@ -142,7 +142,7 @@ The documentation for Cassandra thread pool monitoring originated from the https
 
 === Memtable FlushWriter
 
-You can use using `org.apache.cassandra.metrics.ThreadPools` to sort and write memtables to disk.
+You can use `org.apache.cassandra.metrics.ThreadPools` to sort and write memtables to disk.
 
 Most of the time, memtable issues are caused by overrunning disk capability.
 Sorting can cause issues as well; they are usually accompanied by a high load, but a small number of actual flushes (as seen in `cfstats`).

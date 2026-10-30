@@ -155,7 +155,7 @@ It is not required for flow processing, but can improve performance for deployme
 network operations center (NOC):: One or more locations where a network is monitored and controlled (see https://en.wikipedia.org/wiki/Network_operations_center[Network Operations Center]).
 
 xref:deployment:time-series-storage/newts/introduction.adoc[New-Fangled Time Series Datastore (Newts)]:: An OpenNMS time series datastore based on Apache Cassandra.
-You can use it as an alternative persistence strategy (instead or RRDtool).
+You can use it as an alternative persistence strategy (instead of RRDtool).
 
 node:: A device or application that sends communications over a network (for example, a server).
 They can be provisioned to and monitored by {page-component-title}.

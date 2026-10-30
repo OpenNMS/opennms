@@ -23,6 +23,7 @@ package org.opennms.netmgt.dao.mock;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -182,5 +183,25 @@ public class MockMonitoredServiceDao extends AbstractMockDao<OnmsMonitoredServic
         return findAll().stream()
                  .filter(svc -> svc.getNodeId() == nodeId)
                  .collect(Collectors.toList());
+    }
+
+    @Override
+    public int updateCollectLastGood(final int ifServiceId, final Date timestamp) {
+        final OnmsMonitoredService svc = get(ifServiceId);
+        if (svc == null) {
+            return 0;
+        }
+        svc.setCollectLastGood(timestamp);
+        return 1;
+    }
+
+    @Override
+    public int updateCollectLastFail(final int ifServiceId, final Date timestamp) {
+        final OnmsMonitoredService svc = get(ifServiceId);
+        if (svc == null) {
+            return 0;
+        }
+        svc.setCollectLastFail(timestamp);
+        return 1;
     }
 }

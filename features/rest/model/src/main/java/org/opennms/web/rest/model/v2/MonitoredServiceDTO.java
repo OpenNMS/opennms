@@ -62,6 +62,12 @@ public class MonitoredServiceDTO {
     @XmlElement(name="lastGood")
     private Date lastGood;
 
+    @XmlElement(name="collectLastFail")
+    private Date collectLastFail;
+
+    @XmlElement(name="collectLastGood")
+    private Date collectLastGood;
+
     @XmlElement(name="statusLong")
     private String statusLong;
 
@@ -122,6 +128,16 @@ public class MonitoredServiceDTO {
     @JsonProperty("lastGood")
     public Date getLastGood() {
         return lastGood;
+    }
+
+    @JsonProperty("collectLastFail")
+    public Date getCollectLastFail() {
+        return collectLastFail;
+    }
+
+    @JsonProperty("collectLastGood")
+    public Date getCollectLastGood() {
+        return collectLastGood;
     }
 
     @JsonProperty("statusLong")
@@ -187,6 +203,14 @@ public class MonitoredServiceDTO {
         this.lastGood = lastGood;
     }
 
+    public void setCollectLastFail(Date collectLastFail) {
+        this.collectLastFail = collectLastFail;
+    }
+
+    public void setCollectLastGood(Date collectLastGood) {
+        this.collectLastGood = collectLastGood;
+    }
+
     public void setStatusLong(String statusLong) {
         this.statusLong = statusLong;
     }
@@ -228,6 +252,8 @@ public class MonitoredServiceDTO {
                 Objects.equals(qualifier, otherDTO.qualifier) &&
                 Objects.equals(lastFail, otherDTO.lastFail) &&
                 Objects.equals(lastGood, otherDTO.lastGood) &&
+                Objects.equals(collectLastFail, otherDTO.collectLastFail) &&
+                Objects.equals(collectLastGood, otherDTO.collectLastGood) &&
                 Objects.equals(statusLong, otherDTO.statusLong) &&
                 Objects.equals(ipInterfaceId, otherDTO.ipInterfaceId) &&
                 Objects.equals(ipAddress, otherDTO.ipAddress) &&
@@ -238,6 +264,7 @@ public class MonitoredServiceDTO {
     @Override
     public int hashCode() {
         return Objects.hash(id, down, notify, status, source, serviceType, qualifier, lastFail, lastGood,
+                collectLastFail, collectLastGood,
                 statusLong, ipInterfaceId, ipAddress, nodeId, nodeLabel);
     }
 }

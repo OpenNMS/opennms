@@ -26,10 +26,11 @@ import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -73,7 +74,8 @@ public class ResponseHandlingUtils {
 
     private static int getMatchingIndex(Expression exp, ListMultimap<String, String> valuesByName, int depth) throws NoSuchElementException {
         // Build the context with values from all the attributes at the current depth
-        final StandardEvaluationContext context = new StandardEvaluationContext();
+        // Restricted context: a configured filter expression cannot reference types, call constructors, or use reflection.
+        final EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
         int maxDepth = 0;
         for (String name : valuesByName.keySet()) {
             List<String> values = valuesByName.get(name);
@@ -113,7 +115,8 @@ public class ResponseHandlingUtils {
         final Expression exp = parser.parseExpression(spelFilter);
 
         // Build the context with the first values for all of the attributes
-        final StandardEvaluationContext context = new StandardEvaluationContext();
+        // Restricted context: a configured filter expression cannot reference types, call constructors, or use reflection.
+        final EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
         for (String name : valuesByName.keySet()) {
             final List<String> values = valuesByName.get(name);
             if (values.size() > 0) {

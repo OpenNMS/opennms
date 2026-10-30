@@ -299,12 +299,29 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.features.surveillance-views</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-api</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.mib-compiler</groupId>
+      <artifactId>org.opennms.features.mib-compiler.parser</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <!-- jsmiparser is scope=provided (bnd-embedded) in the parser bundle, so it is not transitive -->
+      <groupId>org.jsmiparser</groupId>
+      <artifactId>jsmiparser-api</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>

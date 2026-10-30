@@ -4,14 +4,23 @@ import { useEventConfigStore } from '@/stores/eventConfigStore'
 import {
   changeEventConfigSourceStatus,
   filterEventConfigSources,
-  getAllSourceNames
+  getAllSourceNames,
+  getOrderedEventConfigSources,
+  updateEventConfigSourcesOrder
 } from '@/services/eventConfigService'
 import { EventConfigSource, UploadedSourceNamesResponse } from '@/types/eventConfig'
+
+const mockShowSnackBar = vi.hoisted(() => vi.fn())
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({ showSnackBar: mockShowSnackBar, hideSnackbar: vi.fn() })
+}))
 
 vi.mock('@/services/eventConfigService', () => ({
   changeEventConfigSourceStatus: vi.fn(),
   filterEventConfigSources: vi.fn(),
-  getAllSourceNames: vi.fn()
+  getAllSourceNames: vi.fn(),
+  getOrderedEventConfigSources: vi.fn(),
+  updateEventConfigSourcesOrder: vi.fn()
 }))
 
 describe('useEventConfigStore', () => {
@@ -476,5 +485,62 @@ describe('useEventConfigStore', () => {
     await store.refreshSourcesFilters()
 
     expect(store.sourcesSearchTerm).toBe('')
+  })
+
+  describe('reorder sources drawer', () => {
+    const catchAll: EventConfigSource = {
+      ...mockSources[0],
+      id: 99,
+      name: 'opennms.catch-all.events',
+      evaluationOrder: 3
+    }
+
+    it('startSourcesReorder enters the mode and fetches the ordered list', async () => {
+      vi.mocked(getOrderedEventConfigSources).mockResolvedValue([...mockSources, catchAll])
+
+      await store.startSourcesReorder()
+
+      expect(store.sourcesReorderMode).toBe(true)
+      expect(store.orderedSources.map(s => s.id)).toEqual(mockSources.map(s => s.id))
+      expect(store.catchAllSource?.id).toBe(99)
+
+      store.stopSourcesReorder()
+      expect(store.sourcesReorderMode).toBe(false)
+    })
+
+    it('fetchOrderedSources failure leaves the reorder mode and says why', async () => {
+      vi.mocked(getOrderedEventConfigSources).mockRejectedValue(new Error('boom'))
+
+      await store.startSourcesReorder()
+
+      expect(store.orderedSources).toEqual([])
+      expect(store.catchAllSource).toBeNull()
+      // an empty reorder view with no explanation is worse than no reorder view
+      expect(store.sourcesReorderMode).toBe(false)
+      expect(mockShowSnackBar).toHaveBeenCalledWith({ msg: 'Failed to load the source order. Try again.', error: true })
+    })
+
+    it('saveSourcesOrder refreshes the table on success', async () => {
+      vi.mocked(updateEventConfigSourcesOrder).mockResolvedValue({ ok: true, status: 200, message: '' })
+      vi.mocked(filterEventConfigSources).mockResolvedValue(mockFilterResponse)
+      vi.mocked(getAllSourceNames).mockResolvedValue(mockSourceNames)
+
+      const result = await store.saveSourcesOrder([2, 1])
+
+      expect(updateEventConfigSourcesOrder).toHaveBeenCalledWith([2, 1])
+      expect(result.ok).toBe(true)
+      expect(filterEventConfigSources).toHaveBeenCalled()
+      expect(store.isSavingSourceOrder).toBe(false)
+    })
+
+    it('saveSourcesOrder passes a rejection through without refreshing', async () => {
+      vi.mocked(updateEventConfigSourcesOrder).mockResolvedValue({ ok: false, status: 400, message: 'missing: x' })
+
+      const result = await store.saveSourcesOrder([2, 1])
+
+      expect(result).toEqual({ ok: false, status: 400, message: 'missing: x' })
+      expect(filterEventConfigSources).not.toHaveBeenCalled()
+      expect(store.isSavingSourceOrder).toBe(false)
+    })
   })
 })

@@ -30,7 +30,7 @@ reproduced without substantive change are marked **Verbatim**.
 
 | Path (under `ui/`) | Upstream source | Nature |
 | --- | --- | --- |
-| `packages/onms-ui/src/icons/**/*.vue` (262 icon SFCs across `account`, `action`, `communication`, `content`, `datavis`, `file`, `hardware`, `medical`, `navigation`, `network`, `notification`, `status`) | `@featherds/icon` | **Verbatim** — SVG geometry reproduced byte-for-byte via a one-time render-to-string generator (`scripts/generate-icons.mjs`), wrapped in template-only single-file components. |
+| `packages/onms-ui/src/icons/**/*.vue` (over 200 icon SFCs across `account`, `action`, `communication`, `content`, `datavis`, `file`, `hardware`, `medical`, `navigation`, `network`, `notification`, `status`) | `@featherds/icon` | **Verbatim** (initially); some **Modified** — SVG geometry **initially** reproduced byte-for-byte via a one-time render-to-string generator (`scripts/generate-icons.mjs`), wrapped in template-only single-file components. **NOTE:** Some icons have been modified or will be modified in future iterations of the product. |
 | `src/composables/useOutsideClick.ts` | `@featherds/composables` (`events/OutsideClick`) | **Verbatim** — behavior preserved; re-typed for standalone use, depends only on Vue. |
 | `src/styles/_onms-typography.scss` | `@featherds/styles` (typography mixins) | **Verbatim** — metric values copied; token references replaced with literals. |
 | `src/styles/_onms-elevation.scss` | `@featherds/styles` (elevation) | **Verbatim** — shadow/elevation values copied as literals. |

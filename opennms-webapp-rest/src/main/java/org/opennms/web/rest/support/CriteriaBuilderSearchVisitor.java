@@ -106,6 +106,7 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 		if (statement != null) {
 			if (statement.getProperty() != null) {
 				String name = getRealPropertyName(statement.getProperty());
+				WriteOnlyPropertyGuard.check(name);
 
 				// TODO: Figure out how to use validators at some point
 				//validatePropertyValue(name, originalValue);
@@ -135,6 +136,7 @@ public class CriteriaBuilderSearchVisitor<T,Q> extends AbstractSearchConditionVi
 					// Convert the query bean property name to the Criteria property name
 					// if necessary
 					name = behavior.getPropertyName() == null ? name : behavior.getPropertyName();
+					WriteOnlyPropertyGuard.check(name);
 
 					// If we're using CriteriaBehaviors, assume that the value is a String
 					// and convert it to the value that will be used in the Criteria

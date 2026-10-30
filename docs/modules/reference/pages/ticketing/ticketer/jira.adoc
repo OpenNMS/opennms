@@ -81,7 +81,7 @@ Open the Karaf shell and run the `opennms:jira-verify` command to check your con
 NOTE: The `jira.verify` command will not work until the `jira.properties` file has been configured.
 
 NOTE: Metadata expressions can also be used in the fields of the `jira.properties` configuration file.
-This lets the user to also reference credentials stored in the secure credentials.
+This lets the user also reference credentials stored in the secure credentials.
 
 == Jira commands
 
