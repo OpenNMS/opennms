@@ -94,7 +94,6 @@ public class MonitorsListCommandIT {
             "org.opennms.netmgt.poller.monitors.StrafePingMonitor", 
             "org.opennms.netmgt.poller.monitors.LdapMonitor",
             "org.opennms.netmgt.poller.monitors.Pop3Monitor", 
-            "org.opennms.netmgt.poller.monitors.DominoIIOPMonitor",
             "org.opennms.netmgt.poller.monitors.DnsMonitor", 
             "org.opennms.netmgt.poller.monitors.SnmpMonitor",
             "org.opennms.netmgt.poller.monitors.PrTableMonitor",

@@ -101,15 +101,6 @@
 	</service>
 
 
-	<bean id="dominoIIOPMonitor" class="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor" />
-	<service ref="dominoIIOPMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
-		<service-properties>
-			<entry key="type"
-				value="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor" />
-		</service-properties>
-	</service>
-
-
 	<bean id="dskTableMonitor" class="org.opennms.netmgt.poller.monitors.DskTableMonitor" />
 	<service ref="dskTableMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>

@@ -9,7 +9,6 @@ org.opennms.netmgt.poller.monitors.DhcpMonitor
 org.opennms.netmgt.poller.monitors.DiskUsageMonitor
 org.opennms.netmgt.poller.monitors.DnsMonitor
 org.opennms.netmgt.poller.monitors.DNSResolutionMonitor
-org.opennms.netmgt.poller.monitors.DominoIIOPMonitor
 org.opennms.netmgt.poller.monitors.DskTableMonitor
 org.opennms.netmgt.poller.monitors.FtpMonitor
 org.opennms.netmgt.poller.monitors.HostResourceSwRunMonitor

@@ -265,7 +265,11 @@ See xref:deployment:time-series-storage/timeseries/prometheus-remotewrite.adoc[t
 === DominoIIOPDetector removed
 The DominoIIOPDetector has been removed.
 Remove any detector that uses the class `org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector` from your foreign source definitions before upgrading.
-The DominoIIOPMonitor is unchanged; to keep monitoring Domino IIOP, add the DominoIIOP service to nodes in their requisitions, or detect it with a xref:reference:provisioning/detectors/TcpDetector.adoc[TcpDetector] on port 63148.
+
+=== DominoIIOPMonitor removed
+The DominoIIOPMonitor has been removed.
+Remove any `DominoIIOP` service and `monitor` entry that uses the class `org.opennms.netmgt.poller.monitors.DominoIIOPMonitor` from `poller-configuration.xml` before upgrading; the poller does not poll services whose monitor class is missing.
+To keep checking a Domino IIOP port, use the xref:reference:service-assurance/monitors/TcpMonitor.adoc[TcpMonitor] on port 63148.
 
 === Newts and Cassandra time series storage deprecated
 

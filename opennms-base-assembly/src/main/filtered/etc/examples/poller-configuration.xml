@@ -206,12 +206,6 @@
       <parameter key="ds-name" value="opennms-jvm"/>
       <parameter key="friendly-name" value="opennms-jvm"/>
     </service>
-    <service name="DominoIIOP" interval="300000" user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="timeout" value="3000" />
-      <parameter key="ior-port" value="80" />
-      <parameter key="port" value="63148" />
-    </service>
     <service name="Citrix" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2" />
       <parameter key="timeout" value="3000" />
@@ -630,7 +624,6 @@
 
   <!-- Example monitors added in this example file -->
 
-  <monitor service="DominoIIOP" class-name="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor" />
   <monitor service="Citrix" class-name="org.opennms.netmgt.poller.monitors.CitrixMonitor" />
   <monitor service="LDAP" class-name="org.opennms.netmgt.poller.monitors.LdapMonitor" />
   <monitor service="Memcached" class-name="org.opennms.netmgt.poller.monitors.MemcachedMonitor" />
