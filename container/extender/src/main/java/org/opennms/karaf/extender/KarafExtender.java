@@ -69,6 +69,8 @@ public class KarafExtender {
     private static final Logger LOG = LoggerFactory.getLogger(KarafExtender.class);
     private static final String PAX_MVN_PID = "org.ops4j.pax.url.mvn";
     private static final String PAX_MVN_REPOSITORIES = "org.ops4j.pax.url.mvn.repositories";
+    private static final String FILEINSTALL_FACTORY_PID = "org.apache.felix.fileinstall";
+    private static final String FILEINSTALL_DIR = "felix.fileinstall.dir";
 
     public static final String WAIT_FOR_KAR_ATTRIBUTE = "wait-for-kar";
     public static final String FEATURES_URI = "features.uri";
@@ -208,16 +210,13 @@ public class KarafExtender {
         final List<Feature> featuresWithKarDependencies = featuresBoot.stream()
                 .filter(f -> f.getKarDependency() != null)
                 .collect(Collectors.toList());
-        if (!featuresWithKarDependencies.isEmpty()) {
-            final KarDependencyHandler karDependencyHandler = new KarDependencyHandler(featuresWithKarDependencies,
-                    m_karService, m_featuresService, m_extenderStatus);
-            m_karDependencyInstallThread = new Thread(karDependencyHandler);
-            m_karDependencyInstallThread.setName("Karaf-Extender-Feature-Install-For-Kars");
-            m_karDependencyInstallThread.start();
-        } else {
-            LOG.debug("No features with dependencies on .kar files to install.");
-            m_extenderStatus.karsDone("");
-        }
+        // Always run the handler: besides the features waiting for .kars, it restores the feature
+        // repositories of already installed .kars after the Karaf cache was cleaned
+        final KarDependencyHandler karDependencyHandler = new KarDependencyHandler(featuresWithKarDependencies,
+                m_karService, m_featuresService, m_extenderStatus, getDeployFolders());
+        m_karDependencyInstallThread = new Thread(karDependencyHandler);
+        m_karDependencyInstallThread.setName("Karaf-Extender-Feature-Install-For-Kars");
+        m_karDependencyInstallThread.start();
     }
 
     public void destroy() {
@@ -227,6 +226,33 @@ public class KarafExtender {
         if (m_karDependencyInstallThread != null) {
             m_karDependencyInstallThread.interrupt();
         }
+    }
+
+    /**
+     * The folders watched by the Felix File Install deployer, as configured in etc/org.apache.felix.fileinstall-*.cfg.
+     * Falls back to ${karaf.base}/deploy when they can't be determined.
+     */
+    private List<Path> getDeployFolders() {
+        final List<Path> deployFolders = new ArrayList<>();
+        try {
+            final Configuration[] configs = m_configurationAdmin.listConfigurations(
+                    "(service.factoryPid=" + FILEINSTALL_FACTORY_PID + ")");
+            if (configs != null) {
+                for (Configuration config : configs) {
+                    final Object dir = config.getProperties() != null ? config.getProperties().get(FILEINSTALL_DIR) : null;
+                    if (dir != null && !dir.toString().contains("${")) {
+                        deployFolders.add(Paths.get(dir.toString()));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOG.warn("Failed to retrieve the deploy folders from the {} configurations.", FILEINSTALL_FACTORY_PID, e);
+        }
+        if (deployFolders.isEmpty()) {
+            deployFolders.add(Paths.get(System.getProperty("karaf.base"), "deploy"));
+        }
+        LOG.debug("Deploy folders: {}", deployFolders);
+        return deployFolders;
     }
 
     private boolean canResolveAllFeatureUris(List<Repository> repositories) {
@@ -442,6 +468,7 @@ public class KarafExtender {
     public class ExtenderStatus {
         private String featuresToInstallDone = null;
         private String karDependencyInstallDone = null;
+        private boolean karDependencyInstallFailed = false;
 
         public void info(String messagePattern, Object... argArray) {
             LOG.info(messagePattern, argArray);
@@ -479,6 +506,14 @@ public class KarafExtender {
             areWeCompletelyDone();
         }
 
+        /**
+         * Like {@link #karsDone(String)}, but keeps reporting a failure once everything else is done.
+         */
+        public void karsFailed(String message) {
+            karDependencyInstallFailed = true;
+            karsDone(message);
+        }
+
         private void areWeCompletelyDone() {
             if (featuresToInstallDone != null && karDependencyInstallDone != null) {
                 StringBuffer message = new StringBuffer();
@@ -490,7 +525,9 @@ public class KarafExtender {
                     message.append(karDependencyInstallDone);
                     message.append(". ");
                 }
-                if (message.length() > 0) {
+                if (karDependencyInstallFailed) {
+                    m_defaultPassiveHealthCheck.setResponse(new Response(Status.Failure, message.toString()), false);
+                } else if (message.length() > 0) {
                     m_defaultPassiveHealthCheck.setResponse(new Response(Status.Success, message.toString()), false);
                 } else {
                     m_defaultPassiveHealthCheck.setResponse(new Response(Status.Success), false);
