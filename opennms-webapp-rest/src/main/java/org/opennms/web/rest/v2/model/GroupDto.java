@@ -41,6 +41,9 @@ public class GroupDto {
 
     private List<String> dutySchedules;
 
+    // the authorized categories; null means "preserve" in a request, and responses list them sorted by name
+    private List<String> categories;
+
     // the row version, also sent as the ETag; ignored in a request body (the If-Match header is the contract)
     private Integer version;
 
@@ -74,6 +77,14 @@ public class GroupDto {
 
     public void setDutySchedules(final List<String> dutySchedules) {
         this.dutySchedules = dutySchedules;
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(final List<String> categories) {
+        this.categories = categories;
     }
 
     public Integer getVersion() {

@@ -22,14 +22,18 @@
 package org.opennms.netmgt.dao.usermgmt;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,6 +52,7 @@ import org.opennms.netmgt.dao.api.SecurityRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
 import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
+import org.opennms.netmgt.dao.api.UserMgmtVersionDao.Domain;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
 import org.opennms.netmgt.model.usermgmt.ContactType;
 import org.opennms.netmgt.model.usermgmt.OnCallRole;
@@ -152,6 +157,21 @@ public class UserMgmtRowVersionIT implements InitializingBean {
                 }
             });
             return updated[0];
+        });
+    }
+
+    /** Runs the query on the connection of a new transaction and returns its first column. */
+    private List<String> strings(final String sql) {
+        return m_tx.execute(status -> {
+            final List<String> values = new ArrayList<>();
+            m_sessionFactory.getCurrentSession().doWork(connection -> {
+                try (PreparedStatement statement = connection.prepareStatement(sql); ResultSet rs = statement.executeQuery()) {
+                    while (rs.next()) {
+                        values.add(rs.getString(1));
+                    }
+                }
+            });
+            return values;
         });
     }
 
@@ -577,5 +597,293 @@ public class UserMgmtRowVersionIT implements InitializingBean {
             Thread.sleep(20);
         }
         fail("no backend started waiting for a lock within 10 s");
+    }
+
+    private int createCategory(final int id, final String name) {
+        assertEquals(1, update("INSERT INTO categories (categoryid, categoryname) VALUES (?, ?)", id, name));
+        return id;
+    }
+
+    @Test
+    public void testCategoryAuthorizationInsertBumpsGroupVersion() {
+        final int group = createGroup("ops");
+        final int other = createGroup("dev");
+        final int category = createCategory(9001, "Edge");
+        final int before = version(VersionedTable.groups, group);
+        final int otherBefore = version(VersionedTable.groups, other);
+
+        assertEquals(1, update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops"));
+
+        assertBumped("group", before, VersionedTable.groups, group);
+        assertEquals(otherBefore, version(VersionedTable.groups, other));
+    }
+
+    @Test
+    public void testCategoryAuthorizationDeleteBumpsGroupVersion() {
+        final int group = createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        final int before = version(VersionedTable.groups, group);
+
+        assertEquals(1, update("DELETE FROM category_group WHERE categoryid = ? AND groupid = ?", category, "ops"));
+
+        assertBumped("group", before, VersionedTable.groups, group);
+    }
+
+    @Test
+    public void testCategoryDeleteBumpsAuthorizedGroupVersions() {
+        final int ops = createGroup("ops");
+        final int dev = createGroup("dev");
+        final int other = createGroup("other");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "dev");
+        final int opsBefore = version(VersionedTable.groups, ops);
+        final int devBefore = version(VersionedTable.groups, dev);
+        final int otherBefore = version(VersionedTable.groups, other);
+
+        // the authorizations go with the category (ON DELETE CASCADE)
+        assertEquals(1, update("DELETE FROM categories WHERE categoryid = ?", category));
+
+        assertBumped("ops", opsBefore, VersionedTable.groups, ops);
+        assertBumped("dev", devBefore, VersionedTable.groups, dev);
+        assertEquals(otherBefore, version(VersionedTable.groups, other));
+    }
+
+    @Test
+    public void testMovingACategoryAuthorizationBumpsBothGroups() {
+        final int ops = createGroup("ops");
+        final int dev = createGroup("dev");
+        final int other = createGroup("other");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        final int opsBefore = version(VersionedTable.groups, ops);
+        final int devBefore = version(VersionedTable.groups, dev);
+        final int otherBefore = version(VersionedTable.groups, other);
+
+        // the old group loses the authorization and the new one gains it
+        assertEquals(1, update("UPDATE category_group SET groupid = ? WHERE categoryid = ? AND groupid = ?", "dev", category, "ops"));
+
+        assertBumped("ops", opsBefore, VersionedTable.groups, ops);
+        assertBumped("dev", devBefore, VersionedTable.groups, dev);
+        assertEquals(otherBefore, version(VersionedTable.groups, other));
+    }
+
+    /** The counter is how the in-memory managers notice a change of what they cache; they cache no category authorizations. */
+    private long groupsCounter() {
+        return m_tx.execute(status -> m_versionDao.getVersion(Domain.groups));
+    }
+
+    @Test
+    public void testCategoryAuthorizationChangesKeepTheGroupsCounter() {
+        createUser("alice");
+        final int group = createGroup("ops");
+        createGroup("dev");
+        final int category = createCategory(9001, "Edge");
+        long counter = groupsCounter();
+        int before = version(VersionedTable.groups, group);
+
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        update("UPDATE category_group SET groupid = ? WHERE categoryid = ?", "dev", category);
+        update("UPDATE category_group SET groupid = ? WHERE categoryid = ?", "ops", category);
+        update("DELETE FROM categories WHERE categoryid = ?", category);
+
+        assertEquals("groups counter after category authorization changes", counter, groupsCounter());
+        assertBumped("group", before, VersionedTable.groups, group);
+
+        // a change of what the managers cache still moves it
+        before = version(VersionedTable.groups, group);
+        assertEquals(1, update("INSERT INTO group_members (group_id, user_id, position) SELECT ?, id, 0 FROM users WHERE username = 'alice'", group));
+        assertTrue("groups counter after a member change", groupsCounter() > counter);
+        assertBumped("group", before, VersionedTable.groups, group);
+        counter = groupsCounter();
+        assertEquals(1, update("UPDATE groups SET comments = 'changed' WHERE id = ?", group));
+        assertTrue("groups counter after a group change", groupsCounter() > counter);
+    }
+
+    @Test
+    public void testCategoryAuthorizationAndAMemberInOneTransactionMoveTheCounter() {
+        createUser("alice");
+        final int group = createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        final long counter = groupsCounter();
+
+        // the version bump of the category change must not hide the member change of the same transaction
+        m_tx.execute(status -> {
+            m_sessionFactory.getCurrentSession().doWork(connection -> {
+                try (java.sql.Statement statement = connection.createStatement()) {
+                    statement.executeUpdate("INSERT INTO category_group (categoryid, groupid) VALUES (" + category + ", 'ops')");
+                    statement.executeUpdate("INSERT INTO group_members (group_id, user_id, position) SELECT " + group + ", id, 0 FROM users WHERE username = 'alice'");
+                }
+            });
+            return null;
+        });
+
+        assertTrue("groups counter after a member change in the same transaction", groupsCounter() > counter);
+    }
+
+    @Test
+    public void testTheGroupsCounterTriggerListsEveryColumnButTheVersion() {
+        // groups_version fires on an UPDATE of the listed columns only, so that the version bumps do not move the
+        // counter: a column missing from the list would change without the managers noticing
+        final List<String> listed = strings("SELECT a.attname FROM pg_trigger t"
+                + " JOIN pg_attribute a ON a.attrelid = t.tgrelid AND a.attnum = ANY (t.tgattr::int2[])"
+                + " WHERE t.tgname = 'groups_version' AND t.tgrelid = 'groups'::regclass ORDER BY a.attname");
+        final List<String> columns = strings("SELECT column_name FROM information_schema.columns"
+                + " WHERE table_schema = current_schema() AND table_name = 'groups' AND column_name <> 'version' ORDER BY column_name");
+        assertFalse(columns.isEmpty());
+        assertEquals(columns, listed);
+    }
+
+    @Test
+    public void testAVersionBumpOfAGroupKeepsTheGroupsCounter() {
+        final int user = createUser("alice");
+        final int group = createGroup("ops");
+        assertEquals(1, update("INSERT INTO group_members (group_id, user_id, position) VALUES (?, ?, 0)", group, user));
+        long counter = groupsCounter();
+
+        assertEquals(1, update("UPDATE groups SET version = version + 1 WHERE id = ?", group));
+        assertEquals("groups counter after a version bump", counter, groupsCounter());
+
+        // a user rename bumps the groups that show the name, and moves the users counter, which the group manager follows
+        final long usersCounter = m_tx.execute(status -> m_versionDao.getVersion(Domain.users));
+        final int before = version(VersionedTable.groups, group);
+        assertEquals(1, update("UPDATE users SET username = 'alicia' WHERE id = ?", user));
+        assertBumped("group", before, VersionedTable.groups, group);
+        assertTrue("users counter after a user rename", m_tx.execute(status -> m_versionDao.getVersion(Domain.users)) > usersCounter);
+
+        counter = groupsCounter();
+        assertEquals(1, update("UPDATE groups SET name = 'operations' WHERE id = ?", group));
+        assertTrue("groups counter after a rename of the group", groupsCounter() > counter);
+    }
+
+    @Test
+    public void testCategoryAuthorizationForUnknownGroupIsNoOp() {
+        final int group = createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        final int before = version(VersionedTable.groups, group);
+
+        assertEquals(1, update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "nobody"));
+
+        assertEquals(before, version(VersionedTable.groups, group));
+    }
+
+    @Test
+    public void testUnchangedCategoryAuthorizationsKeepGroupVersion() {
+        final int group = createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        final int before = version(VersionedTable.groups, group);
+
+        // a category changed or added without an authorization of the group is no change of the group
+        update("UPDATE categories SET categorydescription = 'edge' WHERE categoryid = ?", category);
+        createCategory(9002, "Core");
+
+        assertEquals(before, version(VersionedTable.groups, group));
+    }
+
+    @Test
+    public void testNoOpCategoryAuthorizationUpdateKeepsGroupVersion() {
+        final int group = createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        final int before = version(VersionedTable.groups, group);
+
+        assertEquals(1, update("UPDATE category_group SET groupid = groupid WHERE categoryid = ? AND groupid = ?", category, "ops"));
+
+        assertEquals(before, version(VersionedTable.groups, group));
+    }
+
+    @Test
+    public void testCategoryDeleteTakesTheGroupsLockBeforeAnyGroupRowLock() throws Exception {
+        // B holds the groups counter. A deletes a category that authorizes ops: its cascade must wait for the counter
+        // before it locks the ops row or the authorization row, as lockAll() writers take the counter before the rows.
+        // While A waits, C must be able to lock both; with the rows locked first, C times out and A could deadlock.
+        createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        final ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            final AtomicReference<String> groupRow = new AtomicReference<>();
+            final AtomicReference<String> authorizationRow = new AtomicReference<>();
+            final Future<Integer> delete = m_tx.execute(b -> {
+                m_sessionFactory.getCurrentSession().doWork(connection -> {
+                    try (java.sql.Statement statement = connection.createStatement()) {
+                        statement.executeQuery("SELECT version FROM usermgmt_version WHERE name = 'groups' FOR UPDATE").close();
+                    } catch (final java.sql.SQLException e) {
+                        throw new IllegalStateException(e);
+                    }
+                });
+                final Future<Integer> a = executor.submit(() -> update("DELETE FROM categories WHERE categoryid = ?", category));
+                try {
+                    waitUntilAnotherBackendWaitsForALock();
+                    executor.submit(() -> groupRow.set(tryLock("SELECT 1 FROM groups WHERE name = 'ops' FOR UPDATE"))).get(30, TimeUnit.SECONDS);
+                    executor.submit(() -> authorizationRow.set(tryLock("SELECT 1 FROM category_group WHERE groupid = 'ops' FOR UPDATE"))).get(30, TimeUnit.SECONDS);
+                } catch (final Exception e) {
+                    a.cancel(true);
+                    throw new IllegalStateException(e);
+                }
+                return a; // B commits on return and releases the groups counter
+            });
+            assertEquals(1, delete.get(30, TimeUnit.SECONDS).intValue());
+            assertEquals("ops row while the category delete waits for the groups counter", "not blocked", groupRow.get());
+            assertEquals("authorization row while the category delete waits for the groups counter", "not blocked", authorizationRow.get());
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    @Test
+    public void testCategoryDeleteTakesTheCountersBeforeTheCategoryRow() throws Exception {
+        // B holds the groups counter. A deletes a category: it must wait for the counters before it locks the
+        // categories row. While A waits, C must be able to take the key share lock that the foreign key check of a
+        // category_group insert takes, as a v2 write holding the counters would; with the categories row locked
+        // first, C times out, and that v2 write would deadlock with A.
+        createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        final ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            final AtomicReference<String> categoryRow = new AtomicReference<>();
+            final Future<Integer> delete = m_tx.execute(b -> {
+                m_sessionFactory.getCurrentSession().doWork(connection -> {
+                    try (java.sql.Statement statement = connection.createStatement()) {
+                        statement.executeQuery("SELECT version FROM usermgmt_version WHERE name = 'groups' FOR UPDATE").close();
+                    } catch (final java.sql.SQLException e) {
+                        throw new IllegalStateException(e);
+                    }
+                });
+                final Future<Integer> a = executor.submit(() -> update("DELETE FROM categories WHERE categoryid = ?", category));
+                try {
+                    waitUntilAnotherBackendWaitsForALock();
+                    executor.submit(() -> categoryRow.set(tryLock("SELECT 1 FROM categories WHERE categoryid = " + category + " FOR KEY SHARE"))).get(30, TimeUnit.SECONDS);
+                } catch (final Exception e) {
+                    a.cancel(true);
+                    throw new IllegalStateException(e);
+                }
+                return a; // B commits on return and releases the groups counter
+            });
+            assertEquals(1, delete.get(30, TimeUnit.SECONDS).intValue());
+            assertEquals("categories row while the category delete waits for the counters", "not blocked", categoryRow.get());
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    /** Runs the locking query in a new transaction with a short lock_timeout: "not blocked", or the SQLState of the failure. */
+    private String tryLock(final String sql) {
+        return m_tx.execute(status -> {
+            final AtomicReference<String> result = new AtomicReference<>();
+            m_sessionFactory.getCurrentSession().doWork(connection -> {
+                try (java.sql.Statement statement = connection.createStatement()) {
+                    statement.execute("SET LOCAL lock_timeout = '500ms'");
+                    statement.executeQuery(sql).close();
+                    result.set("not blocked");
+                } catch (final java.sql.SQLException e) {
+                    result.set(e.getSQLState());
+                }
+            });
+            return result.get();
+        });
     }
 }

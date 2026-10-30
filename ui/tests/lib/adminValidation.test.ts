@@ -3,8 +3,11 @@ import {
   isPathAddressable,
   validateAdminComments,
   validateAdminName,
-  validateEmailShape
+  validateEmailShape,
+  validatePasswordConfirmation,
+  validateReservedName
 } from '@/lib/adminValidation'
+import { PROTECTED_USER_IDS } from '@/types/userAdmin'
 
 describe('validateAdminName', () => {
   it('accepts ordinary names and empty values', () => {
@@ -26,9 +29,13 @@ describe('validateAdminName', () => {
     expect(validateAdminName('Müller', 'user-id')).toBeNull()
   })
 
-  it('rejects dot segments', () => {
-    expect(validateAdminName('.', 'user-id')).toContain('dot segment')
-    expect(validateAdminName('..', 'user-id')).toContain('dot segment')
+  it('rejects the reserved names, exactly', () => {
+    for (const name of ['.', '..', 'item', 'available-roles', 'available-categories']) {
+      expect(validateAdminName(name, 'user-id')).toBe(`The user-id "${name}" is reserved.`)
+    }
+    for (const name of ['...', 'Item', 'items', 'available-roles-2', '.hidden']) {
+      expect(validateAdminName(name, 'group name'), name).toBeNull()
+    }
   })
 
   it('names the field in the message', () => {
@@ -63,6 +70,15 @@ describe('validateAdminComments length', () => {
   })
 })
 
+describe('validatePasswordConfirmation', () => {
+  it('reports a typed confirmation that differs, and nothing before one is typed', () => {
+    expect(validatePasswordConfirmation('secret', 'secrex')).toBe('Passwords do not match')
+    expect(validatePasswordConfirmation('', 'x')).toBe('Passwords do not match')
+    expect(validatePasswordConfirmation('secret', '')).toBeNull()
+    expect(validatePasswordConfirmation('secret', 'secret')).toBeNull()
+  })
+})
+
 describe('validateEmailShape', () => {
   it('accepts empty values and common deliverable forms', () => {
     expect(validateEmailShape('', 'email')).toBeNull()
@@ -94,5 +110,20 @@ describe('isPathAddressable', () => {
     expect(isPathAddressable('NOC/Primary')).toBe(false)
     expect(isPathAddressable('a\\b')).toBe(false)
     expect(isPathAddressable('a%b')).toBe(false)
+  })
+})
+
+describe('validateReservedName', () => {
+  it('refuses a look-alike of a reserved name, using the trimmed value', () => {
+    expect(validateReservedName('ADMIN', PROTECTED_USER_IDS, 'user-id')).toBe('The user-id "ADMIN" is reserved.')
+    expect(validateReservedName(' rTC ', PROTECTED_USER_IDS, 'user-id')).toBe('The user-id "rTC" is reserved.')
+    expect(validateReservedName('admin', ['Admin'], 'group name')).toBe('The group name "admin" is reserved.')
+  })
+
+  it('accepts the exact name, other names and empty values', () => {
+    expect(validateReservedName('admin', PROTECTED_USER_IDS, 'user-id')).toBeNull()
+    expect(validateReservedName('administrator', PROTECTED_USER_IDS, 'user-id')).toBeNull()
+    expect(validateReservedName('Admin', ['Admin'], 'group name')).toBeNull()
+    expect(validateReservedName('', PROTECTED_USER_IDS, 'user-id')).toBeNull()
   })
 })

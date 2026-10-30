@@ -177,11 +177,35 @@ A user id must not contain:
 * Whitespace.
 * Control or invisible characters.
 
-A user id must not be `.` or `..`.
+A user id must not be `.`, `..`, `item`, `available-roles` or `available-categories`: a create or rename to one of them returns `400` with the message `The userId "<name>" is reserved.`
 It is at most 256 characters long.
+The ids `admin` and `rtc` are reserved: a create or rename to a case variant of either (for example `Admin` or `RTC`) returns `400` with the message `The user-id "<name>" is reserved.`
 The rules apply to `userId` on create and to `newUserId` on rename.
 A user id that is already stored is not checked again.
 A violation returns `400`.
+
+[[user-query-form]]
+== Names that a path cannot carry
+
+A user id stored before the rules above existed (for example `DOMAIN\jdoe` from a migrated `users.xml`) can contain `/`, `\` or `%`, which a URL path cannot carry reliably.
+A user with one of the reserved ids, which v1 and the JSP pages still accept, is also out of reach of the path form: a client resolves `.` and `..` away, and `/users/available-roles` is the list of roles, not that user.
+Every per-user endpoint therefore has a query form, `item`, that takes the id in the `userId` query parameter.
+URL-encode the value (`DOMAIN%5Cjdoe`).
+The query form behaves exactly like the path form, with the same `If-Match` and `ETag` rules, bodies and status codes.
+A missing or blank `userId` returns `400`.
+
+[cols="1,2"]
+|===
+| Path form | Query form
+
+| `GET /users/{userId}` | `GET /users/item?userId={userId}`
+| `PUT /users/{userId}` | `PUT /users/item?userId={userId}`
+| `PUT /users/{userId}/password` | `PUT /users/item/password?userId={userId}`
+| `POST /users/{userId}/rename` | `POST /users/item/rename?userId={userId}`
+| `DELETE /users/{userId}` | `DELETE /users/item?userId={userId}`
+|===
+
+New user ids with those characters, and the reserved ids, are still refused on create and on rename, so renaming a user such as `DOMAIN\jdoe` to a valid id is the way out of them.
 
 [[user-text-rules]]
 == Comments

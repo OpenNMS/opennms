@@ -42,6 +42,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.UserDataChangedException;
@@ -125,6 +126,35 @@ public class UserMgmtRestSupport {
         if (!UserMgmtStore.isDatabase()) {
             throw error(Status.SERVICE_UNAVAILABLE,
                     "User management through this API needs " + UserMgmtStore.PROPERTY + "=" + UserMgmtStore.DB + ".");
+        }
+    }
+
+    /**
+     * The checks of a per-user or per-group endpoint, path or query form: the admin role, the database store, and a
+     * user id or group name, which the query form can leave out. The admin and store checks come first, so that a
+     * caller without the admin role gets 403 and not 400 for a missing parameter.
+     *
+     * @param param the name of the query parameter, for the message
+     */
+    public void checkTarget(final SecurityContext securityContext, final String what, final String param, final String value) {
+        assertAdmin(securityContext, what);
+        requireDatabaseStore();
+        if (StringUtils.isBlank(value)) {
+            throw badRequest(param + " is required");
+        }
+    }
+
+    /**
+     * Refuses a new user id or group name that equals a protected name ignoring case, but not exactly, such as ADMIN:
+     * it would be mistaken for the system entry. Existing look-alikes are left alone.
+     *
+     * @param label what the name is called in the message, e.g. "user-id" or "group name"
+     */
+    public void checkNotLookAlike(final String name, final Collection<String> protectedNames, final String label) {
+        for (final String reserved : protectedNames) {
+            if (reserved.equalsIgnoreCase(name) && !reserved.equals(name)) {
+                throw badRequest("The " + label + " \"" + name + "\" is reserved.");
+            }
         }
     }
 

@@ -22,7 +22,11 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
@@ -134,5 +138,27 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
         OnmsCriteria crit = new OnmsCriteria(OnmsCategory.class);
         crit.add(Restrictions.sqlRestriction("{alias}.categoryId in (select cg.categoryId from category_group cg where cg.groupId = ?)", groupName, StringType.INSTANCE));
         return findMatching(crit);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Map<String, List<String>> getCategoryNamesByAuthorizedGroup() {
+        final Map<String, List<String>> names = new HashMap<>();
+        for (final Object[] row : findObjects(Object[].class, "select authorizedGroup, category.name from OnmsCategory as category join category.authorizedGroups as authorizedGroup")) {
+            names.computeIfAbsent((String) row[0], k -> new ArrayList<>()).add((String) row[1]);
+        }
+        return names;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<OnmsCategory> findByNames(final Collection<String> names) {
+        if (names.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return getSessionFactory().getCurrentSession()
+                .createQuery("select distinct category from OnmsCategory as category left join fetch category.authorizedGroups where category.name in (:names)", OnmsCategory.class)
+                .setParameterList("names", names)
+                .list();
     }
 }

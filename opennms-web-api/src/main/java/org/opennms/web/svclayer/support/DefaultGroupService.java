@@ -25,7 +25,9 @@ package org.opennms.web.svclayer.support;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.GroupDao;
@@ -239,17 +241,21 @@ public class DefaultGroupService implements InitializingBean, GroupService {
         return false;
     }
 
-    private void setAuthorizedCategories(String groupName, List<String> categoryNames) {
-        List<OnmsCategory> categories = m_categoryDao.getCategoriesWithAuthorizedGroup(groupName);
-        for(OnmsCategory category : categories) {
-            category.getAuthorizedGroups().remove(groupName);
-        }
-        for(String categoryName : categoryNames) {
-            OnmsCategory category = m_categoryDao.findByName(categoryName, false);
-            if (category != null) {
-                category.getAuthorizedGroups().add(groupName);
+    @Override
+    public void setAuthorizedCategories(String groupName, Collection<String> categoryNames) {
+        final Set<String> wanted = new HashSet<>(categoryNames);
+        final Set<String> current = new HashSet<>();
+        for (OnmsCategory category : m_categoryDao.getCategoriesWithAuthorizedGroup(groupName)) {
+            if (wanted.contains(category.getName())) {
+                current.add(category.getName());
+            } else {
+                category.getAuthorizedGroups().remove(groupName);
             }
         }
-
+        wanted.removeAll(current);
+        // one query for all the new ones; a name of no category is left out
+        for (OnmsCategory category : m_categoryDao.findByNames(wanted)) {
+            category.getAuthorizedGroups().add(groupName);
+        }
     }
 }

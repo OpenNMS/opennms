@@ -59,5 +59,7 @@ export const STALE_USER_RELOAD_FAILED_MESSAGE =
   'This user was changed by someone else, and the list could not be reloaded. Reload the page.'
 
 // System accounts the server refuses to delete or rename; mirrored here so
-// the UI can disable the controls with an explanation instead of a 400.
+// the UI can disable the controls with an explanation instead of a 400. The
+// server also refuses a case variant of these as a new or renamed user-id.
+// See UsersRestService.PROTECTED_USERS.
 export const PROTECTED_USER_IDS = ['admin', 'rtc']

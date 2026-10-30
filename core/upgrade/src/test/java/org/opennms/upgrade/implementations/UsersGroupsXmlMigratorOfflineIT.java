@@ -341,6 +341,24 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
     }
 
     @Test
+    public void testAReservedNameFailsTheTaskAndCopiesNothing() throws Exception {
+        copyFixtures();
+        write("users.xml", "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><users>"
+                + "<user><user-id>jane</user-id><password>x</password></user><user><user-id>item</user-id><password>x</password></user>"
+                + "</users></userinfo>");
+        write("groups.xml", "<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\"><groups>"
+                + "<group><name>..</name></group><group><name>Ops</name></group></groups></groupinfo>");
+
+        final OnmsUpgradeException e = assertThrows(OnmsUpgradeException.class, this::migrate);
+
+        assertTrue(e.getMessage(), e.getMessage().contains("the user 'item', the group '..'"));
+        assertEquals(0, count("users"));
+        assertEquals(0, count("groups"));
+        assertEquals(0, count("usermgmt_initialized"));
+        assertFalse("the files are only archived after a successful copy", new File(m_home.getRoot(), "etc_archive").exists());
+    }
+
+    @Test
     public void testAFailedWriteLeavesNothingBehind() throws Exception {
         copyFixtures();
         // fails the last step, after the users and groups are written

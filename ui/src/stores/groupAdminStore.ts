@@ -20,83 +20,89 @@
 /// License.
 ///
 
-import useSnackbar from '@/composables/useSnackbar'
 import API from '@/services'
-import { AdminWriteError } from '@/types/adminWrite'
+import { reloadAfterWrite } from '@/services/adminWrite'
+import { AdminEditMode, AdminWriteResult } from '@/types/adminWrite'
 import { ManagedGroup, ManagedGroupCreate, STALE_GROUP_MESSAGE, STALE_GROUP_RELOAD_FAILED_MESSAGE } from '@/types/groupAdmin'
+import { createSuccessResponse, ValidationResult } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useGroupAdminStore = defineStore('groupAdminStore', () => {
-  const { showSnackBar } = useSnackbar()
   const groups = ref([] as ManagedGroup[])
   const memberCandidates = ref([] as string[])
+  const availableCategories = ref([] as string[])
 
-  const getGroups = async () => {
+  const editMode = ref(AdminEditMode.Table)
+  // the group being edited; null while creating or on the table
+  const currentGroup = ref<ManagedGroup | null>(null)
+
+  // null opens the editor on a new group
+  const openGroupEditor = (group: ManagedGroup | null) => {
+    currentGroup.value = group
+    editMode.value = group ? AdminEditMode.Edit : AdminEditMode.Create
+  }
+
+  const closeGroupEditor = () => {
+    currentGroup.value = null
+    editMode.value = AdminEditMode.Table
+  }
+
+  // a failed read keeps the previous list on screen
+  const getGroups = async (): Promise<ValidationResult> => {
     const result = await API.getManagedGroups()
-    if (result !== null) {
-      groups.value = result
+    if (result.success) {
+      groups.value = result.payload ?? []
     }
-    return result !== null
+    return result
   }
 
-  const getMemberCandidates = async () => {
-    memberCandidates.value = await API.getGroupMemberCandidates()
-  }
-
-  // A stale write means the list on screen is out of date: reload it, and say so only
-  // once the reload has succeeded. The caller gets the flag, not the text.
-  const reloadIfStale = async (error: AdminWriteError | null) => {
-    if (error?.stale) {
-      const reloaded = await getGroups()
-      const message = reloaded ? STALE_GROUP_MESSAGE : STALE_GROUP_RELOAD_FAILED_MESSAGE
-      showSnackBar({ msg: message, error: true })
-      return { ...error, message }
+  const getMemberCandidates = async (): Promise<ValidationResult> => {
+    const result = await API.getGroupMemberCandidates()
+    if (result.success) {
+      memberCandidates.value = result.payload ?? []
     }
-    return error
+    return result
   }
 
-  const createGroup = async (group: ManagedGroupCreate) => {
-    const error = await API.createManagedGroup(group)
-    if (error === null) {
-      await getGroups()
+  const getAvailableCategories = async (): Promise<ValidationResult> => {
+    const result = await API.getAvailableGroupCategories()
+    if (result.success) {
+      availableCategories.value = result.payload ?? []
     }
-    return error
+    return result
   }
 
-  const updateGroup = async (group: ManagedGroup) => {
-    const error = await API.updateManagedGroup(group)
-    if (error === null) {
-      await getGroups()
-    }
-    return await reloadIfStale(error)
-  }
+  // reloads the list after a write, and words a stale write's message by whether that reload worked
+  const afterWrite = (result: AdminWriteResult) => reloadAfterWrite(result, getGroups,
+    { reloaded: STALE_GROUP_MESSAGE, reloadFailed: STALE_GROUP_RELOAD_FAILED_MESSAGE })
 
-  const renameGroup = async (name: string, newName: string, version: number) => {
-    const error = await API.renameManagedGroup(name, newName, version)
-    if (error === null) {
-      await getGroups()
-    }
-    return await reloadIfStale(error)
-  }
+  const createGroup = async (group: ManagedGroupCreate) => afterWrite(await API.createManagedGroup(group))
 
-  const deleteGroup = async (name: string, version: number) => {
-    const error = await API.deleteManagedGroup(name, version)
-    if (error === null) {
-      await getGroups()
-    }
-    return await reloadIfStale(error)
-  }
+  const updateGroup = async (group: ManagedGroup) => afterWrite(await API.updateManagedGroup(group))
 
-  const populate = async () => {
-    await Promise.all([getGroups(), getMemberCandidates()])
+  const renameGroup = async (name: string, newName: string, version: number) =>
+    afterWrite(await API.renameManagedGroup(name, newName, version))
+
+  const deleteGroup = async (name: string, version: number) => afterWrite(await API.deleteManagedGroup(name, version))
+
+  // fails with the message of the first read that failed
+  const populate = async (): Promise<ValidationResult> => {
+    const results = await Promise.all([getGroups(), getMemberCandidates(), getAvailableCategories()])
+    return results.find(r => !r.success) ?? createSuccessResponse()
   }
 
   return {
     groups,
+    editMode,
+    currentGroup,
+    openGroupEditor,
+    closeGroupEditor,
     memberCandidates,
+    availableCategories,
     getGroups,
     getMemberCandidates,
+    getAvailableCategories,
     createGroup,
     updateGroup,
     renameGroup,

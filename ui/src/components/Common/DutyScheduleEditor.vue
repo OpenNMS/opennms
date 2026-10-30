@@ -4,7 +4,7 @@
       v-if="!rows.length"
       class="no-schedules"
       data-test="no-duty-schedules"
-    >No duty schedules; this user is available at all times.</p>
+    >No duty schedules: always on duty.</p>
     <div
       v-for="(row, index) in rows"
       :key="row.id"
@@ -45,6 +45,33 @@
           :data-test="`duty-${index}-end`"
           @input="markEdited(row)"
         >
+        <small
+          v-if="!hasDay(row)"
+          class="row-error"
+          role="alert"
+          :data-test="`duty-${index}-error`"
+        >Pick at least one day</small>
+        <small
+          v-if="!hasTimes(row)"
+          class="row-error"
+          role="alert"
+          :data-test="`duty-${index}-time-error`"
+        >Pick a begin and an end time</small>
+        <small
+          v-if="isOvernight(row)"
+          :class="overnightBlocks(row) ? 'row-error' : 'row-warning'"
+          :data-test="`duty-${index}-overnight`"
+        >The begin time must be before the end time. Split overnight coverage into two schedules.</small>
+        <small
+          v-else-if="isEmptyWindow(row)"
+          :class="emptyWindowBlocks(row) ? 'row-error' : 'row-warning'"
+          :data-test="`duty-${index}-empty-window`"
+        >The begin and end times are the same, so this window never matches. Pick a later end time.</small>
+        <small
+          v-else-if="shortWindow(row) !== null"
+          class="row-warning"
+          :data-test="`duty-${index}-warning`"
+        >This window is only {{ shortWindow(row) }} {{ shortWindow(row) === 1 ? 'minute' : 'minutes' }} long.</small>
       </template>
       <!-- a hand-edited entry the day/time form can't represent stays editable
            as raw text so it is never silently dropped -->
@@ -75,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import { OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 
@@ -87,6 +114,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:modelValue': [string[]]
+  'update:valid': [boolean]
 }>()
 
 // canonical day order; a schedule string concatenates a 1-7 subset of these
@@ -143,24 +171,37 @@ const markEdited = (row: Row) => {
   row.original = null
 }
 
-const serialize = (): string[] =>
-  rows.value
-    .map((row) => {
-      if (row.raw !== null) {
-        return row.raw.trim()
-      }
-      if (row.original !== null) {
-        return row.original
-      }
-      // an incomplete row (no day, or a missing time) is not a valid schedule
-      // yet; keep it visible for editing but leave it out of the value
-      if (!row.days.length || !row.begin || !row.end) {
-        return ''
-      }
-      const days = DAYS.filter(day => row.days.includes(day)).join('')
-      return `${days}${toMilitary(row.begin)}-${toMilitary(row.end)}`
-    })
-    .filter(Boolean)
+// a form row (not raw text) with no day selected can't be serialized
+const hasDay = (row: Row): boolean => row.raw !== null || row.days.length > 0
+
+// a native time input can be emptied; a form row needs both times
+const hasTimes = (row: Row): boolean => row.raw !== null || (!!row.begin && !!row.end)
+
+// complete: raw text, or at least one day plus a begin and an end time
+const isComplete = (row: Row): boolean => hasDay(row) && hasTimes(row)
+
+const serializeRow = (row: Row): string => {
+  if (row.raw !== null) {
+    return row.raw.trim()
+  }
+  if (row.original !== null) {
+    return row.original
+  }
+  // an incomplete row is not a valid schedule yet; keep it visible for editing
+  // but leave it out of the value. valid stays false while it is there, so it
+  // can't be silently dropped on save
+  if (!isComplete(row)) {
+    return ''
+  }
+  const days = DAYS.filter(day => row.days.includes(day)).join('')
+  return `${days}${toMilitary(row.begin)}-${toMilitary(row.end)}`
+}
+
+const serialize = (): string[] => rows.value.map(serializeRow).filter(Boolean)
+
+// the schedules the parent handed us; the server grandfathers these unchanged
+// even when they are overnight, so they never block saving
+let stored = new Set<string>()
 
 // rebuild rows only when the incoming value differs from what we already
 // represent, so emitting our own serialization can't clobber in-progress edits
@@ -168,6 +209,7 @@ watch(
   () => props.modelValue,
   (value) => {
     if (JSON.stringify(serialize()) !== JSON.stringify(value ?? [])) {
+      stored = new Set((value ?? []).map(v => v.trim()))
       rows.value = (value ?? []).map(parse)
     }
   },
@@ -182,6 +224,43 @@ watch(rows, () => {
     emit('update:modelValue', next)
   }
 }, { deep: true })
+
+const minutesOf = (hhmm: string) => {
+  const [hours, minutes] = hhmm.split(':')
+  return Number.parseInt(hours, 10) * 60 + Number.parseInt(minutes, 10)
+}
+
+// v2 and notifd compare within one calendar day, so begin after end never
+// matches; the server rejects it for new or changed entries
+const isOvernight = (row: Row): boolean =>
+  row.raw === null && !!row.begin && !!row.end && minutesOf(row.begin) > minutesOf(row.end)
+
+const overnightBlocks = (row: Row): boolean =>
+  isOvernight(row) && !stored.has(serializeRow(row))
+
+// notifd matches a window inclusively, so one that begins and ends at the same minute matches
+// only that instant: in practice the owner is never on duty. v2 accepts it, so a stored one is
+// left alone, like an overnight one
+const isEmptyWindow = (row: Row): boolean =>
+  row.raw === null && !!row.begin && !!row.end && minutesOf(row.begin) === minutesOf(row.end)
+
+const emptyWindowBlocks = (row: Row): boolean =>
+  isEmptyWindow(row) && !stored.has(serializeRow(row))
+
+// the window length in minutes when it is suspiciously short (5 or fewer), else
+// null. Advisory only.
+const SHORT_WINDOW_MINUTES = 5
+const shortWindow = (row: Row): number | null => {
+  if (row.raw !== null || !row.begin || !row.end || isOvernight(row) || isEmptyWindow(row)) {
+    return null
+  }
+  const length = minutesOf(row.end) - minutesOf(row.begin)
+  return length <= SHORT_WINDOW_MINUTES ? length : null
+}
+
+const valid = computed(() => rows.value.every(row => isComplete(row) && !overnightBlocks(row) && !emptyWindowBlocks(row)))
+
+watch(valid, value => emit('update:valid', value), { immediate: true })
 
 const toggleDay = (row: Row, day: string) => {
   markEdited(row)
@@ -232,6 +311,14 @@ const removeRow = (index: number) => {
     background: var(--p-inputtext-background, transparent);
     color: var(--p-inputtext-color, inherit);
     color-scheme: light dark;
+  }
+
+  .row-error {
+    color: var(--p-red-500, #d32f2f);
+  }
+
+  .row-warning {
+    color: var(--p-orange-500, #ed6c02);
   }
 
   .to {

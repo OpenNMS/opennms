@@ -20,7 +20,7 @@
         for="group-rename-new-name"
         required
         :error="nameProblem || undefined"
-        hint="On-call roles referencing this group follow the rename."
+        hint="On-call roles referencing this group follow the rename; destination paths that target the group by name do not."
       >
         <OnmsInputText
           id="group-rename-new-name"
@@ -54,8 +54,11 @@ import { computed, ref, watch } from 'vue'
 import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
-import { validateAdminName } from '@/lib/adminValidation'
+import useActionFeedback from '@/composables/useActionFeedback'
+import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
+import { validateAdminName, validateReservedName } from '@/lib/adminValidation'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
+import { PROTECTED_GROUP_NAMES } from '@/types/groupAdmin'
 
 const props = defineProps<{
   visible: boolean
@@ -66,12 +69,14 @@ const props = defineProps<{
 const emit = defineEmits(['update:visible'])
 
 const store = useGroupAdminStore()
+const { withSpinner } = useActionFeedback()
+const { reportWrite } = useAdminWriteFeedback()
 
 const newName = ref('')
 const saving = ref(false)
 const errorText = ref('')
 
-const nameProblem = computed(() => validateAdminName(newName.value, 'group name'))
+const nameProblem = computed(() => validateAdminName(newName.value, 'group name') || validateReservedName(newName.value, PROTECTED_GROUP_NAMES, 'group name'))
 
 watch(
   () => props.visible,
@@ -86,13 +91,14 @@ watch(
 const save = async () => {
   saving.value = true
   try {
-    const error = await store.renameGroup(props.groupName, newName.value.trim(), props.version)
-    // A stale save has already reloaded the list; close so the dialog reopens on the fresh object and version.
-    if (error === null || error.stale) {
-      emit('update:visible', false)
-    } else {
-      errorText.value = error.message
-    }
+    const target = newName.value.trim()
+    const result = await withSpinner(() => store.renameGroup(props.groupName, target, props.version))
+    reportWrite(result, `Group '${props.groupName}' renamed to '${target}'.`, {
+      close: () => emit('update:visible', false),
+      banner: (msg) => {
+        errorText.value = msg
+      }
+    })
   } finally {
     saving.value = false
   }

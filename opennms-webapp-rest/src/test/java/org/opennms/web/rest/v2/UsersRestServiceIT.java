@@ -28,8 +28,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -799,6 +803,13 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
             sendRequest(GET, "/users", 403);
             exec(POST, "/users", "{\"userId\":\"x\",\"password\":\"x\"}", null, 403);
             sendRequest(DELETE, "/users/admin", 403);
+            // the query form checks the role before the parameter
+            sendRequest(GET, "/users/item?userId=admin", 403);
+            sendRequest(GET, "/users/item", 403);
+            exec(PUT, "/users/item?userId=admin", "{\"fullName\":\"x\"}", null, 403);
+            exec(PUT, "/users/item/password?userId=admin", "{\"password\":\"x\"}", null, 403);
+            exec(POST, "/users/item/rename?userId=admin", "{\"newUserId\":\"x\"}", null, 403);
+            sendRequest(DELETE, "/users/item?userId=admin", 403);
         } finally {
             setUser("admin", new String[]{ "ROLE_ADMIN" });
         }
@@ -1007,6 +1018,226 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("changed comment", column("jsp2", "comments"));
     }
 
+    /** The user ids the running test commits; see {@link #committing}. */
+    private final Set<String> m_committed = new LinkedHashSet<>();
+
+    /**
+     * Registers the user ids a test commits, which the other tests of this class (one database) must not meet: they
+     * are deleted after the test, even a failed one. An id that already exists was left behind by another test, and
+     * fails here rather than being erased.
+     */
+    private void committing(final String... userIds) {
+        for (final String userId : userIds) {
+            assertEquals(userId + " was left behind by another test", 0, rowCount("users", "username", userId));
+            m_committed.add(userId);
+        }
+    }
+
+    @After
+    public void deleteCommittedUsers() {
+        for (final String userId : m_committed) {
+            new JdbcTemplate(m_dataSource).update("delete from users where username = ?", userId);
+        }
+    }
+
+    /** The query string for a user id that a path cannot carry. */
+    private static String byId(final String userId) {
+        return "?userId=" + URLEncoder.encode(userId, StandardCharsets.UTF_8);
+    }
+
+    private static final String MIGRATED = "DOMAIN\\jdoe";
+
+    @Test
+    public void testQueryFormLifecycle() throws Exception {
+        committing(MIGRATED, "jdoe");
+        createUser(MIGRATED, u -> u.setFullName("John Doe"));
+
+        final MockHttpServletResponse read = exec(GET, "/users/item" + byId(MIGRATED), null, null, 200);
+        assertEquals(MIGRATED, new JSONObject(read.getContentAsString()).getString("userId"));
+        String etag = read.getHeader("ETag");
+        assertNotNull(etag);
+
+        final MockHttpServletResponse updated = exec(PUT, "/users/item" + byId(MIGRATED),
+                "{\"userId\":\"" + MIGRATED.replace("\\", "\\\\") + "\",\"fullName\":\"Johnny\"}", etag, 200);
+        assertEquals("Johnny", column(MIGRATED, "full_name"));
+        assertNotEquals(etag, updated.getHeader("ETag"));
+        etag = updated.getHeader("ETag");
+
+        final String hashBefore = column(MIGRATED, "password_hash");
+        final MockHttpServletResponse password = exec(PUT, "/users/item/password" + byId(MIGRATED), "{\"password\":\"N3w!secret\"}", etag, 204);
+        assertNotEquals(hashBefore, column(MIGRATED, "password_hash"));
+        assertNotEquals(etag, password.getHeader("ETag"));
+        etag = password.getHeader("ETag");
+
+        final MockHttpServletResponse renamed = exec(POST, "/users/item/rename" + byId(MIGRATED), "{\"newUserId\":\"jdoe\"}", etag, 200);
+        assertEquals("jdoe", new JSONObject(renamed.getContentAsString()).getString("userId"));
+        assertEquals(0, rowCount("users", "username", MIGRATED));
+        etag = renamed.getHeader("ETag");
+
+        exec(DELETE, "/users/item" + byId("jdoe"), null, etag, 204);
+        assertEquals(0, rowCount("users", "username", "jdoe"));
+    }
+
+    @Test
+    public void testQueryFormStaleIs412() throws Exception {
+        committing(MIGRATED, "jdoe");
+        createUser(MIGRATED, u -> { });
+        final String stale = exec(GET, "/users/item" + byId(MIGRATED), null, null, 200).getHeader("ETag");
+        exec(PUT, "/users/item" + byId(MIGRATED), "{\"fullName\":\"Second\"}", null, 200);
+        final int version = rowVersion(MIGRATED);
+
+        exec(PUT, "/users/item" + byId(MIGRATED), "{\"fullName\":\"Third\"}", stale, 412);
+        exec(PUT, "/users/item/password" + byId(MIGRATED), "{\"password\":\"other\"}", stale, 412);
+        exec(POST, "/users/item/rename" + byId(MIGRATED), "{\"newUserId\":\"jdoe\"}", stale, 412);
+        exec(DELETE, "/users/item" + byId(MIGRATED), null, stale, 412);
+        assertEquals(version, rowVersion(MIGRATED));
+        assertEquals("Second", column(MIGRATED, "full_name"));
+    }
+
+    @Test
+    public void testQueryFormMissingParamIs400() throws Exception {
+        for (final String query : new String[] { "", "?userId=", "?userId=%20", "?name=admin" }) {
+            assertEquals("userId is required", exec(GET, "/users/item" + query, null, null, 400).getContentAsString());
+            assertEquals("userId is required", exec(PUT, "/users/item" + query, "{\"fullName\":\"x\"}", null, 400).getContentAsString());
+            assertEquals("userId is required", exec(PUT, "/users/item/password" + query, "{\"password\":\"x\"}", null, 400).getContentAsString());
+            assertEquals("userId is required", exec(POST, "/users/item/rename" + query, "{\"newUserId\":\"x\"}", null, 400).getContentAsString());
+            assertEquals("userId is required", exec(DELETE, "/users/item" + query, null, null, 400).getContentAsString());
+        }
+        // admin was not touched by any of them
+        exec(GET, "/users/admin", null, null, 200);
+    }
+
+    @Test
+    public void testQueryFormSameAsPathForm() throws Exception {
+        committing("plain", "plain2");
+        createUser("plain", u -> u.setFullName("Plain"));
+        createUser("plain2", u -> { });
+        final MockHttpServletResponse path = exec(GET, "/users/plain", null, null, 200);
+        final MockHttpServletResponse query = exec(GET, "/users/item" + byId("plain"), null, null, 200);
+        assertEquals(path.getContentAsString(), query.getContentAsString());
+        assertEquals(path.getHeader("ETag"), query.getHeader("ETag"));
+
+        assertSame(exec(GET, "/users/ghost", null, null, 404), exec(GET, "/users/item" + byId("ghost"), null, null, 404));
+        assertSame(exec(PUT, "/users/ghost", "{\"fullName\":\"x\"}", "\"1\"", 412), exec(PUT, "/users/item" + byId("ghost"), "{\"fullName\":\"x\"}", "\"1\"", 412));
+        assertSame(exec(PUT, "/users/plain", "{\"userId\":\"other\"}", null, 400), exec(PUT, "/users/item" + byId("plain"), "{\"userId\":\"other\"}", null, 400));
+        assertSame(exec(PUT, "/users/plain/password", "{}", null, 400), exec(PUT, "/users/item/password" + byId("plain"), "{}", null, 400));
+        assertSame(exec(POST, "/users/plain/rename", "{\"newUserId\":\"plain2\"}", null, 409), exec(POST, "/users/item/rename" + byId("plain"), "{\"newUserId\":\"plain2\"}", null, 409));
+        assertSame(exec(POST, "/users/plain/rename", "{\"newUserId\":\"plain\"}", null, 400), exec(POST, "/users/item/rename" + byId("plain"), "{\"newUserId\":\"plain\"}", null, 400));
+        assertSame(exec(DELETE, "/users/ghost", null, null, 404), exec(DELETE, "/users/item" + byId("ghost"), null, null, 404));
+
+        final MockHttpServletResponse pathUpdate = exec(PUT, "/users/plain", "{\"fullName\":\"Same\"}", null, 200);
+        final MockHttpServletResponse queryUpdate = exec(PUT, "/users/item" + byId("plain2"), "{\"fullName\":\"Same\"}", null, 200);
+        assertEquals(new JSONObject(pathUpdate.getContentAsString()).getString("fullName"), new JSONObject(queryUpdate.getContentAsString()).getString("fullName"));
+        exec(DELETE, "/users/plain", null, null, 204);
+        exec(DELETE, "/users/item" + byId("plain2"), null, null, 204);
+    }
+
+    private static void assertSame(final MockHttpServletResponse path, final MockHttpServletResponse query) throws Exception {
+        assertEquals(path.getStatus(), query.getStatus());
+        assertEquals(path.getContentAsString(), query.getContentAsString());
+    }
+
+    @Test
+    public void testQueryFormCannotCreateOrRenameToUnaddressable() throws Exception {
+        committing(MIGRATED, "a\\b", "a%b", "DOMAIN\\jdoe2");
+        createUser(MIGRATED, u -> { });
+        final String message = "The userId must not contain markup, whitespace, control or invisible characters, or the characters : / \\ % ? #";
+        assertEquals(message, exec(POST, "/users/item/rename" + byId(MIGRATED), "{\"newUserId\":\"a\\\\b\"}", null, 400).getContentAsString());
+        assertEquals(message, exec(POST, "/users", "{\"userId\":\"a\\\\b\",\"password\":\"x\"}", null, 400).getContentAsString());
+        assertEquals(message, exec(POST, "/users", "{\"userId\":\"DOMAIN\\\\jdoe2\",\"password\":\"x\"}", null, 400).getContentAsString());
+        assertEquals(message, exec(POST, "/users/item/rename" + byId(MIGRATED), "{\"newUserId\":\"a%b\"}", null, 400).getContentAsString());
+        assertEquals(0, rowCount("users", "username", "a%b"));
+        assertEquals(1, rowCount("users", "username", MIGRATED));
+        assertEquals(0, rowCount("users", "username", "a\\b"));
+    }
+
+    @Test
+    public void testReservedNamesAreRefused() throws Exception {
+        committing(MIGRATED, ".", "..", "item", "available-roles", "available-categories");
+        createUser(MIGRATED, u -> { });
+        for (final String name : new String[] { ".", "..", "item", "available-roles", "available-categories" }) {
+            final String message = "The userId \"" + name + "\" is reserved.";
+            assertEquals(message, exec(POST, "/users", "{\"userId\":\"" + name + "\",\"password\":\"x\"}", null, 400).getContentAsString());
+            assertEquals(message, exec(POST, "/users/item/rename" + byId(MIGRATED), "{\"newUserId\":\"" + name + "\"}", null, 400).getContentAsString());
+            assertEquals(0, rowCount("users", "username", name));
+        }
+        assertEquals(1, rowCount("users", "username", MIGRATED));
+    }
+
+    @Test
+    public void testQueryFormProtectedNames() throws Exception {
+        final boolean createdRtc = rowCount("users", "username", "rtc") == 0;
+        if (createdRtc) {
+            exec(POST, "/users", "{\"userId\":\"rtc\",\"password\":\"pw\"}", null, 201);
+        }
+        try {
+            assertProtected();
+        } finally {
+            if (createdRtc) {
+                new JdbcTemplate(m_dataSource).update("delete from users where username = 'rtc'");
+            }
+        }
+    }
+
+    private void assertProtected() throws Exception {
+        for (final String name : new String[] { "admin", "rtc" }) {
+            assertSame(exec(DELETE, "/users/" + name, null, null, 400), exec(DELETE, "/users/item" + byId(name), null, null, 400));
+            assertSame(exec(POST, "/users/" + name + "/rename", "{\"newUserId\":\"other\"}", null, 400),
+                    exec(POST, "/users/item/rename" + byId(name), "{\"newUserId\":\"other\"}", null, 400));
+            assertEquals(1, rowCount("users", "username", name));
+        }
+        assertEquals("The system user admin cannot be deleted.", exec(DELETE, "/users/item" + byId("admin"), null, null, 400).getContentAsString());
+    }
+
+    @Test
+    public void testQueryFormReachesReservedNames() throws Exception {
+        // users stored before the names were reserved
+        committing("item", "item-2", "available-roles", "available-roles-2", ".", ".-2", "..", "..-2");
+        createUser("item", u -> u.setFullName("An item"));
+        createUser("available-roles", u -> u.setFullName("Some roles"));
+        createUser(".", u -> u.setFullName("A dot"));
+        createUser("..", u -> u.setFullName("Two dots"));
+        for (final String name : new String[] { "item", "available-roles", ".", ".." }) {
+            final MockHttpServletResponse read = exec(GET, "/users/item" + byId(name), null, null, 200);
+            assertEquals(name, new JSONObject(read.getContentAsString()).getString("userId"));
+            exec(PUT, "/users/item" + byId(name), "{\"fullName\":\"Edited\"}", read.getHeader("ETag"), 200);
+            assertEquals("Edited", column(name, "full_name"));
+            exec(POST, "/users/item/rename" + byId(name), "{\"newUserId\":\"" + name + "-2\"}", null, 200);
+            exec(DELETE, "/users/item" + byId(name + "-2"), null, null, 204);
+            assertEquals(0, rowCount("users", "username", name + "-2"));
+        }
+        // the path form of a literal is the literal endpoint
+        assertTrue(getJson("/users/available-roles", 200).startsWith("["));
+    }
+
+    @Test
+    public void testLookAlikesOfReservedUserIdsAreRefused() throws Exception {
+        committing("ADMIN", "Rtc", "rTC", "plain", "Admin");
+        for (final String name : new String[] { "ADMIN", "Rtc", "rTC" }) {
+            assertEquals("The user-id \"" + name + "\" is reserved.",
+                    exec(POST, "/users", "{\"userId\":\"" + name + "\",\"password\":\"x\"}", null, 400).getContentAsString());
+            assertEquals(0, rowCount("users", "username", name));
+        }
+        createUser("plain", u -> { });
+        final MockHttpServletResponse path = exec(POST, "/users/plain/rename", "{\"newUserId\":\"Admin\"}", null, 400);
+        assertEquals("The user-id \"Admin\" is reserved.", path.getContentAsString());
+        assertSame(path, exec(POST, "/users/item/rename" + byId("plain"), "{\"newUserId\":\"Admin\"}", null, 400));
+        assertEquals(1, rowCount("users", "username", "plain"));
+        // the exact name is not a look-alike: it exists
+        exec(POST, "/users", "{\"userId\":\"admin\",\"password\":\"x\"}", null, 409);
+    }
+
+    @Test
+    public void testExistingLookAlikeUserStaysManageable() throws Exception {
+        committing("ADMIN");
+        createUser("ADMIN", u -> u.setFullName("Old"));
+        final MockHttpServletResponse read = exec(GET, "/users/ADMIN", null, null, 200);
+        exec(PUT, "/users/ADMIN", "{\"fullName\":\"New\"}", read.getHeader("ETag"), 200);
+        assertEquals("New", column("ADMIN", "full_name"));
+        exec(DELETE, "/users/ADMIN", null, null, 204);
+        assertEquals(0, rowCount("users", "username", "ADMIN"));
+    }
+
     private String getJson(final String url, final int expectedStatus) throws Exception {
         final MockHttpServletRequest request = createRequest(GET, url);
         request.addHeader("Accept", JSON);
@@ -1016,7 +1247,11 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     /** Sends a JSON request, with an If-Match header if the tag is not null, and returns the response. */
     private MockHttpServletResponse exec(final String method, final String url, final String body, final String ifMatch,
             final int expectedStatus) throws Exception {
-        final MockHttpServletRequest request = createRequest(servletContext, method, url, getUser(), getUserRoles());
+        final int queryStart = url.indexOf('?');
+        final MockHttpServletRequest request = createRequest(servletContext, method, queryStart < 0 ? url : url.substring(0, queryStart), getUser(), getUserRoles());
+        if (queryStart >= 0) {
+            request.setQueryString(url.substring(queryStart + 1));
+        }
         request.addHeader("Accept", JSON);
         if (body != null) {
             request.setContentType(JSON);

@@ -30,6 +30,8 @@ export interface ManagedGroup {
   comments?: string | null
   users?: string[]
   dutySchedules?: string[]
+  // category names; absent means "leave alone", an empty list means "none"
+  categories?: string[]
   version: number
 }
 

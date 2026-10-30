@@ -29,9 +29,12 @@ const INVALID_COMMENTS = /[&<>"`']/
 // UserMgmtValidation.FREE_TEXT_LENGTH: comments longer than this are rejected, counted in code points once trimmed
 export const FREE_TEXT_LENGTH = 4096
 const EMAIL_SHAPE = /[^\s@]+@[^\s@]+/
+// ReservedNames.NAMES: no user or group may have these names. The browser resolves . and .. away in a URL path,
+// and the others are endpoints of their own under /users and /groups
+export const RESERVED_ADMIN_NAMES = ['.', '..', 'item', 'available-roles', 'available-categories']
 
 /**
- * Validates a user-id, group name or on-call role name.
+ * Validates a new user-id or group name, as UserMgmtValidation.validateName does.
  * Returns a problem description, or null when the value is acceptable.
  * Emptiness is not checked here; required-ness is a per-form concern.
  */
@@ -43,8 +46,22 @@ export const validateAdminName = (value: string, label: string): string | null =
   if (INVALID_NAME.test(trimmed)) {
     return `The ${label} must not contain markup, whitespace, control or invisible characters, or the characters : / \\ % ? #`
   }
-  if (trimmed === '.' || trimmed === '..') {
-    return `The ${label} must not be a dot segment.`
+  if (RESERVED_ADMIN_NAMES.includes(trimmed)) {
+    return `The ${label} "${trimmed}" is reserved.`
+  }
+  return null
+}
+
+/**
+ * A new or renamed user-id or group name that equals a reserved name ignoring case, but not exactly,
+ * would be mistaken for the system entry; the server refuses it. The exact name is not flagged here:
+ * it is a duplicate, which the server reports as such.
+ */
+export const validateReservedName = (value: string, reserved: string[], label: 'user-id' | 'group name'): string | null => {
+  const trimmed = value.trim()
+  const lower = trimmed.toLowerCase()
+  if (reserved.some(name => name.toLowerCase() === lower && name !== trimmed)) {
+    return `The ${label} "${trimmed}" is reserved.`
   }
   return null
 }
@@ -75,6 +92,11 @@ export const isPathAddressable = (name: string): boolean => !/[/\\%]/.test(name)
 
 /** Field hint for a name that fails isPathAddressable. */
 export const UNADDRESSABLE_NAME_HINT = 'The name must not contain / \\ or %'
+
+// The mismatch message of a password and its confirmation, for the create form and the change-password
+// dialog. An empty confirmation is not a mismatch yet: the user has not typed it.
+export const validatePasswordConfirmation = (password: string, confirmation: string): string | null =>
+  confirmation && password !== confirmation ? 'Passwords do not match' : null
 
 /**
  * Loose shape check: every comma-separated recipient must contain a
