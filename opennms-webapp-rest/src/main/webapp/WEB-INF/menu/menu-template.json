@@ -627,78 +627,39 @@
       "roles": null,
       "items": [
         {
-          "id": "helpMain",
-          "name": "Help",
-          "url": "help/index.jsp",
-          "locationMatch": null,
-          "roles": null
-        },
-        {
           "id": "helpAbout",
           "name": "About",
-          "url": "about/index.jsp",
+          "url": "ui/index.html#/about",
           "locationMatch": null,
           "roles": null
         },
         {
-          "id": "support",
-          "name": "Support",
-          "url": "support/index.jsp",
+          "id": "documentation",
+          "name": "Documentation",
+          "url": "ui/index.html#/documentation",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "commercialSupport",
+          "name": "Commercial Support",
+          "url": "ui/index.html#/commercial-support",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "communityResources",
+          "name": "Community Resources",
+          "url": "ui/index.html#/community-resources",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "systemReport",
+          "name": "System Report",
+          "url": "ui/index.html#/system-report",
           "locationMatch": null,
           "roles": ["ROLE_ADMIN"]
-        }
-      ]
-    },
-    {
-      "id": "supportMenu",
-      "name": "Support",
-      "url": "#",
-      "locationMatch": null,
-      "icon": "action/ContactSupport",
-      "roles": null,
-      "items": [
-        {
-          "id": "professionalSupport",
-          "name": "Professional Support",
-          "url": "https://www.opennms.com/support",
-          "isExternalLink": true,
-          "linkTarget": "_blank",
-          "locationMatch": null,
-          "roles": null
-        },
-        {
-          "id": "chat",
-          "name": "Chat",
-          "url": "https://chat.opennms.org",
-          "isExternalLink": true,
-          "linkTarget": "_blank",
-          "locationMatch": null,
-          "roles": null
-        },
-        {
-          "id": "communitySupportDiscourse",
-          "name": "Community Support (Discourse)",
-          "url": "https://opennms.discourse.group",
-          "isExternalLink": true,
-          "linkTarget": "_blank",
-          "locationMatch": null,
-          "roles": null
-        },
-        {
-          "id": "publicIssueTracker`",
-          "name": "Public Issue Tracker",
-          "url": "https://issues.opennms.org/secure/Dashboard.jspa",
-          "isExternalLink": true,
-          "linkTarget": "_blank",
-          "locationMatch": null,
-          "roles": null
-        },
-        {
-          "id": "generateSystemReport",
-          "name": "Generate System Report",
-          "url": "admin/support/systemReportList.htm",
-          "locationMatch": null,
-          "roles": null
         }
       ]
     }

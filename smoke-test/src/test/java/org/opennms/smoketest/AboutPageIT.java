@@ -22,27 +22,36 @@
 package org.opennms.smoketest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class AboutPageIT extends OpenNMSSeleniumIT {
 
     @Before
     public void setUp() throws Exception {
-        driver.get(getBaseUrlInternal() + "opennms/about/index.jsp");
+        driver.get(getBaseUrlInternal() + "opennms/ui/index.html#/about");
     }
 
     @Test
     public void hasAllPanels() throws Exception {
-        assertEquals(4, countElementsMatchingCss("div.card-header"));
+        for (final String title : new String[] { "System details", "License and copyright", "Built with" }) {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[text()='" + title + "']")));
+        }
     }
 
     @Test
-    public void hasContent() {
-        assertNotNull(driver.findElement(By.xpath("//span[text()='License and Copyright']")));
-        assertNotNull(driver.findElement(By.xpath("//th[text()='Version:']")));
+    public void hasServerDetails() {
+        // the Database Type row only appears once /api/v2/about has answered
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@data-test='version-details']//dt[text()='Database Type']")));
+        assertEquals("PostgreSQL", driver.findElement(By.xpath("//div[@data-test='version-details']//dt[text()='Database Type']/following-sibling::dd[1]")).getText());
+    }
+
+    @Test
+    public void legacyUrlRedirects() {
+        driver.get(getBaseUrlInternal() + "opennms/about/index.jsp");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[text()='System details']")));
     }
 }

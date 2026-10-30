@@ -868,16 +868,6 @@
   </servlet>
 
   <servlet>
-    <servlet-name>sendMail</servlet-name>
-    <servlet-class>org.opennms.web.mail.MailerServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>redirect.success</param-name>
-      <param-value>../support/index.htm</param-value>
-    </init-param>
-  </servlet>
-
-  <servlet>
     <servlet-name>nodeRescan</servlet-name>
     <servlet-class>org.opennms.web.element.NodeRescanServlet</servlet-class>
   </servlet>
@@ -1103,11 +1093,6 @@
   <servlet-mapping>
     <servlet-name>rtcRaw</servlet-name>
     <url-pattern>/rtc/raw</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>sendMail</servlet-name>
-    <url-pattern>/mail/send</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

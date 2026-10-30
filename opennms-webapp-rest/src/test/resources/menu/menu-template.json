@@ -321,13 +321,6 @@
           "url": "about/index.jsp",
           "locationMatch": null,
           "roles": null
-        },
-        {
-          "id": "support",
-          "name": "Support",
-          "url": "support/index.jsp",
-          "locationMatch": null,
-          "roles": ["ROLE_ADMIN"]
         }
       ]
     }
@@ -360,13 +353,6 @@
         "url": "ui/index.html#/open-api",
         "locationMatch": null,
         "roles": null
-      },
-      {
-        "id": "support",
-        "name": "Support",
-        "url": "support/index.jsp",
-        "locationMatch": null,
-        "roles": ["ROLE_ADMIN"]
       }
     ]
   },

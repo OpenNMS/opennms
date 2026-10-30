@@ -231,7 +231,6 @@
               org.opennms.web.element,
               org.opennms.web.event,
               org.opennms.web.graph,
-              org.opennms.web.mail,
               org.opennms.web.nodelabel
               -->
               !*
