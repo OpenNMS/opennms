@@ -861,6 +861,26 @@ INSERT INTO usermgmt_initialized (initialized_by) SELECT 'liquibase' WHERE EXIST
         </rollback>
     </changeSet>
 
+    <!-- Releases 31 to 36 HTML-encoded contact values in Contact.setInfo, and notifd copied the value it used into
+         usersnotified.contactinfo: a user's contact, or the address of a destination path's email target, which notifd
+         also puts through setInfo. Contact values are stored raw now and encoded on output, so the old rows would show
+         entities such as o&#39;brien@example.org. Decode them once, like the users migration does with
+         HtmlEncoding.decodeHtmlEncoded: &amp; is replaced last, so the replacements together decode in a single pass
+         (&amp;lt; becomes &lt;). This runs before OpenNMS 37 starts, so no row holds a raw value written by 37. Rows
+         that earlier releases recorded raw change only if they contain one of the five entities, which an address or
+         a number does not. -->
+    <changeSet author="stheleman" id="37.0.0-usersnotified-decode-contactinfo">
+        <sql><![CDATA[
+UPDATE usersnotified
+   SET contactinfo = replace(replace(replace(replace(replace(contactinfo, '&lt;', '<'), '&gt;', '>'), '&#34;', '"'), '&#39;', ''''), '&amp;', '&')
+ WHERE contactinfo LIKE '%&%'
+   AND replace(replace(replace(replace(replace(contactinfo, '&lt;', '<'), '&gt;', '>'), '&#34;', '"'), '&#39;', ''''), '&amp;', '&') <> contactinfo;
+        ]]></sql>
+
+        <!-- the decoding cannot be undone -->
+        <rollback/>
+    </changeSet>
+
     <!-- The category authorizations of a group live in category_group, outside the groups table, and its groupid is
          the group name (no foreign key). Every writer of them (the v2 API, v1 /rest/groups/{g}/categories and
          /rest/categories/{c}/groups/{g}, deleting a category, which cascades, node categories) must make a stale group
