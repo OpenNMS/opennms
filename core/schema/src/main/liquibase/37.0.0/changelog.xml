@@ -892,9 +892,11 @@ UPDATE usersnotified
          manager refuses to save when the groups counter moved since it read, and reloads instead. The managers cache
          no category authorizations, so a category_group change must not move the counter, or every writer of
          category_group that bypasses the managers would make the next group save through a manager fail with "User
-         data was changed by another process". The row trigger marks its own UPDATE of groups with a transaction-local
-         setting, which usermgmt_increment_version skips: the statement trigger of that UPDATE fires at the end of it,
-         while the setting is on.
+         data was changed by another process". So groups_version, which moves the groups counter, now fires on an
+         UPDATE of the data columns only: the version bumps of the triggers (version = version + 1) do not move it.
+         Each child table of a group has a counter trigger of its own, and a user rename, which bumps the groups that
+         show the name, moves the users counter, which the group manager also follows. A column added to groups must
+         be added to the list of groups_version: UserMgmtRowVersionIT checks that it lists every column but version.
 
          Lock order: writers that call UserMgmtVersionDao.lockAll() take the 'users' and then the 'groups' counter
          before any row. A BEFORE statement trigger takes both counters in that order before any category_group row is
@@ -913,32 +915,18 @@ UPDATE usersnotified
         </preConditions>
 
         <createProcedure>
-CREATE OR REPLACE FUNCTION usermgmt_increment_version() RETURNS trigger AS $$
-BEGIN
-    IF current_setting('usermgmt.category_group_bump', true) = 'on' THEN
-        RETURN NULL;
-    END IF;
-    UPDATE usermgmt_version SET version = version + 1 WHERE name = TG_ARGV[0];
-    RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
-        </createProcedure>
-
-        <createProcedure>
 CREATE OR REPLACE FUNCTION usermgmt_bump_for_category_group() RETURNS trigger AS $$
 BEGIN
     PERFORM 1 FROM usermgmt_version WHERE name = 'groups' FOR UPDATE;
     IF TG_OP = 'UPDATE' AND NEW IS NOT DISTINCT FROM OLD THEN
         RETURN NULL;
     END IF;
-    PERFORM set_config('usermgmt.category_group_bump', 'on', true);
     IF TG_OP &lt;&gt; 'DELETE' THEN
         UPDATE groups SET version = version + 1 WHERE name = NEW.groupid;
     END IF;
     IF TG_OP &lt;&gt; 'INSERT' AND (TG_OP = 'DELETE' OR OLD.groupid IS DISTINCT FROM NEW.groupid) THEN
         UPDATE groups SET version = version + 1 WHERE name = OLD.groupid;
     END IF;
-    PERFORM set_config('usermgmt.category_group_bump', 'off', true);
     RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
@@ -956,6 +944,8 @@ $$ LANGUAGE plpgsql;
         </createProcedure>
 
         <sql>
+DROP TRIGGER groups_version ON groups;
+CREATE TRIGGER groups_version AFTER INSERT OR UPDATE OF id, name, default_map, comments, created_time, last_modified OR DELETE OR TRUNCATE ON groups FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
 CREATE TRIGGER category_group_lock_versions BEFORE INSERT OR UPDATE OR DELETE ON category_group FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_lock_for_category_group();
 CREATE TRIGGER category_group_bump_group AFTER INSERT OR UPDATE OR DELETE ON category_group FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_for_category_group();
 CREATE TRIGGER categories_lock_versions BEFORE DELETE ON categories FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_lock_for_category_group();
@@ -968,15 +958,9 @@ DROP TRIGGER IF EXISTS category_group_bump_group ON category_group;
 DROP TRIGGER IF EXISTS category_group_lock_versions ON category_group;
 DROP FUNCTION IF EXISTS usermgmt_bump_for_category_group();
 DROP FUNCTION IF EXISTS usermgmt_lock_for_category_group();
+DROP TRIGGER groups_version ON groups;
+CREATE TRIGGER groups_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON groups FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
             </sql>
-            <createProcedure>
-CREATE OR REPLACE FUNCTION usermgmt_increment_version() RETURNS trigger AS $$
-BEGIN
-    UPDATE usermgmt_version SET version = version + 1 WHERE name = TG_ARGV[0];
-    RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
-            </createProcedure>
         </rollback>
     </changeSet>
 

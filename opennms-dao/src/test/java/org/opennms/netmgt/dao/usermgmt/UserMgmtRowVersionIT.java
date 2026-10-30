@@ -22,14 +22,18 @@
 package org.opennms.netmgt.dao.usermgmt;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -153,6 +157,21 @@ public class UserMgmtRowVersionIT implements InitializingBean {
                 }
             });
             return updated[0];
+        });
+    }
+
+    /** Runs the query on the connection of a new transaction and returns its first column. */
+    private List<String> strings(final String sql) {
+        return m_tx.execute(status -> {
+            final List<String> values = new ArrayList<>();
+            m_sessionFactory.getCurrentSession().doWork(connection -> {
+                try (PreparedStatement statement = connection.prepareStatement(sql); ResultSet rs = statement.executeQuery()) {
+                    while (rs.next()) {
+                        values.add(rs.getString(1));
+                    }
+                }
+            });
+            return values;
         });
     }
 
@@ -672,7 +691,7 @@ public class UserMgmtRowVersionIT implements InitializingBean {
         assertEquals("groups counter after category authorization changes", counter, groupsCounter());
         assertBumped("group", before, VersionedTable.groups, group);
 
-        // a change of what the managers cache still moves it, right after: the setting is off again
+        // a change of what the managers cache still moves it
         before = version(VersionedTable.groups, group);
         assertEquals(1, update("INSERT INTO group_members (group_id, user_id, position) SELECT ?, id, 0 FROM users WHERE username = 'alice'", group));
         assertTrue("groups counter after a member change", groupsCounter() > counter);
@@ -689,7 +708,7 @@ public class UserMgmtRowVersionIT implements InitializingBean {
         final int category = createCategory(9001, "Edge");
         final long counter = groupsCounter();
 
-        // the setting is transaction-local: the category trigger must turn it off again for the member insert
+        // the version bump of the category change must not hide the member change of the same transaction
         m_tx.execute(status -> {
             m_sessionFactory.getCurrentSession().doWork(connection -> {
                 try (java.sql.Statement statement = connection.createStatement()) {
@@ -701,6 +720,41 @@ public class UserMgmtRowVersionIT implements InitializingBean {
         });
 
         assertTrue("groups counter after a member change in the same transaction", groupsCounter() > counter);
+    }
+
+    @Test
+    public void testTheGroupsCounterTriggerListsEveryColumnButTheVersion() {
+        // groups_version fires on an UPDATE of the listed columns only, so that the version bumps do not move the
+        // counter: a column missing from the list would change without the managers noticing
+        final List<String> listed = strings("SELECT a.attname FROM pg_trigger t"
+                + " JOIN pg_attribute a ON a.attrelid = t.tgrelid AND a.attnum = ANY (t.tgattr::int2[])"
+                + " WHERE t.tgname = 'groups_version' AND t.tgrelid = 'groups'::regclass ORDER BY a.attname");
+        final List<String> columns = strings("SELECT column_name FROM information_schema.columns"
+                + " WHERE table_schema = current_schema() AND table_name = 'groups' AND column_name <> 'version' ORDER BY column_name");
+        assertFalse(columns.isEmpty());
+        assertEquals(columns, listed);
+    }
+
+    @Test
+    public void testAVersionBumpOfAGroupKeepsTheGroupsCounter() {
+        final int user = createUser("alice");
+        final int group = createGroup("ops");
+        assertEquals(1, update("INSERT INTO group_members (group_id, user_id, position) VALUES (?, ?, 0)", group, user));
+        long counter = groupsCounter();
+
+        assertEquals(1, update("UPDATE groups SET version = version + 1 WHERE id = ?", group));
+        assertEquals("groups counter after a version bump", counter, groupsCounter());
+
+        // a user rename bumps the groups that show the name, and moves the users counter, which the group manager follows
+        final long usersCounter = m_tx.execute(status -> m_versionDao.getVersion(Domain.users));
+        final int before = version(VersionedTable.groups, group);
+        assertEquals(1, update("UPDATE users SET username = 'alicia' WHERE id = ?", user));
+        assertBumped("group", before, VersionedTable.groups, group);
+        assertTrue("users counter after a user rename", m_tx.execute(status -> m_versionDao.getVersion(Domain.users)) > usersCounter);
+
+        counter = groupsCounter();
+        assertEquals(1, update("UPDATE groups SET name = 'operations' WHERE id = ?", group));
+        assertTrue("groups counter after a rename of the group", groupsCounter() > counter);
     }
 
     @Test
