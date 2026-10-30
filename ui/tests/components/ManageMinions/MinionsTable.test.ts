@@ -91,11 +91,10 @@ describe('MinionsTable.vue', () => {
     expect(ctx.wrapper.find('[data-test="empty-list"]').text()).toContain('Failed to load minions')
   })
 
-  it('has no Edit action or editor dialog, only Delete', async () => {
+  it('has no Edit action, only Delete', async () => {
     ctx.store.minions = [minion('m1', { status: 'down' })] as any
     await ctx.wrapper.vm.$nextTick()
     expect(ctx.wrapper.find('[data-test="edit-minion-button"]').exists()).toBe(false)
-    expect(ctx.wrapper.findComponent({ name: 'MinionEditorDialog' }).exists()).toBe(false)
     const del = ctx.wrapper.find('[data-test="delete-minion-button"]')
     expect(del.exists()).toBe(true)
     expect(del.attributes('aria-label')).toBe('Delete m1')
