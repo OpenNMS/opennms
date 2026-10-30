@@ -149,6 +149,12 @@ Failed polls and collections are timed as well, often at their full timeout incl
 The average, minimum, and maximum are weighted toward recent values, but a single slow poll can remain the maximum for up to about half a day.
 OpenNMS collects them about itself and graphs them under the *Pollerd Poll Stats* and *Collectd Collection Stats* resources.
 
+=== Startup and shutdown events
+{page-component-title} now sends `uei.opennms.org/internal/opennmsStarted` when all of its services have started, and `uei.opennms.org/internal/opennmsStopping` when it begins to shut down.
+The started event carries the version, the startup time, and a `previousShutdown` parameter: `clean` when the previous run sent its stopping event, `unclean` when it ended without one (for example a crash, a forced kill, or a power loss), and `unknown` when no earlier lifecycle event is stored.
+The stopping event carries the version, the uptime, and the reason for the shutdown.
+No notification is configured for these events by default; to be notified of unexpected restarts, create a notification for `opennmsStarted` that matches `previousShutdown` equal to `unclean`.
+
 == Breaking changes
 
 === Kafka SASL/OAUTHBEARER endpoint URLs are blocked by default

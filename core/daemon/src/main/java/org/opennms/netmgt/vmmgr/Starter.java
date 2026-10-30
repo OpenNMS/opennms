@@ -199,5 +199,6 @@ public class Starter {
         }
 
         LOG.info("Startup complete");
+        LifecycleEvents.sendStarted();
     }
 }
