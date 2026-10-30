@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -58,9 +59,11 @@ final class LifecycleEvents {
     static final String UNCLEAN = "unclean";
     static final String UNKNOWN = "unknown";
 
-    static final String REASON_SIGNAL = "termination signal";
-    static final String REASON_REQUESTED = "shutdown requested";
+    static final String REASON_SIGNAL = "shutdown signal";
+    static final String REASON_REQUESTED = "JMX stop request";
     static final String REASON_STARTUP_FAILED = "service startup failed";
+
+    static final long STOPPING_TIMEOUT_MS = SystemProperties.getLong("org.opennms.lifecycle.stoppingEventTimeoutMs", 5_000L);
 
     private static final String LAST_LIFECYCLE_EVENT =
             "SELECT eventuei FROM events WHERE eventuei IN (?, ?) ORDER BY eventtime DESC, eventid DESC LIMIT 1";
@@ -127,11 +130,33 @@ final class LifecycleEvents {
             LOG.debug("Eventd is not running; not sending the {} event", OPENNMS_STOPPING_UEI);
             return;
         }
+        sendStopping(eventIpcManager, stoppingEvent(version(), jvmUptimeMillis(), reason), STOPPING_TIMEOUT_MS);
+    }
+
+    /**
+     * Waits at most {@code timeoutMillis} for the event to be stored; with the database down the write could
+     * block on the connection pool and hold up the shutdown until the service manager kills the process.
+     */
+    static boolean sendStopping(final EventIpcManager eventIpcManager, final Event event, final long timeoutMillis) {
+        final Thread sender = new Thread(() -> {
+            try {
+                eventIpcManager.sendNowSync(event);
+            } catch (RuntimeException e) {
+                LOG.warn("Unable to send the {} event", OPENNMS_STOPPING_UEI, e);
+            }
+        }, "lifecycle-stopping-event");
+        sender.setDaemon(true);
+        sender.start();
         try {
-            eventIpcManager.sendNowSync(stoppingEvent(version(), jvmUptimeMillis(), reason));
-        } catch (RuntimeException e) {
-            LOG.warn("Unable to send the {} event", OPENNMS_STOPPING_UEI, e);
+            sender.join(timeoutMillis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
+        if (sender.isAlive()) {
+            LOG.warn("The {} event was not stored within {} ms; continuing the shutdown without it", OPENNMS_STOPPING_UEI, timeoutMillis);
+            return false;
+        }
+        return true;
     }
 
     private static String version() {

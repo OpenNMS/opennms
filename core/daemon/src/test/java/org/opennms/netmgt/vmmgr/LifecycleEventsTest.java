@@ -22,8 +22,13 @@
 package org.opennms.netmgt.vmmgr;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.opennms.netmgt.events.api.EventConstants.OPENNMS_STARTED_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.OPENNMS_STOPPING_UEI;
@@ -32,10 +37,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.sql.DataSource;
 
 import org.junit.Test;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 
 public class LifecycleEventsTest {
@@ -78,6 +86,30 @@ public class LifecycleEventsTest {
         assertEquals(OPENNMS_STOPPING_UEI, event.getUei());
         assertEquals("3600", parm(event, LifecycleEvents.PARM_UPTIME_SECONDS));
         assertEquals(LifecycleEvents.REASON_SIGNAL, parm(event, LifecycleEvents.PARM_REASON));
+    }
+
+    @Test
+    public void stoppingEventIsSentSynchronously() {
+        final EventIpcManager eventIpcManager = mock(EventIpcManager.class);
+        final Event event = LifecycleEvents.stoppingEvent("37.0.0", 1_000, LifecycleEvents.REASON_SIGNAL);
+
+        assertTrue(LifecycleEvents.sendStopping(eventIpcManager, event, 5_000));
+        verify(eventIpcManager).sendNowSync(event);
+    }
+
+    @Test(timeout = 10_000)
+    public void aBlockedStoppingEventDoesNotHoldUpTheShutdown() {
+        final CountDownLatch release = new CountDownLatch(1);
+        final EventIpcManager eventIpcManager = mock(EventIpcManager.class);
+        doAnswer(invocation -> release.await(1, TimeUnit.MINUTES)).when(eventIpcManager).sendNowSync(any(Event.class));
+        try {
+            final long start = System.nanoTime();
+            assertFalse(LifecycleEvents.sendStopping(eventIpcManager,
+                    LifecycleEvents.stoppingEvent("37.0.0", 1_000, LifecycleEvents.REASON_SIGNAL), 200));
+            assertTrue(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start) < 5_000);
+        } finally {
+            release.countDown();
+        }
     }
 
     private static String parm(final Event event, final String name) {
