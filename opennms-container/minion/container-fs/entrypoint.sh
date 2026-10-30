@@ -21,6 +21,7 @@ CACERTS="${MINION_HOME}/cacerts"
 FEATURES_BOOT_DIR="${MINION_HOME}/etc/featuresBoot.d"
 FEATURES_BOOT_TEMPLATES_DIR="${FEATURES_BOOT_DIR}/templates"
 TELEMETRY_TEMPLATES_DIR="${MINION_HOME}/etc/telemetry-templates"
+LEGACY_CONFIG_FILE="${MINION_HOME}/minion-config.yaml"
 export JAVA_OPTS="${JAVA_OPTS} -Xms${JAVA_MIN_MEM:-2g} -Xmx${JAVA_MAX_MEM:-2g}"
 
 # Prometheus JMX Exporter Configuration
@@ -34,7 +35,7 @@ export JAVA_OPTS="${JAVA_OPTS} -Xms${JAVA_MIN_MEM:-2g} -Xmx${JAVA_MAX_MEM:-2g}"
 #
 # Default behavior:
 # - Configuration is managed via environment variables, which can be set in the Dockerfile, via docker run -e, or in a docker-compose file.
-# - Template uses key/values from /java/agent/prom-jmx-exporter
+# - The default exporter configuration is /opt/prom-jmx-exporter/config.yaml; mount your own file and point PROM_JMX_EXPORTER_CONFIG at it to customize it.
 PROM_JMX_EXPORTER_ENABLED="${PROM_JMX_EXPORTER_ENABLED:-false}" # required
 PROM_JMX_EXPORTER_JAR="${PROM_JMX_EXPORTER_JAR:-/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar}"
 PROM_JMX_EXPORTER_PORT="${PROM_JMX_EXPORTER_PORT:-9299}"
@@ -233,6 +234,16 @@ initConfig() {
     fi
 }
 
+checkLegacyConfig() {
+  # minion-config.yaml is no longer read; refuse to start rather than silently
+  # ignoring a configuration the user still expects to be applied.
+  if [ -f "${LEGACY_CONFIG_FILE}" ]; then
+    echo "[Startup][ERROR] Found ${LEGACY_CONFIG_FILE}, which is no longer supported."
+    echo "[Startup][ERROR] Configure Minion through environment variables or etc overlays instead and remove the file."
+    exit ${E_INIT_CONFIG}
+  fi
+}
+
 applyOverlayConfig() {
   # Overlay etc specific config
   if [ -d "${MINION_OVERLAY_ETC}" ] && [ -n "$(ls -A ${MINION_OVERLAY_ETC})" ]; then
@@ -387,6 +398,7 @@ start() {
 # 1. Telemetry listener templates applied from env vars (JTI_LISTENER_ENABLED, NXOS_LISTENER_ENABLED, FLOWS_LISTENER_ENABLED)
 # 2. Config set via direct file overlay
 configure() {
+  checkLegacyConfig
   initConfig
   applyOpennmsPropertiesD
   applyTelemetryListenerTemplates
@@ -433,6 +445,7 @@ fi
 while getopts csfh flag; do
     case ${flag} in
         c)
+            checkLegacyConfig
             useEnvCredentials
             configure
             start

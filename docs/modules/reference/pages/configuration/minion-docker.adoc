@@ -21,9 +21,9 @@ For settings not covered by environment variables, you can overlay individual co
 [options="header, autowidth"]
 |===
 | Variable | Description | Default value
-| `MINION_ID`         | Unique identifier for this Minion instance. | `MINION-01`
+| `MINION_ID`         | Unique identifier for this Minion instance. | `00000000-0000-0000-0000-deadbeef0001`
 | `MINION_LOCATION`   | Location name associated with this Minion instance. | `MINION`
-| `OPENNMS_BROKER_URL` | ActiveMQ broker URL. | `failover:tcp://horizon:61616`
+| `OPENNMS_BROKER_URL` | ActiveMQ broker URL. | `tcp://127.0.0.1:61616`
 |===
 
 NOTE: You cannot supply credentials via environment variables without exposing them in `docker inspect` output and container logs.
@@ -33,10 +33,10 @@ To store credentials securely, initialize a keystore file using the `-s` flag an
 [options="header, autowidth"]
 |===
 | Variable | Description | Default value
-| `OPENNMS_HTTP_USER`   | Username for the OpenNMS HTTP API.       | `admin`
-| `OPENNMS_HTTP_PASS`   | Password for the OpenNMS HTTP API.       | `admin`
-| `OPENNMS_BROKER_USER` | Username for ActiveMQ authentication.    | `admin`
-| `OPENNMS_BROKER_PASS` | Password for ActiveMQ authentication.    | `admin`
+| `OPENNMS_HTTP_USER`   | Username for the OpenNMS HTTP API.       | `minion`
+| `OPENNMS_HTTP_PASS`   | Password for the OpenNMS HTTP API.       | `minion`
+| `OPENNMS_BROKER_USER` | Username for ActiveMQ authentication.    | `minion`
+| `OPENNMS_BROKER_PASS` | Password for ActiveMQ authentication.    | `minion`
 |===
 
 == IPC strategy
@@ -112,6 +112,28 @@ For full details on the JMX exporter and customizing its configuration file, see
 | `PROM_JMX_EXPORTER_CONFIG`  | Path to the exporter configuration file inside the container. | `/opt/prom-jmx-exporter/config.yaml`
 |===
 
+[[minion-docker-listeners]]
+== Listeners and network settings
+
+[options="header, autowidth"]
+|===
+| Variable | Description | Default value
+| `OPENNMS_INSTANCE_ID`                  | Instance ID used as prefix for queue and topic names. | `OpenNMS`
+| `MINION_SYSLOG_LISTEN_INTERFACE`       | Interface the Syslog listener binds to. | `0.0.0.0`
+| `MINION_SYSLOG_LISTEN_PORT`            | Port the Syslog listener binds to. | `1514`
+| `MINION_TRAPD_LISTEN_INTERFACE`        | Interface the SNMP trap listener binds to. | `0.0.0.0`
+| `MINION_TRAPD_LISTEN_PORT`             | Port the SNMP trap listener binds to. | `1162`
+| `MINION_TRAPD_USE_ADDRESS_FROM_VARBIND` | Use the agent address from the trap varbind instead of the packet source address. | `false`
+| `FLOWS_LISTENER_ENABLED`               | Set to `true` to enable the single-port flows listener. | `false`
+| `JTI_LISTENER_ENABLED`                 | Set to `true` to enable the Junos Telemetry Interface listener on port 50001/udp. | `false`
+| `NXOS_LISTENER_ENABLED`                | Set to `true` to enable the Cisco NX-OS telemetry listener on port 50002/udp. | `false`
+| `KARAF_SSH_HOST`, `KARAF_SSH_PORT`     | Address and port of the Karaf shell SSH server. | `0.0.0.0`, `8201`
+| `JETTY_HOST`, `JETTY_PORT`             | Address and port of the embedded web server. | `0.0.0.0`, `8181`
+| `KARAF_MGMT_RMI_REGISTRY_HOST`, `KARAF_MGMT_RMI_REGISTRY_PORT` | Address and port of the JMX RMI registry. | `0.0.0.0`, `1299`
+| `KARAF_MGMT_RMI_SERVER_HOST`, `KARAF_MGMT_RMI_SERVER_PORT` | Address and port of the JMX RMI server. | `0.0.0.0`, `45444`
+| `DOMINION_GRPC_HOST`, `DOMINION_GRPC_PORT`, `DOMINION_GRPC_CLIENT_SECRET` | Dominion gRPC endpoint and client secret, used when `DOMINION_SCV_ENABLED=true`. | `horizon`, `8990`, (empty)
+|===
+
 [[minion-etc-overlay]]
 == Directory conventions
 
@@ -120,4 +142,33 @@ For full details on the JMX exporter and customizing its configuration file, see
 | Mountpoint                | Description
 | `/opt/minion-etc-overlay` | Files copied into `$\{MINION_HOME}/etc/` at startup, after environment variable processing. Direct file overlays take precedence over the corresponding environment variable settings.
 | `/keystore`               | Directory for the encrypted keystore file initialized with the `-s` flag.
+|===
+
+[[minion-legacy-config-migration]]
+== Migrating from `minion-config.yaml`
+
+Earlier Minion images rendered configuration from a `$\{MINION_HOME}/minion-config.yaml` file.
+This file is no longer supported, and the container refuses to start if it is present.
+To migrate, move each setting to its environment variable or overlay file, then remove the file:
+
+[options="header, autowidth"]
+|===
+| `minion-config.yaml` key | Replacement
+| `broker-url`, `id`, `location` | `OPENNMS_BROKER_URL`, `MINION_ID`, `MINION_LOCATION`
+| `org.opennms.instance.id` | `OPENNMS_INSTANCE_ID`
+| `ipc.kafka.*` | `MINION_IPC=kafka` and `KAFKA_IPC_*` (see <<minion-docker-kafka>>)
+| `ipc.rpc.kafka.*`, `ipc.sink.kafka.*`, `ipc.twin.kafka.*` | No longer supported; use `KAFKA_IPC_*` for all Kafka communication
+| `ipc.grpc.*` | `MINION_IPC=grpc`, `IPC_GRPC_HOST`, `IPC_GRPC_PORT`; overlay `org.opennms.core.ipc.grpc.client.cfg` for other keys
+| `dominion.grpc.*` | `DOMINION_GRPC_HOST`, `DOMINION_GRPC_PORT`, `DOMINION_GRPC_CLIENT_SECRET`
+| `server-certs` | Overlay `minion-server-certs.env` with one certificate ID per line, and mount each certificate at `/opt/minion/server-certs/<id>`
+| `ipc.sink.offheap.*` | Overlay `org.opennms.core.ipc.sink.offheap.cfg`
+| `netmgt.syslog.*`, `netmgt.traps.*` | `MINION_SYSLOG_*` and `MINION_TRAPD_*` (see <<minion-docker-listeners>>); overlay `org.opennms.netmgt.syslog.cfg` or `org.opennms.netmgt.trapd.cfg` for other keys
+| `telemetry.flows.single-port-listener` | `FLOWS_LISTENER_ENABLED=true`; overlay `org.opennms.features.telemetry.listeners-single-port-flows.cfg` to change its parameters
+| `telemetry.flows.listeners.*` | `JTI_LISTENER_ENABLED`, `NXOS_LISTENER_ENABLED`, or overlay one `org.opennms.features.telemetry.listeners-<name>.cfg` file per listener
+| `system.properties.*` | Pass each property as `-D<name>=<value>` in `JAVA_OPTS`
+| `system.properties.JAEGER_*` | `JAEGER_ENABLED=true`; set `JAEGER_ENDPOINT` or `JAEGER_AGENT_HOST` as environment variables, and `JAEGER_SAMPLER_TYPE` and `JAEGER_SAMPLER_PARAM` as `-D` options in `JAVA_OPTS`
+| `scv.provider: dominion` | `DOMINION_SCV_ENABLED=true` and `DOMINION_GRPC_*`
+| `karaf.shell.*`, `karaf.management.*`, `jetty.web.*` | `KARAF_SSH_*`, `KARAF_MGMT_RMI_*`, `JETTY_*`
+| `process-env.java-opts` | `JAVA_OPTS`, `JAVA_MIN_MEM`, `JAVA_MAX_MEM`
+| `java.agent.prom-jmx-exporter.*` | Mount your own exporter configuration file and set `PROM_JMX_EXPORTER_CONFIG`
 |===
