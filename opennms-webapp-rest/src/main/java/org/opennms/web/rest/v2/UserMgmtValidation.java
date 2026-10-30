@@ -33,6 +33,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opennms.netmgt.config.UserMgmtJaxbMapper;
+import org.opennms.netmgt.model.usermgmt.ReservedNames;
 
 /**
  * Validation rules shared by the v2 user-management services: the user id and group name characters, the comments
@@ -52,7 +53,7 @@ final class UserMgmtValidation {
      * destination paths, and names that differ only in it look alike;</li>
      * <li>control and invisible characters ({@code \p{C}}): names that differ only in them look alike.</li>
      * </ul>
-     * Dot segments are rejected separately, in {@link #validateName}.
+     * The {@link ReservedNames} are rejected separately, in {@link #validateName}.
      */
     private static final Pattern INVALID_NAME = Pattern.compile("[&<>\"`':/\\\\%?#\\s\\p{Z}\\p{C}]");
 
@@ -79,8 +80,8 @@ final class UserMgmtValidation {
         if (INVALID_NAME.matcher(name).find()) {
             return "The " + label + " must not contain markup, whitespace, control or invisible characters, or the characters : / \\ % ? #";
         }
-        if (".".equals(name) || "..".equals(name)) {
-            return "The " + label + " must not be a dot segment.";
+        if (ReservedNames.isReserved(name)) {
+            return "The " + label + " \"" + name + "\" is reserved.";
         }
         return null;
     }

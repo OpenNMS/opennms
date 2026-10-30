@@ -1144,6 +1144,19 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testReservedNamesAreRefused() throws Exception {
+        committing(MIGRATED, ".", "..", "item", "available-roles", "available-categories");
+        createGroup(MIGRATED, g -> { });
+        for (final String name : new String[] { ".", "..", "item", "available-roles", "available-categories" }) {
+            final String message = "The group name \"" + name + "\" is reserved.";
+            assertEquals(message, exec(POST, "/groups", "{\"name\":\"" + name + "\"}", null, 400).getContentAsString());
+            assertEquals(message, exec(POST, "/groups/item/rename" + byName(MIGRATED), "{\"newName\":\"" + name + "\"}", null, 400).getContentAsString());
+            assertEquals(0, groupRowCount(name));
+        }
+        assertEquals(1, groupRowCount(MIGRATED));
+    }
+
+    @Test
     public void testLookAlikesOfReservedGroupNamesAreRefused() throws Exception {
         committing("admin", "ADMIN", "plain");
         for (final String name : new String[] { "admin", "ADMIN" }) {
@@ -1180,11 +1193,14 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    public void testQueryFormReachesLiteralNames() throws Exception {
-        committing("item", "item-2", "available-categories", "available-categories-2");
+    public void testQueryFormReachesReservedNames() throws Exception {
+        // groups stored before the names were reserved
+        committing("item", "item-2", "available-categories", "available-categories-2", ".", ".-2", "..", "..-2");
         createGroup("item", g -> g.setComments("An item"));
         createGroup("available-categories", g -> g.setComments("Some categories"));
-        for (final String name : new String[] { "item", "available-categories" }) {
+        createGroup(".", g -> g.setComments("A dot"));
+        createGroup("..", g -> g.setComments("Two dots"));
+        for (final String name : new String[] { "item", "available-categories", ".", ".." }) {
             final MockHttpServletResponse read = exec(GET, "/groups/item" + byName(name), null, null, 200);
             assertEquals(name, new JSONObject(read.getContentAsString()).getString("name"));
             exec(PUT, "/groups/item" + byName(name), "{\"comments\":\"Edited\"}", read.getHeader("ETag"), 200);

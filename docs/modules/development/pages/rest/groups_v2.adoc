@@ -163,7 +163,7 @@ A group name must not contain:
 * Whitespace.
 * Control or invisible characters.
 
-A group name must not be `.` or `..`.
+A group name must not be `.`, `..`, `item`, `available-roles` or `available-categories`: a create or rename to one of them returns `400` with the message `The group name "<name>" is reserved.`
 It is at most 256 characters long.
 The name `Admin` is reserved: a create or rename to a case variant of it (for example `admin`) returns `400` with the message `The group name "<name>" is reserved.`
 The rules apply to `name` on create and to `newName` on rename.
@@ -174,7 +174,7 @@ A violation returns `400`.
 == Names that a path cannot carry
 
 A group name stored before the rules above existed (for example `ops/east` from a migrated `groups.xml`) can contain `/`, `\` or `%`, which a URL path cannot carry reliably.
-A group whose name equals a literal path segment (`item` or `available-categories`) is also out of reach of the path form: `/groups/available-categories` is the list of categories, not that group.
+A group with one of the reserved names, which v1 and the JSP pages still accept, is also out of reach of the path form: a client resolves `.` and `..` away, and `/groups/available-categories` is the list of categories, not that group.
 Every per-group endpoint therefore has a query form, `item`, that takes the name in the `name` query parameter.
 URL-encode the value (`ops%2Feast`).
 The query form behaves exactly like the path form, with the same `If-Match` and `ETag` rules, bodies and status codes.
@@ -190,8 +190,7 @@ A missing or blank `name` returns `400`.
 | `DELETE /groups/{name}` | `DELETE /groups/item?name={name}`
 |===
 
-New group names with those characters are still refused on create and on rename, so renaming a group such as `ops/east` to a valid name is the way out of them.
-The names `item` and `available-categories` are valid, and can be created.
+New group names with those characters, and the reserved names, are still refused on create and on rename, so renaming a group such as `ops/east` to a valid name is the way out of them.
 
 [[group-text-rules]]
 == Comments

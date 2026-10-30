@@ -1152,6 +1152,19 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testReservedNamesAreRefused() throws Exception {
+        committing(MIGRATED, ".", "..", "item", "available-roles", "available-categories");
+        createUser(MIGRATED, u -> { });
+        for (final String name : new String[] { ".", "..", "item", "available-roles", "available-categories" }) {
+            final String message = "The userId \"" + name + "\" is reserved.";
+            assertEquals(message, exec(POST, "/users", "{\"userId\":\"" + name + "\",\"password\":\"x\"}", null, 400).getContentAsString());
+            assertEquals(message, exec(POST, "/users/item/rename" + byId(MIGRATED), "{\"newUserId\":\"" + name + "\"}", null, 400).getContentAsString());
+            assertEquals(0, rowCount("users", "username", name));
+        }
+        assertEquals(1, rowCount("users", "username", MIGRATED));
+    }
+
+    @Test
     public void testQueryFormProtectedNames() throws Exception {
         final boolean createdRtc = rowCount("users", "username", "rtc") == 0;
         if (createdRtc) {
@@ -1177,11 +1190,14 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    public void testQueryFormReachesLiteralNames() throws Exception {
-        committing("item", "item-2", "available-roles", "available-roles-2");
+    public void testQueryFormReachesReservedNames() throws Exception {
+        // users stored before the names were reserved
+        committing("item", "item-2", "available-roles", "available-roles-2", ".", ".-2", "..", "..-2");
         createUser("item", u -> u.setFullName("An item"));
         createUser("available-roles", u -> u.setFullName("Some roles"));
-        for (final String name : new String[] { "item", "available-roles" }) {
+        createUser(".", u -> u.setFullName("A dot"));
+        createUser("..", u -> u.setFullName("Two dots"));
+        for (final String name : new String[] { "item", "available-roles", ".", ".." }) {
             final MockHttpServletResponse read = exec(GET, "/users/item" + byId(name), null, null, 200);
             assertEquals(name, new JSONObject(read.getContentAsString()).getString("userId"));
             exec(PUT, "/users/item" + byId(name), "{\"fullName\":\"Edited\"}", read.getHeader("ETag"), 200);

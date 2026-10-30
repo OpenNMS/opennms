@@ -55,6 +55,17 @@ public class UserMgmtValidationTest {
     }
 
     @Test
+    public void testNameRejectsTheReservedNames() {
+        for (final String reserved : List.of(".", "..", "item", "available-roles", "available-categories")) {
+            assertEquals("The userId \"" + reserved + "\" is reserved.", UserMgmtValidation.validateName(reserved, "userId"));
+        }
+        // exact matches only, as the path match is
+        for (final String fine : List.of("...", "Item", "items", "available-roles-2", ".hidden")) {
+            assertNull("'" + fine + "' should be accepted", UserMgmtValidation.validateName(fine, "group name"));
+        }
+    }
+
+    @Test
     public void testNullAndBlankDutySchedulesAreRejected() {
         assertRejected("Duty schedules must not be blank.", Arrays.asList((String) null), null);
         assertRejected("Duty schedules must not be blank.", Arrays.asList("MoWeFr800-1700", " "), null);

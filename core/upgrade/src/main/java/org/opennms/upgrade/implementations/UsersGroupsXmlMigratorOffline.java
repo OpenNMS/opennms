@@ -62,6 +62,7 @@ import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.model.usermgmt.ContactType;
 import org.opennms.netmgt.model.usermgmt.OnCallSchedule;
+import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.netmgt.model.usermgmt.SecurityRoles;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
@@ -82,6 +83,9 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * values longer than their column. Names are matched exactly, without trimming, as OpenNMS matches them
  * today. The XSDs normally reject unknown types, but JaxbUtils reads a file without validation when it
  * cannot find the XSD.</p>
+ *
+ * <p>A user or group with one of the {@link ReservedNames} fails the task before anything is written: such an entry
+ * is not dropped, since group members, on-call roles and destination paths refer to it by name.</p>
  *
  * <p>The files stay in {@code etc}, because OpenNMS still reads them; copies go to {@code etc_archive}
  * before the data is written.</p>
@@ -177,6 +181,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
             final List<String> customRoles = readSecurityRoles(etcFile(SECURITY_ROLES_FILE_NAME));
             final Userinfo userinfo = read(Userinfo.class, etcFile(USERS_FILE_NAME));
             final Groupinfo groupinfo = read(Groupinfo.class, etcFile(GROUPS_FILE_NAME));
+            checkNoReservedNames(userinfo, groupinfo);
             // before the data, not in postExecute(): Upgrade marks the task as done before postExecute(),
             // so a failure there would never be retried, and after the data the next run copies nothing
             archive();
@@ -208,6 +213,29 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
             migration.logSummary();
         } catch (final SQLException | RuntimeException e) {
             throw new OnmsUpgradeException("Can't copy users and groups to the database: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Fails the task on a user or group with one of the {@link ReservedNames}: the admin renames it in the files, so
+     * nothing is dropped silently. The default-users seed adds no users while users.xml exists, so the next install
+     * copies the files.
+     */
+    private static void checkNoReservedNames(final Userinfo userinfo, final Groupinfo groupinfo) throws OnmsUpgradeException {
+        final List<String> found = new ArrayList<>();
+        if (userinfo != null) {
+            userinfo.getUsers().stream().map(User::getUserId).filter(ReservedNames::isReserved).distinct()
+                    .forEach(name -> found.add("the user '" + name + "'"));
+        }
+        if (groupinfo != null) {
+            groupinfo.getGroups().stream().map(Group::getName).filter(ReservedNames::isReserved).distinct()
+                    .forEach(name -> found.add("the group '" + name + "'"));
+        }
+        if (!found.isEmpty()) {
+            throw new OnmsUpgradeException("Nothing was copied: users and groups must not be named "
+                    + String.join(", ", ReservedNames.NAMES) + ", but the files have " + String.join(", ", found)
+                    + ". Rename them in users.xml and groups.xml, and where the files refer to them (group members, on-call roles, "
+                    + "destination paths in notifications.xml), then run the installer again.");
         }
     }
 

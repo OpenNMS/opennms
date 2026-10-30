@@ -29,9 +29,13 @@ describe('validateAdminName', () => {
     expect(validateAdminName('Müller', 'user-id')).toBeNull()
   })
 
-  it('rejects dot segments', () => {
-    expect(validateAdminName('.', 'user-id')).toContain('dot segment')
-    expect(validateAdminName('..', 'user-id')).toContain('dot segment')
+  it('rejects the reserved names, exactly', () => {
+    for (const name of ['.', '..', 'item', 'available-roles', 'available-categories']) {
+      expect(validateAdminName(name, 'user-id')).toBe(`The user-id "${name}" is reserved.`)
+    }
+    for (const name of ['...', 'Item', 'items', 'available-roles-2', '.hidden']) {
+      expect(validateAdminName(name, 'group name'), name).toBeNull()
+    }
   })
 
   it('names the field in the message', () => {
