@@ -208,6 +208,23 @@ describe('GroupEditorPanel.vue', () => {
       expect(store.createGroup).toHaveBeenCalledWith(expect.objectContaining({ name: 'NewGroup', categories: ['Servers', 'Switches'] }))
     })
 
+    it('offers and keeps a stored category that the list lacks', async () => {
+      await mountPanel({ name: 'Ops', users: [], categories: ['legacy', 'Routers'], version: 3 })
+
+      expect(categorySelect().props('options')).toEqual(['legacy', 'Routers', 'Servers', 'Switches'])
+      expect(categorySelect().props('modelValue')).toEqual(['legacy', 'Routers'])
+      await save().trigger('click')
+      await flushPromises()
+      expect(store.updateGroup.mock.calls[0][0].categories).toEqual(['legacy', 'Routers'])
+    })
+
+    it('still shows the stored categories when the list failed to load', async () => {
+      store.availableCategories = []
+      await mountPanel({ name: 'Ops', users: [], categories: ['Servers', 'Routers'], version: 3 })
+
+      expect(categorySelect().props('options')).toEqual(['Routers', 'Servers'])
+    })
+
     it('does not invent an empty category list for a group that came without one', async () => {
       await mountPanel({ name: 'Ops', users: [], version: 3 })
       await save().trigger('click')
@@ -245,6 +262,21 @@ describe('GroupEditorPanel.vue', () => {
       await flushPromises()
 
       expect(store.updateGroup.mock.calls[0][0].users).toEqual(['ana', 'jose'])
+    })
+
+    it('checks a newly typed multi-line comment, and sends it trimmed like the server stores it', async () => {
+      await mountPanel({ name: 'Ops', users: [], version: 1 })
+      const comments = wrapper.find('[data-test="group-comments-input"]')
+
+      await comments.setValue('first\n<b>second</b>')
+      expect(wrapper.find('#group-editor-comments-error').exists()).toBe(true)
+      expect(save().attributes('disabled')).toBeDefined()
+
+      await comments.setValue('  first\nsecond\n\nthird  ')
+      expect(wrapper.find('#group-editor-comments-error').exists()).toBe(false)
+      await save().trigger('click')
+      await flushPromises()
+      expect(store.updateGroup.mock.calls[0][0].comments).toBe('first\nsecond\n\nthird')
     })
 
     it('round-trips a multi-line comment unchanged', async () => {

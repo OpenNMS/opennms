@@ -159,7 +159,7 @@
               <OnmsMultiSelect
                 v-model="categories"
                 inputId="group-editor-categories"
-                :options="store.availableCategories"
+                :options="categoryOptions"
                 display="chip"
                 :showToggleAll="false"
                 filter
@@ -261,6 +261,19 @@ const nameProblem = computed(() => (isEditing.value ? null : validateAdminName(n
 const commentsProblem = computed(() =>
   comments.value.trim() === (props.group?.comments ?? '').trim() ? null : validateAdminComments(comments.value))
 
+// the order of the server's lists of categories
+const ignoringCase = (a: string, b: string) => a.localeCompare(b, undefined, { sensitivity: 'base' })
+
+// a stored category the list lacks (created after the list was loaded, or the list failed to load) is
+// still offered, so that it shows as chosen and is not dropped unseen
+const categoryOptions = computed(() => {
+  const missing = (props.group?.categories ?? []).filter(c => !store.availableCategories.includes(c))
+  if (!missing.length) {
+    return store.availableCategories
+  }
+  return [...store.availableCategories, ...missing].sort(ignoringCase)
+})
+
 // the checks that show a message on the Group tab; marks the tab, since Save is disabled from any tab
 const groupTabProblem = computed(() => !!(nameProblem.value || commentsProblem.value))
 
@@ -322,7 +335,7 @@ const save = async () => {
       dutySchedules: dutySchedules.value.map(s => s.trim()).filter(Boolean)
     }
     if (props.group?.categories !== undefined || categories.value.length > 0 || !props.group) {
-      fields.categories = [...categories.value].sort()
+      fields.categories = [...categories.value].sort(ignoringCase)
     }
     const result = await withSpinner(() => props.group
       ? store.updateGroup({ ...props.group, ...fields })
