@@ -168,6 +168,8 @@ applyOverlayConfig() {
 
 # Start opennms in foreground
 start() {
+  # karaf.clean.cache removes data/cache but not data/kar, so the deployer would skip the .kar files
+  ${OPENNMS_HOME}/bin/clean-kar-storage.sh ${OPENNMS_HOME} || true
   local OPENNMS_JAVA_OPTS="$("${OPENNMS_HOME}/bin/_module_opts.sh") \
   -Dorg.apache.jasper.compiler.disablejsr199=true
   -Dopennms.home=${OPENNMS_HOME}

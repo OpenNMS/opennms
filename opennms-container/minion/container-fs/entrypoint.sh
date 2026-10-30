@@ -205,6 +205,8 @@ applyOpennmsPropertiesD() {
 
 start() {
     export KARAF_EXEC="exec"
+    # karaf.clean.cache removes data/cache but not data/kar, so the deployer would skip the .kar files
+    ${MINION_HOME}/bin/clean-kar-storage.sh ${MINION_HOME} || true
     cd ${MINION_HOME}/bin
     exec ./karaf server
 }
