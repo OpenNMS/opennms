@@ -178,8 +178,8 @@ Every write response carries the collection's new `ETag`.
 | kind
 | No
 | What the entry is.
-`prefab`, a prefabricated graph drawn for one resource, is the only kind stored today and the default when omitted.
-`adhoc` is reserved for graphs from the ad-hoc graph builder and is rejected with `400 Bad Request` until it is implemented.
+`prefab`, a prefabricated graph drawn for one resource, is the default when omitted.
+`adhoc` is a graph from the custom performance graph builder, carried in `adhocState` and drawn by the web UI over the entry's timespan.
 
 | title
 | No
@@ -195,6 +195,15 @@ Not required when one of the legacy fields below is set.
 | Yes, for `prefab`
 | The prefabricated graph name, which is the `report.name` from `snmp-graph.properties.d`.
 The names available for a resource are listed by `GET /rest/graphs/for/\{resourceId}`.
+Not allowed on an `adhoc` graph.
+
+| adhocState
+| Yes, for `adhoc`
+| The query string of the builder's share link (everything after the `?`, without the `?`), which names the graph's sources, series styles and expressions.
+Percent-encoded, at most 8192 characters, and naming at least one source (`nf`, `rf`, `df`, `pn`, `pr`, `pd`, `xd`, `o` or `e`).
+It must not carry the link's time window (`range`, `start`, `end`, `fmt`): the entry's `timespan` sets the window the graph is drawn over, and the view page's timespan override applies to it like to any other graph.
+The server stores it unchanged and the `resolved` view passes it through; it never resolves the sources itself, so an `adhoc` graph is always `valid` there unless its timespan is unknown.
+Not allowed on a `prefab` graph, and `resourceId`, `graphtype` and the legacy address fields are not allowed on an `adhoc` one.
 
 | timespan
 | Yes
@@ -246,7 +255,21 @@ curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/graph-collections"
         "nodeId": null,
         "nodeSource": null,
         "domain": null,
-        "interfaceId": null
+        "interfaceId": null,
+        "adhocState": null
+      },
+      {
+        "kind": "adhoc",
+        "title": "Core CPU",
+        "resourceId": null,
+        "graphtype": null,
+        "timespan": "1_day",
+        "extlink": null,
+        "nodeId": null,
+        "nodeSource": null,
+        "domain": null,
+        "interfaceId": null,
+        "adhocState": "nf=Routers&rf=nodeSnmp&df=CpuRawUser&n=2&title=Core+CPU"
       }
     ]
   }

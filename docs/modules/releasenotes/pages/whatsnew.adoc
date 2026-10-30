@@ -314,6 +314,7 @@ The `Actiond` daemon and its configuration `etc/actiond-configuration.xml` have 
 
 The feature formerly labeled *KSC Reports* is now *Graph Collections* throughout the web UI and the documentation, and its pages have moved to the Vue UI under `ui/index.html#/graph-collections`.
 The list, view, editor and the *Add to Graph Collection* dialog on the resource graphs pages are all new; a collection can be created from a blank form, as a copy of another, from the on-the-fly collection of a node, or straight from the dialog when adding a graph.
+Graphs built in the custom performance graph builder can be added to a collection too, and are drawn there over the collection's timespan; the REST API carries them as graphs of kind `adhoc`.
 The global search category formerly named *KSC Report* is now *Graph Collection*.
 
 The legacy `KSC/*.jsp` pages and `KSC/*.htm` controllers have been removed.

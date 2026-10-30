@@ -42,6 +42,8 @@ public class GraphCollectionResolvedGraphDto {
     private long start;
     private long end;
     private String extlink;
+    /** The builder state of an adhoc graph, passed through for the client to draw; null on a prefab one. */
+    private String adhocState;
 
     public int getIndex() {
         return index;
@@ -145,5 +147,13 @@ public class GraphCollectionResolvedGraphDto {
 
     public void setExtlink(final String extlink) {
         this.extlink = extlink;
+    }
+
+    public String getAdhocState() {
+        return adhocState;
+    }
+
+    public void setAdhocState(final String adhocState) {
+        this.adhocState = adhocState;
     }
 }

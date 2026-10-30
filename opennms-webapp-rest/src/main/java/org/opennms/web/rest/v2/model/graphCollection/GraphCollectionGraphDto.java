@@ -24,14 +24,16 @@ package org.opennms.web.rest.v2.model.graphCollection;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 /**
- * One graph in a graph collection. kind says what the entry is: "prefab", the
- * only kind today, is a prefabricated graph name drawn for one resource over a
- * named timespan; "adhoc", reserved for graphs built in the ad-hoc graph builder,
- * is rejected until it is implemented. Omitting kind means "prefab".
+ * One graph in a graph collection. kind says what the entry is: "prefab" is a
+ * prefabricated graph name drawn for one resource over a named timespan; "adhoc"
+ * is a graph built in the ad-hoc graph builder, carried as the query string of
+ * the builder's share link in adhocState and drawn by the client over the entry's
+ * timespan. Omitting kind means "prefab".
  *
  * New prefab entries address the resource with resourceId; nodeId, nodeSource,
  * domain and interfaceId are the pre-resourceId form still found in older
- * configuration files and are carried through untouched.
+ * configuration files and are carried through untouched. An adhoc entry has
+ * none of these and no graphtype.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GraphCollectionGraphDto {
@@ -45,6 +47,7 @@ public class GraphCollectionGraphDto {
     private String nodeSource;
     private String domain;
     private String interfaceId;
+    private String adhocState;
 
     public String getKind() {
         return kind;
@@ -124,5 +127,13 @@ public class GraphCollectionGraphDto {
 
     public void setInterfaceId(final String interfaceId) {
         this.interfaceId = interfaceId;
+    }
+
+    public String getAdhocState() {
+        return adhocState;
+    }
+
+    public void setAdhocState(final String adhocState) {
+        this.adhocState = adhocState;
     }
 }

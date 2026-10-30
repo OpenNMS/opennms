@@ -27,6 +27,8 @@ Any user who is not read-only can create and edit collections.
 
 The editor sets the collection's title, how many graphs are drawn per row (`0` uses the `ksc.default.graphsPerLine` property from `opennms.properties`), and whether the view page offers the timespan and graph type overrides.
 *Add graph* opens a picker that walks from a node to one of its resources and to one of the graphs available for it; each entry also takes a title and a timespan.
+A collection can also hold graphs built in the custom performance graph builder: on the builder page, *Add to collection* stores the graph as you built it, and the collection draws it over its own timespan.
+The entry's title and timespan are edited in the collection editor; to change the graph itself, open it in the builder from the entry and add it again.
 Entries can be reordered and removed.
 
 If the collection was changed by someone else while you were editing it, saving offers to reload the stored version or to overwrite it.
