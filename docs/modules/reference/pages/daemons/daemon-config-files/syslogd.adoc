@@ -78,3 +78,6 @@ Comparing the two counts below can confirm that every syslog packet a Minion rec
 | packetsReceived
 | Syslog packets received by the {page-component-title} listener itself.
 |===
+
+`consumer.messagesReceived` on {page-component-title} adds up the messages from every Minion and from the {page-component-title} listener itself, so compare it with the sum of the `packetsReceived` counters.
+All of these counters start at zero when the process starts, so compare counts taken over the same interval, without a restart in between.

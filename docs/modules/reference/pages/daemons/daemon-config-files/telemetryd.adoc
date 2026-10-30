@@ -83,3 +83,6 @@ A single NetFlow or IPFIX packet usually holds several records.
 | Messages received from the Sink for a queue, counted individually rather than per batch.
 For flow protocols each message is one flow record, so compare it with the parser's `recordsDispatched`.
 |===
+
+`consumers.<queue>.messagesReceived` adds up the messages from every Minion that sends to that queue, and from listeners on {page-component-title} or Sentinel itself, so compare it with the sum of the per-Minion counters.
+All of these counters start at zero when the process starts, so compare counts taken over the same interval, without a restart in between.
