@@ -32,6 +32,10 @@
             <comments>A group with a single user</comments>
             <user>brozow</user>
         </group>
+        <group>
+            <name>EmptyGroup</name>
+            <comments>A group with no users</comments>
+        </group>
     </groups>
     <roles>
       <role name="oncall" supervisor="admin" description="oncall role" membership-group="All">           <schedule name="brozow" type="weekly">               <time day="sunday" begins="09:00:00" ends="17:00:00"/>
