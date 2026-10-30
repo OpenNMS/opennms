@@ -136,6 +136,12 @@ describe('userAdminService reads', () => {
     expect(await svc.getManagedUsers()).toEqual(expect.objectContaining({ success: false, message: UNAVAILABLE }))
   })
 
+  it('fails a user load that got an HTML error page with the default, not the page', async () => {
+    vi.mocked(v2.get).mockRejectedValue({ response: { status: 502, data: '<html><body><h2>HTTP ERROR 502</h2></body></html>', headers: { 'content-type': 'text/html' }}})
+
+    expect(await svc.getManagedUsers()).toEqual(expect.objectContaining({ success: false, message: 'Failed to load users.' }))
+  })
+
   it('fails a user load without a server text with a default', async () => {
     vi.mocked(v2.get).mockRejectedValue(new Error('Network Error'))
 

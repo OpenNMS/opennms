@@ -21,6 +21,7 @@
 ///
 
 import { isPathAddressable } from '@/lib/adminValidation'
+import { ifMatch } from './axiosInstances'
 
 export type AdminCollection = 'users' | 'groups'
 export type AdminItemAction = 'rename' | 'password'
@@ -53,3 +54,8 @@ export const adminItemUrl = (collection: AdminCollection, name: string, action?:
   }
   return { url: `/${collection}/item${suffix}`, params: { [QUERY_PARAM[collection]]: name }}
 }
+
+// The request config of a per-item write: the If-Match header, plus the query of the /item form when the
+// name needs it.
+export const adminItemConfig = (target: AdminItemTarget, version: number) =>
+  target.params ? { ...ifMatch(version), params: target.params } : ifMatch(version)

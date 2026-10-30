@@ -21,7 +21,7 @@
 ///
 import axios from 'axios'
 import { describe, expect, it } from 'vitest'
-import { adminItemUrl } from '@/services/adminItemUrl'
+import { adminItemConfig, adminItemUrl } from '@/services/adminItemUrl'
 
 // what the browser requests for a target: the path, plus the query axios builds from params
 const requested = (target: { url: string, params?: Record<string, string> }) => axios.getUri(target)
@@ -75,5 +75,13 @@ describe('adminItemUrl', () => {
   it('reserves each segment only for its own collection', () => {
     expect(adminItemUrl('groups', 'available-roles')).toEqual({ url: '/groups/available-roles' })
     expect(adminItemUrl('users', 'available-categories')).toEqual({ url: '/users/available-categories' })
+  })
+})
+
+describe('adminItemConfig', () => {
+  it('sends If-Match, plus the query of the /item form when the target has one', () => {
+    expect(adminItemConfig(adminItemUrl('users', 'jdoe'), 7)).toEqual({ headers: { 'If-Match': '"7"' }})
+    expect(adminItemConfig(adminItemUrl('users', 'DOMAIN\\jdoe'), 7))
+      .toEqual({ headers: { 'If-Match': '"7"' }, params: { userId: 'DOMAIN\\jdoe' }})
   })
 })

@@ -23,37 +23,28 @@
 import { adminWriteSuccess, AdminWriteResult } from '@/types/adminWrite'
 import { ManagedUser, ManagedUserCreate } from '@/types/userAdmin'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
-import { AdminItemTarget, adminItemUrl } from './adminItemUrl'
-import { ifMatch, v2 } from './axiosInstances'
+import { adminItemConfig, adminItemUrl } from './adminItemUrl'
+import { v2 } from './axiosInstances'
+import { serverMessage } from './serverMessage'
 
 // Reads return a ValidationResultWithPayload and writes an AdminWriteResult; the
 // component that started the action shows any feedback.
 const endpoint = '/users'
-
-// the server's plain-text reason for a rejected request, else the fallback
-const errorMessage = (err: any, fallback: string): string => {
-  const detail = err?.response?.data
-  return typeof detail === 'string' && detail ? detail : fallback
-}
 
 // A 412 is reported by flag only; the store words the stale message once the list has been reloaded.
 const writeError = (err: any, fallback: string): AdminWriteResult => {
   if (err?.response?.status === 412) {
     return { success: false, message: '', stale: true }
   }
-  return { success: false, message: errorMessage(err, fallback), stale: false }
+  return { success: false, message: serverMessage(err, fallback), stale: false }
 }
-
-// the If-Match header, plus the query of the /item form when the name needs it
-const itemConfig = (target: AdminItemTarget, version: number) =>
-  target.params ? { ...ifMatch(version), params: target.params } : ifMatch(version)
 
 const getManagedUsers = async (): Promise<ValidationResultWithPayload<ManagedUser[]>> => {
   try {
     const resp = await v2.get(endpoint)
     return createResultWithPayload(true, '', Array.isArray(resp.data) ? resp.data : [])
   } catch (err: any) {
-    return createResultWithPayload<ManagedUser[]>(false, errorMessage(err, 'Failed to load users.'))
+    return createResultWithPayload<ManagedUser[]>(false, serverMessage(err, 'Failed to load users.'))
   }
 }
 
@@ -62,7 +53,7 @@ const getAvailableUserRoles = async (): Promise<ValidationResultWithPayload<stri
     const resp = await v2.get(`${endpoint}/available-roles`)
     return createResultWithPayload(true, '', Array.isArray(resp.data) ? resp.data : [])
   } catch (err: any) {
-    return createResultWithPayload<string[]>(false, errorMessage(err, 'Failed to load available roles.'))
+    return createResultWithPayload<string[]>(false, serverMessage(err, 'Failed to load available roles.'))
   }
 }
 
@@ -78,7 +69,7 @@ const createManagedUser = async (user: ManagedUserCreate): Promise<AdminWriteRes
 const updateManagedUser = async (user: ManagedUser): Promise<AdminWriteResult> => {
   try {
     const target = adminItemUrl('users', user.userId)
-    await v2.put(target.url, user, itemConfig(target, user.version))
+    await v2.put(target.url, user, adminItemConfig(target, user.version))
     return adminWriteSuccess()
   } catch (err: any) {
     return writeError(err, `Failed to update user '${user.userId}'.`)
@@ -88,7 +79,7 @@ const updateManagedUser = async (user: ManagedUser): Promise<AdminWriteResult> =
 const setManagedUserPassword = async (userId: string, password: string, version: number): Promise<AdminWriteResult> => {
   try {
     const target = adminItemUrl('users', userId, 'password')
-    await v2.put(target.url, { password }, itemConfig(target, version))
+    await v2.put(target.url, { password }, adminItemConfig(target, version))
     return adminWriteSuccess()
   } catch (err: any) {
     return writeError(err, `Failed to change the password for '${userId}'.`)
@@ -98,7 +89,7 @@ const setManagedUserPassword = async (userId: string, password: string, version:
 const renameManagedUser = async (userId: string, newUserId: string, version: number): Promise<AdminWriteResult> => {
   try {
     const target = adminItemUrl('users', userId, 'rename')
-    await v2.post(target.url, { newUserId }, itemConfig(target, version))
+    await v2.post(target.url, { newUserId }, adminItemConfig(target, version))
     return adminWriteSuccess()
   } catch (err: any) {
     return writeError(err, `Failed to rename user '${userId}'.`)
@@ -108,7 +99,7 @@ const renameManagedUser = async (userId: string, newUserId: string, version: num
 const deleteManagedUser = async (userId: string, version: number): Promise<AdminWriteResult> => {
   try {
     const target = adminItemUrl('users', userId)
-    await v2.delete(target.url, itemConfig(target, version))
+    await v2.delete(target.url, adminItemConfig(target, version))
     return adminWriteSuccess()
   } catch (err: any) {
     return writeError(err, `Failed to delete user '${userId}'.`)
