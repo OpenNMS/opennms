@@ -213,9 +213,9 @@ const toggleRowMenu = (event: Event, group: ManagedGroup) => {
 const confirmDelete = async () => {
   const group = groupToDelete.value
   if (group) {
-    const error = await withSpinner(() => store.deleteGroup(group.name, group.version))
+    const result = await withSpinner(() => store.deleteGroup(group.name, group.version))
     // no banner here: a failure, stale or not, is a snackbar; the confirmation closes either way
-    reportWrite(error, `Group '${group.name}' deleted.`, store.reloadError)
+    reportWrite(result, `Group '${group.name}' deleted.`)
   }
   showDeleteConfirmation.value = false
   groupToDelete.value = null

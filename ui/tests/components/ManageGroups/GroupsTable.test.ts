@@ -9,7 +9,6 @@ import GroupsTable from '@/components/ManageGroups/GroupsTable.vue'
 const store = vi.hoisted(() => ({
   openGroupEditor: vi.fn(),
   deleteGroup: vi.fn(),
-  reloadError: '',
   groups: [] as unknown[]
 }))
 

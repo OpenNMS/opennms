@@ -3,6 +3,7 @@ import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { adminWriteSuccess } from '@/types/adminWrite'
 
 vi.mock('@/stores/groupAdminStore')
 
@@ -23,8 +24,8 @@ describe('GroupEditorPanel.vue', () => {
     store = {
       memberCandidates: ['admin', 'jose', 'ana', 'zed'],
       availableCategories: ['Routers', 'Servers', 'Switches'],
-      createGroup: vi.fn().mockResolvedValue(null),
-      updateGroup: vi.fn().mockResolvedValue(null)
+      createGroup: vi.fn().mockResolvedValue(adminWriteSuccess()),
+      updateGroup: vi.fn().mockResolvedValue(adminWriteSuccess())
     }
     vi.mocked(useGroupAdminStore).mockReturnValue(store)
   })

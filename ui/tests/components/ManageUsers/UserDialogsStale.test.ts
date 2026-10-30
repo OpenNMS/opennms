@@ -9,6 +9,7 @@ import UserPasswordDialog from '@/components/ManageUsers/UserPasswordDialog.vue'
 import UserRenameDialog from '@/components/ManageUsers/UserRenameDialog.vue'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { STALE_USER_MESSAGE } from '@/types/userAdmin'
+import { adminWriteSuccess } from '@/types/adminWrite'
 
 const store = vi.hoisted(() => ({
   updateUser: vi.fn(),
@@ -17,7 +18,6 @@ const store = vi.hoisted(() => ({
   renameUser: vi.fn(),
   setPassword: vi.fn(),
   deleteUser: vi.fn(),
-  reloadError: '',
   users: [] as unknown[],
   availableRoles: [] as string[]
 }))
@@ -59,11 +59,10 @@ const cases = [
 describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest, fill, successMsg) => {
   beforeEach(() => {
     vi.clearAllMocks()
-    store.reloadError = ''
   })
 
   it('closes when the save is rejected as stale, and shows the stale text once', async () => {
-    storeCall.mockResolvedValue({ message: STALE_USER_MESSAGE, stale: true })
+    storeCall.mockResolvedValue({ success: false, message: STALE_USER_MESSAGE, stale: true })
     const wrapper = mountDialog()
 
     await (wrapper.vm as unknown as DialogVm).save()
@@ -74,7 +73,7 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest, fill, suc
   })
 
   it('stays open and shows other errors in the dialog only', async () => {
-    storeCall.mockResolvedValue({ message: 'Something else went wrong', stale: false })
+    storeCall.mockResolvedValue({ success: false, message: 'Something else went wrong', stale: false })
     const wrapper = mountDialog()
 
     await (wrapper.vm as unknown as DialogVm).save()
@@ -89,7 +88,7 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest, fill, suc
   })
 
   it('closes on success and says so, with the spinner around the save', async () => {
-    storeCall.mockResolvedValue(null)
+    storeCall.mockResolvedValue(adminWriteSuccess())
     const wrapper = mountDialog()
     fill(wrapper.vm as unknown as DialogVm)
 
@@ -103,10 +102,7 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest, fill, suc
   })
 
   it('on success whose reload failed, says both', async () => {
-    storeCall.mockImplementation(async () => {
-      store.reloadError = 'Failed to load users.'
-      return null
-    })
+    storeCall.mockResolvedValue({ ...adminWriteSuccess(), errors: ['Failed to load users.'] })
     const wrapper = mountDialog()
     fill(wrapper.vm as unknown as DialogVm)
 
@@ -116,7 +112,7 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest, fill, suc
   })
 
   it('does not close on the stale wording without the flag', async () => {
-    storeCall.mockResolvedValue({ message: STALE_USER_MESSAGE, stale: false })
+    storeCall.mockResolvedValue({ success: false, message: STALE_USER_MESSAGE, stale: false })
     const wrapper = mountDialog()
 
     await (wrapper.vm as unknown as DialogVm).save()
@@ -130,14 +126,13 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest, fill, suc
 describe('UserEditorPanel save results', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    store.reloadError = ''
   })
 
   const mountPanel = () => mount(UserEditorPanel, { props: { user }, global: { plugins: [PrimeVue] }})
   const save = (wrapper: { vm: unknown }) => (wrapper.vm as { save: () => Promise<void> }).save()
 
   it('closes when the save is rejected as stale, and shows the stale text once', async () => {
-    store.updateUser.mockResolvedValue({ message: STALE_USER_MESSAGE, stale: true })
+    store.updateUser.mockResolvedValue({ success: false, message: STALE_USER_MESSAGE, stale: true })
     const wrapper = mountPanel()
     await save(wrapper)
 
@@ -147,7 +142,7 @@ describe('UserEditorPanel save results', () => {
   })
 
   it('stays open and shows other errors in the panel only', async () => {
-    store.updateUser.mockResolvedValue({ message: 'Something else went wrong', stale: false })
+    store.updateUser.mockResolvedValue({ success: false, message: 'Something else went wrong', stale: false })
     const wrapper = mountPanel()
     await save(wrapper)
     await nextTick()
@@ -158,7 +153,7 @@ describe('UserEditorPanel save results', () => {
   })
 
   it('does not close on the stale wording without the flag', async () => {
-    store.updateUser.mockResolvedValue({ message: STALE_USER_MESSAGE, stale: false })
+    store.updateUser.mockResolvedValue({ success: false, message: STALE_USER_MESSAGE, stale: false })
     const wrapper = mountPanel()
     await save(wrapper)
 
@@ -167,7 +162,7 @@ describe('UserEditorPanel save results', () => {
   })
 
   it('closes on an update and says so, with the spinner around the save', async () => {
-    store.updateUser.mockResolvedValue(null)
+    store.updateUser.mockResolvedValue(adminWriteSuccess())
     const wrapper = mountPanel()
     await save(wrapper)
 
@@ -178,7 +173,7 @@ describe('UserEditorPanel save results', () => {
   })
 
   it('closes on a create and says so', async () => {
-    store.createUser.mockResolvedValue(null)
+    store.createUser.mockResolvedValue(adminWriteSuccess())
     const wrapper = mount(UserEditorPanel, { props: { user: null }, global: { plugins: [PrimeVue] }})
     const vm = wrapper.vm as unknown as { form: { userId: string, password: string }, save: () => Promise<void> }
     vm.form.userId = 'jose'
@@ -190,10 +185,7 @@ describe('UserEditorPanel save results', () => {
   })
 
   it('on success whose reload failed, says both', async () => {
-    store.updateUser.mockImplementation(async () => {
-      store.reloadError = 'Failed to load users.'
-      return null
-    })
+    store.updateUser.mockResolvedValue({ ...adminWriteSuccess(), errors: ['Failed to load users.'] })
     const wrapper = mountPanel()
     await save(wrapper)
 
@@ -204,7 +196,6 @@ describe('UserEditorPanel save results', () => {
 describe('UsersTable delete results', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    store.reloadError = ''
   })
 
   const deleteFromTable = async () => {
@@ -216,7 +207,7 @@ describe('UsersTable delete results', () => {
   }
 
   it('says the user was deleted', async () => {
-    store.deleteUser.mockResolvedValue(null)
+    store.deleteUser.mockResolvedValue(adminWriteSuccess())
     const vm = await deleteFromTable()
 
     expect(vm.showDeleteConfirmation).toBe(false)
@@ -226,7 +217,7 @@ describe('UsersTable delete results', () => {
   })
 
   it('shows a failed delete with the server text', async () => {
-    store.deleteUser.mockResolvedValue({ message: 'User \'jdoe\' cannot be deleted.', stale: false })
+    store.deleteUser.mockResolvedValue({ success: false, message: 'User \'jdoe\' cannot be deleted.', stale: false })
     const vm = await deleteFromTable()
 
     expect(vm.showDeleteConfirmation).toBe(false)
@@ -234,17 +225,14 @@ describe('UsersTable delete results', () => {
   })
 
   it('shows a stale delete with the stale text once', async () => {
-    store.deleteUser.mockResolvedValue({ message: STALE_USER_MESSAGE, stale: true })
+    store.deleteUser.mockResolvedValue({ success: false, message: STALE_USER_MESSAGE, stale: true })
     await deleteFromTable()
 
     expect(showSnackBar.mock.calls).toEqual([[{ msg: STALE_USER_MESSAGE, error: true }]])
   })
 
   it('on success whose reload failed, says both', async () => {
-    store.deleteUser.mockImplementation(async () => {
-      store.reloadError = 'Failed to load users.'
-      return null
-    })
+    store.deleteUser.mockResolvedValue({ ...adminWriteSuccess(), errors: ['Failed to load users.'] })
     await deleteFromTable()
 
     expect(showSnackBar.mock.calls).toEqual([[{ msg: 'User \'jdoe\' deleted.' }], [{ msg: 'Failed to load users.', error: true }]])
@@ -255,10 +243,10 @@ describe('UsersTable delete results', () => {
 describe('version reaches the store', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    store.updateUser.mockResolvedValue(null)
-    store.renameUser.mockResolvedValue(null)
-    store.setPassword.mockResolvedValue(null)
-    store.deleteUser.mockResolvedValue(null)
+    store.updateUser.mockResolvedValue(adminWriteSuccess())
+    store.renameUser.mockResolvedValue(adminWriteSuccess())
+    store.setPassword.mockResolvedValue(adminWriteSuccess())
+    store.deleteUser.mockResolvedValue(adminWriteSuccess())
   })
 
   const save = (wrapper: { vm: unknown }) => (wrapper.vm as { save: () => Promise<void> }).save()
@@ -308,9 +296,9 @@ describe('a rename followed by an edit', () => {
     store.renameUser.mockImplementation(async () => {
       // what the real store does on success: reload the list
       live.users = [{ userId: 'jsmith', fullName: 'J Doe', version: 4 }]
-      return null
+      return adminWriteSuccess()
     })
-    store.updateUser.mockResolvedValue(null)
+    store.updateUser.mockResolvedValue(adminWriteSuccess())
     const table = mount(UsersTable, { global: { plugins: [PrimeVue], directives: { tooltip: {}}}})
 
     // rename through the row's menu
@@ -344,7 +332,7 @@ describe('a rename followed by an edit', () => {
 describe('UserEditorPanel comment limit', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    store.updateUser.mockResolvedValue(null)
+    store.updateUser.mockResolvedValue(adminWriteSuccess())
   })
 
   const mountEditor = (userComments?: string) =>

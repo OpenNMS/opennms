@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
-import { AdminEditMode } from '@/types/adminWrite'
+import { AdminEditMode, adminWriteSuccess } from '@/types/adminWrite'
 import API from '@/services'
 import { ManagedGroup, ManagedGroupCreate, STALE_GROUP_MESSAGE, STALE_GROUP_RELOAD_FAILED_MESSAGE } from '@/types/groupAdmin'
 import { createResultWithPayload } from '@/types/validation'
@@ -106,29 +106,29 @@ describe('useGroupAdminStore', () => {
   })
 
   it('createGroup should refresh on success and preserve member order in the payload', async () => {
-    vi.mocked(API.createManagedGroup).mockResolvedValue(null)
+    vi.mocked(API.createManagedGroup).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedGroups).mockResolvedValue(loaded(mockGroups))
 
     const group: ManagedGroupCreate = { name: 'NOC', users: ['second', 'first'] }
     const ok = await store.createGroup(group)
 
-    expect(ok).toBe(null)
+    expect(ok).toEqual(adminWriteSuccess())
     expect(API.createManagedGroup).toHaveBeenCalledWith(group)
     expect(vi.mocked(API.createManagedGroup).mock.calls[0][0].users).toEqual(['second', 'first'])
     expect(API.getManagedGroups).toHaveBeenCalledTimes(1)
   })
 
   it('createGroup should not refresh on failure', async () => {
-    vi.mocked(API.createManagedGroup).mockResolvedValue({ message: 'it failed', stale: false })
+    vi.mocked(API.createManagedGroup).mockResolvedValue({ success: false, message: 'it failed', stale: false })
 
     const ok = await store.createGroup({ name: 'NOC' })
 
-    expect(ok).toEqual({ message: 'it failed', stale: false })
+    expect(ok).toEqual({ success: false, message: 'it failed', stale: false })
     expect(API.getManagedGroups).not.toHaveBeenCalled()
   })
 
   it('updateGroup should refresh on success', async () => {
-    vi.mocked(API.updateManagedGroup).mockResolvedValue(null)
+    vi.mocked(API.updateManagedGroup).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedGroups).mockResolvedValue(loaded(mockGroups))
 
     await store.updateGroup(mockGroups[1])
@@ -138,7 +138,7 @@ describe('useGroupAdminStore', () => {
   })
 
   it('renameGroup should pass old and new names and refresh', async () => {
-    vi.mocked(API.renameManagedGroup).mockResolvedValue(null)
+    vi.mocked(API.renameManagedGroup).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedGroups).mockResolvedValue(loaded(mockGroups))
 
     await store.renameGroup('NOC', 'NOC2', 1)
@@ -148,7 +148,7 @@ describe('useGroupAdminStore', () => {
   })
 
   it('deleteGroup should refresh on success', async () => {
-    vi.mocked(API.deleteManagedGroup).mockResolvedValue(null)
+    vi.mocked(API.deleteManagedGroup).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedGroups).mockResolvedValue(loaded([mockGroups[0]]))
 
     await store.deleteGroup('NOC', 1)
@@ -158,8 +158,8 @@ describe('useGroupAdminStore', () => {
 
 
   it('passes the version through rename and delete', async () => {
-    vi.mocked(API.renameManagedGroup).mockResolvedValue(null)
-    vi.mocked(API.deleteManagedGroup).mockResolvedValue(null)
+    vi.mocked(API.renameManagedGroup).mockResolvedValue(adminWriteSuccess())
+    vi.mocked(API.deleteManagedGroup).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedGroups).mockResolvedValue(loaded(mockGroups))
 
     await store.renameGroup('NOC', 'NOC2', 4)
@@ -169,58 +169,56 @@ describe('useGroupAdminStore', () => {
     expect(API.deleteManagedGroup).toHaveBeenCalledWith('NOC', 4)
   })
 
-  it('a write whose reload fails still succeeds, and reports the reload in reloadError', async () => {
-    vi.mocked(API.updateManagedGroup).mockResolvedValue(null)
+  it('a write whose reload fails still succeeds, and reports the reload in errors', async () => {
+    vi.mocked(API.updateManagedGroup).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedGroups).mockResolvedValue(loaded(mockGroups))
-    expect(await store.updateGroup(mockGroups[1])).toBe(null)
-    expect(store.reloadError).toBe('')
+    expect(await store.updateGroup(mockGroups[1])).toEqual(adminWriteSuccess())
 
     vi.mocked(API.getManagedGroups).mockResolvedValue(failed(UNAVAILABLE))
-    vi.mocked(API.renameManagedGroup).mockResolvedValue(null)
-    expect(await store.renameGroup('NOC', 'NOC2', 2)).toBe(null)
-    expect(store.reloadError).toBe(UNAVAILABLE)
+    vi.mocked(API.renameManagedGroup).mockResolvedValue(adminWriteSuccess())
+    expect(await store.renameGroup('NOC', 'NOC2', 2)).toEqual({ ...adminWriteSuccess(), errors: [UNAVAILABLE] })
 
-    vi.mocked(API.deleteManagedGroup).mockResolvedValue({ message: 'Failed to delete group \'x\'.', stale: false })
-    await store.deleteGroup('x', 1)
-    expect(store.reloadError).toBe('')
+    // a failed write does not reload, so it carries no reload error
+    vi.mocked(API.deleteManagedGroup).mockResolvedValue({ success: false, message: 'Failed to delete group \'x\'.', stale: false })
+    expect(await store.deleteGroup('x', 1)).toEqual({ success: false, message: 'Failed to delete group \'x\'.', stale: false })
     expect(showSnackBar).not.toHaveBeenCalled()
   })
 
   it('on a stale write reloads the list, then reports the stale message', async () => {
-    vi.mocked(API.updateManagedGroup).mockResolvedValue({ message: '', stale: true })
+    vi.mocked(API.updateManagedGroup).mockResolvedValue({ success: false, message: '', stale: true })
     vi.mocked(API.getManagedGroups).mockResolvedValue(loaded(mockGroups))
 
     const error = await store.updateGroup(mockGroups[1])
 
-    expect(error).toEqual({ message: STALE_GROUP_MESSAGE, stale: true })
+    expect(error).toEqual({ success: false, message: STALE_GROUP_MESSAGE, stale: true })
     expect(API.getManagedGroups).toHaveBeenCalledTimes(1)
     expect(store.groups).toEqual(mockGroups)
 
-    vi.mocked(API.renameManagedGroup).mockResolvedValue({ message: '', stale: true })
+    vi.mocked(API.renameManagedGroup).mockResolvedValue({ success: false, message: '', stale: true })
     expect((await store.renameGroup('NOC', 'y', 1))?.stale).toBe(true)
-    vi.mocked(API.renameManagedGroup).mockResolvedValue({ message: '', stale: true })
+    vi.mocked(API.renameManagedGroup).mockResolvedValue({ success: false, message: '', stale: true })
     expect((await store.renameGroup('NOC', 'x', 1))?.stale).toBe(true)
-    vi.mocked(API.deleteManagedGroup).mockResolvedValue({ message: '', stale: true })
+    vi.mocked(API.deleteManagedGroup).mockResolvedValue({ success: false, message: '', stale: true })
     expect((await store.deleteGroup('NOC', 1))?.stale).toBe(true)
     expect(API.getManagedGroups).toHaveBeenCalledTimes(4)
     expect(showSnackBar).not.toHaveBeenCalled()
   })
 
   it('on a stale write whose reload fails, says the list could not be reloaded', async () => {
-    vi.mocked(API.deleteManagedGroup).mockResolvedValue({ message: '', stale: true })
+    vi.mocked(API.deleteManagedGroup).mockResolvedValue({ success: false, message: '', stale: true })
     vi.mocked(API.getManagedGroups).mockResolvedValue(failed('Failed to load groups.'))
 
     const error = await store.deleteGroup('NOC', 1)
 
-    expect(error).toEqual({ message: STALE_GROUP_RELOAD_FAILED_MESSAGE, stale: true })
+    expect(error).toEqual({ success: false, message: STALE_GROUP_RELOAD_FAILED_MESSAGE, stale: true })
     expect(showSnackBar).not.toHaveBeenCalled()
     expect(STALE_GROUP_RELOAD_FAILED_MESSAGE).not.toContain('has been reloaded')
   })
 
   it('on 409 returns the server message without reloading', async () => {
-    vi.mocked(API.renameManagedGroup).mockResolvedValue({ message: 'Group \'x\' already exists.', stale: false })
+    vi.mocked(API.renameManagedGroup).mockResolvedValue({ success: false, message: 'Group \'x\' already exists.', stale: false })
 
-    expect(await store.renameGroup('NOC', 'x', 1)).toEqual({ message: 'Group \'x\' already exists.', stale: false })
+    expect(await store.renameGroup('NOC', 'x', 1)).toEqual({ success: false, message: 'Group \'x\' already exists.', stale: false })
     expect(API.getManagedGroups).not.toHaveBeenCalled()
   })
 

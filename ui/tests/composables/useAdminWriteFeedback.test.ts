@@ -21,6 +21,7 @@
 ///
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
+import { adminWriteSuccess } from '@/types/adminWrite'
 
 const showSnackBar = vi.hoisted(() => vi.fn())
 vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
@@ -37,7 +38,7 @@ describe('useAdminWriteFeedback', () => {
   })
 
   it('on success shows the success message, closes and returns true', () => {
-    expect(reportWrite(null, 'User \'jdoe\' updated.', '', { close, banner })).toBe(true)
+    expect(reportWrite(adminWriteSuccess(), 'User \'jdoe\' updated.', { close, banner })).toBe(true)
 
     expect(showSnackBar.mock.calls).toEqual([[{ msg: 'User \'jdoe\' updated.' }]])
     expect(close).toHaveBeenCalledTimes(1)
@@ -45,15 +46,15 @@ describe('useAdminWriteFeedback', () => {
   })
 
   it('on success whose reload failed shows the success message, then the reload error', () => {
-    reportWrite(null, 'User \'jdoe\' updated.', 'Failed to load users.', { close, banner })
+    reportWrite({ ...adminWriteSuccess(), errors: ['Failed to load users.'] }, 'User \'jdoe\' updated.', { close, banner })
 
     expect(showSnackBar.mock.calls).toEqual([[{ msg: 'User \'jdoe\' updated.' }], [{ msg: 'Failed to load users.', error: true }]])
     expect(close).toHaveBeenCalledTimes(1)
   })
 
   it('on a stale write shows the stale text once, closes and returns false', () => {
-    // a reload error belongs to a successful write only
-    expect(reportWrite({ message: STALE, stale: true }, 'User \'jdoe\' updated.', 'Failed to load users.', { close, banner })).toBe(false)
+    // follow-up errors belong to a successful write only
+    expect(reportWrite({ success: false, message: STALE, stale: true, errors: ['Failed to load users.'] }, 'User \'jdoe\' updated.', { close, banner })).toBe(false)
 
     expect(showSnackBar.mock.calls).toEqual([[{ msg: STALE, error: true }]])
     expect(close).toHaveBeenCalledTimes(1)
@@ -61,7 +62,7 @@ describe('useAdminWriteFeedback', () => {
   })
 
   it('on another error shows it in the banner only, stays open and returns false', () => {
-    expect(reportWrite({ message: 'User \'x\' already exists.', stale: false }, 'User \'jdoe\' renamed to \'x\'.', '', { close, banner })).toBe(false)
+    expect(reportWrite({ success: false, message: 'User \'x\' already exists.', stale: false }, 'User \'jdoe\' renamed to \'x\'.', { close, banner })).toBe(false)
 
     expect(banner).toHaveBeenCalledWith('User \'x\' already exists.')
     expect(showSnackBar).not.toHaveBeenCalled()
@@ -69,14 +70,14 @@ describe('useAdminWriteFeedback', () => {
   })
 
   it('without a banner shows another error as a snackbar', () => {
-    reportWrite({ message: 'User \'jdoe\' cannot be deleted.', stale: false }, 'User \'jdoe\' deleted.', '')
+    reportWrite({ success: false, message: 'User \'jdoe\' cannot be deleted.', stale: false }, 'User \'jdoe\' deleted.')
 
     expect(showSnackBar.mock.calls).toEqual([[{ msg: 'User \'jdoe\' cannot be deleted.', error: true }]])
   })
 
   it('without a close still reports success and a stale write', () => {
-    reportWrite(null, 'User \'jdoe\' deleted.', '')
-    reportWrite({ message: STALE, stale: true }, 'User \'jdoe\' deleted.', '')
+    reportWrite(adminWriteSuccess(), 'User \'jdoe\' deleted.')
+    reportWrite({ success: false, message: STALE, stale: true }, 'User \'jdoe\' deleted.')
 
     expect(showSnackBar.mock.calls).toEqual([[{ msg: 'User \'jdoe\' deleted.' }], [{ msg: STALE, error: true }]])
   })

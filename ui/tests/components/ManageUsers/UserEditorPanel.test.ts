@@ -4,6 +4,7 @@ import { OnmsSelect } from '@opennms/onms-ui'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { adminWriteSuccess } from '@/types/adminWrite'
 
 vi.mock('@/stores/userAdminStore')
 
@@ -28,8 +29,8 @@ describe('UserEditorPanel.vue', () => {
     vi.clearAllMocks()
     store = {
       availableRoles: ['ROLE_USER', 'ROLE_ADMIN'],
-      createUser: vi.fn().mockResolvedValue(null),
-      updateUser: vi.fn().mockResolvedValue(null)
+      createUser: vi.fn().mockResolvedValue(adminWriteSuccess()),
+      updateUser: vi.fn().mockResolvedValue(adminWriteSuccess())
     }
     vi.mocked(useUserAdminStore).mockReturnValue(store)
   })

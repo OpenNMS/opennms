@@ -20,13 +20,17 @@
 /// License.
 ///
 
-// Failure of a user/group write. `stale` is set when the server answered 412
-// (the If-Match version no longer matches, or the object is gone); callers
-// branch on the flag, never on the message text.
-export interface AdminWriteError {
-  message: string
+import { ValidationResult } from '@/types/validation'
+
+// Result of a user/group write. On failure, `stale` is set when the server answered
+// 412 (the If-Match version no longer matches, or the object is gone); callers branch
+// on the flag, never on the message text. On success, `errors` carries follow-up
+// problems, such as a failed reload of the list.
+export interface AdminWriteResult extends ValidationResult {
   stale: boolean
 }
+
+export const adminWriteSuccess = (): AdminWriteResult => ({ success: true, message: '', stale: false })
 
 // Manage Users and Manage Groups: the table, or the editor panel in place of it.
 export enum AdminEditMode {

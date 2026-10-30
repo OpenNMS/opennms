@@ -104,8 +104,8 @@ watch(
 const save = async () => {
   saving.value = true
   try {
-    const error = await withSpinner(() => store.setPassword(props.userId, password.value, props.version))
-    reportWrite(error, `Password changed for '${props.userId}'.`, store.reloadError, {
+    const result = await withSpinner(() => store.setPassword(props.userId, password.value, props.version))
+    reportWrite(result, `Password changed for '${props.userId}'.`, {
       close: () => emit('update:visible', false),
       banner: (msg) => {
         errorText.value = msg

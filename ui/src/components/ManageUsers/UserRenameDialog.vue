@@ -92,8 +92,8 @@ const save = async () => {
   saving.value = true
   try {
     const target = newUserId.value.trim()
-    const error = await withSpinner(() => store.renameUser(props.userId, target, props.version))
-    reportWrite(error, `User '${props.userId}' renamed to '${target}'.`, store.reloadError, {
+    const result = await withSpinner(() => store.renameUser(props.userId, target, props.version))
+    reportWrite(result, `User '${props.userId}' renamed to '${target}'.`, {
       close: () => emit('update:visible', false),
       banner: (msg) => {
         errorText.value = msg

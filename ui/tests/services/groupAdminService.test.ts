@@ -23,6 +23,7 @@ import axios from 'axios'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import * as svc from '@/services/groupAdminService'
 import { rest, v2 } from '@/services/axiosInstances'
+import { adminWriteSuccess } from '@/types/adminWrite'
 
 // feedback belongs to the components: the service must never show any
 const showSnackBar = vi.hoisted(() => vi.fn())
@@ -87,7 +88,7 @@ describe('groupAdminService versions', () => {
     await svc.renameManagedGroup('My Group', 'New', 7)
     expect(v2.post).toHaveBeenCalledWith('/groups/My%20Group/rename', { newName: 'New' }, IF_MATCH_7)
 
-    await svc.deleteManagedGroup('My Group', 7)
+    expect(await svc.deleteManagedGroup('My Group', 7)).toEqual(adminWriteSuccess())
     expect(v2.delete).toHaveBeenCalledWith('/groups/My%20Group', IF_MATCH_7)
   })
 
@@ -99,7 +100,7 @@ describe('groupAdminService versions', () => {
 
   it('on 409 returns the server message', async () => {
     vi.mocked(v2.post).mockRejectedValue({ response: { status: 409, data: 'Group \'y\' already exists.' }})
-    expect(await svc.renameManagedGroup('x', 'y', 3)).toEqual({ message: 'Group \'y\' already exists.', stale: false })
+    expect(await svc.renameManagedGroup('x', 'y', 3)).toEqual({ success: false, message: 'Group \'y\' already exists.', stale: false })
   })
 })
 

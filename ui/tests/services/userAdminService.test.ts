@@ -23,6 +23,7 @@ import axios from 'axios'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import * as svc from '@/services/userAdminService'
 import { v2 } from '@/services/axiosInstances'
+import { adminWriteSuccess } from '@/types/adminWrite'
 
 // feedback belongs to the components: the service must never show any
 const showSnackBar = vi.hoisted(() => vi.fn())
@@ -61,7 +62,7 @@ describe('userAdminService versions', () => {
     await svc.renameManagedUser('My User', 'New', 7)
     expect(v2.post).toHaveBeenCalledWith('/users/My%20User/rename', { newUserId: 'New' }, IF_MATCH_7)
 
-    await svc.deleteManagedUser('My User', 7)
+    expect(await svc.deleteManagedUser('My User', 7)).toEqual(adminWriteSuccess())
     expect(v2.delete).toHaveBeenCalledWith('/users/My%20User', IF_MATCH_7)
 
     await svc.setManagedUserPassword('My User', 'pw', 7)
@@ -76,7 +77,7 @@ describe('userAdminService versions', () => {
 
   it('on 409 returns the server message', async () => {
     vi.mocked(v2.post).mockRejectedValue({ response: { status: 409, data: 'User \'y\' already exists.' }})
-    expect(await svc.renameManagedUser('x', 'y', 3)).toEqual({ message: 'User \'y\' already exists.', stale: false })
+    expect(await svc.renameManagedUser('x', 'y', 3)).toEqual({ success: false, message: 'User \'y\' already exists.', stale: false })
   })
 })
 

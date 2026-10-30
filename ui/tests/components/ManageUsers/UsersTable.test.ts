@@ -9,7 +9,6 @@ import UsersTable from '@/components/ManageUsers/UsersTable.vue'
 const store = vi.hoisted(() => ({
   openUserEditor: vi.fn(),
   deleteUser: vi.fn(),
-  reloadError: '',
   users: [] as unknown[]
 }))
 

@@ -254,9 +254,9 @@ const toggleRowMenu = (event: Event, user: ManagedUser) => {
 const confirmDelete = async () => {
   const user = userToDelete.value
   if (user) {
-    const error = await withSpinner(() => store.deleteUser(user.userId, user.version))
+    const result = await withSpinner(() => store.deleteUser(user.userId, user.version))
     // no banner here: a failure, stale or not, is a snackbar; the confirmation closes either way
-    reportWrite(error, `User '${user.userId}' deleted.`, store.reloadError)
+    reportWrite(result, `User '${user.userId}' deleted.`)
   }
   showDeleteConfirmation.value = false
   userToDelete.value = null

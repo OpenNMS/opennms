@@ -21,7 +21,7 @@
 ///
 
 import useActionFeedback from '@/composables/useActionFeedback'
-import { AdminWriteError } from '@/types/adminWrite'
+import { AdminWriteResult } from '@/types/adminWrite'
 
 export interface AdminWriteHandlers {
   // closes the panel or dialog; called on success and on a stale write
@@ -30,31 +30,28 @@ export interface AdminWriteHandlers {
   banner?: (msg: string) => void
 }
 
-// Feedback for a user or group write (the stores return AdminWriteError | null):
-//  - success: the success message, then the store's reloadError if the list reload failed; close
+// Feedback for a user or group write:
+//  - success: the success message, then any follow-up errors (a failed list reload); close
 //  - stale: the stale text (the store has already reloaded the list) as one error snackbar; close,
 //    so the editor reopens on the fresh object and version
 //  - anything else: the banner when there is one, else an error snackbar; stay open
-// Returns true on success.
+// Returns result.success.
 const useAdminWriteFeedback = () => {
-  const { showError, showSuccess } = useActionFeedback()
+  const { report, showError } = useActionFeedback()
 
-  const reportWrite = (error: AdminWriteError | null, successMsg: string, reloadError: string, handlers: AdminWriteHandlers = {}): boolean => {
-    if (error === null) {
-      showSuccess(successMsg)
-      if (reloadError) {
-        showError(reloadError)
-      }
+  const reportWrite = (result: AdminWriteResult, successMsg: string, handlers: AdminWriteHandlers = {}): boolean => {
+    if (result.success) {
+      report(result, successMsg)
       handlers.close?.()
       return true
     }
-    if (error.stale) {
-      showError(error.message)
+    if (result.stale) {
+      showError(result.message)
       handlers.close?.()
     } else if (handlers.banner) {
-      handlers.banner(error.message)
+      handlers.banner(result.message)
     } else {
-      showError(error.message)
+      showError(result.message)
     }
     return false
   }

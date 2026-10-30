@@ -20,14 +20,14 @@
 /// License.
 ///
 
-import { AdminWriteError } from '@/types/adminWrite'
+import { adminWriteSuccess, AdminWriteResult } from '@/types/adminWrite'
 import { ManagedGroup, ManagedGroupCreate } from '@/types/groupAdmin'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { AdminItemTarget, adminItemUrl } from './adminItemUrl'
 import { ifMatch, v2 } from './axiosInstances'
 
-// Reads return a ValidationResultWithPayload and writes an AdminWriteError (null on
-// success); the component that started the action shows any feedback.
+// Reads return a ValidationResultWithPayload and writes an AdminWriteResult; the
+// component that started the action shows any feedback.
 const endpoint = '/groups'
 
 // the server's plain-text reason for a rejected request, else the fallback
@@ -37,11 +37,11 @@ const errorMessage = (err: any, fallback: string): string => {
 }
 
 // A 412 is reported by flag only; the store words the stale message once the list has been reloaded.
-const writeError = (err: any, fallback: string): AdminWriteError => {
+const writeError = (err: any, fallback: string): AdminWriteResult => {
   if (err?.response?.status === 412) {
-    return { message: '', stale: true }
+    return { success: false, message: '', stale: true }
   }
-  return { message: errorMessage(err, fallback), stale: false }
+  return { success: false, message: errorMessage(err, fallback), stale: false }
 }
 
 // the If-Match header, plus the query of the /item form when the name needs it
@@ -78,40 +78,40 @@ const getAvailableGroupCategories = async (): Promise<ValidationResultWithPayloa
   }
 }
 
-const createManagedGroup = async (group: ManagedGroupCreate): Promise<AdminWriteError | null> => {
+const createManagedGroup = async (group: ManagedGroupCreate): Promise<AdminWriteResult> => {
   try {
     await v2.post(endpoint, group)
-    return null
+    return adminWriteSuccess()
   } catch (err: any) {
     return writeError(err, `Failed to create group '${group.name}'.`)
   }
 }
 
-const updateManagedGroup = async (group: ManagedGroup): Promise<AdminWriteError | null> => {
+const updateManagedGroup = async (group: ManagedGroup): Promise<AdminWriteResult> => {
   try {
     const target = adminItemUrl('groups', group.name)
     await v2.put(target.url, group, itemConfig(target, group.version))
-    return null
+    return adminWriteSuccess()
   } catch (err: any) {
     return writeError(err, `Failed to update group '${group.name}'.`)
   }
 }
 
-const renameManagedGroup = async (name: string, newName: string, version: number): Promise<AdminWriteError | null> => {
+const renameManagedGroup = async (name: string, newName: string, version: number): Promise<AdminWriteResult> => {
   try {
     const target = adminItemUrl('groups', name, 'rename')
     await v2.post(target.url, { newName }, itemConfig(target, version))
-    return null
+    return adminWriteSuccess()
   } catch (err: any) {
     return writeError(err, `Failed to rename group '${name}'.`)
   }
 }
 
-const deleteManagedGroup = async (name: string, version: number): Promise<AdminWriteError | null> => {
+const deleteManagedGroup = async (name: string, version: number): Promise<AdminWriteResult> => {
   try {
     const target = adminItemUrl('groups', name)
     await v2.delete(target.url, itemConfig(target, version))
-    return null
+    return adminWriteSuccess()
   } catch (err: any) {
     return writeError(err, `Failed to delete group '${name}'.`)
   }

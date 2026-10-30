@@ -8,6 +8,7 @@ import GroupEditorPanel from '@/components/ManageGroups/GroupEditorPanel.vue'
 import GroupRenameDialog from '@/components/ManageGroups/GroupRenameDialog.vue'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { STALE_GROUP_MESSAGE } from '@/types/groupAdmin'
+import { adminWriteSuccess } from '@/types/adminWrite'
 
 const store = vi.hoisted(() => ({
   updateGroup: vi.fn(),
@@ -15,7 +16,6 @@ const store = vi.hoisted(() => ({
   createGroup: vi.fn(),
   renameGroup: vi.fn(),
   deleteGroup: vi.fn(),
-  reloadError: '',
   groups: [] as unknown[],
   memberCandidates: [] as string[]
 }))
@@ -52,11 +52,10 @@ const cases = [
 describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest, fill, successMsg) => {
   beforeEach(() => {
     vi.clearAllMocks()
-    store.reloadError = ''
   })
 
   it('closes when the save is rejected as stale, and shows the stale text once', async () => {
-    storeCall.mockResolvedValue({ message: STALE_GROUP_MESSAGE, stale: true })
+    storeCall.mockResolvedValue({ success: false, message: STALE_GROUP_MESSAGE, stale: true })
     const wrapper = mountDialog()
 
     await (wrapper.vm as unknown as DialogVm).save()
@@ -67,7 +66,7 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest, fill, suc
   })
 
   it('stays open and shows other errors in the dialog only', async () => {
-    storeCall.mockResolvedValue({ message: 'Something else went wrong', stale: false })
+    storeCall.mockResolvedValue({ success: false, message: 'Something else went wrong', stale: false })
     const wrapper = mountDialog()
 
     await (wrapper.vm as unknown as DialogVm).save()
@@ -82,7 +81,7 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest, fill, suc
   })
 
   it('does not close on the stale wording without the flag', async () => {
-    storeCall.mockResolvedValue({ message: STALE_GROUP_MESSAGE, stale: false })
+    storeCall.mockResolvedValue({ success: false, message: STALE_GROUP_MESSAGE, stale: false })
     const wrapper = mountDialog()
 
     await (wrapper.vm as unknown as DialogVm).save()
@@ -92,7 +91,7 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest, fill, suc
   })
 
   it('closes on success and says so, with the spinner around the save', async () => {
-    storeCall.mockResolvedValue(null)
+    storeCall.mockResolvedValue(adminWriteSuccess())
     const wrapper = mountDialog()
     fill(wrapper.vm as unknown as DialogVm)
 
@@ -105,10 +104,7 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest, fill, suc
   })
 
   it('on success whose reload failed, says both', async () => {
-    storeCall.mockImplementation(async () => {
-      store.reloadError = 'Failed to load groups.'
-      return null
-    })
+    storeCall.mockResolvedValue({ ...adminWriteSuccess(), errors: ['Failed to load groups.'] })
     const wrapper = mountDialog()
     fill(wrapper.vm as unknown as DialogVm)
 
@@ -122,14 +118,13 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest, fill, suc
 describe('GroupEditorPanel save results', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    store.reloadError = ''
   })
 
   const mountPanel = () => mount(GroupEditorPanel, { props: { group }, global: { plugins: [PrimeVue] }})
   const save = (wrapper: { vm: unknown }) => (wrapper.vm as { save: () => Promise<void> }).save()
 
   it('closes when the save is rejected as stale, and shows the stale text once', async () => {
-    store.updateGroup.mockResolvedValue({ message: STALE_GROUP_MESSAGE, stale: true })
+    store.updateGroup.mockResolvedValue({ success: false, message: STALE_GROUP_MESSAGE, stale: true })
     const wrapper = mountPanel()
     await save(wrapper)
 
@@ -138,7 +133,7 @@ describe('GroupEditorPanel save results', () => {
   })
 
   it('stays open and shows other errors in the panel only', async () => {
-    store.updateGroup.mockResolvedValue({ message: 'Something else went wrong', stale: false })
+    store.updateGroup.mockResolvedValue({ success: false, message: 'Something else went wrong', stale: false })
     const wrapper = mountPanel()
     await save(wrapper)
     await nextTick()
@@ -149,7 +144,7 @@ describe('GroupEditorPanel save results', () => {
   })
 
   it('does not close on the stale wording without the flag', async () => {
-    store.updateGroup.mockResolvedValue({ message: STALE_GROUP_MESSAGE, stale: false })
+    store.updateGroup.mockResolvedValue({ success: false, message: STALE_GROUP_MESSAGE, stale: false })
     const wrapper = mountPanel()
     await save(wrapper)
 
@@ -158,7 +153,7 @@ describe('GroupEditorPanel save results', () => {
   })
 
   it('closes on an update and says so, with the spinner around the save', async () => {
-    store.updateGroup.mockResolvedValue(null)
+    store.updateGroup.mockResolvedValue(adminWriteSuccess())
     const wrapper = mountPanel()
     await save(wrapper)
 
@@ -169,7 +164,7 @@ describe('GroupEditorPanel save results', () => {
   })
 
   it('closes on a create and says so', async () => {
-    store.createGroup.mockResolvedValue(null)
+    store.createGroup.mockResolvedValue(adminWriteSuccess())
     const wrapper = mount(GroupEditorPanel, { props: { group: null }, global: { plugins: [PrimeVue] }})
     const vm = wrapper.vm as unknown as { name: string, save: () => Promise<void> }
     vm.name = 'Dev'
@@ -180,10 +175,7 @@ describe('GroupEditorPanel save results', () => {
   })
 
   it('on success whose reload failed, says both', async () => {
-    store.updateGroup.mockImplementation(async () => {
-      store.reloadError = 'Failed to load groups.'
-      return null
-    })
+    store.updateGroup.mockResolvedValue({ ...adminWriteSuccess(), errors: ['Failed to load groups.'] })
     const wrapper = mountPanel()
     await save(wrapper)
 
@@ -194,7 +186,6 @@ describe('GroupEditorPanel save results', () => {
 describe('GroupsTable delete results', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    store.reloadError = ''
   })
 
   const deleteFromTable = async () => {
@@ -206,7 +197,7 @@ describe('GroupsTable delete results', () => {
   }
 
   it('says the group was deleted', async () => {
-    store.deleteGroup.mockResolvedValue(null)
+    store.deleteGroup.mockResolvedValue(adminWriteSuccess())
     const vm = await deleteFromTable()
 
     expect(vm.showDeleteConfirmation).toBe(false)
@@ -216,7 +207,7 @@ describe('GroupsTable delete results', () => {
   })
 
   it('shows a failed delete with the server text', async () => {
-    store.deleteGroup.mockResolvedValue({ message: 'Group \'Ops\' cannot be deleted.', stale: false })
+    store.deleteGroup.mockResolvedValue({ success: false, message: 'Group \'Ops\' cannot be deleted.', stale: false })
     const vm = await deleteFromTable()
 
     expect(vm.showDeleteConfirmation).toBe(false)
@@ -224,17 +215,14 @@ describe('GroupsTable delete results', () => {
   })
 
   it('shows a stale delete with the stale text once', async () => {
-    store.deleteGroup.mockResolvedValue({ message: STALE_GROUP_MESSAGE, stale: true })
+    store.deleteGroup.mockResolvedValue({ success: false, message: STALE_GROUP_MESSAGE, stale: true })
     await deleteFromTable()
 
     expect(showSnackBar.mock.calls).toEqual([[{ msg: STALE_GROUP_MESSAGE, error: true }]])
   })
 
   it('on success whose reload failed, says both', async () => {
-    store.deleteGroup.mockImplementation(async () => {
-      store.reloadError = 'Failed to load groups.'
-      return null
-    })
+    store.deleteGroup.mockResolvedValue({ ...adminWriteSuccess(), errors: ['Failed to load groups.'] })
     await deleteFromTable()
 
     expect(showSnackBar.mock.calls).toEqual([[{ msg: 'Group \'Ops\' deleted.' }], [{ msg: 'Failed to load groups.', error: true }]])
@@ -245,9 +233,9 @@ describe('GroupsTable delete results', () => {
 describe('version reaches the store', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    store.updateGroup.mockResolvedValue(null)
-    store.renameGroup.mockResolvedValue(null)
-    store.deleteGroup.mockResolvedValue(null)
+    store.updateGroup.mockResolvedValue(adminWriteSuccess())
+    store.renameGroup.mockResolvedValue(adminWriteSuccess())
+    store.deleteGroup.mockResolvedValue(adminWriteSuccess())
   })
 
   it('GroupEditorPanel sends the group with its version', async () => {
@@ -286,9 +274,9 @@ describe('a rename followed by an edit', () => {
     store.renameGroup.mockImplementation(async () => {
       // what the real store does on success: reload the list
       live.groups = [{ name: 'Dev', users: [], version: 4 }]
-      return null
+      return adminWriteSuccess()
     })
-    store.updateGroup.mockResolvedValue(null)
+    store.updateGroup.mockResolvedValue(adminWriteSuccess())
     const table = mount(GroupsTable, { global: { plugins: [PrimeVue], directives: { tooltip: {}}}})
 
     // rename through the row's menu
@@ -322,7 +310,7 @@ describe('a rename followed by an edit', () => {
 describe('GroupEditorPanel comment limit', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    store.updateGroup.mockResolvedValue(null)
+    store.updateGroup.mockResolvedValue(adminWriteSuccess())
   })
 
   const mountEditor = (comments?: string) =>

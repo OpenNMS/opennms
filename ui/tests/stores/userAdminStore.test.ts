@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useUserAdminStore } from '@/stores/userAdminStore'
-import { AdminEditMode } from '@/types/adminWrite'
+import { AdminEditMode, adminWriteSuccess } from '@/types/adminWrite'
 import API from '@/services'
 import { ManagedUser, STALE_USER_MESSAGE, STALE_USER_RELOAD_FAILED_MESSAGE } from '@/types/userAdmin'
 import { createResultWithPayload } from '@/types/validation'
@@ -78,26 +78,26 @@ describe('useUserAdminStore', () => {
   })
 
   it('createUser should refresh on success', async () => {
-    vi.mocked(API.createManagedUser).mockResolvedValue(null)
+    vi.mocked(API.createManagedUser).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedUsers).mockResolvedValue(loaded(mockUsers))
 
     const ok = await store.createUser({ userId: 'noc', password: 'secret' })
 
-    expect(ok).toBe(null)
+    expect(ok).toEqual(adminWriteSuccess())
     expect(API.getManagedUsers).toHaveBeenCalledTimes(1)
   })
 
   it('createUser should not refresh on failure', async () => {
-    vi.mocked(API.createManagedUser).mockResolvedValue({ message: 'it failed', stale: false })
+    vi.mocked(API.createManagedUser).mockResolvedValue({ success: false, message: 'it failed', stale: false })
 
     const ok = await store.createUser({ userId: 'noc', password: 'secret' })
 
-    expect(ok).toEqual({ message: 'it failed', stale: false })
+    expect(ok).toEqual({ success: false, message: 'it failed', stale: false })
     expect(API.getManagedUsers).not.toHaveBeenCalled()
   })
 
   it('updateUser should refresh on success', async () => {
-    vi.mocked(API.updateManagedUser).mockResolvedValue(null)
+    vi.mocked(API.updateManagedUser).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedUsers).mockResolvedValue(loaded(mockUsers))
 
     await store.updateUser(mockUsers[1])
@@ -107,7 +107,7 @@ describe('useUserAdminStore', () => {
   })
 
   it('renameUser should pass old and new ids and refresh', async () => {
-    vi.mocked(API.renameManagedUser).mockResolvedValue(null)
+    vi.mocked(API.renameManagedUser).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedUsers).mockResolvedValue(loaded(mockUsers))
 
     await store.renameUser('noc', 'noc2', 2)
@@ -117,7 +117,7 @@ describe('useUserAdminStore', () => {
   })
 
   it('deleteUser should refresh on success', async () => {
-    vi.mocked(API.deleteManagedUser).mockResolvedValue(null)
+    vi.mocked(API.deleteManagedUser).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedUsers).mockResolvedValue(loaded([mockUsers[0]]))
 
     await store.deleteUser('noc', 2)
@@ -136,19 +136,19 @@ describe('useUserAdminStore', () => {
   })
 
   it('setPassword should reload the list on success', async () => {
-    vi.mocked(API.setManagedUserPassword).mockResolvedValue(null)
+    vi.mocked(API.setManagedUserPassword).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedUsers).mockResolvedValue(loaded(mockUsers))
 
     const ok = await store.setPassword('noc', 'newpw', 2)
 
-    expect(ok).toBe(null)
+    expect(ok).toEqual(adminWriteSuccess())
     expect(API.setManagedUserPassword).toHaveBeenCalledWith('noc', 'newpw', 2)
     expect(API.getManagedUsers).toHaveBeenCalledTimes(1)
   })
 
   it('an update after a password change sends the bumped version', async () => {
-    vi.mocked(API.setManagedUserPassword).mockResolvedValue(null)
-    vi.mocked(API.updateManagedUser).mockResolvedValue(null)
+    vi.mocked(API.setManagedUserPassword).mockResolvedValue(adminWriteSuccess())
+    vi.mocked(API.updateManagedUser).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedUsers).mockResolvedValue(loaded([{ userId: 'noc', version: 5 }]))
     store.users = [{ userId: 'noc', version: 4 }]
 
@@ -161,9 +161,9 @@ describe('useUserAdminStore', () => {
 
 
   it('passes the version through rename, delete and password', async () => {
-    vi.mocked(API.renameManagedUser).mockResolvedValue(null)
-    vi.mocked(API.deleteManagedUser).mockResolvedValue(null)
-    vi.mocked(API.setManagedUserPassword).mockResolvedValue(null)
+    vi.mocked(API.renameManagedUser).mockResolvedValue(adminWriteSuccess())
+    vi.mocked(API.deleteManagedUser).mockResolvedValue(adminWriteSuccess())
+    vi.mocked(API.setManagedUserPassword).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedUsers).mockResolvedValue(loaded(mockUsers))
 
     await store.renameUser('noc', 'noc2', 4)
@@ -175,71 +175,62 @@ describe('useUserAdminStore', () => {
     expect(API.setManagedUserPassword).toHaveBeenCalledWith('noc', 'pw', 4)
   })
 
-  it('a write that succeeds keeps reloadError empty', async () => {
-    vi.mocked(API.updateManagedUser).mockResolvedValue(null)
+  it('a write that succeeds returns no follow-up errors', async () => {
+    vi.mocked(API.updateManagedUser).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedUsers).mockResolvedValue(loaded(mockUsers))
 
-    expect(await store.updateUser(mockUsers[1])).toBe(null)
-    expect(store.reloadError).toBe('')
+    const result = await store.updateUser(mockUsers[1])
+    expect(result).toEqual(adminWriteSuccess())
+    expect(result.errors).toBeUndefined()
   })
 
-  it('a write whose reload fails still succeeds, and reports the reload in reloadError', async () => {
-    vi.mocked(API.renameManagedUser).mockResolvedValue(null)
+  it('a write whose reload fails still succeeds, and reports the reload in errors', async () => {
+    vi.mocked(API.renameManagedUser).mockResolvedValue(adminWriteSuccess())
     vi.mocked(API.getManagedUsers).mockResolvedValue(failed(UNAVAILABLE))
 
-    expect(await store.renameUser('noc', 'noc2', 2)).toBe(null)
-    expect(store.reloadError).toBe(UNAVAILABLE)
+    expect(await store.renameUser('noc', 'noc2', 2)).toEqual({ ...adminWriteSuccess(), errors: [UNAVAILABLE] })
 
-    // the next write starts clean
-    vi.mocked(API.getManagedUsers).mockResolvedValue(loaded(mockUsers))
-    vi.mocked(API.createManagedUser).mockResolvedValue(null)
-    await store.createUser({ userId: 'x', password: 'pw' })
-    expect(store.reloadError).toBe('')
-
-    vi.mocked(API.getManagedUsers).mockResolvedValue(failed(UNAVAILABLE))
-    await store.createUser({ userId: 'x', password: 'pw' })
-    expect(store.reloadError).toBe(UNAVAILABLE)
-    vi.mocked(API.deleteManagedUser).mockResolvedValue({ message: 'Failed to delete user \'x\'.', stale: false })
-    await store.deleteUser('x', 1)
-    expect(store.reloadError).toBe('')
+    // a failed write does not reload, so it carries no reload error
+    vi.mocked(API.deleteManagedUser).mockResolvedValue({ success: false, message: 'Failed to delete user \'x\'.', stale: false })
+    expect(await store.deleteUser('x', 1)).toEqual({ success: false, message: 'Failed to delete user \'x\'.', stale: false })
     expect(showSnackBar).not.toHaveBeenCalled()
   })
 
   it('on a stale write reloads the list, then reports the stale message', async () => {
-    vi.mocked(API.updateManagedUser).mockResolvedValue({ message: '', stale: true })
+    vi.mocked(API.updateManagedUser).mockResolvedValue({ success: false, message: '', stale: true })
     vi.mocked(API.getManagedUsers).mockResolvedValue(loaded(mockUsers))
 
     const error = await store.updateUser(mockUsers[1])
 
-    expect(error).toEqual({ message: STALE_USER_MESSAGE, stale: true })
+    expect(error).toEqual({ success: false, message: STALE_USER_MESSAGE, stale: true })
     expect(API.getManagedUsers).toHaveBeenCalledTimes(1)
     expect(store.users).toEqual(mockUsers)
 
-    vi.mocked(API.setManagedUserPassword).mockResolvedValue({ message: '', stale: true })
+    vi.mocked(API.setManagedUserPassword).mockResolvedValue({ success: false, message: '', stale: true })
     expect((await store.setPassword('noc', 'pw', 1))?.stale).toBe(true)
-    vi.mocked(API.renameManagedUser).mockResolvedValue({ message: '', stale: true })
+    vi.mocked(API.renameManagedUser).mockResolvedValue({ success: false, message: '', stale: true })
     expect((await store.renameUser('noc', 'x', 1))?.stale).toBe(true)
-    vi.mocked(API.deleteManagedUser).mockResolvedValue({ message: '', stale: true })
+    vi.mocked(API.deleteManagedUser).mockResolvedValue({ success: false, message: '', stale: true })
     expect((await store.deleteUser('noc', 1))?.stale).toBe(true)
     expect(API.getManagedUsers).toHaveBeenCalledTimes(4)
     expect(showSnackBar).not.toHaveBeenCalled()
   })
 
   it('on a stale write whose reload fails, says the list could not be reloaded', async () => {
-    vi.mocked(API.deleteManagedUser).mockResolvedValue({ message: '', stale: true })
+    vi.mocked(API.deleteManagedUser).mockResolvedValue({ success: false, message: '', stale: true })
     vi.mocked(API.getManagedUsers).mockResolvedValue(failed('Failed to load users.'))
 
     const error = await store.deleteUser('noc', 1)
 
-    expect(error).toEqual({ message: STALE_USER_RELOAD_FAILED_MESSAGE, stale: true })
+    expect(error).toEqual({ success: false, message: STALE_USER_RELOAD_FAILED_MESSAGE, stale: true })
     expect(showSnackBar).not.toHaveBeenCalled()
     expect(STALE_USER_RELOAD_FAILED_MESSAGE).not.toContain('has been reloaded')
   })
 
   it('on 409 returns the server message without reloading', async () => {
-    vi.mocked(API.renameManagedUser).mockResolvedValue({ message: 'User \'x\' already exists.', stale: false })
+    vi.mocked(API.renameManagedUser).mockResolvedValue({ success: false, message: 'User \'x\' already exists.', stale: false })
 
-    expect(await store.renameUser('noc', 'x', 1)).toEqual({ message: 'User \'x\' already exists.', stale: false })
+    expect(await store.renameUser('noc', 'x', 1)).toEqual({ success: false, message: 'User \'x\' already exists.', stale: false })
     expect(API.getManagedUsers).not.toHaveBeenCalled()
   })
 

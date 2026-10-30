@@ -21,7 +21,7 @@
 ///
 
 import API from '@/services'
-import { AdminEditMode, AdminWriteError } from '@/types/adminWrite'
+import { AdminEditMode, AdminWriteResult } from '@/types/adminWrite'
 import { ManagedUser, ManagedUserCreate, STALE_USER_MESSAGE, STALE_USER_RELOAD_FAILED_MESSAGE } from '@/types/userAdmin'
 import { createSuccessResponse, ValidationResult } from '@/types/validation'
 import { defineStore } from 'pinia'
@@ -30,9 +30,6 @@ import { ref } from 'vue'
 export const useUserAdminStore = defineStore('userAdminStore', () => {
   const users = ref([] as ManagedUser[])
   const availableRoles = ref([] as string[])
-  // why the list reload after the last successful write failed; '' when it succeeded.
-  // The write itself still returns null, so the caller reports both.
-  const reloadError = ref('')
 
   const editMode = ref(AdminEditMode.Table)
   // the user being edited; null while creating or on the table
@@ -66,21 +63,19 @@ export const useUserAdminStore = defineStore('userAdminStore', () => {
     return result
   }
 
-  // After a write: a success reloads the list (and notes a failed reload in reloadError);
+  // After a write: a success reloads the list (a failed reload goes in the result's errors);
   // a stale write means the list on screen is out of date, so it reloads too and words
   // the stale message by whether that reload worked. The caller shows the result.
-  const afterWrite = async (error: AdminWriteError | null): Promise<AdminWriteError | null> => {
-    reloadError.value = ''
-    if (error === null) {
+  const afterWrite = async (result: AdminWriteResult): Promise<AdminWriteResult> => {
+    if (result.success) {
       const reloaded = await getUsers()
-      reloadError.value = reloaded.success ? '' : reloaded.message
-      return null
+      return reloaded.success ? result : { ...result, errors: [reloaded.message] }
     }
-    if (error.stale) {
+    if (result.stale) {
       const reloaded = await getUsers()
-      return { ...error, message: reloaded.success ? STALE_USER_MESSAGE : STALE_USER_RELOAD_FAILED_MESSAGE }
+      return { ...result, message: reloaded.success ? STALE_USER_MESSAGE : STALE_USER_RELOAD_FAILED_MESSAGE }
     }
-    return error
+    return result
   }
 
   const createUser = async (user: ManagedUserCreate) => afterWrite(await API.createManagedUser(user))
@@ -109,7 +104,6 @@ export const useUserAdminStore = defineStore('userAdminStore', () => {
     openUserEditor,
     closeUserEditor,
     availableRoles,
-    reloadError,
     getUsers,
     getAvailableRoles,
     createUser,

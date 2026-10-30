@@ -390,10 +390,10 @@ const save = async () => {
       dutySchedules: form.dutySchedules.map(s => s.trim()).filter(Boolean),
       roles: [...form.roles]
     }
-    const error = await withSpinner(() => props.user
+    const result = await withSpinner(() => props.user
       ? store.updateUser({ ...props.user, ...fields })
       : store.createUser({ ...fields, password: form.password }))
-    reportWrite(error, props.user ? `User '${fields.userId}' updated.` : `User '${fields.userId}' created.`, store.reloadError, {
+    reportWrite(result, props.user ? `User '${fields.userId}' updated.` : `User '${fields.userId}' created.`, {
       close: () => emit('close'),
       banner: (msg) => {
         errorText.value = msg

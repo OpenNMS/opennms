@@ -311,10 +311,10 @@ const save = async () => {
     if (props.group?.categories !== undefined || categories.value.length > 0 || !props.group) {
       fields.categories = [...categories.value].sort()
     }
-    const error = await withSpinner(() => props.group
+    const result = await withSpinner(() => props.group
       ? store.updateGroup({ ...props.group, ...fields })
       : store.createGroup(fields))
-    reportWrite(error, props.group ? `Group '${fields.name}' updated.` : `Group '${fields.name}' created.`, store.reloadError, {
+    reportWrite(result, props.group ? `Group '${fields.name}' updated.` : `Group '${fields.name}' created.`, {
       close: () => emit('close'),
       banner: (msg) => {
         errorText.value = msg

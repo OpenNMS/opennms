@@ -92,8 +92,8 @@ const save = async () => {
   saving.value = true
   try {
     const target = newName.value.trim()
-    const error = await withSpinner(() => store.renameGroup(props.groupName, target, props.version))
-    reportWrite(error, `Group '${props.groupName}' renamed to '${target}'.`, store.reloadError, {
+    const result = await withSpinner(() => store.renameGroup(props.groupName, target, props.version))
+    reportWrite(result, `Group '${props.groupName}' renamed to '${target}'.`, {
       close: () => emit('update:visible', false),
       banner: (msg) => {
         errorText.value = msg
