@@ -34,6 +34,10 @@ All liveness decisions use the database clock; node clocks never participate.
 * Two identically installed nodes (same version, same install path) sharing one PostgreSQL database.
 * Network access between the nodes' web ports (config sync, REST status) and from both nodes to PostgreSQL.
 * The HA feature artifacts present in the distribution (`lib/` and `system/`).
+* A PostgreSQL `max_connections` large enough for both nodes at once.
+During every handover the old active node is still draining while the promoted node starts its services, so both hold connections for a short time.
+Size it as at least twice one node's pool total (the `maxPool` of the `opennms`, `opennms-admin`, and `opennms-monitor` data sources in `opennms-datasources.xml`), plus `superuser_reserved_connections` and any other clients of the server.
+Running out during a handover can crash the promoted node; PostgreSQL logs it as `FATAL: sorry, too many clients already`.
 
 == Install the second node
 
@@ -42,6 +46,10 @@ Install the second node exactly as you installed the first (see xref:deployment:
 * Point its `$OPENNMS_HOME/etc/opennms-datasources.xml` at the *same* database as the first node: the pair coordinates through that shared database, and neither node holds HA state locally.
 * Run `$OPENNMS_HOME/bin/install -dis` before the node joins the pair — ideally with the first node stopped, or during a maintenance window, since it touches the shared database.
 The schema is already initialized, so the run changes nothing there, but it creates the `etc/configured` marker; without it `bin/opennms start` refuses to start.
+
+Config sync replicates only `$OPENNMS_HOME/etc`, so anything outside it needs to be applied to the second node by hand: systemd drop-ins (for example `LimitNOFILE`), OS limits, kernel tuning, and Java settings in `/etc/sysconfig` or `/etc/default`.
+Hand-applied tuning on the first node is easy to miss here.
+A node that runs out of file descriptors logs `Too many open files`; network sockets count against that limit, so it can appear under connection load rather than file access.
 
 Do not hand-copy `$OPENNMS_HOME/etc` from the first node: config sync populates it once HA is enabled, and the per-node files (`ha-configuration.xml`, plus anything in `<sync-excludes>`) must stay local.
 
@@ -59,10 +67,22 @@ echo "opennms-ha-shell" | sudo tee -a ${OPENNMS_HOME}/etc/featuresBoot.d/ha.boot
 
 . Edit `$OPENNMS_HOME/etc/ha-configuration.xml`: set `enabled=true`, a unique `instance-id`, the `role` (one PRIMARY, one SECONDARY), the partner's `instance-id` and REST URL.
 Use HTTPS for `partner-rest-url` in production; sync transfers credential stores.
++
+NOTE: Changes to `enabled`, `instance-id`, `role`, `mode`, or `partner-rest-url` take effect only on restart, and a running node rejects the whole reloaded file (including runtime-safe settings) while any of them differ from what it started with.
+A file that does not parse is ignored with a warning while the node runs, but stops the node from starting services at the next restart, so you may want to check it with `xmllint --noout` after editing.
+
+. Enable HTTPS on each node if you follow that advice.
+Setting the `org.opennms.netmgt.jetty.https-*` properties in `opennms.properties.d/` is not enough on its own: no HTTPS connector exists until you copy `etc/examples/jetty.xml` to `etc/jetty.xml` and uncomment its "Add HTTPS support" block.
+See xref:deep-dive/admin/configuration/https/https-server.adoc[] for the full procedure.
+The host name in `partner-rest-url` must match a name in the partner's certificate; a URL with an IP address fails hostname verification unless the certificate lists that address as a SAN.
 
 . Create the config-sync service account on the active node: add a user (see xref:deep-dive/user-management/user-config.adoc[]) and assign it the `ROLE_ADMIN` xref:deep-dive/user-management/security-roles.adoc[security role].
 The standby authenticates to the active node with this account to pull configuration; any user name works.
 Creating it on one node is enough, because `users.xml` is itself synced.
++
+If you create the account through the REST API, add `hashPassword=true` to the request (`POST /rest/users?hashPassword=true`, or `PUT /rest/users/<id>` with `password=<password>&hashPassword=true`).
+Without it the `password` value is stored verbatim in `users.xml`, and that file is then replicated to the other node.
+The web UI always hashes the password.
 
 . Store that password in each node's vault so it never appears in a configuration file:
 +
@@ -136,6 +156,11 @@ While non-ACTIVE, a node replicates `etc/` from the active node every `sync-inte
 
 On identically installed nodes leave `<sync-excludes>` empty; list only files that genuinely differ per node (for example a host-specific certificate store).
 A file excluded on either node is neither overwritten nor deleted by sync.
+
+== Client access
+
+A non-ACTIVE node does not listen on its web port at all, because HA holds startup before the web server starts.
+An unauthenticated HTTP health check against the web port, such as `GET /opennms/login.jsp` (200 on the active node), therefore tells a load balancer or reverse proxy which node is serving.
 
 == Supervision modes
 
