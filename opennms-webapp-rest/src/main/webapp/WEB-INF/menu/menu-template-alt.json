@@ -560,32 +560,48 @@
     },
     {
       "id": "supportMenu",
-      "name": "Support ",
+      "name": "Help",
       "url": "#",
       "locationMatch": null,
       "icon": "action/ContactSupport",
       "roles": null,
       "items": [
         {
-          "id": "helpMain",
-          "name": "Help",
-          "url": "help/index.jsp",
-          "locationMatch": null,
-          "roles": null
-        },
-        {
           "id": "helpAbout",
           "name": "About",
-          "url": "about/index.jsp",
+          "url": "ui/index.html#/about",
           "locationMatch": null,
           "roles": null
         },
         {
-          "id": "support",
-          "name": "Support",
-          "url": "support/index.jsp",
+          "id": "documentation",
+          "name": "Documentation",
+          "url": "ui/index.html#/documentation",
           "locationMatch": null,
-          "roles": ["ROLE_ADMIN"]
+          "roles": null
+        },
+        {
+          "id": "commercialSupport",
+          "name": "Commercial Support",
+          "url": "ui/index.html#/commercial-support",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "communityResources",
+          "name": "Community Resources",
+          "url": "ui/index.html#/community-resources",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "systemReport",
+          "name": "System Report",
+          "url": "ui/index.html#/system-report",
+          "locationMatch": null,
+          "roles": [
+            "ROLE_ADMIN"
+          ]
         }
       ]
     }
@@ -599,16 +615,30 @@
     "roles": null,
     "items": [
       {
-        "id": "helpMain",
-        "name": "Help",
-        "url": "help/index.jsp",
+        "id": "helpAbout",
+        "name": "About",
+        "url": "ui/index.html#/about",
         "locationMatch": null,
         "roles": null
       },
       {
-        "id": "helpAbout",
-        "name": "About",
-        "url": "about/index.jsp",
+        "id": "documentation",
+        "name": "Documentation",
+        "url": "ui/index.html#/documentation",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "commercialSupport",
+        "name": "Commercial Support",
+        "url": "ui/index.html#/commercial-support",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "communityResources",
+        "name": "Community Resources",
+        "url": "ui/index.html#/community-resources",
         "locationMatch": null,
         "roles": null
       },
@@ -620,11 +650,13 @@
         "roles": null
       },
       {
-        "id": "support",
-        "name": "Support",
-        "url": "support/index.jsp",
+        "id": "systemReport",
+        "name": "System Report",
+        "url": "ui/index.html#/system-report",
         "locationMatch": null,
-        "roles": ["ROLE_ADMIN"]
+        "roles": [
+          "ROLE_ADMIN"
+        ]
       }
     ]
   },

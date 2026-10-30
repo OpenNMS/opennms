@@ -28,7 +28,7 @@
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
           .headTitle("System Reports")
-          .breadcrumb("Support", "support/index.htm")
+          .breadcrumb("Help", "help/index.jsp")
           .breadcrumb("System Reports")
           .build(request);
 %>

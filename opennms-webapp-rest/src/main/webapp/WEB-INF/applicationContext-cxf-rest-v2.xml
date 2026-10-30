@@ -20,6 +20,13 @@
     <context:component-scan base-package="org.opennms.web.rest.v2, org.opennms.web.rest.mapper.v2" />
     <onmsgi:reference id="trapdConfigDao" interface="org.opennms.netmgt.dao.api.TrapdConfigDao" />
 
+    <!-- Backs SystemReportRestService. serviceRegistry is a root-context bean from
+         applicationContext-soa.xml (the CXF servlet context has the root as parent),
+         so this mirrors the legacy dispatcher-servlet wiring exactly. -->
+    <bean id="systemReport" class="org.opennms.systemreport.SystemReport">
+        <property name="serviceRegistry" ref="serviceRegistry" />
+    </bean>
+
     <import resource="classpath:/META-INF/cxf/cxf.xml" />
     <import resource="classpath:/META-INF/cxf/cxf-servlet.xml" />
 
