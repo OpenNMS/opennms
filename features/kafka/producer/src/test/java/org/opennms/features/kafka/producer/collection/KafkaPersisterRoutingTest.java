@@ -270,4 +270,27 @@ public class KafkaPersisterRoutingTest {
     private CollectionSetProtos.CollectionSet protoFor(final CollectionSet collectionSet) {
         return collectionSetMapper.buildCollectionSetProtos(collectionSet, new ServiceParameters(Collections.emptyMap()));
     }
+
+    @Test
+    public void countsSentCollectionSetsTheirSizeAndBuildTime() throws UnknownHostException {
+        persister(routerRoutingInterfacesTo("routed-metrics")).visitCollectionSet(mixedCollectionSet());
+
+        final int records = producer.history().size();
+        assertEquals(records, metricRegistry.meter("messages.metric.sent").getCount());
+        assertEquals(records, metricRegistry.histogram("messages.metric.size").getCount());
+        assertEquals(1, metricRegistry.timer("messages.metric.build").getCount());
+        assertEquals(0, metricRegistry.meter("messages.metric.failed").getCount());
+    }
+
+    @Test
+    public void countsCollectionSetsKafkaRejects() throws UnknownHostException {
+        producer = new MockProducer<>(false, new StringSerializer(), new ByteArraySerializer());
+        persister(routerRoutingInterfacesTo(DEFAULT_TOPIC)).visitCollectionSet(mixedCollectionSet());
+        while (producer.errorNext(new RuntimeException("message too large"))) {
+            // complete every pending send with an error
+        }
+
+        assertEquals(producer.history().size(), metricRegistry.meter("messages.metric.failed").getCount());
+        assertEquals(0, metricRegistry.meter("messages.metric.sent").getCount());
+    }
 }

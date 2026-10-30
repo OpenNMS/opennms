@@ -485,6 +485,51 @@ Once metric forwarding is enabled, you can use this as the exclusive persistence
 echo 'org.opennms.timeseries.strategy=osgi' > "$OPENNMS_HOME/etc/opennms.properties.d/kafka-for-metrics.properties"
 ----
 
+== Monitor the producer
+
+The producer counts and times the messages it sends, per message type, and exposes the metrics over JMX in the `org.opennms.features.kafka.producer` domain and through the shell:
+
+[source, console]
+----
+admin@opennms()> opennms:metrics-display -m org.opennms.features.kafka.producer
+----
+
+In each metric name, _type_ is `event`, `alarm`, `node`, `alarm_feedback`, `topology_vertex`, `topology_edge`, or `metric` (collected performance data).
+
+[options="header" cols="1,1,3"]
+|===
+| Metric
+| Type
+| Description
+
+| messages._type_.sent
+| Meter
+| Records Kafka acknowledged.
+
+| messages._type_.failed
+| Meter
+| Records whose send failed, either immediately or when Kafka rejected them (for example, a collection set larger than the broker's maximum message size).
+
+| messages._type_.dropped
+| Counter
+| Records discarded because the send queue (`kafkaSendQueueCapacity`) was full.
+Not used for `metric`, which is sent without the queue.
+
+| messages._type_.build
+| Timer
+| Time spent turning an OpenNMS object into a Kafka record, including any database lookups.
+
+| messages._type_.size
+| Histogram
+| Size of each record in bytes; a delete is recorded as 0.
+
+| messages.sendQueueSize
+| Gauge
+| Records waiting in the send queue.
+|===
+
+A metric appears once its first message has been handled, so a message type that is not forwarded has no metrics.
+
 == Configure topic names
 
 By default five topics are created i.e., `events`, `alarms`, `nodes`,`vertices`, and `edges` .
