@@ -133,7 +133,7 @@
         <ul class="list-unstyled mb-0">
             <li><a href="admin/ng-requisitions/index.jsp">Manage Provisioning Requisitions</a></li>
             <li><a href="admin/asset/index.jsp">Import and Export Asset Information</a></li>
-            <li><a href="admin/categories.htm">Manage Surveillance Categories</a></li>
+            <li><a href="ui/index.html#/admin/surveillance-categories">Manage Surveillance Categories</a></li>
             <li><a href="admin/discovery/edit-config.jsp">Configure Discovery</a></li>
             <li><a href="admin/discovery/edit-scan.jsp">Run Single Discovery Scan</a></li>
             <li><a href="ui/index.html#/snmp-config">Configure SNMP Community Names by IP Address</a></li>

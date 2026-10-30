@@ -223,9 +223,9 @@
         {
           "id": "surveillanceCategories",
           "name": "Surveillance Categories",
-          "url": "admin/categories.htm",
-          "locationMatch": "categories",
-          "roles": null
+          "url": "ui/index.html#/admin/surveillance-categories",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
         },
         {
           "id": "configureThresholds",

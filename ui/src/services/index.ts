@@ -35,6 +35,14 @@ import { getNodeOutages, getOutages } from './outageService'
 import { nodeExistsInRequisition } from './requisitionService'
 import { getNodeEnlinkdElements } from './enlinkdService'
 import { getCategories } from './categoryService'
+import {
+  addNodeToCategory,
+  createCategory,
+  deleteCategory,
+  listCategories,
+  removeNodeFromCategory,
+  updateCategoryDescription
+} from './categoryAdminService'
 import { getMonitoringLocations } from './monitoringLocationService'
 import {
   createMonitoringLocation,
@@ -186,6 +194,12 @@ export default {
   getNodeAvailabilityPercentage,
   getNodeOutageTimeline,
   getCategories,
+  addNodeToCategory,
+  createCategory,
+  deleteCategory,
+  listCategories,
+  removeNodeFromCategory,
+  updateCategoryDescription,
   getMonitoringLocations,
   createMonitoringLocation,
   deleteMonitoringLocation,
