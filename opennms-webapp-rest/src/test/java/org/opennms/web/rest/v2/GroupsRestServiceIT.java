@@ -954,6 +954,18 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testCategoryDeletedBehindTheCacheIs400() throws Exception {
+        createGroup("catcached", g -> { });
+        createCategory("Fleeting");
+        // the DAO caches the category, then it goes without the DAO knowing (another process, a SQL script)
+        assertNotNull(inTx(() -> m_categoryDao.findByName("Fleeting")));
+        new JdbcTemplate(m_dataSource).update("delete from categories where categoryname = 'Fleeting'");
+
+        assertEquals("Unknown category: Fleeting",
+                exec(PUT, "/groups/catcached", "{\"name\":\"catcached\",\"categories\":[\"Fleeting\"]}", null, 400).getContentAsString());
+    }
+
+    @Test
     public void testAvailableCategories() throws Exception {
         createCategory("Servers");
         createCategory("routers");

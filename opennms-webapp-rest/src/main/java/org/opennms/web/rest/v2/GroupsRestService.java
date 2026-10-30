@@ -407,9 +407,10 @@ public class GroupsRestService implements GroupsRestApi {
             UserMgmtValidation.validateDutySchedules(owner, dto.getDutySchedules(), existing == null ? null : existing.getDutySchedules());
         }
         if (dto.getCategories() != null) {
-            // the first unknown name in sorted order is the one reported
+            // the first unknown name in sorted order is the one reported; read past the DAO's cache, which can still
+            // hold a category deleted since, so that a write racing the delete is refused instead of dropping it
             for (final String category : dto.getCategories().stream().sorted(Comparator.nullsFirst(Comparator.<String>naturalOrder())).collect(Collectors.toList())) {
-                if (category == null || m_categoryDao.findByName(category) == null) {
+                if (category == null || m_categoryDao.findByName(category, false) == null) {
                     throw new UserMgmtValidationException("Unknown category: " + category);
                 }
             }
