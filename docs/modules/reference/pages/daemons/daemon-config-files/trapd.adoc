@@ -60,36 +60,12 @@ You can configure the eventd subsystem to discard unwanted SNMP traps.
 To do so, use the `discardtraps` logmsg.
 See xref:operation:deep-dive/events/event-definition.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] in the Event Daemon Configuration section for more information.
 
-For V3, you must specify the SNMPv3 credentials that trapd uses to authenticate and decode V3 traps.
-You can add them through the web UI or the REST API, or include them in an XML configuration that you upload, as in the following example:
+For V3, you must specify the SNMPv3 users whose credentials trapd uses to authenticate and decode V3 traps.
+Add them on the *Trap Configuration* page or through the xref:development:rest/trapd-rest-api.adoc[Trapd REST API (v2)].
+For the privacy protocol, the available options are `DES`, `AES`, `AES192`, and `AES256`.
+For the authentication protocol, the available options are `MD5`, `SHA`, `SHA-224`, `SHA-256`, and `SHA-512`.
 
-[source, xml]
-----
-<trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd" snmp-trap-port="162" new-suspect-on-trap="true">
-  <snmpv3-user security-name="opennms" auth-passphrase="0p3nNMSv3" auth-protocol="MD5"
-      privacy-passphrase="0p3nNMSv3" privacy-protocol="DES"/>
-  <snmpv3-user security-name="sample-name" auth-passphrase="secret" auth-protocol="MD5"
-      privacy-passphrase="super-secret" privacy-protocol="DES"/>
-</trapd-configuration>
-----
-For `privacy-protocol`, the available options are `DES`, `AES`, `AES192`, and `AES256`.
-For `auth-protocol`, the available options are `MD5`, `SHA`, `SHA-224`, `SHA-256`, and `SHA-512`.
-
-NOTE: Metadata expressions can also be used in attributes of the trapd configuration.
-This lets you reference credentials from the Secure Credentials Vault (SCV), including SNMPv3 passphrases.
-
-.Example using SCV metadata for SNMPv3 passphrases
-[source, xml]
-----
-<trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd" snmp-trap-port="162" new-suspect-on-trap="true">
-  <snmpv3-user security-name="opennms"
-      auth-protocol="SHA"
-      auth-passphrase="${scv:trapd-v3-user:authPassphrase}"
-      privacy-protocol="AES"
-      privacy-passphrase="${scv:trapd-v3-user:privacyPassphrase}"/>
-</trapd-configuration>
-----
-
+SNMPv3 passphrases can contain metadata expressions, which lets you reference credentials from the Secure Credentials Vault (SCV) instead of storing them in the trapd configuration.
 The SCV expression format is `${scv:<alias>:<attribute>}`.
 For SCV setup and management, see xref:operation:deep-dive/admin/configuration/scv-configuration.adoc[SCV configuration] and xref:operation:deep-dive/meta-data.adoc#ga-metadata-scv[secure credentials vault metadata].
 
