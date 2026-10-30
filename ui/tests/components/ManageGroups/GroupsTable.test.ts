@@ -76,6 +76,29 @@ describe('GroupsTable', () => {
       expect(names(wrapper)).toEqual([])
       expect(wrapper.find('b').exists()).toBe(false)
     })
+
+    it('renders markup in stored comments and members as text, and filters on it', async () => {
+      store.groups = [...groups, { name: 'marked', comments: '<b>Bold</b> ops', users: ['<i>legacy</i>'], version: 4 }]
+      const wrapper = mountTable()
+      const row = wrapper.findAll('tbody tr').find(r => r.text().includes('marked'))!
+
+      expect(row.text()).toContain('<b>Bold</b> ops')
+      expect(row.text()).toContain('<i>legacy</i>')
+      expect(wrapper.find('tbody b').exists()).toBe(false)
+      expect(wrapper.find('tbody i').exists()).toBe(false)
+
+      await type(wrapper, '<i>')
+      expect(names(wrapper)).toEqual(['marked'])
+    })
+
+    it('says that nothing matches, and not that there are no groups', async () => {
+      const wrapper = mountTable()
+      await type(wrapper, 'nobody-has-this')
+
+      expect(names(wrapper)).toEqual([])
+      expect(wrapper.find('[data-test="no-match"]').text()).toBe('No groups match the filter.')
+      expect(wrapper.find('[data-test="empty-list"]').exists()).toBe(false)
+    })
   })
 })
 

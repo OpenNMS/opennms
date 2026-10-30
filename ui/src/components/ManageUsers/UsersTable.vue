@@ -118,6 +118,12 @@
           </div>
         </template>
       </OnmsColumn>
+      <template #empty>
+        <EmptyList
+          :content="noMatchContent"
+          data-test="no-match"
+        />
+      </template>
     </OnmsTable>
 
     <OnmsMenu
@@ -153,7 +159,9 @@
     <template #content>
       <p>
         Are you sure you want to delete the user <strong>{{ userToDelete?.userId }}</strong>?
-        The user is also removed from all groups. This action cannot be undone.
+        The user is also removed from all groups. A user cannot be deleted while they supervise an
+        on-call role or a destination path sends to them, or if they are the last administrator.
+        This action cannot be undone.
       </p>
     </template>
   </OnmsConfirmationDialog>
@@ -191,6 +199,11 @@ const userToDelete = ref<ManagedUser | null>(null)
 
 const emptyListContent = {
   msg: 'No users found.'
+}
+
+// the table only shows while there are users, so an empty table means the filter matched none
+const noMatchContent = {
+  msg: 'No users match the filter.'
 }
 
 const filter = ref('')

@@ -82,12 +82,51 @@ describe('UsersTable', () => {
       expect(wrapper.find('b').exists()).toBe(false)
     })
 
+    it('renders markup in a stored name or comment as text, and filters on it', async () => {
+      store.users = [
+        ...users,
+        { userId: 'marked', fullName: '<b>Bold</b> Name', email: 'm@example.org', userComments: '<img src=x onerror="alert(1)">', roles: [], version: 4 }
+      ]
+      const wrapper = mountTable()
+      const row = wrapper.findAll('tbody tr').find(r => r.text().includes('marked'))!
+
+      expect(row.text()).toContain('<b>Bold</b> Name')
+      expect(row.text()).toContain('<img src=x onerror="alert(1)">')
+      expect(wrapper.find('tbody b').exists()).toBe(false)
+      expect(wrapper.find('tbody img').exists()).toBe(false)
+
+      await type(wrapper, '<b>')
+      expect(ids(wrapper)).toEqual(['marked'])
+      expect(wrapper.find('tbody b').exists()).toBe(false)
+    })
+
+    it('says that nothing matches, and not that there are no users', async () => {
+      const wrapper = mountTable()
+      await type(wrapper, 'nobody-has-this')
+
+      expect(ids(wrapper)).toEqual([])
+      expect(wrapper.find('[data-test="no-match"]').text()).toBe('No users match the filter.')
+      expect(wrapper.find('[data-test="empty-list"]').exists()).toBe(false)
+
+      await type(wrapper, '')
+      expect(wrapper.find('[data-test="no-match"]').exists()).toBe(false)
+    })
+
     it('shows every user again when the filter is cleared', async () => {
       const wrapper = mountTable()
       await type(wrapper, 'JD')
       await type(wrapper, '')
       expect(ids(wrapper)).toHaveLength(3)
     })
+  })
+
+  it('says in the delete confirmation when the server refuses a delete', async () => {
+    const wrapper = mountTable()
+    ;(wrapper.vm as unknown as { askDelete: (u: unknown) => void }).askDelete(users[0])
+    await nextTick()
+
+    // the dialog is teleported to the body
+    expect(document.body.textContent).toContain('A user cannot be deleted while they supervise an on-call role or a destination path sends to them, or if they are the last administrator.')
   })
 
   it('shows the comments in their own column, with the full text as the tooltip', () => {

@@ -91,6 +91,12 @@
           </div>
         </template>
       </OnmsColumn>
+      <template #empty>
+        <EmptyList
+          :content="noMatchContent"
+          data-test="no-match"
+        />
+      </template>
     </OnmsTable>
 
     <OnmsMenu
@@ -157,6 +163,11 @@ const groupToDelete = ref<ManagedGroup | null>(null)
 
 const emptyListContent = {
   msg: 'No groups found.'
+}
+
+// the table only shows while there are groups, so an empty table means the filter matched none
+const noMatchContent = {
+  msg: 'No groups match the filter.'
 }
 
 const filter = ref('')

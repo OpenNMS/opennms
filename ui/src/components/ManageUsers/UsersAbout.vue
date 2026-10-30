@@ -39,6 +39,8 @@
       <strong>Rename</strong> keeps group memberships intact: the user stays in all their
       groups under the new id. Destination paths that target the user by name do not follow a
       rename; update them afterwards. <strong>Delete</strong> also removes the user from every group.
+      It is refused while the user supervises an on-call role or a destination path sends to the
+      user, and for the last administrator; change those first.
       The <em>admin</em> and <em>rtc</em> accounts are system accounts and cannot be deleted
       or renamed.
     </p>
