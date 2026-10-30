@@ -1,0 +1,11 @@
+update {
+  prefix {
+    elem { name: "interfaces" }
+    elem { name: "interface" key { key: "name" value: "Ethernet1" } }
+    elem { name: "state" }
+    elem { name: "counters" }
+  }
+  update { path { elem { name: "in-octets" } } val { uint_val: 1 } }
+  update { path { elem { name: "out-octets" } } val { uint_val: 2 } }
+  update { path { elem { name: "last-clear" } } val { string_val: "2026-10-12T00:00:00Z" } }
+}

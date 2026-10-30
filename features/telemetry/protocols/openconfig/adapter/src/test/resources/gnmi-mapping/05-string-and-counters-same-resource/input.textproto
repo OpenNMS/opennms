@@ -1,0 +1,14 @@
+update {
+  prefix {
+    elem { name: "interfaces" }
+    elem { name: "interface" key { key: "name" value: "Ethernet1" } }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "description" } }
+    val { string_val: "uplink to core" }
+  }
+  update {
+    path { elem { name: "state" } elem { name: "counters" } elem { name: "in-octets" } }
+    val { uint_val: 7 }
+  }
+}

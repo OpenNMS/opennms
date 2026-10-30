@@ -1,0 +1,8 @@
+version: 1
+groups:
+  - name: oc-if-state
+    match: /interfaces/interface/state
+    resource-type: interface
+    instance: "{interface.name}"
+    attributes: all
+    default-type: gauge

@@ -1,0 +1,41 @@
+# Disclaimer: This configuration is a proof of concept. It evaluates how usable it is
+# to configure gNMI streaming telemetry metric processing. These files are not covered
+# by commercial service agreements.
+#
+# Read by etc/telemetryd-adapters/openconfig-gnmi-mapping.groovy together with every
+# other *.yaml, *.yml and *.json file in this directory. Files are split by YANG
+# model: openconfig-* files are vendor neutral, vendor files such as junos-* map
+# native models. A group only sees the paths the connector subscribes to.
+# Reference: OpenConfig telemetry docs, section "Declarative mapping".
+#
+# Model: Junos native sensors, subscribed with origin juniper.
+# Connector path: /junos/system/linecard/environment (origin juniper).
+# Checked against a Juniper MX10004. Resource type junosFpcSensor is defined in
+# etc/resource-types.d/junos-gnmi-resource.xml. Other vendors never send these
+# paths, so this file is harmless on their nodes.
+version: 1
+groups:
+  # A match can be a path instead of an alias.
+  # Temperature sensor names already carry the line card, e.g. FPC0:EA0_TEMP_SENSOR.
+  - name: junos-fpc-temp
+    match: /junos/system/linecard/environment/temp-record
+    resource-type: junosFpcSensor
+    instance: "{temp-record.temp-sensor-name}"
+    attributes:
+      temp-value: { type: gauge, name: fpcTemp }
+  # Voltage sensor names repeat on every line card, so the line card goes into the instance
+  - name: junos-fpc-voltage
+    match: /junos/system/linecard/environment/voltage-record
+    resource-type: junosFpcSensor
+    instance: "{linecard.name}_{voltage-record.voltage-sensor-name}"
+    attributes:
+      voltage-value: { type: gauge, name: fpcVoltage }  # mV
+  # The line card name equals the OpenConfig component name, so power lands
+  # on the same ocComponent resource as the line card's temperature
+  - name: junos-fpc-power
+    match: /junos/system/linecard/environment/power-record
+    resource-type: ocComponent
+    instance: "{linecard.name}"
+    attributes:
+      fpc-power: { type: gauge, name: fpcPower }  # W
+      max-fpc-power: { type: gauge, name: fpcPowerMax }  # W

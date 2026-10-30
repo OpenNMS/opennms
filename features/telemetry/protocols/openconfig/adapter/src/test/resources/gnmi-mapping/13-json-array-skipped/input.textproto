@@ -1,0 +1,10 @@
+update {
+  update {
+    path {
+      elem { name: "interfaces" }
+      elem { name: "interface" key { key: "name" value: "Ethernet1" } }
+      elem { name: "state" }
+    }
+    val { json_ietf_val: "{\"mtu\":1500,\"addresses\":[{\"ip\":\"10.0.0.1\"}]}" }
+  }
+}

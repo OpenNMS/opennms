@@ -1,0 +1,1 @@
+if|TenGigE0_0_0_3|oc-if-counters|in-octets|counter|5

@@ -1,0 +1,2 @@
+if|Ethernet1|oc-if-counters|in-octets|counter|9
+node|node|oc-node|anyInOctets|gauge|9

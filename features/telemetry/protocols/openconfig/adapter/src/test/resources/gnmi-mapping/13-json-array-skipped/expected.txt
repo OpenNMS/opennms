@@ -1,0 +1,1 @@
+if|Ethernet1|oc-if-state|mtu|gauge|1500
