@@ -6,9 +6,10 @@
   </div>
   <div class="manage-users-container">
     <h1 class="page-title">Manage Users</h1>
-    <UsersTable v-if="store.editMode === AdminEditMode.Table" />
+    <!-- hidden, not removed, while the editor is open: the table keeps its filter, page and sort -->
+    <UsersTable v-show="store.editMode === AdminEditMode.Table" />
     <UserEditorPanel
-      v-else
+      v-if="store.editMode !== AdminEditMode.Table"
       :user="store.currentUser"
       @close="store.closeUserEditor()"
     />

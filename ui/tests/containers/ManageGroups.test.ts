@@ -63,6 +63,24 @@ describe('ManageGroups.vue (container)', () => {
     expect(showSnackBar).not.toHaveBeenCalled()
   })
 
+  it('hides the table while the editor is open, so the table keeps its filter and page', async () => {
+    store.populate.mockResolvedValue({ success: true, message: '' })
+    store.editMode = AdminEditMode.Edit
+    const wrapper = await mountPage()
+
+    expect(wrapper.findComponent({ name: 'GroupsTable' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'GroupsTable' }).attributes('style')).toContain('display: none')
+    expect(wrapper.findComponent({ name: 'GroupEditorPanel' }).exists()).toBe(true)
+  })
+
+  it('shows only the table outside the editor', async () => {
+    store.populate.mockResolvedValue({ success: true, message: '' })
+    const wrapper = await mountPage()
+
+    expect(wrapper.findComponent({ name: 'GroupsTable' }).attributes('style') ?? '').not.toContain('display: none')
+    expect(wrapper.findComponent({ name: 'GroupEditorPanel' }).exists()).toBe(false)
+  })
+
   it('shows a failed load with the server text', async () => {
     store.populate.mockResolvedValue({ success: false, message: UNAVAILABLE })
     await mountPage()

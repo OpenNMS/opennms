@@ -6,9 +6,10 @@
   </div>
   <div class="manage-groups-container">
     <h1 class="page-title">Manage Groups</h1>
-    <GroupsTable v-if="store.editMode === AdminEditMode.Table" />
+    <!-- hidden, not removed, while the editor is open: the table keeps its filter, page and sort -->
+    <GroupsTable v-show="store.editMode === AdminEditMode.Table" />
     <GroupEditorPanel
-      v-else
+      v-if="store.editMode !== AdminEditMode.Table"
       :group="store.currentGroup"
       @close="store.closeGroupEditor()"
     />
