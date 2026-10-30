@@ -68,7 +68,7 @@
                 label="Confirm Password"
                 for="user-editor-password-confirm"
                 required
-                :error="passwordMismatch ? 'Passwords do not match' : undefined"
+                :error="passwordMismatch ?? undefined"
               >
                 <OnmsPassword
                   v-model="form.passwordConfirm"
@@ -242,7 +242,7 @@ import TableCard from '@/components/Common/TableCard.vue'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
-import { validateAdminComments, validateAdminName, validateEmailShape, validateReservedName } from '@/lib/adminValidation'
+import { validateAdminComments, validateAdminName, validateEmailShape, validatePasswordConfirmation, validateReservedName } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser, ManagedUserCreate, PROTECTED_USER_IDS } from '@/types/userAdmin'
 
@@ -320,7 +320,7 @@ const timeZoneOptions = computed(() => {
   return stored && !browserTimeZones.includes(stored) ? [stored, ...browserTimeZones] : browserTimeZones
 })
 
-const passwordMismatch = computed(() => !isEditing.value && !!form.passwordConfirm && form.password !== form.passwordConfirm)
+const passwordMismatch = computed(() => (isEditing.value ? null : validatePasswordConfirmation(form.password, form.passwordConfirm)))
 
 const dutyValid = ref(true)
 // a new user gets a fresh schedule editor: an unfinished row is not part of the value, so two users

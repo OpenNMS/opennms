@@ -4,6 +4,7 @@ import {
   validateAdminComments,
   validateAdminName,
   validateEmailShape,
+  validatePasswordConfirmation,
   validateReservedName
 } from '@/lib/adminValidation'
 import { PROTECTED_USER_IDS } from '@/types/userAdmin'
@@ -62,6 +63,15 @@ describe('validateAdminComments length', () => {
     // 4096 emoji are 8192 UTF-16 units but 4096 characters
     expect(validateAdminComments('\u{1F600}'.repeat(4096))).toBeNull()
     expect(validateAdminComments('\u{1F600}'.repeat(4097))).not.toBeNull()
+  })
+})
+
+describe('validatePasswordConfirmation', () => {
+  it('reports a typed confirmation that differs, and nothing before one is typed', () => {
+    expect(validatePasswordConfirmation('secret', 'secrex')).toBe('Passwords do not match')
+    expect(validatePasswordConfirmation('', 'x')).toBe('Passwords do not match')
+    expect(validatePasswordConfirmation('secret', '')).toBeNull()
+    expect(validatePasswordConfirmation('secret', 'secret')).toBeNull()
   })
 })
 

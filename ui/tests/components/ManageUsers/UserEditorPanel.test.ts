@@ -216,6 +216,13 @@ describe('UserEditorPanel.vue', () => {
       expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({ timeZoneId: '' }))
     })
 
+    it('sends null, which keeps the stored zone, for a user without one when it is untouched', async () => {
+      await mountPanel({ userId: 'jose', dutySchedules: [], roles: [] })
+      await saveUser()
+
+      expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({ timeZoneId: null }))
+    })
+
     it('sends the stored time zone when it is untouched', async () => {
       await mountPanel({ userId: 'jose', timeZoneId: 'America/New_York', dutySchedules: [], roles: [] })
       await saveUser()
@@ -259,6 +266,8 @@ describe('UserEditorPanel.vue', () => {
 
       expect(wrapper.find('[data-test="password-input"]').exists()).toBe(false)
       expect(wrapper.find('[data-test="password-confirm-input"]').exists()).toBe(false)
+      // nothing to confirm, so nothing holds Save back
+      expect(saveDisabled()).toBeUndefined()
     })
   })
 

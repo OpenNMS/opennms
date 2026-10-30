@@ -33,7 +33,7 @@
         label="Confirm Password"
         for="user-password-confirm"
         required
-        :error="confirmation && password !== confirmation ? 'Passwords do not match' : undefined"
+        :error="validatePasswordConfirmation(password, confirmation) ?? undefined"
       >
         <OnmsPassword
           v-model="confirmation"
@@ -71,6 +71,7 @@ import { OnmsButton, OnmsDialog, OnmsPassword } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
+import { validatePasswordConfirmation } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 
 const props = defineProps<{
