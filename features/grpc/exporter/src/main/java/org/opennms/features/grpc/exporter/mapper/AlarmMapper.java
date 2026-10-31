@@ -26,6 +26,7 @@ import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
@@ -51,7 +52,7 @@ public interface AlarmMapper {
     @Mapping(target = "firstEventTime", expression = "java(mapDate(onmsAlarm.getFirstEventTime()))")
     @Mapping(target = "lastUpdateTime", expression = "java(mapDate(onmsAlarm.getLastUpdateTime()))")
     @Mapping(source = "counter", target = "count")
-    @Mapping(target = "type", expression = "java(mapType(onmsAlarm.getType().getId()))")
+    @Mapping(target = "type", expression = "java(mapType(onmsAlarm.getAlarmType()))")
     @Mapping(target = "nodeCriteria", expression = "java(mapNodeCriteria(onmsAlarm))")
     @Mapping(target = "logMessage", source = "logMsg")
     @Mapping(target = "severity", expression = "java(mapSeverity(onmsAlarm.getSeverity().toString()))")
@@ -79,16 +80,18 @@ public interface AlarmMapper {
     @Mapping(target = "id", source = "nodeId", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
     NodeCriteria mapNodeCriteria(OnmsAlarm alarm);
 
+    @Named("mapType")
     default int mapType(Integer value) {
+        if (value == null) {
+            return Type.PROBLEM_WITHOUT_CLEAR.getNumber();
+        }
         switch (value) {
-            case 0:
+            case OnmsAlarm.PROBLEM_TYPE:
                 return Type.PROBLEM_WITH_CLEAR.getNumber();
-            case 1:
+            case OnmsAlarm.RESOLUTION_TYPE:
                 return Type.CLEAR.getNumber();
-            case 2:
-                return Type.PROBLEM_WITHOUT_CLEAR.getNumber();
             default:
-                throw new IllegalArgumentException("Unknown value for Type: " + value);
+                return Type.PROBLEM_WITHOUT_CLEAR.getNumber();
         }
     }
 
@@ -97,6 +100,7 @@ public interface AlarmMapper {
         return date != null ? date.getTime() : 0;
     }
 
+    @Named("mapSeverity")
     default int mapSeverity(String severity) {
 
         switch (severity) {
