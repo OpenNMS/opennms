@@ -27,7 +27,7 @@ License.
   placeholder when the server says the entry cannot be drawn.
 -->
 <template>
-  <div class="gc-cell" data-test="gc-cell">
+  <div class="gc-cell" data-test="gc-cell" :data-pdf-caption="pdfCaption">
     <div class="gc-cell__header">
       <div class="gc-cell__title-block">
         <div class="gc-cell__title" data-test="gc-title">{{ heading }}</div>
@@ -103,6 +103,20 @@ ResourceLink.props = ['resource']
 const heading = computed(() => props.graph.title || props.graph.prefabGraphTitle || props.graph.graphtype)
 
 const time = computed(() => graphTimeFor(props.graph.start, props.graph.end))
+
+// the cell header as plain text, which the collection's PDF export prints above the graph
+const pdfCaption = computed(() => {
+  const resource = props.graph.resource
+  const resourceLine = [resource?.parent, resource]
+    .filter((r): r is GraphCollectionResource => !!r)
+    .map(r => `${r.typeLabel ?? 'Resource'}: ${r.label}`)
+    .join('    ')
+  return [
+    heading.value,
+    `From ${formatGraphInstant(props.graph.start)} to ${formatGraphInstant(props.graph.end)}`,
+    resourceLine
+  ].filter(Boolean).join('\n')
+})
 
 // The single-graph page: one prefabricated graph for one resource (NMS-15711), not every graph of
 // the resource. Resource labels can hold slashes, so the segments are encoded by hand.
