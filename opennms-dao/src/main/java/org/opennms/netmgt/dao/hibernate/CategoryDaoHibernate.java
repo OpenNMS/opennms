@@ -31,11 +31,9 @@ import java.util.Map;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.IntegerType;
-import org.hibernate.type.StringType;
 import org.hibernate.type.Type;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -135,9 +133,9 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
     /** {@inheritDoc} */
     @Override
     public List<OnmsCategory> getCategoriesWithAuthorizedGroup(String groupName) {
-        OnmsCriteria crit = new OnmsCriteria(OnmsCategory.class);
-        crit.add(Restrictions.sqlRestriction("{alias}.categoryId in (select cg.categoryId from category_group cg where cg.groupId = ?)", groupName, StringType.INSTANCE));
-        return findMatching(crit);
+        // the authorized groups come along, so a caller that changes them doesn't load them one category at a time
+        return find("select distinct category from OnmsCategory as category left join fetch category.authorizedGroups"
+                + " where category.id in (select c.id from OnmsCategory as c join c.authorizedGroups as g where g = ?1)", groupName);
     }
 
     /** {@inheritDoc} */

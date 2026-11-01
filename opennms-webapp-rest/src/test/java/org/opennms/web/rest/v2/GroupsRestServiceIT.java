@@ -865,13 +865,18 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final long addedMany = statements(() -> exec(PUT, "/groups/catsave", new JSONObject().put("categories", all).toString(), null, 200));
         final long unchangedMany = statements(() -> exec(PUT, "/groups/catsave", new JSONObject().put("categories", all).toString(), null, 200));
         assertEquals(all, authorizedCategories("catsave"));
+        final long removedMany = statements(() -> exec(PUT, "/groups/catsave", "{\"categories\":[\"save0\"]}", null, 200));
+        exec(PUT, "/groups/catsave", new JSONObject().put("categories", all).toString(), null, 200);
+        final long removedOne = statements(() -> exec(PUT, "/groups/catsave", new JSONObject().put("categories", all.subList(0, 7)).toString(), null, 200));
+        assertEquals(all.subList(0, 7), authorizedCategories("catsave"));
         exec(PUT, "/groups/catsave", "{\"categories\":[]}", null, 200);
         final long addedOne = statements(() -> exec(PUT, "/groups/catsave", "{\"categories\":[\"save0\"]}", null, 200));
 
         assertTrue("no statement counted", unchangedFew > 0);
         assertEquals("statements of an unchanged save, 1 category vs. 8 categories", unchangedFew, unchangedMany);
-        // beyond the reads, an added authorization costs its own INSERT: 7 added vs. 1 added
+        // beyond the reads, an added authorization costs its own INSERT and a removed one its own DELETE
         assertEquals("statements to add 7 categories vs. 1 category, less the 6 extra INSERTs", addedOne, addedMany - 6);
+        assertEquals("statements to remove 7 categories vs. 1 category, less the 6 extra DELETEs", removedOne, removedMany - 6);
         assertEquals(List.of("save0"), authorizedCategories("catsave"));
     }
 
