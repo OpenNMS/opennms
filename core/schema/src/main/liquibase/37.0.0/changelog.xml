@@ -964,4 +964,42 @@ CREATE TRIGGER groups_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON gr
         </rollback>
     </changeSet>
 
+    <!-- A v2 group lists its categories by name, so renaming a category changes every group authorized for it, but no
+         category_group row: the version of those groups moves as for a category_group change. Without it, a stale
+         editor could save a name that now belongs to another category with a still-valid ETag. Lock order as above:
+         a rename locks its categories row, which a v2 group write waits on (the foreign key check) while it holds the
+         counters, so the counters are taken before the row, as for a delete. Hibernate writes every column of a
+         category it updates, so any category update through Hibernate takes the counters. -->
+    <changeSet author="stheleman" id="37.0.0-category-rename-version">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1">SELECT count(*) FROM pg_proc WHERE proname = 'usermgmt_bump_for_category_rename' AND pronamespace = current_schema()::regnamespace</sqlCheck>
+            </not>
+        </preConditions>
+
+        <createProcedure>
+CREATE OR REPLACE FUNCTION usermgmt_bump_for_category_rename() RETURNS trigger AS $$
+BEGIN
+    UPDATE groups SET version = version + 1 WHERE name IN (SELECT groupid FROM category_group WHERE categoryid = NEW.categoryid);
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <sql>
+DROP TRIGGER categories_lock_versions ON categories;
+CREATE TRIGGER categories_lock_versions BEFORE UPDATE OF categoryname OR DELETE ON categories FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_lock_for_category_group();
+CREATE TRIGGER categories_rename_bump_groups AFTER UPDATE OF categoryname ON categories FOR EACH ROW WHEN (OLD.categoryname IS DISTINCT FROM NEW.categoryname) EXECUTE PROCEDURE usermgmt_bump_for_category_rename();
+        </sql>
+
+        <rollback>
+            <sql>
+DROP TRIGGER IF EXISTS categories_rename_bump_groups ON categories;
+DROP FUNCTION IF EXISTS usermgmt_bump_for_category_rename();
+DROP TRIGGER categories_lock_versions ON categories;
+CREATE TRIGGER categories_lock_versions BEFORE DELETE ON categories FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_lock_for_category_group();
+            </sql>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

@@ -669,6 +669,44 @@ public class UserMgmtRowVersionIT implements InitializingBean {
         assertEquals(otherBefore, version(VersionedTable.groups, other));
     }
 
+    @Test
+    public void testCategoryRenameBumpsAuthorizedGroupVersions() {
+        final int ops = createGroup("ops");
+        final int dev = createGroup("dev");
+        final int other = createGroup("other");
+        final int category = createCategory(9001, "Edge");
+        createCategory(9002, "Core");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "dev");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", 9002, "other");
+        final int opsBefore = version(VersionedTable.groups, ops);
+        final int devBefore = version(VersionedTable.groups, dev);
+        final int otherBefore = version(VersionedTable.groups, other);
+        final long counter = groupsCounter();
+
+        // a v2 group lists its categories by name: the renamed one shows a new name
+        assertEquals(1, update("UPDATE categories SET categoryname = 'Perimeter' WHERE categoryid = ?", category));
+
+        assertBumped("ops", opsBefore, VersionedTable.groups, ops);
+        assertBumped("dev", devBefore, VersionedTable.groups, dev);
+        assertEquals(otherBefore, version(VersionedTable.groups, other));
+        assertEquals("groups counter after a category rename", counter, groupsCounter());
+    }
+
+    @Test
+    public void testCategoryUpdateWithoutARenameKeepsGroupVersions() {
+        final int group = createGroup("ops");
+        final int category = createCategory(9001, "Edge");
+        update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
+        final int before = version(VersionedTable.groups, group);
+
+        // Hibernate writes the name back unchanged when it updates the description
+        assertEquals(1, update("UPDATE categories SET categoryname = categoryname, categorydescription = 'edge devices' WHERE categoryid = ?", category));
+        assertEquals(1, update("UPDATE categories SET categorydescription = 'edge routers' WHERE categoryid = ?", category));
+
+        assertEquals(before, version(VersionedTable.groups, group));
+    }
+
     /** The counter is how the in-memory managers notice a change of what they cache; they cache no category authorizations. */
     private long groupsCounter() {
         return m_tx.execute(status -> m_versionDao.getVersion(Domain.groups));
@@ -835,17 +873,28 @@ public class UserMgmtRowVersionIT implements InitializingBean {
 
     @Test
     public void testCategoryDeleteTakesTheCountersBeforeTheCategoryRow() throws Exception {
-        // B holds the groups counter. A deletes a category: it must wait for the counters before it locks the
-        // categories row. While A waits, C must be able to take the key share lock that the foreign key check of a
-        // category_group insert takes, as a v2 write holding the counters would; with the categories row locked
-        // first, C times out, and that v2 write would deadlock with A.
+        assertTakesTheCountersBeforeTheCategoryRow("delete", "DELETE FROM categories WHERE categoryid = ?");
+    }
+
+    @Test
+    public void testCategoryRenameTakesTheCountersBeforeTheCategoryRow() throws Exception {
+        assertTakesTheCountersBeforeTheCategoryRow("rename", "UPDATE categories SET categoryname = 'Core' WHERE categoryid = ?");
+    }
+
+    /**
+     * B holds the groups counter. A changes a category with the statement: it must wait for the counters before it
+     * locks the categories row. While A waits, C must be able to take the key share lock that the foreign key check
+     * of a category_group insert takes, as a v2 write holding the counters would; with the categories row locked
+     * first, C times out, and that v2 write would deadlock with A.
+     */
+    private void assertTakesTheCountersBeforeTheCategoryRow(final String what, final String sql) throws Exception {
         createGroup("ops");
         final int category = createCategory(9001, "Edge");
         update("INSERT INTO category_group (categoryid, groupid) VALUES (?, ?)", category, "ops");
         final ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
             final AtomicReference<String> categoryRow = new AtomicReference<>();
-            final Future<Integer> delete = m_tx.execute(b -> {
+            final Future<Integer> change = m_tx.execute(b -> {
                 m_sessionFactory.getCurrentSession().doWork(connection -> {
                     try (java.sql.Statement statement = connection.createStatement()) {
                         statement.executeQuery("SELECT version FROM usermgmt_version WHERE name = 'groups' FOR UPDATE").close();
@@ -853,7 +902,7 @@ public class UserMgmtRowVersionIT implements InitializingBean {
                         throw new IllegalStateException(e);
                     }
                 });
-                final Future<Integer> a = executor.submit(() -> update("DELETE FROM categories WHERE categoryid = ?", category));
+                final Future<Integer> a = executor.submit(() -> update(sql, category));
                 try {
                     waitUntilAnotherBackendWaitsForALock();
                     executor.submit(() -> categoryRow.set(tryLock("SELECT 1 FROM categories WHERE categoryid = " + category + " FOR KEY SHARE"))).get(30, TimeUnit.SECONDS);
@@ -863,8 +912,8 @@ public class UserMgmtRowVersionIT implements InitializingBean {
                 }
                 return a; // B commits on return and releases the groups counter
             });
-            assertEquals(1, delete.get(30, TimeUnit.SECONDS).intValue());
-            assertEquals("categories row while the category delete waits for the counters", "not blocked", categoryRow.get());
+            assertEquals(1, change.get(30, TimeUnit.SECONDS).intValue());
+            assertEquals("categories row while the category " + what + " waits for the counters", "not blocked", categoryRow.get());
         } finally {
             executor.shutdownNow();
         }

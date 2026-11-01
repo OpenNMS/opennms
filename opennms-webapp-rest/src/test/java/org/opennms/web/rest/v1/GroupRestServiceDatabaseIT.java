@@ -157,6 +157,32 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
     }
 
     @Test
+    public void testCategoryUpdateKeepsTheAuthorizationsAndOnlyARenameMovesTheVersions() throws Exception {
+        createGroup("dbcats");
+        createGroup("dbcats2");
+        createCategory("Edge");
+        sendRequest(PUT, "/categories/Edge/groups/dbcats", 204);
+        sendRequest(PUT, "/categories/Edge/groups/dbcats2", 204);
+        final int version = version("dbcats");
+        final int version2 = version("dbcats2");
+
+        // an update of the category itself rewrites none of its authorizations, so a group editor isn't stale; the list
+        // first, as a category editor reads it: it fills the category cache of this thread, which outlives the request
+        sendRequest(GET, "/categories", 200);
+        sendPut("/categories/Edge", "description=Edge devices", 204);
+        sendPut("/categories/Edge", "description=Edge routers", 204);
+        assertEquals(version, version("dbcats"));
+        assertEquals(version2, version("dbcats2"));
+        assertEquals(List.of("Edge"), authorizedCategories("dbcats"));
+
+        // a rename changes the category names a v2 group shows
+        sendPut("/categories/Edge", "name=Perimeter", 204);
+        assertNewVersion("dbcats", version);
+        assertNewVersion("dbcats2", version2);
+        assertEquals(List.of("Perimeter"), authorizedCategories("dbcats"));
+    }
+
+    @Test
     public void testRenameAndDeleteRightAfterACategoryChange() throws Exception {
         createGroup("dbcats");
         createGroup("other");
