@@ -83,6 +83,8 @@ If any `.rpmnew` or `.rpmsave` files exist within the configuration directory, s
 The upgrade may take some time.
 An "Upgrade completed successfully!" message confirms that the upgrade has completed.
 If you do not get this message, check the output of the install command for any errors.
+If an upgrade task that {page-component-title} cannot run without fails, for example copying the users and groups into the database, the output ends with "UPGRADE FAILED" and the task's error.
+The install command then exits with an error, and {page-component-title} does not start until you fix the cause and run the install command again.
 
 . Clear the Karaf cache:
 +

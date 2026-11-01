@@ -179,6 +179,12 @@ public class DefaultUsersSeedOfflineIT implements TemporaryDatabaseAware<Tempora
     }
 
     @Test
+    public void testAFailedSeedFailsTheUpgrade() throws Exception {
+        // a database it fails to seed has no users
+        assertTrue(new DefaultUsersSeedOffline().isCritical());
+    }
+
+    @Test
     public void testDoesNotSeedWhenThereAreUsers() throws Exception {
         m_jdbc.update("INSERT INTO users (id, username, password_salted, created_time) VALUES (nextval('users_id_seq'), 'jane', false, NOW())");
         seed();

@@ -117,10 +117,11 @@ The upgrade copies `users.xml`, `groups.xml` and `security-roles.properties` int
 The data now lives in the database: manage it through the pages and the REST APIs.
 
 Users must not be named `.`, `..`, `item` or `available-roles`, and groups must not be named `.`, `..`, `item` or `available-categories`.
-If `users.xml` or `groups.xml` has one of these names, the upgrade copies none of the users and groups, and the install log has a warning that names the entries.
-The installer still finishes and reports success, so check its log for this warning.
+If `users.xml` or `groups.xml` has one of these names, the upgrade copies none of the users and groups, and the install log names the entries.
 Rename them in the files, and wherever the files refer to them (group members, on-call roles, destination paths in `notifications.xml`), then run the installer again.
-Until then, {page-component-title} has no users, so no one can log in.
+
+If the users and groups cannot be copied, for this or any other reason, the upgrade fails: the installer ends with "UPGRADE FAILED" and an error status, and {page-component-title} does not start until the installer has run again without the failure.
+This way {page-component-title} never starts without users, where no one could log in.
 
 New REST v2 APIs manage them: xref:development:rest/users_v2.adoc[Users (v2)], xref:development:rest/groups_v2.adoc[Groups (v2)], xref:development:rest/security_roles.adoc[Security Roles] and xref:development:rest/oncall_roles.adoc[On-Call Roles].
 

@@ -352,6 +352,8 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
         final OnmsUpgradeException e = assertThrows(OnmsUpgradeException.class, this::migrate);
 
         assertTrue(e.getMessage(), e.getMessage().contains("the user 'item', the group '..'"));
+        // so the failure fails the upgrade and the installer, and OpenNMS does not start without users
+        assertTrue(new UsersGroupsXmlMigratorOffline().isCritical());
         assertEquals(0, count("users"));
         assertEquals(0, count("groups"));
         assertEquals(0, count("usermgmt_initialized"));

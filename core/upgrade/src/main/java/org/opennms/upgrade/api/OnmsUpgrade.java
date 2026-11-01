@@ -110,6 +110,19 @@ public interface OnmsUpgrade {
     default boolean runOnlyOnce() {
         return true;
     }
+
+    /**
+     * Does a failure of this task fail the upgrade?
+     * <p>For a task whose failure leaves OpenNMS unusable, for example with no user who can log in. When preExecute()
+     * or execute() of a critical task fails, the other tasks still run, but then the upgrade removes etc/configured,
+     * so that OpenNMS does not start, and ends with an error, which fails the installer. The admin fixes the cause and
+     * runs the installer again.</p>
+     *
+     * @return true, if a failure of this task fails the upgrade
+     */
+    default boolean isCritical() {
+        return false;
+    }
 }
 
 

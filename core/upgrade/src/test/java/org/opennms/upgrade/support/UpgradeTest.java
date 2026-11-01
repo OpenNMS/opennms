@@ -24,13 +24,19 @@ package org.opennms.upgrade.support;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.opennms.upgrade.api.OnmsUpgradeException;
+import org.opennms.upgrade.criticaltests.TestCriticalUpgradeFailsInExecute;
+import org.opennms.upgrade.criticaltests.TestCriticalUpgradeFailsInPreExecute;
+import org.opennms.upgrade.criticaltests.TestUpgradeAfterTheCriticalOnes;
 import org.opennms.upgrade.tests.TestUpgradeA;
 import org.opennms.upgrade.tests.TestUpgradeB;
 import org.opennms.upgrade.tests.TestUpgradeEverytime;
@@ -51,6 +57,14 @@ public class UpgradeTest {
     /** The upgrade status. */
     private UpgradeStatus upgradeStatus;
 
+    @Rule
+    public TemporaryFolder home = new TemporaryFolder();
+
+    /** The installer's etc/configured, in a temporary OpenNMS home. */
+    private File configured;
+
+    private String previousHome;
+
     /**
      * Sets up the test.
      *
@@ -65,6 +79,10 @@ public class UpgradeTest {
         upgradeStatus = new UpgradeStatus(statusFile);
         UpgradeHelper.executed.clear();
         UpgradeHelper.rolledback.clear();
+        previousHome = System.getProperty("opennms.home");
+        System.setProperty("opennms.home", home.getRoot().getAbsolutePath());
+        configured = new File(home.newFolder("etc"), "configured");
+        Assert.assertTrue(configured.createNewFile());
     }
 
     /**
@@ -75,6 +93,11 @@ public class UpgradeTest {
     @After
     public void tearDown() throws Exception {
         statusFile.delete();
+        if (previousHome == null) {
+            System.clearProperty("opennms.home");
+        } else {
+            System.setProperty("opennms.home", previousHome);
+        }
     }
 
     /**
@@ -93,6 +116,24 @@ public class UpgradeTest {
         Assert.assertEquals(TestUpgradeB.class.getName(), UpgradeHelper.getExecutedList().get(2));
         Assert.assertEquals(1, UpgradeHelper.getRolledBackList().size());
         Assert.assertEquals(TestUpgradeWIthException.class.getName(), UpgradeHelper.getRolledBackList().get(0));
+        // the failure of a task that is not critical does not fail the upgrade
+        Assert.assertTrue(configured.exists());
+    }
+
+    @Test
+    public void testACriticalFailureFailsTheUpgradeAfterTheOtherTasks() throws Exception {
+        final OnmsUpgradeException e = Assert.assertThrows(OnmsUpgradeException.class, () -> performUpgrade("org.opennms.upgrade.criticaltests"));
+
+        Assert.assertTrue(e.getMessage(), e.getMessage().contains(TestCriticalUpgradeFailsInExecute.class.getName()));
+        Assert.assertTrue(e.getMessage(), e.getMessage().contains(TestCriticalUpgradeFailsInPreExecute.class.getName()));
+        // the other tasks still run
+        Assert.assertEquals(List.of(TestUpgradeAfterTheCriticalOnes.class.getName()), UpgradeHelper.getExecutedList());
+        // a failed execute() is rolled back, as before; a failed preExecute() ran nothing to roll back
+        Assert.assertEquals(List.of(TestCriticalUpgradeFailsInExecute.class.getName()), UpgradeHelper.getRolledBackList());
+        // OpenNMS does not start until the installer runs again
+        Assert.assertFalse(configured.exists());
+        Assert.assertFalse(upgradeStatus.wasExecuted(new TestCriticalUpgradeFailsInExecute()));
+        Assert.assertTrue(upgradeStatus.wasExecuted(new TestUpgradeAfterTheCriticalOnes()));
     }
 
     @Test
