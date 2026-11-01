@@ -292,6 +292,33 @@ describe('UserEditorPanel.vue', () => {
     })
   })
 
+  describe('telephone PIN', () => {
+    const saveDisabled = () => wrapper.find('[data-test="save-button"]').attributes('disabled')
+
+    it('flags a changed PIN that is not all digits, and marks the User tab', async () => {
+      await mountPanel({ userId: 'jose', tuiPin: '1234', dutySchedules: [], roles: [] })
+      await wrapper.find('[data-test="tui-pin-input"]').setValue('12a4')
+
+      expect(wrapper.find('#user-editor-tui-pin-error').text()).toBe('The telephone PIN must contain only digits.')
+      expect(wrapper.find('[data-test="tab-user"] [data-test="tab-problem-marker"]').exists()).toBe(true)
+      expect(saveDisabled()).toBeDefined()
+
+      await wrapper.find('[data-test="tui-pin-input"]').setValue(' 4321 ')
+      expect(wrapper.find('#user-editor-tui-pin-error').exists()).toBe(false)
+      expect(saveDisabled()).toBeUndefined()
+    })
+
+    it('leaves a stored PIN alone, which the server keeps as it is', async () => {
+      await mountPanel({ userId: 'jose', tuiPin: '12#4', dutySchedules: [], roles: [] })
+
+      expect(wrapper.find('#user-editor-tui-pin-error').exists()).toBe(false)
+      await wrapper.find('[data-test="save-button"]').trigger('click')
+      await flushPromises()
+
+      expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({ tuiPin: '12#4' }))
+    })
+  })
+
   describe('tab problem markers', () => {
     const marker = (tab: string) => wrapper.find(`[data-test="${tab}"] [data-test="tab-problem-marker"]`)
 

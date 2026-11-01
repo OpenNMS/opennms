@@ -425,8 +425,10 @@ public class UsersRestService implements UsersRestApi {
         final String owner = owner(userId);
         final String storedComments = existing == null ? null : existing.getComments();
         UserMgmtValidation.checkComments(owner, dto.getUserComments(), storedComments);
+        // a stored time zone or TUI PIN echoed back is grandfathered, like the comments: the editor sends every
+        // field, so a value written before these rules must not block every save of the user
         final String timeZoneId = StringUtils.trimToNull(dto.getTimeZoneId());
-        if (timeZoneId != null) {
+        if (timeZoneId != null && !UserMgmtValidation.textUnchanged(timeZoneId, existing == null ? null : existing.getTimeZoneId())) {
             try {
                 UserMgmtValidation.checkLength(owner, "time zone", ZoneId.of(timeZoneId).getId(), UserMgmtJaxbMapper.TIME_ZONE_ID_LENGTH);
             } catch (final java.time.DateTimeException e) {
@@ -435,10 +437,12 @@ public class UsersRestService implements UsersRestApi {
         }
         // the TUI PIN is dialled on a phone keypad
         final String tuiPin = StringUtils.trimToNull(dto.getTuiPin());
-        if (tuiPin != null && !tuiPin.matches("[0-9]+")) {
-            throw new UserMgmtValidationException("The TUI PIN must contain only digits.");
+        if (!UserMgmtValidation.textUnchanged(tuiPin, existing == null ? null : existing.getTuiPin())) {
+            if (tuiPin != null && !tuiPin.matches("[0-9]+")) {
+                throw new UserMgmtValidationException("The TUI PIN must contain only digits.");
+            }
+            UserMgmtValidation.checkLength(owner, "TUI PIN", tuiPin, UserMgmtJaxbMapper.TUI_PIN_LENGTH);
         }
-        UserMgmtValidation.checkLength(owner, "TUI PIN", tuiPin, UserMgmtJaxbMapper.TUI_PIN_LENGTH);
         UserMgmtValidation.checkLength(owner, "full name", StringUtils.trimToNull(dto.getFullName()), UserMgmtJaxbMapper.FULL_NAME_LENGTH);
         for (final String[] field : new String[][] {
                 { "email", dto.getEmail() }, { "pager email", dto.getPagerEmail() }, { "work phone", dto.getWorkPhone() },
@@ -486,10 +490,11 @@ public class UsersRestService implements UsersRestApi {
         if (dto.getUserComments() != null && !UserMgmtValidation.textUnchanged(dto.getUserComments(), user.getComments())) {
             user.setComments(StringUtils.trimToNull(dto.getUserComments()));
         }
-        if (dto.getTuiPin() != null) {
+        // an unchanged TUI PIN or time zone is left as stored: validateDtoFields grandfathers it
+        if (dto.getTuiPin() != null && !UserMgmtValidation.textUnchanged(dto.getTuiPin(), user.getTuiPin())) {
             user.setTuiPin(StringUtils.trimToNull(dto.getTuiPin()));
         }
-        if (dto.getTimeZoneId() != null) {
+        if (dto.getTimeZoneId() != null && !UserMgmtValidation.textUnchanged(dto.getTimeZoneId(), user.getTimeZoneId())) {
             // stored as a manager round trip would write it back, so a later manager save doesn't rewrite it
             final String timeZoneId = StringUtils.trimToNull(dto.getTimeZoneId());
             user.setTimeZoneId(timeZoneId == null ? null : ZoneId.of(timeZoneId).getId());

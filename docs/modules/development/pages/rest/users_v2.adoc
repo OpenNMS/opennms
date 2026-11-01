@@ -159,8 +159,8 @@ The password hash is never returned by any operation.
 | numericPagerPin | Numeric pager PIN or number.
 | textPagerService | Text pager service provider.
 | textPagerPin | Text pager PIN or number.
-| tuiPin | Telephone user interface PIN.
-| timeZoneId | Time zone id, for example `Europe/Berlin`. Stored in its canonical form.
+| tuiPin | Telephone user interface PIN: digits only. A stored PIN sent back unchanged is not checked.
+| timeZoneId | Time zone id, for example `Europe/Berlin`. Stored in its canonical form. A stored id sent back unchanged is not checked and stays as it is.
 | dutySchedules | List of duty schedule strings. See <<user-duty-schedules>>.
 | roles | List of security role names, for example `ROLE_ADMIN`. An unknown role returns `400`.
 | readOnly | `true` when the user holds `ROLE_READONLY`. Read-only.

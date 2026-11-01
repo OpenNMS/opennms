@@ -99,6 +99,13 @@ export const validatePasswordConfirmation = (password: string, confirmation: str
   confirmation && password !== confirmation ? 'Passwords do not match' : null
 
 /**
+ * The TUI PIN is dialled on a phone keypad: digits only, as UsersRestService checks a new or changed one.
+ * Returns a problem description, or null when the value is empty or acceptable.
+ */
+export const validateTuiPin = (value: string): string | null =>
+  /^\d*$/.test(value.trim()) ? null : 'The telephone PIN must contain only digits.'
+
+/**
  * Loose shape check: every comma-separated recipient must contain a
  * local@domain somewhere, which also accepts RFC-5322 display-name forms
  * like `Bill Smith <bill@example.com>`.

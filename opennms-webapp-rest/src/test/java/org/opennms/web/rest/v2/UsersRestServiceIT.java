@@ -385,6 +385,38 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testStoredInvalidTuiPinIsGrandfathered() throws Exception {
+        // written before the rule, e.g. by the JSPs or a migration
+        createUser("oldpin", u -> u.setTuiPin("12#4"));
+
+        // echoed back unchanged, along with another change, as the editor sends every field
+        exec(PUT, "/users/oldpin", "{\"userId\":\"oldpin\",\"tuiPin\":\" 12#4 \",\"fullName\":\"Old Pin\"}", null, 200);
+        assertEquals("12#4", column("oldpin", "tui_pin"));
+        assertEquals("Old Pin", column("oldpin", "full_name"));
+
+        // but a changed one must be digits
+        exec(PUT, "/users/oldpin", "{\"userId\":\"oldpin\",\"tuiPin\":\"12#5\"}", null, 400);
+        exec(PUT, "/users/oldpin", "{\"userId\":\"oldpin\",\"tuiPin\":\"125\"}", null, 200);
+        assertEquals("125", column("oldpin", "tui_pin"));
+    }
+
+    @Test
+    public void testStoredInvalidTimeZoneIsGrandfathered() throws Exception {
+        // a zone Java's ZoneId does not know, e.g. from a hand-edited users.xml
+        createUser("oldzone", u -> u.setTimeZoneId("Mars/Olympus"));
+
+        exec(PUT, "/users/oldzone", "{\"userId\":\"oldzone\",\"timeZoneId\":\"Mars/Olympus\",\"fullName\":\"Old Zone\"}", null, 200);
+        assertEquals("Mars/Olympus", column("oldzone", "time_zone_id"));
+        assertEquals("Old Zone", column("oldzone", "full_name"));
+
+        exec(PUT, "/users/oldzone", "{\"userId\":\"oldzone\",\"timeZoneId\":\"Venus/Maxwell\"}", null, 400);
+        exec(PUT, "/users/oldzone", "{\"userId\":\"oldzone\",\"timeZoneId\":\"Europe/Berlin\"}", null, 200);
+        assertEquals("Europe/Berlin", column("oldzone", "time_zone_id"));
+        exec(PUT, "/users/oldzone", "{\"userId\":\"oldzone\",\"timeZoneId\":\"\"}", null, 200);
+        assertNull(column("oldzone", "time_zone_id"));
+    }
+
+    @Test
     public void testUpdatePreservesUnexposedContacts() throws Exception {
         // seed a user carrying an XMPP contact, as a migrated users.xml would
         createUser("xmppuser", u -> {

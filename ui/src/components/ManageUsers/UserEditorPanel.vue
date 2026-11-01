@@ -137,8 +137,17 @@
               <FormField label="Home Phone" for="user-editor-home-phone">
                 <OnmsInputText id="user-editor-home-phone" v-model="form.homePhone" data-test="home-phone-input" />
               </FormField>
-              <FormField label="Telephone PIN" for="user-editor-tui-pin">
-                <OnmsInputText id="user-editor-tui-pin" v-model="form.tuiPin" data-test="tui-pin-input" />
+              <FormField
+                label="Telephone PIN"
+                for="user-editor-tui-pin"
+                :error="tuiPinProblem || undefined"
+              >
+                <OnmsInputText
+                  id="user-editor-tui-pin"
+                  v-model="form.tuiPin"
+                  :invalid="!!tuiPinProblem"
+                  data-test="tui-pin-input"
+                />
               </FormField>
               <FormField label="Numeric Pager Service" for="user-editor-numeric-service">
                 <OnmsInputText id="user-editor-numeric-service" v-model="form.numericPagerService" data-test="numeric-service-input" />
@@ -242,7 +251,7 @@ import TableCard from '@/components/Common/TableCard.vue'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
-import { validateAdminComments, validateAdminName, validateEmailShape, validatePasswordConfirmation, validateReservedName } from '@/lib/adminValidation'
+import { validateAdminComments, validateAdminName, validateEmailShape, validatePasswordConfirmation, validateReservedName, validateTuiPin } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser, ManagedUserCreate, PROTECTED_USER_IDS } from '@/types/userAdmin'
 
@@ -313,6 +322,7 @@ const pagerEmailProblem = computed(() =>
   changedOnly(form.pagerEmail, props.user?.pagerEmail ?? '', validateEmailShape(form.pagerEmail, 'pager email')))
 const commentsProblem = computed(() =>
   changedOnly(form.comments, props.user?.userComments ?? '', validateAdminComments(form.comments)))
+const tuiPinProblem = computed(() => changedOnly(form.tuiPin, props.user?.tuiPin ?? '', validateTuiPin(form.tuiPin)))
 
 // a stored zone the browser list lacks (an alias such as US/Eastern) must still show as selected
 const timeZoneOptions = computed(() => {
@@ -329,10 +339,12 @@ const dutyEditorKey = ref(0)
 
 // the checks that show a message on the User tab; marks the tab, since Save is disabled from either tab
 const userTabProblem = computed(() =>
-  !!(userIdProblem.value || emailProblem.value || pagerEmailProblem.value || commentsProblem.value || passwordMismatch.value))
+  !!(userIdProblem.value || emailProblem.value || pagerEmailProblem.value || commentsProblem.value || tuiPinProblem.value ||
+    passwordMismatch.value))
 
 const isValid = computed(() => {
-  if (!dutyValid.value || userIdProblem.value || emailProblem.value || pagerEmailProblem.value || commentsProblem.value) {
+  if (!dutyValid.value || userIdProblem.value || emailProblem.value || pagerEmailProblem.value || commentsProblem.value ||
+    tuiPinProblem.value) {
     return false
   }
   if (isEditing.value) {
