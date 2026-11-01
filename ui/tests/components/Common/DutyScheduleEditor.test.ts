@@ -156,6 +156,54 @@ describe('DutyScheduleEditor.vue', () => {
       expect(wrapper.find('[data-test="duty-1-time-error"]').exists()).toBe(false)
     })
 
+    describe('a raw row', () => {
+      const rawError = (wrapper: ReturnType<typeof mountEditor>) => wrapper.find('[data-test="duty-0-raw-error"]')
+
+      it('is not flagged while it keeps its stored text', () => {
+        const wrapper = mountEditor(['weird-legacy-entry'])
+        expect(rawError(wrapper).exists()).toBe(false)
+        expect(validEmits(wrapper)?.at(-1)).toBe(true)
+      })
+
+      it.each([
+        ['still-weird', 'Not a schedule: enter days, then begin-end military times, e.g. MoWeFr800-1700'],
+        ['Mo800-2400', 'The times must be military clock values between 0 and 2359'],
+        ['Mo860-900', 'The times must be military clock values between 0 and 2359'],
+        ['Mo2000-800', 'The begin time must be before the end time. Split overnight coverage into two schedules.'],
+        ['Mo800-800', 'The begin and end times are the same, so this window never matches. Pick a later end time.'],
+        ['  ', 'Enter a schedule or remove this row']
+      ])('edited to "%s" is flagged and blocks saving', async (text, message) => {
+        const wrapper = mountEditor(['weird-legacy-entry'])
+        await wrapper.find('[data-test="duty-0-raw"]').setValue(text)
+
+        expect(rawError(wrapper).text()).toBe(message)
+        expect(validEmits(wrapper)?.at(-1)).toBe(false)
+      })
+
+      it('edited to a valid schedule, or back to its stored text, is not flagged', async () => {
+        const wrapper = mountEditor(['weird-legacy-entry'])
+        await wrapper.find('[data-test="duty-0-raw"]').setValue('still-weird')
+        await wrapper.find('[data-test="duty-0-raw"]').setValue('MoWe800-1700')
+        expect(rawError(wrapper).exists()).toBe(false)
+        expect(validEmits(wrapper)?.at(-1)).toBe(true)
+
+        await wrapper.find('[data-test="duty-0-raw"]').setValue('still-weird')
+        await wrapper.find('[data-test="duty-0-raw"]').setValue(' weird-legacy-entry ')
+        expect(rawError(wrapper).exists()).toBe(false)
+        expect(validEmits(wrapper)?.at(-1)).toBe(true)
+      })
+
+      it('blanked stays visible until it is removed', async () => {
+        const wrapper = mountEditor(['weird-legacy-entry'])
+        await wrapper.find('[data-test="duty-0-raw"]').setValue('')
+        expect(wrapper.find('[data-test="duty-0-raw"]').exists()).toBe(true)
+        expect(validEmits(wrapper)?.at(-1)).toBe(false)
+
+        await wrapper.find('[data-test="remove-duty-0"]').trigger('click')
+        expect(validEmits(wrapper)?.at(-1)).toBe(true)
+      })
+    })
+
     it('warns about a window of 5 minutes', () => {
       const wrapper = mountEditor(['Mo800-805'])
       expect(wrapper.find('[data-test="duty-0-warning"]').text()).toBe('This window is only 5 minutes long.')

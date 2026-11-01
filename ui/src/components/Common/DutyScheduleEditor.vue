@@ -75,13 +75,21 @@
       </template>
       <!-- a hand-edited entry the day/time form can't represent stays editable
            as raw text so it is never silently dropped -->
-      <OnmsInputText
-        v-else
-        v-model="row.raw"
-        class="raw-input"
-        fluid
-        :data-test="`duty-${index}-raw`"
-      />
+      <template v-else>
+        <OnmsInputText
+          v-model="row.raw"
+          class="raw-input"
+          fluid
+          :invalid="!!rawProblem(row)"
+          :data-test="`duty-${index}-raw`"
+        />
+        <small
+          v-if="rawProblem(row)"
+          class="row-error"
+          role="alert"
+          :data-test="`duty-${index}-raw-error`"
+        >{{ rawProblem(row) }}</small>
+      </template>
       <OnmsIconButton
         severity="danger"
         :icon="Cancel"
@@ -258,7 +266,38 @@ const shortWindow = (row: Row): number | null => {
   return length <= SHORT_WINDOW_MINUTES ? length : null
 }
 
-const valid = computed(() => rows.value.every(row => isComplete(row) && !overnightBlocks(row) && !emptyWindowBlocks(row)))
+// a raw row edited away from its stored text gets the checks of a form row: the server checks every new
+// entry, and a blanked row would otherwise drop out of the value unseen
+const rawProblem = (row: Row): string | null => {
+  if (row.raw === null) {
+    return null
+  }
+  const text = row.raw.trim()
+  if (stored.has(text)) {
+    return null
+  }
+  if (!text) {
+    return 'Enter a schedule or remove this row'
+  }
+  const match = SCHEDULE.exec(text)
+  if (!match) {
+    return 'Not a schedule: enter days, then begin-end military times, e.g. MoWeFr800-1700'
+  }
+  const begin = Number.parseInt(match[2], 10)
+  const end = Number.parseInt(match[3], 10)
+  if (begin > 2359 || end > 2359 || begin % 100 > 59 || end % 100 > 59) {
+    return 'The times must be military clock values between 0 and 2359'
+  }
+  if (begin > end) {
+    return 'The begin time must be before the end time. Split overnight coverage into two schedules.'
+  }
+  if (begin === end) {
+    return 'The begin and end times are the same, so this window never matches. Pick a later end time.'
+  }
+  return null
+}
+
+const valid = computed(() => rows.value.every(row => isComplete(row) && !overnightBlocks(row) && !emptyWindowBlocks(row) && !rawProblem(row)))
 
 watch(valid, value => emit('update:valid', value), { immediate: true })
 
