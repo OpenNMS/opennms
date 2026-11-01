@@ -48,10 +48,13 @@ export const useGroupAdminStore = defineStore('groupAdminStore', () => {
     editMode.value = AdminEditMode.Table
   }
 
-  // a failed read keeps the previous list on screen
+  // a failed read keeps the previous list on screen, and only the latest read sets it: a slow first
+  // load must not replace the list read after a write
+  let latestRead = 0
   const getGroups = async (): Promise<ValidationResult> => {
+    const read = ++latestRead
     const result = await API.getManagedGroups()
-    if (result.success) {
+    if (result.success && read === latestRead) {
       groups.value = result.payload ?? []
     }
     return result

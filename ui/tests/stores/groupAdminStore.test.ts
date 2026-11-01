@@ -89,6 +89,21 @@ describe('useGroupAdminStore', () => {
     expect(showSnackBar).not.toHaveBeenCalled()
   })
 
+  it('a slow earlier read does not replace the list of a later one', async () => {
+    let finishFirst: (value: ReturnType<typeof loaded<ManagedGroup[]>>) => void = () => {}
+    vi.mocked(API.getManagedGroups)
+      .mockReturnValueOnce(new Promise((resolve) => {
+        finishFirst = resolve
+      }))
+      .mockResolvedValueOnce(loaded(mockGroups))
+    const first = store.getGroups()
+    await store.getGroups()
+    finishFirst(loaded([]))
+    await first
+
+    expect(store.groups).toEqual(mockGroups)
+  })
+
   it('getGroups returns the read result', async () => {
     vi.mocked(API.getManagedGroups).mockResolvedValue(failed(UNAVAILABLE))
 

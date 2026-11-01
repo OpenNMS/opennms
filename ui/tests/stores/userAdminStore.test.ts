@@ -71,6 +71,21 @@ describe('useUserAdminStore', () => {
     expect(showSnackBar).not.toHaveBeenCalled()
   })
 
+  it('a slow earlier read does not replace the list of a later one', async () => {
+    let finishFirst: (value: ReturnType<typeof loaded<ManagedUser[]>>) => void = () => {}
+    vi.mocked(API.getManagedUsers)
+      .mockReturnValueOnce(new Promise((resolve) => {
+        finishFirst = resolve
+      }))
+      .mockResolvedValueOnce(loaded(mockUsers))
+    const first = store.getUsers()
+    await store.getUsers()
+    finishFirst(loaded([]))
+    await first
+
+    expect(store.users).toEqual(mockUsers)
+  })
+
   it('getUsers returns the read result', async () => {
     vi.mocked(API.getManagedUsers).mockResolvedValue(failed(UNAVAILABLE))
 

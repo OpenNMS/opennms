@@ -47,10 +47,13 @@ export const useUserAdminStore = defineStore('userAdminStore', () => {
     editMode.value = AdminEditMode.Table
   }
 
-  // a failed read keeps the previous list on screen
+  // a failed read keeps the previous list on screen, and only the latest read sets it: a slow first
+  // load must not replace the list read after a write
+  let latestRead = 0
   const getUsers = async (): Promise<ValidationResult> => {
+    const read = ++latestRead
     const result = await API.getManagedUsers()
-    if (result.success) {
+    if (result.success && read === latestRead) {
       users.value = result.payload ?? []
     }
     return result
