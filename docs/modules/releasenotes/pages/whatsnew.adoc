@@ -116,8 +116,9 @@ See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-fil
 The upgrade copies `users.xml`, `groups.xml` and `security-roles.properties` into the database and copies the original files to `etc_archive/`.
 The data now lives in the database: manage it through the pages and the REST APIs.
 
-Users and groups must not be named `.`, `..`, `item`, `available-roles` or `available-categories`.
-If `users.xml` or `groups.xml` has one of these names, the upgrade copies nothing and the install log names the entries.
+Users must not be named `.`, `..`, `item` or `available-roles`, and groups must not be named `.`, `..`, `item` or `available-categories`.
+If `users.xml` or `groups.xml` has one of these names, the upgrade copies none of the users and groups, and the install log has a warning that names the entries.
+The installer still finishes and reports success, so check its log for this warning.
 Rename them in the files, and wherever the files refer to them (group members, on-call roles, destination paths in `notifications.xml`), then run the installer again.
 Until then, {page-component-title} has no users, so no one can log in.
 

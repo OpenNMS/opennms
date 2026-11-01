@@ -24,19 +24,18 @@ package org.opennms.netmgt.model.usermgmt;
 import java.util.List;
 
 /**
- * The names no user or group may have. The v2 API addresses a user or group by its name as a path segment
+ * The names no user, or no group, may have. The v2 API addresses a user or group by its name as a path segment
  * ({@code /users/{userId}}, {@code /groups/{name}}): a client resolves {@code .} and {@code ..} away before
- * sending, and the other names are endpoints of their own. The v2 API refuses them as new names, and the
- * migration of users.xml and groups.xml stops on them. The match is exact, as the path match is.
+ * sending, and the other names are endpoints of their own in that collection ({@code /users/available-roles},
+ * {@code /groups/available-categories}). The v2 API refuses them as new names, and the migration of users.xml and
+ * groups.xml stops on them. The match is exact, as the path match is.
  */
 public final class ReservedNames {
 
-    public static final List<String> NAMES = List.of(".", "..", "item", "available-roles", "available-categories");
+    public static final List<String> USER_IDS = List.of(".", "..", "item", "available-roles");
+
+    public static final List<String> GROUP_NAMES = List.of(".", "..", "item", "available-categories");
 
     private ReservedNames() {
-    }
-
-    public static boolean isReserved(final String name) {
-        return NAMES.contains(name);
     }
 }

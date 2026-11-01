@@ -45,6 +45,7 @@ import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
 import org.opennms.netmgt.model.usermgmt.ContactType;
 import org.opennms.netmgt.model.usermgmt.OnCallRole;
+import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.netmgt.model.usermgmt.SecurityRole;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.netmgt.model.usermgmt.UserContact;
@@ -160,7 +161,7 @@ public class UsersRestService implements UsersRestApi {
             throw m_support.badRequest("A userId is required.");
         }
         final String userId = request.getUserId().trim();
-        final String userIdProblem = UserMgmtValidation.validateName(userId, "userId");
+        final String userIdProblem = UserMgmtValidation.validateName(userId, "userId", ReservedNames.USER_IDS);
         if (userIdProblem != null) {
             throw m_support.badRequest(userIdProblem);
         }
@@ -286,7 +287,7 @@ public class UsersRestService implements UsersRestApi {
             throw m_support.badRequest("The system user " + userId + " cannot be renamed.");
         }
         final String newUserId = body.getNewUserId().trim();
-        final String userIdProblem = UserMgmtValidation.validateName(newUserId, "userId");
+        final String userIdProblem = UserMgmtValidation.validateName(newUserId, "userId", ReservedNames.USER_IDS);
         if (userIdProblem != null) {
             throw m_support.badRequest(userIdProblem);
         }

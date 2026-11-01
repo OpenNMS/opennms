@@ -29,16 +29,19 @@ const INVALID_COMMENTS = /[&<>"`']/
 // UserMgmtValidation.FREE_TEXT_LENGTH: comments longer than this are rejected, counted in code points once trimmed
 export const FREE_TEXT_LENGTH = 4096
 const EMAIL_SHAPE = /[^\s@]+@[^\s@]+/
-// ReservedNames.NAMES: no user or group may have these names. The browser resolves . and .. away in a URL path,
-// and the others are endpoints of their own under /users and /groups
-export const RESERVED_ADMIN_NAMES = ['.', '..', 'item', 'available-roles', 'available-categories']
+// ReservedNames.USER_IDS and GROUP_NAMES: the names no user, or no group, may have. The browser resolves . and ..
+// away in a URL path, and the others are endpoints of their own under /users or /groups
+export const RESERVED_USER_IDS = ['.', '..', 'item', 'available-roles']
+export const RESERVED_GROUP_NAMES = ['.', '..', 'item', 'available-categories']
 
 /**
  * Validates a new user-id or group name, as UserMgmtValidation.validateName does.
  * Returns a problem description, or null when the value is acceptable.
  * Emptiness is not checked here; required-ness is a per-form concern.
+ *
+ * @param reserved the reserved names of its collection: RESERVED_USER_IDS or RESERVED_GROUP_NAMES
  */
-export const validateAdminName = (value: string, label: string): string | null => {
+export const validateAdminName = (value: string, label: string, reserved: string[]): string | null => {
   const trimmed = value.trim()
   if (!trimmed) {
     return null
@@ -46,7 +49,7 @@ export const validateAdminName = (value: string, label: string): string | null =
   if (INVALID_NAME.test(trimmed)) {
     return `The ${label} must not contain markup, whitespace, control or invisible characters, or the characters : / \\ % ? #`
   }
-  if (RESERVED_ADMIN_NAMES.includes(trimmed)) {
+  if (reserved.includes(trimmed)) {
     return `The ${label} "${trimmed}" is reserved.`
   }
   return null

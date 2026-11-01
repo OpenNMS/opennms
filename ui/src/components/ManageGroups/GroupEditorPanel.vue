@@ -215,7 +215,7 @@ import KeyboardArrowDown from '@opennms/onms-ui/icons/hardware/KeyboardArrowDown
 import KeyboardArrowUp from '@opennms/onms-ui/icons/hardware/KeyboardArrowUp.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
-import { validateAdminComments, validateAdminName, validateReservedName } from '@/lib/adminValidation'
+import { RESERVED_GROUP_NAMES, validateAdminComments, validateAdminName, validateReservedName } from '@/lib/adminValidation'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { ManagedGroup, ManagedGroupCreate, PROTECTED_GROUP_NAMES } from '@/types/groupAdmin'
 
@@ -254,7 +254,7 @@ const originalName = computed(() => props.group?.name ?? '')
 
 const addableUsers = computed(() => store.memberCandidates.filter(u => !members.value.includes(u)))
 
-const nameProblem = computed(() => (isEditing.value ? null : validateAdminName(name.value, 'group name') || validateReservedName(name.value, PROTECTED_GROUP_NAMES, 'group name')))
+const nameProblem = computed(() => (isEditing.value ? null : validateAdminName(name.value, 'group name', RESERVED_GROUP_NAMES) || validateReservedName(name.value, PROTECTED_GROUP_NAMES, 'group name')))
 
 // a hand-edited comment that predates this page stays editable: only
 // changed input is validated (the server grandfathers unchanged values too)

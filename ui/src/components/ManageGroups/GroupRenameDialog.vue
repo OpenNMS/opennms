@@ -56,7 +56,7 @@ import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
-import { validateAdminName, validateReservedName } from '@/lib/adminValidation'
+import { RESERVED_GROUP_NAMES, validateAdminName, validateReservedName } from '@/lib/adminValidation'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { PROTECTED_GROUP_NAMES } from '@/types/groupAdmin'
 
@@ -76,7 +76,7 @@ const newName = ref('')
 const saving = ref(false)
 const errorText = ref('')
 
-const nameProblem = computed(() => validateAdminName(newName.value, 'group name') || validateReservedName(newName.value, PROTECTED_GROUP_NAMES, 'group name'))
+const nameProblem = computed(() => validateAdminName(newName.value, 'group name', RESERVED_GROUP_NAMES) || validateReservedName(newName.value, PROTECTED_GROUP_NAMES, 'group name'))
 
 watch(
   () => props.visible,

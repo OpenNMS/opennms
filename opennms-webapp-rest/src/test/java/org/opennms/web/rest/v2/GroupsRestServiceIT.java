@@ -1186,15 +1186,18 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testReservedNamesAreRefused() throws Exception {
-        committing(MIGRATED, ".", "..", "item", "available-roles", "available-categories");
+        committing(MIGRATED, ".", "..", "item", "available-categories", "available-roles");
         createGroup(MIGRATED, g -> { });
-        for (final String name : new String[] { ".", "..", "item", "available-roles", "available-categories" }) {
+        for (final String name : new String[] { ".", "..", "item", "available-categories" }) {
             final String message = "The group name \"" + name + "\" is reserved.";
             assertEquals(message, exec(POST, "/groups", "{\"name\":\"" + name + "\"}", null, 400).getContentAsString());
             assertEquals(message, exec(POST, "/groups/item/rename" + byName(MIGRATED), "{\"newName\":\"" + name + "\"}", null, 400).getContentAsString());
             assertEquals(0, groupRowCount(name));
         }
         assertEquals(1, groupRowCount(MIGRATED));
+        // /groups has no available-roles endpoint, so the path reaches that group
+        exec(POST, "/groups", "{\"name\":\"available-roles\"}", null, 201);
+        assertEquals("available-roles", new JSONObject(getJson("/groups/available-roles", 200)).getString("name"));
     }
 
     @Test

@@ -359,6 +359,22 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
     }
 
     @Test
+    public void testTheEndpointNamesOfTheOtherCollectionAreCopied() throws Exception {
+        copyFixtures();
+        // /users has no available-categories endpoint, and /groups no available-roles one
+        write("users.xml", "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><users>"
+                + "<user><user-id>available-categories</user-id><password>x</password></user>"
+                + "</users></userinfo>");
+        write("groups.xml", "<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\"><groups>"
+                + "<group><name>available-roles</name></group></groups></groupinfo>");
+
+        migrate();
+
+        assertEquals(1, m_jdbc.queryForObject("SELECT COUNT(*) FROM users WHERE username = 'available-categories'", Integer.class).intValue());
+        assertEquals(1, m_jdbc.queryForObject("SELECT COUNT(*) FROM groups WHERE name = 'available-roles'", Integer.class).intValue());
+    }
+
+    @Test
     public void testAFailedWriteLeavesNothingBehind() throws Exception {
         copyFixtures();
         // fails the last step, after the users and groups are written

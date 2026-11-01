@@ -165,7 +165,7 @@ A group name must not contain:
 * Whitespace.
 * Control or invisible characters.
 
-A group name must not be `.`, `..`, `item`, `available-roles` or `available-categories`: a create or rename to one of them returns `400` with the message `The group name "<name>" is reserved.`
+A group name must not be `.`, `..`, `item` or `available-categories`: a create or rename to one of them returns `400` with the message `The group name "<name>" is reserved.`
 It is at most 256 characters long.
 The name `Admin` is reserved: a create or rename to a case variant of it (for example `admin`) returns `400` with the message `The group name "<name>" is reserved.`
 The rules apply to `name` on create and to `newName` on rename.

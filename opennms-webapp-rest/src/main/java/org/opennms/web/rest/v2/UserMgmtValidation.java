@@ -75,12 +75,13 @@ final class UserMgmtValidation {
      * Returns a problem description, or null when the user id or group name is acceptable.
      *
      * @param label what the value is called in the message, e.g. "userId" or "group name"
+     * @param reserved the names of its collection, {@link ReservedNames#USER_IDS} or {@link ReservedNames#GROUP_NAMES}
      */
-    static String validateName(final String name, final String label) {
+    static String validateName(final String name, final String label, final Collection<String> reserved) {
         if (INVALID_NAME.matcher(name).find()) {
             return "The " + label + " must not contain markup, whitespace, control or invisible characters, or the characters : / \\ % ? #";
         }
-        if (ReservedNames.isReserved(name)) {
+        if (reserved.contains(name)) {
             return "The " + label + " \"" + name + "\" is reserved.";
         }
         return null;

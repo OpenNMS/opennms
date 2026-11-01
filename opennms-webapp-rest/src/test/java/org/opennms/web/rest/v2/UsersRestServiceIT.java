@@ -1187,13 +1187,16 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testReservedNamesAreRefused() throws Exception {
         committing(MIGRATED, ".", "..", "item", "available-roles", "available-categories");
         createUser(MIGRATED, u -> { });
-        for (final String name : new String[] { ".", "..", "item", "available-roles", "available-categories" }) {
+        for (final String name : new String[] { ".", "..", "item", "available-roles" }) {
             final String message = "The userId \"" + name + "\" is reserved.";
             assertEquals(message, exec(POST, "/users", "{\"userId\":\"" + name + "\",\"password\":\"x\"}", null, 400).getContentAsString());
             assertEquals(message, exec(POST, "/users/item/rename" + byId(MIGRATED), "{\"newUserId\":\"" + name + "\"}", null, 400).getContentAsString());
             assertEquals(0, rowCount("users", "username", name));
         }
         assertEquals(1, rowCount("users", "username", MIGRATED));
+        // /users has no available-categories endpoint, so the path reaches that user
+        exec(POST, "/users", "{\"userId\":\"available-categories\",\"password\":\"x\"}", null, 201);
+        assertEquals("available-categories", new JSONObject(getJson("/users/available-categories", 200)).getString("userId"));
     }
 
     @Test

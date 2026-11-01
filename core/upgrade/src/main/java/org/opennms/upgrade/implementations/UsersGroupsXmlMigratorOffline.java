@@ -224,16 +224,17 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
     private static void checkNoReservedNames(final Userinfo userinfo, final Groupinfo groupinfo) throws OnmsUpgradeException {
         final List<String> found = new ArrayList<>();
         if (userinfo != null) {
-            userinfo.getUsers().stream().map(User::getUserId).filter(ReservedNames::isReserved).distinct()
+            userinfo.getUsers().stream().map(User::getUserId).filter(ReservedNames.USER_IDS::contains).distinct()
                     .forEach(name -> found.add("the user '" + name + "'"));
         }
         if (groupinfo != null) {
-            groupinfo.getGroups().stream().map(Group::getName).filter(ReservedNames::isReserved).distinct()
+            groupinfo.getGroups().stream().map(Group::getName).filter(ReservedNames.GROUP_NAMES::contains).distinct()
                     .forEach(name -> found.add("the group '" + name + "'"));
         }
         if (!found.isEmpty()) {
-            throw new OnmsUpgradeException("Nothing was copied: users and groups must not be named "
-                    + String.join(", ", ReservedNames.NAMES) + ", but the files have " + String.join(", ", found)
+            throw new OnmsUpgradeException("Nothing was copied: users must not be named " + String.join(", ", ReservedNames.USER_IDS)
+                    + ", and groups must not be named " + String.join(", ", ReservedNames.GROUP_NAMES)
+                    + ", but the files have " + String.join(", ", found)
                     + ". Rename them in users.xml and groups.xml, and where the files refer to them (group members, on-call roles, "
                     + "destination paths in notifications.xml), then run the installer again.");
         }

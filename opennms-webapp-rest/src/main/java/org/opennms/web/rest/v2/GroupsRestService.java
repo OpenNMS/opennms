@@ -46,6 +46,7 @@ import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.usermgmt.OnCallRole;
+import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.netmgt.model.usermgmt.UserGroup;
 import org.opennms.web.rest.v2.api.GroupsRestApi;
@@ -163,7 +164,7 @@ public class GroupsRestService implements GroupsRestApi {
             throw m_support.badRequest("A group name is required.");
         }
         final String name = dto.getName().trim();
-        final String nameProblem = UserMgmtValidation.validateName(name, "group name");
+        final String nameProblem = UserMgmtValidation.validateName(name, "group name", ReservedNames.GROUP_NAMES);
         if (nameProblem != null) {
             throw m_support.badRequest(nameProblem);
         }
@@ -245,7 +246,7 @@ public class GroupsRestService implements GroupsRestApi {
             throw m_support.badRequest("The system group " + name + " cannot be renamed.");
         }
         final String newName = body.getNewName().trim();
-        final String nameProblem = UserMgmtValidation.validateName(newName, "group name");
+        final String nameProblem = UserMgmtValidation.validateName(newName, "group name", ReservedNames.GROUP_NAMES);
         if (nameProblem != null) {
             throw m_support.badRequest(nameProblem);
         }
