@@ -192,17 +192,21 @@ final class NodeInfoScan implements RunInBatch {
             } else {
                 node = getNode();
             }
+            NodePolicy abortingPolicy = null;
             for(NodePolicy policy : nodePolicies) {
                 if (node != null) {
                     LOG.info("Applying NodePolicy {}({}) to {}", policy.getClass(), policy, node.getLabel());
                     node = policy.apply(node, Collections.emptyMap());
+                    if (node == null) {
+                        abortingPolicy = policy;
+                    }
                 }
             }
         
             if (node == null) {
                 restoreCategories = false;
                 if (!isAborted()) {
-                    String reason = "Aborted scan of node due to configured policy";
+                    String reason = NodeScan.policyAbortReason(abortingPolicy);
                     abort(reason);
                 }
             } else {
