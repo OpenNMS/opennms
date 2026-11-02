@@ -19,6 +19,10 @@
  * language governing permissions and limitations under the
  * License.
  */
+// This module carries global AngularJS setup (loading bar, ngResource, ui.router,
+// onms.http, angular-bootstrap-toggle and hashPrefix('')) formerly provided by the
+// removed onms-central-search module. Many apps depend on onms.default.apps for it,
+// so do not remove it as unused.
 const angular = require('vendor/angular-js');
 require('../../lib/onms-http');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle');
