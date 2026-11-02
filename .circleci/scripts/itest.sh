@@ -93,9 +93,9 @@ retry sudo apt update && \
             retry sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
                 r-base \
                 "rrdtool=$RRDTOOL_VERSION" \
-                jrrd2 \
-                jicmp \
-                jicmp6 \
+                jrrd2=2.0.4 \
+                jicmp=3.0.4-1 \
+                jicmp6=3.0.4-1 \
                 openjdk-11-jdk-headless \
             || exit 1
 
