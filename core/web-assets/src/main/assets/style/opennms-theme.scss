@@ -359,6 +359,11 @@ iframe.vaadin-fullscreen {
   --onms-legacy-content-offset: calc(var(--onms-header-height, 3.75rem) + 0.25rem);
 }
 
+// Framed pages (see bootstrap.jsp) render no menu, so they need no offset.
+.onms-embedded {
+  --onms-legacy-content-offset: 0px;
+}
+
 // Main content container for all pages, used in bootstrap.jsp
 #content {
   // The Vue top menu bar and side menu rail are both position:fixed, so page

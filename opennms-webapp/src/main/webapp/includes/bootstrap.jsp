@@ -249,6 +249,15 @@
         // localStorage unavailable; fall through to the default theme
       }
       document.documentElement.classList.add(theme);
+      // Mirrors isFramed() in ui/src/lib/framing.ts; a framed page gets no menu.
+      try {
+        if (window.self !== window.top) {
+          document.documentElement.classList.add('onms-embedded');
+        }
+      } catch (e) {
+        // top is not accessible (cross-origin), so we are framed
+        document.documentElement.classList.add('onms-embedded');
+      }
     })();
   </script>
   <% if (__menuAssetsAllowed) { %>
@@ -295,13 +304,6 @@
 <%= ">" %>
 
 <!-- Bootstrap header -->
-<c:choose>
-  <c:when test='${__bs_flags.contains("quiet")}'>
-    <!-- No visual header is being displayed -->
-  </c:when>
-  <c:otherwise>
-  </c:otherwise>
-</c:choose>
 <!-- End bootstrap header -->
 
 <!-- Body -->
@@ -331,10 +333,8 @@
       <jsp:param name="asset" value="onms-default-apps" />
     </jsp:include>
 
-    <%-- Logout form, expected to exist on some pages. --%>
-    <c:if test='${(__bs_includeLogoutForm != null) && (__bs_includeLogoutForm.contains("true"))}'>
-      <form id="headerLogoutForm" name="headerLogoutForm" action="${baseHref}j_spring_security_logout" method="post"></form>
-    </c:if>
+    <%-- Logout form, on every logged-in page: AngularJS submits it on a 401 (see onms-http). --%>
+    <% if (__menuAssetsAllowed) { %><form id="headerLogoutForm" name="headerLogoutForm" action="<%= __baseHref %>j_spring_security_logout" method="post"></form><% } %>
 
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
 
