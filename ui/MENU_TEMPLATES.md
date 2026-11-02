@@ -10,7 +10,7 @@ The `menu-template.json` file controls the menu configuration.
 
 It is read by the Rest API v2 Menu service and displayed by the UI.
 
-Configuration changes made in the file will take effect as soon as the browser page is refreshed (no need to restart OpenNMS).
+Configuration changes made in the file will take effect as soon as the browser page is refreshed (no need to restart OpenNMS). The search "Open ..." results are cached per user and pick up changes within 5 minutes.
 
 Two template files are installed:
 

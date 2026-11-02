@@ -23,7 +23,6 @@ package org.opennms.web.rest.support.menu;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 

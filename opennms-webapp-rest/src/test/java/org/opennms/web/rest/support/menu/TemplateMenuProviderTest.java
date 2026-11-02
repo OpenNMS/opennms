@@ -26,16 +26,36 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Test;
 import org.opennms.web.navigate.DisplayStatus;
 import org.opennms.web.navigate.MenuContext;
 import org.opennms.web.navigate.MenuEntry;
+import org.springframework.mock.web.MockServletContext;
 
 public class TemplateMenuProviderTest {
     private static final String SHIPPED = "src/main/webapp/WEB-INF/menu/menu-template.json";
+
+    private static final String TEST_PROP = "org.opennms.test.menuTemplateProviderTest.flag";
+
+    @After
+    public void clearProperty() {
+        System.clearProperty(TEST_PROP);
+    }
+
+    private static Path writeTemplate(String json) throws Exception {
+        Path dir = Files.createTempDirectory("menu-template-test");
+        Path file = dir.resolve("WEB-INF/menu/menu-template.json");
+        Files.createDirectories(file.getParent());
+        Files.writeString(file, json);
+        file.toFile().deleteOnExit();
+        return file;
+    }
 
     private static MenuContext ctx(Set<String> roles, boolean all) {
         return new MenuContext() {
@@ -112,5 +132,56 @@ public class TemplateMenuProviderTest {
     @Test
     public void missingTemplateYieldsEmptyList() {
         assertTrue(new TemplateMenuProvider("/nonexistent/menu-template.json").getMenu(ctx(Set.of(), true)).isEmpty());
+    }
+
+    @Test
+    public void requiredSystemPropertiesAreHonored() throws Exception {
+        Path file = writeTemplate("{\"menus\":[{\"name\":\"Gated\",\"url\":\"gated.jsp\",\"action\":\"link\","
+                + "\"requiredSystemProperties\":[{\"name\":\"" + TEST_PROP + "\",\"value\":\"true\"}]}]}");
+        TemplateMenuProvider provider = new TemplateMenuProvider(file.toString());
+
+        assertEquals(null, byName(provider.getMenu(ctx(Set.of(), true)), "Gated"));
+
+        System.setProperty(TEST_PROP, "true");
+        assertNotNull(byName(provider.getMenu(ctx(Set.of(), true)), "Gated"));
+    }
+
+    @Test
+    public void deeplyNestedLeafIsIncluded() throws Exception {
+        Path file = writeTemplate("{\"menus\":[{\"name\":\"Top\",\"url\":\"#\",\"items\":["
+                + "{\"name\":\"Mid\",\"url\":\"#\",\"items\":[{\"name\":\"Deep\",\"url\":\"deep.jsp\"}]}]}]}");
+        List<MenuEntry> entries = new TemplateMenuProvider(file.toString()).getMenu(ctx(Set.of(), true));
+
+        assertNotNull(byName(entries, "Deep"));
+        assertEquals(1, entries.size());
+    }
+
+    @Test
+    public void resolvedPlaceholderPathIsReRootedAtServletContextWebInf() throws Exception {
+        Path file = writeTemplate("{\"menus\":[{\"name\":\"Rerooted\",\"url\":\"r.jsp\",\"action\":\"link\"}]}");
+        Path webInf = file.getParent().getParent();
+        MockServletContext sc = new MockServletContext() {
+            @Override public String getRealPath(String path) { return "/WEB-INF".equals(path) ? webInf.toString() : null; }
+        };
+        TemplateMenuProvider provider = new TemplateMenuProvider("/nonexistent/opennms-home/jetty-webapps/opennms/WEB-INF/menu/menu-template.json");
+        provider.setServletContext(sc);
+
+        assertNotNull(byName(provider.getMenu(ctx(Set.of(), true)), "Rerooted"));
+    }
+
+    @Test
+    public void nullRealPathFallsBackToConfiguredPath() {
+        MockServletContext sc = new MockServletContext() {
+            @Override public String getRealPath(String path) { return null; }
+        };
+        TemplateMenuProvider provider = new TemplateMenuProvider(SHIPPED);
+        provider.setServletContext(sc);
+
+        assertNotNull(byName(provider.getMenu(ctx(Set.of(), true)), "Alarms"));
+    }
+
+    @Test
+    public void noServletContextUsesConfiguredPath() {
+        assertNotNull(byName(new TemplateMenuProvider(SHIPPED).getMenu(ctx(Set.of(), true)), "Alarms"));
     }
 }

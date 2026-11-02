@@ -39,6 +39,10 @@ public final class MenuEntryFilter {
     }
 
     public static List<MenuEntry> filter(List<MenuEntry> entries, MenuFilterContext ctx) {
+        return filter(entries, ctx, true);
+    }
+
+    private static List<MenuEntry> filter(List<MenuEntry> entries, MenuFilterContext ctx, boolean topLevel) {
         List<MenuEntry> result = new ArrayList<>();
 
         if (entries == null) {
@@ -54,9 +58,9 @@ public final class MenuEntryFilter {
             boolean hadItems = entry.items != null && !entry.items.isEmpty();
 
             if (hadItems) {
-                copy.items = filter(entry.items, ctx);
+                copy.items = filter(entry.items, ctx, false);
 
-                if (copy.items.isEmpty() && !isNavigable(entry)) {
+                if (copy.items.isEmpty() && !isNavigable(entry, topLevel)) {
                     continue;
                 }
             }
@@ -88,8 +92,18 @@ public final class MenuEntryFilter {
         return true;
     }
 
-    private static boolean isNavigable(MenuEntry e) {
-        return (!Strings.isNullOrEmpty(e.url) && !"#".equals(e.url)) || LINK_ACTION.equals(e.action);
+    /**
+     * Whether an entry emptied by filtering still works as a link. The side menu only turns a
+     * top-level entry into a link when its action is "link"; nested entries with a url are links.
+     */
+    private static boolean isNavigable(MenuEntry e, boolean topLevel) {
+        final boolean hasUrl = !Strings.isNullOrEmpty(e.url) && !"#".equals(e.url);
+
+        if (topLevel) {
+            return hasUrl && LINK_ACTION.equals(e.action);
+        }
+
+        return hasUrl || LINK_ACTION.equals(e.action);
     }
 
     private static boolean isSeparator(MenuEntry e) {

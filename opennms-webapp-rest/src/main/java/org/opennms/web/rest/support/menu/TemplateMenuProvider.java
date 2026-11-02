@@ -42,6 +42,8 @@ import org.springframework.web.context.ServletContextAware;
 public class TemplateMenuProvider implements org.opennms.web.api.MenuProvider, ServletContextAware {
     private static final Logger LOG = LoggerFactory.getLogger(TemplateMenuProvider.class);
 
+    private static final String WEB_INF = "/WEB-INF";
+
     private final String menuTemplateFilePath;
     private volatile ServletContext servletContext;
 
@@ -88,13 +90,22 @@ public class TemplateMenuProvider implements org.opennms.web.api.MenuProvider, S
             return menuTemplateFilePath;
         }
 
-        if (sc.getRealPath("/WEB-INF") == null) {
-            // e.g. unexpanded WAR; resolve() would otherwise produce "null/..."
+        final String realWebInf = sc.getRealPath("/WEB-INF");
+
+        if (realWebInf == null) {
+            // e.g. unexpanded WAR
             LOG.warn("Could not determine real path of /WEB-INF; using configured menu template path '{}'", menuTemplateFilePath);
             return menuTemplateFilePath;
         }
 
-        return MenuTemplatePaths.resolve(menuTemplateFilePath, sc);
+        // The placeholder may already have been resolved by Spring, so re-root on the WEB-INF segment itself.
+        final int idx = menuTemplateFilePath.lastIndexOf(WEB_INF);
+
+        if (idx < 0) {
+            return menuTemplateFilePath;
+        }
+
+        return realWebInf + menuTemplateFilePath.substring(idx + WEB_INF.length());
     }
 
     private static void collect(List<MenuEntry> entries, boolean topLevel, List<org.opennms.web.navigate.MenuEntry> result) {

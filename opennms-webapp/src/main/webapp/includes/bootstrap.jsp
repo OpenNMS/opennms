@@ -58,9 +58,8 @@
   
   This include JSP takes two parameters:
     title (required): used in the middle of the header bar
-    location (optional): used to "dull out" the item in the menu bar
-      that has a link to the location given  (for example, on the
-      outage/index.jsp, give the location "outages")
+    location (optional): accepted for page identification only; it is not
+      used by this include and no longer affects the menu
     nomenujs (optional): "true" to omit the Vue menu bundle's modulepreload
       link, for pages that never mount the menu but still use the bundle's
       stylesheet (also settable as the Bootstrap "nomenujs" flag). Without
@@ -302,9 +301,6 @@
   class="fixed-nav"
 </c:if>
 <%= ">" %>
-
-<!-- Bootstrap header -->
-<!-- End bootstrap header -->
 
 <!-- Body -->
 <%-- This <div> tag is unmatched in this file (its matching tag is in the

@@ -115,6 +115,32 @@ public class MenuEntryFilterTest {
     }
 
     @Test
+    public void dropsTopLevelGroupWithUrlButNoLinkActionAndNoVisibleChildren() {
+        MenuEntry parent = group("Help", "https://docs.example.com", adminOnly("child"));
+
+        assertTrue(MenuEntryFilter.filter(List.of(parent), USER).isEmpty());
+    }
+
+    @Test
+    public void keepsTopLevelGroupWithLinkActionAndNoVisibleChildren() {
+        MenuEntry parent = group("Help", "https://docs.example.com", adminOnly("child"));
+        parent.action = "link";
+
+        assertEquals(List.of("Help"), names(MenuEntryFilter.filter(List.of(parent), USER)));
+    }
+
+    @Test
+    public void keepsNestedGroupWithUrlAndNoVisibleChildren() {
+        MenuEntry nested = group("Nested", "nested.jsp", adminOnly("child"));
+        MenuEntry top = group("Top", "#", nested);
+
+        List<MenuEntry> result = MenuEntryFilter.filter(List.of(top), USER);
+
+        assertEquals(List.of("Top"), names(result));
+        assertEquals(List.of("Nested"), names(result.get(0).items));
+    }
+
+    @Test
     public void collapsesSeparators() {
         List<MenuEntry> in = List.of(separator(), entry("A", "a"), separator(), separator(), entry("B", "b"), separator());
         assertEquals(List.of("A", "separator", "B"), names(MenuEntryFilter.filter(in, USER)));
