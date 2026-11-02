@@ -40,8 +40,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.BadRequestException;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -92,9 +90,14 @@ public class FilesystemRestServiceTest {
         httpServer.stop(0);
     }
 
-    @Test(expected = BadRequestException.class)
-    public void testXmlWithDoctypeIsRejected() {
-        new FilesystemRestService(null).maybeValidateXml(new File("src/test/resources/NMS-20521/doctype.xml"));
+    @Test
+    public void testJettyDoctypeIsAccepted() throws IOException {
+        final File file = File.createTempFile("jetty", ".xml");
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!DOCTYPE Configure PUBLIC \"-//Jetty//Configure//EN\" \"http://www.eclipse.org/jetty/configure.dtd\">\n"
+                + "<Configure id=\"Server\"/>");
+        new FilesystemRestService(null).maybeValidateXml(file);
     }
 
     private String loadDtdFile() throws IOException {

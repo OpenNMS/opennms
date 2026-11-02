@@ -29,7 +29,9 @@
 package org.opennms.systemreport.system;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.systemreport.sanitizer.FileSanitizationException;
 import org.opennms.systemreport.sanitizer.XmlFileSanitizer;
@@ -39,12 +41,17 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 
 public class XmlFileSanitizerTest {
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
     private XmlFileSanitizer xmlFileSanitizer;
 
     public XmlFileSanitizerTest() {
@@ -118,9 +125,41 @@ public class XmlFileSanitizerTest {
         xmlFileSanitizer.getSanitizedResource(file);
     }
 
-    @Test(expected = FileSanitizationException.class)
-    public void testDoctypeIsRejected() throws FileSanitizationException {
-        File file = new File("target/test-classes/mock/doctype.xml");
-        xmlFileSanitizer.getSanitizedResource(file);
+    @Test
+    public void testExternalEntityIsNotResolved() throws Exception {
+        final File secret = temporaryFolder.newFile("secret.txt");
+        Files.writeString(secret.toPath(), "secretFileContent");
+        final File file = writeXml("<!DOCTYPE root [<!ENTITY xxe SYSTEM \"" + secret.toURI() + "\">]>"
+                + "<root><description>&xxe;</description></root>");
+        final String content = sanitize(file);
+        assertFalse(content.contains("secretFileContent"));
+    }
+
+    @Test
+    public void testJettyDoctypeIsAccepted() throws Exception {
+        final File file = writeXml("<!DOCTYPE Configure PUBLIC \"-//Jetty//Configure//EN\" \"http://www.eclipse.org/jetty/configure.dtd\">"
+                + "<Configure id=\"Server\"/>");
+        final String content = sanitize(file);
+        assertTrue(content.contains("<Configure id=\"Server\""));
+    }
+
+    @Test
+    public void testPasswordInInternalEntityIsSanitized() throws Exception {
+        final File file = writeXml("<!DOCTYPE root [<!ENTITY creds \"<password>secretValue</password>\">]>"
+                + "<root>&creds;</root>");
+        final String content = sanitize(file);
+        assertFalse(content.contains("secretValue"));
+    }
+
+    private File writeXml(final String xml) throws IOException {
+        final File file = temporaryFolder.newFile("test.xml");
+        Files.writeString(file.toPath(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + xml);
+        return file;
+    }
+
+    private String sanitize(final File file) throws FileSanitizationException, IOException {
+        final Resource result = xmlFileSanitizer.getSanitizedResource(file);
+        return new BufferedReader(new InputStreamReader(result.getInputStream()))
+                .lines().collect(Collectors.joining("\n"));
     }
 }

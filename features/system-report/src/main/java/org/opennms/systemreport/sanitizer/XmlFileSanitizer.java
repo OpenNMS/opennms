@@ -73,14 +73,13 @@ public class XmlFileSanitizer implements ConfigFileSanitizer {
 
     public XmlFileSanitizer() throws ParserConfigurationException, TransformerConfigurationException {
         this.xPath = XPathFactory.newInstance().newXPath();
-        // Users can change the files under etc/, so do not process DTDs or external entities
+        // Users can change the files under etc/, so do not load external entities or external DTDs.
+        // Keep DOCTYPE support: etc/jetty.xml has a DOCTYPE.
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
         factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         factory.setXIncludeAware(false);
-        factory.setExpandEntityReferences(false);
         this.builder = factory.newDocumentBuilder();
         this.transformer = TransformerFactory.newInstance().newTransformer();
     }
