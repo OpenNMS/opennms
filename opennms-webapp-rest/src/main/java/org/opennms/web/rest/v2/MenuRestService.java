@@ -105,7 +105,6 @@ public class MenuRestService {
                           "name": "",
                           "url": null,
                           "isExternalLink": null,
-                          "locationMatch": null,
                           "action": null,
                           "linkTarget": null,
                           "icon": null,

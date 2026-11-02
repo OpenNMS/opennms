@@ -33,7 +33,6 @@ const createMenuItem = (id: string, name: string) => {
     id,
     name,
     url: null,
-    locationMatch: null,
     roles: null
   } as MenuItem
 }
@@ -44,7 +43,6 @@ const createTopMenuItem = (id: string, name: string, items: MenuItem[], url?: st
     name,
     items,
     url: (url && url.length > 0) ? url : null,
-    locationMatch: null,
     roles: null
   } as MenuItem
 }

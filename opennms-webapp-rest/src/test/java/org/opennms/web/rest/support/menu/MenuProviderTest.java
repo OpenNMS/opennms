@@ -21,6 +21,9 @@
  */
 package org.opennms.web.rest.support.menu;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +35,9 @@ import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.startsWith;
@@ -41,6 +46,23 @@ import org.opennms.web.rest.support.menu.model.MainMenu;
 import org.opennms.web.rest.support.menu.model.MenuEntry;
 
 public class MenuProviderTest {
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
+
+    @Test
+    public void parsesTemplateWithUnknownProperties() throws Exception {
+        File file = tempFolder.newFile("menu-template.json");
+        String json = "{\"menus\": [{\"name\": \"Info\", \"locationMatch\": \"x\", \"someFutureKey\": 1,"
+                + " \"requiredSystemProperties\": [{\"name\": \"a\", \"value\": \"b\", \"another\": 2}]}],"
+                + " \"unknownTopLevel\": true}";
+        Files.write(file.toPath(), json.getBytes(StandardCharsets.UTF_8));
+
+        MainMenu menu = new MenuProvider(null).parseMenuTemplate(file.getAbsolutePath());
+
+        assertNotNull(menu);
+        assertEquals(1, menu.menus.size());
+        assertEquals("Info", menu.menus.get(0).name);
+    }
     final static String MENU_TEMPLATE_PATH = "src/test/resources/menu/menu-template.json";
 
     final static String[] ADMIN_ROLES = new String[] { "ROLE_ADMIN", "ROLE_FLOW_MANAGER" };

@@ -28,7 +28,6 @@ export interface MenuItem {
   name: string | null
   url: string | null
   isExternalLink?: boolean | null
-  locationMatch: string | null
   action?: string | null
   linkTarget?: string | null
   icon?: string | null
