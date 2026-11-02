@@ -33,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import org.opennms.features.vaadin.api.ConfigFileNames;
 import org.opennms.features.vaadin.api.Logger;
 
 import com.vaadin.v7.ui.Upload;
@@ -61,7 +62,13 @@ public abstract class MibUploadButton extends Upload {
         setReceiver(new Receiver() {
             @Override
             public OutputStream receiveUpload(String filename, String mimeType) {
-                File file = new File(pendingDir, filename);
+                final File file;
+                try {
+                    file = ConfigFileNames.resolve(pendingDir, filename);
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Unable to accept file '" + filename + "': " + e.getMessage());
+                    return null;
+                }
                 try {
                     return new FileOutputStream(file);
                 } catch (FileNotFoundException e) {

@@ -36,6 +36,7 @@ import java.io.StringWriter;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.vaadin.api.ConfigFileNames;
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
@@ -226,7 +227,13 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
                 Notification.show("There is a group with the same name, please pick another one.");
             } else {
                 final File configDir = new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + "datacollection");
-                final File file = new File(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
+                final File file;
+                try {
+                    file = ConfigFileNames.resolve(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
+                } catch (IllegalArgumentException e) {
+                    Notification.show("Invalid group name. " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
                 saveFile(file, dcGroup, logger);
             }
         }

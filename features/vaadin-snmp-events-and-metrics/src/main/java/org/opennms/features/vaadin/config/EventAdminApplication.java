@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.vaadin.api.ConfigFileNames;
 import org.opennms.features.vaadin.events.EventPanel;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -150,7 +151,13 @@ public class EventAdminApplication extends UI {
                 PromptWindow w = new PromptWindow("New Events Configuration", "Events File Name") {
                     @Override
                     public void textFieldChanged(String fieldValue) {
-                        final File file = new File(eventsDir, normalizeFilename(fieldValue));
+                        final File file;
+                        try {
+                            file = ConfigFileNames.resolve(eventsDir, normalizeFilename(fieldValue));
+                        } catch (IllegalArgumentException e) {
+                            Notification.show("Invalid file name. " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                            return;
+                        }
                         LOG.info("Adding new events file {}", file);
                         final Events events = new Events();
                         addEventPanel(layout, file, events);
