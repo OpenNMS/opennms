@@ -414,7 +414,11 @@ is in a text field. The state is module-level, like `useOnmsToast`, so host
 and plugins share it through `window.OnmsUI`.
 
 `useOnmsChromelessHost()` is for the host only: `App.vue` calls it once to
-sync routes marked `meta.chromeless` and install the Escape handler.
+sync routes marked `meta.chromeless` and install the Escape handler. Its optional
+third argument, `{ isForced: () => boolean }`, is for embedding the app in an
+iframe: it is re-read on each route change, and while it returns true the app
+is always chromeless and both Escape and `exitChromeless()` are ignored.
+Without it, behavior is unchanged.
 
 ## Sanctioned direct-PrimeVue exceptions
 
