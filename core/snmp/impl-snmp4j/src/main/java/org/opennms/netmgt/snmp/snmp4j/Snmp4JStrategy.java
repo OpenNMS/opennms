@@ -869,7 +869,11 @@ public class Snmp4JStrategy implements SnmpStrategy {
         private static void assertTrackingInitialized() {
             if (s_sessions == null) {
                 s_sessions = new ConcurrentHashMap<>();
-                s_sessionStatsExecutor = Executors.newSingleThreadScheduledExecutor();
+                s_sessionStatsExecutor = Executors.newSingleThreadScheduledExecutor(r -> {
+                    final Thread t = new Thread(r, "SNMP4J-Session-Stats");
+                    t.setDaemon(true);
+                    return t;
+                });
                 s_sessionStatsExecutor.scheduleAtFixedRate(new Runnable() {
                     @Override public void run() {
                         logSessionStats();

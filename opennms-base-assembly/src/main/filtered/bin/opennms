@@ -451,6 +451,11 @@ doStart(){
 	# work around some jar files that are not compatible with updated JDK validation
 	APP_VM_PARMS=("-Djdk.util.zip.disableZip64ExtraFieldValidation=true" "${APP_VM_PARMS[@]}")
 
+	# timestamp ConsolePlain lines only when they go to output.log; journald timestamps its own input
+	if [ "$SYSTEMD" != 1 ] && [ "$BACKGROUND" = 1 ]; then
+		APP_VM_PARMS+=("-Dopennms.log.console.prefix=%d ")
+	fi
+
 	CMD=("${RUNJAVA_CMD[@]}" "-D_OPENNMS_LAUNCH" "${JAVA_CMD[@]}" "-Dopennms.pidfile=${OPENNMS_PIDFILE}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}")
 	if [ "$SYSTEMD" = 1 ]; then
 		if [ "$BACKGROUND" = 0 ]; then

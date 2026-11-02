@@ -222,9 +222,11 @@ public class JmsTwinIT extends CamelBlueprintTest {
         final var tracker = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
 
         final var session = this.publisher.register("test", String.class);
+        // Twin only guarantees the latest state: an update published while the subscriber is still
+        // fetching its initial state can be folded into it, so wait for each value before the next.
         session.publish("Test1");
+        await().until(tracker::getLog, hasItems("Test1"));
         session.publish("Test2");
-
         await().until(tracker::getLog, hasItems("Test1", "Test2"));
 
         ((JmsTwinPublisher) publisher).close();
@@ -243,9 +245,12 @@ public class JmsTwinIT extends CamelBlueprintTest {
 
         final var session = this.publisher.register("test", String.class);
         session.publish("Test1");
+        await().until(tracker1::getLog, hasItems("Test1"));
         session.publish("Test2");
+        await().until(tracker1::getLog, hasItems("Test1", "Test2"));
 
         final var tracker2 = AbstractTwinBrokerIT.Tracker.subscribe(this.subscriber, "test", String.class);
+        await().until(tracker2::getLog, hasItems("Test2"));
 
         session.publish("Test3");
 
