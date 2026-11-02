@@ -20,7 +20,7 @@ Two template files are installed:
 - `menu-template.json` is the active template, the one the menu actually uses. It is identical to the default when installed.
   Customize it only if you know what you are doing.
 
-Note that `roles` only hides menu entries. Access is enforced by Spring Security and by the UI route guards,
+Note that `roles` controls what both the menu and the search results show. Access is enforced by Spring Security and by the UI route guards,
 so hiding an entry does not grant or revoke access to a page.
 
 Groups that have no visible children for the current user, and stray separators (leading, trailing or doubled),
