@@ -1144,8 +1144,8 @@
                 <exclude>opennms-base-assembly/src/main/filtered/etc</exclude>
                 <exclude>opennms-base-assembly/src/main/resources</exclude>
 
-                <!-- BSD + GPL, see header for details -->
-                <exclude>core/test-api/dns/**/DNSServer.java</exclude>
+                <!-- BSD (derived from dnsjava jnamed), see header -->
+                <exclude>**/DNSServer.java</exclude>
 
                 <!-- APLv2 -->
                 <exclude>**/BlueprintCamelStateService.java</exclude>
