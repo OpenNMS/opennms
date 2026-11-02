@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- OpenNMS lifecycle events (NMS-9486), added to the opennms.internal.events source. Built-in events
+         reach the database only through the 35.0.0 seed or a changeset like this one. -->
+
+    <changeSet author="joseanesONMS" id="37.0.0-eventconf-opennms-started-event">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_events"/>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM eventconf_sources WHERE name = 'opennms.internal.events'
+                </sqlCheck>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM eventconf_events WHERE uei = 'uei.opennms.org/internal/opennmsStarted'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql><![CDATA[
+            INSERT INTO eventconf_events
+                (id, source_id, uei, event_label, description, enabled, xml_content,
+                 created_time, last_modified, modified_by, severity, event_order)
+            SELECT nextval('eventconf_events_id_seq'), s.id,
+                   'uei.opennms.org/internal/opennmsStarted',
+                   'OpenNMS-defined internal event: OpenNMS started',
+                   '<p>OpenNMS %parm[version]% started all of its services in %parm[startupSeconds]% seconds. The previous shutdown was %parm[previousShutdown]%: clean means the previous run was stopped normally, unclean means it ended without a shutdown (for example a crash, a forced kill or a power loss), and unknown means no earlier lifecycle event was found.</p>',
+                   TRUE,
+                   '<event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <uei>uei.opennms.org/internal/opennmsStarted</uei>
+   <event-label>OpenNMS-defined internal event: OpenNMS started</event-label>
+   <descr>&lt;p>OpenNMS %parm[version]% started all of its services in %parm[startupSeconds]% seconds. The previous shutdown was %parm[previousShutdown]%: clean means the previous run was stopped normally, unclean means it ended without a shutdown (for example a crash, a forced kill or a power loss), and unknown means no earlier lifecycle event was found.&lt;/p></descr>
+   <logmsg dest="logndisplay">OpenNMS %parm[version]% started (previous shutdown: %parm[previousShutdown]%).</logmsg>
+   <severity>Normal</severity>
+</event>',
+                   CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system-migration', 'Normal',
+                   (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = s.id)
+            FROM eventconf_sources s
+            WHERE s.name = 'opennms.internal.events';
+
+            UPDATE eventconf_sources SET event_count = event_count + 1, last_modified = CURRENT_TIMESTAMP
+            WHERE name = 'opennms.internal.events';
+        ]]></sql>
+        <rollback>
+            <sql>
+                DELETE FROM eventconf_events WHERE uei = 'uei.opennms.org/internal/opennmsStarted';
+                UPDATE eventconf_sources SET event_count = event_count - 1 WHERE name = 'opennms.internal.events';
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="joseanesONMS" id="37.0.0-eventconf-opennms-stopping-event">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_events"/>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM eventconf_sources WHERE name = 'opennms.internal.events'
+                </sqlCheck>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM eventconf_events WHERE uei = 'uei.opennms.org/internal/opennmsStopping'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql><![CDATA[
+            INSERT INTO eventconf_events
+                (id, source_id, uei, event_label, description, enabled, xml_content,
+                 created_time, last_modified, modified_by, severity, event_order)
+            SELECT nextval('eventconf_events_id_seq'), s.id,
+                   'uei.opennms.org/internal/opennmsStopping',
+                   'OpenNMS-defined internal event: OpenNMS stopping',
+                   '<p>OpenNMS %parm[version]% is stopping its services after %parm[uptimeSeconds]% seconds of uptime. Reason: %parm[reason]%.</p>',
+                   TRUE,
+                   '<event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <uei>uei.opennms.org/internal/opennmsStopping</uei>
+   <event-label>OpenNMS-defined internal event: OpenNMS stopping</event-label>
+   <descr>&lt;p>OpenNMS %parm[version]% is stopping its services after %parm[uptimeSeconds]% seconds of uptime. Reason: %parm[reason]%.&lt;/p></descr>
+   <logmsg dest="logndisplay">OpenNMS %parm[version]% is stopping (%parm[reason]%).</logmsg>
+   <severity>Normal</severity>
+</event>',
+                   CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system-migration', 'Normal',
+                   (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = s.id)
+            FROM eventconf_sources s
+            WHERE s.name = 'opennms.internal.events';
+
+            UPDATE eventconf_sources SET event_count = event_count + 1, last_modified = CURRENT_TIMESTAMP
+            WHERE name = 'opennms.internal.events';
+        ]]></sql>
+        <rollback>
+            <sql>
+                DELETE FROM eventconf_events WHERE uei = 'uei.opennms.org/internal/opennmsStopping';
+                UPDATE eventconf_sources SET event_count = event_count - 1 WHERE name = 'opennms.internal.events';
+            </sql>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

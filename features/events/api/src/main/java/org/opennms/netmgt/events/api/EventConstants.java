@@ -428,6 +428,15 @@ public abstract class EventConstants {
     /** Constant <code>PARM_CONFIG_FILE_NAME="configFile"</code> */
     public static final String PARM_CONFIG_FILE_NAME = "configFile";
 
+    /**
+     * OpenNMS finished starting all services.
+     */
+    public static final String OPENNMS_STARTED_UEI = "uei.opennms.org/internal/opennmsStarted";
+    /**
+     * OpenNMS is about to stop its services.
+     */
+    public static final String OPENNMS_STOPPING_UEI = "uei.opennms.org/internal/opennmsStopping";
+
     /*
      * Reportd UEIs.
      */
