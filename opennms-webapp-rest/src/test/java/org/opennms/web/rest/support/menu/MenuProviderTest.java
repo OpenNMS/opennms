@@ -28,6 +28,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Strings;
 import org.junit.Assert;
@@ -184,6 +188,35 @@ public class MenuProviderTest {
         assertThat(actualNames, containsInAnyOrder(expectedNames));
     }
 
+    @Test
+    public void concurrentContextsDoNotLeak() throws Exception {
+        final MenuProvider provider = new MenuProvider(MENU_TEMPLATE_PATH);
+        final ExecutorService executor = Executors.newFixedThreadPool(8);
+
+        try {
+            List<Future<Boolean>> futures = new ArrayList<>();
+
+            for (int i = 0; i < 200; i++) {
+                final boolean admin = i % 2 == 0;
+                futures.add(executor.submit(() -> {
+                    var ctx = new TestMenuRequestContext(admin ? "admin1" : "user1", false,
+                            Arrays.asList(admin ? "ROLE_ADMIN" : "ROLE_USER"));
+                    MainMenu menu = provider.getMainMenu(ctx, MENU_TEMPLATE_PATH);
+                    assertEquals(admin ? "admin1" : "user1", menu.username);
+                    boolean hasLogs = getMenuNames(getMenuEntry(menu.menus, "Info")).contains("Logs");
+                    assertEquals(admin, hasLogs);
+                    return true;
+                }));
+            }
+
+            for (Future<Boolean> f : futures) {
+                assertTrue(f.get(30, TimeUnit.SECONDS));
+            }
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
     private MainMenu parseMainMenu(boolean isZenithConnectEnabled, String[] roles) {
         MainMenu mainMenu = null;
         List<String> roleList = Arrays.stream(roles).toList();
@@ -191,9 +224,9 @@ public class MenuProviderTest {
         try {
             MenuProvider provider = new MenuProvider(MENU_TEMPLATE_PATH);
 
-            provider.setMenuRequestContext(
-                    new MenuProviderTest.TestMenuRequestContext(isZenithConnectEnabled, roleList));
-            mainMenu = provider.getMainMenu();
+            mainMenu = provider.getMainMenu(
+                    new MenuProviderTest.TestMenuRequestContext("admin1", isZenithConnectEnabled, roleList),
+                    MENU_TEMPLATE_PATH);
         } catch (Exception e) {
             Assert.fail("Error in MenuProvider.getMainMenu: " + e.getMessage());
         }
@@ -216,7 +249,8 @@ public class MenuProviderTest {
     }
 
     public static class TestMenuRequestContext implements MenuRequestContext {
-        public TestMenuRequestContext(boolean isZenithConnectEnabled, List<String> roles) {
+        public TestMenuRequestContext(String username, boolean isZenithConnectEnabled, List<String> roles) {
+            this.username = username;
             this.isZenithConnectEnabled = isZenithConnectEnabled;
 
             if (roles != null && !roles.isEmpty()) {
@@ -224,12 +258,14 @@ public class MenuProviderTest {
             }
         }
 
+        final private String username;
+
         final private boolean isZenithConnectEnabled;
 
         final private List<String> userRoles = new ArrayList<>();
 
         public String getRemoteUser() {
-            return "admin1";
+            return username;
         }
 
         public String calculateUrlBase() {

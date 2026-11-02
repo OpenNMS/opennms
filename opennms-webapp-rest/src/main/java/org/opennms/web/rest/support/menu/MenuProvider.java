@@ -45,9 +45,6 @@ import com.google.common.collect.ImmutableSet;
  * due to runtime data and role or system property evaluation.
  */
 public class MenuProvider {
-    /** Fully qualified classname of RoleBasedNavBarEntry class, from opennms-webapp. */
-    private final String ROLE_BASED_NAV_BAR_ENTRY_CLASS = "org.opennms.web.navigate.RoleBasedNavBarEntry";
-
     private final String ADMIN_ROLE_ICON = "fa-cogs";
 
     public static final String ZENITH_CONNECT_ENABLED_KEY = "opennms.zenithConnect.enabled";
@@ -60,42 +57,20 @@ public class MenuProvider {
     );
 
     /** Full file path to menu-template.json file, see "applicationContext-cxf-rest-v2.xml" */
-    private String menuTemplateFilePath;
-
-    /** Context that must be set before using the MenuProvider. */
-    private MenuRequestContext menuRequestContext;
+    private final String menuTemplateFilePath;
 
     public MenuProvider(String menuTemplateFilePath) {
         this.menuTemplateFilePath = menuTemplateFilePath;
-    }
-
-    public void setMenuRequestContext(MenuRequestContext context) {
-        this.menuRequestContext = context;
     }
 
     public String getMenuTemplateFilePath() {
         return this.menuTemplateFilePath;
     }
 
-    public void setMenuTemplateFilePath(String path) {
-        this.menuTemplateFilePath = path;
-    }
-
-    public MainMenu getMainMenu() throws Exception, IOException {
-        ensureContext();
-
-        MainMenu mainMenu = generateMenuFromTemplate();
-
-        return mainMenu;
-    }
-
-    public MainMenu generateMenuFromTemplate() throws Exception, IOException {
-        return generateMenuFromTemplate(null);
-    }
-
-    public MainMenu generateMenuFromTemplate(String menuTemplateFile) throws Exception, IOException {
-        final String templatePath = menuTemplateFile != null ? menuTemplateFile : this.menuTemplateFilePath;
-
+    /**
+     * Build the menu for one request. Stateless: all per-request data comes from the arguments.
+     */
+    public MainMenu getMainMenu(MenuRequestContext menuRequestContext, String templatePath) throws Exception {
         MainMenu mainMenu = parseMenuTemplate(templatePath);
 
         if (mainMenu == null) {
@@ -124,16 +99,13 @@ public class MenuProvider {
         mainMenu.copyrightDates = String.format("2002-%d", LocalDate.now().getYear());
         mainMenu.version = Vault.getProperty("version.display");
 
-        // Remove any MenuEntry items marked as RoleBased where user does not have any required role
-        List<MenuEntry> filteredTopMenuEntries = filterMenuEntriesByRole(mainMenu.menus);
-        filteredTopMenuEntries = filterMenuEntriesBySystemProperties(filteredTopMenuEntries);
-
+        List<MenuEntry> filteredMenus = MenuEntryFilter.filter(mainMenu.menus, menuRequestContext);
         mainMenu.menus.clear();
-        mainMenu.menus.addAll(filteredTopMenuEntries);
+        mainMenu.menus.addAll(filteredMenus);
 
         // These are mostly in the template now
         // May have to remove some depending on Admin role, etc.
-        mainMenu.helpMenu.items = filterMenuEntriesByRole(mainMenu.helpMenu.items);
+        mainMenu.helpMenu.items = MenuEntryFilter.filter(mainMenu.helpMenu.items, menuRequestContext);
 
         mainMenu.selfServiceMenu.name = menuRequestContext.getRemoteUser();
 
@@ -148,11 +120,11 @@ public class MenuProvider {
         }
 
         // Template should include ROLE_ADMIN and ROLE_PROVISION
-        if (!evaluateRoleBasedMenuEntry(mainMenu.provisionMenu)) {
+        if (!MenuEntryFilter.isVisible(mainMenu.provisionMenu, menuRequestContext)) {
             mainMenu.provisionMenu = null;
         }
 
-        if (!evaluateRoleBasedMenuEntry(mainMenu.configurationMenu)) {
+        if (!MenuEntryFilter.isVisible(mainMenu.configurationMenu, menuRequestContext)) {
             mainMenu.configurationMenu = null;
         }
 
@@ -185,71 +157,5 @@ public class MenuProvider {
         }
 
         return template;
-    }
-
-    private void ensureContext() throws Exception {
-        if (this.menuRequestContext == null) {
-            throw new Exception("Must set MenuRequestContext when using a MenuProvider.");
-        }
-    }
-
-    private List<MenuEntry> filterMenuEntriesByRole(List<MenuEntry> entries) {
-        // remove any top-level menu entries that have roles that the user is not part of
-        List<MenuEntry> filteredEntries = entries.stream()
-            .filter(this::evaluateRoleBasedMenuEntry).toList();
-
-        // If the entry has child items, filter those
-        for (MenuEntry filteredEntry : filteredEntries) {
-            if (filteredEntry.items != null && !filteredEntry.items.isEmpty()) {
-                filteredEntry.items = filterMenuEntriesByRole(filteredEntry.items);
-            }
-        }
-
-        return filteredEntries;
-    }
-
-    private List<MenuEntry> filterMenuEntriesBySystemProperties(List<MenuEntry> entries) {
-        // remove any top-level menu entries where the required system properties do not match
-        List<MenuEntry> filteredEntries = entries.stream()
-            .filter(this::evaluateRequiredSystemProperties).toList();
-
-        // If the entry has child items, filter those
-        for (MenuEntry filteredEntry : filteredEntries) {
-            if (filteredEntry.items != null && !filteredEntry.items.isEmpty()) {
-                filteredEntry.items = filterMenuEntriesBySystemProperties(filteredEntry.items);
-            }
-        }
-
-        return filteredEntries;
-    }
-
-    private boolean evaluateRoleBasedMenuEntry(MenuEntry menuEntry) {
-        if (menuEntry.roles != null && !menuEntry.roles.isEmpty()) {
-            return menuRequestContext.isUserInAnyRole(menuEntry.roles);
-        }
-
-       return true;
-    }
-
-    private boolean evaluateRequiredSystemProperties(MenuEntry menuEntry) {
-        if (menuEntry.requiredSystemProperties != null && !menuEntry.requiredSystemProperties.isEmpty()) {
-            return menuEntry.requiredSystemProperties.stream()
-                    .allMatch(p -> evaluateSystemPropertyMenuEntry(p.name, p.value));
-        }
-
-        return true;
-    }
-
-    /**
-     * Evaluate any required system properties to determine whether to add this menu item or not.
-     */
-    private boolean evaluateSystemPropertyMenuEntry(String systemProperty, String systemPropertyValue) {
-        if (!Strings.isNullOrEmpty(systemProperty) && !Strings.isNullOrEmpty(systemPropertyValue)) {
-            String value = menuRequestContext.getSystemProperty(systemProperty, "");
-
-            return !Strings.isNullOrEmpty(value) && value.equals(systemPropertyValue);
-        }
-
-        return true;
     }
 }
