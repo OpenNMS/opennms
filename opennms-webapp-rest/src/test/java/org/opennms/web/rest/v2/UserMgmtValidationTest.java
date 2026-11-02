@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.opennms.netmgt.model.usermgmt.ReservedNames;
 
 public class UserMgmtValidationTest {
 
@@ -47,10 +48,27 @@ public class UserMgmtValidationTest {
 
     @Test
     public void testNameRejectsWhitespaceAndInvisibleCharacters() {
-        assertNull(UserMgmtValidation.validateName("jane.doe@example.org", "userId"));
-        assertNull(UserMgmtValidation.validateName("Müller", "userId"));
+        assertNull(UserMgmtValidation.validateName("jane.doe@example.org", "userId", ReservedNames.USER_IDS));
+        assertNull(UserMgmtValidation.validateName("Müller", "userId", ReservedNames.USER_IDS));
         for (final String bad : List.of("a b", "Ops\u00A0", "Ops\u2003", "a\u200Bb", "a\u0000b", "a\u2028b", "a<b", "a:b")) {
-            assertNotNull("'" + bad + "' should be rejected", UserMgmtValidation.validateName(bad, "group name"));
+            assertNotNull("'" + bad + "' should be rejected", UserMgmtValidation.validateName(bad, "group name", ReservedNames.GROUP_NAMES));
+        }
+    }
+
+    @Test
+    public void testNameRejectsTheReservedNames() {
+        for (final String reserved : List.of(".", "..", "item", "available-roles")) {
+            assertEquals("The userId \"" + reserved + "\" is reserved.", UserMgmtValidation.validateName(reserved, "userId", ReservedNames.USER_IDS));
+        }
+        for (final String reserved : List.of(".", "..", "item", "available-categories")) {
+            assertEquals("The group name \"" + reserved + "\" is reserved.", UserMgmtValidation.validateName(reserved, "group name", ReservedNames.GROUP_NAMES));
+        }
+        // only the endpoints of its own collection
+        assertNull(UserMgmtValidation.validateName("available-categories", "userId", ReservedNames.USER_IDS));
+        assertNull(UserMgmtValidation.validateName("available-roles", "group name", ReservedNames.GROUP_NAMES));
+        // exact matches only, as the path match is
+        for (final String fine : List.of("...", "Item", "items", "available-categories-2", ".hidden")) {
+            assertNull("'" + fine + "' should be accepted", UserMgmtValidation.validateName(fine, "group name", ReservedNames.GROUP_NAMES));
         }
     }
 

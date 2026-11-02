@@ -29,13 +29,19 @@ const INVALID_COMMENTS = /[&<>"`']/
 // UserMgmtValidation.FREE_TEXT_LENGTH: comments longer than this are rejected, counted in code points once trimmed
 export const FREE_TEXT_LENGTH = 4096
 const EMAIL_SHAPE = /[^\s@]+@[^\s@]+/
+// ReservedNames.USER_IDS and GROUP_NAMES: the names no user, or no group, may have. The browser resolves . and ..
+// away in a URL path, and the others are endpoints of their own under /users or /groups
+export const RESERVED_USER_IDS = ['.', '..', 'item', 'available-roles']
+export const RESERVED_GROUP_NAMES = ['.', '..', 'item', 'available-categories']
 
 /**
- * Validates a user-id, group name or on-call role name.
+ * Validates a new user-id or group name, as UserMgmtValidation.validateName does.
  * Returns a problem description, or null when the value is acceptable.
  * Emptiness is not checked here; required-ness is a per-form concern.
+ *
+ * @param reserved the reserved names of its collection: RESERVED_USER_IDS or RESERVED_GROUP_NAMES
  */
-export const validateAdminName = (value: string, label: string): string | null => {
+export const validateAdminName = (value: string, label: string, reserved: string[]): string | null => {
   const trimmed = value.trim()
   if (!trimmed) {
     return null
@@ -43,8 +49,22 @@ export const validateAdminName = (value: string, label: string): string | null =
   if (INVALID_NAME.test(trimmed)) {
     return `The ${label} must not contain markup, whitespace, control or invisible characters, or the characters : / \\ % ? #`
   }
-  if (trimmed === '.' || trimmed === '..') {
-    return `The ${label} must not be a dot segment.`
+  if (reserved.includes(trimmed)) {
+    return `The ${label} "${trimmed}" is reserved.`
+  }
+  return null
+}
+
+/**
+ * A new or renamed user-id or group name that equals a reserved name ignoring case, but not exactly,
+ * would be mistaken for the system entry; the server refuses it. The exact name is not flagged here:
+ * it is a duplicate, which the server reports as such.
+ */
+export const validateReservedName = (value: string, reserved: string[], label: 'user-id' | 'group name'): string | null => {
+  const trimmed = value.trim()
+  const lower = trimmed.toLowerCase()
+  if (reserved.some(name => name.toLowerCase() === lower && name !== trimmed)) {
+    return `The ${label} "${trimmed}" is reserved.`
   }
   return null
 }
@@ -75,6 +95,18 @@ export const isPathAddressable = (name: string): boolean => !/[/\\%]/.test(name)
 
 /** Field hint for a name that fails isPathAddressable. */
 export const UNADDRESSABLE_NAME_HINT = 'The name must not contain / \\ or %'
+
+// The mismatch message of a password and its confirmation, for the create form and the change-password
+// dialog. An empty confirmation is not a mismatch yet: the user has not typed it.
+export const validatePasswordConfirmation = (password: string, confirmation: string): string | null =>
+  confirmation && password !== confirmation ? 'Passwords do not match' : null
+
+/**
+ * The TUI PIN is dialled on a phone keypad: digits only, as UsersRestService checks a new or changed one.
+ * Returns a problem description, or null when the value is empty or acceptable.
+ */
+export const validateTuiPin = (value: string): string | null =>
+  /^\d*$/.test(value.trim()) ? null : 'The telephone PIN must contain only digits.'
 
 /**
  * Loose shape check: every comma-separated recipient must contain a

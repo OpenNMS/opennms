@@ -33,7 +33,7 @@
         label="Confirm Password"
         for="user-password-confirm"
         required
-        :error="confirmation && password !== confirmation ? 'Passwords do not match' : undefined"
+        :error="validatePasswordConfirmation(password, confirmation) ?? undefined"
       >
         <OnmsPassword
           v-model="confirmation"
@@ -69,6 +69,9 @@ import { ref, watch } from 'vue'
 import { OnmsButton, OnmsDialog, OnmsPassword } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
+import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
+import { validatePasswordConfirmation } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 
 const props = defineProps<{
@@ -80,6 +83,8 @@ const props = defineProps<{
 const emit = defineEmits(['update:visible'])
 
 const store = useUserAdminStore()
+const { withSpinner } = useActionFeedback()
+const { reportWrite } = useAdminWriteFeedback()
 
 const password = ref('')
 const confirmation = ref('')
@@ -100,13 +105,13 @@ watch(
 const save = async () => {
   saving.value = true
   try {
-    const error = await store.setPassword(props.userId, password.value, props.version)
-    // A stale save has already reloaded the list; close so the dialog reopens on the fresh object and version.
-    if (error === null || error.stale) {
-      emit('update:visible', false)
-    } else {
-      errorText.value = error.message
-    }
+    const result = await withSpinner(() => store.setPassword(props.userId, password.value, props.version))
+    reportWrite(result, `Password changed for '${props.userId}'.`, {
+      close: () => emit('update:visible', false),
+      banner: (msg) => {
+        errorText.value = msg
+      }
+    })
   } finally {
     saving.value = false
   }

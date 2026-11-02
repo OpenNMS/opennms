@@ -45,6 +45,7 @@ import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
 import org.opennms.netmgt.model.usermgmt.ContactType;
 import org.opennms.netmgt.model.usermgmt.OnCallRole;
+import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.netmgt.model.usermgmt.SecurityRole;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.netmgt.model.usermgmt.UserContact;
@@ -113,8 +114,17 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional(readOnly = true)
     public Response getUser(final SecurityContext securityContext, final String userId) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
+        return doGetUser(securityContext, userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Response getUserByQuery(final SecurityContext securityContext, final String userId) {
+        return doGetUser(securityContext, userId);
+    }
+
+    private Response doGetUser(final SecurityContext securityContext, final String userId) {
+        m_support.checkTarget(securityContext, "User management", "userId", userId);
         try {
             final UserAccount user = load(userId);
             // the version of the row read for the body, not a second read: a newer version with an older body would let
@@ -151,10 +161,11 @@ public class UsersRestService implements UsersRestApi {
             throw m_support.badRequest("A userId is required.");
         }
         final String userId = request.getUserId().trim();
-        final String userIdProblem = UserMgmtValidation.validateName(userId, "userId");
+        final String userIdProblem = UserMgmtValidation.validateName(userId, "userId", ReservedNames.USER_IDS);
         if (userIdProblem != null) {
             throw m_support.badRequest(userIdProblem);
         }
+        m_support.checkNotLookAlike(userId, PROTECTED_USERS, "user-id");
         if (StringUtils.isBlank(request.getPassword())) {
             throw m_support.badRequest("A password is required.");
         }
@@ -182,8 +193,17 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional
     public Response updateUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserDto dto) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
+        return doUpdateUser(securityContext, headers, userId, dto);
+    }
+
+    @Override
+    @Transactional
+    public Response updateUserByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserDto dto) {
+        return doUpdateUser(securityContext, headers, userId, dto);
+    }
+
+    private Response doUpdateUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserDto dto) {
+        m_support.checkTarget(securityContext, "User management", "userId", userId);
         if (dto == null) {
             throw m_support.badRequest("A user body is required.");
         }
@@ -216,8 +236,17 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional
     public Response setPassword(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserPasswordRequest body) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
+        return doSetPassword(securityContext, headers, userId, body);
+    }
+
+    @Override
+    @Transactional
+    public Response setUserPasswordByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserPasswordRequest body) {
+        return doSetPassword(securityContext, headers, userId, body);
+    }
+
+    private Response doSetPassword(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserPasswordRequest body) {
+        m_support.checkTarget(securityContext, "User management", "userId", userId);
         if (body == null || StringUtils.isBlank(body.getPassword())) {
             throw m_support.badRequest("A password is required.");
         }
@@ -240,8 +269,17 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional
     public Response renameUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserRenameRequest body) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
+        return doRenameUser(securityContext, headers, userId, body);
+    }
+
+    @Override
+    @Transactional
+    public Response renameUserByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserRenameRequest body) {
+        return doRenameUser(securityContext, headers, userId, body);
+    }
+
+    private Response doRenameUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId, final UserRenameRequest body) {
+        m_support.checkTarget(securityContext, "User management", "userId", userId);
         if (body == null || StringUtils.isBlank(body.getNewUserId())) {
             throw m_support.badRequest("A newUserId is required.");
         }
@@ -249,10 +287,11 @@ public class UsersRestService implements UsersRestApi {
             throw m_support.badRequest("The system user " + userId + " cannot be renamed.");
         }
         final String newUserId = body.getNewUserId().trim();
-        final String userIdProblem = UserMgmtValidation.validateName(newUserId, "userId");
+        final String userIdProblem = UserMgmtValidation.validateName(newUserId, "userId", ReservedNames.USER_IDS);
         if (userIdProblem != null) {
             throw m_support.badRequest(userIdProblem);
         }
+        m_support.checkNotLookAlike(newUserId, PROTECTED_USERS, "user-id");
         if (newUserId.equals(userId)) {
             throw m_support.badRequest("The newUserId is the same as the current userId.");
         }
@@ -279,8 +318,17 @@ public class UsersRestService implements UsersRestApi {
     @Override
     @Transactional
     public Response deleteUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId) {
-        m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
+        return doDeleteUser(securityContext, headers, userId);
+    }
+
+    @Override
+    @Transactional
+    public Response deleteUserByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String userId) {
+        return doDeleteUser(securityContext, headers, userId);
+    }
+
+    private Response doDeleteUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId) {
+        m_support.checkTarget(securityContext, "User management", "userId", userId);
         if (PROTECTED_USERS.contains(userId)) {
             throw m_support.badRequest("The system user " + userId + " cannot be deleted.");
         }
@@ -378,8 +426,10 @@ public class UsersRestService implements UsersRestApi {
         final String owner = owner(userId);
         final String storedComments = existing == null ? null : existing.getComments();
         UserMgmtValidation.checkComments(owner, dto.getUserComments(), storedComments);
+        // a stored time zone or TUI PIN echoed back is grandfathered, like the comments: the editor sends every
+        // field, so a value written before these rules must not block every save of the user
         final String timeZoneId = StringUtils.trimToNull(dto.getTimeZoneId());
-        if (timeZoneId != null) {
+        if (timeZoneId != null && !UserMgmtValidation.textUnchanged(timeZoneId, existing == null ? null : existing.getTimeZoneId())) {
             try {
                 UserMgmtValidation.checkLength(owner, "time zone", ZoneId.of(timeZoneId).getId(), UserMgmtJaxbMapper.TIME_ZONE_ID_LENGTH);
             } catch (final java.time.DateTimeException e) {
@@ -388,10 +438,12 @@ public class UsersRestService implements UsersRestApi {
         }
         // the TUI PIN is dialled on a phone keypad
         final String tuiPin = StringUtils.trimToNull(dto.getTuiPin());
-        if (tuiPin != null && !tuiPin.matches("[0-9]+")) {
-            throw new UserMgmtValidationException("The TUI PIN must contain only digits.");
+        if (!UserMgmtValidation.textUnchanged(tuiPin, existing == null ? null : existing.getTuiPin())) {
+            if (tuiPin != null && !tuiPin.matches("[0-9]+")) {
+                throw new UserMgmtValidationException("The TUI PIN must contain only digits.");
+            }
+            UserMgmtValidation.checkLength(owner, "TUI PIN", tuiPin, UserMgmtJaxbMapper.TUI_PIN_LENGTH);
         }
-        UserMgmtValidation.checkLength(owner, "TUI PIN", tuiPin, UserMgmtJaxbMapper.TUI_PIN_LENGTH);
         UserMgmtValidation.checkLength(owner, "full name", StringUtils.trimToNull(dto.getFullName()), UserMgmtJaxbMapper.FULL_NAME_LENGTH);
         for (final String[] field : new String[][] {
                 { "email", dto.getEmail() }, { "pager email", dto.getPagerEmail() }, { "work phone", dto.getWorkPhone() },
@@ -439,10 +491,11 @@ public class UsersRestService implements UsersRestApi {
         if (dto.getUserComments() != null && !UserMgmtValidation.textUnchanged(dto.getUserComments(), user.getComments())) {
             user.setComments(StringUtils.trimToNull(dto.getUserComments()));
         }
-        if (dto.getTuiPin() != null) {
+        // an unchanged TUI PIN or time zone is left as stored: validateDtoFields grandfathers it
+        if (dto.getTuiPin() != null && !UserMgmtValidation.textUnchanged(dto.getTuiPin(), user.getTuiPin())) {
             user.setTuiPin(StringUtils.trimToNull(dto.getTuiPin()));
         }
-        if (dto.getTimeZoneId() != null) {
+        if (dto.getTimeZoneId() != null && !UserMgmtValidation.textUnchanged(dto.getTimeZoneId(), user.getTimeZoneId())) {
             // stored as a manager round trip would write it back, so a later manager save doesn't rewrite it
             final String timeZoneId = StringUtils.trimToNull(dto.getTimeZoneId());
             user.setTimeZoneId(timeZoneId == null ? null : ZoneId.of(timeZoneId).getId());

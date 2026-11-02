@@ -29,6 +29,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -116,4 +117,47 @@ public interface UsersRestApi {
             @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
     })
     Response deleteUser(@Context SecurityContext securityContext, @Context HttpHeaders headers, @PathParam("userId") String userId);
+
+    @GET
+    @Path("item")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get one user by query parameter (for ids a path cannot carry)", operationId = "getUserByQuery")
+    Response getUserByQuery(@Context SecurityContext securityContext, @QueryParam("userId") String userId);
+
+    @PUT
+    @Path("item")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Update a user by query parameter (for ids a path cannot carry)", operationId = "updateUserByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response updateUserByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("userId") String userId, UserDto user);
+
+    @PUT
+    @Path("item/password")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Set a user's password by query parameter (for ids a path cannot carry)", operationId = "setUserPasswordByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response setUserPasswordByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("userId") String userId, UserPasswordRequest body);
+
+    @POST
+    @Path("item/rename")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Rename a user by query parameter (for ids a path cannot carry)", operationId = "renameUserByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response renameUserByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("userId") String userId, UserRenameRequest body);
+
+    @DELETE
+    @Path("item")
+    @Operation(summary = "Delete a user by query parameter (for ids a path cannot carry)", operationId = "deleteUserByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response deleteUserByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("userId") String userId);
 }

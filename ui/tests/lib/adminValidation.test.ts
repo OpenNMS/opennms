@@ -1,38 +1,53 @@
 import { describe, expect, it } from 'vitest'
 import {
   isPathAddressable,
+  RESERVED_GROUP_NAMES,
+  RESERVED_USER_IDS,
   validateAdminComments,
   validateAdminName,
-  validateEmailShape
+  validateEmailShape,
+  validatePasswordConfirmation,
+  validateReservedName
 } from '@/lib/adminValidation'
+import { PROTECTED_USER_IDS } from '@/types/userAdmin'
 
 describe('validateAdminName', () => {
   it('accepts ordinary names and empty values', () => {
-    expect(validateAdminName('NOC-Duty_1', 'group name')).toBeNull()
-    expect(validateAdminName('', 'group name')).toBeNull()
-    expect(validateAdminName('   ', 'group name')).toBeNull()
+    expect(validateAdminName('NOC-Duty_1', 'group name', RESERVED_GROUP_NAMES)).toBeNull()
+    expect(validateAdminName('', 'group name', RESERVED_GROUP_NAMES)).toBeNull()
+    expect(validateAdminName('   ', 'group name', RESERVED_GROUP_NAMES)).toBeNull()
   })
 
   it('rejects whitespace, markup and URL-hostile characters', () => {
     for (const bad of ['Test Group', 'a<b', 'a&b', 'a"b', 'a\'b', 'a`b', 'a:b', 'a/b', 'a\\b', 'a%b', 'a?b', 'a#b']) {
-      expect(validateAdminName(bad, 'group name'), bad).toContain('must not contain')
+      expect(validateAdminName(bad, 'group name', RESERVED_GROUP_NAMES), bad).toContain('must not contain')
     }
   })
 
   it('rejects other whitespace and invisible characters', () => {
     for (const bad of ['Ops\u00A0x', 'Ops\u2003x', 'a\u200Bb', 'a\u0000b', 'a\u2028b']) {
-      expect(validateAdminName(bad, 'group name'), bad).toContain('must not contain')
+      expect(validateAdminName(bad, 'group name', RESERVED_GROUP_NAMES), bad).toContain('must not contain')
     }
-    expect(validateAdminName('Müller', 'user-id')).toBeNull()
+    expect(validateAdminName('Müller', 'user-id', RESERVED_USER_IDS)).toBeNull()
   })
 
-  it('rejects dot segments', () => {
-    expect(validateAdminName('.', 'user-id')).toContain('dot segment')
-    expect(validateAdminName('..', 'user-id')).toContain('dot segment')
+  it('rejects the reserved names of its collection, exactly', () => {
+    for (const name of ['.', '..', 'item', 'available-roles']) {
+      expect(validateAdminName(name, 'user-id', RESERVED_USER_IDS)).toBe(`The user-id "${name}" is reserved.`)
+    }
+    for (const name of ['.', '..', 'item', 'available-categories']) {
+      expect(validateAdminName(name, 'group name', RESERVED_GROUP_NAMES)).toBe(`The group name "${name}" is reserved.`)
+    }
+    // the endpoint of the other collection is a fine name
+    expect(validateAdminName('available-categories', 'user-id', RESERVED_USER_IDS)).toBeNull()
+    expect(validateAdminName('available-roles', 'group name', RESERVED_GROUP_NAMES)).toBeNull()
+    for (const name of ['...', 'Item', 'items', 'available-categories-2', '.hidden']) {
+      expect(validateAdminName(name, 'group name', RESERVED_GROUP_NAMES), name).toBeNull()
+    }
   })
 
   it('names the field in the message', () => {
-    expect(validateAdminName('a b', 'role name')).toContain('role name')
+    expect(validateAdminName('a b', 'role name', [])).toContain('role name')
   })
 })
 
@@ -60,6 +75,15 @@ describe('validateAdminComments length', () => {
     // 4096 emoji are 8192 UTF-16 units but 4096 characters
     expect(validateAdminComments('\u{1F600}'.repeat(4096))).toBeNull()
     expect(validateAdminComments('\u{1F600}'.repeat(4097))).not.toBeNull()
+  })
+})
+
+describe('validatePasswordConfirmation', () => {
+  it('reports a typed confirmation that differs, and nothing before one is typed', () => {
+    expect(validatePasswordConfirmation('secret', 'secrex')).toBe('Passwords do not match')
+    expect(validatePasswordConfirmation('', 'x')).toBe('Passwords do not match')
+    expect(validatePasswordConfirmation('secret', '')).toBeNull()
+    expect(validatePasswordConfirmation('secret', 'secret')).toBeNull()
   })
 })
 
@@ -94,5 +118,20 @@ describe('isPathAddressable', () => {
     expect(isPathAddressable('NOC/Primary')).toBe(false)
     expect(isPathAddressable('a\\b')).toBe(false)
     expect(isPathAddressable('a%b')).toBe(false)
+  })
+})
+
+describe('validateReservedName', () => {
+  it('refuses a look-alike of a reserved name, using the trimmed value', () => {
+    expect(validateReservedName('ADMIN', PROTECTED_USER_IDS, 'user-id')).toBe('The user-id "ADMIN" is reserved.')
+    expect(validateReservedName(' rTC ', PROTECTED_USER_IDS, 'user-id')).toBe('The user-id "rTC" is reserved.')
+    expect(validateReservedName('admin', ['Admin'], 'group name')).toBe('The group name "admin" is reserved.')
+  })
+
+  it('accepts the exact name, other names and empty values', () => {
+    expect(validateReservedName('admin', PROTECTED_USER_IDS, 'user-id')).toBeNull()
+    expect(validateReservedName('administrator', PROTECTED_USER_IDS, 'user-id')).toBeNull()
+    expect(validateReservedName('Admin', ['Admin'], 'group name')).toBeNull()
+    expect(validateReservedName('', PROTECTED_USER_IDS, 'user-id')).toBeNull()
   })
 })

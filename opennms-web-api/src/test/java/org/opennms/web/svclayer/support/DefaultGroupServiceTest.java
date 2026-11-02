@@ -21,13 +21,21 @@
  */
 package org.opennms.web.svclayer.support;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -86,6 +94,50 @@ public class DefaultGroupServiceTest {
         assertTrue(m_second.getAuthorizedGroups().contains("new"));
         assertFalse(m_first.getAuthorizedGroups().contains("old"));
         assertFalse(m_second.getAuthorizedGroups().contains("old"));
+    }
+
+    @Test
+    public void testSetAuthorizedCategoriesReplacesTheSet() {
+        final OnmsCategory third = new OnmsCategory("Third");
+        third.getAuthorizedGroups().add("other");
+        when(m_categoryDao.findByNames(Set.of("Third"))).thenReturn(List.of(third));
+
+        m_service.setAuthorizedCategories("old", Arrays.asList("First", "Third"));
+
+        assertTrue(m_first.getAuthorizedGroups().contains("old"));
+        assertFalse(m_second.getAuthorizedGroups().contains("old"));
+        assertEquals(Set.of("old", "other"), third.getAuthorizedGroups());
+        // one lookup, of the category the group did not have yet
+        verify(m_categoryDao).findByNames(Set.of("Third"));
+        verifyNoInteractions(m_groupDao);
+    }
+
+    @Test
+    public void testSetAuthorizedCategoriesWithTheSameSetChangesNothing() {
+        m_service.setAuthorizedCategories("old", Arrays.asList("Second", "First"));
+
+        assertEquals(Set.of("old"), m_first.getAuthorizedGroups());
+        assertEquals(Set.of("old"), m_second.getAuthorizedGroups());
+        verify(m_categoryDao).findByNames(Set.of());
+        verify(m_categoryDao, never()).findByName(anyString(), anyBoolean());
+    }
+
+    @Test
+    public void testSetAuthorizedCategoriesWithAnEmptySetClearsThem() {
+        m_service.setAuthorizedCategories("old", Collections.emptyList());
+
+        assertTrue(m_first.getAuthorizedGroups().isEmpty());
+        assertTrue(m_second.getAuthorizedGroups().isEmpty());
+    }
+
+    @Test
+    public void testSetAuthorizedCategoriesIgnoresAnUnknownName() {
+        // the caller validates the names; one that matches no category is skipped, not an error
+        m_service.setAuthorizedCategories("old", Arrays.asList("First", "Gone"));
+
+        assertTrue(m_first.getAuthorizedGroups().contains("old"));
+        assertFalse(m_second.getAuthorizedGroups().contains("old"));
+        verify(m_categoryDao).findByNames(Set.of("Gone"));
     }
 
     @Test

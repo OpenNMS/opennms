@@ -21,6 +21,7 @@
  */
 package org.opennms.web.svclayer.api;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.opennms.netmgt.config.groups.Group;
@@ -41,6 +42,13 @@ public interface GroupService {
     List<OnmsCategory> getAuthorizedCategories(String groupName);
 
     List<String> getAuthorizedCategoriesAsString(String groupName);
+
+    /**
+     * Makes the group authorized for exactly the named categories. Only the categories whose membership
+     * differs are touched, so an unchanged set writes nothing. The names must already be validated: a name
+     * that matches no category is ignored.
+     */
+    void setAuthorizedCategories(String groupName, Collection<String> categoryNames);
 
     void saveGroup(OnmsGroup group);
 

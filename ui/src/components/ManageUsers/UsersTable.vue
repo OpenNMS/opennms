@@ -16,9 +16,19 @@
       </div>
     </div>
 
+    <OnmsSearchInput
+      v-if="store.users.length"
+      v-model="filter"
+      class="users-filter"
+      placeholder="Filter users"
+      aria-label="Filter users"
+      data-test="users-filter"
+    />
+
     <OnmsTable
       v-if="store.users.length"
-      :value="store.users"
+      v-model:first="first"
+      :value="filteredUsers"
       paginator
       dataKey="userId"
       :rows="10"
@@ -32,13 +42,21 @@
         sortable
       >
         <template #body="{ data }">
-          <span class="userId">{{ data.userId }}</span>
+          <span class="user-id">{{ data.userId }}</span>
           <OnmsTag
             v-if="isProtected(data.userId)"
             value="system"
             severity="secondary"
             class="system-tag"
-            v-tooltip.top="'System account: cannot be deleted or renamed'"
+            v-onms-tooltip.top="'System account: cannot be deleted or renamed'"
+          />
+          <OnmsTag
+            v-if="data.readOnly"
+            value="read-only"
+            severity="secondary"
+            class="system-tag"
+            data-test="read-only-tag"
+            v-onms-tooltip.top="'This user cannot change anything in the web console'"
           />
         </template>
       </OnmsColumn>
@@ -56,6 +74,16 @@
         field="pagerEmail"
         header="Pager Email"
       />
+      <OnmsColumn header="Comments">
+        <template #body="{ data }">
+          <span
+            v-if="data.userComments"
+            class="comments"
+            v-onms-tooltip.top="data.userComments"
+            data-test="user-comments"
+          >{{ data.userComments }}</span>
+        </template>
+      </OnmsColumn>
       <OnmsColumn header="Roles">
         <template #body="{ data }">
           <span class="roles">{{ (data.roles ?? []).join(', ') || '--' }}</span>
@@ -63,13 +91,7 @@
       </OnmsColumn>
       <OnmsColumn header="Actions">
         <template #body="{ data }">
-          <span
-            v-if="!isPathAddressable(data.userId)"
-            class="unaddressable"
-            v-tooltip.top="'This user-id contains / \\ or %, which the API cannot address; manage it by editing users.xml.'"
-            data-test="unaddressable-note"
-          >file-managed</span>
-          <div v-else class="action-container">
+          <div class="action-container">
             <OnmsIconButton
               :icon="Edit"
               :title="`Edit ${data.userId}`"
@@ -96,6 +118,12 @@
           </div>
         </template>
       </OnmsColumn>
+      <template #empty>
+        <EmptyList
+          :content="noMatchContent"
+          data-test="no-match"
+        />
+      </template>
     </OnmsTable>
 
     <OnmsMenu
@@ -111,10 +139,6 @@
     </div>
   </TableCard>
 
-  <UserEditorDialog
-    v-model:visible="showEditor"
-    :user="userToEdit"
-  />
   <UserPasswordDialog
     v-model:visible="showPassword"
     :userId="actionUserId"
@@ -135,35 +159,37 @@
     <template #content>
       <p>
         Are you sure you want to delete the user <strong>{{ userToDelete?.userId }}</strong>?
-        The user is also removed from all groups. This action cannot be undone.
+        The user is also removed from all groups. A user cannot be deleted while they supervise an
+        on-call role or a destination path sends to them, or if they are the last administrator.
+        This action cannot be undone.
       </p>
     </template>
   </OnmsConfirmationDialog>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsTable, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsMenu, OnmsMenuItem, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 
 import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import UserEditorDialog from '@/components/ManageUsers/UserEditorDialog.vue'
 import UserPasswordDialog from '@/components/ManageUsers/UserPasswordDialog.vue'
 import UserRenameDialog from '@/components/ManageUsers/UserRenameDialog.vue'
 import UsersAbout from '@/components/ManageUsers/UsersAbout.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
+import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import MoreVert from '@opennms/onms-ui/icons/navigation/MoreVert.vue'
-import { isPathAddressable } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
 import { ManagedUser, PROTECTED_USER_IDS } from '@/types/userAdmin'
 
 const store = useUserAdminStore()
+const { withSpinner } = useActionFeedback()
+const { reportWrite } = useAdminWriteFeedback()
 
-const showEditor = ref(false)
-const userToEdit = ref<ManagedUser | null>(null)
 const showPassword = ref(false)
 const showRename = ref(false)
 const actionUserId = ref('')
@@ -175,12 +201,31 @@ const emptyListContent = {
   msg: 'No users found.'
 }
 
+// the table only shows while there are users, so an empty table means the filter matched none
+const noMatchContent = {
+  msg: 'No users match the filter.'
+}
+
+const filter = ref('')
+const first = ref(0)
+
+// client-side: id, full name, email and comments, ignoring case; the paginator goes back to page 1
+const filteredUsers = computed(() => {
+  const term = (filter.value ?? '').trim().toLowerCase()
+  if (!term) {
+    return store.users
+  }
+  return store.users.filter(u => [u.userId, u.fullName, u.email, u.userComments]
+    .some(v => (v ?? '').toLowerCase().includes(term)))
+})
+watch(filter, () => {
+  first.value = 0
+})
+
 const isProtected = (userId: string) => PROTECTED_USER_IDS.includes(userId)
 
-const openEditor = (user: ManagedUser | null) => {
-  userToEdit.value = user
-  showEditor.value = true
-}
+// the editor panel replaces this table (see ManageUsers)
+const openEditor = (user: ManagedUser | null) => store.openUserEditor(user)
 
 const openPassword = (user: ManagedUser) => {
   actionUserId.value = user.userId
@@ -220,8 +265,11 @@ const toggleRowMenu = (event: Event, user: ManagedUser) => {
 }
 
 const confirmDelete = async () => {
-  if (userToDelete.value) {
-    await store.deleteUser(userToDelete.value.userId, userToDelete.value.version)
+  const user = userToDelete.value
+  if (user) {
+    const result = await withSpinner(() => store.deleteUser(user.userId, user.version))
+    // no banner here: a failure, stale or not, is a snackbar; the confirmation closes either way
+    reportWrite(result, `User '${user.userId}' deleted.`)
   }
   showDeleteConfirmation.value = false
   userToDelete.value = null
@@ -269,9 +317,19 @@ const cancelDelete = () => {
   color: var(--p-text-muted-color);
 }
 
-.unaddressable {
-  color: var(--p-text-muted-color);
-  font-style: italic;
+.users-filter {
+  display: block;
+  margin-bottom: 0.75rem;
+  max-width: 24rem;
+}
+
+.comments {
+  display: inline-block;
+  max-width: 16rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
 }
 
 .action-container {

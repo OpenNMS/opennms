@@ -144,6 +144,7 @@ import {
 import {
   createManagedGroup,
   deleteManagedGroup,
+  getAvailableGroupCategories,
   getGroupMemberCandidates,
   getManagedGroups,
   renameManagedGroup,
@@ -272,6 +273,7 @@ export default {
   validateNotificationRule,
   createManagedGroup,
   deleteManagedGroup,
+  getAvailableGroupCategories,
   getGroupMemberCandidates,
   getManagedGroups,
   renameManagedGroup,

@@ -4,13 +4,16 @@ import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import UsersTable from '@/components/ManageUsers/UsersTable.vue'
-import UserEditorDialog from '@/components/ManageUsers/UserEditorDialog.vue'
+import UserEditorPanel from '@/components/ManageUsers/UserEditorPanel.vue'
 import UserPasswordDialog from '@/components/ManageUsers/UserPasswordDialog.vue'
 import UserRenameDialog from '@/components/ManageUsers/UserRenameDialog.vue'
 import { useUserAdminStore } from '@/stores/userAdminStore'
+import { STALE_USER_MESSAGE } from '@/types/userAdmin'
+import { adminWriteSuccess } from '@/types/adminWrite'
 
 const store = vi.hoisted(() => ({
   updateUser: vi.fn(),
+  openUserEditor: vi.fn(),
   createUser: vi.fn(),
   renameUser: vi.fn(),
   setPassword: vi.fn(),
@@ -26,36 +29,54 @@ vi.mock('@/stores/userAdminStore', async () => {
   return { useUserAdminStore: () => live }
 })
 
+// the components give the feedback (the store and service give none)
+const showSnackBar = vi.hoisted(() => vi.fn())
+vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
+const spinner = vi.hoisted(() => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() }))
+vi.mock('@/composables/useSpinner', () => ({ default: () => spinner }))
+
 // the dialogs are teleported to the body; unmount each one, or a later test can find an earlier test's dialog
 enableAutoUnmount(afterEach)
 
 const user = { userId: 'jdoe', fullName: 'J Doe', version: 3 }
 
-// each case: a mounted dialog, the store call its Save makes and the data-test of the dialog
+type DialogVm = { save: () => Promise<void>, newUserId: string, password: string, confirmation: string }
+
+// each case: a mounted dialog, the store call its Save makes, the data-test of the dialog,
+// how to fill it in and its success message
 const cases = [
-  ['UserEditorDialog', () => mount(UserEditorDialog, { props: { visible: true, user }, global: { plugins: [PrimeVue] }}), store.updateUser, 'user-editor-dialog'],
-  ['UserRenameDialog', () => mount(UserRenameDialog, { props: { visible: true, userId: 'jdoe', version: 3 }, global: { plugins: [PrimeVue] }}), store.renameUser, 'user-rename-dialog'],
-  ['UserPasswordDialog', () => mount(UserPasswordDialog, { props: { visible: true, userId: 'jdoe', version: 3 }, global: { plugins: [PrimeVue] }}), store.setPassword, 'user-password-dialog']
+  ['UserRenameDialog', () => mount(UserRenameDialog, { props: { visible: true, userId: 'jdoe', version: 3 }, global: { plugins: [PrimeVue] }}), store.renameUser, 'user-rename-dialog',
+    (vm: DialogVm) => {
+      vm.newUserId = 'jsmith'
+    }, 'User \'jdoe\' renamed to \'jsmith\'.'],
+  ['UserPasswordDialog', () => mount(UserPasswordDialog, { props: { visible: true, userId: 'jdoe', version: 3 }, global: { plugins: [PrimeVue] }}), store.setPassword, 'user-password-dialog',
+    (vm: DialogVm) => {
+      vm.password = 'secret-pass-1'
+      vm.confirmation = 'secret-pass-1'
+    }, 'Password changed for \'jdoe\'.']
 ] as const
 
-describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest) => {
-  beforeEach(() => vi.clearAllMocks())
-
-  it('closes when the save is rejected as stale', async () => {
-    // the text is irrelevant: only the stale flag closes the dialog
-    storeCall.mockResolvedValue({ message: 'any wording at all', stale: true })
-    const wrapper = mountDialog()
-
-    await (wrapper.vm as unknown as { save: () => Promise<void> }).save()
-
-    expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest, fill, successMsg) => {
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
-  it('stays open and shows other errors', async () => {
-    storeCall.mockResolvedValue({ message: 'Something else went wrong', stale: false })
+  it('closes when the save is rejected as stale, and shows the stale text once', async () => {
+    storeCall.mockResolvedValue({ success: false, message: STALE_USER_MESSAGE, stale: true })
     const wrapper = mountDialog()
 
-    await (wrapper.vm as unknown as { save: () => Promise<void> }).save()
+    await (wrapper.vm as unknown as DialogVm).save()
+
+    expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+    expect(showSnackBar).toHaveBeenCalledTimes(1)
+    expect(showSnackBar).toHaveBeenCalledWith({ msg: STALE_USER_MESSAGE, error: true })
+  })
+
+  it('stays open and shows other errors in the dialog only', async () => {
+    storeCall.mockResolvedValue({ success: false, message: 'Something else went wrong', stale: false })
+    const wrapper = mountDialog()
+
+    await (wrapper.vm as unknown as DialogVm).save()
     await nextTick()
 
     expect(wrapper.emitted('update:visible')).toBeUndefined()
@@ -63,32 +84,175 @@ describe.each(cases)('%s', (_name, mountDialog, storeCall, dialogTest) => {
     const errors = document.body.querySelectorAll(`[data-test="${dialogTest}"] [data-test="dialog-error"]`)
     expect(errors).toHaveLength(1)
     expect(errors[0].textContent).toBe('Something else went wrong')
+    expect(showSnackBar).not.toHaveBeenCalled()
+  })
+
+  it('closes on success and says so, with the spinner around the save', async () => {
+    storeCall.mockResolvedValue(adminWriteSuccess())
+    const wrapper = mountDialog()
+    fill(wrapper.vm as unknown as DialogVm)
+
+    await (wrapper.vm as unknown as DialogVm).save()
+
+    expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+    expect(showSnackBar).toHaveBeenCalledTimes(1)
+    expect(showSnackBar).toHaveBeenCalledWith({ msg: successMsg })
+    expect(spinner.startSpinner).toHaveBeenCalledTimes(1)
+    expect(spinner.stopSpinner).toHaveBeenCalledTimes(1)
+  })
+
+  it('on success whose reload failed, says both', async () => {
+    storeCall.mockResolvedValue({ ...adminWriteSuccess(), errors: ['Failed to load users.'] })
+    const wrapper = mountDialog()
+    fill(wrapper.vm as unknown as DialogVm)
+
+    await (wrapper.vm as unknown as DialogVm).save()
+
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: successMsg }], [{ msg: 'Failed to load users.', error: true }]])
   })
 
   it('does not close on the stale wording without the flag', async () => {
-    storeCall.mockResolvedValue({ message: 'This user was changed by someone else. The list has been reloaded; reapply your change.', stale: false })
+    storeCall.mockResolvedValue({ success: false, message: STALE_USER_MESSAGE, stale: false })
     const wrapper = mountDialog()
 
-    await (wrapper.vm as unknown as { save: () => Promise<void> }).save()
+    await (wrapper.vm as unknown as DialogVm).save()
 
     expect(wrapper.emitted('update:visible')).toBeUndefined()
+    expect(showSnackBar).not.toHaveBeenCalled()
   })
 })
 
-// the version of the row the dialog was opened on must reach the store, or the server cannot detect a stale write
+// the editor panel replaces the table; it is not teleported, so its error shows inside the wrapper
+describe('UserEditorPanel save results', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  const mountPanel = () => mount(UserEditorPanel, { props: { user }, global: { plugins: [PrimeVue] }})
+  const save = (wrapper: { vm: unknown }) => (wrapper.vm as { save: () => Promise<void> }).save()
+
+  it('closes when the save is rejected as stale, and shows the stale text once', async () => {
+    store.updateUser.mockResolvedValue({ success: false, message: STALE_USER_MESSAGE, stale: true })
+    const wrapper = mountPanel()
+    await save(wrapper)
+
+    expect(wrapper.emitted('close')).toHaveLength(1)
+    expect(showSnackBar).toHaveBeenCalledTimes(1)
+    expect(showSnackBar).toHaveBeenCalledWith({ msg: STALE_USER_MESSAGE, error: true })
+  })
+
+  it('stays open and shows other errors in the panel only', async () => {
+    store.updateUser.mockResolvedValue({ success: false, message: 'Something else went wrong', stale: false })
+    const wrapper = mountPanel()
+    await save(wrapper)
+    await nextTick()
+
+    expect(wrapper.emitted('close')).toBeUndefined()
+    expect(wrapper.find('[data-test="save-error"]').text()).toBe('Something else went wrong')
+    expect(showSnackBar).not.toHaveBeenCalled()
+  })
+
+  it('does not close on the stale wording without the flag', async () => {
+    store.updateUser.mockResolvedValue({ success: false, message: STALE_USER_MESSAGE, stale: false })
+    const wrapper = mountPanel()
+    await save(wrapper)
+
+    expect(wrapper.emitted('close')).toBeUndefined()
+    expect(showSnackBar).not.toHaveBeenCalled()
+  })
+
+  it('closes on an update and says so, with the spinner around the save', async () => {
+    store.updateUser.mockResolvedValue(adminWriteSuccess())
+    const wrapper = mountPanel()
+    await save(wrapper)
+
+    expect(wrapper.emitted('close')).toHaveLength(1)
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: 'User \'jdoe\' updated.' }]])
+    expect(spinner.startSpinner).toHaveBeenCalledTimes(1)
+    expect(spinner.stopSpinner).toHaveBeenCalledTimes(1)
+  })
+
+  it('closes on a create and says so', async () => {
+    store.createUser.mockResolvedValue(adminWriteSuccess())
+    const wrapper = mount(UserEditorPanel, { props: { user: null }, global: { plugins: [PrimeVue] }})
+    const vm = wrapper.vm as unknown as { form: { userId: string, password: string }, save: () => Promise<void> }
+    vm.form.userId = 'jose'
+    vm.form.password = 'secret'
+    await vm.save()
+
+    expect(wrapper.emitted('close')).toHaveLength(1)
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: 'User \'jose\' created.' }]])
+  })
+
+  it('on success whose reload failed, says both', async () => {
+    store.updateUser.mockResolvedValue({ ...adminWriteSuccess(), errors: ['Failed to load users.'] })
+    const wrapper = mountPanel()
+    await save(wrapper)
+
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: 'User \'jdoe\' updated.' }], [{ msg: 'Failed to load users.', error: true }]])
+  })
+})
+
+describe('UsersTable delete results', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  const deleteFromTable = async () => {
+    const wrapper = mount(UsersTable, { shallow: true, global: { plugins: [PrimeVue], directives: { tooltip: {}}}})
+    const vm = wrapper.vm as unknown as { askDelete: (u: typeof user) => void, confirmDelete: () => Promise<void>, showDeleteConfirmation: boolean }
+    vm.askDelete(user)
+    await vm.confirmDelete()
+    return vm
+  }
+
+  it('says the user was deleted', async () => {
+    store.deleteUser.mockResolvedValue(adminWriteSuccess())
+    const vm = await deleteFromTable()
+
+    expect(vm.showDeleteConfirmation).toBe(false)
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: 'User \'jdoe\' deleted.' }]])
+    expect(spinner.startSpinner).toHaveBeenCalledTimes(1)
+    expect(spinner.stopSpinner).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows a failed delete with the server text', async () => {
+    store.deleteUser.mockResolvedValue({ success: false, message: 'User \'jdoe\' cannot be deleted.', stale: false })
+    const vm = await deleteFromTable()
+
+    expect(vm.showDeleteConfirmation).toBe(false)
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: 'User \'jdoe\' cannot be deleted.', error: true }]])
+  })
+
+  it('shows a stale delete with the stale text once', async () => {
+    store.deleteUser.mockResolvedValue({ success: false, message: STALE_USER_MESSAGE, stale: true })
+    await deleteFromTable()
+
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: STALE_USER_MESSAGE, error: true }]])
+  })
+
+  it('on success whose reload failed, says both', async () => {
+    store.deleteUser.mockResolvedValue({ ...adminWriteSuccess(), errors: ['Failed to load users.'] })
+    await deleteFromTable()
+
+    expect(showSnackBar.mock.calls).toEqual([[{ msg: 'User \'jdoe\' deleted.' }], [{ msg: 'Failed to load users.', error: true }]])
+  })
+})
+
+// the version of the row the editor was opened on must reach the store, or the server cannot detect a stale write
 describe('version reaches the store', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    store.updateUser.mockResolvedValue(null)
-    store.renameUser.mockResolvedValue(null)
-    store.setPassword.mockResolvedValue(null)
-    store.deleteUser.mockResolvedValue(null)
+    store.updateUser.mockResolvedValue(adminWriteSuccess())
+    store.renameUser.mockResolvedValue(adminWriteSuccess())
+    store.setPassword.mockResolvedValue(adminWriteSuccess())
+    store.deleteUser.mockResolvedValue(adminWriteSuccess())
   })
 
   const save = (wrapper: { vm: unknown }) => (wrapper.vm as { save: () => Promise<void> }).save()
 
-  it('UserEditorDialog sends the user with its version', async () => {
-    await save(mount(UserEditorDialog, { props: { visible: true, user }, global: { plugins: [PrimeVue] }}))
+  it('UserEditorPanel sends the user with its version', async () => {
+    await save(mount(UserEditorPanel, { props: { user }, global: { plugins: [PrimeVue] }}))
 
     expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({ userId: 'jdoe', version: 3 }))
   })
@@ -132,9 +296,9 @@ describe('a rename followed by an edit', () => {
     store.renameUser.mockImplementation(async () => {
       // what the real store does on success: reload the list
       live.users = [{ userId: 'jsmith', fullName: 'J Doe', version: 4 }]
-      return null
+      return adminWriteSuccess()
     })
-    store.updateUser.mockResolvedValue(null)
+    store.updateUser.mockResolvedValue(adminWriteSuccess())
     const table = mount(UsersTable, { global: { plugins: [PrimeVue], directives: { tooltip: {}}}})
 
     // rename through the row's menu
@@ -149,26 +313,30 @@ describe('a rename followed by an edit', () => {
     await nextTick()
     expect(rename.props('visible')).toBe(false)
 
-    // edit the reloaded row through its Edit button
+    // edit the reloaded row through its Edit button: the table opens the editor on that row
     const editButtons = table.findAll('[data-test="edit-user-button"]')
     expect(editButtons).toHaveLength(1)
     await editButtons[0].trigger('click')
-    const editor = table.findComponent(UserEditorDialog)
-    expect(editor.props('visible')).toBe(true)
+    expect(store.openUserEditor).toHaveBeenCalledTimes(1)
+    const opened = store.openUserEditor.mock.calls[0][0]
+    expect(opened).toMatchObject({ userId: 'jsmith', version: 4 })
+
+    // and the editor saves what it was opened on
+    const editor = mount(UserEditorPanel, { props: { user: opened }, global: { plugins: [PrimeVue] }})
     await (editor.vm as unknown as { save: () => Promise<void> }).save()
 
     expect(store.updateUser).toHaveBeenCalledWith(expect.objectContaining({ userId: 'jsmith', version: 4 }))
   })
 })
 
-describe('UserEditorDialog comment limit', () => {
+describe('UserEditorPanel comment limit', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    store.updateUser.mockResolvedValue(null)
+    store.updateUser.mockResolvedValue(adminWriteSuccess())
   })
 
   const mountEditor = (userComments?: string) =>
-    mount(UserEditorDialog, { props: { visible: true, user: { ...user, userComments }}, global: { plugins: [PrimeVue] }})
+    mount(UserEditorPanel, { props: { user: { ...user, userComments }}, global: { plugins: [PrimeVue] }})
   const vmOf = (wrapper: { vm: unknown }) => wrapper.vm as unknown as { form: { comments: string }, commentsProblem: string | null, isValid: boolean, save: () => Promise<void> }
 
   it('flags a new comment over 4096 characters and blocks Save', async () => {
