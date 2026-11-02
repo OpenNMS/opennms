@@ -37,6 +37,8 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.opennms.upgrade.criticaltests.TestCriticalUpgradeFailsInExecute;
 import org.opennms.upgrade.criticaltests.TestCriticalUpgradeFailsInPreExecute;
 import org.opennms.upgrade.criticaltests.TestUpgradeAfterTheCriticalOnes;
+import org.opennms.upgrade.skippedtests.pending.TestOfflineCriticalUpgradePending;
+import org.opennms.upgrade.skippedtests.pending.TestOnlineCriticalUpgradePending;
 import org.opennms.upgrade.tests.TestUpgradeA;
 import org.opennms.upgrade.tests.TestUpgradeB;
 import org.opennms.upgrade.tests.TestUpgradeEverytime;
@@ -150,14 +152,55 @@ public class UpgradeTest {
         Assert.assertEquals(3, UpgradeHelper.getExecutedList().stream().filter(c -> TestUpgradeEverytime.class.getName().equals(c)).count());
     }
 
+    @Test
+    public void testACriticalTaskSkippedWhileOpenNMSRunsFailsTheUpgradeIfItHasWorkLeft() throws Exception {
+        final OnmsUpgradeException e = Assert.assertThrows(OnmsUpgradeException.class,
+                () -> performUpgrade("org.opennms.upgrade.skippedtests.pending", true));
+
+        Assert.assertTrue(e.getMessage(), e.getMessage().contains(TestOfflineCriticalUpgradePending.class.getName()));
+        // the task that requires OpenNMS to be running ran
+        Assert.assertFalse(e.getMessage(), e.getMessage().contains(TestOnlineCriticalUpgradePending.class.getName()));
+        Assert.assertEquals(List.of(TestOnlineCriticalUpgradePending.class.getName()), UpgradeHelper.getExecutedList());
+        Assert.assertFalse(configured.exists());
+    }
+
+    @Test
+    public void testACriticalTaskSkippedWhileOpenNMSIsStoppedFailsTheUpgradeIfItHasWorkLeft() throws Exception {
+        final OnmsUpgradeException e = Assert.assertThrows(OnmsUpgradeException.class,
+                () -> performUpgrade("org.opennms.upgrade.skippedtests.pending", false));
+
+        Assert.assertTrue(e.getMessage(), e.getMessage().contains(TestOnlineCriticalUpgradePending.class.getName()));
+        Assert.assertFalse(e.getMessage(), e.getMessage().contains(TestOfflineCriticalUpgradePending.class.getName()));
+        Assert.assertEquals(List.of(TestOfflineCriticalUpgradePending.class.getName()), UpgradeHelper.getExecutedList());
+        Assert.assertFalse(configured.exists());
+    }
+
+    @Test
+    public void testSkippingACriticalTaskWithNoWorkLeftOrATaskThatIsNotCriticalDoesNotFail() throws Exception {
+        // e.g. install -dis while OpenNMS runs, after a good migration: the migrator and the seed have nothing to do
+        performUpgrade("org.opennms.upgrade.skippedtests.done", true);
+
+        Assert.assertTrue(UpgradeHelper.getExecutedList().isEmpty());
+        Assert.assertTrue(configured.exists());
+    }
+
     /**
-     * Perform upgrade.
+     * Perform upgrade, as if OpenNMS were stopped: whether an OpenNMS instance runs on this computer does not matter.
      *
      * @param scope the scope
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     private void performUpgrade(String scope) throws OnmsUpgradeException {
-        Upgrade upgrade = new Upgrade();
+        performUpgrade(scope, false);
+    }
+
+    private void performUpgrade(final String scope, final boolean opennmsRunning) throws OnmsUpgradeException {
+        Upgrade upgrade = new Upgrade() {
+            @Override
+            protected boolean isOpennmsRunning() {
+                return opennmsRunning;
+            }
+        };
         upgrade.setClassScope(scope);
         upgrade.setUpgradeStatus(upgradeStatus);
         upgrade.execute();

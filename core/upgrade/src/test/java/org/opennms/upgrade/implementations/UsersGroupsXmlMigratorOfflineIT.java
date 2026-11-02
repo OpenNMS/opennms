@@ -354,6 +354,8 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
         assertTrue(e.getMessage(), e.getMessage().contains("the user 'item', the group '..'"));
         // so the failure fails the upgrade and the installer, and OpenNMS does not start without users
         assertTrue(new UsersGroupsXmlMigratorOffline().isCritical());
+        // and skipping it while OpenNMS runs fails the upgrade too
+        assertTrue(new UsersGroupsXmlMigratorOffline().isPending());
         assertEquals(0, count("users"));
         assertEquals(0, count("groups"));
         assertEquals(0, count("usermgmt_initialized"));
@@ -374,6 +376,18 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
 
         assertEquals(1, m_jdbc.queryForObject("SELECT COUNT(*) FROM users WHERE username = 'available-categories'", Integer.class).intValue());
         assertEquals(1, m_jdbc.queryForObject("SELECT COUNT(*) FROM groups WHERE name = 'available-roles'", Integer.class).intValue());
+    }
+
+    @Test
+    public void testIsPendingUntilTheFilesAreCopied() throws Exception {
+        // the upgrade asks when it skips the task because OpenNMS is running: the files are not copied yet
+        copyFixtures();
+        assertTrue(new UsersGroupsXmlMigratorOffline().isPending());
+
+        migrate();
+
+        // an install while OpenNMS runs, after a good migration, does not fail
+        assertFalse(new UsersGroupsXmlMigratorOffline().isPending());
     }
 
     @Test

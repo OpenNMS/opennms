@@ -82,6 +82,12 @@ public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
         return true;
     }
 
+    /** Until the usermgmt_initialized marker is set, either the migrator or this task has to fill the database. */
+    @Override
+    public boolean isPending() throws OnmsUpgradeException {
+        return !UserMgmtInitialized.isSet();
+    }
+
     @Override
     public void preExecute() throws OnmsUpgradeException {
     }

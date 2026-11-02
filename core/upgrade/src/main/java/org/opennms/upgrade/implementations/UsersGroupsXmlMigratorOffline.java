@@ -155,6 +155,12 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
         return true;
     }
 
+    /** Until the usermgmt_initialized marker is set, the files still have to be copied, or the seed has to run. */
+    @Override
+    public boolean isPending() throws OnmsUpgradeException {
+        return !UserMgmtInitialized.isSet();
+    }
+
     @Override
     public void preExecute() throws OnmsUpgradeException {
         try (final Connection connection = DataSourceFactory.getInstance().getConnection();

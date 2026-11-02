@@ -249,12 +249,18 @@ public class Upgrade {
                         if (executeUpgrade(upg) && upg.isCritical()) {
                             criticalFailures.add(upg.getId());
                         }
+                    } else if (skippedWithWorkLeft(upg, "stopped", "running", "Stop")) {
+                        criticalFailures.add(upg.getId());
                     } else {
                         log("  Task %s requires that OpenNMS is stopped but it is running (ignoring)\n", upg.getId());
                     }
                 } else {
                     if (upg.requiresOnmsRunning()) {
-                        log("  Task %s requires OpenNMS is running but it is stopped (ignoring)\n", upg.getId());
+                        if (skippedWithWorkLeft(upg, "running", "stopped", "Start")) {
+                            criticalFailures.add(upg.getId());
+                        } else {
+                            log("  Task %s requires OpenNMS is running but it is stopped (ignoring)\n", upg.getId());
+                        }
                     } else if (executeUpgrade(upg) && upg.isCritical()) {
                         criticalFailures.add(upg.getId());
                     }
@@ -271,6 +277,28 @@ public class Upgrade {
     }
 
     /**
+     * Checks a task that is skipped because OpenNMS is not in the state it requires: a critical task that still has
+     * work to do fails the upgrade, so that OpenNMS does not start without that work (see {@link OnmsUpgrade#isPending()}).
+     *
+     * @return true, if the task is critical and has work left
+     */
+    private boolean skippedWithWorkLeft(final OnmsUpgrade upg, final String required, final String actual, final String fix) {
+        if (!upg.isCritical()) {
+            return false;
+        }
+        try {
+            if (!upg.isPending()) {
+                return false;
+            }
+        } catch (final OnmsUpgradeException e) {
+            log("  Error: can't tell whether task %s has work left: %s\n", upg.getId(), e.getMessage());
+        }
+        log("  Error: task %s requires that OpenNMS is %s, but it is %s, and OpenNMS cannot run without its work. %s OpenNMS, then run the installer again.\n",
+                upg.getId(), required, actual, fix);
+        return true;
+    }
+
+    /**
      * Ends an upgrade in which critical tasks failed: removes etc/configured, so that OpenNMS does not start until the
      * installer runs again, and throws.
      */
@@ -280,7 +308,7 @@ public class Upgrade {
         log("\n==============================================================================\n");
         log("UPGRADE FAILED");
         log("\n==============================================================================\n\n");
-        log("OpenNMS cannot run without these tasks, which failed: %s.\n", tasks);
+        log("OpenNMS cannot run without these tasks, which failed or were skipped: %s.\n", tasks);
         log("Their messages above say why. Fix the cause, then run the installer again:\n\n");
         log("  %s/bin/install -dis\n\n", ConfigFileConstants.getHome());
         if (!configured.exists() || configured.delete()) {
@@ -288,7 +316,7 @@ public class Upgrade {
         } else {
             log("Warning: %s could not be removed. Do not start OpenNMS until the installer has run without this failure.\n", configured);
         }
-        throw new OnmsUpgradeException("The upgrade failed: these tasks failed, and OpenNMS cannot run without them: " + tasks);
+        throw new OnmsUpgradeException("The upgrade failed: these tasks failed or were skipped, and OpenNMS cannot run without them: " + tasks);
     }
 
     private void thank() {

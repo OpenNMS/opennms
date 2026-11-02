@@ -123,6 +123,20 @@ public interface OnmsUpgrade {
     default boolean isCritical() {
         return false;
     }
+
+    /**
+     * Does this critical task still have work to do?
+     * <p>Asked only when the upgrade skips a critical task because OpenNMS is running and the task requires it to be
+     * stopped, or the reverse. A pending task fails the upgrade, as if it had failed. A task that runs on every
+     * install, but has work only once, answers false once that work is done, so that a later install with OpenNMS
+     * running does not fail.</p>
+     *
+     * @return true, if the task still has work to do; the default, so that skipping a critical task fails the upgrade
+     * @throws OnmsUpgradeException if the task cannot tell; the upgrade then fails
+     */
+    default boolean isPending() throws OnmsUpgradeException {
+        return true;
+    }
 }
 
 
