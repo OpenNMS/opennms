@@ -81,6 +81,19 @@ const getMenuLink = (menuItem: MenuItem, baseHref?: string | null) => {
   return '#'
 }
 
+const getSearchResultLink = (
+  item: { url?: string | null, value?: string | null, properties?: Record<string, string> | null },
+  baseHref: string
+): { url: string, target: '_self' | '_blank' } => {
+  const rawUrl = item.url || item.value || ''
+  const isExternal = item.properties?.isExternalLink === 'true'
+
+  return {
+    url: isExternal ? rawUrl : `${baseHref}${rawUrl}`,
+    target: item.properties?.linkTarget === '_blank' ? '_blank' : '_self'
+  }
+}
+
 const createMenuIcon = (menuItem: MenuItem, getIcon: (iconId?: string | null) => Component | null) => {
   const icon: (Component | null) = getIcon(menuItem.icon)
 
@@ -258,5 +271,6 @@ export {
   createPrimeMenuModel,
   createTopMenuItem,
   getMenuLink,
+  getSearchResultLink,
   updateWithPluginsMenuItems
 }

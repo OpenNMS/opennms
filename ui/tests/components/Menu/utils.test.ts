@@ -24,7 +24,7 @@ import { describe, it, expect, vi } from 'vitest'
 import type { OnmsMenuItem as PrimeMenuItem } from '@opennms/onms-ui'
 import { Plugin } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
-import { computePluginRelLink, createPrimeMenuModel, updateWithPluginsMenuItems } from '@/components/Menu/utils'
+import { computePluginRelLink, createPrimeMenuModel, getSearchResultLink, updateWithPluginsMenuItems } from '@/components/Menu/utils'
 import useMenuIcons from '@/components/Menu/useMenuIcons'
 import mainMenuData from './menu-template-test.json'
 
@@ -313,5 +313,31 @@ describe('Menu utils', () => {
         target: '_self'
       })
     })
+  })
+})
+
+describe('getSearchResultLink', () => {
+  it('prefixes baseHref for internal results', () => {
+    expect(getSearchResultLink({ url: 'alarm/list.htm' }, '/opennms/'))
+      .toEqual({ url: '/opennms/alarm/list.htm', target: '_self' })
+  })
+
+  it('leaves external results untouched and honors _blank', () => {
+    expect(getSearchResultLink({
+      url: 'https://chat.opennms.org',
+      properties: { isExternalLink: 'true', linkTarget: '_blank' }
+    }, '/opennms/')).toEqual({ url: 'https://chat.opennms.org', target: '_blank' })
+  })
+
+  it('uses _self for external results without a target', () => {
+    expect(getSearchResultLink({
+      url: 'https://chat.opennms.org',
+      properties: { isExternalLink: 'true' }
+    }, '/opennms/')).toEqual({ url: 'https://chat.opennms.org', target: '_self' })
+  })
+
+  it('falls back to value', () => {
+    expect(getSearchResultLink({ value: 'element/node.jsp?node=1' }, '/opennms/'))
+      .toEqual({ url: '/opennms/element/node.jsp?node=1', target: '_self' })
   })
 })

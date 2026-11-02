@@ -60,6 +60,7 @@ import { OnmsSearchInput } from '@opennms/onms-ui'
 import { useOutsideClick } from '@/composables/useOutsideClick'
 import SearchHeader from './SearchHeader.vue'
 import SearchResult from './SearchResult.vue'
+import { getSearchResultLink } from './utils'
 import { useMenuStore } from '@/stores/menuStore'
 import { useSearchStore } from '@/stores/searchStore'
 
@@ -169,10 +170,13 @@ const handleItemClick = (item: any) => {
   selectedIndex.value = -1
 
   if (item && (item.url || item.value)) {
-    const baseHref = menuStore.mainMenu?.baseHref || ''
-    const itemUrl = item.url || item.value || ''
-    const fullPath = `${baseHref}${itemUrl}`
-    window.location.href = fullPath
+    const { url, target } = getSearchResultLink(item, menuStore.mainMenu?.baseHref || '')
+
+    if (target === '_blank') {
+      window.open(url, '_blank', 'noopener')
+    } else {
+      window.location.href = url
+    }
   }
 }
 
