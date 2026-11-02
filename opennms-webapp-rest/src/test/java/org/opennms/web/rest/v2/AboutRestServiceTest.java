@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
@@ -42,13 +43,11 @@ import org.opennms.web.rest.v2.AboutRestService.AboutDTO;
 
 public class AboutRestServiceTest {
 
-    private static final String[] VAULT_KEYS = { "version.display", "opennms.product", "opennms.docs.version" };
+    private static final String[] VAULT_KEYS = { "version.display" };
 
     @Before
     public void setUp() {
         Vault.getProperties().setProperty("version.display", "37.0.0-SNAPSHOT");
-        Vault.getProperties().setProperty("opennms.product", "horizon");
-        Vault.getProperties().setProperty("opennms.docs.version", "latest");
     }
 
     @After
@@ -78,8 +77,7 @@ public class AboutRestServiceTest {
         final AboutDTO about = service.getAbout(servletContext);
 
         assertEquals("37.0.0-SNAPSHOT", about.getDisplayVersion());
-        assertEquals("horizon", about.getProduct());
-        assertEquals("latest", about.getDocsVersion());
+        assertEquals("2002-" + LocalDate.now().getYear(), about.getCopyrightDates());
         assertEquals("PostgreSQL", about.getDatabaseType());
         assertEquals("16.4", about.getDatabaseVersion());
         assertEquals("jetty/9.4.58 (Servlet Spec 3.1)", about.getServletContainer());

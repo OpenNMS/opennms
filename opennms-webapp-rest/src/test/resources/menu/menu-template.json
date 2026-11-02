@@ -311,7 +311,7 @@
         {
           "id": "helpMain",
           "name": "Help",
-          "url": "help/index.jsp",
+          "url": "ui/index.html#/documentation",
           "locationMatch": null,
           "roles": null
         },
@@ -336,7 +336,7 @@
       {
         "id": "helpMain",
         "name": "Help",
-        "url": "help/index.jsp",
+        "url": "ui/index.html#/documentation",
         "locationMatch": null,
         "roles": null
       },
@@ -351,6 +351,14 @@
         "id": "apiDocumentation",
         "name": "API Documentation",
         "url": "ui/index.html#/open-api",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "restApiReferenceDocumentation",
+        "name": "REST API Reference",
+        "url": "https://docs.opennms.com/$PRODUCT/$DOCS_VERSION/development/rest/rest-api.html",
+        "isExternalLink": true,
         "locationMatch": null,
         "roles": null
       }

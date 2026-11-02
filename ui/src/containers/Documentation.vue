@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed } from 'vue'
 import ApiEndpoints from '@opennms/onms-ui/icons/network/ApiEndpoints.vue'
 import BlogArticle from '@opennms/onms-ui/icons/content/BlogArticle.vue'
 import Code from '@opennms/onms-ui/icons/network/Code.vue'
@@ -22,16 +22,15 @@ import Monitoring from '@opennms/onms-ui/icons/network/Monitoring.vue'
 import Server from '@opennms/onms-ui/icons/network/Server.vue'
 
 import HelpPage from '@/components/Help/HelpPage.vue'
-import API from '@/services'
+import { docsBaseUrl } from '@/lib/docs'
+import { useMenuStore } from '@/stores/menuStore'
 import { HelpSection } from '@/types/help'
 
 // The docs site is versioned per product, and only the server knows which product this is
-// (the UI bundle is shared), so the release guides wait for /api/v2/about.
-const product = ref<string | null>(null)
-const docsVersion = ref<string | null>(null)
-const loadFailed = ref(false)
-
-const docsBase = computed(() => `https://docs.opennms.com/${product.value}/${docsVersion.value}`)
+// (the UI bundle is shared), so the release guides come from the menu.
+const menuStore = useMenuStore()
+const docsBase = computed(() => docsBaseUrl(menuStore.mainMenu))
+const loadFailed = computed(() => menuStore.mainMenuLoaded && !docsBase.value)
 
 const releaseGuides = computed<HelpSection>(() => (
   {
@@ -85,17 +84,7 @@ const moreDocumentation: HelpSection =
   }
 
 const sections = computed<HelpSection[]>(() =>
-  product.value && docsVersion.value ? [releaseGuides.value, moreDocumentation] : [moreDocumentation])
-
-onMounted(async () => {
-  const result = await API.getAbout()
-  if (result.success && result.payload?.product && result.payload.docsVersion) {
-    product.value = result.payload.product
-    docsVersion.value = result.payload.docsVersion
-  } else {
-    loadFailed.value = true
-  }
-})
+  docsBase.value ? [releaseGuides.value, moreDocumentation] : [moreDocumentation])
 </script>
 
 <style scoped lang="scss">

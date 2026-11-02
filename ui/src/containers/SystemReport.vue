@@ -63,7 +63,9 @@
           <label for="sr-filename">File name</label>
           <OnmsInputText id="sr-filename" v-model="filename" :placeholder="defaultFilename" data-test="filename" />
         </div>
-        <OnmsButton :disabled="!canGenerate" data-test="generate-btn" @click="generate">Generate System Report</OnmsButton>
+        <OnmsButton :disabled="!canGenerate" data-test="generate-btn" @click="generate">
+          {{ generating ? 'Generating...' : 'Generate System Report' }}
+        </OnmsButton>
       </div>
     </section>
   </div>
@@ -76,15 +78,13 @@ import { OnmsButton, OnmsCheckbox, OnmsInputText, OnmsSelect } from '@opennms/on
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import API from '@/services'
-import useDownload from '@/composables/useDownload'
 import useRole from '@/composables/useRole'
 import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
-import { BreadCrumb } from '@/types'
+import { BreadCrumb, MessageSeverity } from '@/types'
 import { SystemReportFormatter, SystemReportPlugin } from '@/types/systemReport'
 
 const { showSnackBar } = useSnackbar()
-const { downloadFile } = useDownload()
 const { adminRole } = useRole()
 const menuStore = useMenuStore()
 
@@ -115,7 +115,11 @@ const formatterOptions = computed(() =>
 const allSelected = computed<boolean>(() =>
   plugins.value.length > 0 && selectedPlugins.value.length === plugins.value.length)
 
-const canGenerate = computed<boolean>(() => selectedPlugins.value.length > 0 && !!selectedFormatter.value)
+// true until the download starts, so a second click cannot start another (slow) report
+const generating = ref(false)
+
+const canGenerate = computed<boolean>(() =>
+  !generating.value && selectedPlugins.value.length > 0 && !!selectedFormatter.value)
 
 const toggleAll = () => {
   selectedPlugins.value = allSelected.value ? [] : plugins.value.map(p => p.name)
@@ -141,24 +145,27 @@ const generate = async () => {
 
   // The report is built on demand — plugins run live and logs/config are gathered
   // and compressed — so it can take a while on a large system.
-  showSnackBar({ msg: 'Generating the system report — this can take a while on a large system. Your download will start when it is ready.' })
+  showSnackBar({ msg: 'Generating the system report. The download starts right away but can take a while to finish on a large system.', severity: MessageSeverity.Info })
 
-  const response = await API.generateSystemReport({
-    formatter: selectedFormatter.value,
-    plugins: [...selectedPlugins.value],
-    output: cleanedName || undefined
-  })
-
-  if (!response) {
-    showSnackBar({
-      msg: 'The system report could not be generated. Your session may have expired, or part of the report failed — please try again.',
-      error: true
+  generating.value = true
+  try {
+    const result = await API.generateSystemReport({
+      formatter: selectedFormatter.value,
+      plugins: [...selectedPlugins.value],
+      output: cleanedName || undefined
     })
-    return
-  }
 
-  // force blob so the report is saved as-is rather than JSON-stringified
-  downloadFile(response, true)
+    if (!result.success) {
+      showSnackBar({
+        msg: result.message
+          ? `The system report could not be generated: ${result.message}`
+          : 'The system report could not be generated. Your session may have expired; please try again.',
+        error: true
+      })
+    }
+  } finally {
+    generating.value = false
+  }
 }
 
 onMounted(async () => {

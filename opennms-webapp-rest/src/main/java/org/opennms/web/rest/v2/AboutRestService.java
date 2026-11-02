@@ -44,6 +44,7 @@ import org.opennms.core.ipc.sink.common.SinkStrategy;
 import org.opennms.core.rpc.common.RpcStrategy;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.TimeSeries;
+import org.opennms.web.rest.support.menu.MenuProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -71,8 +72,7 @@ public class AboutRestService {
     public AboutDTO getAbout(@Context final ServletContext servletContext) {
         final AboutDTO about = new AboutDTO();
         about.displayVersion = Vault.getProperty("version.display");
-        about.product = Vault.getProperty("opennms.product");
-        about.docsVersion = Vault.getProperty("opennms.docs.version");
+        about.copyrightDates = MenuProvider.copyrightDates();
         // formatted server-side so it shows the server's own time zone
         about.serverTime = new Date().toString();
 
@@ -123,8 +123,7 @@ public class AboutRestService {
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class AboutDTO {
         @XmlElement private String displayVersion;
-        @XmlElement private String product;
-        @XmlElement private String docsVersion;
+        @XmlElement private String copyrightDates;
         @XmlElement private String serverTime;
         @XmlElement private String javaVersion;
         @XmlElement private String javaRuntime;
@@ -140,8 +139,7 @@ public class AboutRestService {
         @XmlElement private String ipcStrategy;
 
         public String getDisplayVersion() { return displayVersion; }
-        public String getProduct() { return product; }
-        public String getDocsVersion() { return docsVersion; }
+        public String getCopyrightDates() { return copyrightDates; }
         public String getServerTime() { return serverTime; }
         public String getJavaVersion() { return javaVersion; }
         public String getJavaRuntime() { return javaRuntime; }

@@ -28,8 +28,7 @@ import About from '@/containers/About.vue'
 
 const about = {
   displayVersion: '37.0.0-SNAPSHOT',
-  product: 'horizon',
-  docsVersion: 'latest',
+  copyrightDates: '2002-2026',
   serverTime: 'Fri Oct 30 12:00:00 EDT 2026',
   javaVersion: '21.0.12 (Ubuntu)',
   javaRuntime: 'OpenJDK Runtime Environment (21.0.12)',
@@ -52,10 +51,10 @@ vi.mock('@/services', () => ({
   }
 }))
 
-const mountPage = () =>
+const mountPage = (mainMenu: object = { product: 'horizon', docsVersion: 'latest', copyrightDates: '2002-2026' }) =>
   mount(About, {
     global: {
-      plugins: [createTestingPinia({ stubActions: false }), PrimeVue],
+      plugins: [createTestingPinia({ stubActions: false, initialState: { menuStore: { mainMenu, mainMenuLoaded: true }}}), PrimeVue],
       stubs: ['router-link', 'BreadCrumbs']
     }
   })
@@ -83,6 +82,15 @@ describe('About', () => {
     expect(wrapper.find('[data-test="release-notes"]').attributes('href'))
       .toBe('https://docs.opennms.com/horizon/latest/releasenotes/whatsnew.html')
     expect(wrapper.find('[data-test="load-error"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="license"]').text()).toContain('copyright © 2002-2026 The OpenNMS Group')
+  })
+
+  it('hides the release notes link when the product or docs version is unknown', async () => {
+    const wrapper = mountPage({ product: 'horizon', docsVersion: null })
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="release-notes"]').exists()).toBe(false)
+    expect(wrapper.find('.product').text()).toBe('OpenNMS Horizon')
   })
 
   it('still shows the client-side details and an error when the server details fail to load', async () => {
@@ -94,6 +102,7 @@ describe('About', () => {
     expect(detail(wrapper, 'Client Time')).toBeDefined()
     expect(detail(wrapper, 'User Agent')).toBeDefined()
     expect(detail(wrapper, 'Database Type')).toBeUndefined()
-    expect(wrapper.find('[data-test="release-notes"]').exists()).toBe(false)
+    // the menu's server-side copy of the dates still fills the copyright line
+    expect(wrapper.find('[data-test="copyright-dates"]').text()).toBe('2002-2026')
   })
 })

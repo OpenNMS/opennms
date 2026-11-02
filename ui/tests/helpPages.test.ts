@@ -28,20 +28,13 @@ import CommercialSupport from '@/containers/CommercialSupport.vue'
 import CommunityResources from '@/containers/CommunityResources.vue'
 import Documentation from '@/containers/Documentation.vue'
 
-const getAbout = vi.fn()
-vi.mock('@/services', () => ({
-  default: {
-    getAbout: (...a: unknown[]) => getAbout(...a)
-  }
-}))
-
 const adminRole = { value: true }
 vi.mock('@/composables/useRole', () => ({ default: () => ({ adminRole }) }))
 
-const mountPage = (component: object) =>
+const mountPage = (component: object, menuState: object = { mainMenu: {}, mainMenuLoaded: true }) =>
   mount(component, {
     global: {
-      plugins: [createTestingPinia({ stubActions: false }), PrimeVue],
+      plugins: [createTestingPinia({ stubActions: false, initialState: { menuStore: menuState }}), PrimeVue],
       stubs: ['router-link', 'BreadCrumbs']
     }
   })
@@ -55,8 +48,7 @@ describe('Documentation', () => {
   })
 
   it('links the guides for this product and docs version', async () => {
-    getAbout.mockResolvedValue({ success: true, message: '', payload: { product: 'meridian', docsVersion: '2026' }})
-    const wrapper = mountPage(Documentation)
+    const wrapper = mountPage(Documentation, { mainMenu: { product: 'meridian', docsVersion: '2026' }, mainMenuLoaded: true })
     await flushPromises()
 
     const deployment = links(wrapper).find(l => l.text === 'Deployment Guide')
@@ -67,8 +59,7 @@ describe('Documentation', () => {
   })
 
   it('offers only version-neutral links when the product and version are unknown', async () => {
-    getAbout.mockResolvedValue({ success: false, message: 'Unable to load the system details.' })
-    const wrapper = mountPage(Documentation)
+    const wrapper = mountPage(Documentation, { mainMenu: { product: null, docsVersion: null }, mainMenuLoaded: true })
     await flushPromises()
 
     // never guess a product: a Meridian install must not be sent to the Horizon guides
@@ -77,8 +68,7 @@ describe('Documentation', () => {
   })
 
   it('shows no release guides while the product and version are still loading', () => {
-    getAbout.mockReturnValue(new Promise(() => {}))
-    const wrapper = mountPage(Documentation)
+    const wrapper = mountPage(Documentation, { mainMenu: {}, mainMenuLoaded: false })
 
     expect(links(wrapper).map(l => l.text)).toEqual(['OpenNMS Documentation', 'OpenAPI Documentation'])
     expect(wrapper.find('[data-test="docs-unavailable"]').exists()).toBe(false)

@@ -590,7 +590,7 @@
         {
           "id": "restApiReferenceDocumentation",
           "name": "REST API Reference Documentation",
-          "url": "https://docs.opennms.com/horizon/latest/development/rest/rest-api.html",
+          "url": "https://docs.opennms.com/$PRODUCT/$DOCS_VERSION/development/rest/rest-api.html",
           "isExternalLink": true,
           "linkTarget": "_blank",
           "locationMatch": "",
@@ -610,7 +610,7 @@
     {
       "id": "helpDocumentationMenu",
       "name": "Help",
-      "url": "https://docs.opennms.com/horizon/latest",
+      "url": "https://docs.opennms.com/$PRODUCT/$DOCS_VERSION",
       "isExternalLink": true,
       "locationMatch": null,
       "icon": "action/Help",
@@ -661,6 +661,13 @@
     "locationMatch": null,
     "roles": null,
     "items": [
+      {
+        "id": "helpMain",
+        "name": "Help",
+        "url": "ui/index.html#/documentation",
+        "locationMatch": null,
+        "roles": null
+      }
     ]
   },
   "selfServiceMenu": {

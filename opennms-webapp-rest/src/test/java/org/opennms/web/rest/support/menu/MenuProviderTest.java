@@ -31,12 +31,14 @@ import org.junit.Assert;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.startsWith;
 
+import org.opennms.core.resource.Vault;
 import org.opennms.web.rest.support.menu.model.MainMenu;
 import org.opennms.web.rest.support.menu.model.MenuEntry;
 
@@ -160,6 +162,29 @@ public class MenuProviderTest {
         List<String> actualNames = getMenuNames(infoMenu);
         assertEquals(expectedNames.length, actualNames.size());
         assertThat(actualNames, containsInAnyOrder(expectedNames));
+    }
+
+    @Test
+    public void testDocsUrlTokens() {
+        try {
+            Vault.getProperties().setProperty("opennms.product", "meridian");
+            Vault.getProperties().setProperty("opennms.docs.version", "2026");
+            MainMenu mainMenu = parseMainMenu(false, ADMIN_ROLES);
+            assertEquals("meridian", mainMenu.product);
+            assertEquals("2026", mainMenu.docsVersion);
+            assertEquals("https://docs.opennms.com/meridian/2026/development/rest/rest-api.html",
+                    getMenuEntry(mainMenu.helpMenu.items, "REST API Reference").url);
+
+            // unknown product: fall back to the Horizon docs rather than a broken link
+            Vault.getProperties().remove("opennms.product");
+            mainMenu = parseMainMenu(false, ADMIN_ROLES);
+            assertNull(mainMenu.product);
+            assertEquals("https://docs.opennms.com/horizon/latest/development/rest/rest-api.html",
+                    getMenuEntry(mainMenu.helpMenu.items, "REST API Reference").url);
+        } finally {
+            Vault.getProperties().remove("opennms.product");
+            Vault.getProperties().remove("opennms.docs.version");
+        }
     }
 
     private MainMenu parseMainMenu(boolean isZenithConnectEnabled, String[] roles) {

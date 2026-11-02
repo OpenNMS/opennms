@@ -41,6 +41,9 @@ public class MainMenu {
     public Boolean sideMenuInitialExpand;
     public String copyrightDates;
     public String version;
+    /** docs.opennms.com path segments for this install, e.g. "horizon" and "36"; null when unknown. */
+    public String product;
+    public String docsVersion;
 
     final public List<MenuEntry> menus = new ArrayList<>();
     public MenuEntry helpMenu;

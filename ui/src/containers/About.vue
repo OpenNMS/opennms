@@ -12,7 +12,7 @@
         <div v-if="about" class="version" data-test="version">{{ about.displayVersion }}</div>
       </div>
       <a
-        v-if="about"
+        v-if="releaseNotesUrl"
         class="release-notes"
         :href="releaseNotesUrl"
         target="_blank"
@@ -52,7 +52,7 @@
           trademark, and Horizon&trade;, Meridian&trade;, and Compass&trade; are trademarks, of
           <a href="https://www.opennms.com/" target="_blank" rel="noopener noreferrer">The OpenNMS Group, Inc.</a>
           Horizon&trade; software by OpenNMS&reg; and Meridian&trade; software by OpenNMS&reg;, as distributed here,
-          are copyright &copy; {{ copyrightDates }} The OpenNMS Group, Inc.
+          are copyright &copy; <span v-if="copyrightDates" data-test="copyright-dates">{{ copyrightDates }}</span> The OpenNMS Group, Inc.
         </p>
         <p>
           OpenNMS contains original code as well as code from other open source projects. The license terms for this
@@ -95,6 +95,7 @@ import Microservices from '@opennms/onms-ui/icons/network/Microservices.vue'
 import Server from '@opennms/onms-ui/icons/network/Server.vue'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { docsBaseUrl } from '@/lib/docs'
 import API from '@/services'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
@@ -114,15 +115,18 @@ const about = ref<AboutInfo | null>(null)
 const loadError = ref<string | null>(null)
 const clientTime = new Date().toString()
 
-const copyrightDates = computed(() => menuStore.mainMenu?.copyrightDates || `2002-${new Date().getFullYear()}`)
+// both are computed by the server; the menu's copy covers a failed /about load
+const copyrightDates = computed(() => about.value?.copyrightDates ?? menuStore.mainMenu?.copyrightDates)
 
 const productName = computed(() => {
-  const product = about.value?.product
+  const product = menuStore.mainMenu?.product
   return product ? `OpenNMS ${product.charAt(0).toUpperCase()}${product.slice(1)}` : 'OpenNMS'
 })
 
-const releaseNotesUrl = computed(() =>
-  `https://docs.opennms.com/${about.value?.product}/${about.value?.docsVersion}/releasenotes/whatsnew.html`)
+const releaseNotesUrl = computed(() => {
+  const base = docsBaseUrl(menuStore.mainMenu)
+  return base ? `${base}/releasenotes/whatsnew.html` : null
+})
 
 interface DetailGroup {
   title: string

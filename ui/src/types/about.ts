@@ -22,8 +22,7 @@
 
 export interface AboutInfo {
   displayVersion: string
-  product: string
-  docsVersion: string
+  copyrightDates: string
   serverTime: string
   javaVersion: string
   javaRuntime: string
