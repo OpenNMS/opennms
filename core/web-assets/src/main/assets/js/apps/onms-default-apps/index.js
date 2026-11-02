@@ -20,9 +20,21 @@
  * License.
  */
 const angular = require('vendor/angular-js');
+require('../../lib/onms-http');
+require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle');
+require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle.css');
+require('angular-ui-router');
 const search = require('apps/search');
-const centralSearch = require('apps/onms-central-search');
 
 const MODULE_NAME = 'onms.default.apps';
 
-angular.module(MODULE_NAME, [ 'onms.central.search', 'onms-search' ]);
+angular.module(MODULE_NAME, [
+    'angular-loading-bar',
+    'ngResource',
+    'ui.router',
+    'onms.http',
+    'onms-search',
+])
+    .config(['$locationProvider', function($locationProvider) {
+        $locationProvider.hashPrefix('');
+    }]);
