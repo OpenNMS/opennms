@@ -81,7 +81,6 @@
 
 <%
   final String __baseHref = Util.calculateUrlBase( request );
-  final String oldMenuValue = request.getParameter("oldmenu");
 
   // Cache-buster for the Vue menu bundle links below. The bundle is built with
   // fixed filenames (ui/vite.config.menu.ts), so without a version param a
@@ -301,10 +300,6 @@
     <!-- No visual header is being displayed -->
   </c:when>
   <c:otherwise>
-    <%-- Only display old menu when user has 'oldmenu=true' in query string --%>
-    <% if (oldMenuValue != null && oldMenuValue.equals("true")) { %>
-      <jsp:include page="/navBar.htm" flush="false" />
-    <% } %>
   </c:otherwise>
 </c:choose>
 <!-- End bootstrap header -->
@@ -324,7 +319,7 @@
     <c:choose>
       <c:when test="${param.fromVaadin == 'true'}">
         <!-- both superQuiet and fromVaadin are true -->
-        <% if (__menuAssetsAllowed && (oldMenuValue == null || !oldMenuValue.equals("true"))) { %>
+        <% if (__menuAssetsAllowed) { %>
           <div id="opennms-sidemenu-container"></div>
           <script type="module" src="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>"></script>
         <% } %>
@@ -354,8 +349,7 @@
     <%= "<div id=\"content-body\">" %>
 
     <%-- Vue menus: do not display if 'quiet' is true (whether requested via the
-         'quiet' include param or the Bootstrap 'quiet' flag, e.g. login.jsp), or
-         if 'oldmenu' query string param is true. On unauthenticated quiet pages
+         'quiet' include param or the Bootstrap 'quiet' flag, e.g. login.jsp). On unauthenticated quiet pages
          the menu app must not execute at all: its REST calls would trigger the
          browser's basic-auth prompt and poison SPRING_SECURITY_SAVED_REQUEST
          with a REST URL (NMS-20174). --%>
@@ -364,7 +358,7 @@
         <!-- 'quiet' mode, not displaying Vue menus -->
       </c:when>
       <c:otherwise>
-        <% if (__menuAssetsAllowed && (oldMenuValue == null || !oldMenuValue.equals("true"))) { %>
+        <% if (__menuAssetsAllowed) { %>
           <div id="opennms-sidemenu-container"></div>
           <script type="module" src="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>"></script>
         <% } %>
