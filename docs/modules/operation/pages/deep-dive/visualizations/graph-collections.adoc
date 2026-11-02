@@ -1,0 +1,71 @@
+
+[[ksc-reports]]
+= Graph Collections
+:description: Learn about graph collections in {page-component-title}, which display prefabricated graphical views of collected data.
+:page-aliases: deep-dive/visualizations/ksc-reports.adoc
+
+Graph collections (formerly KSC reports) are saved, ordered sets of prefabricated performance graphs.
+Each entry in a collection draws one graph type for one resource over a named timespan, and the collection's view page lays the graphs out in a grid.
+
+== View graph collections
+
+Click menu:Reports[Graph Collections] in the top menu bar to list the collections.
+From the list you can view, edit, duplicate or delete a collection.
+The view page draws every graph of the collection; if the collection allows it, you can override the timespan or the graph type of all its graphs for the current view.
+
+The *Node and Domain Collections* card below the list builds a collection on the fly for a node or a domain, one graph per SNMP interface.
+Type part of a node label to find the node; the card shows a page of matches at a time rather than every node.
+Domains are listed when you click *Show domains*, because finding them means walking every resource.
+*Save as collection* on its view page turns it into a stored collection that you can then customize.
+
+== Create and edit graph collections
+
+Any user who is not read-only can create and edit collections.
+
+* On the Graph Collections page, click *Create collection* to start from a blank collection, or *Duplicate* a collection to start from a copy of it.
+* On a resource graph, click *Add to collection* to add that graph to an existing collection or to a new one named in the same dialog.
+
+The editor sets the collection's title, how many graphs are drawn per row (`0` uses the `ksc.default.graphsPerLine` property from `opennms.properties`), and whether the view page offers the timespan and graph type overrides.
+*Add graph* opens a picker that walks from a node to one of its resources and to one of the graphs available for it; each entry also takes a title and a timespan.
+Entries can be reordered and removed.
+
+If the collection was changed by someone else while you were editing it, saving offers to reload the stored version or to overwrite it.
+
+== Configuration file
+
+Collections are stored in `etc/ksc-performance-reports.xml`.
+{page-component-title} reads the file at startup and after each change made through the web UI or the REST API, so edits made to the file by hand are not seen until it is reloaded.
+To reload it, click *Reload from file* on the Graph Collections page, call the `reload` operation of the xref:development:rest/graph_collections.adoc[Graph Collections REST API], or restart {page-component-title}.
+
+The following is an example collection:
+
+[source, xml]
+----
+<Report id="7" title="GlassFish JVM Stats" show_timespan_button="true"
+        show_graphtype_button="true" graphs_per_line="2">
+  <Graph title="Instance1 Heap Usage" resourceId="node[1].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.heap"/>
+  <Graph title="Instance1 Non-Heap Usage" resourceId="node[1].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.nonheap"/>
+  <Graph title="Instance2 Heap Used" resourceId="node[2].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.heap"/>
+  <Graph title="Instance2 Non-Heap Used" resourceId="node[2].jmxJVMIndex[GlassFish]"
+         timespan="7_day" graphtype="jvm.memory.nonheap"/>
+</Report>
+----
+
+Valid options for `timespan` are as follows:
+
+[source, console]
+----
+  "1_hour", "2_hour", "4_hour", "6_hour", "8_hour", "12_hour",
+  "1_day", "2_day", "7_day", "1_month", "3_month", "6_month",
+  "1_year", "Today", "Yesterday", "Yesterday 9am-5pm",
+  "Yesterday 5pm-10pm", "This Week", "Last Week", "This Month",
+  "Last Month", "This Quarter", "Last Quarter", "This Year",
+  "Last Year"
+----
+
+The same list is served by `GET /api/v2/graph-collections/timespans`.
+
+NOTE: Make sure that each collection's `id` is unique.

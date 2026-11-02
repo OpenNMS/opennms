@@ -6,7 +6,7 @@ Each collection has a title, layout options for its view page, and an ordered li
 
 This is the REST API behind the Graph Collections UI in the OpenNMS web interface.
 External applications can use it to manage collections directly.
-It replaces the legacy xref:development:rest/ksc_reports.adoc[KSC Reports] API under `/rest/ksc`; new integrations should use this API.
+It replaces the KSC Reports API under `/rest/ksc`, which was removed in Horizon 37.
 
 Collections are stored in `etc/ksc-performance-reports.xml`.
 Writes through this API update that file immediately, and the file remains editable by hand (see the `reload` operation below).
@@ -17,7 +17,7 @@ All operations produce and consume JSON.
 
 Any authenticated user can read collections.
 Any authenticated user can create, edit and delete collections, except users who hold `ROLE_READONLY`, who receive `403 Forbidden` on every write.
-This matches the behavior of the legacy Graph Collections  / KSC Reports pages.
+This matches the behavior of the former KSC Reports pages.
 
 == GETs (reading data)
 

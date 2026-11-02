@@ -17,7 +17,23 @@
         >
           <OnmsButton variant="outlined">Open</OnmsButton>
         </router-link>
+        <OnmsButton
+          v-if="canAddToCollection && canEditCollections"
+          variant="outlined"
+          label="Add to collection"
+          data-test="add-to-collection-btn"
+          @click="addToCollectionOpen = true"
+        />
       </div>
+      <AddToGraphCollectionDialog
+        v-if="addToCollectionOpen"
+        :visible="addToCollectionOpen"
+        :resourceId="resourceId"
+        :resourceLabel="label"
+        :graphtype="definition"
+        :graphTitle="convertedGraphDataRef.title || definition"
+        @update:visible="(value: boolean) => addToCollectionOpen = value"
+      />
       <OnmsTabs value="0" class="graph-data-tabs">
         <OnmsTabList>
           <OnmsTab value="0">Graph</OnmsTab>
@@ -61,6 +77,8 @@ import { format } from 'd3'
 import { OnmsButton, OnmsIconButton, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
 import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import { PropType, computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import AddToGraphCollectionDialog from '@/components/GraphCollections/AddToGraphCollectionDialog.vue'
+import useRole from '@/composables/useRole'
 
 Chart.register(...registerables)
 Chart.register(zoomPlugin)
@@ -93,10 +111,20 @@ const props = defineProps({
   // (a graph collection with two timespans of one graph) passes its own id.
   canvasId: {
     type: String
+  },
+  // Offer "Add to collection" (the resource graphs pages do; a collection's own view does not).
+  canAddToCollection: {
+    type: Boolean,
+    default: false
   }
 })
 
 const chartId = computed(() => props.canvasId || `${props.label}-${props.definition}`)
+
+const { readOnlyRole, rolesAreLoaded } = useRole()
+const canEditCollections = computed(() => rolesAreLoaded.value && !readOnlyRole.value)
+// the dialog is only created while open, since a page draws many graphs
+const addToCollectionOpen = ref(false)
 
 const graphStore = useGraphStore()
 const graphData = ref<GraphMetricsResponse | null>(null)

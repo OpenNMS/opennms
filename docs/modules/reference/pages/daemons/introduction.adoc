@@ -21,6 +21,9 @@ See xref:operation:deep-dive/admin/configuration/daemon-config-files.adoc[] sect
 
 == List of daemons
 
+In a container, the variable names must match the table exactly.
+A variable with any other name has no effect, and {page-component-title} does not log a warning for it.
+
 [cols="1,2,2"]
 |===
 | Name | Description | Container Environment variable with defaults
@@ -58,8 +61,9 @@ See xref:operation:deep-dive/admin/configuration/daemon-config-files.adoc[] sect
 | `CORE_SERVICE_EVENTTRANSLATOR_ENABLED=true`
 
 | Eventd
-| Receives and writes event information. Eventd is always enabled and cannot be disabled.
-| -
+| Receives and writes event information.
+| None.
+Eventd is always enabled.
 
 | JettyServer
 | The Jetty server provides the {page-component-title} web user interface.
@@ -100,10 +104,6 @@ This can be helpful for devices that cannot be directly polled to check service 
 | Handles scheduling of tasks to run in the future.
 | `CORE_SERVICE_QUEUED_ENABLED=true`
 
-| Reportd
-| Generates and schedules reports.
-| `CORE_SERVICE_REPORTD_ENABLED=true`
-
 | Rtcd
 | Handles uptime percentage calculations.
 | `CORE_SERVICE_RTCD_ENABLED=true`
@@ -128,10 +128,6 @@ It is separate from pollerd's SnmpMonitor.
 | Ticketer
 | Enables {page-component-title} to create trouble tickets in external systems.
 | `CORE_SERVICE_TICKETER_ENABLED=true`
-
-| Tl1d
-| Enables reception of TL1 autonomous messages.
-| `CORE_SERVICE_TL1D_ENABLED=false`
 
 | Trapd
 | Provides an SNMP server that accepts SNMP traps that can be converted to events.

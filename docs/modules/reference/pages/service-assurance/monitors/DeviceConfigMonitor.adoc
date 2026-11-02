@@ -64,9 +64,10 @@ Overwrite in metadata as `dcb:ssh-timeout`.
 
 | schedule
 | Schedule to fetch configuration, in the form of cron expression.
-  Defaults to never run; overwrite this in metadata with proper cron expression.
+  Set to `never` to disable scheduled retrieval.
+  The `DeviceConfig` service in the default `poller-configuration.xml` sets it to `never`; overwrite this in metadata with a proper cron expression.
   Overwrite in metadata as `dcb:schedule`.
-| never
+| `0 0 0 * * ?` (daily at midnight)
 
 | retention-period
 | Maximum retention period after which configs without any updates will be deleted from database.
@@ -106,3 +107,34 @@ The service uses an interval of 300 seconds and a cron expression for the schedu
 The monitor checks every 300 seconds (interval) for the next trigger time in the cron schedule.
 It retrieves the configuration only when the next trigger time matches the current time (current time must be greater than the trigger time).
 For example, if the monitor checks at 11:59 p.m., but the trigger time is 12:00 a.m., the monitor will retrieve the configuration at the next check interval at 12:04 a.m.
+
+== Examples
+
+The following example is based on the `DeviceConfig` service in the default `poller-configuration.xml`.
+It backs up the configuration once a day at 1:00 a.m. unless the node's requisition metadata sets `dcb:schedule`.
+The `pattern` element lets one service definition match `DeviceConfig-<type>` services, such as `DeviceConfig-running`, and passes the suffix as the `config-type`.
+Note that you must include the `monitor` section for each service in your definition.
+
+[source, xml]
+----
+<service name="DeviceConfig" interval="300000" user-defined="false" status="on">
+  <pattern><![CDATA[^DeviceConfig-(?<configType>.+)$]]></pattern>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="rrd-base-name" value="device-config"/>
+  <parameter key="config-type" value="${pattern:configType|requisition:dcb:config-type|default}"/>
+  <parameter key="username" value="${requisition:dcb:username|admin}"/>
+  <parameter key="password" value="${requisition:dcb:password|admin}"/>
+  <parameter key="ssh-port" value="${requisition:dcb:ssh-port|22}"/>
+  <parameter key="ssh-timeout" value="${requisition:dcb:ssh-timeout|60000}"/>
+  <parameter key="schedule" value="${requisition:dcb:schedule|0 0 1 * * ?}"/> <1>
+  <parameter key="retention-period" value="${requisition:dcb:retention-period|P1Y}"/>
+  <parameter key="script-file" value="${requisition:dcb:script-file|assets:operating-system|node:os|default}.dcb"/> <2>
+</service>
+
+<monitor service="DeviceConfig" class-name="org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor"/>
+----
+<1> Quartz cron expression with seconds, minutes, hours, day-of-month, month, and day-of-week fields.
+The default `poller-configuration.xml` uses `never` here.
+<2> Uses the `dcb:script-file` metadata, then the node's operating system asset or `os` field, and falls back to `default.dcb`.
+
+For details on device configuration backup setup, see xref:operation:deep-dive/device-config-backup/introduction.adoc[].

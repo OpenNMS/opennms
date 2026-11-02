@@ -46,7 +46,7 @@ If one of the steps in the sample above fails, the service is marked down.
 | Default
 
 | retry
-| Number of attempts to get a valid IMAP response.
+| Number of retries after the first failed attempt to get a valid IMAP response.
 | 0
 
 | port

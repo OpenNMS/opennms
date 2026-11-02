@@ -141,6 +141,14 @@ This includes more reliable rendering with reduced load times as well as expecte
 === Karaf shell pubkey auth
 Support has been added for configuring Karaf shell authentication using ssh public keys.
 
+=== Poll and collection timing metrics
+Pollerd and Collectd now publish timers over JMX, both overall and per service name, under `org.opennms.netmgt.poller:name=polls*` and `org.opennms.netmgt.collectd:name=collections*`.
+They report average, minimum, and maximum poll and collection times along with polls and collections per second.
+The overall timers combine every service, so the per-service timers are generally more useful for timing.
+Failed polls and collections are timed as well, often at their full timeout including retries, and poll times include any Minion queueing, so a few unreachable nodes can raise a service's average.
+The average, minimum, and maximum are weighted toward recent values, but a single slow poll can remain the maximum for up to about half a day.
+OpenNMS collects them about itself and graphs them under the *Pollerd Poll Stats* and *Collectd Collection Stats* resources.
+
 == Breaking changes
 
 === Kafka SASL/OAUTHBEARER endpoint URLs are blocked by default
@@ -323,15 +331,19 @@ There is no drop-in replacement.
 
 The `Actiond` daemon and its configuration `etc/actiond-configuration.xml` have been removed. Actiond-related event fields will still validate but are ignored.
 
-=== KSC Reports renamed to Graph Collections
+=== KSC Reports replaced by Graph Collections
 
-The feature formerly labeled *KSC Reports* is now *Graph Collections* throughout the web UI (the main-menu entry, page titles, breadcrumbs, the *Add to Graph Collection* dialog, and the home-page section) and the documentation.
+The feature formerly labeled *KSC Reports* is now *Graph Collections* throughout the web UI and the documentation, and its pages have moved to the Vue UI under `ui/index.html#/graph-collections`.
+The list, view, editor and the *Add to Graph Collection* dialog on the resource graphs pages are all new; a collection can be created from a blank form, as a copy of another, from the on-the-fly collection of a node, or straight from the dialog when adding a graph.
 The global search category formerly named *KSC Report* is now *Graph Collection*.
 
-This is a user-facing label change only.
-The underlying configuration file (`etc/ksc-performance-reports.xml`), the REST endpoints under `/rest/ksc`, the `KSC/*.jsp` page URLs, and the internal identifiers are unchanged, so existing reports, saved bookmarks, and API integrations continue to work without modification.
+The legacy `KSC/*.jsp` pages and `KSC/*.htm` controllers have been removed.
+`KSC/index.jsp` and `KSC/customView.htm` redirect to the new list and view pages, with the report, timespan and graph type parameters carried over, so bookmarks and links to a report keep working; the legacy editor URLs do not redirect.
+The view page refreshes itself every five minutes, as the legacy page did.
+The REST API under `/rest/ksc` has been removed; use the xref:development:rest/graph_collections.adoc[Graph Collections API] under `/api/v2/graph-collections` instead.
+The configuration file `etc/ksc-performance-reports.xml` and the `ksc.default.graphsPerLine` property are unchanged, so existing reports keep working.
 
-NOTE: Update any of your own documentation, runbooks, training material, or UI automation that refers to *KSC Reports* by name — including tests that match on the old menu label or the *KSC Report* search category — to use *Graph Collections*.
+NOTE: Update any of your own documentation, runbooks, training material, UI automation or API integrations that refer to *KSC Reports*, the `KSC/` page URLs or the `/rest/ksc` endpoints.
 
 === BeanShell integration deprecated
 
