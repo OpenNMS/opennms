@@ -33,7 +33,7 @@ RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 
 FROM ${BASE_IMAGE} AS core-base
 
-ARG REQUIRED_DEBS="rrdtool jrrd2 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo"
+ARG REQUIRED_DEBS="rrdtool jrrd2=2.0.4 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo"
 
 ARG REPO_KEY_URL="https://debian.opennms.org/OPENNMS-GPG-KEY"
 
