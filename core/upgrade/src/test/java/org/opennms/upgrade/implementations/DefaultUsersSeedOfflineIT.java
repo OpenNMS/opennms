@@ -22,6 +22,7 @@
 package org.opennms.upgrade.implementations;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -176,6 +177,24 @@ public class DefaultUsersSeedOfflineIT implements TemporaryDatabaseAware<Tempora
         seed();
         assertEquals(0, count("users"));
         assertEquals(0, count("groups"));
+        // skipping it while OpenNMS runs fails the upgrade: the database has no users yet
+        assertTrue(new DefaultUsersSeedOffline().isPending());
+    }
+
+    @Test
+    public void testIsPendingUntilTheDatabaseIsSeeded() throws Exception {
+        assertTrue(new DefaultUsersSeedOffline().isPending());
+
+        seed();
+
+        // an install while OpenNMS runs, after the seed, does not fail
+        assertFalse(new DefaultUsersSeedOffline().isPending());
+    }
+
+    @Test
+    public void testAFailedSeedFailsTheUpgrade() throws Exception {
+        // a database it fails to seed has no users
+        assertTrue(new DefaultUsersSeedOffline().isCritical());
     }
 
     @Test

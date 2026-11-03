@@ -27,6 +27,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.upgrade.api.OnmsUpgradeException;
+
 /**
  * The usermgmt_initialized marker: set once the user data of a database is initialized (copied from the files, or
  * seeded with the defaults). DefaultUsersSeedOffline adds the default users only to a database without it.
@@ -34,6 +37,18 @@ import java.sql.Statement;
 public final class UserMgmtInitialized {
 
     private UserMgmtInitialized() {
+    }
+
+    /**
+     * Whether the marker is set, on a connection of its own: for {@link org.opennms.upgrade.api.OnmsUpgrade#isPending()},
+     * which the upgrade asks without running the task.
+     */
+    public static boolean isSet() throws OnmsUpgradeException {
+        try (final Connection connection = DataSourceFactory.getInstance().getConnection()) {
+            return isSet(connection);
+        } catch (final SQLException e) {
+            throw new OnmsUpgradeException("Can't read the table usermgmt_initialized: " + e.getMessage(), e);
+        }
     }
 
     public static boolean isSet(final Connection connection) throws SQLException {

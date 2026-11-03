@@ -41,8 +41,10 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * deleted them, does not get admin/admin back on its next upgrade.
  *
  * It does not seed while etc/users.xml exists: the migrator copies that file into a database without the marker
- * (also a restored or new database on an upgraded host), so here it failed. Upgrade continues after a failed task,
- * and a seeded admin would make the migrator's next run copy nothing, so the users of the file would be lost.
+ * (also a restored or new database on an upgraded host), so here it failed. The upgrade runs the other tasks before it
+ * fails, and a seeded admin would make the migrator's next run copy nothing, so the users of the file would be lost.
+ *
+ * The task is critical, like the migrator: a database it fails to seed has no users, so no one could log in.
  */
 public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
 
@@ -73,6 +75,17 @@ public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
     @Override
     public boolean runOnlyOnce() {
         return false;
+    }
+
+    @Override
+    public boolean isCritical() {
+        return true;
+    }
+
+    /** Until the usermgmt_initialized marker is set, either the migrator or this task has to fill the database. */
+    @Override
+    public boolean isPending() throws OnmsUpgradeException {
+        return !UserMgmtInitialized.isSet();
     }
 
     @Override

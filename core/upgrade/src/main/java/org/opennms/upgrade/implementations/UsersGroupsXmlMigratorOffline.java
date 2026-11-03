@@ -87,6 +87,9 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * <p>A user or group with one of the {@link ReservedNames} fails the task before anything is written: such an entry
  * is not dropped, since group members, on-call roles and destination paths refer to it by name.</p>
  *
+ * <p>The task is critical: when it fails, the upgrade fails, so OpenNMS does not start without users. The admin
+ * fixes the cause and runs the installer again, which copies the files.</p>
+ *
  * <p>The files stay in {@code etc}, because OpenNMS still reads them; copies go to {@code etc_archive}
  * before the data is written.</p>
  */
@@ -144,6 +147,18 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
     public boolean runOnlyOnce() {
         // once per database: see the class comment
         return false;
+    }
+
+    @Override
+    public boolean isCritical() {
+        // a failed copy leaves no users, so no one could log in
+        return true;
+    }
+
+    /** Until the usermgmt_initialized marker is set, the files still have to be copied, or the seed has to run. */
+    @Override
+    public boolean isPending() throws OnmsUpgradeException {
+        return !UserMgmtInitialized.isSet();
     }
 
     @Override
