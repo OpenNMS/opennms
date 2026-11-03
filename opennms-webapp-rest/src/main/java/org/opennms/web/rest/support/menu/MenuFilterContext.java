@@ -19,19 +19,15 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.api;
+package org.opennms.web.rest.support.menu;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
- * @deprecated use HeaderComponent from vaadin-components/header instead.
+ * The part of a request context needed to decide whether a menu entry is visible.
  */
-@Deprecated
-public interface OnmsHeaderProvider {
+public interface MenuFilterContext {
+    boolean isUserInAnyRole(List<String> roles);
 
-    /**
-     * @deprecated use HeaderComponent from vaadin-components/header instead.
-     */
-    @Deprecated
-    String getHeaderHtml(HttpServletRequest request) throws Exception;
+    String getSystemProperty(String name, String def);
 }

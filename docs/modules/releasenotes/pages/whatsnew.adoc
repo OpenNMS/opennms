@@ -19,6 +19,19 @@ Most installations require no action, but there are behavior and compatibility c
 custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
 See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
 
+=== Legacy navigation bar removed
+The legacy FreeMarker navigation bar and the `?oldmenu=true` switch that selected it have been removed.
+
+* `maps.htm` and `dashboards.htm` now return 404; the Maps and Dashboards entries of the side menu replace them.
+* If you edited `${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/dispatcher-servlet.xml` and kept your copy during the upgrade (Debian/Ubuntu packages ask about it), or supply one through the container's `/opt/opennms-jetty-webinf-overlay`, re-apply your changes to the new file: the old one refers to classes that have been removed, and the web UI does not start with it.
+* `menu-template-default.json` is the default menu shipped with the product, identical to the stock `menu-template.json`; do not edit it.
+* Admin-only entries now carry `roles` in `menu-template.json`.
+* Package upgrades replace `menu-template.json`, so a customized copy is lost: back it up before upgrading and re-apply your changes to the new file. A copy supplied through the container's `/opt/opennms-jetty-webinf-overlay` is kept; compare it with `menu-template-default.json` to pick up the new `roles`.
+* `locationMatch` in menu templates is ignored.
+* The "Action" results of the central search ("Open ...") now come from `menu-template.json` and follow the same `roles` as the menu.
+* The search "Open ..." results are cached per user for up to 5 minutes. They pick up edits to the menu template, and a user's changed roles (which take effect at the user's next login), within that time. The side menu picks up both on the next page load.
+* Pages displayed inside an iframe, both legacy JSP pages and the `ui/` app, no longer show the menu, and pressing Escape does not bring it back. To keep the menu in a frame, put `-with-header` in the frame's name, for example `<iframe name="noc-with-header" src="...">`. See xref:operation:deep-dive/admin/configuration/http-security-headers.adoc[HTTP Security Headers].
+
 === Trends removed
 The Trends page has been removed from the Dashboards menu and from the product. `etc/trend-configuration.xml` is no longer read and can be deleted.
 

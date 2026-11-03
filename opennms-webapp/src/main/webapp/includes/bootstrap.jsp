@@ -58,9 +58,8 @@
   
   This include JSP takes two parameters:
     title (required): used in the middle of the header bar
-    location (optional): used to "dull out" the item in the menu bar
-      that has a link to the location given  (for example, on the
-      outage/index.jsp, give the location "outages")
+    location (optional): accepted for page identification only; it is not
+      used by this include and no longer affects the menu
     nomenujs (optional): "true" to omit the Vue menu bundle's modulepreload
       link, for pages that never mount the menu but still use the bundle's
       stylesheet (also settable as the Bootstrap "nomenujs" flag). Without
@@ -81,7 +80,6 @@
 
 <%
   final String __baseHref = Util.calculateUrlBase( request );
-  final String oldMenuValue = request.getParameter("oldmenu");
 
   // Cache-buster for the Vue menu bundle links below. The bundle is built with
   // fixed filenames (ui/vite.config.menu.ts), so without a version param a
@@ -250,6 +248,18 @@
         // localStorage unavailable; fall through to the default theme
       }
       document.documentElement.classList.add(theme);
+      // Mirrors hidesMenuInFrame() in ui/src/lib/framing.ts: a framed page gets no menu,
+      // unless the frame's name contains "-with-header" (e.g. <iframe name="noc-with-header">).
+      var framed;
+      try {
+        framed = window.self !== window.top;
+      } catch (e) {
+        // top is not accessible (cross-origin), so we are framed
+        framed = true;
+      }
+      if (framed && String(window.name || '').indexOf('-with-header') === -1) {
+        document.documentElement.classList.add('onms-embedded');
+      }
     })();
   </script>
   <% if (__menuAssetsAllowed) { %>
@@ -295,20 +305,6 @@
 </c:if>
 <%= ">" %>
 
-<!-- Bootstrap header -->
-<c:choose>
-  <c:when test='${__bs_flags.contains("quiet")}'>
-    <!-- No visual header is being displayed -->
-  </c:when>
-  <c:otherwise>
-    <%-- Only display old menu when user has 'oldmenu=true' in query string --%>
-    <% if (oldMenuValue != null && oldMenuValue.equals("true")) { %>
-      <jsp:include page="/navBar.htm" flush="false" />
-    <% } %>
-  </c:otherwise>
-</c:choose>
-<!-- End bootstrap header -->
-
 <!-- Body -->
 <%-- This <div> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
@@ -324,7 +320,7 @@
     <c:choose>
       <c:when test="${param.fromVaadin == 'true'}">
         <!-- both superQuiet and fromVaadin are true -->
-        <% if (__menuAssetsAllowed && (oldMenuValue == null || !oldMenuValue.equals("true"))) { %>
+        <% if (__menuAssetsAllowed) { %>
           <div id="opennms-sidemenu-container"></div>
           <script type="module" src="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>"></script>
         <% } %>
@@ -336,10 +332,8 @@
       <jsp:param name="asset" value="onms-default-apps" />
     </jsp:include>
 
-    <%-- Logout form, expected to exist on some pages. --%>
-    <c:if test='${(__bs_includeLogoutForm != null) && (__bs_includeLogoutForm.contains("true"))}'>
-      <form id="headerLogoutForm" name="headerLogoutForm" action="${baseHref}j_spring_security_logout" method="post"></form>
-    </c:if>
+    <%-- Logout form, on every logged-in page: AngularJS submits it on a 401 (see onms-http). --%>
+    <% if (__menuAssetsAllowed) { %><form id="headerLogoutForm" name="headerLogoutForm" action="<%= __baseHref %>j_spring_security_logout" method="post"></form><% } %>
 
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
 
@@ -354,8 +348,7 @@
     <%= "<div id=\"content-body\">" %>
 
     <%-- Vue menus: do not display if 'quiet' is true (whether requested via the
-         'quiet' include param or the Bootstrap 'quiet' flag, e.g. login.jsp), or
-         if 'oldmenu' query string param is true. On unauthenticated quiet pages
+         'quiet' include param or the Bootstrap 'quiet' flag, e.g. login.jsp). On unauthenticated quiet pages
          the menu app must not execute at all: its REST calls would trigger the
          browser's basic-auth prompt and poison SPRING_SECURITY_SAVED_REQUEST
          with a REST URL (NMS-20174). --%>
@@ -364,7 +357,7 @@
         <!-- 'quiet' mode, not displaying Vue menus -->
       </c:when>
       <c:otherwise>
-        <% if (__menuAssetsAllowed && (oldMenuValue == null || !oldMenuValue.equals("true"))) { %>
+        <% if (__menuAssetsAllowed) { %>
           <div id="opennms-sidemenu-container"></div>
           <script type="module" src="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>"></script>
         <% } %>

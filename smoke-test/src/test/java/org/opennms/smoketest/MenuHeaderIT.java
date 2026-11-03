@@ -480,4 +480,16 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
             setImplicitWait();
         }
     }
+
+    @Test
+    public void verifyHeaderLogoutFormPresent() {
+        LOG.debug("In verifyHeaderLogoutFormPresent");
+
+        // AngularJS pages submit this form on a 401, so every logged-in JSP page must have it.
+        frontPage();
+        assertEquals(1, findElementsByXpath("//form[@name='headerLogoutForm']").size());
+
+        driver.get(getBaseUrlInternal() + "opennms/alarm/list.htm");
+        assertEquals(1, findElementsByXpath("//form[@name='headerLogoutForm']").size());
+    }
 }
