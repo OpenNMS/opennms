@@ -37,8 +37,10 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.opennms.upgrade.criticaltests.TestCriticalUpgradeFailsInExecute;
 import org.opennms.upgrade.criticaltests.TestCriticalUpgradeFailsInPreExecute;
 import org.opennms.upgrade.criticaltests.TestUpgradeAfterTheCriticalOnes;
+import org.opennms.upgrade.skippedtests.executed.TestOfflineCriticalUpgradeExecuted;
 import org.opennms.upgrade.skippedtests.pending.TestOfflineCriticalUpgradePending;
 import org.opennms.upgrade.skippedtests.pending.TestOnlineCriticalUpgradePending;
+import org.opennms.upgrade.skippedtests.unknown.TestOfflineCriticalUpgradeUnknown;
 import org.opennms.upgrade.tests.TestUpgradeA;
 import org.opennms.upgrade.tests.TestUpgradeB;
 import org.opennms.upgrade.tests.TestUpgradeEverytime;
@@ -66,6 +68,9 @@ public class UpgradeTest {
     private File configured;
 
     private String previousHome;
+
+    /** What the upgrade logged. */
+    private final StringBuilder output = new StringBuilder();
 
     /**
      * Sets up the test.
@@ -165,14 +170,54 @@ public class UpgradeTest {
     }
 
     @Test
-    public void testACriticalTaskSkippedWhileOpenNMSIsStoppedFailsTheUpgradeIfItHasWorkLeft() throws Exception {
-        final OnmsUpgradeException e = Assert.assertThrows(OnmsUpgradeException.class,
-                () -> performUpgrade("org.opennms.upgrade.skippedtests.pending", false));
+    public void testSkippingACriticalTaskThatRequiresOpenNMSRunningWhileItIsStoppedDoesNotFail() throws Exception {
+        // the failure would remove etc/configured, so the admin could not start OpenNMS to run the task
+        performUpgrade("org.opennms.upgrade.skippedtests.pending", false);
 
-        Assert.assertTrue(e.getMessage(), e.getMessage().contains(TestOnlineCriticalUpgradePending.class.getName()));
-        Assert.assertFalse(e.getMessage(), e.getMessage().contains(TestOfflineCriticalUpgradePending.class.getName()));
         Assert.assertEquals(List.of(TestOfflineCriticalUpgradePending.class.getName()), UpgradeHelper.getExecutedList());
+        Assert.assertTrue(configured.exists());
+    }
+
+    @Test
+    public void testSkippingACriticalTaskThatRanOnceDoesNotFail() throws Exception {
+        // the task keeps the default isPending(), true, but a task that runs only once and has run has no work left
+        upgradeStatus.markAsExecuted(new TestOfflineCriticalUpgradeExecuted());
+
+        performUpgrade("org.opennms.upgrade.skippedtests.executed", true);
+
+        Assert.assertTrue(UpgradeHelper.getExecutedList().isEmpty());
+        Assert.assertTrue(configured.exists());
+    }
+
+    @Test
+    public void testACriticalTaskSkippedWhileOpenNMSRunsThatCannotTellWhetherItHasWorkLeftFailsTheUpgradeWithTheReason() throws Exception {
+        final OnmsUpgradeException e = Assert.assertThrows(OnmsUpgradeException.class,
+                () -> performUpgrade("org.opennms.upgrade.skippedtests.unknown", true));
+
+        Assert.assertTrue(e.getMessage(), e.getMessage().contains(TestOfflineCriticalUpgradeUnknown.class.getName()));
+        Assert.assertTrue(output.toString(), output.toString().contains("can't tell whether the task has work left: the database is down\n"
+                + "  Fix the cause, stop OpenNMS, then run the installer again."));
+        Assert.assertFalse(output.toString(), output.toString().contains("OpenNMS cannot run without its work"));
         Assert.assertFalse(configured.exists());
+        // the admin learns that the running OpenNMS won't start again
+        Assert.assertTrue(output.toString(), output.toString().contains("OpenNMS is still running"));
+    }
+
+    @Test
+    public void testACriticalTaskWhoseExecutionStatusCannotBeReadFailsTheUpgradeWithThatReason() throws Exception {
+        // the status file is read on the first use; a directory in its place can't be read
+        Assert.assertTrue(new File(configured.getParentFile(), UpgradeStatus.STATUS_FILE).mkdir());
+
+        final OnmsUpgradeException e = Assert.assertThrows(OnmsUpgradeException.class,
+                () -> performUpgrade("org.opennms.upgrade.criticaltests", false, null));
+
+        Assert.assertTrue(e.getMessage(), e.getMessage().contains(TestCriticalUpgradeFailsInExecute.class.getName()));
+        Assert.assertTrue(output.toString(), output.toString().contains("Error: can't tell whether task "
+                + TestCriticalUpgradeFailsInExecute.class.getName() + " was executed before, because: Can't load upgrade status data."));
+        Assert.assertFalse(output.toString(), output.toString().contains("pre-execution phase because"));
+        Assert.assertTrue(UpgradeHelper.getExecutedList().isEmpty());
+        Assert.assertFalse(configured.exists());
+        Assert.assertFalse(output.toString(), output.toString().contains("OpenNMS is still running"));
     }
 
     @Test
@@ -195,14 +240,27 @@ public class UpgradeTest {
     }
 
     private void performUpgrade(final String scope, final boolean opennmsRunning) throws OnmsUpgradeException {
+        performUpgrade(scope, opennmsRunning, upgradeStatus);
+    }
+
+    /**
+     * @param status the status of the executed tasks; null for the default, the status file in the OpenNMS home
+     */
+    private void performUpgrade(final String scope, final boolean opennmsRunning, final UpgradeStatus status) throws OnmsUpgradeException {
         Upgrade upgrade = new Upgrade() {
             @Override
             protected boolean isOpennmsRunning() {
                 return opennmsRunning;
             }
+
+            @Override
+            protected void log(final String msgFormat, final Object... args) {
+                super.log(msgFormat, args);
+                output.append(String.format(msgFormat, args));
+            }
         };
         upgrade.setClassScope(scope);
-        upgrade.setUpgradeStatus(upgradeStatus);
+        upgrade.setUpgradeStatus(status);
         upgrade.execute();
     }
 }

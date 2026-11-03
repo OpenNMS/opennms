@@ -61,7 +61,7 @@ public abstract class SkippableTestUpgrade implements OnmsUpgrade {
     }
 
     @Override
-    public boolean isPending() {
+    public boolean isPending() throws OnmsUpgradeException {
         return m_pending;
     }
 

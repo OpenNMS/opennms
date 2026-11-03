@@ -122,6 +122,7 @@ Rename them in the files, and wherever the files refer to them (group members, o
 
 If the users and groups cannot be copied, for this or any other reason, the upgrade fails: the installer ends with "UPGRADE FAILED" and an error status, and {page-component-title} does not start until the installer has run again without the failure.
 The same happens when the installer runs while {page-component-title} is still running and the users and groups have not been copied yet: the copy needs {page-component-title} to be stopped.
+The running {page-component-title} keeps running, but once it stops, it does not start again until then, also not when a service manager such as systemd restarts it.
 Stop {page-component-title}, then run the installer again.
 This way {page-component-title} never starts without users, where no one could log in.
 

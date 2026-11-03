@@ -117,6 +117,11 @@ public interface OnmsUpgrade {
      * or execute() of a critical task fails, the other tasks still run, but then the upgrade removes etc/configured,
      * so that OpenNMS does not start, and ends with an error, which fails the installer. The admin fixes the cause and
      * runs the installer again.</p>
+     * <p>A failure in postExecute() is only a warning, as for any other task, so a critical task does its work in
+     * preExecute() and execute().</p>
+     * <p>A critical task should require OpenNMS to be stopped (see {@link #requiresOnmsRunning()}). When the upgrade
+     * skips it because OpenNMS is running, it fails if the task still has work to do (see {@link #isPending()}). A task
+     * that requires OpenNMS to be running is one that OpenNMS can run without: skipping it never fails the upgrade.</p>
      *
      * @return true, if a failure of this task fails the upgrade
      */
@@ -126,10 +131,11 @@ public interface OnmsUpgrade {
 
     /**
      * Does this critical task still have work to do?
-     * <p>Asked only when the upgrade skips a critical task because OpenNMS is running and the task requires it to be
-     * stopped, or the reverse. A pending task fails the upgrade, as if it had failed. A task that runs on every
-     * install, but has work only once, answers false once that work is done, so that a later install with OpenNMS
-     * running does not fail.</p>
+     * <p>Asked only when the upgrade skips a critical task because the task requires that OpenNMS is stopped, but it is
+     * running. A pending task fails the upgrade, as if it had failed. A task that runs only once (see
+     * {@link #runOnlyOnce()}) and has run is not asked: it has no work left. A task that runs on every install, but has
+     * work only once, must answer false once that work is done, so that a later install with OpenNMS running does not
+     * fail.</p>
      *
      * @return true, if the task still has work to do; the default, so that skipping a critical task fails the upgrade
      * @throws OnmsUpgradeException if the task cannot tell; the upgrade then fails
