@@ -187,26 +187,17 @@ function applyTelemetryListenerTemplates() {
         "${FLOWS_LISTENER_ENABLED:-false}"
 }
 
-function parseEnvironment() {
-    # Configure additional features
-    IFS=$'\n'
+function applyKafkaIpcConfig() {
+    # Rebuilt on every startup so changed or removed KAFKA_IPC_* variables take effect with a persisted etc directory.
+    local cfg="${MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg"
+    local env_var ipc_name
 
-    for VAR in $(env)
-    do
-        env_var=$(echo "$VAR" | cut -d= -f1)
-        env_val=$(echo "$VAR" | cut -d= -f2)
+    # shellcheck disable=SC2016 # literal placeholder, resolved by Karaf
+    echo 'bootstrap.servers=${env:KAFKA_IPC_BOOTSTRAP_SERVERS:-kafka:29092}' > "${cfg}"
 
-        if [ "${env_var}" == "JAVA_MIN_MEM" ]; then
-          export JAVA_OPTS="$JAVA_OPTS -Xms${env_val}"
-        fi
-        if [ "${env_var}" == "JAVA_MAX_MEM" ]; then
-          export JAVA_OPTS="$JAVA_OPTS -Xmx${env_val}"
-        fi
-
-        if [[ $env_var =~ ^KAFKA_IPC_ ]]; then
-            ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
-            updateConfig "$ipc_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg"
-        fi
+    for env_var in $(compgen -e | grep '^KAFKA_IPC_' || true); do
+        ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
+        updateConfig "$ipc_name" "${!env_var}" "${cfg}"
     done
 }
 
@@ -224,8 +215,6 @@ initConfig() {
             echo "minion=$(cat "${MINION_HOME}/.ssh/id_rsa.pub" | awk '{print $2}'),viewer" > "${MINION_HOME}/etc/keys.properties" && \
             echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> ${MINION_HOME}/etc/keys.properties && \
             chmod 600 "${MINION_HOME}/.ssh/id_rsa"
-
-        parseEnvironment
 
         echo "Configured $(date)" > ${MINION_HOME}/etc/configured
     else
@@ -396,14 +385,16 @@ start() {
 # Order of precedence is (later overwrites former):
 # 1. Feature boot files applied from env vars (MINION_IPC, JAEGER_ENABLED, DOMINION_SCV_ENABLED)
 # 2. Telemetry listener templates applied from env vars (JTI_LISTENER_ENABLED, NXOS_LISTENER_ENABLED, FLOWS_LISTENER_ENABLED)
-# 3. Config set via direct file overlay
-# Env-driven templates are re-applied on every startup so changes take effect with a persisted etc directory.
+# 3. Kafka IPC config applied from env vars (KAFKA_IPC_*)
+# 4. Config set via direct file overlay
+# Env-driven config is re-applied on every startup so changes take effect with a persisted etc directory.
 configure() {
   checkLegacyConfig
   initConfig
   applyOpennmsPropertiesD
   applyFeatureBootTemplates
   applyTelemetryListenerTemplates
+  applyKafkaIpcConfig
   applyOverlayConfig
   if [[ "$JACOCO_AGENT_ENABLED" -gt 0 ]]; then
     export JAVA_OPTS="$JAVA_OPTS -javaagent:${MINION_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*"

@@ -57,6 +57,8 @@ Set `MINION_IPC` to choose the inter-process communication transport.
 
 Environment variables prefixed with `KAFKA_IPC_` are written to `$\{MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg`.
 The prefix is stripped, the remainder is lowercased, and underscores are converted to dots before being written as property keys.
+The file is regenerated on every startup, so changes to `KAFKA_IPC_*` variables take effect after a restart even when `etc` is persisted.
+Manual edits to this file are overwritten; use an etc overlay to customize it instead.
 
 [options="header, autowidth"]
 |===
