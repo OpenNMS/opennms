@@ -147,6 +147,49 @@ public class ServiceCollectorTest {
     }
 
     @Test
+    public void testMinMaxLastCollectionTime() {
+        ServiceCollector svcCollector = setupServiceCollector();
+
+        assertEquals(0, svcCollector.getMinCollectionTime());
+        assertEquals(0, svcCollector.getMaxCollectionTime());
+        assertEquals(0, svcCollector.getLastCollectionTime());
+
+        addCollection(svcCollector, "2010-05-26 12:12:18,027", "2010-05-26 12:12:23,027");
+        addCollection(svcCollector, "2010-05-26 12:17:18,027", "2010-05-26 12:17:38,027");
+        addCollection(svcCollector, "2010-05-26 12:22:18,027", "2010-05-26 12:22:20,027");
+        addCollection(svcCollector, "2010-05-26 12:27:18,027", "2010-05-26 12:27:28,027");
+
+        assertEquals(4, svcCollector.getCollectionCount());
+        assertEquals(2000L, svcCollector.getMinCollectionTime());
+        assertEquals(20000L, svcCollector.getMaxCollectionTime());
+        assertEquals(10000L, svcCollector.getLastCollectionTime());
+        assertEquals(new Duration(2000L).toString(), svcCollector.getMinCollectionDuration().toString());
+        assertEquals(new Duration(20000L).toString(), svcCollector.getMaxCollectionDuration().toString());
+        assertEquals(new Duration(10000L).toString(), svcCollector.getLastCollectionDuration().toString());
+    }
+
+    @Test
+    public void testMinMaxLastIgnoreUnmatchedEnd() {
+        ServiceCollector svcCollector = setupServiceCollector();
+
+        svcCollector.addMessage(BaseLogMessage.create("2010-05-26 12:12:18,027 INFO [CollectdScheduler-50 Pool-fiber11] collector.collect: end:example1/24/216.216.217.254/SNMP"));
+        assertEquals(0, svcCollector.getCollectionCount());
+        assertEquals(0, svcCollector.getMinCollectionTime());
+        assertEquals(0, svcCollector.getMaxCollectionTime());
+        assertEquals(0, svcCollector.getLastCollectionTime());
+
+        addCollection(svcCollector, "2010-05-26 12:17:18,027", "2010-05-26 12:17:21,027");
+        assertEquals(3000L, svcCollector.getMinCollectionTime());
+        assertEquals(3000L, svcCollector.getMaxCollectionTime());
+        assertEquals(3000L, svcCollector.getLastCollectionTime());
+    }
+
+    private void addCollection(ServiceCollector svcCollector, String begin, String end) {
+        svcCollector.addMessage(BaseLogMessage.create(begin + " INFO [CollectdScheduler-50 Pool-fiber11] collector.collect: begin:example1/24/216.216.217.254/SNMP"));
+        svcCollector.addMessage(BaseLogMessage.create(end + " INFO [CollectdScheduler-50 Pool-fiber11] collector.collect: end:example1/24/216.216.217.254/SNMP"));
+    }
+
+    @Test
     public void testGetParsedServiceID() {
        ServiceCollector svcCollector = setupServiceCollector();
        

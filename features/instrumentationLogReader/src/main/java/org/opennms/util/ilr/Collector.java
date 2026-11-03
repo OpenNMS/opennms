@@ -36,6 +36,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 import static org.opennms.util.ilr.Filter.*;
@@ -45,6 +47,7 @@ public class Collector {
     
     public static final String SERVICE_TITLE_FORMAT = "%-40s%20s%15s%25s%15s%25s%15s%20s%25s%15s%15s%n";
     public static final String SERVICE_DATA_FORMAT = "%-40s%20s%15s%25s%15.1f%25s%15.1f%20s%25s%15s%15s%n";
+    private static final Pattern LOG_FILE_PATTERN = Pattern.compile("^instrumentation(?:\\.(\\d{1,9}))?\\.log$");
     private String m_searchString = null;
     private static boolean s_durationsMs = false;
 
@@ -53,6 +56,9 @@ public class Collector {
         TOTALCOLLECTS,
         TOTALCOLLECTTIME,
         AVGCOLLECTTIME, 
+        MINCOLLECTTIME,
+        MAXCOLLECTTIME,
+        LASTCOLLECTTIME,
         AVGTIMEBETWEENCOLLECTS,
         TOTALSUCCESSCOLLECTS,
         SUCCESSPERCENTAGE,
@@ -221,6 +227,33 @@ public class Collector {
             };
 
         }   
+        case MINCOLLECTTIME:
+        {
+            return new LongComparator() {
+                @Override
+                protected long getLong(ServiceCollector sc) {
+                    return sc.getMinCollectionTime();
+                }
+            };
+        }
+        case MAXCOLLECTTIME:
+        {
+            return new LongComparator() {
+                @Override
+                protected long getLong(ServiceCollector sc) {
+                    return sc.getMaxCollectionTime();
+                }
+            };
+        }
+        case LASTCOLLECTTIME:
+        {
+            return new LongComparator() {
+                @Override
+                protected long getLong(ServiceCollector sc) {
+                    return sc.getLastCollectionTime();
+                }
+            };
+        }
         case AVGTIMEBETWEENCOLLECTS: 
         {
             return new LongComparator() {
@@ -349,6 +382,33 @@ public class Collector {
         }
         r.close();
     }
+
+    public static boolean isInstrumentationLogFile(String fileName) {
+        return fileName != null && LOG_FILE_PATTERN.matcher(fileName).matches();
+    }
+
+    /**
+     * Returns the instrumentation log and its rotated copies in {@code logDir}, oldest first.
+     * log4j2 rolls with fileIndex=min, so a higher index is older and instrumentation.log is the newest.
+     */
+    public static List<File> getInstrumentationLogFiles(File logDir) {
+        final List<File> files = new ArrayList<>();
+        final File[] matches = logDir.listFiles((dir, name) -> isInstrumentationLogFile(name));
+        if (matches != null) {
+            Collections.addAll(files, matches);
+        }
+        files.sort(Comparator.comparingInt((File f) -> getRotationIndex(f.getName())).reversed());
+        return files;
+    }
+
+    private static int getRotationIndex(String fileName) {
+        final Matcher m = LOG_FILE_PATTERN.matcher(fileName);
+        if (m.matches() && m.group(1) != null) {
+            return Integer.parseInt(m.group(1));
+        }
+        return 0;
+    }
+
     public void printGlobalStats(PrintWriter out) {
         SimpleDateFormat f = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss,S");
         out.println("Start Time: " + f.format(this.getStartTime()));
