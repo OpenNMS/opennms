@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
 
 import java.time.Duration;
@@ -250,34 +251,25 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         assertNotNull("apiDocumentationMenu / Source Code", foundElement);
 
         // Help Documentation menu
-        clickMenuItem("Help", "Help");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Help')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Documentation']")));
-
         clickMenuItem("Help", "About");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'About')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Version Details']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'breadcrumbs')]//a[contains(text()[normalize-space()], 'About')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h2[text()='System details']")));
 
-        clickMenuItem("Help", "Support");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Support')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Commercial Support']")));
+        foundElement = findMenuItemLink("Help", "Commercial Support");
+        assertNotNull("helpDocumentationMenu / Commercial Support", foundElement);
 
-        // Support Menu
-        foundElement = findMenuItemLink("Support", "Professional Support");
-        assertNotNull("supportMenu / Professional Support", foundElement);
+        foundElement = findMenuItemLink("Help", "Community Resources");
+        assertNotNull("helpDocumentationMenu / Community Resources", foundElement);
 
-        foundElement = findMenuItemLink("Support", "Chat");
-        assertNotNull("supportMenu / Chat", foundElement);
+        foundElement = findMenuItemLink("Help", "Documentation");
+        assertNotNull("helpDocumentationMenu / Documentation", foundElement);
 
-        foundElement = findMenuItemLink("Support", "Community Support (Discourse)");
-        assertNotNull("supportMenu / Community Support (Discourse)", foundElement);
-
-        foundElement = findMenuItemLink("Support", "Public Issue Tracker");
-        assertNotNull("supportMenu / Public Issue Tracker", foundElement);
-
-        clickMenuItem("Support", "Generate System Report");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'System Reports')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-body']//div[@class='form-group']/input[@type='submit' and @value='Generate System Report']")));
+        clickMenuItem("Help", "System Report");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'breadcrumbs')]//a[contains(text()[normalize-space()], 'Generate System Report')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[contains(normalize-space(.), 'Generate System Report')]")));
+        // the options come from /api/v2/system-report; a failed load would still render the button
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("sr-plugin-Java")));
+        assertTrue("system report options failed to load", driver.findElements(By.cssSelector("[data-test=load-error]")).isEmpty());
 
         // Omitting for now - need to fix!
         // Vaadin Topology page

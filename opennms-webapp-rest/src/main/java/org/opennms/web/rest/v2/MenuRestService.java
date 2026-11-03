@@ -67,7 +67,8 @@ public class MenuRestService {
             description = """
         The whole menubar for the calling user, assembled from the menu template plus the request's
         roles, so two users can get different `menus` contents from the same call. Alongside the menu
-        trees the response carries `baseHref`, `username`, `version`, `copyrightDates`, the formatted
+        trees the response carries `baseHref`, `username`, `version`, `copyrightDates`, the docs.opennms.com
+        `product` and `docsVersion` (null when unknown), the formatted
         server date and time, the notification status, and the Zenith Connect and add-node feature
         flags.
 
@@ -98,6 +99,8 @@ public class MenuRestService {
                       "sideMenuInitialExpand": false,
                       "copyrightDates": "2002-2026",
                       "version": "36.0.6-SNAPSHOT",
+                      "product": "horizon",
+                      "docsVersion": "36",
                       "menus": [
                         {
                           "type": "header",

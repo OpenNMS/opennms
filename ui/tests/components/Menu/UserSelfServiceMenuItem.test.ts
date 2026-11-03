@@ -46,6 +46,22 @@ const OnmsPopoverStub = {
 const mainMenu = {
   baseHref: 'http://localhost:8980/opennms/',
   username: 'admin',
+  helpMenu: {
+    id: 'helpMenu',
+    name: 'Help',
+    url: '#',
+    locationMatch: null,
+    roles: null,
+    items: [
+      {
+        id: 'helpMain',
+        name: 'Help',
+        url: 'ui/index.html#/documentation',
+        locationMatch: null,
+        roles: null
+      }
+    ]
+  },
   selfServiceMenu: {
     id: 'selfService',
     name: 'admin',
@@ -93,6 +109,11 @@ describe('UserSelfServiceMenuItem.vue', () => {
 
   afterEach(() => {
     wrapper.unmount()
+  })
+
+  it('links Help to the Documentation page', () => {
+    expect(wrapper.get('a[name="self-service-helpMain"]').attributes('href'))
+      .toBe('http://localhost:8980/opennms/ui/index.html#/documentation')
   })
 
   it('renders the logout item', () => {
