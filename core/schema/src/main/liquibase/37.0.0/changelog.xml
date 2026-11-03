@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- Contact email address(es) for a node, separated by semicolons (NMS-5526). -->
+    <changeSet author="joseanesONMS" id="37.0.0-assets-email">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="assets"/>
+            <not>
+                <columnExists tableName="assets" columnName="email"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="assets">
+            <column name="email" type="text"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="assets" columnName="email"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
