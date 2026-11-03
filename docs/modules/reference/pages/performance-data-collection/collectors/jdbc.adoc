@@ -109,3 +109,29 @@ To test this same collection on Minion, you must specify the JDBC settings as se
 ----
 opennms:collect -l MINION org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 collection=opennms-stats driver=org.postgresql.Driver url=jdbc:postgresql://localhost:5432/opennms user=opennms password=opennms
 ----
+
+== Service configuration example
+
+To schedule the collection, add a service to a package in `$\{OPENNMS_HOME}/etc/collectd-configuration.xml` and a matching `collector` entry.
+Collectd collects only from IP interfaces that are in the package and have a monitored service with the same name, for example one added through a requisition or a detector.
+
+This example, based on the `PostgreSQL` service in the default configuration, collects the `PostgreSQL` collection from `$\{OPENNMS_HOME}/etc/jdbc-datacollection.d/postgresql.xml`:
+
+[source, xml]
+----
+<service name="PostgreSQL" interval="300000" user-defined="false" status="on">
+  <parameter key="collection" value="PostgreSQL"/>
+  <parameter key="thresholding-enabled" value="true"/>
+  <parameter key="driver" value="org.postgresql.Driver"/>
+  <parameter key="user" value="postgres"/>
+  <parameter key="password" value="postgres"/>
+  <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
+</service>
+
+<collector service="PostgreSQL" class-name="org.opennms.netmgt.collectd.JdbcCollector"/>
+----
+
+The collector replaces `OPENNMS_JDBC_HOSTNAME` in the `url` with the host name that a reverse DNS lookup returns for the interface being collected, or with its IP address if the lookup fails.
+To use a data source from `opennms-datasources.xml` instead, set the `data-source` parameter and omit `driver`, `url`, `user` and `password` (not supported on Minion).
+
+The default configuration sets these values with xref:operation:deep-dive/meta-data.adoc[metadata] expressions, such as `${requisition:pg-user|postgres}`, so you can override them per node.

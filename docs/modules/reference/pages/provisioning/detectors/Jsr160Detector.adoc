@@ -1,0 +1,125 @@
+= JMX Detector
+:description: Learn how the Jsr160Detector in OpenNMS {page-component-title} detects Java applications that expose a JMX (JSR-160) connector.
+
+The Jsr160Detector detects Java applications that expose a JMX connector as defined by JSR-160.
+It connects to the JMX connector on the interface, and detects the service when the MBean server reports at least one registered MBean.
+If you set the `object` parameter, the MBean with that object name must also exist.
+
+The detector uses the same connection handling as the xref:service-assurance/monitors/JmxMonitor.adoc[JmxMonitor] and the xref:performance-data-collection/collectors/jmx.adoc[JmxCollector].
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.jmx.Jsr160Detector`
+|===
+
+== Configuration and use
+
+The Jsr160Detector uses the xref:reference:provisioning/detectors.adoc#ref-detector-provisioning-common-parameters[common configuration parameters].
+
+.Parameters for the Jsr160Detector
+[options="header"]
+[cols="1,4,1"]
+|===
+| Parameter
+| Description
+| Default
+
+3+| *Required*
+
+| port
+| Port of the JMX connector (the RMI registry port for `rmi`).
+Required unless you set `url`.
+| none
+
+3+| *Optional*
+
+| url
+| Complete JMX service URL, for example `service:jmx:rmi:///jndi/rmi://$\{ipaddr}:1099/jmxrmi`.
+`$\{ipaddr}` is replaced with the IP address of the interface.
+If you set this parameter, the detector connects to this URL instead of building one from `port`, `protocol`, and `urlPath`.
+When you do not set `port`, the detector takes it from the URL.
+| none
+
+| protocol
+| Protocol used in the JMX service URL.
+| rmi
+
+| urlPath
+| Path used in the JMX service URL.
+| /jmxrmi
+
+| factory
+| Authentication strategy for the connection.
+Valid values are `STANDARD`, `PASSWORD_CLEAR`, and `SASL`.
+| STANDARD
+
+| username
+| User name for authentication.
+| opennms
+
+| password
+| Password for authentication.
+| OPENNMS
+
+| object
+| Object name of an MBean that must exist for the service to be detected, for example `java.lang:type=Runtime`.
+| none
+
+| retries
+| Number of connection attempts.
+A value of `0` makes no attempt, so the service is never detected.
+| 1
+
+| timeout
+| Accepted for compatibility.
+Each connection attempt times out after 30 seconds, independent of this value.
+| 2000
+
+| type
+| Accepted for compatibility with older configurations.
+The detector does not use it to build the connection.
+| default
+
+| friendlyName
+| Accepted for compatibility with older configurations.
+The detector does not use it to build the connection.
+| jsr160
+|===
+
+NOTE: Because `username` and `password` have default values, the detector always sends credentials, even when `factory` is `STANDARD`.
+Set them to the values your JMX agent expects.
+
+If `jmx-config.xml` contains an `mbean-server` entry that matches the interface IP address and the detector port, the parameters of that entry override the detector parameters.
+This lets you keep credentials in `jmx-config.xml`, where you can also reference the xref:operation:deep-dive/meta-data.adoc[secure credentials vault].
+
+== Examples
+
+The following foreign-source definition detects the Cassandra JMX service on port `7199`, and only when the MBean of the Newts `samples` table exists:
+
+[source, xml]
+----
+<detector name="JMX-Cassandra-Newts" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
+    <parameter key="port" value="7199"/>
+    <parameter key="retries" value="2"/>
+    <parameter key="protocol" value="rmi"/>
+    <parameter key="urlPath" value="/jmxrmi"/>
+    <parameter key="factory" value="PASSWORD_CLEAR"/>
+    <parameter key="username" value="cassandra-username"/>
+    <parameter key="password" value="cassandra-password"/>
+    <parameter key="object" value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=samples"/>
+</detector>
+----
+
+The following definition uses a complete JMX service URL instead of `port`, `protocol`, and `urlPath`:
+
+[source, xml]
+----
+<detector name="JMX-Minion" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
+    <parameter key="url" value="service:jmx:rmi:///jndi/rmi://${ipaddr}:1299/karaf-minion"/>
+    <parameter key="factory" value="PASSWORD_CLEAR"/>
+    <parameter key="username" value="admin"/>
+    <parameter key="password" value="admin"/>
+</detector>
+----

@@ -38,7 +38,8 @@ The JDBCDetector uses the xref:reference:provisioning/detectors.adoc#ref-detecto
 | url
 | JDBC URL to query.
 Note: this URL can differ based on JDBC drivers, databases, and so on.
-| `jdbc:postgresql://localhost/opennms`
+The detector replaces `OPENNMS_JDBC_HOSTNAME` in the URL with the host name of the interface being scanned.
+| `jdbc:postgresql://OPENNMS_JDBC_HOSTNAME/opennms`
 
 | user
 | JDBC username.

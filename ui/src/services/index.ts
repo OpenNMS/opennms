@@ -93,6 +93,7 @@ import {
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
 import { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
+import { getAbout } from './aboutService'
 import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from './wsmanAdminService'
 import {
   createManagedUser,
@@ -157,6 +158,7 @@ export default {
   deleteMinion,
   getMinion,
   search,
+  getAbout,
   getSystemReportPlugins,
   getSystemReportFormatters,
   generateSystemReport,

@@ -69,7 +69,7 @@ It helps provide a more robust infrastructure for workflow and problem state man
 
 https://www.elastic.co/elasticsearch/[Elasticsearch]:: A component of the Elastic Stack (comprised of Elasticsearch, Logstash, and Kibana).
 It is a NoSQL database with an integrated search engine based on the Lucene library.
-{page-component-title} persists and forwards certain data to Elasticsearch to store flow records, and warehouse events and alarm history for long-term storage of this data (see xref:operation:deep-dive/elasticsearch/introduction.adoc[]).
+{page-component-title} persists and forwards certain data to Elasticsearch to store flow records, and warehouse events and alarm history for long-term storage of this data (see xref:configuration/tuning-elasticsearch.adoc[]).
 
 events:: Structured historical records of activities in {page-component-title} and the nodes, interfaces, and services it manages (see xref:operation:deep-dive/events/introduction.adoc[]).
 
@@ -90,7 +90,7 @@ https://grafana.com/[Grafana]:: An open-source analysis and visualization web ap
 It connects to data sources and generates dashboards with charts, graphs, and alerts.
 
 Graph collections:: Formerly known as KSC (Key SNMP Customized) reports, graph collections provide a way to generate prefabricated graphical views of collected data.
-They let you display data from different devices and sources (SNMP, ICMP, HTTP) on one page (see xref:operation:deep-dive/visualizations/ksc-reports.adoc[]).
+They let you display data from different devices and sources (SNMP, ICMP, HTTP) on one page (see xref:operation:deep-dive/visualizations/graph-collections.adoc[]).
 
 https://www.opennms.com/horizon/[Horizon]:: An open-source solution from The OpenNMS Group that lets you visualize and monitor everything on your local and remote networks.
 The free, community-driven project includes the latest technology and features and is delivered through a rapid release cycle.

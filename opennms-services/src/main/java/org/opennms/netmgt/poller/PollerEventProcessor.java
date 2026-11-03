@@ -475,6 +475,7 @@ final class PollerEventProcessor implements EventListener {
                 getPollerConfig().update();
                 getPoller().resizeScheduler();
                 rescheduleAllServices(event);
+                getPoller().removeUnconfiguredPollTimers();
                 // Preparing successful event
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, daemonName);
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);

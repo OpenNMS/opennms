@@ -1,0 +1,150 @@
+[[upgrade-minion-sentinel]]
+= Upgrade Minion and Sentinel
+:description: Upgrade order and steps for OpenNMS Minion and Sentinel when you upgrade a Horizon or Meridian core server.
+
+If your deployment includes Minions or Sentinels, upgrade them as part of the same maintenance window as the {page-component-title} core server.
+
+[[upgrade-order]]
+== Upgrade order
+
+. Upgrade the core server, including the `install -dis` step, as described in xref:deployment:upgrade/basic.adoc[Basic Upgrade Steps].
+Sentinel features that you configure with the core datasource (`org.opennms.netmgt.distributed.datasource`) use the same database schema, so the installer should migrate it before a new Sentinel version starts.
+. Upgrade each Sentinel and Minion.
+
+Upgrade Minions and Sentinels to the same version as the core server.
+After the upgrade, the Minions table under menu:Distributed Monitoring[Manage Minions and Locations] marks each Minion whose version differs from the core, and the *Version differs from core* filter lists them.
+
+[[upgrade-minion-sentinel-packages]]
+== Upgrade the packages
+
+The steps are the same for Minion and Sentinel.
+Replace `<service>` with `minion` or `sentinel`.
+
+Before you upgrade a package, install the Java version that the new release requires (see xref:deployment:core/system-requirements.adoc[]).
+
+[{tabs}]
+====
+CentOS/RHEL::
++
+--
+. Stop the service:
++
+[source, console]
+----
+sudo systemctl stop <service>
+----
+
+. Back up the configuration directory:
++
+[source, console]
+----
+sudo rsync -Ppav /opt/<service>/etc/ /opt/<service>-etc.orig/
+----
+
+. Upgrade the package, enabling the repository you disabled after installation for this command only:
++
+[source, console, subs="attributes"]
+----
+ifeval::["{page-component-title}" == "Horizon"]
+sudo dnf -y upgrade --enablerepo='opennms-repo-stable-*' {package-prefix}-<service>
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+sudo dnf -y upgrade --enablerepo=meridian {package-prefix}-<service>
+endif::[]
+----
+ifeval::["{page-component-title}" == "Meridian"]
++
+If the repository's `baseurl` points to the old release family, change it to the new one first.
+endif::[]
+
+. Reconcile configuration changes.
+For some files you changed, such as `org.apache.karaf.features.cfg`, the package keeps your version and saves the new shipped version next to it as `.rpmnew`.
+For most other files in `etc`, it installs the new version and saves yours as `.rpmsave`.
+List these files and merge any differences:
++
+[source, console]
+----
+sudo find /opt/<service>/etc /etc/sysconfig/<service>* -name '*.rpmnew' -o -name '*.rpmsave'
+----
++
+The package replaces shipped files in `etc/featuresBoot.d` without saving your version.
+Compare the configuration directory with your backup to find these changes:
++
+[source, console]
+----
+sudo diff -r /opt/<service>-etc.orig /opt/<service>/etc/
+----
+
+. Start the service:
++
+[source, console]
+----
+sudo systemctl start <service>
+----
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Debian/Ubuntu::
++
+--
+. Stop the service:
++
+[source, console]
+----
+sudo systemctl stop <service>
+----
+
+. Back up the configuration directory:
++
+[source, console]
+----
+sudo rsync -Ppav /opt/<service>/etc/ /opt/<service>-etc.orig/
+----
+
+. Release the package hold, upgrade the package, and set the hold again:
++
+[source, console]
+----
+sudo apt-mark unhold opennms-<service>
+sudo apt update
+sudo apt install --only-upgrade opennms-<service>
+sudo apt-mark hold opennms-<service>
+----
++
+If `dpkg` asks whether to keep a configuration file you changed, such as `org.opennms.minion.controller.cfg`, keep your version.
+The package may start the service during the upgrade.
+
+. Compare the configuration directory with your backup and restore any changes that the upgrade replaced:
++
+[source, console]
+----
+sudo diff -r /opt/<service>-etc.orig /opt/<service>/etc/
+----
+
+. Restart the service so it reads the reconciled configuration:
++
+[source, console]
+----
+sudo systemctl restart <service>
+----
+--
+endif::[]
+====
+
+The package upgrade clears the Karaf cache in the `data` directory, so you do not need to clear it yourself.
+
+TIP: `tail -F /var/log/<service>/<service>.log` shows the startup progress.
+
+[[upgrade-minion-sentinel-containers]]
+== Upgrade containers
+
+If you run Minion or Sentinel in a container, change the image tag in your `docker-compose.yml` file to the new version, then pull the image and recreate the container:
+
+[source, console]
+----
+docker compose pull
+docker compose up -d
+----
+
+Configuration that you mount into the container, such as `minion-config.yaml`, is not changed by the new image.
+Check the release notes for changes that affect it before you start the new container.

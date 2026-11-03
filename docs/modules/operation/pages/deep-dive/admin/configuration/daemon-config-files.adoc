@@ -72,3 +72,60 @@ A daemon reload generates one or more of the following events:
 * `uei.opennms.org/internal/reloadDaemonConfigSuccessful`: Indicates positive feedback from the reload process.
 * `uei.opennms.org/internal/reloadDaemonConfigFailed`: Indicates negative feedback from the reload process (for example, {page-component-title} could not load the daemon).
 In these cases, the event description also includes a reason for the negative feedback.
+
+[[package-filter-changes]]
+== Package filter changes
+
+Pollerd, Collectd, SnmpPoller, and the thresholding service assign IP interfaces to packages by evaluating each package's `<filter>` rule and address ranges.
+They evaluate the packages when they schedule an interface, not on every poll or collection.
+After you change a package's filter, ranges, or services in a configuration file, send a reload event to the daemon that reads the file, or restart {page-component-title}.
+
+Some node changes also make a daemon evaluate the packages again for the affected node, without a reload.
+
+[options="header"]
+[cols="1,2,3,3"]
+|===
+| Daemon name
+| Configuration file
+| Effect of a reload
+| Node changes that re-evaluate packages
+
+| Pollerd
+| poller-configuration.xml
+| Re-reads the file and reschedules the services of every node that Pollerd already polls, against the new packages.
+A node that had no polled service before the change is not scheduled until a node event for it arrives or {page-component-title} restarts.
+| `nodeGainedService` schedules the new service if it matches a package.
+`nodeCategoryMembershipChanged` and `assetInfoChanged` start polling services of the node that now match a package.
+Services that are already polled keep the package they were scheduled with until the next Pollerd reload.
+`nodeLocationChanged` reschedules all services of the node.
+
+| Collectd
+| collectd-configuration.xml
+| Re-reads the file, unschedules all services, and schedules them again against the new packages.
+| `nodeCategoryMembershipChanged` and `nodeLocationChanged` unschedule the node and schedule its services again.
+Collectd does not react to asset changes.
+
+| SnmpPoller
+| snmp-interface-poller-configuration.xml
+| Re-reads the file and schedules every SNMP interface again against the new packages.
+| `nodeGainedService` for the SNMP service evaluates the packages for that interface.
+
+| Threshd
+| threshd-configuration.xml
+| Re-reads `threshd-configuration.xml` and `thresholds.xml`, and evaluates every package filter again.
+| `nodeGainedService` and `nodeCategoryMembershipChanged` evaluate all thresholding package filters again.
+|===
+
+Use the name in the *Daemon name* column as the `daemonName` parameter of the reload event, or as the argument of the `reload-daemon` command.
+For example, the following command reloads Threshd:
+
+[source, karaf]
+opennms:reload-daemon Threshd
+
+NOTE: A `Threshd` reload does not send a `reloadDaemonConfigSuccessful` or `reloadDaemonConfigFailed` event.
+If the reload fails, the logs contain the message `Unable to reload thresholding.`
+
+Notification rules work differently.
+Notifd evaluates the `<rule>` of a notification against the database for each event, so a node that starts to match a rule receives notices without a reload or a rescan.
+Notifd also checks the modification time of `notifications.xml` when an event arrives and re-reads the file if it changed, so an edited rule takes effect with the next event.
+To reload all notification configuration files at once, send a reload event with `daemonName` set to `Notifd`.

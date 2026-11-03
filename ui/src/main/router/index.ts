@@ -113,7 +113,7 @@ const router = createRouter({
       component: () => import('@/containers/DistributedMonitoring.vue'),
       beforeEnter: requireRole('adminRole', 'Must be admin to manage distributed monitoring.')
     },
-    // the former Manage Minions / Manage Monitoring Locations pages (NMS-20364)
+    // redirects from the old page routes
     {
       path: '/admin/minions',
       redirect: { path: '/distributed-monitoring', query: { tab: 'minions' }}
@@ -319,6 +319,26 @@ const router = createRouter({
       name: 'Generate System Report',
       component: () => import('@/containers/SystemReport.vue'),
       beforeEnter: requireRole('adminRole', 'Must be admin to generate a system report.')
+    },
+    {
+      path: '/about',
+      name: 'About',
+      component: () => import('@/containers/About.vue')
+    },
+    {
+      path: '/documentation',
+      name: 'Documentation',
+      component: () => import('@/containers/Documentation.vue')
+    },
+    {
+      path: '/commercial-support',
+      name: 'Commercial Support',
+      component: () => import('@/containers/CommercialSupport.vue')
+    },
+    {
+      path: '/community-resources',
+      name: 'Community Resources',
+      component: () => import('@/containers/CommunityResources.vue')
     },
     {
       path: '/snmp-config',
