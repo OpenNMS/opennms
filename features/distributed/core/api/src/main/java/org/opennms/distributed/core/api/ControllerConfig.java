@@ -38,6 +38,4 @@ public interface ControllerConfig {
 
     int getBrokerIdleTimeout();
 
-    String getHttpUrl();
-
 }
