@@ -24,7 +24,8 @@ License.
   One graph of a graph collection's view: the legacy custom view's cell. The header
   carries the graph's own title, the window, and links to the resource, its parent
   and the single-graph detail page; the body is the prefabricated graph, or a
-  placeholder when the server says the entry cannot be drawn.
+  placeholder when the server says the entry cannot be drawn. An ad-hoc entry links
+  to the builder instead and is drawn from its stored builder state.
 -->
 <template>
   <div class="gc-cell" data-test="gc-cell">
@@ -51,16 +52,31 @@ License.
           class="gc-cell__detail"
           data-test="gc-detail"
         >Detail</router-link>
+        <router-link
+          v-if="builderRoute"
+          :to="builderRoute"
+          target="_blank"
+          class="gc-cell__detail"
+          data-test="gc-builder"
+        >Open in the builder</router-link>
       </div>
     </div>
 
-    <div v-if="graph.valid && graph.resource" class="gc-cell__graph">
+    <div v-if="adhoc" class="gc-cell__graph">
+      <AdhocCollectionGraph
+        :canvasId="canvasId"
+        :adhocState="adhoc"
+        :start="graph.start"
+        :end="graph.end"
+      />
+    </div>
+    <div v-else-if="prefab" class="gc-cell__graph">
       <Graph
         :canvasId="canvasId"
-        :definition="graph.graphtype"
-        :resourceId="graph.resource.id"
+        :definition="prefab.graphtype"
+        :resourceId="prefab.resource.id"
         :time="time"
-        :label="graph.resource.label"
+        :label="prefab.resource.label"
         :isSingleGraph="true"
       />
     </div>
@@ -76,6 +92,8 @@ import { computed, h } from 'vue'
 import { RouterLink } from 'vue-router'
 import Graph from '@/components/Resources/Graph.vue'
 import { GraphCollectionResource, ResolvedGraphCollectionGraph } from '@/types/graphCollection'
+import AdhocCollectionGraph from './AdhocCollectionGraph.vue'
+import { adhocBuilderRoute, adhocStateTitle } from './adhocCollectionState'
 import { formatGraphInstant, graphTimeFor, legacyHref, spaRouteForLegacyLink } from './graphCollectionTime'
 
 const props = defineProps<{
@@ -100,18 +118,34 @@ const ResourceLink = (p: { resource: GraphCollectionResource }, { attrs }: { att
 // declared so the data-test attribute falls through to the rendered element instead of becoming a prop
 ResourceLink.props = ['resource']
 
-const heading = computed(() => props.graph.title || props.graph.prefabGraphTitle || props.graph.graphtype)
+const isAdhoc = computed(() => props.graph.kind === 'adhoc')
+
+const heading = computed(() =>
+  props.graph.title || props.graph.prefabGraphTitle ||
+  (isAdhoc.value ? adhocStateTitle(props.graph.adhocState) || 'Custom performance graph' : props.graph.graphtype))
 
 const time = computed(() => graphTimeFor(props.graph.start, props.graph.end))
+
+/** The stored builder state of a drawable ad-hoc entry, or null. */
+const adhoc = computed(() => (isAdhoc.value && props.graph.valid && props.graph.adhocState) || null)
+
+/** What a drawable prefab entry needs, or null. */
+const prefab = computed(() => {
+  const { resource, graphtype, valid } = props.graph
+  return !isAdhoc.value && valid && resource && graphtype ? { resource, graphtype } : null
+})
+
+// The builder opens the stored state on this very window, so what it shows matches the cell.
+const builderRoute = computed(() => (isAdhoc.value && props.graph.adhocState ? adhocBuilderRoute(props.graph.adhocState, time.value) : null))
 
 // The single-graph page: one prefabricated graph for one resource (NMS-15711), not every graph of
 // the resource. Resource labels can hold slashes, so the segments are encoded by hand.
 const detailRoute = computed(() => {
-  const resource = props.graph.resource
-  if (!resource || !props.graph.valid) {
+  if (!prefab.value) {
     return null
   }
-  const segments = [resource.label, props.graph.graphtype, resource.id].map(encodeURIComponent)
+  const { resource, graphtype } = prefab.value
+  const segments = [resource.label, graphtype, resource.id].map(encodeURIComponent)
   return { path: `/resource-graphs/graphs/${segments.join('/')}` }
 })
 </script>
