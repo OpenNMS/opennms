@@ -33,6 +33,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
@@ -72,6 +73,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
     private static final String EDIT_WEEKLY = "/admin/userGroupView/roles/editWeekly.jsp";
     private static final String EDIT_MONTHLY = "/admin/userGroupView/roles/editMonthly.jsp";
     private static final String EDIT_SPECIFIC = "/admin/userGroupView/roles/editSpecific.jsp";
+    private static final Set<String> CHANGE_OPERATIONS = Set.of("delete", "saveDetails", "saveEntry");
     
     /**
      * <p>Constructor for AdminRoleServlet.</p>
@@ -339,8 +341,16 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
 	/** {@inheritDoc} */
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Operations that change roles or schedules run only on POST. POST requests get the CSRF token check.
+        // Thus, a cross-site GET cannot trigger them.
+        final String op = request.getParameter("operation");
+        if (op != null && CHANGE_OPERATIONS.contains(op)) {
+            response.setHeader("Allow", "POST");
+            response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
+        }
         doIt(request, response);
-	}  	
+	}
 	
 	/* (non-Java-doc)
 	 * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
