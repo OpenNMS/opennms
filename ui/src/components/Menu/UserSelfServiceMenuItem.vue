@@ -116,7 +116,7 @@ const createIcon = (menuItem: MenuItem) => {
   let icon: Component | null = null
 
   switch (menuItem.id) {
-    case 'helpMenu':
+    case 'helpMain':
       icon = IconHelp; break
     case 'logout':
       icon = IconLogout; break

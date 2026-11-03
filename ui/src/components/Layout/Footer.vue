@@ -1,7 +1,7 @@
 <template>
   <div class="footer">
     <p>
-      OpenNMS <a href="../about/index.jsp">Copyright</a> © {{ mainMenu.copyrightDates || '--' }}
+      OpenNMS <a href="#/about">Copyright</a> © {{ mainMenu.copyrightDates || '--' }}
       <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
       OpenNMS&reg; is a registered trademark of
       <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>

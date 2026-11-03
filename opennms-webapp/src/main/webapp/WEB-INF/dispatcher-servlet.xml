@@ -91,18 +91,12 @@
     <bean name="/admin/userGroupView/groups/modifyGroup"
           class="org.opennms.web.controller.admin.group.GroupController"/>
 
-    <bean name="systemReport" class="org.opennms.systemreport.SystemReport">
-        <property name="serviceRegistry" ref="serviceRegistry"/>
+    <!-- the legacy System Report pages moved to the Vue UI -->
+    <bean name="/admin/support/systemReport.htm" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="redirect:/ui/index.html#/system-report"/>
     </bean>
-
-    <bean name="/admin/support/systemReport.htm"
-          class="org.opennms.web.controller.admin.support.SystemReportController">
-        <property name="systemReport" ref="systemReport"/>
-    </bean>
-
-    <bean name="/admin/support/systemReportList.htm"
-          class="org.opennms.web.controller.admin.support.SystemReportListController">
-        <property name="systemReport" ref="systemReport"/>
+    <bean name="/admin/support/systemReportList.htm" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="redirect:/ui/index.html#/system-report"/>
     </bean>
 
     <bean name="/aggregateStatus.htm"

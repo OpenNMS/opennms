@@ -98,18 +98,24 @@
               <li class="nav-item dropdown">
                   <a name="nav-help-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Help</a>
                   <div class="dropdown-menu dropdown-menu-right">
-                      <a class="dropdown-item" name="nav-admin-help" href="${baseHref}help/index.jsp">
-                          <i class="fa fa-fw fa-question-circle"></i>&nbsp; Help
-                      </a>
-                      <a class="dropdown-item" name="nav-admin-about" href="${baseHref}about/index.jsp">
+                      <a class="dropdown-item" name="nav-admin-about" href="${baseHref}ui/index.html#/about">
                           <i class="fa fa-fw fa-info-circle"></i>&nbsp; About
+                      </a>
+                      <a class="dropdown-item" name="nav-help-documentation" href="${baseHref}ui/index.html#/documentation">
+                          <i class="fa fa-fw fa-book"></i>&nbsp; Documentation
+                      </a>
+                      <a class="dropdown-item" name="nav-help-commercial-support" href="${baseHref}ui/index.html#/commercial-support">
+                          <i class="fa fa-fw fa-life-ring"></i>&nbsp; Commercial Support
+                      </a>
+                      <a class="dropdown-item" name="nav-help-community-resources" href="${baseHref}ui/index.html#/community-resources">
+                          <i class="fa fa-fw fa-users"></i>&nbsp; Community Resources
                       </a>
                       <a class="dropdown-item" name="nav-admin-api-documentation" href="${baseHref}ui/index.html#/open-api">
                           <i class="fa fa-fw fa-info-circle"></i>&nbsp; API Documentation
                       </a>
                       <#if isAdmin >
-                          <a class="dropdown-item" name="nav-admin-support" href="${baseHref}support/index.jsp" title="Support">
-                              <i class="fa fa-solid fa-cogs"></i>&nbsp;Support
+                          <a class="dropdown-item" name="nav-help-system-report" href="${baseHref}ui/index.html#/system-report">
+                              <i class="fa fa-fw fa-stethoscope"></i>&nbsp; System Report
                           </a>
                       </#if>
                   </div>
