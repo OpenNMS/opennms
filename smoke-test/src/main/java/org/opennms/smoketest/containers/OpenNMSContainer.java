@@ -36,6 +36,7 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -49,6 +50,8 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opennms.smoketest.stacks.InternetProtocol;
 import org.opennms.smoketest.stacks.IpcStrategy;
@@ -250,6 +253,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         OverlayUtils.copyAndTemplate("opennms-overlay", home, model);
 
         Path etc = home.resolve("etc");
+        disableServices(etc.resolve("service-configuration.xml"));
         Path propsD = etc.resolve("opennms.properties.d");
         Files.createDirectories(propsD);
 
@@ -313,6 +317,27 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                             .put("compression.type", model.getKafkaCompressionStrategy().getCodec())
                             .build());
         }
+    }
+
+    /**
+     * Marks the services from {@link OpenNMSProfile#getDisabledServices()} as disabled in the overlay's
+     * service-configuration.xml. This is done after the class-path overlay has been copied, since that
+     * overlay ships its own service-configuration.xml and would overwrite a file provided by the profile.
+     */
+    private void disableServices(final Path serviceConfiguration) throws IOException {
+        if (profile.getDisabledServices().isEmpty()) {
+            return;
+        }
+        String xml = Files.readString(serviceConfiguration, StandardCharsets.UTF_8);
+        for (final String serviceName : profile.getDisabledServices()) {
+            final Pattern pattern = Pattern.compile("<service(?:\\s+enabled=\"[^\"]*\")?\\s*>(\\s*<name>" + Pattern.quote(serviceName) + "</name>)");
+            final Matcher matcher = pattern.matcher(xml);
+            if (!matcher.find()) {
+                throw new IllegalStateException("Service " + serviceName + " not found in " + serviceConfiguration);
+            }
+            xml = matcher.replaceFirst("<service enabled=\"false\">$1");
+        }
+        Files.writeString(serviceConfiguration, xml, StandardCharsets.UTF_8);
     }
 
     /**
