@@ -226,7 +226,6 @@ initConfig() {
             chmod 600 "${MINION_HOME}/.ssh/id_rsa"
 
         parseEnvironment
-        applyFeatureBootTemplates
 
         echo "Configured $(date)" > ${MINION_HOME}/etc/configured
     else
@@ -395,12 +394,15 @@ start() {
 }
 
 # Order of precedence is (later overwrites former):
-# 1. Telemetry listener templates applied from env vars (JTI_LISTENER_ENABLED, NXOS_LISTENER_ENABLED, FLOWS_LISTENER_ENABLED)
-# 2. Config set via direct file overlay
+# 1. Feature boot files applied from env vars (MINION_IPC, JAEGER_ENABLED, DOMINION_SCV_ENABLED)
+# 2. Telemetry listener templates applied from env vars (JTI_LISTENER_ENABLED, NXOS_LISTENER_ENABLED, FLOWS_LISTENER_ENABLED)
+# 3. Config set via direct file overlay
+# Env-driven templates are re-applied on every startup so changes take effect with a persisted etc directory.
 configure() {
   checkLegacyConfig
   initConfig
   applyOpennmsPropertiesD
+  applyFeatureBootTemplates
   applyTelemetryListenerTemplates
   applyOverlayConfig
   if [[ "$JACOCO_AGENT_ENABLED" -gt 0 ]]; then
