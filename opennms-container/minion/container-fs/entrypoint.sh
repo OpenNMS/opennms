@@ -94,27 +94,6 @@ setCredentials() {
   rsync --out-format="%n %C" ${MINION_HOME}/etc/scv.jce /keystore/.
 }
 
-function updateConfig() {
-    key=$1
-    value=$2
-    file=$3
-
-    # Handling exceptions for specific keys
-    [ "$key" == "class.name" ]       && key="class-name"
-    [ "$key" == "max.packet.size" ]  && key="maxPacketSize"
-    [ "$key" == "template.timeout" ] && key="templateTimeout"
-
-    # Omit $value here, in case there is sensitive information
-    echo "[Configuring] '$key' in '$file'"
-
-    # If config exists in file, replace it. Otherwise, append to file.
-    if grep -E -q "^#?\s*$key\s*=" "$file"; then
-        sed -r -i "s@^#?\s*$key\s*=.*@$key=$value@g" "$file" #note that no config values may contain an '@' char
-    else
-        echo "$key=$value" >> "$file"
-    fi
-}
-
 function applyFeatureBootTemplates() {
     # Clean only files managed by this script; keep baseline boot files from the image/package.
     local managed_boot_files=(
@@ -192,12 +171,19 @@ function applyKafkaIpcConfig() {
     local cfg="${MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg"
     local env_var ipc_name
 
-    # shellcheck disable=SC2016 # literal placeholder, resolved by Karaf
-    echo 'bootstrap.servers=${env:KAFKA_IPC_BOOTSTRAP_SERVERS:-kafka:29092}' > "${cfg}"
+    # Values are written verbatim; avoid sed so '@', '&' and '\' in values are preserved.
+    if [[ -n "${KAFKA_IPC_BOOTSTRAP_SERVERS:-}" ]]; then
+        echo "bootstrap.servers=${KAFKA_IPC_BOOTSTRAP_SERVERS}" > "${cfg}"
+    else
+        # shellcheck disable=SC2016 # literal placeholder, resolved by Karaf
+        echo 'bootstrap.servers=${env:KAFKA_IPC_BOOTSTRAP_SERVERS:-kafka:29092}' > "${cfg}"
+    fi
 
-    for env_var in $(compgen -e | grep '^KAFKA_IPC_' || true); do
+    for env_var in $(compgen -e | grep '^KAFKA_IPC_' | grep -v '^KAFKA_IPC_BOOTSTRAP_SERVERS$' || true); do
         ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
-        updateConfig "$ipc_name" "${!env_var}" "${cfg}"
+        # Omit the value here, in case there is sensitive information
+        echo "[Configuring] '${ipc_name}' in '${cfg}'"
+        echo "${ipc_name}=${!env_var}" >> "${cfg}"
     done
 }
 
