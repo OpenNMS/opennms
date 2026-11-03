@@ -264,9 +264,9 @@
         </roles>
     </action>
     <action>
-        <icon>fa fa-life-ring</icon>
-        <label>Support</label>
-        <url>about/index.jsp</url>
+        <icon>fa fa-stethoscope</icon>
+        <label>System Report</label>
+        <url>ui/index.html#/system-report</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
@@ -291,14 +291,30 @@
         <url>account/selfService/newPasswordEntry</url>
     </action>
     <action>
-        <icon>fa fa-question-circle</icon>
-        <label>Help</label>
-        <url>help/index.jsp</url>
-    </action>
-    <action>
         <icon>fa fa-info-circle</icon>
         <label>About</label>
-        <url>about/index.jsp</url>
+        <url>ui/index.html#/about</url>
+    </action>
+    <action>
+        <icon>fa fa-book</icon>
+        <label>Documentation</label>
+        <url>ui/index.html#/documentation</url>
+        <aliases>
+            <alias>Help</alias>
+        </aliases>
+    </action>
+    <action>
+        <icon>fa fa-life-ring</icon>
+        <label>Commercial Support</label>
+        <url>ui/index.html#/commercial-support</url>
+        <aliases>
+            <alias>Support</alias>
+        </aliases>
+    </action>
+    <action>
+        <icon>fa fa-users</icon>
+        <label>Community Resources</label>
+        <url>ui/index.html#/community-resources</url>
     </action>
     <action>
         <label>Show Nodes with Flows</label>

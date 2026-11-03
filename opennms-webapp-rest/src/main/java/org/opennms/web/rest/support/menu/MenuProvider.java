@@ -24,6 +24,7 @@ package org.opennms.web.rest.support.menu;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.DatabindException;
@@ -49,6 +50,10 @@ public class MenuProvider {
     public static final String ZENITH_CONNECT_ENABLED_KEY = "opennms.zenithConnect.enabled";
     public static final String ZENITH_CONNECT_BASE_URL_KEY = "opennms.zenithConnect.zenithBaseUrl";
     public static final String ZENITH_CONNECT_RELATIVE_URL_KEY = "opennms.zenithConnect.zenithRelativeUrl";
+
+    /** Tokens in template URLs, replaced with the docs site product and version (e.g. horizon/36). */
+    public static final String PRODUCT_TOKEN = "$PRODUCT";
+    public static final String DOCS_VERSION_TOKEN = "$DOCS_VERSION";
 
     private static final ImmutableSet<String> ADMIN_ROLES = ImmutableSet.of(
         Authentication.ROLE_ADMIN,
@@ -95,8 +100,10 @@ public class MenuProvider {
 
         mainMenu.noticeStatus = menuRequestContext.getNoticeStatus();
 
-        mainMenu.copyrightDates = String.format("2002-%d", LocalDate.now().getYear());
+        mainMenu.copyrightDates = copyrightDates();
         mainMenu.version = Vault.getProperty("version.display");
+        mainMenu.product = Strings.emptyToNull(Vault.getProperty("opennms.product"));
+        mainMenu.docsVersion = Strings.emptyToNull(Vault.getProperty("opennms.docs.version"));
 
         List<MenuEntry> filteredMenus = MenuEntryFilter.filter(mainMenu.menus, menuRequestContext);
         mainMenu.menus.clear();
@@ -127,7 +134,34 @@ public class MenuProvider {
             mainMenu.configurationMenu = null;
         }
 
+        // the docs site has no unversioned product root, so fall back to the Horizon docs rather than a broken link
+        final String product = mainMenu.product != null ? mainMenu.product : "horizon";
+        final String docsVersion = mainMenu.product != null && mainMenu.docsVersion != null ? mainMenu.docsVersion : "latest";
+        replaceDocsTokens(mainMenu.menus, product, docsVersion);
+        replaceDocsTokens(Arrays.asList(mainMenu.helpMenu, mainMenu.selfServiceMenu, mainMenu.userNotificationMenu,
+                mainMenu.provisionMenu, mainMenu.configurationMenu), product, docsVersion);
+
         return mainMenu;
+    }
+
+    /** The copyright range shown in the footer and on the About page, from the server's clock. */
+    public static String copyrightDates() {
+        return String.format("2002-%d", LocalDate.now().getYear());
+    }
+
+    private static void replaceDocsTokens(List<MenuEntry> entries, String product, String docsVersion) {
+        if (entries == null) {
+            return;
+        }
+        for (MenuEntry entry : entries) {
+            if (entry == null) {
+                continue;
+            }
+            if (entry.url != null) {
+                entry.url = entry.url.replace(PRODUCT_TOKEN, product).replace(DOCS_VERSION_TOKEN, docsVersion);
+            }
+            replaceDocsTokens(entry.items, product, docsVersion);
+        }
     }
 
     public MainMenu parseMenuTemplate() {

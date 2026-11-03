@@ -11,15 +11,11 @@ The `menu-template.json` file controls the menu configuration.
 It is read by the Rest API v2 Menu service and displayed by the UI.
 
 Configuration changes made in the file will take effect as soon as the browser page is refreshed (no need to restart OpenNMS). The search "Open ..." results are cached per user and pick up changes within 5 minutes.
-
 Two template files are installed:
-
 - `menu-template-default.json` is the company-approved default template and represents our latest recommended design.
   Never edit this file. To restore the default menu, copy it over `menu-template.json`.
-
 - `menu-template.json` is the active template, the one the menu actually uses. It is identical to the default when installed.
   Customize it only if you know what you are doing.
-
 Note that `roles` controls what both the menu and the search results show. Access is enforced by Spring Security and by the UI route guards,
 so hiding an entry does not grant or revoke access to a page.
 
@@ -43,7 +39,7 @@ The menu template structure can be found in the Java code in: `org.opennms.web.r
   <tr>
     <td>baseHref, homeUrl, formattedDateTime, formattedDate, formattedTime,
   noticeStatus, username, baseNodeUrl, zenithConnectEnabled, zenithConnectBaseUrl,
-  zenithConnectRelativeUrl, copyrightDates, version</td>
+  zenithConnectRelativeUrl, copyrightDates, version, product, docsVersion</td>
     <td>These are filled in at runtime with values. Any values you enter will be ignored.</td>
   </tr>
   <tr>
@@ -159,7 +155,9 @@ The `items` under each top level menu contain the individual menu items.
     <td>The url that the menu item links to.
     If it is non-external, should be a relative link under the main <code>/opennms</code> path.
     Example: <code>"url": "element/index.jsp"</code> to link to the Search Inventory page.
-    If it is an external link, provide the entire absolute URL, e.g. <code>"url": "https://www.opennms.com"</code>.</td>
+    If it is an external link, provide the entire absolute URL, e.g. <code>"url": "https://www.opennms.com"</code>.
+    <code>$PRODUCT</code> and <code>$DOCS_VERSION</code> are replaced with this install's docs site product and version,
+    e.g. <code>"url": "https://docs.opennms.com/$PRODUCT/$DOCS_VERSION/operation/overview/overview.html"</code>.</td>
   </tr>
 
   <tr>

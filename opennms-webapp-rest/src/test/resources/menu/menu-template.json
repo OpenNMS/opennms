@@ -237,7 +237,7 @@
         {
           "id": "helpMain",
           "name": "Help",
-          "url": "help/index.jsp",
+          "url": "ui/index.html#/documentation",
           "roles": null
         },
         {
@@ -245,12 +245,6 @@
           "name": "About",
           "url": "about/index.jsp",
           "roles": null
-        },
-        {
-          "id": "support",
-          "name": "Support",
-          "url": "support/index.jsp",
-          "roles": ["ROLE_ADMIN"]
         }
       ]
     }
@@ -265,7 +259,7 @@
       {
         "id": "helpMain",
         "name": "Help",
-        "url": "help/index.jsp",
+        "url": "ui/index.html#/documentation",
         "roles": null
       },
       {
@@ -281,10 +275,11 @@
         "roles": null
       },
       {
-        "id": "support",
-        "name": "Support",
-        "url": "support/index.jsp",
-        "roles": ["ROLE_ADMIN"]
+        "id": "restApiReferenceDocumentation",
+        "name": "REST API Reference",
+        "url": "https://docs.opennms.com/$PRODUCT/$DOCS_VERSION/development/rest/rest-api.html",
+        "isExternalLink": true,
+        "roles": null
       }
     ]
   },

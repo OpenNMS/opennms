@@ -514,7 +514,7 @@
         {
           "id": "restApiReferenceDocumentation",
           "name": "REST API Reference Documentation",
-          "url": "https://docs.opennms.com/horizon/latest/development/rest/rest-api.html",
+          "url": "https://docs.opennms.com/$PRODUCT/$DOCS_VERSION/development/rest/rest-api.html",
           "isExternalLink": true,
           "linkTarget": "_blank",
           "roles": null
@@ -532,73 +532,38 @@
     {
       "id": "helpDocumentationMenu",
       "name": "Help",
-      "url": "https://docs.opennms.com/horizon/latest",
+      "url": "https://docs.opennms.com/$PRODUCT/$DOCS_VERSION",
       "isExternalLink": true,
       "icon": "action/Help",
       "roles": null,
       "items": [
         {
-          "id": "helpMain",
-          "name": "Help",
-          "url": "help/index.jsp",
-          "roles": null
-        },
-        {
           "id": "helpAbout",
           "name": "About",
-          "url": "about/index.jsp",
+          "url": "ui/index.html#/about",
           "roles": null
         },
         {
-          "id": "support",
-          "name": "Support",
-          "url": "support/index.jsp",
-          "roles": ["ROLE_ADMIN"]
-        }
-      ]
-    },
-    {
-      "id": "supportMenu",
-      "name": "Support",
-      "url": "#",
-      "icon": "action/ContactSupport",
-      "roles": null,
-      "items": [
-        {
-          "id": "professionalSupport",
-          "name": "Professional Support",
-          "url": "https://www.opennms.com/support",
-          "isExternalLink": true,
-          "linkTarget": "_blank",
+          "id": "documentation",
+          "name": "Documentation",
+          "url": "ui/index.html#/documentation",
           "roles": null
         },
         {
-          "id": "chat",
-          "name": "Chat",
-          "url": "https://chat.opennms.org",
-          "isExternalLink": true,
-          "linkTarget": "_blank",
+          "id": "commercialSupport",
+          "name": "Commercial Support",
+          "url": "ui/index.html#/commercial-support",
           "roles": null
         },
         {
-          "id": "communitySupportDiscourse",
-          "name": "Community Support (Discourse)",
-          "url": "https://opennms.discourse.group",
-          "isExternalLink": true,
-          "linkTarget": "_blank",
+          "id": "communityResources",
+          "name": "Community Resources",
+          "url": "ui/index.html#/community-resources",
           "roles": null
         },
         {
-          "id": "publicIssueTracker`",
-          "name": "Public Issue Tracker",
-          "url": "https://issues.opennms.org/secure/Dashboard.jspa",
-          "isExternalLink": true,
-          "linkTarget": "_blank",
-          "roles": null
-        },
-        {
-          "id": "generateSystemReport",
-          "name": "Generate System Report",
+          "id": "systemReport",
+          "name": "System Report",
           "url": "ui/index.html#/system-report",
           "roles": ["ROLE_ADMIN"]
         }
@@ -611,6 +576,13 @@
     "url": "#",
     "roles": null,
     "items": [
+      {
+        "id": "helpMain",
+        "name": "Help",
+        "url": "ui/index.html#/documentation",
+        "locationMatch": null,
+        "roles": null
+      }
     ]
   },
   "selfServiceMenu": {
