@@ -59,7 +59,18 @@ public class SearchQueryProvider implements FilterVisitor<String> {
 
     private final Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
 
+    private final ProportionalSumQuery.Strategy proportionalSumStrategy;
+
     public SearchQueryProvider() {
+        this(ProportionalSumQuery.Strategy.PAINLESS);
+    }
+
+    public SearchQueryProvider(String proportionalSumStrategy) {
+        this(ProportionalSumQuery.Strategy.parse(proportionalSumStrategy));
+    }
+
+    public SearchQueryProvider(ProportionalSumQuery.Strategy proportionalSumStrategy) {
+        this.proportionalSumStrategy = proportionalSumStrategy;
         // Setup Freemarker
         cfg.setClassForTemplateLoading(getClass(), "");
         cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
@@ -67,6 +78,11 @@ public class SearchQueryProvider implements FilterVisitor<String> {
         cfg.setAutoImports(ImmutableMap.builder()
                                        .put("onms", "common.ftl")
                                        .build());
+    }
+
+    private String proportionalSumAgg(long step, long start, long end) {
+        return ProportionalSumQuery.aggregationFor(proportionalSumStrategy, step, start, end,
+                "netflow.delta_switched", "netflow.last_switched", "netflow.bytes", "netflow.sampling_interval");
     }
 
     public String getFlowCountQuery(List<Filter> filters) {
@@ -106,7 +122,8 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .put("groupByTerm", groupByTerm)
                 .put("step", step)
                 .put("start", start)
-                .put("end", end);
+                .put("end", end)
+                .put("proportionalSum", proportionalSumAgg(step, start, end));
         getSnmpInterfaceId(filters).ifPresent(iif -> builder.put("snmpInterfaceId", iif));
         return render("series_for_terms.ftl", builder.build());
     }
@@ -119,7 +136,8 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .put("groupByTerm", groupByTerm)
                 .put("step", step)
                 .put("start", start)
-                .put("end", end);
+                .put("end", end)
+                .put("proportionalSum", proportionalSumAgg(step, start, end));
         getSnmpInterfaceId(filters).ifPresent(iif -> builder.put("snmpInterfaceId", iif));
         return render("series_for_terms.ftl", builder.build());
     }
@@ -132,7 +150,8 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .put("keyForMissingTerm", keyForMissingTerm)
                 .put("step", step)
                 .put("start", start)
-                .put("end", end);
+                .put("end", end)
+                .put("proportionalSum", proportionalSumAgg(step, start, end));
         getSnmpInterfaceId(filters).ifPresent(iif -> builder.put("snmpInterfaceId", iif));
         return render("series_for_missing.ftl", builder.build());
     }
@@ -147,7 +166,8 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .put("excludeMissing", excludeMissing)
                 .put("step", step)
                 .put("start", start)
-                .put("end", end);
+                .put("end", end)
+                .put("proportionalSum", proportionalSumAgg(step, start, end));
         getSnmpInterfaceId(filters).ifPresent(iif -> builder.put("snmpInterfaceId", iif));
         return render("series_for_others.ftl", builder.build());
     }

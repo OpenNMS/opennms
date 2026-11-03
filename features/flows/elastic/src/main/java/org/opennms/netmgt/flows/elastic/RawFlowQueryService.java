@@ -66,10 +66,15 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
     public static final String OTHER_NAME = "Other";
     public static final String UNKNOWN_APPLICATION_NAME = "Unknown";
 
-    private final SearchQueryProvider searchQueryProvider = new SearchQueryProvider();
+    private final SearchQueryProvider searchQueryProvider;
 
     public RawFlowQueryService(ElasticRestClient client, IndexSelector indexSelector) {
+        this(client, indexSelector, null);
+    }
+
+    public RawFlowQueryService(ElasticRestClient client, IndexSelector indexSelector, String proportionalSumStrategy) {
         super(client, indexSelector);
+        this.searchQueryProvider = new SearchQueryProvider(ProportionalSumQuery.Strategy.parse(proportionalSumStrategy));
     }
 
     @Override
