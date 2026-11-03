@@ -23,7 +23,7 @@
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { getActivePinia, setActivePinia } from 'pinia'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, ref } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import AdhocCollectionGraph from '@/components/GraphCollections/AdhocCollectionGraph.vue'
 
@@ -171,5 +171,32 @@ describe('AdhocCollectionGraph.vue', () => {
     expect(Object.keys(pinia?.state.value ?? {})).not.toContain('adhocGraphStore')
     wrapper.unmount()
     expect(Object.keys(pinia?.state.value ?? {})).not.toContain('adhocGraph:gc-3-1')
+  })
+
+  it('starts a fresh store when remade under the same canvas id for a new definition', async () => {
+    // the grid keys a cell by its state but names it by its index, so a refreshed entry
+    // takes the old cell's canvas and store ids: the old store must be gone before it does
+    const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+    setActivePinia(pinia)
+    const state = ref(STATE)
+    const Host = defineComponent({
+      setup: () => () => h(AdhocCollectionGraph, { key: state.value, adhocState: state.value, start: END - HOUR, end: END, canvasId: 'gc-3-1' })
+    })
+    const wrapper = mount(Host, { global: { plugins: [pinia] }})
+    await flushPromises()
+    await flushPromises()
+    const before = wrapper.findComponent(AdhocCollectionGraph)
+    expect(before.find('[data-test="chart-stub"]').attributes('data-series')).toBe('1')
+
+    state.value = `${STATE}&n=2`
+    await flushPromises()
+    await flushPromises()
+    const after = wrapper.findComponent(AdhocCollectionGraph)
+    expect(after.vm).not.toBe(before.vm)
+    expect(after.find('[data-test="chart-stub"]').attributes('data-canvas')).toBe('gc-3-1')
+    expect(after.find('[data-test="chart-stub"]').attributes('data-series')).toBe('1')
+    expect(after.find('[data-test="chart-stub"]').attributes('data-error')).toBe('')
+    expect(getGraphMetrics).toHaveBeenCalledTimes(2)
+    expect(Object.keys(pinia.state.value)).toContain('adhocGraph:gc-3-1')
   })
 })

@@ -145,7 +145,8 @@ describe('GraphCollectionGrid.vue', () => {
     const stub = wrapper.find('[data-test="adhoc-stub"]')
     expect(stub.attributes('data-state')).toBe(STATE)
     expect(stub.attributes('data-start')).toBe(String(END - DAY))
-    expect(stub.attributes('data-canvas')).toBe(wrapper.findAll('[data-test="gc-cell"]')[1].find('[data-test="adhoc-stub"]').attributes('data-canvas'))
+    // the id names the cell's place, not its state: it becomes DOM ids and the cell's store id
+    expect(stub.attributes('data-canvas')).toBe('gc-3-1')
     // one prefab graph, one ad-hoc graph, and neither cell draws the other kind
     expect(wrapper.findAll('[data-test="graph-stub"]')).toHaveLength(1)
     // the entry has no title of its own, so the one the builder stored is used
@@ -174,6 +175,7 @@ describe('GraphCollectionGrid.vue', () => {
     await wrapper.setProps({ collection: collection([adhoc(0, { adhocState: 'nf=core&df=ifHCOutOctets&n=1&title=Downlinks' })]) })
     const after = wrapper.findComponent(AdhocStub)
     expect(after.vm).not.toBe(before.vm)
+    expect(after.attributes('data-canvas')).toBe(before.attributes('data-canvas'))
     expect(after.attributes('data-state')).toBe('nf=core&df=ifHCOutOctets&n=1&title=Downlinks')
     expect(wrapper.find('[data-test="gc-title"]').text()).toBe('Downlinks')
   })
