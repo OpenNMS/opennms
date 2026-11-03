@@ -72,7 +72,13 @@ resolve_value() {
 		'${env:'*':-'*'}')
 			__name="${1#\$\{env:}"; __name="${__name%%:-*}"
 			__default="${1#*:-}"; __default="${__default%\}}"
-			printenv "$__name" || printf '%s' "$__default"
+			# Like Karaf, use the default when the variable is unset or empty
+			__env="$(printenv "$__name")"
+			if [ -n "$__env" ]; then
+				printf '%s' "$__env"
+			else
+				printf '%s' "$__default"
+			fi
 			;;
 		'${env:'*'}')
 			__name="${1#\$\{env:}"; __name="${__name%\}}"

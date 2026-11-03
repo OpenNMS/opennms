@@ -103,6 +103,13 @@ testEnvDefaultWhenUnset() {
   assertFalse "data/kar should be removed" "[ -e '$KARAF_HOME/data/kar' ]"
 }
 
+testEnvDefaultWhenEmpty() {
+  # shellcheck disable=SC2016
+  writeCleanCache '${env:KARAF_CLEAN_CACHE:-true}'
+  KARAF_CLEAN_CACHE='' runCleanKarStorage "$KARAF_HOME" >/dev/null
+  assertFalse "data/kar should be removed when the variable is empty" "[ -e '$KARAF_HOME/data/kar' ]"
+}
+
 testEnvOverridesDefault() {
   # shellcheck disable=SC2016
   writeCleanCache '${env:KARAF_CLEAN_CACHE:-true}'
