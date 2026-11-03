@@ -84,6 +84,8 @@ public class JmxDatacollectionConfiggenerator {
         standardVmBeans.add("java.lang");
         standardVmBeans.add("java.nio");
         standardVmBeans.add("java.util.logging");
+        standardVmBeans.add("jdk.management");
+        standardVmBeans.add("jdk.management.jfr");
 
         // valid number types
         numbers = new ArrayList<>();

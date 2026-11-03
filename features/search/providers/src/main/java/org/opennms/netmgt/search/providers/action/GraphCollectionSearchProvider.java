@@ -61,7 +61,7 @@ public class GraphCollectionSearchProvider implements SearchProvider {
                     final SearchResultItem result = new SearchResultItem();
                     result.setLabel(report.getTitle());
                     result.setIdentifier(report.getTitle());
-                    result.setUrl("KSC/customView.htm?type=custom&report=" + report.getId());
+                    result.setUrl("ui/index.html#/graph-collections/" + report.getId());
                     return result;
                 })
                 .limit(query.getMaxResults())

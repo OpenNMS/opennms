@@ -22,6 +22,7 @@
 
 import {
   getNodes,
+  getNodesByFilterRule,
   getNodeById,
   getNodeAlarmStatus,
   getNodeCriticalPath,
@@ -92,6 +93,7 @@ import {
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
 import { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
+import { getAbout } from './aboutService'
 import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from './wsmanAdminService'
 import {
   createManagedUser,
@@ -129,6 +131,18 @@ import {
 } from './notificationConfigService'
 import { acknowledgeNotification, browseNotifications } from './notificationService'
 import {
+  addGraphToCollection,
+  createGraphCollection,
+  deleteGraphCollection,
+  getGraphCollection,
+  getGraphCollectionTimespans,
+  getGraphCollections,
+  getResolvedGraphCollection,
+  getResolvedSyntheticGraphCollection,
+  reloadGraphCollections,
+  updateGraphCollection
+} from './graphCollectionsService'
+import {
   createManagedGroup,
   deleteManagedGroup,
   getGroupMemberCandidates,
@@ -144,11 +158,13 @@ export default {
   deleteMinion,
   getMinion,
   search,
+  getAbout,
   getSystemReportPlugins,
   getSystemReportFormatters,
   generateSystemReport,
   getInfo,
   getNodes,
+  getNodesByFilterRule,
   getAlarms,
   getEvents,
   modifyAlarm,
@@ -271,5 +287,15 @@ export default {
   resetWsmanDataCollection,
   syncWsmanDefinition,
   updateWsmanConfig,
-  updateWsmanDataCollectionFile
+  updateWsmanDataCollectionFile,
+  addGraphToCollection,
+  createGraphCollection,
+  deleteGraphCollection,
+  getGraphCollection,
+  getGraphCollectionTimespans,
+  getGraphCollections,
+  getResolvedGraphCollection,
+  getResolvedSyntheticGraphCollection,
+  reloadGraphCollections,
+  updateGraphCollection
 }

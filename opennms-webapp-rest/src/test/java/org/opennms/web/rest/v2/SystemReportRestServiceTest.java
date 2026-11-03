@@ -22,7 +22,9 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -33,8 +35,12 @@ import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import javax.servlet.http.HttpServletRequest;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
@@ -91,11 +97,14 @@ public class SystemReportRestServiceTest {
     }
 
     @Test
-    public void returnsOnlyVisibleFormattersWithExtension() {
-        final SystemReportFormatter zip = formatter("zip", "Compressed file of all resources", "zip", true);
+    public void returnsOnlyVisibleDownloadableFormattersWithExtension() {
+        final SystemReportFormatter zip = streamingFormatter("zip", "zip", "application/zip");
         final SystemReportFormatter ftp = formatter("ftp", "internal only", "ftp", false);
-        final SystemReportFormatter text = formatter("text", "Human-readable text", "txt", true);
-        when(m_systemReport.getFormatters()).thenReturn(Arrays.asList(zip, ftp, text));
+        // visible, but uploads instead of streaming: generate() would always reject it
+        final SystemReportFormatter upload = formatter("upload", "uploads elsewhere", "up", true);
+        when(upload.needsOutputStream()).thenReturn(false);
+        final SystemReportFormatter text = streamingFormatter("text", "txt", "text/plain");
+        when(m_systemReport.getFormatters()).thenReturn(Arrays.asList(zip, ftp, upload, text));
 
         final List<SystemReportRestService.FormatterDTO> result = m_service.getFormatters();
 
@@ -163,6 +172,79 @@ public class SystemReportRestServiceTest {
         final Response resp = m_service.generate(request("text", Collections.singletonList("Java"), "/etc/my report.txt"));
 
         assertEquals("attachment; filename=\"myreport.txt\"", resp.getHeaderString("Content-Disposition"));
+    }
+
+    @Test
+    public void fileNameFallsBackToTheDefaultWhenNothingSurvivesSanitizing() {
+        assertEquals("opennms-system-report.zip", SystemReportRestService.fileName("!!!", "zip"));
+        assertEquals("opennms-system-report.zip", SystemReportRestService.fileName("/", "zip"));
+        assertEquals("opennms-system-report.zip", SystemReportRestService.fileName("\u0442\u0435\u0441\u0442", "zip"));
+        assertEquals("opennms-system-report.zip", SystemReportRestService.fileName("..", "zip"));
+        assertEquals("opennms-system-report.zip", SystemReportRestService.fileName("  ", "zip"));
+        assertEquals("report.zip", SystemReportRestService.fileName(" report.zip ", "zip"));
+    }
+
+    @Test
+    public void formPostSetsTheDownloadCookieOnlyForAWellFormedToken() {
+        final SystemReportPlugin java = plugin("Java", "d", true);
+        when(m_systemReport.getPlugins()).thenReturn(Collections.singletonList(java));
+        final SystemReportFormatter text = streamingFormatter("text", "txt", "text/plain");
+        when(m_systemReport.getFormatters()).thenReturn(Collections.singletonList(text));
+
+        final Response resp = m_service.generateFromForm("text", Collections.singletonList("Java"), null, "abc-123", null);
+        final NewCookie cookie = resp.getCookies().get(SystemReportRestService.DOWNLOAD_COOKIE);
+        assertEquals("abc-123", cookie.getValue());
+        assertEquals("/", cookie.getPath());
+        assertEquals(300, cookie.getMaxAge());
+
+        final Response bad = m_service.generateFromForm("text", Collections.singletonList("Java"), null, "a;b=c", null);
+        assertTrue(bad.getCookies().isEmpty());
+    }
+
+    @Test
+    public void formPostRejectsRequestsTheBrowserMarksCrossSite() {
+        final HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.getHeader("Sec-Fetch-Site")).thenReturn("cross-site");
+        assertEquals(403, statusOf(() -> m_service.generateFromForm("text", Collections.singletonList("Java"), null, null, req)));
+    }
+
+    @Test
+    public void aSecondReportWhileOneIsRunningGetsA503() throws Exception {
+        final SystemReportPlugin java = plugin("Java", "d", true);
+        when(m_systemReport.getPlugins()).thenReturn(Collections.singletonList(java));
+        final SystemReportFormatter text = streamingFormatter("text", "txt", "text/plain");
+        when(m_systemReport.getFormatters()).thenReturn(Collections.singletonList(text));
+        final CountDownLatch writing = new CountDownLatch(1);
+        final CountDownLatch release = new CountDownLatch(1);
+        doAnswer(inv -> {
+            writing.countDown();
+            release.await(10, TimeUnit.SECONDS);
+            return null;
+        }).when(text).write(java);
+
+        final StreamingOutput first = (StreamingOutput) m_service.generate(request("text", Collections.singletonList("Java"), null)).getEntity();
+        final Thread t = new Thread(() -> {
+            try {
+                first.write(new ByteArrayOutputStream());
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        t.start();
+        assertTrue(writing.await(10, TimeUnit.SECONDS));
+        try {
+            final StreamingOutput second = (StreamingOutput) m_service.generate(request("text", Collections.singletonList("Java"), null)).getEntity();
+            assertEquals(503, statusOf(() -> {
+                try {
+                    second.write(new ByteArrayOutputStream());
+                } catch (final java.io.IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }));
+        } finally {
+            release.countDown();
+            t.join(10_000);
+        }
     }
 
     @Test

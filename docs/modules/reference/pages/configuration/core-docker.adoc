@@ -62,6 +62,9 @@ via `JAVA_OPTS`, e.g. `JAVA_OPTS="-Djava.io.tmpdir=/some/path -Dactivemq.data=/s
 | `OPENNMS_LIBRARY_JRRD2`            | JRRD2 library path                                                      | optional | `/usr/lib64/libjrrd2.so`
 |===
 
+The following trapd variables are written to `trapd-configuration.xml`, which {page-component-title} imports into the database only once, when the trapd configuration is first initialized.
+After that, change these settings on the Trap Configuration page or through the REST API (see xref:reference:daemons/daemon-config-files/trapd.adoc#trapd-config-storage[trapd configuration storage]).
+
 .SNMP Trap receiver configuration in trapd-configuration.xml
 [options="header, %autowidth"]
 |===

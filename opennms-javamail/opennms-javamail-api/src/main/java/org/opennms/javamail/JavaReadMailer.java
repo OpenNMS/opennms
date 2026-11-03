@@ -22,6 +22,7 @@
 package org.opennms.javamail;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -113,6 +114,8 @@ public class JavaReadMailer extends JavaMailer2 {
         
         final UserAuth userAuth = getUserAuth(config);
         m_session = Session.getInstance(configureProperties(), createAuthenticator(userAuth.getUserName(), userAuth.getPassword()));
+        m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream(), true));
+        m_session.setDebug(m_config.isDebug());
     }
     
     /**
@@ -191,8 +194,6 @@ public class JavaReadMailer extends JavaMailer2 {
      */
     private Properties configureProperties() throws JavaMailerException {
         Properties props = new Properties();
-        
-        props.setProperty("mail.debug", String.valueOf(m_config.isDebug()));
         
         //first set the actual properties defined in the sendmail configuration
         List<JavamailProperty> jmps = m_config.getJavamailProperties();

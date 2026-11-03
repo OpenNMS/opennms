@@ -60,6 +60,11 @@ public class OpenNMSAuthFailureHandler implements AuthenticationFailureHandler {
                 this.logger.debug("Forwarding to " + this.defaultFailureUrl);
                 request.getRequestDispatcher(targetURL).forward(request, response);
             } else {
+                // keep the Vue hash route that login.jsp posted, so it survives another login attempt
+                final String fragment = LoginRedirects.sanitizeFragment(request.getParameter(LoginRedirects.FRAGMENT_PARAMETER));
+                if (fragment != null) {
+                    targetURL += fragment;
+                }
                 this.logger.debug("Redirecting to " + this.defaultFailureUrl);
                 this.redirectStrategy.sendRedirect(request, response, targetURL);
             }

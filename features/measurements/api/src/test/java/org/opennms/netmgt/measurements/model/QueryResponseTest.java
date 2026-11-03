@@ -29,13 +29,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.xml.JaxbUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class QueryResponseTest extends XmlTestNoCastor<QueryResponse> {
+public class QueryResponseTest extends XmlTest<QueryResponse> {
 
     public QueryResponseTest(QueryResponse sampleObject, Object sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

@@ -1,0 +1,152 @@
+[[ref-daemon-config-files-correlator]]
+= Correlator
+:description: Learn about the Correlator daemon in OpenNMS {page-component-title}, which runs Drools rule engines against selected events.
+
+The Correlator runs one or more Drools correlation engines.
+Each engine receives the events listed in its rule set, evaluates them against its Drools rules, and can send new events in response.
+
+The Correlator is separate from the Drools engine in Alarmd, which processes alarms rather than events and is configured in `alarmd/drools-rules.d`.
+For Alarmd rules, see xref:operation:deep-dive/alarms/advanced-alarm-handling.adoc[].
+
+== Enable the Correlator
+
+The Correlator is disabled by default.
+To enable it, set `enabled="true"` on its entry in `$\{OPENNMS_HOME}/etc/service-configuration.xml` and restart {page-component-title}:
+
+[source, xml]
+----
+<service enabled="true"><name>OpenNMS:Name=Correlator</name></service>
+----
+
+In a container, set the environment variable `CORE_SERVICE_CORRELATOR_ENABLED=true` instead.
+
+A stock installation has no engine configuration, so the Correlator starts with no engines until you add one as described below.
+
+== Configuration files
+
+The Correlator reads engine definitions from two locations:
+
+* `$\{OPENNMS_HOME}/etc/drools-engine.xml`, if the file exists.
+* A `drools-engine.xml` file in each subdirectory of `$\{OPENNMS_HOME}/etc/drools-engine.d/`.
+A subdirectory without a `drools-engine.xml` file is ignored, and an error is logged.
+
+Each `drools-engine.xml` file contains one or more `<rule-set>` elements, and each rule set creates one engine named after the rule set.
+Rule files (`<rule-file>`) and the optional Spring context (`<app-context>`) are resolved relative to the directory that contains the `drools-engine.xml` file.
+
+An example configuration is available in `$\{OPENNMS_HOME}/etc/examples/drools-engine.d/nodeParentRules/`.
+Its `drools-engine.xml` defines two rule sets, `locationMonitorRules` and `nodeParentRules`, so copying the `nodeParentRules` directory to `$\{OPENNMS_HOME}/etc/drools-engine.d/` creates two engines.
+
+.Correlator configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| drools-engine.xml
+| Define rule sets (engines), the events each engine receives, its rule files, and globals.
+| yes
+| no
+
+| drools-engine.d/<name>/drools-engine.xml
+| Define rule sets in a self-contained directory together with their rule files and Spring context.
+| yes
+| no
+
+| *.drl files referenced by `<rule-file>`
+| Drools rules for an engine.
+| yes
+| no
+
+| service-configuration.xml
+| Enable or disable the Correlator daemon.
+| no
+| yes
+|===
+
+=== Rule set attributes
+
+[options="header"]
+[cols="1,3,1"]
+|===
+| Attribute
+| Description
+| Default
+
+| name
+| Name of the rule set and of the engine it creates.
+Required.
+| -
+
+| persist-state
+| If `true`, the engine writes its working memory to a file in the Java temporary directory when it stops, and restores it on the next start.
+The state is not saved if timed tasks are still pending when the engine stops.
+| false
+
+| assert-behaviour
+| Drools assert behaviour: `identity` or `equality`.
+| identity
+
+| event-processing-mode
+| Drools event processing mode: `cloud` or `stream`.
+| cloud
+|===
+
+== Apply configuration changes
+
+Changes are not applied automatically.
+Send a `reloadDaemonConfig` event, using one of the following daemon names:
+
+[options="header"]
+[cols="1,3"]
+|===
+| daemonName
+| Effect
+
+| DroolsCorrelationEngine
+| Rereads all `drools-engine.xml` files.
+Engines whose rule set was added are created, engines whose rule set was removed are stopped, and engines whose rule set definition changed are re-created.
+A re-created engine starts with an empty working memory unless its rule set has `persist-state="true"`.
+Engines whose rule set definition is unchanged keep running, even if their `.drl` files changed.
+
+| DroolsCorrelationEngine-<rule-set name>
+| Reloads a single engine: rereads its rule set and rule files and restarts the engine.
+By default, the facts in the engine's working memory are kept across the reload.
+To start with an empty working memory, add the parameter `persistState false`.
+The engine name is matched as a substring of `daemonName`, so a rule set whose name extends another one (for example, `nodeRules` and `nodeRulesExtra`) is reloaded together with it; avoid such names.
+|===
+
+For example, to pick up new rule sets and then reload the rules of the `nodeParentRules` engine:
+
+[source, console]
+----
+${OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName DroolsCorrelationEngine'
+${OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName DroolsCorrelationEngine-nodeParentRules'
+----
+
+You can also send the reload with the Karaf command `opennms:reload-daemon DroolsCorrelationEngine-nodeParentRules`.
+The Karaf command cannot set the `persistState` parameter.
+
+If a single-engine reload fails, {page-component-title} sends a `reloadDaemonConfigFailed` event and removes that engine.
+Fix the error and send the `DroolsCorrelationEngine` reload event to create it again.
+
+During a `DroolsCorrelationEngine` reload, a new or changed rule set that fails to build is skipped and the error is logged, but a `reloadDaemonConfigSuccessful` event is still sent.
+For a changed rule set, the previous engine has already been stopped, so no engine runs for that rule set until you fix the error and reload again.
+
+Enabling or disabling the Correlator itself requires a restart.
+
+.Correlator log file overview
+[options="header"]
+[cols="2,3"]
+|===
+| File
+| Description
+
+| correlator.log
+| Logs relating to the Correlator daemon itself.
+
+| DroolsCorrelationEngine-<rule-set name>.log
+| Logs relating to rule processing in one engine.
+|===

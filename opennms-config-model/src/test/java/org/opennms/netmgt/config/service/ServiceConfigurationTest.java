@@ -28,10 +28,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
 public class ServiceConfigurationTest extends
-        XmlTestNoCastor<ServiceConfiguration> {
+        XmlTest<ServiceConfiguration> {
 
     public ServiceConfigurationTest(final ServiceConfiguration sampleObject,
             final String sampleXml, final String schemaFile) {

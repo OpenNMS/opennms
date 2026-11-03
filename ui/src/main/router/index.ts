@@ -35,6 +35,10 @@ import useSpinner from '@/composables/useSpinner'
 import { useMenuStore } from '@/stores/menuStore'
 import { ActiveTabs, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { requireCondition, requireRole } from './guards'
+import useRole from '@/composables/useRole'
+
+// any logged-in user may change graph collections except a read-only one, as on the legacy pages
+const READONLY_GRAPH_COLLECTIONS = 'Read-only users cannot change graph collections.'
 
 const { startSpinner, stopSpinner } = useSpinner()
 
@@ -109,7 +113,7 @@ const router = createRouter({
       component: () => import('@/containers/DistributedMonitoring.vue'),
       beforeEnter: requireRole('adminRole', 'Must be admin to manage distributed monitoring.')
     },
-    // the former Manage Minions / Manage Monitoring Locations pages (NMS-20364)
+    // redirects from the old page routes
     {
       path: '/admin/minions',
       redirect: { path: '/distributed-monitoring', query: { tab: 'minions' }}
@@ -249,6 +253,51 @@ const router = createRouter({
       ]
     },
     {
+      path: '/graph-collections',
+      name: 'GraphCollections',
+      component: () => import('@/containers/GraphCollections.vue')
+    },
+    {
+      path: '/graph-collections/new',
+      name: 'GraphCollectionNew',
+      component: () => import('@/containers/GraphCollectionEditor.vue'),
+      beforeEnter: requireCondition(() => useRole().rolesAreLoaded.value, () => !useRole().readOnlyRole.value, READONLY_GRAPH_COLLECTIONS)
+    },
+    {
+      path: '/graph-collections/:id(\\d+)/edit',
+      name: 'GraphCollectionEdit',
+      component: () => import('@/containers/GraphCollectionEditor.vue'),
+      props: true,
+      beforeEnter: requireCondition(() => useRole().rolesAreLoaded.value, () => !useRole().readOnlyRole.value, READONLY_GRAPH_COLLECTIONS)
+    },
+    {
+      // A collection built on the fly for a node (by id, by foreignSource:foreignId, or by domain),
+      // one graph per SNMP interface; nothing is stored. The static segment outranks :id below.
+      path: '/graph-collections/node/:nodeId([1-9]\\d*)',
+      name: 'GraphCollectionNode',
+      component: () => import('@/containers/GraphCollectionView.vue'),
+      props: route => ({ kind: 'node', source: route.params.nodeId })
+    },
+    {
+      path: '/graph-collections/nodeSource/:nodeSource',
+      name: 'GraphCollectionNodeSource',
+      component: () => import('@/containers/GraphCollectionView.vue'),
+      props: route => ({ kind: 'nodeSource', source: route.params.nodeSource })
+    },
+    {
+      path: '/graph-collections/domain/:domain',
+      name: 'GraphCollectionDomain',
+      component: () => import('@/containers/GraphCollectionView.vue'),
+      props: route => ({ kind: 'domain', source: route.params.domain })
+    },
+    {
+      // ids start at 0 in ksc-performance-reports.xml, so 0 is a real collection here
+      path: '/graph-collections/:id(\\d+)',
+      name: 'GraphCollectionView',
+      component: () => import('@/containers/GraphCollectionView.vue'),
+      props: true
+    },
+    {
       path: '/open-api',
       name: 'OpenAPI',
       component: () => import('@/containers/OpenAPI.vue')
@@ -270,6 +319,26 @@ const router = createRouter({
       name: 'Generate System Report',
       component: () => import('@/containers/SystemReport.vue'),
       beforeEnter: requireRole('adminRole', 'Must be admin to generate a system report.')
+    },
+    {
+      path: '/about',
+      name: 'About',
+      component: () => import('@/containers/About.vue')
+    },
+    {
+      path: '/documentation',
+      name: 'Documentation',
+      component: () => import('@/containers/Documentation.vue')
+    },
+    {
+      path: '/commercial-support',
+      name: 'Commercial Support',
+      component: () => import('@/containers/CommercialSupport.vue')
+    },
+    {
+      path: '/community-resources',
+      name: 'Community Resources',
+      component: () => import('@/containers/CommunityResources.vue')
     },
     {
       path: '/snmp-config',

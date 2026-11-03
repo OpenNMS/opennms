@@ -199,7 +199,7 @@ public class CollectdMoreIT {
         m_filterDao.flushActiveIpAddressListCache();
         verify(m_filterDao, atLeastOnce()).flushActiveIpAddressListCache();
 
-        when(m_nodeDao.load(1)).thenReturn(nodeBuilder.getNode());
+        when(m_nodeDao.get(1)).thenReturn(nodeBuilder.getNode());
         
         createGetPackagesExpectation(svc);
         
@@ -269,7 +269,7 @@ public class CollectdMoreIT {
         verify(m_collectdConfigFactory, atLeastOnce()).getThreads();
         verify(m_ifaceDao, atLeastOnce()).findByServiceType("SNMP");
         verify(m_ifaceDao, atLeastOnce()).load(anyInt());
-        verify(m_nodeDao, atLeastOnce()).load(anyInt());
+        verify(m_nodeDao, atLeastOnce()).get(anyInt());
     }
 
     private void createGetPackagesExpectation(OnmsMonitoredService svc) {

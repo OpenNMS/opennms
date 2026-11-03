@@ -22,7 +22,7 @@
 package org.opennms.netmgt.config.collectd.jmx;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -33,7 +33,7 @@ import java.util.Collection;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class RrdTest extends XmlTestNoCastor<Rrd> {
+public class RrdTest extends XmlTest<Rrd> {
 
     /**
      * Instantiates a new attribute test.

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.container</artifactId>
+        <version>37.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.container</groupId>
+    <artifactId>org.opennms.container.aries-proxy-patch</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenNMS :: Container :: aries-proxy Patch</name>
+    <description>
+        org.apache.aries.proxy's ProxyUtils.getWeavingJavaVersion() maps the running JVM's
+        java.class.version to the byte code level it generates proxies at, and throws
+        IllegalArgumentException("Invalid Java version 69") for anything it does not list.
+        1.1.14 - the latest release, and the version Karaf's aries-proxy feature pins - stops
+        at Java 21, so on JDK 22+ every blueprint service reference proxy fails and the
+        bundles using them never start.
+
+        This module rebuilds org.apache.aries.proxy with a patched ProxyUtils that generates
+        Java 21 byte code on newer JVMs. The assembly modules (container/karaf for core,
+        container/shared for Minion and Sentinel) copy this over the bundle that Karaf's
+        aries-proxy feature put into their assembled system/ directory.
+
+        Should Apache Aries release a version that knows newer Java versions, bump the
+        feature to it and delete this module.
+    </description>
+
+    <properties>
+        <license.skipAddThirdParty>true</license.skipAddThirdParty>
+        <ariesProxyJar>org.apache.aries.proxy-${ariesProxyVersion}.jar</ariesProxyJar>
+    </properties>
+
+    <dependencies>
+        <!-- compile classpath for ProxyUtils only, nothing here is shipped -->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>${asmVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4jVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-original-aries-proxy</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.aries.proxy</groupId>
+                                    <artifactId>org.apache.aries.proxy</artifactId>
+                                    <version>${ariesProxyVersion}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/original</outputDirectory>
+                                    <destFileName>${ariesProxyJar}</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- packaging is "pom" so the default lifecycle does not bind
+                     compilation on its own - compile the one patched class
+                     explicitly, matching the original's class file version (52 =
+                     Java 8) so it drops into the bundle unchanged otherwise -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>compile-patched-proxy-utils</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <release>8</release>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${maven.antrun.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>patch-aries-proxy-utils</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <unzip src="${project.build.directory}/original/${ariesProxyJar}"
+                                       dest="${project.build.directory}/bundle"/>
+
+                                <!-- overlay the recompiled class over the original -->
+                                <copy overwrite="true"
+                                      file="${project.build.directory}/classes/org/apache/aries/proxy/impl/ProxyUtils.class"
+                                      tofile="${project.build.directory}/bundle/org/apache/aries/proxy/impl/ProxyUtils.class"/>
+
+                                <!-- repack; passing the original manifest keeps the OSGi
+                                     headers untouched and writes META-INF/MANIFEST.MF as
+                                     the first entry, which Karaf's JarInputStream based
+                                     manifest readers depend on -->
+                                <jar destfile="${project.build.directory}/${ariesProxyJar}"
+                                     basedir="${project.build.directory}/bundle"
+                                     manifest="${project.build.directory}/bundle/META-INF/MANIFEST.MF"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-patched-aries-proxy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/${ariesProxyJar}</file>
+                                    <type>jar</type>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

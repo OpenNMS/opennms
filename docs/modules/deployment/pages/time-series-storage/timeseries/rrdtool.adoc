@@ -9,7 +9,7 @@ Depending on your operating system, the home directory is `/opt/opennms` for Deb
 
 [{tabs}]
 ====
-CentOS/RHEL 8::
+CentOS/RHEL::
 +
 --
 .Enable the OpenNMS repository and install rrdtool and jrrd2
@@ -17,60 +17,6 @@ CentOS/RHEL 8::
 ----
 sudo dnf config-manager --enable opennms-repo-stable-*
 sudo dnf -y install rrdtool jrrd2
-----
-
-.Create a configuration file with the time series database settings
-[source, console]
-----
-sudo vi etc/opennms.properties.d/timeseries.properties
-----
-
-[source, properties]
-----
-org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy<1>
-org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar<2>
-opennms.library.jrrd2=/usr/lib64/libjrrd2.so<3>
-org.opennms.web.graphs.engine=rrdtool<4>
-rrd.binary=/usr/bin/rrdtool<5>
-----
-
-<1> Set JNI RRD strategy class.
-<2> Use the internal JRRD library.
-<3> Use the JRRD library to interface with RRDtool.
-<4> This is optional; use RRDtool to render graphs.
-If unset, keep Backshift as default.
-<5> Path to the RRDtool binary file.
-
-TIP: If your RRDtool binary is not in `/usr/bin/rrdtool`, adjust the path in the following files: +
-     `response-adhoc-graph.properties`, +
-     `response-graph.properties`, +
-     `snmp-adhoc-graph.properties`, +
-     `snmp-graph.properties`.
-
-.Restart the {page-component-title} Core instance to apply the configuration
-[source, console]
-----
-sudo systemctl restart opennms
-----
-
-.Verify that RRD files get created
-[source, console]
-----
-find /opt/opennms/share/rrd -iname "*.rrd"
-----
-
-NOTE: The first data collection creates RRDtool files with extension `.rrd`.
-      You must delete them manually.
---
-
-CentOS/RHEL 7::
-+
---
-.Enable the OpenNMS repository and install rrdtool and jrrd2
-[source, console]
-----
-sudo yum-config-manager --enable opennms-repo-stable-*
-sudo yum -y install rrdtool jrrd2
 ----
 
 .Create a configuration file with the time series database settings

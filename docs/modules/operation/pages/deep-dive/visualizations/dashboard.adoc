@@ -15,8 +15,8 @@ The dashboard includes the following components:
 You can reduce visible information by selecting rows, columns, and cells to focus on.
 The rest of the dashboard updates dynamically.
 
-* *Alarms:* Displays unacknowledged alarms whose severity is higher than `Normal (1)`.
-* *Notifications:* Displays outstanding and unacknowledged notifications that have been sent to recipients.
+* *Alarms:* Displays up to 100 unacknowledged alarms.
+* *Notifications:* Displays unacknowledged notifications, and acknowledged notifications that were sent within the last seven days.
 * *Outages:* Displays all ongoing network outages.
 * *Resource graphs:* Displays time series reports for performance diagnosis.
 
@@ -39,8 +39,8 @@ image::visualizations/dashboard/02_dashboard-surveillance-view.png["{page-compon
 
 === Alarms
 
-The alarms component displays an overview of all unacknowledged alarms whose severity is higher than `Normal (1)`.
-It sorts alarms from most to least recent, and lets you scroll through the last 100 alarms.
+The alarms component displays an overview of unacknowledged alarms on nodes in the selected surveillance view cells.
+It retrieves at most 100 alarms, and sorts them by severity and then from most to least recent.
 
 Acknowledged alarms are removed from the operator's responsibility and, therefore, the alarms component.
 
@@ -58,9 +58,27 @@ The alarms component displays the following information:
 
 === Notifications
 
-The notifications component shows outstanding and unacknowledged notifications.
-It sorts notifications from most to least recent, and lets you scroll through the last 100 notifications.
-When a notification is acknowledged, it is removed from the component.
+The notifications component shows notifications for nodes in the selected surveillance view cells, sorted from most to least recent.
+It shows all unacknowledged notifications, and acknowledged notifications that were sent within the last seven days.
+
+The component colors each notification with a severity that it derives from the notification's state and age:
+
+[options="header", cols="2,1"]
+|===
+| Notification
+| Displayed severity
+
+| Unacknowledged, sent more than 15 minutes ago
+| Critical
+
+| Unacknowledged, sent within the last 15 minutes
+| Minor
+
+| Acknowledged, sent within the last seven days
+| Normal
+|===
+
+This severity applies only to the dashboard display; it does not change the notification.
 
 .A notifications component displaying three notifications
 image::visualizations/dashboard/04_dashboard-notifications.png["{page-component-title} UI displaying a notifications component with three notifications."]
@@ -258,7 +276,7 @@ For this example, we will create two dashboards and two users: `dashboard1` and 
 ----
 
 . Edit `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-acegi-security.xml` to enable anonymous authentication for the `/dashboard1` and `/dashboard2` aliases:
-** Add the following code in the `<bean id="filterChainProxy" ...>` block, after the entry for `/rss.jsp*`:
+** Add the following code in the `<bean id="filterChainProxy" ...>` block, before the entry for `/**`:
 +
 [source, xml]
 ----
@@ -267,7 +285,6 @@ For this example, we will create two dashboards and two users: `dashboard1` and 
       <value>
         CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
         PATTERN_TYPE_APACHE_ANT
-        /rss.jsp*=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,basicExceptionTranslationFilter,filterInvocationInterceptor
         /dashboard1*=httpSessionContextIntegrationFilter,logoutFilter,securityContextHolderAwareRequestFilter,dash1AnonymousProcessingFilter,filterInvocationInterceptor
         /dashboard2*=httpSessionContextIntegrationFilter,logoutFilter,securityContextHolderAwareRequestFilter,dash2AnonymousProcessingFilter,filterInvocationInterceptor
         /**=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor

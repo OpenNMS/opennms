@@ -26,13 +26,13 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.netmgt.config.opennmsDataSources.ConnectionPool;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.opennmsDataSources.Param;
 
-public class DataSourceConfigurationTest extends XmlTestNoCastor<DataSourceConfiguration> {
+public class DataSourceConfigurationTest extends XmlTest<DataSourceConfiguration> {
 
     public DataSourceConfigurationTest(DataSourceConfiguration sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/opennms-datasources.xsd");

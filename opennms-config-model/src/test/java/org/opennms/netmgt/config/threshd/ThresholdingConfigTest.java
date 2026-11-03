@@ -28,9 +28,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class ThresholdingConfigTest extends XmlTestNoCastor<ThresholdingConfig> {
+public class ThresholdingConfigTest extends XmlTest<ThresholdingConfig> {
 
     public ThresholdingConfigTest(ThresholdingConfig sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/thresholding.xsd");

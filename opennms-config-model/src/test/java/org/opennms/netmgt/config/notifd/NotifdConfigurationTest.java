@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class NotifdConfigurationTest extends XmlTestNoCastor<NotifdConfiguration> {
+public class NotifdConfigurationTest extends XmlTest<NotifdConfiguration> {
 
     public NotifdConfigurationTest(NotifdConfiguration sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/notifd-configuration.xsd");

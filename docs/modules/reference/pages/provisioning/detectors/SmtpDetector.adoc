@@ -1,0 +1,53 @@
+= SMTP Detector
+:description: Learn how the SmtpDetector in OpenNMS {page-component-title} finds SMTP services for monitoring in your network.
+
+The SmtpDetector finds SMTP services for monitoring in your network.
+It expects a `220` banner, sends `HELO LOCALHOST` and expects `250`, then sends `QUIT` and detects the service when the reply is `221`.
+Multiline replies are supported.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.simple.SmtpDetector`
+|===
+
+== Configuration and use
+
+The SmtpDetector uses the xref:reference:provisioning/detectors.adoc#ref-detector-provisioning-common-parameters[common configuration parameters].
+
+.Parameters for the SmtpDetector
+[options="header"]
+[cols="1,4,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| TCP port to connect to.
+| 25
+
+| idleTime
+| Time, in milliseconds, that the detector waits for data from the service before it gives up.
+The value is rounded to whole seconds, with a minimum of one second.
+| 3000
+
+| useSSLFilter
+| Set `true` to use TLS for the connection.
+| false
+|===
+
+NOTE: This detector opens connections with a fixed connection timeout of 2000 milliseconds and does not apply the `timeout` parameter.
+Use `idleTime` to control how long it waits for responses.
+
+== Example configuration
+
+The following detector finds SMTP services on the submission port:
+
+[source, xml]
+----
+<detector name="SMTP-Submission" class="org.opennms.netmgt.provision.detector.simple.SmtpDetector">
+    <parameter key="port" value="587"/>
+</detector>
+----

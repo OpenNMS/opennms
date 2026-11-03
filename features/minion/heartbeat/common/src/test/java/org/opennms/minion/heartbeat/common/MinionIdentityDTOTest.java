@@ -27,10 +27,10 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.utils.StringUtils;
 
-public class MinionIdentityDTOTest extends XmlTestNoCastor<MinionIdentityDTO> {
+public class MinionIdentityDTOTest extends XmlTest<MinionIdentityDTO> {
 
     public MinionIdentityDTOTest(MinionIdentityDTO sampleObject, Object sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);
