@@ -143,7 +143,7 @@ public class ShippedMenuTemplateTest {
     @Test
     public void shippedTemplateForAdminKeepsAdminEntries() throws Exception {
         final MainMenu menu = menuFor("ROLE_ADMIN");
-        for (String id : new String[] {"surveillanceCategories", "manageUsers", "generateSystemReport", "deleteNodes"}) {
+        for (String id : new String[] {"surveillanceCategories", "manageUsers", "systemReport", "deleteNodes"}) {
             assertTrue("missing " + id, hasId(menu, id));
         }
     }

@@ -78,8 +78,11 @@ public class TemplateMenuProvider implements org.opennms.web.api.MenuProvider, S
             }
         };
 
+        final List<MenuEntry> visible = MenuEntryFilter.filter(mainMenu.menus, filterContext);
+        MenuProvider.replaceDocsTokens(visible);
+
         final List<org.opennms.web.navigate.MenuEntry> result = new ArrayList<>();
-        collect(MenuEntryFilter.filter(mainMenu.menus, filterContext), true, result);
+        collect(visible, true, result);
         return result;
     }
 

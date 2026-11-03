@@ -33,6 +33,7 @@ import java.util.Set;
 
 import org.junit.After;
 import org.junit.Test;
+import org.opennms.core.resource.Vault;
 import org.opennms.web.navigate.DisplayStatus;
 import org.opennms.web.navigate.MenuContext;
 import org.opennms.web.navigate.MenuEntry;
@@ -96,7 +97,7 @@ public class TemplateMenuProviderTest {
 
     @Test
     public void externalLinksAreFlagged() {
-        MenuEntry chat = byName(menu(ctx(Set.of(), true)), "Chat");
+        MenuEntry chat = byName(menu(ctx(Set.of(), true)), "Source Code");
         assertNotNull(chat);
         assertTrue(chat.isExternalLink());
         assertEquals("_blank", chat.getLinkTarget());
@@ -121,12 +122,29 @@ public class TemplateMenuProviderTest {
     @Test
     public void topLevelGroupWithUrlIsNotIncluded() {
         List<MenuEntry> entries = menu(ctx(Set.of(), true));
-        for (MenuEntry e : entries) {
-            assertFalse("https://docs.opennms.com/horizon/latest".equals(e.getUrl()));
-        }
+        // the top-level "Help" group links to the docs root; only its children are search results
+        assertEquals(null, byName(entries, "Help"));
         MenuEntry about = byName(entries, "About");
         assertNotNull(about);
-        assertEquals("about/index.jsp", about.getUrl());
+        assertEquals("ui/index.html#/about", about.getUrl());
+    }
+
+    @Test
+    public void docsUrlTokensAreReplaced() {
+        try {
+            Vault.getProperties().setProperty("opennms.product", "meridian");
+            Vault.getProperties().setProperty("opennms.docs.version", "2026");
+            List<MenuEntry> entries = menu(ctx(Set.of(), true));
+            MenuEntry restApi = byName(entries, "REST API Reference Documentation");
+            assertNotNull(restApi);
+            assertEquals("https://docs.opennms.com/meridian/2026/development/rest/rest-api.html", restApi.getUrl());
+            for (MenuEntry e : entries) {
+                assertFalse(e.getName(), e.getUrl().contains("$"));
+            }
+        } finally {
+            Vault.getProperties().remove("opennms.product");
+            Vault.getProperties().remove("opennms.docs.version");
+        }
     }
 
     @Test

@@ -23,7 +23,7 @@ See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upg
 The legacy FreeMarker navigation bar and the `?oldmenu=true` switch that selected it have been removed. The menu is now always built from `${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/menu/menu-template.json`.
 
 * `maps.htm` and `dashboards.htm` now return 404; the Maps and Dashboards entries of the side menu replace them.
-* `menu-template-alt.json` and `menu-template-legacy.json` are removed. `menu-template-default.json` is the default menu shipped with the product, identical to the stock `menu-template.json`; do not edit it.
+* `menu-template-default.json` is the default menu shipped with the product, identical to the stock `menu-template.json`; do not edit it.
 * `locationMatch` in menu templates is ignored.
 * Admin-only entries now carry `roles` in `menu-template.json`. If you customized `menu-template.json`, compare it with `menu-template-default.json`.
 * The "Action" results of the central search ("Open ...") now come from `menu-template.json` and follow the same `roles` as the menu.

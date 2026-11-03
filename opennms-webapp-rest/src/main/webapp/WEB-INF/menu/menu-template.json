@@ -580,7 +580,6 @@
         "id": "helpMain",
         "name": "Help",
         "url": "ui/index.html#/documentation",
-        "locationMatch": null,
         "roles": null
       }
     ]

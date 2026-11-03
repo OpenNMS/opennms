@@ -134,12 +134,9 @@ public class MenuProvider {
             mainMenu.configurationMenu = null;
         }
 
-        // the docs site has no unversioned product root, so fall back to the Horizon docs rather than a broken link
-        final String product = mainMenu.product != null ? mainMenu.product : "horizon";
-        final String docsVersion = mainMenu.product != null && mainMenu.docsVersion != null ? mainMenu.docsVersion : "latest";
-        replaceDocsTokens(mainMenu.menus, product, docsVersion);
+        replaceDocsTokens(mainMenu.menus, mainMenu.product, mainMenu.docsVersion);
         replaceDocsTokens(Arrays.asList(mainMenu.helpMenu, mainMenu.selfServiceMenu, mainMenu.userNotificationMenu,
-                mainMenu.provisionMenu, mainMenu.configurationMenu), product, docsVersion);
+                mainMenu.provisionMenu, mainMenu.configurationMenu), mainMenu.product, mainMenu.docsVersion);
 
         return mainMenu;
     }
@@ -149,7 +146,24 @@ public class MenuProvider {
         return String.format("2002-%d", LocalDate.now().getYear());
     }
 
-    private static void replaceDocsTokens(List<MenuEntry> entries, String product, String docsVersion) {
+    /**
+     * Replaces {@link #PRODUCT_TOKEN} and {@link #DOCS_VERSION_TOKEN} in the URLs of these entries and their
+     * descendants. {@code product} and {@code docsVersion} are the raw values (null when unknown); the docs site
+     * has no unversioned product root, so an unknown product falls back to the Horizon docs rather than a broken link.
+     */
+    public static void replaceDocsTokens(List<MenuEntry> entries, String product, String docsVersion) {
+        final String docsProduct = product != null ? product : "horizon";
+        final String version = product != null && docsVersion != null ? docsVersion : "latest";
+        substituteDocsTokens(entries, docsProduct, version);
+    }
+
+    /** {@link #replaceDocsTokens(List, String, String)} with the product and docs version of this server. */
+    public static void replaceDocsTokens(List<MenuEntry> entries) {
+        replaceDocsTokens(entries, Strings.emptyToNull(Vault.getProperty("opennms.product")),
+                Strings.emptyToNull(Vault.getProperty("opennms.docs.version")));
+    }
+
+    private static void substituteDocsTokens(List<MenuEntry> entries, String product, String docsVersion) {
         if (entries == null) {
             return;
         }
@@ -160,7 +174,7 @@ public class MenuProvider {
             if (entry.url != null) {
                 entry.url = entry.url.replace(PRODUCT_TOKEN, product).replace(DOCS_VERSION_TOKEN, docsVersion);
             }
-            replaceDocsTokens(entry.items, product, docsVersion);
+            substituteDocsTokens(entry.items, product, docsVersion);
         }
     }
 
