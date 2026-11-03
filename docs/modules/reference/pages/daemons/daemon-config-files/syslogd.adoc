@@ -81,3 +81,7 @@ Comparing the two counts below can confirm that every syslog packet a Minion rec
 
 `consumer.messagesReceived` on {page-component-title} adds up the messages from every Minion and from the {page-component-title} listener itself, so compare it with the sum of the `packetsReceived` counters.
 All of these counters start at zero when the process starts, so compare counts taken over the same interval, without a restart in between.
+
+A sender's count can be higher than `packetsReceived` even when nothing is lost inside {page-component-title}.
+Datagrams that the operating system drops because the listener's socket receive buffer is full never reach the listener, so `packetsReceived` does not count them.
+On Linux, these drops appear as receive buffer errors (`RcvbufErrors`) in the output of `netstat -su` on the host that runs the listener.
