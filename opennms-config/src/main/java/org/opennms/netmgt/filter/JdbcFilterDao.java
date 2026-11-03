@@ -715,13 +715,13 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
                     final String extracted = extractedStrings.get(Integer.parseInt(pattern.substring(4, pattern.length() - 4)));
                     pattern = extracted.substring(1, extracted.length() - 1).replaceAll("''", "'");
                 }
-                if (IplikeSqlTranslator.toSqlPredicate(pattern, "ipaddr") != null) {
-                    // Translatable: emit an indexable native predicate. It is
-                    // stashed as an extracted string so the keyword/column
-                    // passes below leave its contents untouched; the column
-                    // reference therefore gets schema-qualified here.
-                    final String column = m_databaseSchemaConfigFactory.addColumn(tables, regex.group(1));
-                    extractedStrings.add(IplikeSqlTranslator.toSqlPredicate(pattern, column));
+                // The native predicate is stashed as an extracted string so the
+                // keyword/column passes below leave its contents untouched; the
+                // column reference therefore gets schema-qualified here.
+                final String column = m_databaseSchemaConfigFactory.addColumn(tables, regex.group(1));
+                final String nativePredicate = IplikeSqlTranslator.toSqlPredicate(pattern, column);
+                if (nativePredicate != null) {
+                    extractedStrings.add(nativePredicate);
                     regex.appendReplacement(tempStringBuff, "###@" + (extractedStrings.size() - 1) + "@###");
                 } else if (regex.group(2).startsWith("###@")) {
                     // an extracted-string placeholder merges back with its own
