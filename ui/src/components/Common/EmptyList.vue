@@ -15,9 +15,9 @@
   <div :class="['empty-list', bg ? 'bg' : '']">
     <h3 v-if="content.title" data-test="title">{{ content.title }}</h3>
     <div data-test="msg">{{ msg }}</div>
-    <PButton
+    <OnmsButton
       v-if="content.btn"
-      outlined
+      variant="outlined"
       :label="content.btn.label"
       data-test="btn"
       @click="content.btn.action"
@@ -27,9 +27,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import Button from 'primevue/button'
-
-const PButton = Button
+import { OnmsButton } from '@opennms/onms-ui'
 
 type Content = {
   title?: string

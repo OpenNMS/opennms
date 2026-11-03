@@ -53,6 +53,7 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageBuilder;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.TransportValueVisitor;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
+import org.opennms.netmgt.telemetry.protocols.common.utils.ShutdownUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +69,9 @@ import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public abstract class ParserBase implements Parser {
     private static final Logger LOG = LoggerFactory.getLogger(ParserBase.class);
+
+    /** How long a stop waits for the records that are still in the executor. */
+    static final Duration SHUTDOWN_TIMEOUT = Duration.ofSeconds(5);
 
     private final RateLimitedLog SEQUENCE_ERRORS_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
@@ -193,7 +197,7 @@ public abstract class ParserBase implements Parser {
 
     @Override
     public void stop() {
-        executor.shutdown();
+        ShutdownUtils.shutdownAndAwait(executor, name, SHUTDOWN_TIMEOUT);
     }
 
     @Override

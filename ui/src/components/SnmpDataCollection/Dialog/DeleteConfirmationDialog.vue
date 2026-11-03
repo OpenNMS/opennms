@@ -1,5 +1,5 @@
 <template>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     class="delete-event-config-source-modal"
     :visible="props.visible"
     :title="label.title"
@@ -44,13 +44,13 @@
         <p><strong>Are you sure you want to proceed?</strong></p>
       </div>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script lang="ts" setup>
 import { computed } from 'vue'
 
-import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
+import { OnmsConfirmationDialog } from '@opennms/onms-ui'
 
 const props = defineProps<{
   visible: boolean

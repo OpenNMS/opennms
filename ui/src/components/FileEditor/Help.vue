@@ -9,8 +9,8 @@
 import { computed } from 'vue'
 
 import { useFileEditorStore } from '@/stores/fileEditorStore'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
-import Close from '@/components/icons/navigation/Cancel.vue'
+import { OnmsIcon } from '@opennms/onms-ui'
+import Close from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 
 const fileEditorStore = useFileEditorStore()
 const snippets = computed(() => fileEditorStore.snippets)

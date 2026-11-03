@@ -451,6 +451,11 @@ doStart(){
 	# work around some jar files that are not compatible with updated JDK validation
 	APP_VM_PARMS=("-Djdk.util.zip.disableZip64ExtraFieldValidation=true" "${APP_VM_PARMS[@]}")
 
+	# timestamp ConsolePlain lines only when they go to output.log; journald timestamps its own input
+	if [ "$SYSTEMD" != 1 ] && [ "$BACKGROUND" = 1 ]; then
+		APP_VM_PARMS+=("-Dopennms.log.console.prefix=%d ")
+	fi
+
 	CMD=("${RUNJAVA_CMD[@]}" "-D_OPENNMS_LAUNCH" "${JAVA_CMD[@]}" "-Dopennms.pidfile=${OPENNMS_PIDFILE}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}")
 	if [ "$SYSTEMD" = 1 ]; then
 		if [ "$BACKGROUND" = 0 ]; then
@@ -883,10 +888,17 @@ if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c MaxMetaspaceSize=)" -e
 fi
 
 if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Djava.io.tmpdir=)" -eq 0 ]; then
-	if [ ! -d "$OPENNMS_HOME/data/tmp" ]; then
-		mkdir -p "$OPENNMS_HOME/data/tmp"
+	if [ ! -d "$OPENNMS_HOME/tmp" ]; then
+		mkdir -p "$OPENNMS_HOME/tmp"
 	fi
-	ADDITIONAL_MANAGER_OPTIONS+=("-Djava.io.tmpdir=$OPENNMS_HOME/data/tmp")
+	ADDITIONAL_MANAGER_OPTIONS+=("-Djava.io.tmpdir=$OPENNMS_HOME/tmp")
+fi
+
+if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c -- -Dactivemq.data=)" -eq 0 ]; then
+	if [ ! -d "$OPENNMS_HOME/var/activemq" ]; then
+		mkdir -p "$OPENNMS_HOME/var/activemq"
+	fi
+	ADDITIONAL_MANAGER_OPTIONS+=("-Dactivemq.data=$OPENNMS_HOME/var/activemq")
 fi
 
 # Fix for Attach API listener sometimes going AWOL

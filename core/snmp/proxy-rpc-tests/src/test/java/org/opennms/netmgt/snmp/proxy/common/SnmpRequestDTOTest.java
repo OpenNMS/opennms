@@ -27,14 +27,14 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
 import com.google.common.collect.Lists;
 
-public class SnmpRequestDTOTest extends XmlTestNoCastor<SnmpRequestDTO> {
+public class SnmpRequestDTOTest extends XmlTest<SnmpRequestDTO> {
 
     public SnmpRequestDTOTest(SnmpRequestDTO sampleObject, String sampleXml) {
         super(sampleObject, sampleXml, null);

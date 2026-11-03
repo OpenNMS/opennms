@@ -24,7 +24,6 @@ package org.opennms.netmgt.dao.api;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.SituationSummary;
@@ -58,8 +57,6 @@ public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
      * @param nodeIds The nodeIds you want to restrict the AlarmSummary calculation to. Must not be NULL!
      */
     List<AlarmSummary> getNodeAlarmSummariesIncludeAcknowledgedOnes(List<Integer> nodeIds);
-
-    List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, boolean processAcknowledgedAlarms, String restrictionColumn, String restrictionValue, String... groupByColumns);
 
     List<OnmsAlarm> getAlarmsForEventParameters(final Map<String, String> eventParameters);
 

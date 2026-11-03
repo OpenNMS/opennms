@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 570" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="1000" height="570" fill="#ffffff"/>
+
+  <!-- connections -->
+  <!-- Minions to Kafka -->
+  <line x1="275" y1="95" x2="500" y2="150" stroke="#555555" stroke-width="1.5"/>
+  <line x1="500" y1="95" x2="500" y2="150" stroke="#555555" stroke-width="1.5"/>
+  <line x1="725" y1="95" x2="500" y2="150" stroke="#555555" stroke-width="1.5"/>
+  <!-- Kafka to Core -->
+  <line x1="450" y1="220" x2="215" y2="285" stroke="#555555" stroke-width="1.5"/>
+  <!-- Kafka to Sentinels -->
+  <line x1="560" y1="220" x2="597" y2="295" stroke="#555555" stroke-width="1.5"/>
+  <line x1="560" y1="220" x2="757" y2="295" stroke="#555555" stroke-width="1.5"/>
+  <line x1="560" y1="220" x2="917" y2="295" stroke="#555555" stroke-width="1.5"/>
+  <!-- Core to storage -->
+  <line x1="185" y1="365" x2="140" y2="450" stroke="#555555" stroke-width="1.5"/>
+  <line x1="250" y1="365" x2="345" y2="450" stroke="#555555" stroke-width="1.5"/>
+  <!-- Sentinels to PostgreSQL -->
+  <line x1="560" y1="358" x2="400" y2="452" stroke="#555555" stroke-width="1.5"/>
+  <!-- Sentinels to Elasticsearch -->
+  <line x1="597" y1="360" x2="757" y2="450" stroke="#555555" stroke-width="1.5"/>
+  <line x1="757" y1="360" x2="757" y2="450" stroke="#555555" stroke-width="1.5"/>
+  <line x1="917" y1="360" x2="757" y2="450" stroke="#555555" stroke-width="1.5"/>
+
+  <!-- Minions (blue) -->
+  <rect x="200" y="30" width="150" height="65" rx="10" fill="#1f6db3" stroke="#134a7c" stroke-width="2"/>
+  <text x="275" y="69" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">OpenNMS Minion</text>
+  <rect x="425" y="30" width="150" height="65" rx="10" fill="#1f6db3" stroke="#134a7c" stroke-width="2"/>
+  <text x="500" y="69" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">OpenNMS Minion</text>
+  <rect x="650" y="30" width="150" height="65" rx="10" fill="#1f6db3" stroke="#134a7c" stroke-width="2"/>
+  <text x="725" y="69" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">OpenNMS Minion</text>
+
+  <!-- Apache Kafka cluster -->
+  <rect x="350" y="150" width="300" height="70" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="500" y="192" text-anchor="middle" font-size="17" font-weight="bold" fill="#222222">Apache Kafka cluster</text>
+
+  <!-- OpenNMS Core -->
+  <rect x="100" y="285" width="230" height="80" rx="10" fill="#4c9a41" stroke="#2e6b28" stroke-width="2"/>
+  <text x="215" y="331" text-anchor="middle" font-size="18" font-weight="bold" fill="#ffffff">OpenNMS Core</text>
+
+  <!-- OpenNMS Sentinels (lighter blue) -->
+  <rect x="530" y="295" width="135" height="65" rx="10" fill="#5b9bd5" stroke="#2f6db3" stroke-width="2"/>
+  <text x="597" y="322" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">OpenNMS</text>
+  <text x="597" y="340" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Sentinel</text>
+  <rect x="690" y="295" width="135" height="65" rx="10" fill="#5b9bd5" stroke="#2f6db3" stroke-width="2"/>
+  <text x="757" y="322" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">OpenNMS</text>
+  <text x="757" y="340" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Sentinel</text>
+  <rect x="850" y="295" width="135" height="65" rx="10" fill="#5b9bd5" stroke="#2f6db3" stroke-width="2"/>
+  <text x="917" y="322" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">OpenNMS</text>
+  <text x="917" y="340" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Sentinel</text>
+
+  <!-- Dedicated time series storage (under Core, left) -->
+  <rect x="40" y="450" width="200" height="80" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="140" y="485" text-anchor="middle" font-size="15" font-weight="bold" fill="#222222">Dedicated time series</text>
+  <text x="140" y="505" text-anchor="middle" font-size="15" font-weight="bold" fill="#222222">storage</text>
+
+  <!-- PostgreSQL (under Core, right) -->
+  <rect x="270" y="450" width="150" height="80" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="345" y="497" text-anchor="middle" font-size="15" font-weight="bold" fill="#222222">PostgreSQL</text>
+
+  <!-- Elasticsearch / OpenSearch (under Sentinels) -->
+  <rect x="637" y="450" width="240" height="80" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="757" y="485" text-anchor="middle" font-size="15" font-weight="bold" fill="#222222">Elasticsearch or</text>
+  <text x="757" y="505" text-anchor="middle" font-size="15" font-weight="bold" fill="#222222">OpenSearch</text>
+</svg>

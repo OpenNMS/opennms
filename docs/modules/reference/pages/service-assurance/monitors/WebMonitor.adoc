@@ -59,9 +59,9 @@ WebMonitor uses Apache HttpClient, which acts more like a real browser (follows 
 | True/false whether to use HTTP 1.0 or 1.1.
 | false
 
-| header_#header#-value
-| Additional headers to include in the request.
-The parameter name should match a regular expressions of `header_[0-9]+$`
+| header_<n>
+| Name of an additional header to include in the request, where `<n>` is a number (the parameter name must match `header_[0-9]+$`).
+Set the header value with a matching `header_<n>_value` parameter.
 | n/a
 
 | use-ssl-filter
@@ -85,12 +85,62 @@ The parameter name should match a regular expressions of `header_[0-9]+$`
 | true
 
 | response-text
-| The response text to look for.
+| Text that the response body is checked against.
+Without a leading `~`, the whole response body must equal the value.
+With a leading `~`, the rest of the value is a Java regular expression that must match the whole response body.
+When this parameter is set, its result replaces the `response-range` check.
 | n/a
 
 | response-range
-| What HTTP status ranges are considered success.
+| A single range of HTTP status codes, in the form `<low>-<high>`, that is considered a success.
 | 100-399
 |===
 
 kbd:[{}] _indicates the parameter supports <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
+
+The monitor makes a single attempt per poll and does not use the `retry` parameter.
+
+== Examples
+
+The following example requests `https://<interface-address>/status` with a custom `Host` header and an extra `Accept` header.
+The service is up when the response body contains `OK`.
+Note that you must include the `monitor` section for each service in your definition.
+
+[source, xml]
+----
+<service name="Web-Status" interval="300000" user-defined="false" status="on">
+  <parameter key="timeout" value="5000"/>
+  <parameter key="scheme" value="https"/>
+  <parameter key="port" value="443"/>
+  <parameter key="path" value="/status"/>
+  <parameter key="virtual-host" value="www.example.com"/> <1>
+  <parameter key="use-ssl-filter" value="true"/> <2>
+  <parameter key="header_0" value="Accept"/> <3>
+  <parameter key="header_0_value" value="text/plain"/> <3>
+  <parameter key="response-range" value="200-299"/> <4>
+  <parameter key="response-text" value="~(?s).*OK.*"/> <5>
+</service>
+
+<monitor service="Web-Status" class-name="org.opennms.netmgt.poller.monitors.WebMonitor"/>
+----
+<1> Value of the `Host` header.
+<2> Trust self-signed certificates.
+<3> Header name and value, paired by the number in the parameter name.
+<4> Applies only when `response-text` is not set; here the `response-text` result replaces it.
+<5> The leading `~` marks a regular expression; `(?s)` lets `.*` span line breaks in the body.
+
+The following example uses preemptive basic authentication against a page that requires a login:
+
+[source, xml]
+----
+<service name="Web-Admin" interval="300000" user-defined="false" status="on">
+  <parameter key="port" value="8080"/>
+  <parameter key="path" value="/admin/"/>
+  <parameter key="auth-enabled" value="true"/>
+  <parameter key="auth-user" value="monitor"/>
+  <parameter key="auth-password" value="secret"/>
+  <parameter key="response-range" value="200-299"/>
+</service>
+
+<monitor service="Web-Admin" class-name="org.opennms.netmgt.poller.monitors.WebMonitor"/>
+----

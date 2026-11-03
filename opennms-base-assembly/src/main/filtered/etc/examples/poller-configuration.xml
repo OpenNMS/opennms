@@ -173,16 +173,6 @@
       <parameter key="rrd-base-name" value="pop3" />
       <parameter key="ds-name" value="pop3" />
     </service>
-    <service name="NSClient" interval="300000" user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="port" value="1248" />
-      <parameter key="timeout" value="3000" />
-    </service>
-    <service name="NSClientpp" interval="300000" user-defined="false" status="on">
-      <parameter key="retry" value="2" />
-      <parameter key="port" value="12489" />
-      <parameter key="timeout" value="3000" />
-    </service>
     <service name="NRPE" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="3" />
       <parameter key="timeout" value="3000" />
@@ -677,8 +667,6 @@
 
   <!-- These monitors are now distributed separately.  They must be installed before enabling the following: -->
   <monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor" />
-  <monitor service="NSClient" class-name="org.opennms.protocols.nsclient.monitor.NsclientMonitor" />
-  <monitor service="NSClientpp" class-name="org.opennms.protocols.nsclient.monitor.NsclientMonitor" />
   <monitor service="RadiusAuth" class-name="org.opennms.protocols.radius.monitor.RadiusAuthMonitor" />
 
 </poller-configuration>

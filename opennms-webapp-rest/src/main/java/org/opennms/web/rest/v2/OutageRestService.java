@@ -22,11 +22,21 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,9 +44,16 @@ import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsOutageCollection;
+import org.opennms.web.rest.v2.model.NodeOutageTimelineDto;
+import org.opennms.web.rest.v2.model.NodeOutageTimelineEntryDto;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
@@ -45,6 +62,24 @@ import org.opennms.web.rest.support.SearchProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+import org.apache.cxf.jaxrs.ext.search.SearchContext;
+import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.SearchPropertyCollection;
+import org.opennms.web.rest.support.StringCollection;
 
 /**
  * Basic Web Service using REST for {@link OnmsOutage} entity.
@@ -59,6 +94,12 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
 
     @Autowired
     private OutageDao m_dao;
+
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    /** Window used by the timeline resource when the caller supplies neither bound. */
+    private static final long DEFAULT_TIMELINE_WINDOW_MS = 86_400_000L;
 
     @Override
     protected OutageDao getDao() {
@@ -153,4 +194,504 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
         return getDao().get(id);
     }
 
+    /**
+     * Outage timeline for one node: every core-poller outage overlapping a window, across every
+     * monitored service on the node, in one request.
+     *
+     * The path is deliberately two segments. The inherited {@code @GET @Path("{id}")} of
+     * {@link AbstractDaoRestServiceWithDTO} matches exactly one segment, so {@code timeline/{nodeId}}
+     * cannot be dispatched to it. A single-segment literal would compete with that template and the
+     * winner would depend on the requested media type, which is the trap documented on
+     * {@code NodeRestService.getServiceTypes()}.
+     */
+    @GET
+    @Path("timeline/{nodeId}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
+    @Operation(summary = "Outage timeline for one node",
+            description = """
+                    Every core-poller outage overlapping a time window, for every monitored service on one
+                    node, in one call. This is the JSON replacement for the per-service PNG strips of
+                    `GET /rest/timeline/image/...`: the caller draws the strip.
+
+                    An outage overlaps the window when it was still open after `start` and had already begun
+                    by `end`, so an outage that began before `start` is included with its true, unclamped
+                    `ifLostService`. Outages recorded by a remote perspective are excluded, matching the v1 strip.
+
+                    Unlike the rest of the v2 API, every timestamp here is epoch milliseconds in both JSON
+                    and XML, so the values echo the `start` and `end` that were sent. An outage that is still
+                    open reports `ifRegainedService` as null in JSON; in XML the attribute is omitted.
+
+                    `truncated` is true when more outages matched than `limit` allowed, so a caller can say
+                    the strip is incomplete rather than draw a confidently wrong window. The outages returned
+                    are the most recent ones.
+
+                    `ifServiceId` and `ipInterfaceId` are the `id` fields of the service and interface objects
+                    in `GET /rest/availability/nodes/{nodeId}`, so the two documents join directly.""",
+            operationId = "outagesTimelineForNode")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The node's outages over the window.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = NodeOutageTimelineDto.class),
+                                    examples = @ExampleObject(value = """
+                                            {
+                                              "nodeId": 1,
+                                              "start": 1787641143996,
+                                              "end": 1787727543996,
+                                              "nodeCreateTime": 1436881400000,
+                                              "count": 2,
+                                              "truncated": false,
+                                              "outage": [
+                                                { "id": 3543, "ifServiceId": 3, "ipInterfaceId": 1,
+                                                  "ipAddress": "192.168.1.1", "serviceId": 3, "serviceName": "SNMP",
+                                                  "ifLostService": 1787700000000, "ifRegainedService": null },
+                                                { "id": 3542, "ifServiceId": 3, "ipInterfaceId": 1,
+                                                  "ipAddress": "192.168.1.1", "serviceId": 3, "serviceName": "SNMP",
+                                                  "ifLostService": 1787650000000, "ifRegainedService": 1787660000000 }
+                                              ]
+                                            }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = NodeOutageTimelineDto.class),
+                                    examples = @ExampleObject(value = """
+                                            <outage-timeline nodeId="1" start="1787641143996" end="1787727543996"
+                                                             nodeCreateTime="1436881400000" count="1">
+                                              <outage id="3543" ifServiceId="3" ipInterfaceId="1" ipAddress="192.168.1.1"
+                                                      serviceId="3" serviceName="SNMP" ifLostService="1787700000000"/>
+                                            </outage-timeline>"""))
+                    }),
+            @ApiResponse(responseCode = "400", description = "`start` is not strictly before `end`, or `limit` is negative.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "start must be strictly before end"))),
+            @ApiResponse(responseCode = "404", description = "No node has that identifier. The response has no body.")
+    })
+    public Response getNodeOutageTimeline(
+            @Parameter(description = "Database identifier of the node.", required = true, example = "1")
+            @PathParam("nodeId") final Integer nodeId,
+            @Parameter(description = "Window start, epoch milliseconds. Defaults to `end` minus 24 hours.",
+                    example = "1787641143996")
+            @QueryParam("start") final Long start,
+            @Parameter(description = "Window end, epoch milliseconds. Defaults to now.",
+                    example = "1787727543996")
+            @QueryParam("end") final Long end,
+            @Parameter(description = "Safety cap on the number of outages returned, most recent first. "
+                    + "Zero means no cap.", example = "10000")
+            @DefaultValue("10000") @QueryParam("limit") final Integer limit) {
+
+        final long endMs = (end != null) ? end : System.currentTimeMillis();
+        final long startMs = (start != null) ? start : endMs - DEFAULT_TIMELINE_WINDOW_MS;
+
+        if (startMs >= endMs) {
+            return Response.status(Status.BAD_REQUEST)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity("start must be strictly before end").build();
+        }
+
+        // CriteriaBuilder passes any non-zero limit straight through, so a negative one reaches the
+        // query and fails there as a 500. Zero is the documented way to ask for no cap.
+        if (limit == null || limit < 0) {
+            return Response.status(Status.BAD_REQUEST)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity("limit must not be negative; use 0 for no limit").build();
+        }
+
+        final OnmsNode node = m_nodeDao.get(nodeId);
+        if (node == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+
+        final Date startDate = new Date(startMs);
+        final Date endDate = new Date(endMs);
+
+        // The same aliases and the same overlap predicate as TimelineRestService.queryOutages(), so
+        // this document describes exactly the strip the PNG drew. The two-argument alias() form
+        // already defaults to a LEFT JOIN.
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
+        builder.alias("monitoredService", "monitoredService");
+        builder.alias("monitoredService.ipInterface", "ipInterface");
+        builder.alias("monitoredService.ipInterface.node", "node");
+        builder.alias("monitoredService.serviceType", "serviceType");
+
+        builder.eq("node.id", nodeId);
+        builder.isNull("perspective");
+        builder.le("ifLostService", endDate);
+        builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", startDate));
+
+        // One more row than asked for, so a full page can be told from a page that merely reached
+        // the cap. Without it a caller cannot know the strip is missing outages: it would render a
+        // confidently wrong picture of the window. CriteriaBuilder maps a limit of 0 to "no limit",
+        // so asking for one more in that case would be asking for exactly one.
+        builder.limit(limit == 0 ? 0 : limit + 1);
+        // Ordered by time rather than by id: a tripped limit should drop the oldest outages, which
+        // are the ones furthest from the right edge of the strip.
+        builder.orderBy("ifLostService").desc();
+
+        final List<OnmsOutage> found = getDao().findMatching(builder.toCriteria());
+        final boolean truncated = limit > 0 && found.size() > limit;
+
+        final List<NodeOutageTimelineEntryDto> rows =
+                (truncated ? found.subList(0, limit) : found).stream()
+                        .map(OutageRestService::toTimelineEntry)
+                        .collect(Collectors.toList());
+
+        return Response.ok(new NodeOutageTimelineDto(nodeId, startMs, endMs,
+                node.getCreateTime().getTime(), rows, truncated)).build();
+    }
+
+    private static NodeOutageTimelineEntryDto toTimelineEntry(final OnmsOutage outage) {
+        final OnmsMonitoredService svc = outage.getMonitoredService();
+        final NodeOutageTimelineEntryDto dto = new NodeOutageTimelineEntryDto();
+        dto.setId(outage.getId());
+        dto.setIfServiceId(svc.getId());
+        dto.setIpInterfaceId(svc.getIpInterfaceId());
+        dto.setIpAddress(InetAddressUtils.str(svc.getIpAddress()));
+        dto.setServiceId(svc.getServiceId());
+        dto.setServiceName(svc.getServiceName());
+        dto.setIfLostService(outage.getIfLostService().getTime());
+        dto.setIfRegainedService(outage.getIfRegainedService() == null
+                ? null : outage.getIfRegainedService().getTime());
+        return dto;
+    }
+
+    @Override
+    @Operation(summary = "List outages",
+            description = """
+                    Outages matching the query, newest identifier first unless `orderBy` says otherwise. The query joins the monitored service, its IP interface, node, SNMP interface, asset record and location, the lost and regained service events and the perspective location, so properties of all of those are searchable.
+
+                    Timestamps are epoch milliseconds in JSON and ISO-8601 with a UTC offset in XML.
+
+                    `application/atom+xml` is also accepted and returns the same document as `application/xml`.
+
+                    For example, `_s=ifRegainedService=gt=2026-08-01T00:00:00.000-0400;node.label==loopback-009`.""",
+            operationId = "outagesList")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "One page of matching outages.",
+                    headers = @Header(name = "Content-Range", description = "`items <offset>-<last>/<totalCount>` for this page.",
+                            schema = @Schema(type = "string")),
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OnmsOutageCollection.class),
+                                    examples = @ExampleObject(value = """
+                            {
+                              "totalCount": 4077,
+                              "count": 1,
+                              "offset": 0,
+                              "outage": [ {
+                                "id": 900009,
+                                "nodeId": 7,
+                                "nodeLabel": "loopback-009",
+                                "foreignSource": "loopback-lab",
+                                "foreignId": "lb-009",
+                                "locationName": "Default",
+                                "ipAddress": "127.0.0.9",
+                                "serviceId": 2,
+                                "monitoredService": {
+                                  "id": 1025,
+                                  "status": "A",
+                                  "statusLong": "Managed",
+                                  "down": false,
+                                  "lastGood": 1787727479370,
+                                  "lastFail": 1787685424755,
+                                  "serviceType": { "id": 2, "name": "HTTP-8080" },
+                                  "ipInterfaceId": 17
+                                },
+                                "ifLostService": 1787052190798,
+                                "ifRegainedService": 1787073778565,
+                                "suppressTime": null,
+                                "suppressedBy": null,
+                                "perspective": "Default"
+                              } ]
+                            }""")),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = OnmsOutageCollection.class),
+                                    examples = @ExampleObject(value = """
+                            <outages count="1" offset="0" totalCount="4077">
+                              <outage id="900009">
+                                <foreignId>lb-009</foreignId>
+                                <foreignSource>loopback-lab</foreignSource>
+                                <ifLostService>2026-08-18T07:23:10.798-04:00</ifLostService>
+                                <ifRegainedService>2026-08-18T13:22:58.565-04:00</ifRegainedService>
+                                <ipAddress>127.0.0.9</ipAddress>
+                                <locationName>Default</locationName>
+                                <monitoredService down="false" status="A" statusLong="Managed" id="1025">
+                                  <ipInterfaceId>17</ipInterfaceId>
+                                  <serviceType id="2"><name>HTTP-8080</name></serviceType>
+                                </monitoredService>
+                                <nodeId>7</nodeId>
+                                <nodeLabel>loopback-009</nodeLabel>
+                                <perspective>Default</perspective>
+                              </outage>
+                            </outages>"""))
+                    }),
+            @ApiResponse(responseCode = "204", description = "No outage matched the query. The response has no body."),
+            @ApiResponse(responseCode = "500", description = DOC_SEARCH_ERROR,
+                    content = @Content(mediaType = "text/plain", schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error parsing FIQL search")))
+    })
+    public Response get(final UriInfo uriInfo, final SearchContext searchContext) {
+        return super.get(uriInfo, searchContext);
+    }
+
+    @Override
+    @Operation(summary = "Count outages",
+            description = """
+                    Number of outages matching the query.
+
+                    Only `text/plain` is produced. A request that sends `Accept: application/json` does not match this operation and falls through to the single-entity GET with `count` as the identifier.
+
+                    For example, `_s=ifRegainedService=gt=2026-08-01T00:00:00.000-0400;node.label==loopback-009`.""",
+            operationId = "outagesCount")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The number of matching outages, as a decimal string.",
+                    content = @Content(mediaType = "text/plain", schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "4077"))),
+            @ApiResponse(responseCode = "500", description = DOC_COUNT_ERROR,
+                    content = @Content(mediaType = "text/plain", schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error parsing FIQL search")))
+    })
+    public Response getCount(final UriInfo uriInfo, final SearchContext searchContext) {
+        return super.getCount(uriInfo, searchContext);
+    }
+
+    @Override
+    @Operation(summary = "List the queryable properties of outages",
+            description = """
+                    The properties an outage query can filter and sort on, including the joined node, interface, service, event and asset properties.""",
+            operationId = "outagesSearchProperties")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The properties this endpoint can search and sort on.",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = SearchPropertyCollection.class),
+                                    examples = @ExampleObject(value = """
+                            {
+                              "totalCount": 1,
+                              "count": 1,
+                              "offset": 0,
+                              "searchProperty": [
+                                { "id": "ifLostService", "name": "Lost Service Time", "type": "TIMESTAMP", "orderBy": true, "iplike": false }
+                              ]
+                            }""")),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = SearchPropertyCollection.class),
+                                    examples = @ExampleObject(value = """
+                            <searchProperties count="1" offset="0" totalCount="1">
+                              <searchProperty type="TIMESTAMP" orderBy="true" iplike="false" id="ifLostService" name="Lost Service Time"/>
+                            </searchProperties>"""))
+                    })
+    })
+    public Response getProperties(final String query) {
+        return super.getProperties(query);
+    }
+
+    @Override
+    @Operation(summary = "List the values a queryable property takes",
+            description = """
+                    Distinct values held by one outage property. The `value` entries are typed after the property: numbers for `INTEGER`, `LONG` and `FLOAT`, epoch milliseconds for `TIMESTAMP`, strings otherwise.""",
+            operationId = "outagesSearchPropertyValues")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The distinct values, typed after the property.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = StringCollection.class),
+                            examples = @ExampleObject(value = """
+                            {
+                              "totalCount": 2,
+                              "count": 2,
+                              "offset": 0,
+                              "value": [ 1786382635102, 1786382635105 ]
+                            }"""))),
+            @ApiResponse(responseCode = "404", description = "No property with that `id` is queryable here. The response has no body.")
+    })
+    public Response getPropertyValues(final String propertyId, final String query, final Integer limit) {
+        return super.getPropertyValues(propertyId, query, limit);
+    }
+
+    @Override
+    @Operation(summary = "Get one outage",
+            description = """
+                    One outage by database identifier.
+
+                    Timestamps are epoch milliseconds in JSON and ISO-8601 with a UTC offset in XML.
+
+                    `application/atom+xml` is also accepted and returns the same document as `application/xml`.""",
+            operationId = "outagesGet")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The requested outage.",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OnmsOutage.class),
+                                    examples = @ExampleObject(value = """
+                            {
+                              "id": 900009,
+                              "nodeId": 7,
+                              "nodeLabel": "loopback-009",
+                              "locationName": "Default",
+                              "ipAddress": "127.0.0.9",
+                              "serviceId": 2,
+                              "ifLostService": 1787052190798,
+                              "ifRegainedService": 1787073778565,
+                              "suppressTime": null,
+                              "suppressedBy": null,
+                              "perspective": "Default"
+                            }""")),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = OnmsOutage.class),
+                                    examples = @ExampleObject(value = """
+                            <outage id="900009">
+                              <ifLostService>2026-08-18T07:23:10.798-04:00</ifLostService>
+                              <ifRegainedService>2026-08-18T13:22:58.565-04:00</ifRegainedService>
+                              <ipAddress>127.0.0.9</ipAddress>
+                              <locationName>Default</locationName>
+                              <nodeId>7</nodeId>
+                              <nodeLabel>loopback-009</nodeLabel>
+                              <perspective>Default</perspective>
+                            </outage>"""))
+                    }),
+            @ApiResponse(responseCode = "404", description = """
+                    No outage has that identifier, or the identifier is not an integer. The response has no body.""")
+    })
+    public Response get(final UriInfo uriInfo,
+            @Parameter(description = """
+                    Database identifier of the outage.""",
+                    required = true, example = "900009")
+            final Integer id) {
+        return super.get(uriInfo, id);
+    }
+
+    @Override
+    @Operation(summary = "Create an outage",
+            description = """
+                    Answered with 501 for every body.""",
+            operationId = "outagesCreate")
+    @ApiResponses({
+            @ApiResponse(responseCode = "501", description = DOC_NOT_IMPLEMENTED)
+    })
+    public Response create(final SecurityContext securityContext, final UriInfo uriInfo,
+            @RequestBody(description = """
+                    Accepted but not acted on: the endpoint answers 501 for every body.""",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OnmsOutage.class),
+                                    examples = @ExampleObject(value = """
+                            { }""")),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = OnmsOutage.class),
+                                    examples = @ExampleObject(value = """
+                            <outage/>"""))
+                    })
+            final OnmsOutage object) {
+        return super.create(securityContext, uriInfo, object);
+    }
+
+    @Override
+    @Operation(summary = "Rejected: create an outage at a caller-chosen identifier",
+            description = DOC_POST_WITH_ID,
+            operationId = "outagesCreateWithId")
+    @Parameters({
+            @Parameter(name = "id", in = ParameterIn.PATH, required = true,
+                    description = "Ignored. Any value produces the same response.",
+                    schema = @Schema(type = "string"), example = "900009")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = "Always. The response has no body.")
+    })
+    public Response createSpecific() {
+        return super.createSpecific();
+    }
+
+    @Override
+    @Operation(summary = "Update the outages matching a query",
+            description = """
+                    Not supported for outages: the endpoint answers 501 once it has found at least one match, and 404 when nothing matches.
+
+                    For example, `_s=ifRegainedService=gt=2026-08-01T00:00:00.000-0400;node.label==loopback-009`.""",
+            operationId = "outagesUpdateMany")
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = DOC_NO_MATCH),
+            @ApiResponse(responseCode = "500", description = DOC_SEARCH_ERROR,
+                    content = @Content(mediaType = "text/plain", schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error parsing FIQL search"))),
+            @ApiResponse(responseCode = "501", description = DOC_NOT_IMPLEMENTED)
+    })
+    public Response updateMany(final SecurityContext securityContext, final UriInfo uriInfo, final SearchContext searchContext,
+            @RequestBody(description = DOC_FORM_BODY,
+                    content = @Content(mediaType = "application/x-www-form-urlencoded",
+                            schema = @Schema(type = "object"),
+                            examples = @ExampleObject(value = """
+                            suppressedBy=admin""")))
+            final MultivaluedMapImpl params) {
+        return super.updateMany(securityContext, uriInfo, searchContext, params);
+    }
+
+    @Override
+    @Hidden
+    public Response update(final SecurityContext securityContext, final UriInfo uriInfo, final Integer id,
+            final OnmsOutage object) {
+        return super.update(securityContext, uriInfo, id, object);
+    }
+
+    @Override
+    @Operation(summary = "Update one outage",
+            description = """
+                    Both the JSON or XML replacement form and the form-parameter form answer 501.""",
+            operationId = "outagesUpdate")
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = """
+                    The form variant answers 404 when nothing matches the identifier; the JSON or XML
+                    variant answers 404 only for an absent body and does not look the identifier up."""),
+            @ApiResponse(responseCode = "501", description = """
+                    Outages do not support update. Returned by the JSON or XML variant whether or not the
+                    identifier exists. The response has no body.""")
+    })
+    public Response updateProperties(final SecurityContext securityContext, final UriInfo uriInfo,
+            @Parameter(description = """
+                    Database identifier of the outage.""",
+                    required = true, example = "900009")
+            final Integer id,
+            @RequestBody(description = """
+                    Accepted but not acted on: the endpoint answers 501 for every body.""",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OnmsOutage.class),
+                                    examples = @ExampleObject(value = """
+                            { }""")),
+                            @Content(mediaType = "application/xml", schema = @Schema(implementation = OnmsOutage.class),
+                                    examples = @ExampleObject(value = """
+                            <outage/>""")),
+                            @Content(mediaType = "application/x-www-form-urlencoded",
+                                    schema = @Schema(type = "object"),
+                                    examples = @ExampleObject(value = """
+                            suppressedBy=admin"""))
+                    })
+            final MultivaluedMapImpl params) {
+        return super.updateProperties(securityContext, uriInfo, id, params);
+    }
+
+    @Override
+    @Operation(summary = "Delete the outages matching a query",
+            description = """
+                    Not supported for outages: the endpoint answers 501 once it has found at least one match, and 404 when nothing matches.
+
+                    For example, `_s=ifRegainedService=gt=2026-08-01T00:00:00.000-0400;node.label==loopback-009`.""",
+            operationId = "outagesDeleteMany")
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = DOC_NO_MATCH),
+            @ApiResponse(responseCode = "500", description = DOC_SEARCH_ERROR,
+                    content = @Content(mediaType = "text/plain", schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Error parsing FIQL search"))),
+            @ApiResponse(responseCode = "501", description = DOC_NOT_IMPLEMENTED)
+    })
+    public Response deleteMany(final SecurityContext securityContext, final UriInfo uriInfo, final SearchContext searchContext) {
+        return super.deleteMany(securityContext, uriInfo, searchContext);
+    }
+
+    @Override
+    @Operation(summary = "Delete one outage",
+            description = """
+                    Answered with 501 once the identifier resolves, and 404 when it does not.""",
+            operationId = "outagesDelete")
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = """
+                    No outage has that identifier. The response has no body."""),
+            @ApiResponse(responseCode = "501", description = """
+                    Outages do not support deletion. The response has no body.""")
+    })
+    public Response delete(final SecurityContext securityContext, final UriInfo uriInfo,
+            @Parameter(description = """
+                    Database identifier of the outage.""",
+                    required = true, example = "900009")
+            final Integer id) {
+        return super.delete(securityContext, uriInfo, id);
+    }
 }

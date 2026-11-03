@@ -200,7 +200,7 @@
       </div>
       <div class="card-body">
         <ul class="list-unstyled mb-0">
-            <li><a href="admin/sched-outages/index.jsp">Configure Scheduled Outages</a></li>
+            <li><a href="ui/index.html#/scheduled-outages">Configure Scheduled Outages</a></li>
             <li><a href="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
             <%=getAdminPageNavEntries("service-monitoring")%>
         </ul>
@@ -226,9 +226,9 @@
       </div>
       <div class="card-body">
         <ul class="list-unstyled mb-0">
-            <li><a href="locations/index.jsp">Manage Monitoring Locations</a></li>
+            <li><a href="ui/index.html#/distributed-monitoring?tab=locations">Manage Monitoring Locations</a></li>
             <li><a href="admin/applications.htm">Manage Applications</a></li>
-            <li><a href="minion/index.jsp">Manage Minions</a></li>
+            <li><a href="ui/index.html#/distributed-monitoring?tab=minions">Manage Minions</a></li>
         </ul>
       </div> <!-- card-body -->
     </div> <!-- panel -->

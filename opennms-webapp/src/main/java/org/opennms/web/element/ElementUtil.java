@@ -917,7 +917,7 @@ public abstract class ElementUtil {
     		nodeId = Integer.parseInt(request.getParameter("node"));
     	} catch (NumberFormatException nfe) {
     		throw new ElementIdNotFoundException("Wrong type for parameter \"node\" (should be integer)",
-    					request.getParameter("node"), "node", "element/node.jsp", "node", "element/nodeList.jsp");
+    					request.getParameter("node"), "node", "element/node.jsp", "node", "ui/#/nodes");
     	}
     	services = NetworkElementFactory.getInstance(servletContext).getServicesOnNode(nodeId, serviceId);
     	return services;

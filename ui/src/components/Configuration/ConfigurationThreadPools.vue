@@ -9,10 +9,10 @@
       <div class="title-flex">
         <div class="title">Thread Pools</div>
         <div v-if="!threadPoolsActive" class="chip-list">
-          <PChip v-if="unTouchedThreadPoolData.importThreads" :label="`${unTouchedThreadPoolData.importThreads} Import Threads`" />
-          <PChip v-if="unTouchedThreadPoolData.scanThreads" :label="`${unTouchedThreadPoolData.scanThreads} Scan Threads`" />
-          <PChip v-if="unTouchedThreadPoolData.rescanThreads" :label="`${unTouchedThreadPoolData.rescanThreads} Rescan Threads`" />
-          <PChip v-if="unTouchedThreadPoolData.writeThreads" :label="`${unTouchedThreadPoolData.writeThreads} Write Threads`" />
+          <OnmsChip v-if="unTouchedThreadPoolData.importThreads" :label="`${unTouchedThreadPoolData.importThreads} Import Threads`" />
+          <OnmsChip v-if="unTouchedThreadPoolData.scanThreads" :label="`${unTouchedThreadPoolData.scanThreads} Scan Threads`" />
+          <OnmsChip v-if="unTouchedThreadPoolData.rescanThreads" :label="`${unTouchedThreadPoolData.rescanThreads} Rescan Threads`" />
+          <OnmsChip v-if="unTouchedThreadPoolData.writeThreads" :label="`${unTouchedThreadPoolData.writeThreads} Write Threads`" />
         </div>
       </div>
     </template>
@@ -22,7 +22,7 @@
         values. To adjust them, type a new number in the field or use the up/down arrows to select a value.
       </p>
       <FormField label="Import" :error="getError('importThreads')" hint="Number of threads to allocate for requisition import tasks.">
-        <PInputText
+        <OnmsInputText
           type="number"
           :invalid="Boolean(getError('importThreads'))"
           v-model="threadPoolData.importThreads"
@@ -30,7 +30,7 @@
         />
       </FormField>
       <FormField label="Scan" :error="getError('scanThreads')" hint="Number of threads to allocate for manual scanning tasks.">
-        <PInputText
+        <OnmsInputText
           type="number"
           :invalid="Boolean(getError('scanThreads'))"
           v-model="threadPoolData.scanThreads"
@@ -38,7 +38,7 @@
         />
       </FormField>
       <FormField label="Rescan" :error="getError('rescanThreads')" hint="Number of threads to allocate for scheduled rescanning tasks.">
-        <PInputText
+        <OnmsInputText
           type="number"
           :invalid="Boolean(getError('rescanThreads'))"
           v-model="threadPoolData.rescanThreads"
@@ -46,14 +46,14 @@
         />
       </FormField>
       <FormField class="last-input" label="Write" :error="getError('writeThreads')" hint="Number of threads to allocate for writing to the database.">
-        <PInputText
+        <OnmsInputText
           type="number"
           :invalid="Boolean(getError('writeThreads'))"
           v-model="threadPoolData.writeThreads"
           @keypress="enterCheck"
         />
       </FormField>
-      <PButton
+      <OnmsButton
         label="Update Thread Pools"
         :loading="loading"
         :disabled="loading"
@@ -71,21 +71,14 @@ import { computed, reactive, ref } from 'vue'
 
 import { useConfigurationStore } from '@/stores/configurationStore'
 
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
-import Chip from 'primevue/chip'
+import { OnmsButton, OnmsChip, OnmsInputText } from '@opennms/onms-ui'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 import FormField from '@/components/Common/FormField.vue'
-import { isEqual as _isEqual } from 'lodash'
 
 import { putProvisionDService } from '@/services/configurationService'
 import useSnackbar from '@/composables/useSnackbar'
 import { threadPoolKeys } from './copy/threadPoolKeys'
 import { ConfigurationHelper } from './ConfigurationHelper'
-
-const PButton = Button
-const PInputText = InputText
-const PChip = Chip
 
 const configurationStore = useConfigurationStore()
 const { showSnackBar } = useSnackbar()
@@ -133,21 +126,6 @@ const updateThreadpools = async () => {
   // If there are no errors.
   if (Object.keys(threadPoolsErrors.value).length === 0) {
     try {
-      // reduce provisionD data object to thread pool sizes, in order to determine whether thread pool sizes value has changed, upon update button clicked
-      const reducedUpdatedProvisionDData = threadPoolKeys.reduce((acc, key) => {
-        const obj: Record<string, string> = {}
-
-        for (let elem in updatedProvisionDData) {
-          if (elem === key) {
-            obj[elem] = updatedProvisionDData[elem]
-            break
-          }
-        }
-
-        return { ...acc, ...obj }
-      }, {})
-      const haveThreadPoolValuesChanged = !_isEqual(currentThreadpoolState, reducedUpdatedProvisionDData)
-
       // Set Update State
       threadPoolKeys.forEach((key) => {
         if (updatedProvisionDData?.[key]) {
@@ -162,20 +140,11 @@ const updateThreadpools = async () => {
       // Redownload + Populate Data.
       await configurationStore.getProvisionDService()
 
-      let messageUpdateSuccess = 'Thread pool data saved.'
-
-      if (!haveThreadPoolValuesChanged) {
-        showSnackBar({
-          msg: messageUpdateSuccess
-        })
-      } else {
-        messageUpdateSuccess += ' Restart OpenNMS for this change to take effect.'
-
-        showSnackBar({
-          msg: messageUpdateSuccess,
-          timeout: 10000
-        })
-      }
+      // Provisiond applies new thread pool sizes immediately on the reload
+      // event the config manager fires, so no restart is needed.
+      showSnackBar({
+        msg: 'Thread pool data saved.'
+      })
     } catch (err) {
       showSnackBar({
         msg: `Thread pool data not saved. (${err})`,
@@ -216,6 +185,11 @@ const getError = (key: string) => {
 >
 @import '@/styles/onms-typography';
 
+// Local replacement for the removed FeatherDS global spacing utility
+// (--onms-spacing-xl mirrors the original FeatherDS value).
+.pb-xl {
+  padding-bottom: var(--onms-spacing-xl);
+}
 .title {
   @include onms-headline3();
   margin-right: 16px;

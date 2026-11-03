@@ -26,13 +26,16 @@ import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.xml.bind.annotation.XmlRootElement;
 
 
 @XmlRootElement(name = "application-edge")
 @XmlAccessorType(XmlAccessType.NONE)
+@Schema(description = "An edge pointing at an application.")
 public class ApplicationEdgeResponseDTO extends AbstractEdgeResponseDTO {
 
+    @Schema(description = "The application this edge points at.")
     @XmlElement(name = "application")
     private ApplicationResponseDTO application;
 

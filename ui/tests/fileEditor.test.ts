@@ -28,7 +28,7 @@ test('Creating folders', () => {
   const sample: string[] = [
     'alarmd/drools-rules.d/alarmd.drl',
     'alarmd/drools-rules.d/situations.drl',
-    'ami-config.xml'
+    'categories.xml'
   ]
 
   const result: IFile = {
@@ -55,8 +55,8 @@ test('Creating folders', () => {
         ]
       },
       {
-        name: 'ami-config.xml',
-        fullPath: 'ami-config.xml'
+        name: 'categories.xml',
+        fullPath: 'categories.xml'
       }
     ]
   }

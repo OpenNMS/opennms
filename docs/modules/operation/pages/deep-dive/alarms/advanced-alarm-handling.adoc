@@ -1,7 +1,7 @@
 = Advanced Alarm Handling
 :description: Advanced ways to handle alarms in {page-component-title}: advanced alarm handling.
 
-This section covers Advanced Alarm Handling using Drools. Drools is a Business Logic language that can enable {page-component-title} to handle advanced alarm handling scenarios that are specific to your business needs and the lifecycle of alarms in your environment.  Out of the box, {page-component-title} uses drools for basic alarm correlation but more advanced correlation and management is possible with customization.
+This section covers Advanced Alarm Handling using Drools. Drools is a business logic language that can enable {page-component-title} to handle advanced alarm handling scenarios that are specific to your business needs and the lifecycle of alarms in your environment.  Out of the box, {page-component-title} uses Drools for basic alarm correlation but more advanced correlation and management is possible with customization.
 
 [[ga-Included-alarm-handling]]
 == Included Alarm handling

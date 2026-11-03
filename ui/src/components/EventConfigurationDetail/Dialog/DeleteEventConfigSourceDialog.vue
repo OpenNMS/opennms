@@ -1,5 +1,5 @@
 <template>
-  <ConfirmationDialog
+  <OnmsConfirmationDialog
     :visible="store.deleteEventConfigSourceDialogState.visible"
     title="Delete Event Configuration Source"
     action-button-text="Delete"
@@ -18,13 +18,13 @@
       </p>
       <p><strong>Are you sure you want to proceed?</strong></p>
     </template>
-  </ConfirmationDialog>
+  </OnmsConfirmationDialog>
 </template>
 
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
 
-import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
+import { OnmsConfirmationDialog } from '@opennms/onms-ui'
 import useSnackbar from '@/composables/useSnackbar'
 import { deleteEventConfigSourceById } from '@/services/eventConfigService'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'

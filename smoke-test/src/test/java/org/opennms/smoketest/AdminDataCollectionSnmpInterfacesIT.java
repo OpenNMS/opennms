@@ -125,7 +125,7 @@ public class AdminDataCollectionSnmpInterfacesIT extends OpenNMSSeleniumIT {
         // 1 column: collect
         List<WebElement> collect = driver.findElements(By.cssSelector("onms-interfaces-config td input"));
         Assert.assertNotNull(collect);
-        Assert.assertEquals(4, collect.size());
+        Assert.assertEquals(8, collect.size());
         // 1st Row: collection enabled
         Assert.assertEquals("1", interfaces.get(0).getText());
         Assert.assertEquals("eth1", interfaces.get(3).getText());

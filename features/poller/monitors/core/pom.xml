@@ -150,6 +150,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>jakarta.mail</groupId>
+      <artifactId>jakarta.mail-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jcifs-dependencies</artifactId>
       <type>pom</type>

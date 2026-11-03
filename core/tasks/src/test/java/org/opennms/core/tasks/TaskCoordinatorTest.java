@@ -22,6 +22,8 @@
 package org.opennms.core.tasks;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,5 +96,24 @@ public class TaskCoordinatorTest {
         }
         latch.await();
         assertEquals("0123456789", result.toString());
+    }
+
+    /**
+     * getExecutor() falls back to the default executor for unknown names, which is
+     * what task scheduling wants. getRegisteredExecutor() must not, so callers that
+     * need to act on a specific pool can tell a missing registration apart.
+     */
+    @Test
+    public void testGetRegisteredExecutorDoesNotFallBackToDefault() {
+        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator("Provisiond");
+        coordinator.setDefaultExecutor("scan");
+        Executor scan = Executors.newSingleThreadExecutor();
+        Map<String, Executor> executors = new HashMap<>();
+        executors.put("scan", scan);
+        coordinator.setExecutors(executors);
+
+        assertSame(scan, coordinator.getExecutor("import"));
+        assertSame(scan, coordinator.getRegisteredExecutor("scan"));
+        assertNull(coordinator.getRegisteredExecutor("import"));
     }
 }

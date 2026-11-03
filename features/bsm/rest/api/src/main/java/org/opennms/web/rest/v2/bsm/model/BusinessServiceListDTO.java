@@ -34,6 +34,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.web.rest.api.ResourceLocation;
 import org.opennms.web.rest.api.ResourceLocationFactory;
@@ -43,6 +44,7 @@ import org.opennms.web.rest.api.support.JsonResourceLocationListSerializationPro
 
 @XmlRootElement(name = "business-services")
 @JsonRootName("business-services")
+@Schema(description = "Resource locations of the defined business services, one link per service.")
 public class BusinessServiceListDTO {
     private List<ResourceLocation> services;
 

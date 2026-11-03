@@ -5,9 +5,9 @@
 
 WARNING: This section is under development.
 Examples or code snippets may not fully work.
-However, they are conceptionally correct and should point in the right direction.
+However, they are conceptually correct and should point in the right direction.
 
-An `InfoPanelItem` object defines dach element in the Info Panel.
+An `InfoPanelItem` object defines each element in the Info Panel.
 
 All available `InfoPanelItem` objects are sorted by the order.
 This lets you arrange the items in a custom order.

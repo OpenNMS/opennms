@@ -37,9 +37,13 @@ import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.netmgt.model.events.EventConfEventOrderPayload;
+import org.opennms.netmgt.model.events.EventConfSourceOrderPayload;
 import org.opennms.web.rest.v2.model.AddEventConfSourceRequest;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
+import org.opennms.web.rest.v2.model.EventConfEventMoveRequest;
+import org.opennms.web.rest.v2.model.EventConfEventSummaryDto;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.opennms.web.rest.v2.model.SourceNameDto;
 import org.slf4j.Logger;
@@ -60,15 +64,13 @@ import java.io.Serializable;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Date;
-import java.util.Optional;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -76,6 +78,9 @@ import java.util.stream.Collectors;
 public class EventConfRestService implements EventConfRestApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventConfRestService.class);
+
+    /** "file" label of the upload report entry describing a failed eventconf.xml ordering step. */
+    static final String EVENTCONF_ORDER_STEP = "eventconf.xml (source order)";
 
     private static final int VENDOR_MAX_LENGTH = 128;
 
@@ -92,15 +97,20 @@ public class EventConfRestService implements EventConfRestApi {
     public Response uploadEventConfFiles(final List<Attachment> attachments, final SecurityContext securityContext) {
         final String username = getUsername(securityContext);
         final Date now = new Date();
-        int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
-
+        final List<Map<String, Object>> successList = new ArrayList<>();
+        final List<Map<String, Object>> errorList = new ArrayList<>();
         final Map<String, Attachment> fileMap = new LinkedHashMap<>();
         for (Attachment attachment : attachments) {
-            String filename = attachment.getContentDisposition().getParameter("filename");
+            // a dropped attachment must show up in the report: a 200 with files missing from
+            // both lists reads as success to the client
+            String filename = attachment.getContentDisposition() == null
+                    ? null : attachment.getContentDisposition().getParameter("filename");
             String basename = stripPathAndExtension(filename);
 
             if (basename == null || basename.isEmpty()) {
                 LOG.warn("Skipping attachment with invalid filename: {}", filename);
+                errorList.add(Map.of("file", String.valueOf(filename),
+                        "error", "The attachment carries no usable filename and was not stored"));
                 continue;
             }
 
@@ -108,19 +118,19 @@ public class EventConfRestService implements EventConfRestApi {
                 String existingFilename = fileMap.get(basename).getContentDisposition().getParameter("filename");
                 LOG.warn("Duplicate basename detected: '{}' and '{}' resolve to same name '{}'. Keeping first file.",
                         existingFilename, filename, basename);
+                errorList.add(Map.of("file", filename,
+                        "error", "Resolves to the same name as '" + existingFilename + "'; only the first file was stored"));
                 continue;
             }
 
             fileMap.put(basename, attachment);
         }
 
-        // Detect and parse eventconf.xml for file ordering
-        Map<String, Integer> fileOrderMap = buildFileOrderFromEventConf(fileMap);
+        // An eventconf.xml in the upload dictates the source order; it is applied after the files are
+        // persisted (see reorderSourcesFromEventConf), so it is not stored as a source itself.
+        final ManifestOrder manifest = parseEventConfOrder(fileMap);
 
         List<String> orderedFiles = new ArrayList<>(fileMap.keySet());
-
-        final List<Map<String, Object>> successList = new ArrayList<>();
-        final List<Map<String, Object>> errorList = new ArrayList<>();
 
         final long dbStartTime = System.currentTimeMillis();
         for (final String fileName : orderedFiles) {
@@ -138,128 +148,97 @@ public class EventConfRestService implements EventConfRestApi {
             }
 
             try {
-                final EventConfSource existingSource = eventConfSourceDao.findByName(fileName);
-                final int fileOrder;
-                if (fileOrderMap != null && fileOrderMap.containsKey(fileName)) {
-                    fileOrder = fileOrderMap.get(fileName);
-                } else if (existingSource != null) {
-                    fileOrder = existingSource.getFileOrder();
-                } else {
-                    fileOrder = ++maxFileOrder;
-                }
-
+                // the source position is decided inside the persisting transaction: an existing source keeps
+                // its committed position, a new one is allocated there
                 eventConfPersistenceService.persistEventConfFile(
                         fileEvents,
-                        buildMetadata(fileName, "", fileEvents, fileOrder, username, now));
+                        buildMetadata(fileName, "", fileEvents, username, now));
                 successList.add(buildSuccessResponse(fileName, fileEvents));
             } catch (Exception e) {
                 errorList.add(buildErrorResponse(fileName, e));
             }
         }
 
-        // Update fileOrder for existing DB sources not in this upload
-        if (fileOrderMap != null) {
-            for (Map.Entry<String, Integer> entry : fileOrderMap.entrySet()) {
-                if (!fileMap.containsKey(entry.getKey())) {
-                    eventConfPersistenceService.updateFileOrder(entry.getKey(), entry.getValue());
-                }
-            }
-        }
-
         final long dbEndTime = System.currentTimeMillis();
         LOG.info("Time to add {} files to DB: {} ms", orderedFiles.size(), (dbEndTime - dbStartTime));
 
+        boolean orderApplied = manifest.failure == null;
+        if (manifest.failure != null) {
+            errorList.add(buildErrorResponse(EVENTCONF_ORDER_STEP, manifest.failure));
+        }
+        if (manifest.note != null) {
+            // a consumed manifest that produced no order must still show up in the report
+            successList.add(Map.of("file", EVENTCONF_ORDER_STEP, "message", manifest.note));
+        }
+        if (manifest.order != null) {
+            try {
+                eventConfPersistenceService.reorderSourcesFromEventConf(manifest.order);
+                // the report says the order step happened: a manifest-only upload is otherwise empty
+                successList.add(Map.of("file", EVENTCONF_ORDER_STEP,
+                        "message", "Source order applied (" + manifest.order.size() + " entries)"));
+            } catch (Exception e) {
+                // The files above are committed, but eventd would now evaluate them in upload order, not in
+                // the order the eventconf.xml asked for: that is a failed request, not a footnote.
+                LOG.error("Uploaded files were persisted but the eventconf.xml source order could not be applied", e);
+                errorList.add(buildErrorResponse(EVENTCONF_ORDER_STEP, e));
+                orderApplied = false;
+            }
+        }
+
         eventConfPersistenceService.reloadEventsIntoMemory();
 
-        return Response.ok(Map.of("success", successList, "errors", errorList)).build();
+        final Map<String, Object> report = Map.of("success", successList, "errors", errorList);
+        return (orderApplied ? Response.ok(report) : Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(report)).build();
     }
 
     /**
-     * If an eventconf.xml is present in the upload, parse its event-file entries
-     * and build a fileOrder map for all sources (uploaded + existing in DB).
-     * Referenced sources (explicitly listed in eventconf.xml) follow eventconf.xml order
-     * (first entry = searched first among referenced).
-     * Unreferenced sources (sources in DB but not in eventconf.xml, or files included in the
-     * upload but not explicitly listed in eventconf.xml) get higher fileOrder (searched before
-     * referenced), consistent with normal upload behavior where new files get highest priority.
-     * Returns null if no eventconf.xml is present or parsing fails.
+     * If an eventconf.xml is part of the upload, removes it from the file map and returns the source
+     * names of its {@code <event-file>} entries in file order (first = evaluated first).
+     * Returns null when there is no eventconf.xml, it lists no files, or it cannot be parsed
+     * (in which case it is left in the map so it shows up in the error list).
      */
-    private Map<String, Integer> buildFileOrderFromEventConf(final Map<String, Attachment> fileMap) {
+    /** Result of looking for an ordering manifest (eventconf.xml) in an upload. */
+    private static final class ManifestOrder {
+        static final ManifestOrder ABSENT = new ManifestOrder(null, null, null);
+        final List<String> order;   // null unless a usable order was parsed
+        final Exception failure;    // non-null when a manifest was present but unparseable
+        final String note;          // non-null when a manifest was consumed without producing an order
+
+        private ManifestOrder(final List<String> order, final Exception failure, final String note) {
+            this.order = order;
+            this.failure = failure;
+            this.note = note;
+        }
+    }
+
+    private ManifestOrder parseEventConfOrder(final Map<String, Attachment> fileMap) {
         final Attachment eventConfAttachment = fileMap.get("eventconf");
         if (eventConfAttachment == null) {
-            return null;
+            return ManifestOrder.ABSENT;
         }
-        // Remove eventconf from fileMap only after confirming it exists
         fileMap.remove("eventconf");
-
         try (InputStream stream = eventConfAttachment.getObject(InputStream.class)) {
             final Events eventConfEvents = parseEventFile(new ByteArrayInputStream(stream.readAllBytes()));
             final List<String> eventConfOrder = new ArrayList<>();
-            final Set<String> eventConfOrderSet = new HashSet<>();
+            final Set<String> seen = new HashSet<>();
             for (String eventFile : eventConfEvents.getEventFiles()) {
                 String name = stripPathAndExtension(eventFile);
-                if (name != null && !name.isEmpty() && eventConfOrderSet.add(name)) {
+                if (name != null && !name.isEmpty() && seen.add(name)) {
                     eventConfOrder.add(name);
                 }
             }
-
             if (eventConfOrder.isEmpty()) {
                 LOG.info("eventconf.xml contained no <event-file> entries, falling back to default ordering");
-                return null;
+                return new ManifestOrder(null, null,
+                        "eventconf.xml contained no <event-file> entries; no order was applied");
             }
-
-            // Collect all known source names: uploaded files + existing DB sources
-            final Set<String> allSourceNames = new LinkedHashSet<>(fileMap.keySet());
-            allSourceNames.addAll(eventConfSourceDao.findAllNames());
-
-            // Unreferenced sources (sources in DB but not in eventconf.xml): preserve their existing DB order
-            final List<EventConfSource> existingByOrder = eventConfSourceDao.findAllByFileOrder();
-            final List<String> unreferencedSorted = new ArrayList<>();
-            final Set<String> unreferencedSet = new HashSet<>();
-            for (EventConfSource src : existingByOrder) {
-                if (!eventConfOrderSet.contains(src.getName())) {
-                    unreferencedSorted.add(src.getName());
-                    unreferencedSet.add(src.getName());
-                }
-            }
-            // Add any newly uploaded unreferenced files (not in eventconf.xml and not in DB yet) at the end
-            for (String name : fileMap.keySet()) {
-                if (!eventConfOrderSet.contains(name) && !unreferencedSet.contains(name)) {
-                    unreferencedSorted.add(name);
-                }
-            }
-
-            final Map<String, Integer> fileOrderMap = new HashMap<>();
-            // Reserve fileOrder 1 for catch-all (always searched last)
-            final String CATCH_ALL = "opennms.catch-all.events";
-            int nextOrder = 2;
-
-            // Referenced sources in eventconf.xml order: last entry gets lowest fileOrder (searched last)
-            // first entry gets highest fileOrder among referenced (searched first among referenced)
-            // catch-all is excluded — it stays pinned at fileOrder 1
-            for (int i = eventConfOrder.size() - 1; i >= 0; i--) {
-                String name = eventConfOrder.get(i);
-                if (!CATCH_ALL.equals(name) && allSourceNames.contains(name)) {
-                    fileOrderMap.put(name, nextOrder++);
-                }
-            }
-
-            // Unreferenced sources get higher fileOrder (searched first),
-            // consistent with uploads without eventconf.xml where new files get highest priority.
-            // Existing unreferenced preserve their relative order; newly uploaded ones go last (highest priority).
-            for (String name : unreferencedSorted) {
-                if (!CATCH_ALL.equals(name)) {
-                    fileOrderMap.put(name, nextOrder++);
-                }
-            }
-
             LOG.info("Parsed eventconf.xml with {} event-file entries for ordering", eventConfOrder.size());
-            return fileOrderMap;
+            return new ManifestOrder(eventConfOrder, null, null);
         } catch (Exception e) {
-            LOG.warn("Failed to parse eventconf.xml for file ordering, falling back to default order: {}", e.getMessage());
-            // Re-add eventconf to fileMap so it appears in the error list
-            fileMap.put("eventconf", eventConfAttachment);
-            return null;
+            // A manifest was supplied but cannot be honored: that fails the request (see the caller),
+            // it must not silently degrade into "default order"
+            LOG.error("Failed to parse the uploaded eventconf.xml, its source order cannot be applied", e);
+            return new ManifestOrder(null, e, null);
         }
     }
 
@@ -300,7 +279,7 @@ public class EventConfRestService implements EventConfRestApi {
         }
 
         try {
-            eventConfPersistenceService.updateSourceAndEventEnabled(payload);
+            eventConfPersistenceService.updateSourceAndEventEnabled(payload, getUsername(securityContext));
             eventConfPersistenceService.reloadEventsIntoMemory();
             return Response.ok().entity("EventConf sources updated successfully.").build();
 
@@ -316,9 +295,10 @@ public class EventConfRestService implements EventConfRestApi {
                                                String eventOrder, Integer totalRecords, Integer offset,
                                                Integer limit, SecurityContext securityContext) {
 
-        // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0 or limit < 1
+        // Return 400 Bad Request on a missing/invalid sourceId or a negative offset/limit;
+        // a missing or zero limit means the whole result set in one page
         if (Objects.requireNonNullElse(sourceId, 0L) <= 0L || Objects.requireNonNullElse(offset, 0) < 0
-                || Objects.requireNonNullElse(limit, 0) < 1) {
+                || Objects.requireNonNullElse(limit, 0) < 0) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(Map.of("error", "Invalid sourceId/offset/limit values"))
                     .build();
@@ -387,12 +367,14 @@ public class EventConfRestService implements EventConfRestApi {
         try {
             eventConfPersistenceService.deleteEventConfSources(payload);
             eventConfPersistenceService.reloadEventsIntoMemory();
-            return Response.ok().entity("EventConf sources deleted successfully.").build();
+            return Response.ok().entity(Map.of("message", "EventConf sources deleted successfully.")).build();
 
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", ex.getMessage())).build();
         } catch (EntityNotFoundException ex) {
-            return Response.status(Response.Status.NOT_FOUND).entity("One or more sourceIds were not found: " + ex.getMessage()).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(Map.of("error", "One or more sourceIds were not found: " + ex.getMessage())).build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Map.of("error", "Unexpected error occurred: " + ex.getMessage())).build();
         }
 
     }
@@ -409,7 +391,7 @@ public class EventConfRestService implements EventConfRestApi {
         }
 
         try {
-            eventConfPersistenceService.enableDisableConfSourcesEvents(sourceId, payload);
+            eventConfPersistenceService.enableDisableConfSourcesEvents(sourceId, payload, getUsername(securityContext));
             eventConfPersistenceService.reloadEventsIntoMemory();
             return Response.ok().entity("EventConfEvents updated successfully.").build();
 
@@ -465,45 +447,101 @@ public class EventConfRestService implements EventConfRestApi {
         }
     }
 
+    @Override
+    public Response getEventConfSourceEventsByUei(Long sourceId, String uei, SecurityContext securityContext) {
+        if (sourceId == null || sourceId <= 0) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid sourceId: must be a positive number").build();
+        }
+        if (uei == null || uei.isBlank()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Query parameter 'uei' is required").build();
+        }
+        try {
+            final List<EventConfEventDto> events =
+                    EventConfEventDto.fromEntity(eventConfPersistenceService.findEventsBySourceIdAndUei(sourceId, uei));
+            return Response.ok(events).build();
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity(ex.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response upsertEventConfSourceEvent(Long sourceId, Event event, SecurityContext securityContext) throws Exception {
+        try {
+            validateAddEvent(sourceId, event);
+            final String username = getUsername(securityContext);
+            final var result = eventConfPersistenceService.upsertEventConfSourceEvent(sourceId, username, event);
+            if (result.outcome != EventConfPersistenceService.EventUpsertResult.Outcome.UNCHANGED) {
+                eventConfPersistenceService.reloadEventsIntoMemory();
+            }
+            final var created = result.outcome == EventConfPersistenceService.EventUpsertResult.Outcome.CREATED;
+            return Response
+                    .status(created ? Response.Status.CREATED : Response.Status.OK)
+                    .entity(Map.of(
+                            "outcome", result.outcome.name().toLowerCase(),
+                            "id", result.id,
+                            "eventOrder", result.eventOrder))
+                    .build();
+        } catch (EntityNotFoundException ex) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity("Source with ID " + sourceId + " not found")
+                    .build();
+        } catch (IllegalArgumentException ex) {
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid event payload: " + ex.getMessage())
+                    .build();
+        }
+    }
+
 
     
     @Override
     public Response updateEventConfEvent(Long sourceId, Long eventId, EventConfEventEditRequest payload, SecurityContext securityContext) throws Exception {
-        if (payload == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        if (payload == null || payload.getEvent() == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "Request body must carry an 'event' definition")).build();
+        }
+        if (payload.getEnabled() == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "The 'enabled' flag must be provided (true/false).")).build();
         }
         try {
-            eventConfPersistenceService.updateEventConfEvent(sourceId,eventId, payload);
+            eventConfPersistenceService.updateEventConfEvent(sourceId, eventId, payload, getUsername(securityContext));
             eventConfPersistenceService.reloadEventsIntoMemory();
-            return Response.ok().entity("EventConfEvent updated successfully.").build();
+            return Response.ok().entity(Map.of("message", "EventConfEvent updated successfully.")).build();
 
         } catch (EntityNotFoundException ex) {
-            return Response.status(Response.Status.NOT_FOUND).entity("eventConfEvent were not found: " + ex.getMessage()).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(Map.of("error", ex.getMessage())).build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Map.of("error", "Unexpected error occurred: " + ex.getMessage())).build();
         }
     }
 
     @Override
     public Response deleteEventsForSource(Long sourceId, EventConfEventDeletePayload payload, SecurityContext securityContext) throws Exception {
         if (sourceId == null || sourceId <= 0) {
-            throw new IllegalArgumentException("Invalid sourceId: must be a positive number");
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "Invalid sourceId: must be a positive number")).build();
         }
 
         if (payload == null || payload.getEventIds() == null || payload.getEventIds().isEmpty()) {
-            throw new IllegalArgumentException("Event IDs to delete must not be null or empty");
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "Event IDs to delete must not be null or empty")).build();
         }
 
         try {
             eventConfPersistenceService.deleteEventsForSource(sourceId, payload);
             eventConfPersistenceService.reloadEventsIntoMemory();
-            return Response.ok().entity("EventConf events deleted successfully.").build();
+            return Response.ok().entity(Map.of("message", "EventConf events deleted successfully.")).build();
 
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", ex.getMessage())).build();
         } catch (EntityNotFoundException ex) {
-            return Response.status(Response.Status.NOT_FOUND).entity("One or more eventIds were not found: " + ex.getMessage())
+            return Response.status(Response.Status.NOT_FOUND).entity(Map.of("error", "One or more eventIds were not found: " + ex.getMessage()))
                     .build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage())
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Map.of("error", "Unexpected error occurred: " + ex.getMessage()))
                     .build();
         }
     }
@@ -540,9 +578,12 @@ public class EventConfRestService implements EventConfRestApi {
             }
         };
 
+        // the source name is user-supplied: quotes, backslashes and control characters must not
+        // reach the header, where they would smuggle parameters or break the response
+        final String safeName = eventConfSource.getName().replaceAll("[\\p{Cntrl}\"\\\\]", "_");
         return Response.ok(stream).type(MediaType.APPLICATION_XML)
                 .header("Content-Disposition", "attachment; filename=\"%s.xml\""
-                        .formatted(eventConfSource.getName())).build();
+                        .formatted(safeName)).build();
     }
 
     @Override
@@ -615,12 +656,6 @@ public class EventConfRestService implements EventConfRestApi {
                         .build();
             }
 
-            int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
-            int newOrder = maxFileOrder + 1;
-
-            LOG.debug("Assigned fileOrder={} for new EventConfSource name='{}'",
-                    newOrder, request.getName());
-
             EventConfSource eventConfSource = new EventConfSource();
             eventConfSource.setName(request.getName());
             eventConfSource.setDescription(request.getDescription());
@@ -629,8 +664,8 @@ public class EventConfRestService implements EventConfRestApi {
             eventConfSource.setEventCount(0);
             eventConfSource.setCreatedTime(now);
             eventConfSource.setLastModified(now);
-            eventConfSource.setFileOrder(newOrder);
             eventConfSource.setUploadedBy(username);
+            // fileOrder is allocated by the service inside its transaction (max + 1, unique)
 
             LOG.debug("Persisting EventConfSource name='{}'", request.getName());
 
@@ -667,6 +702,106 @@ public class EventConfRestService implements EventConfRestApi {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Unexpected error occurred while creating EventConfSource")
                     .build();
+        }
+    }
+
+    @Override
+    public Response getOrderedEventConfSources(SecurityContext securityContext) {
+        try {
+            final List<EventConfSource> sources = new ArrayList<>(eventConfSourceDao.findAllByFileOrder());
+            Collections.reverse(sources); // highest fileOrder = evaluated first; catch-all (1) ends up last
+            return Response.ok(EventConfSourceDto.fromEntity(sources)).build();
+        } catch (Exception e) {
+            LOG.error("Failed to fetch the ordered event-conf sources", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Failed to fetch the ordered EventConf sources: " + e.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response updateEventConfSourcesOrder(final EventConfSourceOrderPayload payload, SecurityContext securityContext) throws Exception {
+        if (payload == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+        if (payload.getSourceIds() == null || payload.getSourceIds().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("At least one sourceId must be provided.").build();
+        }
+
+        try {
+            final int updated = eventConfPersistenceService.reorderEventConfSources(payload.getSourceIds());
+            eventConfPersistenceService.reloadEventsIntoMemory();
+            return Response.ok(Map.of("updated", updated)).build();
+
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity(ex.getMessage()).build();
+        } catch (Exception ex) {
+            LOG.error("Failed to reorder the event-conf sources", ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response moveEventConfSourceEvent(final Long sourceId, final Long eventId, final EventConfEventMoveRequest request,
+                                             SecurityContext securityContext) throws Exception {
+        if (request == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+
+        try {
+            final int eventOrder = eventConfPersistenceService.moveEventConfEvent(sourceId, eventId, request);
+            eventConfPersistenceService.reloadEventsIntoMemory();
+            return Response.ok(Map.of("id", eventId, "eventOrder", eventOrder)).build();
+
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity(ex.getMessage()).build();
+        } catch (Exception ex) {
+            LOG.error("Failed to move event {} of source {}", eventId, sourceId, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response getOrderedEventConfSourceEvents(final Long sourceId, SecurityContext securityContext) {
+        try {
+            if (sourceId == null || sourceId <= 0 || eventConfSourceDao.get(sourceId) == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("EventConfSource not found for id: " + sourceId).build();
+            }
+            final List<Object[]> summaries = eventConfPersistenceService.findEventOrderSummaries(sourceId);
+            return Response.ok(EventConfEventSummaryDto.fromRows(summaries)).build();
+        } catch (Exception e) {
+            LOG.error("Failed to fetch the ordered events of source {}", sourceId, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Failed to fetch the ordered events: " + e.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response updateEventConfSourceEventsOrder(final Long sourceId, final EventConfEventOrderPayload payload,
+                                                     SecurityContext securityContext) throws Exception {
+        if (payload == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+        if (payload.getEventIds() == null || payload.getEventIds().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("At least one eventId must be provided.").build();
+        }
+
+        try {
+            final int updated = eventConfPersistenceService.reorderEventConfEvents(sourceId, payload.getEventIds());
+            eventConfPersistenceService.reloadEventsIntoMemory();
+            return Response.ok(Map.of("updated", updated)).build();
+
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity(ex.getMessage()).build();
+        } catch (Exception ex) {
+            LOG.error("Failed to reorder the events of source {}", sourceId, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
         }
     }
 
@@ -731,7 +866,8 @@ public class EventConfRestService implements EventConfRestApi {
         List<Map<String, ? extends Serializable>> eventSummaries = events
                 .getEvents()
                 .stream()
-                .map(e -> Map.of("uei", e.getUei(), "label", e.getEventLabel(), "description", e.getEventLabel(), "enabled", true))
+                .map(e -> Map.of("uei", e.getUei(), "label", e.getEventLabel(),
+                        "description", Objects.requireNonNullElse(e.getDescr(), ""), "enabled", true))
                 .collect(Collectors.toList());
         entry.put("events", eventSummaries);
 
@@ -745,12 +881,11 @@ public class EventConfRestService implements EventConfRestApi {
         return entry;
     }
 
-    private EventConfSourceMetadataDto buildMetadata(String fileName, String description, Events events, int fileOrder,
+    private EventConfSourceMetadataDto buildMetadata(String fileName, String description, Events events,
                                                      String username, Date now) {
         return new EventConfSourceMetadataDto.Builder()
                 .filename(fileName)
                 .eventCount(events.getEvents().size())
-                .fileOrder(fileOrder)
                 .username(username)
                 .now(now)
                 .vendor(StringUtils.substringBefore(fileName, "."))

@@ -5,11 +5,11 @@ import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import ChangeEventConfigEventStatusDialog from '@/components/EventConfigurationDetail/Dialog/ChangeEventConfigEventStatusDialog.vue'
 import { VENDOR_OPENNMS } from '@/lib/utils'
 
-// Stub the Common ConfirmationDialog wrapper so these tests exercise this
+// Stub the Common OnmsConfirmationDialog wrapper so these tests exercise this
 // component's logic via the wrapper's public API (props + ok/cancel events),
 // independent of the underlying dialog library.
 const ConfirmationDialogStub = {
-  name: 'ConfirmationDialog',
+  name: 'OnmsConfirmationDialog',
   template: '<div class="confirmation-dialog"><div class="modal-body"><slot name="content"></slot></div><button class="action-btn" @click="$emit(\'ok\')">{{ actionButtonText }}</button><button class="cancel-btn" @click="$emit(\'cancel\')">{{ cancelButtonText || \'Cancel\' }}</button></div>',
   props: ['visible', 'title', 'actionButtonText', 'cancelButtonText']
 }
@@ -39,7 +39,7 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          ConfirmationDialog: ConfirmationDialogStub
+          OnmsConfirmationDialog: ConfirmationDialogStub
         }
       }
     })
@@ -52,20 +52,20 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
 
   describe('Dialog Rendering', () => {
     it('renders dialog correctly with title', () => {
-      const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
+      const dialog = wrapper.findComponent({ name: 'OnmsConfirmationDialog' })
       expect(dialog.exists()).toBe(true)
       expect(dialog.props('title')).toBe('Change Event Configuration Event Status')
     })
 
-    it('renders ConfirmationDialog with visible prop true when dialog is visible', () => {
-      const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
+    it('renders OnmsConfirmationDialog with visible prop true when dialog is visible', () => {
+      const dialog = wrapper.findComponent({ name: 'OnmsConfirmationDialog' })
       expect(dialog.props('visible')).toBe(true)
     })
 
-    it('renders ConfirmationDialog with visible prop false when dialog is hidden', async () => {
+    it('renders OnmsConfirmationDialog with visible prop false when dialog is hidden', async () => {
       store.changeEventConfigEventStatusDialogState.visible = false
       await wrapper.vm.$nextTick()
-      const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
+      const dialog = wrapper.findComponent({ name: 'OnmsConfirmationDialog' })
       expect(dialog.props('visible')).toBe(false)
     })
 
@@ -271,7 +271,7 @@ describe('ChangeEventConfigEventStatusDialog.vue', () => {
 
   describe('Dialog Cancel Event', () => {
     it('calls hideChangeEventConfigEventStatusDialog when dialog emits cancel event', async () => {
-      const dialog = wrapper.findComponent({ name: 'ConfirmationDialog' })
+      const dialog = wrapper.findComponent({ name: 'OnmsConfirmationDialog' })
       await dialog.vm.$emit('cancel')
       expect(store.hideChangeEventConfigEventStatusDialog).toHaveBeenCalled()
     })

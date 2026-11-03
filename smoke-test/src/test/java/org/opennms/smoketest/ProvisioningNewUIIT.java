@@ -269,22 +269,11 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
             driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
         }
 
-        // Open the legacy nodes list page
-        driver.get(getBaseUrlInternal() + "opennms/");
-        clickMenuItem("Inventory", "Nodes (Legacy)");
-
-        try {
-            // Don't wait as long as usual for just the node page, it should be pretty quick
-            driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT / 2, TimeUnit.MILLISECONDS);
-            // If this is the only node on the system, we'll be sent directly to its node details page.
-            findElementByXpath("//div[@class='card-header']/span[text()='Availability']");
-        } catch (NoSuchElementException e) {
-            // If there are multiple nodes, we will be on the node list page, click through to the node
-            findElementByLink(NODE_LABEL).click();
-        } finally {
-            // Restore the implicitlyWait timeout
-            driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
-        }
+        // Navigate directly to this node's detail page. (The legacy node-list page, and its
+        // single-node auto-redirect, were removed in NMS-18217; we already know the node's
+        // foreignSource:foreignId here, so go straight to its detail page rather than relying
+        // on Vue table click timing.)
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=" + REQUISITION_NAME + ":" + NODE_FOREIGNID);
 
         waitUntil(elementToBeClickable(By.linkText("ICMP")));
         findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + NODE_IPADDR + "']");

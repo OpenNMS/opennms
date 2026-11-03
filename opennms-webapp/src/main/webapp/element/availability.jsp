@@ -220,7 +220,7 @@
 
     final List<String> schedOutages = new ArrayList<>();
 
-    ReadablePollOutagesDao pollOutagesDao = BeanUtils.getBean("pollerConfigContext", "pollOutagesDao",
+    ReadablePollOutagesDao pollOutagesDao = BeanUtils.getBean("daoContext", "pollOutagesDao",
             ReadablePollOutagesDao.class);
 
     for (final Outage outage : pollOutagesDao.getReadOnlyConfig().getOutages()) {

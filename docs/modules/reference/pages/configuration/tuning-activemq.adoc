@@ -23,7 +23,7 @@ Consider increasing the `memoryUsage` (defaults to 20MB) to `512MB` or greater, 
     </systemUsage>
 </systemUsage>
 ----
-<1> The amount of JVM heap memory assigned to the broker to track of destinations, cache messages, etc; `memoryUsage` limit can be increased to `512MB` or more.
+<1> The amount of JVM heap memory assigned to the broker to keep track of destinations, cache messages, etc; `memoryUsage` limit can be increased to `512MB` or more.
 <2> The limit of disk storage in `$\{OPENNMS_HOME}/data/` that can be used to store persistent messages; `storeUsage` limit can be increased to `5GB` or more.
 <3> The limit of disk storage in `$\{OPENNMS_HOME}/data/` that can be used to store non-persistent messages; `tempUsage` limit can be increased to `1GB` or more.
 
@@ -31,7 +31,7 @@ TIP: If the memory limit is reached, https://activemq.apache.org/producer-flow-c
 from being published to the broker.
 
 == Per destination limits
-ActiveMQ provides mechanism to tune memory usage per destination. The default limits are conservative and should be tuned to accommodate your workload.
+ActiveMQ provides a mechanism to tune memory usage per destination. The default limits are conservative and should be tuned to accommodate your workload.
 
 [source, xml]
 ----
@@ -50,7 +50,7 @@ The `policyEntry/memoryLimit` value prevents any one queue from consuming all br
 
 == KahaDB persistence
 KahaDB is a file based persistence database that is local to the ActiveMQ broker.
-It has been optimized for fast persistence and is the the default broker storage mechanism.
+It has been optimized for fast persistence and is the default broker storage mechanism.
 ActiveMQ spools messages to disk in order to prevent broker running out of memory or to fulfill persistence requirements.
 
 You can optimize the performance of the KahaDB message store by modifying the following attributes:

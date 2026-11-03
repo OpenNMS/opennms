@@ -119,7 +119,7 @@
                 <a id="${group.name}.doDelete" href="javascript:deleteGroup('${fn:escapeXml(group.name)}')" onclick="return confirm('Are you sure you want to delete the group ${fn:escapeXml(group.name)}?')"><i class="fas fa-trash-can fa-2x"></i></a>
               </c:when>
               <c:otherwise>
-                <i class="fas fa-trash-can fa-2x" style="color: var(--feather-clickable-normal);" onclick="alert('Sorry, the ${fn:escapeXml(group.name)} group cannot be deleted.')"></i>
+                <i class="fas fa-trash-can fa-2x" onclick="alert('Sorry, the ${fn:escapeXml(group.name)} group cannot be deleted.')"></i>
               </c:otherwise>
             </c:choose>
           </td>

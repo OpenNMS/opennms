@@ -33,7 +33,10 @@ import javax.ws.rs.core.Response;
 import com.google.common.base.Strings;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonMethod;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.SnmpConfigUtils;
 import org.opennms.netmgt.config.SnmpConfigUtils.DefinitionContentsValidationStatus;
@@ -63,6 +66,17 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
     private static final String MODULE_NAME = "web rest api";
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    // The SnmpConfig getters substitute a default when the underlying field is unset, so serializing
+    // through them would turn every inherited value into an explicit one. Bind to the fields instead
+    // and drop nulls, so a downloaded file only carries what was actually configured.
+    private static final ObjectMapper downloadObjectMapper = new ObjectMapper();
+    static {
+        downloadObjectMapper.setVisibility(JsonMethod.GETTER, JsonAutoDetect.Visibility.NONE);
+        downloadObjectMapper.setVisibility(JsonMethod.IS_GETTER, JsonAutoDetect.Visibility.NONE);
+        downloadObjectMapper.setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
+        downloadObjectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+    }
 
     public static final String DEFINITION_MISSING_CONTENTS_MESSAGE = "Definition must have at least one specific IP, IP range or IP match specified.";
     public static final String DEFINITION_CANNOT_MIX_RANGE_AND_IPMATCH_MESSAGE =
@@ -286,7 +300,7 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
                 // the codehaus.jackson JsonProvider
                 // The codehaus.jackson DefaultPrettyPrinter doesn't have the best output,
                 // it adds extra whitespace, but it'll do for now
-                String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(snmpConfig);
+                String json = downloadObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(snmpConfig);
                 byteArray = json.getBytes(StandardCharsets.UTF_8);
             }
         } catch (Exception e) {

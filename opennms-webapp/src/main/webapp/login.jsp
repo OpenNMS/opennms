@@ -23,7 +23,7 @@
 --%>
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
-          .flags("quiet")
+          .flags("quiet", "nomenujs")
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
@@ -182,6 +182,14 @@
     username.value = '';
     password.value = '';
   }
+  // The browser keeps the URL fragment (e.g. a Vue route "#/node/1") through the redirect to this
+  // page but does not send it to the server. Post it, so the user goes back to it after login.
+  // Set on submit, not on load: a quick submit (e.g. autofill) can come before the load event.
+  document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("loginForm").addEventListener("submit", function() {
+      document.getElementById("input_redirect_fragment").value = window.location.hash;
+    });
+  });
 </script>
 <div class="login-page">
     <div class="card login-form rounded">
@@ -191,6 +199,7 @@
 
       <form class="" id="loginForm" name="loginForm" role="form" method="post" action="<c:url value='j_spring_security_check'/>" autocomplete="off">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        <input type="hidden" id="input_redirect_fragment" name="onms_redirect_fragment" value=""/>
         <div class="form-content">
           <div class="form-group">
             <input type="text" id="input_j_username" name="j_username"
@@ -232,3 +241,16 @@
        </div>
   </div>
 </div>
+
+<%--
+  These pages include bootstrap.jsp but not bootstrap-footer.jsp — they are
+  deliberately footer-less — so nothing else closes the two <div> tags that
+  include opens. Close them here: #content is a flex column at least as tall as
+  the window (see #content in opennms-theme.scss), and leaving the wrapper open
+  would put this page's markup and any later content in the wrong box. The
+  matching tags are in bootstrap.jsp, so they are emitted from JSP fragments to
+  keep the Eclipse HTML validator quiet, as that file does. <body> and <html>
+  stay unclosed here exactly as before.
+--%>
+<%= "</div>" %><!-- id="content-body" -->
+<%= "</div>" %><!-- id="content" class="container-fluid" -->

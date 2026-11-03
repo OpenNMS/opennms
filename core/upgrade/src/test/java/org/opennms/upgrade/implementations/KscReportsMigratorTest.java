@@ -30,7 +30,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.netmgt.config.GraphCollectionConfigFactory;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 
 /**
@@ -51,7 +51,7 @@ public class KscReportsMigratorTest {
         FileUtils.copyDirectory(new File("src/test/resources/rrd"), new File("target/home/rrd"));
         FileUtils.copyDirectory(new File("src/test/resources/jetty-webapps/opennms/WEB-INF"), new File("target/home/jetty-webapps/opennms/WEB-INF/"));
         System.setProperty("opennms.home", "target/home");
-        KSC_PerformanceReportFactory.init();
+        GraphCollectionConfigFactory.init();
     }
 
     /**
@@ -81,8 +81,8 @@ public class KscReportsMigratorTest {
                 return interfaces;
             }
         };
-        Assert.assertTrue(KSC_PerformanceReportFactory.getInstance().getReportByIndex(1).getGraphs().get(0).getResourceId().isPresent());
-        Assert.assertEquals("node[1].interfaceSnmp[eth0]", KSC_PerformanceReportFactory.getInstance().getReportByIndex(1).getGraphs().get(0).getResourceId().orElse(null));
+        Assert.assertTrue(GraphCollectionConfigFactory.getInstance().getCollectionById(1).getGraphs().get(0).getResourceId().isPresent());
+        Assert.assertEquals("node[1].interfaceSnmp[eth0]", GraphCollectionConfigFactory.getInstance().getCollectionById(1).getGraphs().get(0).getResourceId().orElse(null));
         try {
             obj.preExecute();
             obj.execute();
@@ -91,8 +91,8 @@ public class KscReportsMigratorTest {
             obj.rollback();
             Assert.fail();
         }
-        Assert.assertTrue(KSC_PerformanceReportFactory.getInstance().getReportByIndex(1).getGraphs().get(0).getResourceId().isPresent());
-        Assert.assertEquals("node[1].interfaceSnmp[eth0-005056c00008]", KSC_PerformanceReportFactory.getInstance().getReportByIndex(1).getGraphs().get(0).getResourceId().orElse(null));
+        Assert.assertTrue(GraphCollectionConfigFactory.getInstance().getCollectionById(1).getGraphs().get(0).getResourceId().isPresent());
+        Assert.assertEquals("node[1].interfaceSnmp[eth0-005056c00008]", GraphCollectionConfigFactory.getInstance().getCollectionById(1).getGraphs().get(0).getResourceId().orElse(null));
     }
 
     /**

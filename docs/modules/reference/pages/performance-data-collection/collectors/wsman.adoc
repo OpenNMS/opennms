@@ -59,7 +59,7 @@ Once validated, add the agent-specific details to the {page-component-title} con
 
 === Troubleshooting and commands
 
-For troubleshooting, there is a set of commands you can use in Powershell, verified on Microsoft Windows Server 2012.
+For troubleshooting, there is a set of commands you can use in PowerShell, verified on Microsoft Windows Server 2012.
 
 .Enable WinRM in PowerShell
 [source, shell]
@@ -202,7 +202,21 @@ This allows the user to also reference credentials stored in the secure credenti
 | Enables GSS authentication.
 When enabled, a reverse lookup is performed on the target IP address to determine the canonical host name.
 | False
+
+| kerberos-encryption
+| Enables Kerberos message encryption (MS-WSMV 2.2.9.1).
+The SOAP payload itself is encrypted, so WS-Management can be used safely over plain HTTP (typically port 5985) without SSL.
+Implies `gss-auth`.
+See xref:configuration/wsman-kerberos.adoc[] for the required setup.
+| False
 |===
+
+[[ga-performance-mgmt-collectors-wsman-kerberos]]
+== Kerberos authentication and message encryption
+
+WS-Management agents can be reached with Kerberos authentication (`gss-auth`) or with Kerberos message encryption (`kerberos-encryption`), which protects the SOAP messages themselves and is safe over plain HTTP.
+Both need a Kerberos environment on the system that performs the polls.
+See xref:configuration/wsman-kerberos.adoc[] for the prerequisites, credentials, system properties, and troubleshooting.
 
 NOTE: If you try to connect against Microsoft Windows Server, make sure to set specific ports for WinRM connections.
 By default, Microsoft Windows Server uses port `TCP/5985` for plain text and port `TCP/5986` for SSL connections.
@@ -301,7 +315,7 @@ The Enumerate commands can include an optional `filter` to filter the records an
 
 When you configure a filter, you must also specify the dialect.
 
-The resource type the group uses must of be of type `node` or a generic resource type.
+The resource type the group uses must be of type `node` or a generic resource type.
 Interface-level resources are not supported.
 
 With a generic resource type, you cannot use the `IndexStorageStrategy` since records have no implicit index.
@@ -335,7 +349,7 @@ Use the following attribute definition to achieve this:
 === Special attributes
 
 A group can contain the placeholder attribute `ElementCount` that, during collection, will be populated with the total number of results returned for that group.
-Use this to threshold on the number results returned by an enumeration.
+Use this to threshold on the number of results returned by an enumeration.
 
 [source, xml]
 ----
@@ -347,3 +361,23 @@ Use this to threshold on the number results returned by an enumeration.
     <attrib name="##ElementCount##" alias="elementCount" type="Gauge"/>
 </group>
 ----
+
+== Service configuration example
+
+To schedule the collection, add a service to a package in `$\{OPENNMS_HOME}/etc/collectd-configuration.xml` and a matching `collector` entry.
+Collectd collects only from IP interfaces that are in the package and have a monitored service with the same name, for example one added through a requisition or a detector.
+
+The following `WS-Man` service is simplified from the `example1` package in the default configuration and uses the `default` collection shown above:
+
+[source, xml]
+----
+<service name="WS-Man" interval="300000" user-defined="false" status="on">
+  <parameter key="collection" value="default"/>
+  <parameter key="thresholding-enabled" value="true"/>
+</service>
+
+<collector service="WS-Man" class-name="org.opennms.netmgt.collectd.WsManCollector"/>
+----
+
+The default configuration sets the `collection` value with a xref:operation:deep-dive/meta-data.adoc[metadata] expression, `${requisition:collection|detector:collection|default}`, so you can override it per node.
+The connection settings for each agent come from `etc/wsman-config.xml` (see <<ga-performance-mgmt-collectors-wsman-agent-config, WS-Management agent configuration>>).

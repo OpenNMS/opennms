@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 470" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="1020" height="470" fill="#ffffff"/>
+  <!-- Equipment sites boundary -->
+  <rect x="30" y="50" width="230" height="310" rx="12" fill="none" stroke="#bbbbbb" stroke-width="2"/>
+  <text x="50" y="82" font-size="16" font-weight="bold" fill="#666666">Equipment sites</text>
+
+  <!-- connections -->
+  <line x1="240" y1="137" x2="410" y2="95" stroke="#555555" stroke-width="1.5"/>
+  <line x1="240" y1="222" x2="410" y2="110" stroke="#555555" stroke-width="1.5"/>
+  <line x1="240" y1="307" x2="410" y2="125" stroke="#555555" stroke-width="1.5"/>
+  <line x1="520" y1="150" x2="520" y2="250" stroke="#555555" stroke-width="1.5"/>
+  <line x1="630" y1="110" x2="770" y2="110" stroke="#555555" stroke-width="1.5"/>
+  <line x1="520" y1="330" x2="520" y2="370" stroke="#555555" stroke-width="1.5"/>
+
+  <!-- Minions -->
+  <rect x="70" y="110" width="170" height="55" rx="10" fill="#1f6db3" stroke="#134a7c" stroke-width="2"/>
+  <text x="155" y="145" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">OpenNMS Minion</text>
+  <rect x="70" y="195" width="170" height="55" rx="10" fill="#1f6db3" stroke="#134a7c" stroke-width="2"/>
+  <text x="155" y="230" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">OpenNMS Minion</text>
+  <rect x="70" y="280" width="170" height="55" rx="10" fill="#1f6db3" stroke="#134a7c" stroke-width="2"/>
+  <text x="155" y="315" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">OpenNMS Minion</text>
+
+  <!-- Apache Kafka cluster (hub) -->
+  <rect x="410" y="70" width="220" height="80" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="520" y="105" text-anchor="middle" font-size="15" font-weight="bold" fill="#222222">Apache Kafka cluster</text>
+  <text x="520" y="127" text-anchor="middle" font-size="11" fill="#444444">Minion transport, alarm topic</text>
+
+  <!-- Upstream system (black box) -->
+  <rect x="770" y="70" width="210" height="80" rx="10" fill="#fafafa" stroke="#8c8c8c" stroke-width="2" stroke-dasharray="7 6"/>
+  <text x="875" y="103" text-anchor="middle" font-size="15" font-weight="bold" fill="#222222">Upstream system</text>
+  <text x="875" y="126" text-anchor="middle" font-size="11" fill="#444444">notifications, correlation</text>
+
+  <!-- OpenNMS Core -->
+  <rect x="410" y="250" width="220" height="80" rx="10" fill="#4c9a41" stroke="#2e6b28" stroke-width="2"/>
+  <text x="520" y="285" text-anchor="middle" font-size="17" font-weight="bold" fill="#ffffff">OpenNMS Core</text>
+  <text x="520" y="307" text-anchor="middle" font-size="11" fill="#e8f1e6">traps to correlated alarms</text>
+
+  <!-- PostgreSQL -->
+  <rect x="420" y="370" width="200" height="65" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="520" y="408" text-anchor="middle" font-size="16" font-weight="bold" fill="#222222">PostgreSQL</text>
+</svg>

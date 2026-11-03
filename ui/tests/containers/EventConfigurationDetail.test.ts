@@ -55,6 +55,7 @@ describe('EventConfigurationDetail.vue', () => {
     enabled: true,
     eventCount: 5,
     fileOrder: 1,
+    evaluationOrder: 1,
     uploadedBy: 'test-user',
     createdTime: new Date(),
     lastModified: new Date()
@@ -113,6 +114,13 @@ describe('EventConfigurationDetail.vue', () => {
     expect(configBox.text()).toContain('Enabled')
     expect(configBox.text()).toContain('5')
     expect(configBox.text()).toContain(format(new Date(), 'MM/dd/yyyy'))
+  })
+
+  it('disables "Add Event Config" during events reorder mode so nothing is added mid-edit', async () => {
+    wrapper = await createWrapper()
+    store.eventsReorderMode = true
+    await wrapper.vm.$nextTick()
+    expect(wrapper.get('[data-test="add-event-config"]').attributes('disabled')).toBeDefined()
   })
 
   it('should call setSelectedEventConfigSource when "Add Event Config" button is clicked', async () => {
@@ -369,13 +377,14 @@ describe('EventConfigurationDetail.vue', () => {
     wrapper = await createWrapper(nullishConfig)
 
     expect(wrapper.find('.event-config-container').exists()).toBe(true)
-    expect(wrapper.text()).toContain('Source:')
-    expect(wrapper.text()).toContain('Uploaded By:test-user')
-    expect(wrapper.text()).toContain('Vendor:')
-    expect(wrapper.text()).toContain('Event Count:')
+    expect(wrapper.text()).toContain('Source')
+    expect(wrapper.text()).toContain('Uploaded By')
+    expect(wrapper.text()).toContain('test-user')
+    expect(wrapper.text()).toContain('Vendor')
+    expect(wrapper.text()).toContain('Event Count')
     expect(wrapper.text()).not.toContain('undefined')
-    expect(wrapper.text()).toContain(`Creation Date:${format(new Date(), 'MM/dd/yyyy')}`)
-    expect(wrapper.text()).toContain(`Last Modified Date:${format(new Date(), 'MM/dd/yyyy')}`)
+    expect(wrapper.text()).toContain(`Creation Date${format(new Date(), 'MM/dd/yyyy')}`)
+    expect(wrapper.text()).toContain(`Last Modified Date${format(new Date(), 'MM/dd/yyyy')}`)
     // Actions should show since null !== VENDOR_OPENNMS
     expect(wrapper.find('.action-container').exists()).toBe(true)
   })

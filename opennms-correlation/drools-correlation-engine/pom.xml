@@ -95,10 +95,6 @@
       <artifactId>opennms-correlator</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache-extras.beanshell</groupId>
-      <artifactId>bsh</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>

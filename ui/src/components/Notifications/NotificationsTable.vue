@@ -1,0 +1,354 @@
+<template>
+  <TableCard class="notifications-table">
+    <div class="header">
+      <div class="card-title" data-test="notifications-title">{{ store.title }}</div>
+      <div class="header-right">
+        <div class="count" data-test="notifications-count">{{ store.totalCount }} notification{{ store.totalCount === 1 ? '' : 's' }}</div>
+        <OnmsIconButton
+          variant="text"
+          :icon="DownloadFileIcon"
+          iconSize="1.2rem"
+          title="Download"
+          aria-label="Download notifications"
+          aria-haspopup="true"
+          aria-controls="notifications-download-menu"
+          data-test="download-button"
+          :disabled="!store.totalCount"
+          @click="toggleDownloadMenu"
+        />
+        <OnmsMenu
+          id="notifications-download-menu"
+          ref="downloadMenu"
+          :items="downloadItems"
+        />
+        <OnmsIconButton
+          variant="text"
+          :icon="PrintIcon"
+          iconSize="1.2rem"
+          title="Print / save as PDF"
+          aria-label="Print notifications"
+          data-test="print-button"
+          :disabled="!store.totalCount"
+          @click="printNotifications"
+        />
+      </div>
+    </div>
+
+    <OnmsTable
+      v-if="store.notifications.length"
+      lazy
+      :value="store.notifications"
+      :totalRecords="store.totalCount"
+      paginator
+      dataKey="id"
+      :first="store.first"
+      :rows="store.rows"
+      :rowsPerPageOptions="[10, 20, 50, 100]"
+      class="data-table"
+      data-test="notifications-table"
+      @page="onPage"
+    >
+      <OnmsColumn
+        field="id"
+        header="ID"
+      >
+        <template #body="{ data }">
+          <a
+            :href="`${baseHref}notification/detail.jsp?notice=${data.id}`"
+            :data-test="`notification-link-${data.id}`"
+          >{{ data.id }}</a>
+        </template>
+      </OnmsColumn>
+      <OnmsColumn header="Severity">
+        <template #body="{ data }">
+          <OnmsTag
+            v-if="data.severity"
+            :value="data.severity"
+            :severity="severityMap[String(data.severity).toLowerCase()] ?? 'secondary'"
+          />
+          <span v-else>-</span>
+        </template>
+      </OnmsColumn>
+      <OnmsColumn header="Subject">
+        <template #body="{ data }">
+          <span :title="data.textMessage ?? ''">{{ truncate(data.subject || data.textMessage || '-') }}</span>
+        </template>
+      </OnmsColumn>
+      <OnmsColumn header="Sent Time">
+        <template #body="{ data }">
+          {{ formatTime(data.pageTime) }}
+        </template>
+      </OnmsColumn>
+      <OnmsColumn header="Node">
+        <template #body="{ data }">
+          <a
+            v-if="data.nodeId"
+            :href="`${baseHref}element/node.jsp?node=${data.nodeId}`"
+          >{{ data.nodeLabel ?? data.nodeId }}</a>
+          <span v-else>-</span>
+        </template>
+      </OnmsColumn>
+      <OnmsColumn header="Interface">
+        <template #body="{ data }">
+          {{ data.ipAddress ?? '-' }}
+        </template>
+      </OnmsColumn>
+      <OnmsColumn header="Service">
+        <template #body="{ data }">
+          {{ data.serviceType?.name ?? '-' }}
+        </template>
+      </OnmsColumn>
+      <OnmsColumn
+        v-if="showAckColumns"
+        header="Responder"
+      >
+        <template #body="{ data }">
+          {{ data.ackUser ?? '-' }}
+        </template>
+      </OnmsColumn>
+      <OnmsColumn
+        v-if="showAckColumns"
+        header="Respond Time"
+      >
+        <template #body="{ data }">
+          {{ formatTime(data.ackTime) }}
+        </template>
+      </OnmsColumn>
+      <OnmsColumn
+        v-if="!showAckColumns && canAcknowledgeNotifications"
+        header="Actions"
+      >
+        <template #body="{ data }">
+          <OnmsButton
+            variant="text"
+            label="Acknowledge"
+            :aria-label="`Acknowledge notification ${data.id}`"
+            :data-test="`ack-button-${data.id}`"
+            :disabled="store.loading"
+            @click="acknowledge(data)"
+          />
+        </template>
+      </OnmsColumn>
+    </OnmsTable>
+
+    <div v-if="!store.notifications.length">
+      <EmptyList
+        :content="emptyListContent"
+        data-test="empty-list"
+      />
+    </div>
+  </TableCard>
+</template>
+
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+
+import { OnmsIconButton, OnmsButton, OnmsColumn, OnmsMenu, OnmsTable, OnmsTag, type OnmsMenuItem, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
+
+import EmptyList from '@/components/Common/EmptyList.vue'
+import TableCard from '@/components/Common/TableCard.vue'
+import DownloadFileIcon from '@opennms/onms-ui/icons/action/DownloadFile.vue'
+import PrintIcon from '@opennms/onms-ui/icons/action/Print.vue'
+import useSnackbar from '@/composables/useSnackbar'
+import useRole from '@/composables/useRole'
+import { saveBlobAsFile } from '@/services/eventConfigService'
+import { useMenuStore } from '@/stores/menuStore'
+import { MessageSeverity } from '@/types'
+import useActionFeedback from '@/composables/useActionFeedback'
+import { useNotificationsStore } from '@/stores/notificationsStore'
+import { OnmsNotification } from '@/types/notifications'
+
+const { showSnackBar } = useSnackbar()
+const { canAcknowledgeNotifications } = useRole()
+const menuStore = useMenuStore()
+const store = useNotificationsStore()
+const { withSpinner, report } = useActionFeedback()
+
+// Cap for export/print fetches; the table itself stays server-paginated.
+const EXPORT_LIMIT = 1000
+
+const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
+const showAckColumns = computed<boolean>(() => store.preset === 'allAcknowledged')
+
+const emptyListContent = computed(() => ({
+  msg: store.awaitingUser
+    ? 'Enter a user ID to see their outstanding notifications.'
+    : store.preset === 'allAcknowledged' ? 'No acknowledged notifications found.' : 'No outstanding notifications found.'
+}))
+
+const severityMap: Record<string, OnmsTagSeverity> = {
+  critical: 'danger',
+  major: 'danger',
+  minor: 'warn',
+  warning: 'warn',
+  normal: 'success',
+  cleared: 'success',
+  indeterminate: 'secondary'
+}
+
+const truncate = (text: string, max = 90) => {
+  return text.length > max ? `${text.slice(0, max)}…` : text
+}
+
+const formatTime = (value?: number | string | null) => {
+  if (value === null || value === undefined || value === '') {
+    return '-'
+  }
+  const date = new Date(value)
+  return isNaN(date.getTime()) ? '-' : date.toLocaleString()
+}
+
+const onPage = async (event: OnmsTablePageEvent) => {
+  report(await withSpinner(() => store.onPage(event.first, event.rows)))
+}
+
+const acknowledge = async (notification: OnmsNotification) => {
+  report(await withSpinner(() => store.acknowledge(notification)), `Notification ${notification.id} acknowledged.`)
+}
+
+const fetchAllForExport = async (): Promise<{ notifications: OnmsNotification[], totalCount: number }> => {
+  // delegate to the store so the same whoami guard as load() applies
+  const result = await withSpinner(() => store.fetchForExport(EXPORT_LIMIT))
+  if (!report(result) || !result.payload) {
+    return { notifications: [], totalCount: 0 }
+  }
+  const { notifications, totalCount } = result.payload
+  if (totalCount > notifications.length) {
+    showSnackBar({
+      msg: `Only the first ${notifications.length} of ${totalCount} notifications were exported.`,
+      severity: MessageSeverity.Warn
+    })
+  }
+  return result.payload
+}
+
+const exportColumns = (notification: OnmsNotification): Record<string, string> => ({
+  'ID': String(notification.id),
+  'Severity': notification.severity ?? '',
+  'Subject': notification.subject ?? '',
+  // Text messages are often multi-line; flatten them so each row stays one CSV line.
+  'Text Message': (notification.textMessage ?? '').replace(/\s+/g, ' ').trim(),
+  'Sent Time': formatTime(notification.pageTime),
+  'Node': notification.nodeLabel ?? '',
+  'Interface': notification.ipAddress ?? '',
+  'Service': notification.serviceType?.name ?? '',
+  'Responder': notification.ackUser ?? '',
+  'Respond Time': formatTime(notification.ackTime)
+})
+
+const exportFileName = (extension: string) =>
+  `notifications-${store.preset}-${new Date().toISOString().slice(0, 19).replaceAll(':', '-')}.${extension}`
+
+const downloadCsv = async () => {
+  const { notifications } = await fetchAllForExport()
+  if (!notifications.length) {
+    return
+  }
+  const rows = notifications.map(exportColumns)
+  const headers = Object.keys(rows[0])
+  // a leading = + - @ or tab would execute as a formula when the CSV is
+  // opened in a spreadsheet; notification text derives from event data, which can
+  // be externally influenced (traps), so neutralise it
+  const escapeCell = (value: string) => {
+    const guarded = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
+    return `"${guarded.replaceAll('"', '""')}"`
+  }
+  const csv = [
+    headers.map(escapeCell).join(','),
+    ...rows.map(row => headers.map(h => escapeCell(row[h] === '-' ? '' : row[h])).join(','))
+  ].join('\r\n')
+  const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' })
+  saveBlobAsFile(blob, exportFileName('csv'))
+}
+
+const downloadJson = async () => {
+  const { notifications } = await fetchAllForExport()
+  if (!notifications.length) {
+    return
+  }
+  const blob = new Blob([JSON.stringify(notifications, null, 2)], { type: 'application/json;charset=utf-8' })
+  saveBlobAsFile(blob, exportFileName('json'))
+}
+
+const downloadMenu = ref<InstanceType<typeof OnmsMenu> | null>(null)
+
+const downloadItems: OnmsMenuItem[] = [
+  { label: 'Download CSV...', command: () => downloadCsv() },
+  { label: 'Download JSON...', command: () => downloadJson() }
+]
+
+const toggleDownloadMenu = (event: Event) => {
+  downloadMenu.value?.toggle(event)
+}
+
+const printNotifications = async () => {
+  const { notifications, totalCount } = await fetchAllForExport()
+  if (!notifications.length) {
+    return
+  }
+  const rows = notifications.map(exportColumns)
+  const headers = Object.keys(rows[0])
+  const escapeHtml = (value: string) =>
+    value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<title>${escapeHtml(store.title)}</title>
+<style>
+  body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; margin: 24px; color: #222; }
+  h1 { font-size: 18px; margin: 0 0 4px 0; }
+  .meta { color: #666; font-size: 12px; margin-bottom: 16px; }
+  table { border-collapse: collapse; width: 100%; font-size: 12px; }
+  th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; vertical-align: top; }
+  th { background: #f0f0f5; }
+  @media print { body { margin: 8px; } }
+</style>
+</head>
+<body>
+<h1>${escapeHtml(store.title)}</h1>
+<div class="meta">OpenNMS Horizon — generated ${escapeHtml(new Date().toLocaleString())} — ${rows.length < totalCount ? `first ${rows.length} of ${totalCount}` : rows.length} notification${totalCount === 1 ? '' : 's'}</div>
+<table>
+<thead><tr>${headers.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr></thead>
+<tbody>${rows.map(row => `<tr>${headers.map(h => `<td>${escapeHtml(row[h])}</td>`).join('')}</tr>`).join('')}</tbody>
+</table>
+</body>
+</html>`
+  const printWindow = window.open('', '_blank')
+  if (!printWindow) {
+    return
+  }
+  printWindow.document.write(html)
+  printWindow.document.close()
+  printWindow.focus()
+  printWindow.print()
+}
+</script>
+
+<style lang="scss" scoped>
+.notifications-table {
+  padding: 25px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.count {
+  color: var(--p-text-muted-color);
+  font-size: 0.9rem;
+}
+</style>

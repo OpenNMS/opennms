@@ -35,3 +35,36 @@ The VmwareCollector collects performance metrics for managed entities from vCent
 | Connection timeout in milliseconds
 | 3000
 |===
+
+== Service configuration example
+
+The VmwareCollector collects only from nodes imported with the xref:provisioning/handlers/vmware.adoc[VMware requisition handler].
+It takes the vCenter server from the node's metadata, the managed object ID from the node's foreign ID, and the vCenter credentials from `$\{OPENNMS_HOME}/etc/vmware-config.xml`.
+By default, the handler assigns the `VMware-HostSystem` service to the primary interface of host systems and the `VMware-VirtualMachine` service to the primary interface of virtual machines; the `hostSystemServices` and `virtualMachineServices` parameters of the requisition URL override this.
+The handler also assigns a `VMware<api-version>` category (for example `VMware7`) to each node.
+
+The default `collectd-configuration.xml` contains packages only for API versions 6 and 7 (`vmware6` and `vmware7`, filtered on the `VMware6` and `VMware7` categories).
+To collect from a newer version, copy one of these packages, filter it on that version's category (for example `VMware8`), and point it at a collection in `vmware-datacollection-config.xml` that matches that version's performance counters; the shipped collections are `default-HostSystem6`, `default-VirtualMachine6`, `default-HostSystem7` and `default-VirtualMachine7`.
+
+This is the package for API version 7, simplified from the default configuration:
+
+[source, xml]
+----
+<package name="vmware7" remote="false">
+  <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware7')</filter>
+  <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
+    <parameter key="collection" value="default-VirtualMachine7"/>
+    <parameter key="thresholding-enabled" value="true"/>
+  </service>
+  <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
+    <parameter key="collection" value="default-HostSystem7"/>
+    <parameter key="thresholding-enabled" value="true"/>
+  </service>
+</package>
+
+<collector service="VMware-VirtualMachine" class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
+<collector service="VMware-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
+----
+
+The default configuration sets the `collection` values with xref:operation:deep-dive/meta-data.adoc[metadata] expressions, such as `${requisition:collection|detector:collection|default-HostSystem7}`, so you can override them per node.
+The collections are defined in `$\{OPENNMS_HOME}/etc/vmware-datacollection-config.xml`.

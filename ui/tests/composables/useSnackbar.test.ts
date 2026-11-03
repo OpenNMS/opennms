@@ -55,9 +55,9 @@ describe('useSnackbar', () => {
     showSnackBar({ msg: 'left', center: false })
 
     const adds = addCalls()
-    expect(adds[0]).toMatchObject({ severity: 'error', detail: 'err', group: 'snackbar-center' })
-    expect(adds[1]).toMatchObject({ severity: 'success', detail: 'ok', group: 'snackbar-center' })
-    expect(adds[2]).toMatchObject({ severity: 'success', detail: 'left', group: 'snackbar-start' })
+    expect(adds[0]).toMatchObject({ severity: 'error', detail: 'err', group: 'onms-toast-center' })
+    expect(adds[1]).toMatchObject({ severity: 'success', detail: 'ok', group: 'onms-toast-center' })
+    expect(adds[2]).toMatchObject({ severity: 'success', detail: 'left', group: 'onms-toast-start' })
   })
 
   it('hideSnackbar clears active toasts and allows an identical message to show again', () => {

@@ -31,11 +31,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.mail.Flags.Flag;
-import javax.mail.Header;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.Flags.Flag;
+import jakarta.mail.Header;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 
 import org.opennms.core.utils.StringUtils;
 import org.opennms.javamail.JavaMailerException;
@@ -204,10 +204,10 @@ class MailAckProcessor implements AckProcessor {
     /**
      * <p>createAck</p>
      *
-     * @param msg a {@link javax.mail.Message} object.
+     * @param msg a {@link jakarta.mail.Message} object.
      * @param refId a {@link java.lang.Integer} object.
      * @return a {@link org.opennms.netmgt.model.OnmsAcknowledgment} object.
-     * @throws javax.mail.MessagingException if any.
+     * @throws jakarta.mail.MessagingException if any.
      * @throws java.io.IOException if any.
      */
     protected OnmsAcknowledgment createAck(final Message msg, final Integer refId) throws MessagingException, IOException {
@@ -223,10 +223,10 @@ class MailAckProcessor implements AckProcessor {
     /**
      * <p>determineAckAction</p>
      *
-     * @param msg a {@link javax.mail.Message} object.
+     * @param msg a {@link jakarta.mail.Message} object.
      * @return a {@link org.opennms.netmgt.model.AckAction} object.
      * @throws java.io.IOException if any.
-     * @throws javax.mail.MessagingException if any.
+     * @throws jakarta.mail.MessagingException if any.
      */
     protected AckAction determineAckAction(final Message msg) throws IOException, MessagingException {
         LOG.info("determineAckAcktion: evaluating message looking for user specified acktion...");
@@ -274,7 +274,7 @@ class MailAckProcessor implements AckProcessor {
         if (readMailConfig.getReadmailHost() != null) {
             final ReadmailHost readmailHost = readMailConfig.getReadmailHost();
             final UserAuth userAuth = readMailConfig.getUserAuth();
-            LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: host: {} port: {} ssl: {} transport: {} user: {} password: {}", readmailHost.getHost(), readmailHost.getPort(), readmailHost.getReadmailProtocol().isSslEnable(), readmailHost.getReadmailProtocol().getTransport(), userAuth == null? null : userAuth.getUserName(), userAuth == null? null : userAuth.getPassword());
+            LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: host: {} port: {} ssl: {} transport: {} user: {}", readmailHost.getHost(), readmailHost.getPort(), readmailHost.getReadmailProtocol().isSslEnable(), readmailHost.getReadmailProtocol().getTransport(), userAuth == null? null : userAuth.getUserName());
         }
         
         //TODO: make flag for folder open mode

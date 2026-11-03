@@ -1,0 +1,312 @@
+[[ga-elasticsearch-integration-configuration]]
+= Tuning Elasticsearch
+:description: Configure and tune the Elasticsearch connection settings that {page-component-title} features use to persist flows, events, alarm history, and situation feedback.
+:page-aliases: operation:deep-dive/elasticsearch/introduction.adoc, operation:deep-dive/elasticsearch/features/introduction.adoc
+
+{page-component-title} can persist and forward certain data to Elasticsearch.
+Each feature that uses Elasticsearch has its own configuration file with its own connection, index, and circuit breaker settings.
+This page describes the settings that these features share and their defaults.
+
+[[ga-elasticsearch-features]]
+== Features that use Elasticsearch
+
+[options="header", cols="2,2,1,3"]
+|===
+| Feature
+| Karaf Feature
+| Installed by Default
+| Configuration File
+
+| xref:operation:deep-dive/flows/introduction.adoc[Flows]
+| `opennms-flows`
+| Yes
+| `org.opennms.features.flows.persistence.elastic.cfg`
+
+| xref:operation:deep-dive/event-forwarder/introduction.adoc[Event forwarder]
+| `opennms-es-rest`
+| No
+| `org.opennms.plugin.elasticsearch.rest.forwarder.cfg`
+
+| xref:operation:deep-dive/alarms/history.adoc[Alarm history]
+| `opennms-alarm-history-elastic`
+| No
+| `org.opennms.features.alarms.history.elastic.cfg`
+
+| xref:operation:deep-dive/alarms/situations.adoc#ga-situation-feedback[Situation feedback]
+| `opennms-situation-feedback`
+| No
+| `org.opennms.features.situationfeedback.persistence.elastic.cfg`
+|===
+
+The configuration files are in `$\{OPENNMS_HOME}/etc`.
+When you process flows on a Sentinel, the flows settings are in `$\{SENTINEL_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+
+NOTE: Installing `opennms-alarm-history-elastic` also installs `opennms-es-rest`, which starts the event forwarder with its own configuration file.
+If you install alarm history, also configure `org.opennms.plugin.elasticsearch.rest.forwarder.cfg`.
+
+Settings are not shared between features.
+For example, if both flows and the event forwarder write to the same cluster, set `elasticUrl` in both configuration files.
+The only exception is `elastic-credentials.xml` (see <<ga-elasticsearch-credentials, Credentials>>).
+
+[[ga-elasticsearch-configure-settings]]
+== Change settings
+
+You can change settings either in the Karaf shell or by editing the configuration file.
+Both methods have the same result: the Karaf `config:update` command writes the properties to the feature's `.cfg` file in `$\{OPENNMS_HOME}/etc`, and {page-component-title} applies changes that you make to the file without a restart.
+You do not need to use both.
+
+.Connect to the Karaf shell
+[source, console]
+----
+ssh -p 8101 admin@localhost <1>
+----
+<1> On a Sentinel, use port `8301`.
+
+.Change a setting in the Karaf shell
+[source, karaf]
+----
+config:edit org.opennms.features.flows.persistence.elastic <1>
+config:property-set elasticUrl http://elastic:9200
+config:property-set elasticIndexStrategy daily
+config:update
+----
+<1> The configuration ID is the configuration file name without the `.cfg` extension.
+
+.Equivalent `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`
+[source, properties]
+----
+elasticUrl=http://elastic:9200
+elasticIndexStrategy=daily
+----
+
+TIP: If you use a configuration management tool, you can deploy the `.cfg` file before you start {page-component-title}.
+
+[[ga-elasticsearch-global-parameters]]
+== Global Elasticsearch parameters
+
+The following properties are available in the configuration file of every feature listed above, unless the description says otherwise.
+
+[options="header", cols="1,3,2"]
+|===
+| Property
+| Description
+| Default
+
+3+| *Required*
+
+| elasticUrl
+| URL of one or more Elasticsearch nodes, in the format `\http://<host>:<port>`.
+Separate multiple URLs with commas.
+| \http://localhost:9200
+
+3+| *Optional*
+
+| elasticIndexStrategy
+| How often a new index is created.
+Allowed values are `yearly`, `monthly`, `daily`, and `hourly`.
+| monthly
+
+| indexPrefix
+| Prefix added to index and template names.
+Use it when several {page-component-title} instances share the same Elasticsearch cluster.
+| _none_
+
+| globalElasticUser
+| Username for all Elasticsearch nodes, when authentication is enabled on the cluster.
+| _none_
+
+| globalElasticPassword
+| Password for all Elasticsearch nodes, when authentication is enabled on the cluster.
+| _none_
+
+| connTimeout
+| Connection timeout, in milliseconds.
+Flows currently do not apply this setting.
+| 5000
+
+| readTimeout
+| Read (socket) timeout, in milliseconds.
+Flows currently do not apply this setting.
+| 30000
+
+| retryCooldown
+| Time to wait, in milliseconds, before a failed request is retried.
+For the event forwarder, alarm history, and situation feedback, a request that fails with a connection or I/O error is retried until it succeeds, waiting this long between attempts.
+For flows, this is the base wait between bulk retries, and the wait grows with each attempt.
+| 500
+
+| bulkRetryCount
+| Number of retries before a bulk operation is considered failed.
+| 5 (alarm history: 3)
+
+| defaultMaxTotalConnectionPerRoute
+| Maximum number of connections per Elasticsearch node.
+Negative values use the default.
+Not used by flows.
+| <number of processors> * 2
+
+| maxTotalConnection
+| Maximum total number of connections.
+Negative values use the default.
+Not used by flows.
+| <number of processors> * 6
+
+| nodeDiscovery
+| Whether to discover the other nodes of the cluster.
+Not used by flows.
+| false
+
+| nodeDiscoveryFrequency
+| How often, in seconds, to rediscover nodes when `nodeDiscovery` is `true`.
+Not used by flows.
+| 0
+
+| proxy
+| URL of a proxy server to use to reach Elasticsearch.
+Not used by flows.
+| _none_
+
+| ignoreCertificates
+| Whether to accept any HTTPS certificate from Elasticsearch.
+Not used by flows.
+| false
+|===
+
+NOTE: Older configuration files may also contain the `retries` and `httpCompression` properties.
+In the current release, these properties have no effect.
+
+Some features have additional settings.
+For flows, see <<ga-elasticsearch-flows-settings, Flows settings>>.
+For the event forwarder and alarm history, see their pages linked in <<ga-elasticsearch-features, Features that use Elasticsearch>>.
+
+[[ga-elasticsearch-flows-settings]]
+=== Flows settings
+
+You can set the following properties in `org.opennms.features.flows.persistence.elastic.cfg`:
+
+[options="header", cols="1,3,1"]
+|===
+| Property
+| Description
+| Default
+
+| bulkSize
+| Number of flow documents to collect into a bulk operation before it is sent.
+This applies to each thread.
+Set to `0` to send flows without collecting them first.
+| 1000
+
+| bulkFlushMs
+| Time, in milliseconds, after which a bulk is sent even if `bulkSize` was not reached.
+This applies to each thread.
+Set to `0` to disable the timed flush.
+| 500
+
+| skipElasticsearchPersistence
+| If `true`, flows are not persisted to Elasticsearch.
+Use it when you only forward flows to Kafka.
+| false
+
+| maxFlowDurationMs
+| Time, in milliseconds, by which the time range of a flow query is extended when selecting the indices to search, so that flows that started or ended outside the range are found.
+| 120000
+|===
+
+[[ga-elasticsearch-index-settings]]
+== Index settings
+
+The following properties set Elasticsearch index settings in the index templates that {page-component-title} creates.
+If a property is not set, Elasticsearch uses its own default.
+For flows with `useComposableTemplates=true`, these properties are not applied; configure the index settings in the templates in `$\{OPENNMS_HOME}/etc/netflow-templates` instead.
+Refer to the https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings[Elasticsearch index modules reference] for details.
+
+[options="header", cols="1,3"]
+|===
+| Property
+| Description
+
+| settings.index.number_of_shards
+| Number of primary shards in each index.
+
+| settings.index.number_of_replicas
+| Number of replicas of each primary shard.
+
+| settings.index.refresh_interval
+| How often to make recent changes to an index visible to search (for example, `10s`).
+
+| settings.index.routing_partition_size
+| Number of shards that a custom routing value can go to.
+|===
+
+TIP: On a single-node cluster, set `settings.index.number_of_replicas` to `0`, because Elasticsearch cannot place replicas on the same node as the primary shard.
+
+[[ga-elasticsearch-index-retention]]
+== Index retention
+
+{page-component-title} writes to time-based Elasticsearch indices (see `elasticIndexStrategy`) but never removes them.
+Without a retention process, these indices accumulate indefinitely.
+
+[WARNING]
+====
+{page-component-title} does not expire or delete the data it persists to Elasticsearch.
+Unless you configure an external retention process to remove old indices, the Elasticsearch disk can fill up and the cluster can stop accepting writes.
+This applies to all data {page-component-title} persists to Elasticsearch, including flows, alarm history, and forwarded events.
+====
+
+A time-based index strategy (for example, `elasticIndexStrategy=daily`) lets you drop whole indices once they age out.
+You can automate this with Elasticsearch's Index Lifecycle Management (ILM) or with an external script that removes indices older than your chosen retention period.
+Choose a retention period that fits your available storage and how far back you need to query.
+
+[[ga-elasticsearch-credentials]]
+== Credentials
+
+To use different credentials for each Elasticsearch node, define them in `$\{OPENNMS_HOME}/etc/elastic-credentials.xml`:
+
+.Credentials for each node
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<elastic-credentials>
+    <credentials url="http://localhost:9200" username="ulf" password="ulf" />
+    <credentials url="https://10.10.0.1:9333" username="ulf" password="flu" />
+</elastic-credentials>
+----
+
+The credentials in this file apply to every feature that connects to the listed URLs, except flows.
+Flows use only `globalElasticUser` and `globalElasticPassword`.
+
+You can use metadata expressions in the `username` and `password` attributes, for example to read credentials from the secure credentials vault.
+
+When `globalElasticUser` and `globalElasticPassword` are set, the event forwarder, alarm history, and situation feedback send them preemptively to all nodes.
+
+[[ga-elasticsearch-circuit-breaker]]
+== Circuit breaker
+
+When Elasticsearch is unavailable, a circuit breaker reduces the number of blocked threads.
+After a defined failure rate, requests are not sent to Elasticsearch for a defined period of time; instead, they fail immediately.
+The circuit breaker is based on https://resilience4j.readme.io/docs/circuitbreaker[Resilience4j].
+
+[options="header", cols="2,3,1"]
+|===
+| Property
+| Description
+| Default
+
+| circuitbreaker.failure_rate_threshold_in_percent
+| Failure rate, in percent, above which the circuit breaker opens and starts rejecting requests.
+| 99
+
+| circuitbreaker.wait_in_open_state_milliseconds
+| Time, in milliseconds, that the circuit breaker stays open before it changes to half-open.
+| 60000
+
+| circuitbreaker.ring_buffer_size_in_closed.state
+| Size of the ring buffer when the circuit breaker is closed.
+The ring buffer must be full before the failure rate is calculated.
+| 100
+
+| circuitbreaker.ring_buffer_size_in_half_open_state
+| Size of the ring buffer when the circuit breaker is half-open.
+It is used to decide whether to close the circuit breaker again.
+| 10
+|===

@@ -1,6 +1,6 @@
 <template>
   <div class="snmp-config-definition-details">
-    <PCard v-if="props.displayIps" class="ip-range-card">
+    <OnmsCard v-if="props.displayIps" class="ip-range-card">
       <template #title>
         <h4>Add more IP ranges to the configuration</h4>
       </template>
@@ -15,7 +15,7 @@
                   :error="errors.firstIpAddress"
                   hint="First IP Address in range or specific IP"
                 >
-                  <PInputText
+                  <OnmsInputText
                     :id="`${uid}-first-ip`"
                     class="ip-input"
                     data-test="snmp-definition-first-ip-address"
@@ -31,7 +31,7 @@
                   :error="errors.lastIpAddress"
                   hint="Last IP Address in range (leave blank if not a range)"
                 >
-                  <PInputText
+                  <OnmsInputText
                     :id="`${uid}-last-ip`"
                     class="ip-input"
                     data-test="snmp-definition-last-ip-address"
@@ -51,7 +51,7 @@
                   :error="errors.ipMatch"
                   hint="IPLIKE Expression (cannot be used with First/Last IP)"
                 >
-                  <PInputText
+                  <OnmsInputText
                     :id="`${uid}-ipmatch`"
                     class="ip-input"
                     data-test="snmp-definition-ipmatch-expression"
@@ -61,12 +61,14 @@
                 </FormField>
               </div>
               <div class="onms-col-6 add-range-col">
-                <PButton
-                  label="Add"
-                  :disabled="!firstIpAddress && !lastIpAddress && !ipMatchValue"
-                  @click="onAddRange"
-                  data-test="add-definition-range-button"
-                />
+                <FormField :reserve-label-space="true">
+                  <OnmsButton
+                    label="Add"
+                    :disabled="!firstIpAddress && !lastIpAddress && !ipMatchValue"
+                    @click="onAddRange"
+                    data-test="add-definition-range-button"
+                  />
+                </FormField>
               </div>
             </div>
           </div>
@@ -77,7 +79,7 @@
           </div>
         </div>
       </template>
-    </PCard>
+    </OnmsCard>
 
     <div class="onms-row">
       <div class="onms-col-6" v-if="!props.suppressMonitoringLocation">
@@ -85,7 +87,7 @@
           label="Monitoring Location"
           for="snmp-monitoring-location-select"
         >
-          <PSelect
+          <OnmsSelect
             inputId="snmp-monitoring-location-select"
             class="dropdown-select"
             data-test="snmp-monitoring-location-select"
@@ -102,14 +104,14 @@
             label="Version"
             for="snmp-definition-version"
           >
-            <PSelect
+            <OnmsSelect
               inputId="snmp-definition-version"
               class="dropdown-select"
               data-test="snmp-definition-version"
               optionLabel="_text"
               :options="SnmpVersions"
               :modelValue="snmpVersion"
-              @update:modelValue="onSnmpVersionUpdated"
+              @update:modelValue="(val) => onSnmpVersionUpdated(val as ISelectItemType | undefined)"
             />
           </FormField>
         </div>
@@ -154,10 +156,9 @@
       <div class="large-spacer"></div>
 
       <div class="show-context-fields-row">
-        <PCheckbox
+        <OnmsCheckbox
           inputId="snmp-definition-show-context-fields-checkbox"
           data-test="snmp-definition-show-context-fields-checkbox"
-          binary
           v-model="displaySnmpV3ContextFields"
         />
         <label
@@ -217,13 +218,13 @@
     <div class="onms-row">
       <div class="onms-col-12">
         <div class="action-container">
-          <PButton
+          <OnmsButton
             :label="isCreate ? 'Create Definition' : 'Save Changes'"
             @click="handleSave"
             data-test="save-definition-button"
           />
-          <PButton
-            outlined
+          <OnmsButton
+            variant="outlined"
             label="Cancel"
             @click="handleCancel"
             data-test="cancel-snmp-definition-button"
@@ -243,11 +244,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, useId, watch } from 'vue'
 
-import Button from 'primevue/button'
-import Card from 'primevue/card'
-import Checkbox from 'primevue/checkbox'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
+import { OnmsButton, OnmsCard, OnmsCheckbox, OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
 import { ISelectItemType } from '@/types'
 import { DEFAULT_MONITORING_LOCATION, DEFAULT_SNMP_V3_SECURITY_LEVEL } from '@/lib/constants'
 import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/snmpConfigStore'
@@ -259,12 +256,6 @@ import SnmpConfigPairedFieldInputs from './SnmpConfigPairedFieldInputs.vue'
 import TogglePanel from '../Common/TogglePanel.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
 import { ScvSearchItem } from '@/types/scv'
-
-const PButton = Button
-const PCard = Card
-const PCheckbox = Checkbox
-const PInputText = InputText
-const PSelect = Select
 
 // Unique per-instance prefix for label `for`/input `id` pairs (multiple detail
 // panels stay mounted across PrimeVue tab panels).
@@ -648,8 +639,10 @@ onMounted(() => {
 
   // Align the Add button with the IPLIKE input. The input's column also holds a
   // hint below it (which can wrap), so centering against the full cell pushes the
-  // button too low. Instead top-align the button and match the input height, so
-  // the button and input line up (and their centers coincide).
+  // button too low. Instead the button sits in a FormField of its own with
+  // `reserveLabelSpace`, which lays out the label box the sibling fields have and
+  // leaves the button where their inputs are — no offset to keep in sync here.
+  // Matching the input height (3rem) then makes their centers coincide too.
   .add-range-col {
     display: flex;
     align-items: flex-start;
@@ -657,7 +650,6 @@ onMounted(() => {
     :deep(.p-button) {
       height: 3rem;
       min-width: 8rem;
-      margin-top: 0.5rem;
     }
   }
 

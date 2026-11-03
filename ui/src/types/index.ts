@@ -137,18 +137,74 @@ export interface MonitoringSystemMainResponse {
   type: string
 }
 
+export interface NodeAssetRecord {
+  address1?: string | null
+  address2?: string | null
+  additionalhardware?: string | null
+  admin?: string | null
+  assetNumber?: string | null
+  autoenable?: string | null
+  building?: string | null
+  category?: string | null
+  circuitId?: string | null
+  city?: string | null
+  comment?: string | null
+  connection?: string | null
+  cpu?: string | null
+  dateInstalled?: string | null
+  department?: string | null
+  description?: string | null
+  displayCategory?: string | null
+  division?: string | null
+  enable?: string | null
+  floor?: string | null
+  hdd1?: string | null
+  hdd2?: string | null
+  hdd3?: string | null
+  hdd4?: string | null
+  hdd5?: string | null
+  hdd6?: string | null
+  inputpower?: string | null
+  latitude?: number | null
+  lease?: string | null
+  leaseExpires?: string | null
+  longitude?: number | null
+  maintcontract?: string | null
+  maintContractExpires?: string | null
+  manufacturer?: string | null
+  modelNumber?: string | null
+  notifyCategory?: string | null
+  numpowersupplies?: string | null
+  operatingSystem?: string | null
+  password?: string | null
+  pollerCategory?: string | null
+  port?: string | null
+  rack?: string | null
+  rackunitheight?: string | null
+  ram?: string | null
+  region?: string | null
+  room?: string | null
+  serialNumber?: string | null
+  slot?: string | null
+  snmpcommunity?: string | null
+  state?: string | null
+  storagectrl?: string | null
+  supportPhone?: string | null
+  thresholdCategory?: string | null
+  username?: string | null
+  vendor?: string | null
+  vendorAssetNumber?: string | null
+  vendorFax?: string | null
+  vendorPhone?: string | null
+  zip?: string | null
+}
+
 export interface Node {
   location: string
   type: string
   label: string
   id: string
-  assetRecord: {
-    longitude: string
-    latitude: string
-    category: string
-    description: string
-    maintcontract: string
-  }
+  assetRecord: NodeAssetRecord
   categories: Category[]
   createTime: number
   foreignId: string
@@ -164,6 +220,17 @@ export interface Node {
   sysContact: string
   sysLocation: string
 }
+
+/**
+ * Outcome of a filter-rule node lookup. `invalid` is the server rejecting the rule
+ * itself (HTTP 400), which the caller shows as such; `too-many` is a rule that
+ * matched more nodes than the caller asked to receive, with the count; `failed`
+ * is anything else.
+ */
+export type NodeFilterRuleResult =
+  | { nodes: Node[] }
+  | { error: 'invalid' | 'failed' }
+  | { error: 'too-many', count: number }
 
 export interface NodeColumnSelectionItem {
   id: string
@@ -198,6 +265,9 @@ export interface Alarm {
   count: number
   lastEventTime: number
   logMessage: string
+  // Both absent while the alarm is unacknowledged: the REST API omits null fields.
+  ackTime?: number
+  ackUser?: string
 }
 
 export interface Event {
@@ -235,6 +305,20 @@ export interface DrawerState {
   isAdvanceFilterModal: boolean
 }
 
+/**
+ * IF-MIB ifAdminStatus / ifOperStatus values. ifAdminStatus only ever takes the
+ * first three; ifOperStatus uses the full range.
+ */
+export enum SnmpIfStatus {
+  UP = 1,
+  DOWN = 2,
+  TESTING = 3,
+  UNKNOWN = 4,
+  DORMANT = 5,
+  NOT_PRESENT = 6,
+  LOWER_LAYER_DOWN = 7
+}
+
 export interface SnmpInterface {
   collect: boolean
   collectFlag: string
@@ -255,6 +339,7 @@ export interface SnmpInterface {
   lastEgressFlow: any
   lastIngressFlow: any
   lastSnmpPoll: number
+  nodeId: number
   physAddr: any
   poll: boolean
 }
@@ -279,16 +364,60 @@ export interface IpInterface {
   snmpPrimary: string
   hostName: string
 }
-
-export interface Outage {
-  nodeId: number
-  ipAddress: string
-  serviceIs: number
-  nodeLabel: string
-  location: string
-  hostname: string
+// A monitored service on a node and the address it runs on, from /api/v2/ifservices: what the
+// Node Details Services menu links to.
+export interface NodeLinkService {
   serviceName: string
-  outageId: number
+  ipAddress: string
+}
+
+// GET /api/v2/nodes/{id}/criticalPath: the node's own row in the pathoutage table.
+// GET /api/v2/nodes/{id}/alarmStatus: the node's problem alarms (above Normal), counted on the server.
+export interface NodeAlarmStatus {
+  // Highest unacknowledged problem severity, as an OnmsSeverity name; NORMAL when there is none.
+  severity: string
+  nodeDown: boolean
+  interfacesDown: number
+  servicesDown: number
+  acknowledgedCount: number
+  unacknowledgedCount: number
+}
+
+export interface NodeCriticalPath {
+  criticalPathIp: string | null
+  criticalPathServiceName: string | null
+}
+
+export interface MonitoredService {
+  id: number
+  lastGood?: Date | null
+  lastFail?: Date | null
+  qualifier?: string
+  status?: string
+  source?: string
+  notify?: string
+  serviceType?: ServiceType
+  ipInterface?: IpInterface
+}
+
+// Mirrors what /api/v2/outages actually returns. It sends no hostname and no serviceName --
+// OnmsOutage has neither -- so the service name is resolved from serviceId by the caller.
+// perspective is the monitoring location NAME, not the location: OnmsOutage.getPerspective
+// returns an OnmsMonitoringLocation, but MonitoringLocationJsonSerializer writes it out as
+// just getLocationName() (and the XML adapter does the same).
+export interface Outage {
+  id: number
+  ifLostService: Date | null
+  ifRegainedService: Date | null
+  ipAddress: string
+  locationName: string
+  monitoredService?: MonitoredService
+  nodeId: number
+  nodeLabel: string
+  perspective?: string
+  serviceId: number
+  suppressTime?: Date | null
+  suppressedBy?: string | null
 }
 
 export interface IfService {
@@ -307,6 +436,12 @@ export interface Category {
   authorizedGroups: string[]
   id: number
   name: string
+}
+
+// The page a node slice holds: what its query asked for. A limit of 0 is every row.
+export interface NodePage {
+  offset: number
+  limit: number
 }
 
 export interface QueryParameters {
@@ -336,23 +471,31 @@ export interface SortProps extends ISortObject {
   sortOrder: 1 | -1
 }
 
+export interface NodeAvailabilityService {
+  /** The monitored service (ifservices) id, which the outage timeline joins on. */
+  id: number
+  name: string
+  /** The service *type* id, for building a service detail link. */
+  serviceId: number
+  availability: number
+  up?: boolean
+}
+
+export interface NodeAvailabilityInterface {
+  address: string
+  availability: number
+  id: number
+  services: NodeAvailabilityService[]
+}
+
 export interface NodeAvailability {
   availability: number
   id: number
-  ipinterfaces: {
-    address: string
-    availability: number
-    id: number
-    services: [
-      {
-        id: number
-        name: string
-        availability: number
-      }
-    ]
-  }[]
+  ipinterfaces: NodeAvailabilityInterface[]
   'service-count': number
   'service-down-count': number
+  // The node's total interfaces, when `ipinterfaces` may hold only a page of them.
+  ipinterfaceCount?: number
 }
 
 export interface FileEditorResponseLog {
@@ -422,10 +565,24 @@ export interface AppInfo {
   version: string
 }
 
+/**
+ * A window anchored to "now" rather than to fixed instants — the thing a user
+ * actually picks when they choose "Last two days". Carried alongside the resolved
+ * timestamps so the window can be recomputed later: a bookmarked link, or a
+ * Refresh minutes after the selection, both need the LATEST two days, not the two
+ * days that were current when the choice was made.
+ */
+export interface RelativeTimeRange {
+  unit: 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years'
+  amount: number
+}
+
 export interface StartEndTime {
   startTime: string | number
   endTime: string | number
   format: string
+  /** Present when the window came from a relative range and can be re-resolved. */
+  range?: RelativeTimeRange
 }
 
 export interface ResourceDefinitionsApiResponse extends ApiResponse {
@@ -481,6 +638,10 @@ export interface GraphMetricsPayload {
   step: number
   source: Metric[]
   expression?: { label: string; transient: boolean; value: string }[]
+  /** Cap on returned rows; the server downsamples further if the step would exceed it. */
+  maxrows?: number
+  /** When true a missing/unknown source yields NaNs instead of failing the whole query. */
+  relaxed?: boolean
 }
 
 export interface GraphDefinition {
@@ -617,7 +778,7 @@ export interface AssetFilter {
   value: string
 }
 
-/** All components of a node structure query */
+/** All components of a node list query */
 export interface NodeQueryFilter {
   searchTerm: string
   categoryMode: SetOperator
@@ -631,6 +792,7 @@ export interface NodeQueryFilter {
   topology?: string
   nodesWithDownAggregateStatus?: boolean
   nodesWithAssets?: boolean
+  nodesWithOutages?: boolean
   assetFilters?: AssetFilter[]
   extendedSearch: NodeQueryExtendedSearchParams
 }

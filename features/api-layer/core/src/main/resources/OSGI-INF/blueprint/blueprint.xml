@@ -102,7 +102,7 @@
 
   <!-- Events -->
 
-  <bean id="eventConfExtensionManager" class="org.opennms.features.apilayer.config.EventConfExtensionManager" destroy-method="destroy">
+  <bean id="eventConfExtensionManager" class="org.opennms.features.apilayer.config.EventConfExtensionManager">
     <argument ref="eventConfDao"/>
     <argument ref="eventConfSourceDao"/>
     <argument ref="eventConfEventDao"/>

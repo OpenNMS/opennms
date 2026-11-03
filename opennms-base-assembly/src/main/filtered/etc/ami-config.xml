@@ -1,1 +1,0 @@
-<ami-config xmlns="http://xmlns.opennms.org/xsd/config/ami" timeout="1500" retry="2" username="opennms" password="p455w0rd"/>

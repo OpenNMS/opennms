@@ -43,13 +43,20 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-config</artifactId>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.boot</artifactId>
+            <version>${karafVersion}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features</groupId>
-            <artifactId>org.opennms.features.springframework-security</artifactId>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-config-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- For the catalog of valid OpenNMS security roles. -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-web-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -66,6 +73,16 @@
             <groupId>org.apache.karaf.jaas</groupId>
             <artifactId>org.apache.karaf.jaas.config</artifactId>
             <version>${karafVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 260" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="740" height="260" fill="#ffffff"/>
+  <!-- OpenNMS host boundary -->
+  <rect x="20" y="30" width="320" height="200" rx="12" fill="none" stroke="#bbbbbb" stroke-width="2"/>
+  <text x="40" y="62" font-size="16" font-weight="bold" fill="#666666">OpenNMS host</text>
+  <!-- Database host boundary -->
+  <rect x="400" y="30" width="320" height="200" rx="12" fill="none" stroke="#bbbbbb" stroke-width="2"/>
+  <text x="420" y="62" font-size="16" font-weight="bold" fill="#666666">Database host</text>
+  <!-- connection -->
+  <line x1="300" y1="140" x2="440" y2="140" stroke="#555555" stroke-width="2"/>
+  <!-- OpenNMS Core -->
+  <rect x="60" y="90" width="240" height="100" rx="10" fill="#4c9a41" stroke="#2e6b28" stroke-width="2"/>
+  <text x="180" y="147" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">OpenNMS Core</text>
+  <!-- PostgreSQL -->
+  <rect x="440" y="90" width="240" height="100" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="560" y="147" text-anchor="middle" font-size="20" font-weight="bold" fill="#222222">PostgreSQL</text>
+</svg>

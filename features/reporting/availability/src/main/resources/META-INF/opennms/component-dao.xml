@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+
+  <bean id="calendarAvailabilityCalculator"
+        class="org.opennms.reporting.availability.AvailabilityCalculatorImpl"
+        scope="prototype">
+    <property name="monthFormat" value="calendar" />
+    <property name="baseDir" value="${opennms.report.dir}/" />
+    <property name="reportStoreService" ref="reportStoreService" />
+    <property name="availabilityData" ref="availabilityData" />
+  </bean>
+
+  <bean id="classicAvailabilityCalculator"
+        class="org.opennms.reporting.availability.AvailabilityCalculatorImpl"
+        scope="prototype">
+    <property name="monthFormat" value="classic" />
+    <property name="baseDir" value="${opennms.report.dir}/" />
+    <property name="reportStoreService" ref="reportStoreService" />
+    <property name="availabilityData" ref="availabilityData" />
+  </bean>
+
+  <bean id="availabilityReportService"
+        class="org.opennms.reporting.availability.svclayer.AvailabilityReportService"
+        scope="prototype">
+    <property name="parameterConversionService" ref="parameterConversionService" />
+    <property name="configDao" ref="availabilityReportConfigDao" />
+    <property name="calendarCalculator" ref="calendarAvailabilityCalculator" />
+    <property name="classicCalculator" ref="classicAvailabilityCalculator" />
+  </bean>
+
+  <bean id="legacyAvailabilityDataService"
+        class="org.opennms.reporting.availability.svclayer.LegacyAvailabilityDataService"
+        scope="prototype" />
+
+  <bean id="availabilityData"
+        class="org.opennms.reporting.availability.AvailabilityData"
+        scope="prototype">
+    <property name="availabilityDataService" ref="legacyAvailabilityDataService" />
+  </bean>
+
+</beans>

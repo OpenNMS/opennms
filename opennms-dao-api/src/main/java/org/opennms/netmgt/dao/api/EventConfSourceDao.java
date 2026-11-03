@@ -47,7 +47,8 @@ public interface EventConfSourceDao extends OnmsDao<EventConfSource, Long> {
 
     void deleteAll(final Collection<EventConfSource> list);
 
-    void updateEnabledFlag(final Collection<Long> sourceIds, boolean enabled, boolean cascadeToEvents);
+    /** Flips the sources' enabled flag, bumping their lastModified; a cascade also stamps the events with {@code modifiedBy}. */
+    void updateEnabledFlag(final Collection<Long> sourceIds, boolean enabled, boolean cascadeToEvents, String modifiedBy);
 
     Map<String, Object> filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords,
                                               Integer offset, Integer limit);
@@ -57,6 +58,36 @@ public interface EventConfSourceDao extends OnmsDao<EventConfSource, Long> {
     List<String> findAllNames();
 
     Integer findMaxFileOrder();
+
+    /**
+     * Allocates the {@code fileOrder} for a new source: the next value of a database sequence, always above
+     * every value in use, i.e. the new source is evaluated before every existing one. Lock-free, so creating
+     * a source never blocks other creators however long its own transaction runs. Values start at 2:
+     * 1 is reserved for {@link org.opennms.netmgt.model.EventConfSource#CATCH_ALL_SOURCE_NAME}.
+     * Must be called inside a transaction.
+     */
+    Integer nextFileOrder();
+
+    /**
+     * Takes the transaction-scoped named lock that serializes the operations touching many source rows at
+     * once (the eventconf.xml renumbering, bulk delete, bulk enable/disable) - the DAO's {@code accessLocks}
+     * row, see {@code AbstractDaoHibernate#lock()}. Taking it first gives them all the same lock order, so
+     * they queue instead of deadlocking on each other's rows. Released when the transaction ends.
+     */
+    void lockFileOrders();
+
+    /**
+     * Locks the source row ({@code SELECT ... FOR UPDATE}) for the rest of the current transaction and
+     * returns the source re-read under that lock. Hold it before replacing, appending or compacting the
+     * source's events so concurrent writers cannot interleave and produce duplicate event positions.
+     * <p>
+     * Always work on the returned instance: a lock upgrade does not refresh an entity that is already in
+     * the session, so any {@code fileOrder} or {@code eventCount} read before the lock may be stale and
+     * would be written back over a concurrent change on the next flush.
+     *
+     * @throws javax.persistence.EntityNotFoundException if no source with that id exists
+     */
+    EventConfSource lockForUpdate(Long sourceId);
 
     List<String> findAllVendors();
 }

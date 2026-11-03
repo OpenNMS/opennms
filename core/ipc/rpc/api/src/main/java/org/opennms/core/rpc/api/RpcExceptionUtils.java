@@ -23,6 +23,7 @@ package org.opennms.core.rpc.api;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 
 public class RpcExceptionUtils {
 
@@ -57,6 +58,8 @@ public class RpcExceptionUtils {
         } else if (t instanceof java.util.concurrent.RejectedExecutionException) {
             return Optional.ofNullable(visitor.onRejected(t));
         } else if (t instanceof RequestTimedOutException) {
+            return Optional.ofNullable(visitor.onTimedOut(t));
+        } else if (t instanceof TimeoutException) {
             return Optional.ofNullable(visitor.onTimedOut(t));
         } else {
             return null;

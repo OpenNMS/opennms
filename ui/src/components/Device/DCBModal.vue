@@ -1,24 +1,21 @@
 <template>
-  <PDialog
+  <OnmsDialog
     :visible="visible"
     :header="title"
     modal
-    :draggable="false"
     @update:visible="onVisibleChange"
   >
     <div class="content">
       <slot name="content" />
     </div>
-  </PDialog>
+  </OnmsDialog>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import Dialog from 'primevue/dialog'
+import { OnmsDialog } from '@opennms/onms-ui'
 import { useDeviceStore } from '@/stores/deviceStore'
-
-const PDialog = Dialog
 
 const deviceStore = useDeviceStore()
 

@@ -24,10 +24,10 @@
     <!-- Allows us to use system properties as variables in this configuration file -->
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
-        <!-- By default, use the data/tmp/activemq directory for on-disk storage -->
+        <!-- By default, use the var/activemq directory for on-disk storage -->
         <property name="properties">
             <value>
-                activemq.data=/opt/opennms/data/tmp/activemq
+                activemq.data=/opt/opennms/var/activemq
             </value>
         </property>
     </bean>

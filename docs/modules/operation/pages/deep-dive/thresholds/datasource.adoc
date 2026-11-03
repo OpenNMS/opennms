@@ -107,7 +107,7 @@ As an example, the following configuration for the HTTP service will enable thre
       </service>
 -----
 
-The `rrdRepository` attribute of the thresholding group in `$OPENNMS_HOME/etc/thresholds.xml` must contain the appropriate path to the `response` repository.  In the the example below, the path is `/opt/opennms/share/rrd/response`.
+The `rrdRepository` attribute of the thresholding group in `$OPENNMS_HOME/etc/thresholds.xml` must contain the appropriate path to the `response` repository.  In the example below, the path is `/opt/opennms/share/rrd/response`.
 
 Additionally, response time thresholds must be `interface` (`if`) type.
 Below is an example section from `$OPENNMS_HOME/etc/thresholds.xml`:
@@ -132,3 +132,5 @@ To complete the example, the thresholding package definition from `$OPENNMS_HOME
       </service>
    </package>
 -----
+
+After you change a thresholding package, send a `Threshd` reload event or restart {page-component-title} (see xref:deep-dive/admin/configuration/daemon-config-files.adoc#package-filter-changes[Package filter changes]).

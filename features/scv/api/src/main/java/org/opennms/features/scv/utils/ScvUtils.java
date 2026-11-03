@@ -31,6 +31,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class ScvUtils {
@@ -39,6 +40,29 @@ public class ScvUtils {
     public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
     public static final String OPENNMS_PROPERTIES_D_NAME = "opennms.properties.d";
     public static final String OPENNMS_PROPERTIES_NAME = "opennms.properties";
+
+    /**
+     * Matches a whole SCV metadata reference of the form
+     * {@code ${scv:alias:key|default}}. Mirrors the SCV_REGEX / SCV_SUBKEY rules in
+     * ui/src/lib/scvValidator.ts:
+     * <ul>
+     *   <li>alias   = [a-zA-Z0-9_] optionally followed by [a-zA-Z0-9_.-]* and a trailing [a-zA-Z0-9_]</li>
+     *   <li>:key    = same format, optional</li>
+     *   <li>|default = any chars except | and }, optional</li>
+     * </ul>
+     */
+    public static final Pattern SCV_EXPRESSION_PATTERN = Pattern.compile(
+            "^\\$\\{scv:[a-zA-Z0-9_](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9_])?" +
+            "(?::[a-zA-Z0-9_](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9_])?)?" +
+            "(?:\\|[^|}]+)?\\}$");
+
+    /**
+     * @return {@code true} if {@code value} is a well-formed SCV expression
+     *         ({@code ${scv:...}}); {@code false} for {@code null} or any other value.
+     */
+    public static boolean isScvExpression(final String value) {
+        return value != null && SCV_EXPRESSION_PATTERN.matcher(value).matches();
+    }
 
     /**
      * Loads SCV-related properties from system properties first if not found in system properties,

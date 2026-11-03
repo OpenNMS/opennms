@@ -332,8 +332,8 @@ Note that you must include the `monitor` section for each service in your defini
 
 == Example: test SNMP table with some matching values
 
-This example shows how to use the SnmpMonitor to test if the number of static routes are within a given boundary.
-The service is marked as up if at least three and at maximum of 10 static routes are set on a network device.
+This example shows how to use the SnmpMonitor to test if the number of static routes is within a given boundary.
+The service is marked as up if at least three and at most 10 static routes are set on a network device.
 This status can be monitored by polling the table ipRouteProto from the http://www.ietf.org/rfc/rfc1213.txt[RFC1213-MIB2].
 
 `ipRouteProto 1.3.6.1.2.1.4.21.1.9`
@@ -366,7 +366,7 @@ intended to imply that hosts should support those protocols."
 ----
 
 To monitor only local routes, apply the test only on entries in the ipRouteProto table with value `2`.
-The number of entries in the whole ipRouteProto table has to be counted and the boundaries on the number has to be applied.
+The number of entries in the whole ipRouteProto table has to be counted and the boundaries on the number have to be applied.
 
 == Example SnmpMonitor used to test if the number of local static route entries is between 3 and 10
 

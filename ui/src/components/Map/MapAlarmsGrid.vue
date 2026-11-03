@@ -1,6 +1,6 @@
 <template>
   <FormField label="Alarm Action" class="select-ack">
-    <PSelect
+    <OnmsSelect
       name="alarmOptions"
       id="alarmOptions"
       v-model="alarmOption"
@@ -15,7 +15,7 @@
       <thead>
         <tr>
           <th class="first-th">
-            <PCheckbox binary v-model="all" aria-label="All" />
+            <OnmsCheckbox v-model="all" aria-label="All" />
           </th>
 
           <SortableTh
@@ -71,8 +71,7 @@
       <tbody>
         <tr v-for="alarm in alarms" :key="alarm.id">
           <td :class="alarm.severity" class="first-td">
-            <PCheckbox
-              binary
+            <OnmsCheckbox
               aria-label="Alarm"
               @update:modelValue="selectCheckbox(alarm)"
               :modelValue="all || alarmCheckboxes[alarm.id]"
@@ -94,15 +93,11 @@
 import { computed, reactive, ref } from 'vue'
 
 import { Alarm, AlarmQueryParameters, ISortObject } from '@/types'
-import Select from 'primevue/select'
-import Checkbox from 'primevue/checkbox'
+import { OnmsCheckbox, OnmsSelect } from '@opennms/onms-ui'
 import { SORT } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
 import SortableTh from './SortableTh.vue'
 import { useMapStore } from '@/stores/mapStore'
-
-const PSelect = Select
-const PCheckbox = Checkbox
 
 const mapStore = useMapStore()
 const alarms = computed<Alarm[]>(() => mapStore.getAlarms())

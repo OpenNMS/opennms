@@ -1,9 +1,8 @@
 <template>
-  <Drawer
+  <OnmsDrawer
     v-model:visible="drawerVisible"
-    position="right"
     header="Customize Columns"
-    :style="{ width: '55em' }"
+    width="55em"
   >
     <div class="drawer-content">
       <section>
@@ -19,10 +18,12 @@
       >
         <template #item="{ element, index }">
           <div class="column-row">
-            <Button text class="drag-btn">
-              <OnmsIcon class="close-icon drag-handle" :icon="Apps" />
-            </Button>
-            <Select
+            <OnmsIconButton
+              class="drag-btn close-icon drag-handle"
+              aria-label="Reorder column"
+              :icon="Apps"
+            />
+            <OnmsSelect
               v-model="element.value"
               :options="getAvailableOptions(index)"
               optionLabel="name"
@@ -30,55 +31,52 @@
               :placeholder="`Column ${index + 1}`"
               class="columns-selector"
             />
-            <Button
-              text
+            <OnmsIconButton
               :data-test="`remove-column-${index}`"
+              title="Remove column"
+              class="close-icon"
+              :icon="Cancel"
               @click="removeColumn(index)"
-            >
-              <OnmsIcon class="close-icon" :icon="Cancel" />
-            </Button>
+            />
           </div>
         </template>
       </Draggable>
       <div class="spacer-medium"></div>
       <div class="button-row">
-        <Button @click="customizeTable">Save</Button>
-        <Button
-          outlined
+        <OnmsButton @click="customizeTable">Save</OnmsButton>
+        <OnmsButton
+          variant="outlined"
           :disabled="selectedColumns.length >= 10"
           @click="addColumn"
-        >Add Column</Button>
-        <Button outlined @click="resetColumns">Reset Columns</Button>
-        <Button outlined @click="nodeStructureStore.columnsDrawerState.visible = false">Close</Button>
+        >Add Column</OnmsButton>
+        <OnmsButton variant="outlined" @click="resetColumns">Reset Columns</OnmsButton>
+        <OnmsButton variant="outlined" @click="nodeListStore.columnsDrawerState.visible = false">Close</OnmsButton>
       </div>
     </div>
-  </Drawer>
+  </OnmsDrawer>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
-import Apps from '@/components/icons/navigation/Apps.vue'
-import Cancel from '@/components/icons/navigation/Cancel.vue'
+import Apps from '@opennms/onms-ui/icons/navigation/Apps.vue'
+import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import Draggable from 'vuedraggable'
-import Button from 'primevue/button'
-import Drawer from 'primevue/drawer'
-import Select from 'primevue/select'
+import { OnmsButton, OnmsDrawer, OnmsIconButton, OnmsSelect } from '@opennms/onms-ui'
 import { saveNodePreferences } from '@/services/localStorageService'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
 import { NodeColumnSelectionItem } from '@/types'
 import { defaultColumns } from './utils'
 
-const nodeStructureStore = useNodeStructureStore()
+const nodeListStore = useNodeListStore()
 const columns = ref<NodeColumnSelectionItem[]>(defaultColumns)
 const selectedColumns = ref<{ name: string; value: string }[]>([])
 
 const drawerVisible = computed({
-  get: () => nodeStructureStore.columnsDrawerState.visible,
+  get: () => nodeListStore.columnsDrawerState.visible,
   set: (val: boolean) => {
     if (!val) {
-      nodeStructureStore.columnsDrawerState.visible = false
+      nodeListStore.columnsDrawerState.visible = false
     }
   }
 })
@@ -120,7 +118,7 @@ const customizeTable = async () => {
   // only `col.value` (the id) and never `col.name` — trusting `col.name` here
   // persisted an empty label for any re-added/changed column, which rendered as
   // a header with no text. The id is always correct, so derive the label from it.
-  nodeStructureStore.columns = selectedColumns.value
+  nodeListStore.columns = selectedColumns.value
     .filter(col => col.value)
     .map((col, index) => ({
       id: col.value as string,
@@ -129,28 +127,29 @@ const customizeTable = async () => {
       order: index
     }))
 
-  const nodePrefs = await nodeStructureStore.getNodePreferences()
+  const nodePrefs = await nodeListStore.getNodePreferences()
   saveNodePreferences(nodePrefs)
-  nodeStructureStore.columnsDrawerState.visible = false
+  nodeListStore.columnsDrawerState.visible = false
 }
 
 const resetColumns = async () => {
-  nodeStructureStore.columns = [...defaultColumns]
-  const nodePrefs = await nodeStructureStore.getNodePreferences()
+  nodeListStore.columns = [...defaultColumns]
+  const nodePrefs = await nodeListStore.getNodePreferences()
   saveNodePreferences(nodePrefs)
-  nodeStructureStore.columnsDrawerState.visible = false
+  nodeListStore.columnsDrawerState.visible = false
 }
 
-watch(() => nodeStructureStore.columns, (newColumns) => {
+watch(() => nodeListStore.columns, (newColumns) => {
   initializeSelectedColumns(newColumns)
 }, { immediate: true, deep: true })
 </script>
 
 <style lang="scss" scoped>
+// No height/overflow here on purpose: PrimeVue's own `.p-drawer-content` is the
+// drawer's scroll container. A second scroller nested inside it drew its own
+// scrollbar next to the page's (NMS-20182).
 .drawer-content {
   padding: 20px;
-  height: 100%;
-  overflow: auto;
 }
 
 .spacer-large {

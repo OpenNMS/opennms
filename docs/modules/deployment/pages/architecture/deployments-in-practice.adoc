@@ -1,0 +1,89 @@
+
+[[arch-deployments-in-practice]]
+= Deployments in Practice
+:description: Worked examples of OpenNMS in a complete Operational Support System (OSS) stack, ranging from a mid-size enterprise to a flow-heavy service provider.
+
+The examples below are composites of common real-world deployments; they are not intended as templates to copy.
+They show how {page-component-title} fits into an Operational Support System (OSS) stack, and how the xref:architecture/deployment-scenarios.adoc[deployment scenarios] combine in practice.
+Few deployments start in their final form: most grow iteratively, adding components as specific needs appear rather than being built out all at once.
+
+== Availability and performance monitoring for an enterprise
+
+An organization with a campus network and a dozen branch offices: roughly 1,500 nodes, mostly switches, routers, wireless controllers, and servers.
+The requirements are availability monitoring, SNMP performance data, and alerting.
+
+.Enterprise deployment: single core, one Minion per branch, Grafana for dashboards
+image::deployment/architecture/example-enterprise.svg["Architecture diagram of an enterprise deployment with a core at the central office, PostgreSQL, and Grafana, and a Minion in each of several branch offices connecting back to the core", 800]
+
+The deployment:
+
+* A single core host at the central office (<<arch-single-host, single-host scenario>>) stores time series data on local SSD storage.
+* PostgreSQL runs on the organization's existing database infrastructure (<<arch-external-postgres, external PostgreSQL scenario>>), which already provides backups and DBA support.
+* One Minion runs in each branch office (<<arch-minions, Minion scenario>>).
+The branches sit behind firewalls, and each Minion makes a single outbound connection.
+* Grafana provides the dashboards through the https://docs.opennms.com/grafana-plugin/latest/index.html[OpenNMS Plugin for Grafana]; the {page-component-title} UI handles alarms, provisioning, and troubleshooting.
+* Notifications feed the team's existing on-call tooling.
+
+This deployment uses only the first three scenarios, matching components to the requirements it has.
+It can grow along the same path as needs change.
+
+== Collection and fault management for an upstream OSS
+
+A network operator with equipment in many unstaffed locations, such as fiber exchanges and other equipment sites.
+The equipment reports faults primarily through SNMP traps, and an upstream system owns notifications and cross-domain correlation.
+{page-component-title} serves as the collection and fault management layer between the two: it turns raw traps into alarms, correlates them, and streams them to the upstream system.
+
+.Collection and fault management: Minions collect traps, the core correlates alarms, and Kafka carries both Minion traffic and the alarm topic to an upstream system
+image::deployment/architecture/fault-management.svg["Architecture diagram: Minions at equipment sites connect through a Kafka cluster to the OpenNMS core, which correlates alarms; the same Kafka cluster carries the alarm topic to an upstream system", 900]
+
+The deployment:
+
+* A Minion at each equipment location receives traps close to the source (<<arch-minions, Minion scenario>>) and reaches the core through an external Kafka cluster (<<arch-message-broker, external message broker scenario>>).
+* The core normalizes traps into events and raises alarms from them.
+Custom xref:operation:deep-dive/alarms/advanced-alarm-handling.adoc[Drools rules] extend the default correlation to match the operator's alarm lifecycle, such as clearing, deduplication, and grouping of related alarms.
+* The xref:operation:deep-dive/kafka-producer/kafka-producer.adoc[Kafka Producer] streams all alarms, and their subsequent updates, to a topic on the same Kafka cluster.
+* An upstream system consumes the alarm topic and handles notifications and further correlation.
+To {page-component-title} it is a black box: no notification or ticketing configuration exists in {page-component-title} itself.
+
+In this stack, {page-component-title} owns trap ingestion, event normalization, and alarm correlation; everything user-facing happens upstream.
+The operator's concern here is faults, not performance data.
+
+== Metrics collection for a Prometheus-compatible stack
+
+An organization that uses {page-component-title} solely as a metrics collection engine, feeding a monitoring stack built on Prometheus-compatible tooling.
+This deployment is the opposite of the previous example: the concern is performance data, not faults.
+
+.Metrics pipeline: Minions collect SNMP metrics and reach the core through Kafka; the core writes them to a Prometheus-compatible stack for storage, dashboards, and alerting
+image::deployment/architecture/metrics-pipeline.svg["Architecture diagram: Minions collect SNMP metrics and reach the OpenNMS core through a Kafka cluster; the core writes metrics to Thanos in a Prometheus-compatible stack that feeds Grafana dashboards and Alertmanager notifications to Slack", 980]
+
+The deployment:
+
+* Minions in the collection networks (<<arch-minions, Minion scenario>>) gather SNMP metrics on a one-minute collection interval, faster than the default five-minute interval, and reach the core through an external Kafka cluster (<<arch-message-broker, external message broker scenario>>).
+* The xref:time-series-storage/timeseries/prometheus-remotewrite.adoc[Prometheus RemoteWrite plugin] persists all collected metrics to Thanos (<<arch-dedicated-tss, dedicated time series storage scenario>>); nothing is written to local RRD files.
+The fast collection interval multiplies write volume, which is the trigger for dedicated storage here.
+* Alerting on the metrics runs in the Prometheus ecosystem: an alerting component evaluates threshold rules, and Alertmanager routes notifications to a messaging tool such as Slack.
+* Grafana queries Thanos directly with PromQL through its Prometheus data source; the OpenNMS Plugin for Grafana is not needed in this pipeline.
+
+In this stack, {page-component-title} contributes inventory-driven collection at scale; metric storage, alerting, and dashboards live in the Prometheus ecosystem.
+
+== Flow monitoring for a service provider
+
+A regional service provider: a few thousand nodes across several points of presence, with NetFlow and IPFIX exported from edge and core routers at sustained rates in the tens of thousands of flows per second.
+Traffic visibility is a primary product requirement.
+
+.Service provider deployment: Minions in each POP feed Kafka; Sentinels process flows into Elasticsearch, with Grafana and Kibana for visualization
+image::deployment/architecture/example-flow-heavy.svg["Architecture diagram of a service provider deployment: Minions in points of presence feed a Kafka cluster; the core and Sentinels process data; Sentinels write flows to Elasticsearch; Grafana queries the core and Kibana queries Elasticsearch directly; the Kafka Producer feeds downstream consumers", 860]
+
+The deployment:
+
+* Minions in each POP receive flows and telemetry close to the exporters and handle polling within the POP (<<arch-minions, Minion scenario>>).
+* An Apache Kafka cluster carries Minion traffic and buffers flow data (<<arch-message-broker, external message broker scenario>>).
+Buffering is relevant here because flow volume spikes during network incidents, when visibility is most needed.
+* Sentinel instances consume and process the flow stream, with the instance count scaled to the flow rate.
+Raw flow processing does not reach the core.
+* An Elasticsearch cluster stores flows; PostgreSQL and dedicated time series storage hold the rest.
+* Grafana provides operational dashboards through the OpenNMS data source, and Kibana queries the Elasticsearch cluster directly for flow exploration.
+* The xref:operation:deep-dive/kafka-producer/kafka-producer.adoc[Kafka Producer] streams alarms and events to Kafka topics consumed by the provider's service-impact tooling and data platform.
+The same Kafka cluster serves the internal pipeline and the integration bus.
+
+Even at this scale there is still one core; what scales out is reach (Minions), data processing (Sentinels), and storage (Elasticsearch, Kafka).

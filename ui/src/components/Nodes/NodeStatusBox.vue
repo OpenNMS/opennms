@@ -1,0 +1,82 @@
+<template>
+  <NodeDetailsBanner
+    :severity="severity"
+    role="status"
+    data-test="node-status"
+  >
+    <template v-if="status">
+      <strong data-test="node-status-message">{{ status.message }}</strong>
+      <template v-if="status.hasProblems">
+        There {{ status.unackCount === 1 ? 'is' : 'are' }}
+        <a
+          :href="alarmListHref('unack')"
+          data-test="node-status-unack-link"
+        ><strong>{{ status.unackCount }}</strong> unacknowledged</a>
+        {{ problems(status.unackCount) }}, and
+        <a
+          :href="alarmListHref('ack')"
+          data-test="node-status-ack-link"
+        ><strong>{{ status.ackCount }}</strong> acknowledged</a>
+        {{ problems(status.ackCount) }}.
+      </template>
+    </template>
+    <span
+      v-else-if="loadFailed"
+      data-test="node-status-unavailable"
+    >Node status is unavailable.</span>
+    <span v-else>Checking node status&hellip;</span>
+  </NodeDetailsBanner>
+</template>
+
+<script setup lang="ts">
+import { computed, watch } from 'vue'
+import useVisiblePolling from '@/composables/useVisiblePolling'
+import { useAlarmStore } from '@/stores/alarmStore'
+import { useMenuStore } from '@/stores/menuStore'
+import NodeDetailsBanner from './NodeDetailsBanner.vue'
+import { BannerSeverity, bannerSeverity, computeNodeStatus, NodeStatus } from './nodeStatus'
+import useActiveNodeId from './hooks/useActiveNodeId'
+
+// How often the status is refreshed while it is on screen. The JSP worked it out once per page
+// load; the alarms behind it change without the page knowing, so this one keeps up. Each refresh
+// is a handful of counts on the server, not the node's alarms.
+const POLL_INTERVAL_MS = 60_000
+
+const alarmStore = useAlarmStore()
+const menuStore = useMenuStore()
+
+const nodeId = useActiveNodeId()
+
+// The store's node slice is only replaced on success, so it may still be the previous node's.
+const isThisNode = computed<boolean>(() => alarmStore.nodeAlarmStatusNodeId === nodeId.value)
+
+const status = computed<NodeStatus | undefined>(() =>
+  (isThisNode.value && alarmStore.nodeAlarmStatus ? computeNodeStatus(alarmStore.nodeAlarmStatus) : undefined))
+
+// A failed refresh of a node already on screen keeps the status it had -- a minute-old status
+// says more than none -- so this only shows when there is nothing for this node to fall back on.
+// The failure is the store's, kept by node id: another node's failure never shows here.
+const loadFailed = computed<boolean>(() => !isThisNode.value && alarmStore.nodeAlarmStatusFailedNodeId === nodeId.value)
+
+// Before the first answer there is no severity to show, so the banner stays neutral.
+const severity = computed<BannerSeverity>(() => bannerSeverity(status.value?.severity))
+
+const problems = (count: number) => (count === 1 ? 'problem' : 'problems')
+
+// The legacy alarm list, filtered to this node. Will need to point at the Vue Alarms page once
+// it's implemented.
+const alarmListHref = (ackType: 'ack' | 'unack') =>
+  `${menuStore.mainMenu.baseHref}alarm/list.htm?filter=node%3d${nodeId.value}&acktype=${ackType}`
+
+const fetchStatus = async () => {
+  if (nodeId.value) {
+    await alarmStore.getNodeAlarmStatus(nodeId.value)
+  }
+}
+
+useVisiblePolling(fetchStatus, POLL_INTERVAL_MS)
+
+watch(nodeId, fetchStatus, { immediate: true })
+
+defineExpose({ fetchStatus })
+</script>

@@ -461,6 +461,38 @@ public class Migrator {
     }
 
     /**
+     * <p>grantPgMonitorToUser</p>
+     *
+     * Grants the built-in pg_monitor role to the OpenNMS database user so the
+     * PostgreSQL data collection queries in the default JDBC collection can see
+     * sessions owned by other roles in pg_stat_activity. The grant is idempotent
+     * and runs on every install and upgrade. A failure is logged as a warning
+     * instead of aborting the migration, because the database may be managed
+     * externally with a restricted admin account; in that case the grant must be
+     * applied manually.
+     */
+    public void grantPgMonitorToUser() {
+        if (!m_createUser) {
+            return;
+        }
+
+        LOG.info("granting pg_monitor to the OpenNMS user");
+        Statement st = null;
+        Connection c = null;
+        try {
+            c = m_adminDataSource.getConnection();
+            st = c.createStatement();
+            st.execute("GRANT pg_monitor TO " + getUserForONMSDB());
+        } catch (final SQLException e) {
+            LOG.warn("Unable to grant pg_monitor to {}. PostgreSQL monitoring metrics based on pg_stat_activity"
+                    + " will be incomplete until \"GRANT pg_monitor TO {}\" is run manually.",
+                    getUserForONMSDB(), getUserForONMSDB(), e);
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+    }
+
+    /**
      * <p>databaseExists</p>
      *
      * @return a boolean.
@@ -900,6 +932,7 @@ public class Migrator {
     public void prepareDatabase() throws MigrationException {
         validateDatabaseVersion();
         createUser();
+        grantPgMonitorToUser();
         createSchema();
         createDatabase();
         createLangPlPgsql();

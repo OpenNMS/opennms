@@ -96,6 +96,25 @@
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.api</artifactId>
     </dependency>
+    <!-- Meta-data resolution, used to route metrics to per-tenant topics -->
+    <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.cache</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-jmx</artifactId>
+    </dependency>
     <!-- Kafka -->
     <dependency>
       <groupId>org.apache.kafka</groupId>
@@ -144,6 +163,18 @@
     <dependency>
       <groupId> com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java-util</artifactId>
+      <version>${protobufVersion}</version>
+      <exclusions>
+        <!-- not necessary at runtime -->
+        <exclusion>
+          <groupId>com.google.code.findbugs</groupId>
+          <artifactId>jsr305</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -284,6 +315,13 @@
     <dependency>
       <groupId>org.opennms.features.scv</groupId>
       <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- EntityScopeProviderImpl, for the metric routing tests -->
+    <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.model</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

@@ -98,14 +98,13 @@ public class BulkingIT {
 
         final long[] persists = new long[2];
 
-        // send full bulk in order to estimate last persist
+        // send full bulk; it is persisted synchronously and starts the flush timeout
         flowRepository.persist(createMockedFlows(1000));
+        persists[0] = System.currentTimeMillis();
 
         with().pollInterval(25, MILLISECONDS).await().atMost(10, SECONDS).until(() -> {
             final SearchResponse searchResponse = elasticRestClient.search(SearchRequest.forIndices(List.of("netflow-*"), "{\"query\": {\"match_all\": {}}}"));
             LOG.info("Response: {} documents", searchResponse.getHits().getTotalHits());
-            // record the initial persist
-            persists[0] = System.currentTimeMillis();
             return searchResponse.getHits().getTotalHits() == 1000L;
         });
 

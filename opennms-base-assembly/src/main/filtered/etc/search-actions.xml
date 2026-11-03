@@ -157,7 +157,7 @@
     <!-- Service Monitoring Card -->
     <action>
         <label>Configure Scheduled Outages</label>
-        <url>admin/sched-outages/index.jsp</url>
+        <url>ui/index.html#/scheduled-outages</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
@@ -209,11 +209,15 @@
             <role>ROLE_ADMIN</role>
         </roles>
     </action>
+    <action>
+        <label>Resource Graphs (Preview)</label>
+        <url>ui/index.html#/resource-graphs</url>
+    </action>
 
     <!-- Distributed Monitoring Card -->
     <action>
         <label>Manage Monitoring Locations</label>
-        <url>locations/index.jsp</url>
+        <url>ui/index.html#/distributed-monitoring?tab=locations</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
@@ -227,7 +231,7 @@
     </action>
     <action>
         <label>Manage Minions</label>
-        <url>minion/index.jsp</url>
+        <url>ui/index.html#/distributed-monitoring?tab=minions</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
@@ -260,9 +264,9 @@
         </roles>
     </action>
     <action>
-        <icon>fa fa-life-ring</icon>
-        <label>Support</label>
-        <url>about/index.jsp</url>
+        <icon>fa fa-stethoscope</icon>
+        <label>System Report</label>
+        <url>ui/index.html#/system-report</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
@@ -287,14 +291,30 @@
         <url>account/selfService/newPasswordEntry</url>
     </action>
     <action>
-        <icon>fa fa-question-circle</icon>
-        <label>Help</label>
-        <url>help/index.jsp</url>
-    </action>
-    <action>
         <icon>fa fa-info-circle</icon>
         <label>About</label>
-        <url>about/index.jsp</url>
+        <url>ui/index.html#/about</url>
+    </action>
+    <action>
+        <icon>fa fa-book</icon>
+        <label>Documentation</label>
+        <url>ui/index.html#/documentation</url>
+        <aliases>
+            <alias>Help</alias>
+        </aliases>
+    </action>
+    <action>
+        <icon>fa fa-life-ring</icon>
+        <label>Commercial Support</label>
+        <url>ui/index.html#/commercial-support</url>
+        <aliases>
+            <alias>Support</alias>
+        </aliases>
+    </action>
+    <action>
+        <icon>fa fa-users</icon>
+        <label>Community Resources</label>
+        <url>ui/index.html#/community-resources</url>
     </action>
     <action>
         <label>Show Nodes with Flows</label>
@@ -303,5 +323,15 @@
     <action>
         <label>Show Nodes without Flows</label>
         <url>ui/index.html#/nodes?flows=false</url>
+    </action>
+
+    <!-- Maps -->
+    <action>
+        <label>Geographical Map</label>
+        <url>ui/index.html#/map</url>
+    </action>
+    <action>
+        <label>Topology Map</label>
+        <url>topology</url>
     </action>
 </actions>

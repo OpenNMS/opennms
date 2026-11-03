@@ -22,6 +22,7 @@
 package org.opennms.netmgt.scheduler;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,7 @@ public class Schedule {
     private final ScheduleTimer m_timer;
     private volatile int m_currentExpirationCode;
     private volatile boolean m_scheduled = false;
+    private final AtomicInteger m_consecutiveFailures = new AtomicInteger();
 	
     
     public class ScheduleEntry implements ReadyRunnable {
@@ -77,10 +79,23 @@ public class Schedule {
             if (!m_interval.scheduledSuspension()) {
                 try {
                     Schedule.this.run();
+                    final int recovered = m_consecutiveFailures.getAndSet(0);
+                    if (recovered > 0) {
+                        LOG.info("Schedule {} recovered after {} failed runs.", this, recovered);
+                    }
                 } catch (PostponeNecessary e) {
                     // Chose a random number of seconds between 5 and 14 to wait before trying again
                     m_timer.schedule(random.nextInt(10) * 1000L + 5000L, this);
                     return;
+                } catch (RuntimeException e) {
+                    // Fall through to the reschedule below; otherwise one failed run ends the schedule for good.
+                    // Only the first failure in a row carries the stack trace.
+                    final int failures = m_consecutiveFailures.incrementAndGet();
+                    if (failures == 1) {
+                        LOG.error("Schedule {} failed to run.", this, e);
+                    } else {
+                        LOG.warn("Schedule {} failed to run ({} times in a row): {}", this, failures, e.toString());
+                    }
                 }
             }
                 

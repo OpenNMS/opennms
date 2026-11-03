@@ -35,14 +35,14 @@ import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.MockLogger;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration> {
+public class PollerConfigurationTest extends XmlTest<PollerConfiguration> {
     private static final Logger LOG = LoggerFactory.getLogger(PollerConfigurationTest.class);
 
     public PollerConfigurationTest(final PollerConfiguration sampleObject, final Object sampleXml) {
@@ -448,18 +448,6 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "rrd-repository", "/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/share/rrd/response",
                                         "rrd-base-name", "pop3",
                                         "ds-name", "pop3"
-                ));
-
-        example1.addService(new Service("NSClient", 300000, "false", "on",
-                                        "retry", "2",
-                                        "port", "1248",
-                                        "timeout", "3000"
-                ));
-
-        example1.addService(new Service("NSClientpp", 300000, "false", "on",
-                                        "retry", "2",
-                                        "port", "12489",
-                                        "timeout", "3000"
                 ));
 
         example1.addService(new Service("NRPE", 300000, "false", "on",

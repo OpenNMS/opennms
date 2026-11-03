@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 540" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="1200" height="540" fill="#ffffff"/>
+
+  <!-- Collection networks boundary -->
+  <rect x="25" y="60" width="175" height="320" rx="12" fill="none" stroke="#bbbbbb" stroke-width="2"/>
+  <text x="45" y="92" font-size="15" font-weight="bold" fill="#666666">Collection networks</text>
+
+  <!-- Prometheus-compatible stack boundary -->
+  <rect x="690" y="40" width="485" height="360" rx="12" fill="none" stroke="#bbbbbb" stroke-width="2"/>
+  <text x="710" y="72" font-size="15" font-weight="bold" fill="#666666">Prometheus-compatible stack</text>
+
+  <!-- connections -->
+  <line x1="175" y1="145" x2="240" y2="195" stroke="#555555" stroke-width="1.5"/>
+  <line x1="175" y1="220" x2="240" y2="210" stroke="#555555" stroke-width="1.5"/>
+  <line x1="175" y1="295" x2="240" y2="225" stroke="#555555" stroke-width="1.5"/>
+  <line x1="405" y1="210" x2="445" y2="185" stroke="#555555" stroke-width="1.5"/>
+  <line x1="537" y1="220" x2="537" y2="270" stroke="#555555" stroke-width="1.5"/>
+  <line x1="630" y1="175" x2="720" y2="128" stroke="#555555" stroke-width="1.5"/>
+  <line x1="900" y1="128" x2="970" y2="128" stroke="#555555" stroke-width="1.5"/>
+  <line x1="810" y1="165" x2="810" y2="250" stroke="#555555" stroke-width="1.5"/>
+  <line x1="810" y1="325" x2="810" y2="440" stroke="#555555" stroke-width="1.5"/>
+
+  <!-- Minions -->
+  <rect x="50" y="120" width="125" height="50" rx="10" fill="#1f6db3" stroke="#134a7c" stroke-width="2"/>
+  <text x="112" y="151" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">OpenNMS Minion</text>
+  <rect x="50" y="195" width="125" height="50" rx="10" fill="#1f6db3" stroke="#134a7c" stroke-width="2"/>
+  <text x="112" y="226" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">OpenNMS Minion</text>
+  <rect x="50" y="270" width="125" height="50" rx="10" fill="#1f6db3" stroke="#134a7c" stroke-width="2"/>
+  <text x="112" y="301" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">OpenNMS Minion</text>
+
+  <!-- Apache Kafka cluster -->
+  <rect x="240" y="170" width="165" height="80" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="322" y="205" text-anchor="middle" font-size="13" font-weight="bold" fill="#222222">Apache Kafka cluster</text>
+  <text x="322" y="226" text-anchor="middle" font-size="10" fill="#444444">Minion transport</text>
+
+  <!-- OpenNMS Core -->
+  <rect x="445" y="140" width="185" height="80" rx="10" fill="#4c9a41" stroke="#2e6b28" stroke-width="2"/>
+  <text x="537" y="177" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">OpenNMS Core</text>
+  <text x="537" y="199" text-anchor="middle" font-size="10" fill="#e8f1e6">inventory-driven collection</text>
+
+  <!-- PostgreSQL -->
+  <rect x="455" y="270" width="165" height="65" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="537" y="308" text-anchor="middle" font-size="15" font-weight="bold" fill="#222222">PostgreSQL</text>
+
+  <!-- Thanos -->
+  <rect x="720" y="90" width="180" height="75" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="810" y="124" text-anchor="middle" font-size="16" font-weight="bold" fill="#222222">Thanos</text>
+  <text x="810" y="146" text-anchor="middle" font-size="10" fill="#444444">metrics storage</text>
+
+  <!-- Grafana -->
+  <rect x="970" y="90" width="175" height="75" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="1057" y="124" text-anchor="middle" font-size="16" font-weight="bold" fill="#222222">Grafana</text>
+  <text x="1057" y="146" text-anchor="middle" font-size="10" fill="#444444">PromQL</text>
+
+  <!-- Alertmanager -->
+  <rect x="720" y="250" width="180" height="75" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="810" y="284" text-anchor="middle" font-size="15" font-weight="bold" fill="#222222">Alertmanager</text>
+  <text x="810" y="306" text-anchor="middle" font-size="10" fill="#444444">rule evaluation, routing</text>
+
+  <!-- Slack (external messaging) -->
+  <rect x="720" y="440" width="180" height="65" rx="10" fill="#f2f2f2" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="810" y="478" text-anchor="middle" font-size="16" font-weight="bold" fill="#222222">Slack</text>
+</svg>

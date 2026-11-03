@@ -1,9 +1,9 @@
 <template>
-  <PPanel
+  <OnmsPanel
     :header="header"
     toggleable
     :collapsed="collapsed"
-    :pt="{ header: { onClick: onHeaderClick, style: { cursor: 'pointer' } } }"
+    :unsafe-pt="{ header: { onClick: onHeaderClick, style: { cursor: 'pointer' } } }"
     class="toggle-panel"
     @update:collapsed="emit('update:collapsed', $event)"
   >
@@ -14,13 +14,11 @@
       <slot name="header" />
     </template>
     <slot />
-  </PPanel>
+  </OnmsPanel>
 </template>
 
 <script setup lang="ts">
-import Panel from 'primevue/panel'
-
-const PPanel = Panel
+import { OnmsPanel } from '@opennms/onms-ui'
 
 const props = defineProps<{
   header?: string

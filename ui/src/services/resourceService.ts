@@ -53,4 +53,25 @@ const getResourceForNode = async (name: string): Promise<Resource | null> => {
   }
 }
 
-export { getResources, getResourceForNode }
+/**
+ * Full detail (including rrdGraphAttributes) for a single resource.
+ *
+ * Resource ids embed brackets and may contain spaces or other reserved characters
+ * (e.g. `node[1].hrStorageIndex[C: Label]`), so the id is percent-encoded rather
+ * than interpolated raw the way the older graph endpoints do.
+ */
+const getResourceById = async (id: string): Promise<Resource | null> => {
+  try {
+    const resp = await rest.get(`${endpoint}/${encodeURIComponent(id)}`)
+
+    if (resp.status === 204) {
+      return null
+    }
+
+    return resp.data
+  } catch (_err) {
+    return null
+  }
+}
+
+export { getResources, getResourceForNode, getResourceById }

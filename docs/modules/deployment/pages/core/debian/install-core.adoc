@@ -22,7 +22,7 @@ sudo apt -y install opennms
 
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
      After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
-     We recommend that you exclude the {page-component-title} packages from update except when you plan perform an upgrade.
+     We recommend that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.
 
 [source, console]
 ----

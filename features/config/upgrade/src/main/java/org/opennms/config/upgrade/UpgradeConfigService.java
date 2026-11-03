@@ -69,11 +69,27 @@ public class UpgradeConfigService implements InitializingBean {
             // whichever subsystem's MDC prefix happens to be active on Main.
             try (Logging.MDCCloseable ignored = Logging.withPrefixCloseable("manager")) {
                 new LiquibaseUpgrader(cm).runChangelog("changelog-cm/changelog-cm.xml", dataSource.getConnection());
+                backfillTrapdSnmpv3UserIds();
                 migrateSnmpDataCollection();
                 // Must run after the migration so first-boot imports are seen
                 // (single-boot convergence for every install type).
                 applySnmpDataCollectionDefaultUpdates();
             }
+        }
+    }
+
+    /**
+     * Assign stable ids to any pre-existing trapd SNMPv3 user that lacks one
+     * (NMS-19723). Idempotent — a no-op once every user has an id.
+     */
+    private void backfillTrapdSnmpv3UserIds() {
+        try {
+            final boolean changed = new TrapdSnmpv3UserIdBackfill(cm).execute();
+            if (changed) {
+                LOG.info("Assigned ids to trapd SNMPv3 user(s) that lacked one.");
+            }
+        } catch (final Exception e) {
+            LOG.error("Trapd SNMPv3 user id backfill failed: {}", e.getMessage(), e);
         }
     }
 

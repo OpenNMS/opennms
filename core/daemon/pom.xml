@@ -51,6 +51,8 @@
               org.opennms.features.activemq.broker.api;resolution:=optional,
               org.opennms.features.activemq.broker.impl;resolution:=optional,
               org.opennms.features.scv.jceks;resolution:=optional,
+              <!-- HA coordinator is loaded via reflection; optional so non-HA installs resolve cleanly -->
+              org.opennms.netmgt.ha;resolution:=optional,
               *
             </Import-Package>
             <Export-Package>org.opennms.netmgt.daemon.*;org.opennms.netmgt.vmmgr.*;version="${project.version}"</Export-Package>
@@ -60,6 +62,10 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.camel.hardening</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.logging</artifactId>
@@ -191,6 +197,11 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

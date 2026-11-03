@@ -144,11 +144,11 @@ public abstract class GroupManager implements GroupConfig {
         }
         buildDutySchedules(m_groups);
         
-        if (groupinfo.getRoles().size() > 0) {
-            m_roles = new LinkedHashMap<String, Role>();
-            for (final Role role : groupinfo.getRoles()) {
-                m_roles.put(role.getName(), role);
-            }
+        // always rebuild, so removing the last role from groups.xml doesn't
+        // leave the previous roles cached until restart
+        m_roles = new LinkedHashMap<String, Role>();
+        for (final Role role : groupinfo.getRoles()) {
+            m_roles.put(role.getName(), role);
         }
     }
 
@@ -475,15 +475,25 @@ public abstract class GroupManager implements GroupConfig {
      */
     public synchronized void renameGroup(String oldName, String newName) throws Exception {
     	if (oldName != null && !oldName.equals("")) {
-    		if (m_groups.containsKey(oldName)) {
-    			Group grp = m_groups.remove(oldName);
-    			grp.setName(newName);
-    			m_groups.put(newName, grp);
-    		} else {
+    		if (!m_groups.containsKey(oldName)) {
     			throw new Exception("GroupFactory.renameGroup: Group doesn't exist: " + oldName);
     		}
-    		// Save into groups.xml
-    		saveGroups();
+    		Group grp = m_groups.remove(oldName);
+    		grp.setName(newName);
+    		m_groups.put(newName, grp);
+    		try {
+    			// Save into groups.xml
+    			saveGroups();
+    		} catch (final Exception e) {
+    			// The save did not persist, so undo the in-memory rename: the map
+    			// must keep reflecting groups.xml. Callers key referential-integrity
+    			// decisions (and their rollback) on hasGroup(), which must not report
+    			// a rename the file never received.
+    			m_groups.remove(newName);
+    			grp.setName(oldName);
+    			m_groups.put(oldName, grp);
+    			throw e;
+    		}
     	}
     }
 
@@ -517,13 +527,16 @@ public abstract class GroupManager implements GroupConfig {
         	m_groups.putAll(map);
 
             for (Role role : m_roles.values()) {
+                if (oldName.equals(role.getSupervisor())) {
+                    role.setSupervisor(newName);
+                }
             	for (Schedule sched : role.getSchedules()) {
                     if (oldName.equals(sched.getName())) {
                         sched.setName(newName);
                     }
                 }
             }
-            
+
             saveGroups();
         }
     }

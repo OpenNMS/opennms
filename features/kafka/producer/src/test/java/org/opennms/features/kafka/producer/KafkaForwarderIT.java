@@ -80,6 +80,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -811,8 +812,17 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
         private AtomicInteger numOfMetricRecords = new AtomicInteger(0);
 
+        /** Extra metric topics to consume, for tests that exercise metric routing. */
+        private Set<String> additionalMetricTopics = Collections.emptySet();
+        private Map<String, List<CollectionSetProtos.CollectionSet>> collectionSetsByTopic = new LinkedHashMap<>();
+
         public KafkaMessageConsumerRunner(String kafkaConnectString) {
             this.kafkaConnectString = Objects.requireNonNull(kafkaConnectString);
+        }
+
+        public KafkaMessageConsumerRunner(String kafkaConnectString, Set<String> additionalMetricTopics) {
+            this.kafkaConnectString = Objects.requireNonNull(kafkaConnectString);
+            this.additionalMetricTopics = Objects.requireNonNull(additionalMetricTopics);
         }
 
         public KafkaMessageConsumerRunner(String kafkaConnectString, String topic, String groupId) {
@@ -838,36 +848,47 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
             props.put(ConsumerConfig.METADATA_MAX_AGE_CONFIG, "1000");
             props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
             consumer = new KafkaConsumer<>(props);
-            consumer.subscribe(Arrays.asList(EVENT_TOPIC_NAME, NODE_TOPIC_NAME, ALARM_TOPIC_NAME, METRIC_TOPIC_NAME,
-                    ALARM_FEEDBACK_TOPIC_NAME));
+            final Set<String> subscribedTopics = new LinkedHashSet<>(Arrays.asList(EVENT_TOPIC_NAME, NODE_TOPIC_NAME,
+                    ALARM_TOPIC_NAME, METRIC_TOPIC_NAME, ALARM_FEEDBACK_TOPIC_NAME));
+            subscribedTopics.addAll(additionalMetricTopics);
+            consumer.subscribe(subscribedTopics);
 
             while (!closed.get()) {
                 ConsumerRecords<String, byte[]> records = consumer.poll(1000);
                 for (ConsumerRecord<String, byte[]> record : records) {
                     try {
-                        switch (record.topic()) {
-                            case EVENT_TOPIC_NAME:
-                                events.add(OpennmsModelProtos.Event.parseFrom(record.value()));
-                                break;
-                            case NODE_TOPIC_NAME:
-                                nodes.add(record.value() != null ?
-                                        OpennmsModelProtos.Node.parseFrom(record.value()) : null);
-                                break;
-                            case ALARM_TOPIC_NAME:
-                                final OpennmsModelProtos.Alarm alarm = record.value() != null ?
-                                        OpennmsModelProtos.Alarm.parseFrom(record.value()) : null;
-                                alarms.add(alarm);
-                                alarmsByReductionKey.put(record.key(), alarm);
-                                break;
-                            case METRIC_TOPIC_NAME :
-                                collectionSetValues.add(CollectionSetProtos.CollectionSet.parseFrom(record.value()));
-                                numOfMetricRecords.incrementAndGet();
-                                break;
-                            case ALARM_FEEDBACK_TOPIC_NAME:
-                                final OpennmsModelProtos.AlarmFeedback alarmFeedbackRecord = record.value() != null ?
-                                        OpennmsModelProtos.AlarmFeedback.parseFrom(record.value()) : null;
-                                alarmFeedback.add(alarmFeedbackRecord);
-                                break;
+                        synchronized (this) {
+                            switch (record.topic()) {
+                                case EVENT_TOPIC_NAME:
+                                    events.add(OpennmsModelProtos.Event.parseFrom(record.value()));
+                                    break;
+                                case NODE_TOPIC_NAME:
+                                    nodes.add(record.value() != null ?
+                                            OpennmsModelProtos.Node.parseFrom(record.value()) : null);
+                                    break;
+                                case ALARM_TOPIC_NAME:
+                                    final OpennmsModelProtos.Alarm alarm = record.value() != null ?
+                                            OpennmsModelProtos.Alarm.parseFrom(record.value()) : null;
+                                    alarms.add(alarm);
+                                    alarmsByReductionKey.put(record.key(), alarm);
+                                    break;
+                                case METRIC_TOPIC_NAME :
+                                    addCollectionSet(record.topic(), CollectionSetProtos.CollectionSet.parseFrom(record.value()));
+                                    numOfMetricRecords.incrementAndGet();
+                                    break;
+                                case ALARM_FEEDBACK_TOPIC_NAME:
+                                    final OpennmsModelProtos.AlarmFeedback alarmFeedbackRecord = record.value() != null ?
+                                            OpennmsModelProtos.AlarmFeedback.parseFrom(record.value()) : null;
+                                    alarmFeedback.add(alarmFeedbackRecord);
+                                    break;
+                                default:
+                                    if (additionalMetricTopics.contains(record.topic())) {
+                                        addCollectionSet(record.topic(),
+                                                CollectionSetProtos.CollectionSet.parseFrom(record.value()));
+                                        numOfMetricRecords.incrementAndGet();
+                                    }
+                                    break;
+                            }
                         }
                         numRecordsConsumed.incrementAndGet();
                     } catch (Exception e) {
@@ -878,42 +899,53 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
             consumer.close(Duration.ofMinutes(1));
         }
 
+        private void addCollectionSet(String topic, CollectionSetProtos.CollectionSet collectionSet) {
+            // Kept in the flat list as well, so tests that only count metric records are unaffected
+            // by whichever metric topic a record arrived on.
+            collectionSetValues.add(collectionSet);
+            collectionSetsByTopic.computeIfAbsent(topic, t -> new ArrayList<>()).add(collectionSet);
+        }
+
+        public synchronized Map<String, List<CollectionSetProtos.CollectionSet>> getCollectionSetsByTopic() {
+            return new LinkedHashMap<>(collectionSetsByTopic);
+        }
+
         public AtomicInteger getNumRecordsConsumed() {
             return numRecordsConsumed;
         }
 
-        public List<OpennmsModelProtos.Event> getEvents() {
-            return events;
+        public synchronized List<OpennmsModelProtos.Event> getEvents() {
+            return new ArrayList<>(events);
         }
 
-        public List<OpennmsModelProtos.Node> getNodes() {
-            return nodes;
+        public synchronized List<OpennmsModelProtos.Node> getNodes() {
+            return new ArrayList<>(nodes);
         }
 
-        public List<OpennmsModelProtos.Alarm> getAlarms() {
-            return alarms;
+        public synchronized List<OpennmsModelProtos.Alarm> getAlarms() {
+            return new ArrayList<>(alarms);
         }
 
-        public Map<String, OpennmsModelProtos.Alarm> getAlarmsByReductionKey() {
-            return alarmsByReductionKey;
+        public synchronized Map<String, OpennmsModelProtos.Alarm> getAlarmsByReductionKey() {
+            return new LinkedHashMap<>(alarmsByReductionKey);
         }
 
-        public OpennmsModelProtos.Alarm getAlarmByReductionKey(String reductionKey) {
+        public synchronized OpennmsModelProtos.Alarm getAlarmByReductionKey(String reductionKey) {
             return alarmsByReductionKey.get(reductionKey);
         }
-        
-        public List<OpennmsModelProtos.AlarmFeedback> getAlarmFeedback() {
-            return alarmFeedback;
+
+        public synchronized List<OpennmsModelProtos.AlarmFeedback> getAlarmFeedback() {
+            return new ArrayList<>(alarmFeedback);
         }
 
         public void shutdown() {
             closed.set(true);
         }
 
-        public List<CollectionSetProtos.CollectionSet> getCollectionSetValues() {
-            return collectionSetValues;
+        public synchronized List<CollectionSetProtos.CollectionSet> getCollectionSetValues() {
+            return new ArrayList<>(collectionSetValues);
         }
-        public void clearCollectionSetValues() {
+        public synchronized void clearCollectionSetValues() {
             collectionSetValues.clear();
         }
 

@@ -34,10 +34,10 @@
 </template>
 
 <script setup lang="ts">
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
-import Open from '@/components/icons/navigation/ExpandMore.vue'
-import Close from '@/components/icons/navigation/ChevronRight.vue'
-import Remove from '@/components/icons/action/Remove.vue'
+import { OnmsIcon } from '@opennms/onms-ui'
+import Open from '@opennms/onms-ui/icons/navigation/ExpandMore.vue'
+import Close from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
+import Remove from '@opennms/onms-ui/icons/action/Remove.vue'
 import NewFileInput from './NewFileInput.vue'
 import { useFileEditorStore, IFile } from '@/stores/fileEditorStore'
 import { PropType, computed, ref, watch } from 'vue'

@@ -4,17 +4,12 @@
     :class="props?.active ? 'config-help-panel-open' : ''"
   >
     <div class="config-help-close">
-      <PButton
+      <OnmsIconButton
         class="button"
-        text
         aria-label="Close help"
+        :icon="chevronRight"
         @click="onClose"
-      >
-        <OnmsIcon
-          class="buttonIcon"
-          :icon="chevronRight"
-        />
-      </PButton>
+      />
     </div>
     <div class="config-help-header">
       <div class="config-help-title">
@@ -43,14 +38,11 @@
 >
 import { PropType, computed } from 'vue'
 
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
-import Button from 'primevue/button'
+import { OnmsIconButton } from '@opennms/onms-ui'
 
-import ChevronRight from '@/components/icons/navigation/ChevronRight.vue'
+import ChevronRight from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
 import { RequisitionPluginSubTypes, RequisitionTypes } from './copy/requisitionTypes'
 import { LocalConfiguration } from './configuration.types'
-
-const PButton = Button
 
 /**
  * Props
@@ -192,7 +184,6 @@ const helpText = computed(() => {
   padding-top: 12px;
   height: 50px;
   .button {
-    font-size: 42px;
     color: var(--p-primary-color);
     display: flex;
     align-items: center;

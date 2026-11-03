@@ -22,20 +22,21 @@
 package org.opennms.javamail;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import javax.mail.BodyPart;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.search.SearchTerm;
+import jakarta.mail.BodyPart;
+import jakarta.mail.Folder;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.NoSuchProviderException;
+import jakarta.mail.Session;
+import jakarta.mail.Store;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.search.SearchTerm;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.config.javamail.JavamailProperty;
@@ -113,6 +114,8 @@ public class JavaReadMailer extends JavaMailer2 {
         
         final UserAuth userAuth = getUserAuth(config);
         m_session = Session.getInstance(configureProperties(), createAuthenticator(userAuth.getUserName(), userAuth.getPassword()));
+        m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream(), true));
+        m_session.setDebug(m_config.isDebug());
     }
     
     /**
@@ -156,7 +159,7 @@ public class JavaReadMailer extends JavaMailer2 {
     /**
      * <p>retrieveMessages</p>
      *
-     * @param term a {@link javax.mail.search.SearchTerm} object.
+     * @param term a {@link jakarta.mail.search.SearchTerm} object.
      * @return a {@link java.util.List} object.
      * @throws org.opennms.javamail.JavaMailerException if any.
      */
@@ -191,8 +194,6 @@ public class JavaReadMailer extends JavaMailer2 {
      */
     private Properties configureProperties() throws JavaMailerException {
         Properties props = new Properties();
-        
-        props.setProperty("mail.debug", String.valueOf(m_config.isDebug()));
         
         //first set the actual properties defined in the sendmail configuration
         List<JavamailProperty> jmps = m_config.getJavamailProperties();
@@ -239,9 +240,9 @@ public class JavaReadMailer extends JavaMailer2 {
      * but could use some tweaking later as more types of mail servers are used
      * with this feature.
      *
-     * @param msg a {@link javax.mail.Message} object.
+     * @param msg a {@link jakarta.mail.Message} object.
      * @return The text portion of an email with each line being an element of the list.
-     * @throws javax.mail.MessagingException if any.
+     * @throws jakarta.mail.MessagingException if any.
      * @throws java.io.IOException if any.
      */
     public static List<String> getText(Message msg) throws MessagingException, IOException {

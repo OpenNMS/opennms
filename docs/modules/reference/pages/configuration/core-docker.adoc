@@ -27,13 +27,17 @@
 | `PROM_JMX_EXPORTER_JAR`     | Path to the JMX Prometheus agent                       | optional | `/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar`
 |===
 
+TIP: By default, the JVM temp directory (`java.io.tmpdir`) is `$\{OPENNMS_HOME}/tmp` and the embedded ActiveMQ
+broker's on-disk store (`activemq.data`) is `$\{OPENNMS_HOME}/var/activemq`. To use different paths, pass them
+via `JAVA_OPTS`, e.g. `JAVA_OPTS="-Djava.io.tmpdir=/some/path -Dactivemq.data=/some/other/path"`.
+
 .PostgreSQL connection configuration in opennms-datasources.xml
 [options="header, %autowidth"]
 |===
 | Environment variable                       | Description                                                                       | Required | Default value
 | `OPENNMS_DBNAME`                           | Database name used for {page-component-title} Core instance                       | required | -
 | `OPENNMS_DBUSER`                           | Username with access to the database                                              | required | -
-| `OPENNMS_DBPASS`                           | Password for user with acccess to the database                                    | required | -
+| `OPENNMS_DBPASS`                           | Password for user with access to the database                                    | required | -
 | `POSTGRES_HOST`                            | Host with the PostgreSQL server instance running                                  | required | -
 | `POSTGRES_USER`                            | PostgreSQL super user to initialize database schema specified in `OPENNMS_DBNAME` | required | -
 | `POSTGRES_PASSWORD`                        | PostgreSQL super user password                                                    | required | -
@@ -57,6 +61,9 @@
 | `OPENNMS_RRD_INTERFACEJAR`         | Java RRD Interface library                                              | optional | `/usr/share/java/jrrd2.jar`
 | `OPENNMS_LIBRARY_JRRD2`            | JRRD2 library path                                                      | optional | `/usr/lib64/libjrrd2.so`
 |===
+
+The following trapd variables are written to `trapd-configuration.xml`, which {page-component-title} imports into the database only once, when the trapd configuration is first initialized.
+After that, change these settings on the Trap Configuration page or through the REST API (see xref:reference:daemons/daemon-config-files/trapd.adoc#trapd-config-storage[trapd configuration storage]).
 
 .SNMP Trap receiver configuration in trapd-configuration.xml
 [options="header, %autowidth"]

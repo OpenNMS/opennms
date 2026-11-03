@@ -347,7 +347,7 @@ ORDER BY
 		<property name="local_mesure_unitheight" value="pixel"/>
 		<property name="com.jaspersoft.studio.unit.height" value="px"/>
 	</pageFooter>
-	<summary height="355" splitType="Stretch">
+	<summary height="286" splitType="Stretch">
 		<element kind="subreport" uuid="b40e8a1b-b1d3-4adf-ade0-eaf77b2f6a5b" x="0" y="0" width="554" height="286">
 			<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 			<expression><![CDATA[$P{SUBREPORT_DIR} + "ResponseTimeSummary_Availability_Offenders_subreport.jasper"]]></expression>
@@ -359,16 +359,6 @@ ORDER BY
 			</parameter>
 			<parameter name="START_TIME">
 				<expression><![CDATA[$P{SUBREPORT_START_TIME}]]></expression>
-			</parameter>
-		</element>
-		<element kind="subreport" uuid="276e4300-1992-470b-849b-19b0ddc07ce8" x="0" y="297" width="554" height="58">
-			<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-			<expression><![CDATA[$P{SUBREPORT_DIR} + "ResponseTimeSummary_Response_Offenders_subreport.jasper"]]></expression>
-			<parameter name="ONMS_REPORT_DIR">
-				<expression><![CDATA[$P{ONMS_REPORT_DIR}]]></expression>
-			</parameter>
-			<parameter name="STATSD_REPORT">
-				<expression><![CDATA["Top10_Response_Weekly"]]></expression>
 			</parameter>
 		</element>
 	</summary>

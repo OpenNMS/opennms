@@ -101,3 +101,8 @@ function submitNodeSearch(params) {
     </form>
   </div>
 </div>
+
+<%-- Standalone call-to-action below the Quick Search box, not part of it --%>
+<div class="form-group" style="margin-top:0.75rem;">
+  <a class="btn btn-light btn-block" style="border:1px solid #ccc;" href="ui/#/dashboard">Try the new Dashboard (beta) &raquo;</a>
+</div>

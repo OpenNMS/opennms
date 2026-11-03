@@ -349,8 +349,6 @@ public class NotificationTask implements Runnable {
                 value = getTuiPin();
             } else if (NotificationManager.PARAM_PAGER_EMAIL.equals(aSwitch)) {
                 value = getUserManager().getPagerEmail(m_user.getUserId());
-            } else if (NotificationManager.PARAM_XMPP_ADDRESS.equals(aSwitch)) {
-            	value = getUserManager().getXMPPAddress(m_user.getUserId());
             } else if (NotificationManager.PARAM_TEXT_PAGER_PIN.equals(aSwitch)) {
                 value = getUserManager().getTextPin(m_user.getUserId());
             } else if (NotificationManager.PARAM_NUM_PAGER_PIN.equals(aSwitch)) {
@@ -361,8 +359,6 @@ public class NotificationTask implements Runnable {
                 value = getUserManager().getMobilePhone(m_user.getUserId());
             } else if (NotificationManager.PARAM_HOME_PHONE.equals(aSwitch)) {
                 value = getUserManager().getHomePhone(m_user.getUserId());
-            } else if (NotificationManager.PARAM_MICROBLOG_USERNAME.equals(aSwitch)) {
-                value = getUserManager().getMicroblogName(m_user.getUserId());
             } else if (m_params.containsKey(aSwitch)) {
                 value = m_params.get(aSwitch);
             }

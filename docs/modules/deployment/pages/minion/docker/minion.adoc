@@ -3,7 +3,7 @@ ifeval::["{prerelease}" == "false"]
 :docker-version-tag: {full-display-version}
 endif::[]
 
-.Create a project directory for {page-component-title} core and create a `docker-compose.yml` file.
+.Create a project directory for {page-component-title} Minion and create a `docker-compose.yml` file.
 [source, console]
 ----
 mkdir minion
@@ -55,7 +55,7 @@ Initially this line should be commented out, and will need to be activated after
 <8> Publish ports for Syslog, SNMP trap listener, and the SSH access to the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell].
 
 The Minion process in the container runs as a non-root user and can't open privileged ports < 1024.
-We open the listener for privileged (514/udp, 162/udp) and don't have to give additional permissions to the Minion process in the container.
+We open the listener for privileged ports (514/udp, 162/udp) and do not have to give additional permissions to the Minion process in the container.
 
 CAUTION: Some environments do not allow the use of ICMP (ping) for non-root users.
          {page-component-title} Minion runs as a non-privileged user in the container with `userid=10001, groupid=10001`.

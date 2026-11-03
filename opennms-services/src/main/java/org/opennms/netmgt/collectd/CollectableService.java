@@ -23,7 +23,10 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.Collection;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
@@ -53,9 +56,11 @@ import org.opennms.netmgt.collection.support.ConstantTimeKeeper;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
@@ -66,6 +71,11 @@ import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import com.codahale.metrics.LockFreeExponentiallyDecayingReservoir;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 
 /**
  * <P>
@@ -80,9 +90,18 @@ public class CollectableService implements ReadyRunnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(CollectableService.class);
 
+    public static final String COLLECTIONS_METRIC = "collections";
+
     protected static final String STRICT_INTERVAL_SYS_PROP = "org.opennms.netmgt.collectd.strictInterval";
 
     protected static final String USE_COLLECTION_START_TIME_SYS_PROP = "org.opennms.netmgt.collectd.useCollectionStartTime";
+
+    /**
+     * Set to true to stop collectd from recording the completion time of each collection in the
+     * ifservices collectlastgood/collectlastfail columns. Mirrors the poller's
+     * org.opennms.netmgt.poller.disablePollTimestampTracking.
+     */
+    public static final boolean DISABLE_COLLECTION_TIMESTAMP_TRACKING = Boolean.getBoolean("org.opennms.netmgt.collectd.disableCollectionTimestampTracking");
 
     private final boolean m_usingStrictInterval = !System.getProperties().containsKey(STRICT_INTERVAL_SYS_PROP) || Boolean.getBoolean(STRICT_INTERVAL_SYS_PROP);
 
@@ -123,9 +142,25 @@ public class CollectableService implements ReadyRunnable {
 
     private final IpInterfaceDao m_ifaceDao;
 
+    private final MonitoredServiceDao m_monitoredServiceDao;
+
+    private final TransactionTemplate m_transTemplate;
+
+    /**
+     * The ifservices primary key of the service this collector tracks, resolved on the first
+     * collection and cached so that every later timestamp write is a single UPDATE by primary
+     * key. Cleared whenever the collector is reinitialized (which covers reparenting) or the
+     * UPDATE finds no row, so the next write resolves it again.
+     */
+    private volatile Integer m_ifServiceId;
+
     private final PersisterFactory m_persisterFactory;
 
     private ThresholdingSession m_thresholdingSession;
+
+    private final Timer m_collectionTimer;
+
+    private final Timer m_serviceCollectionTimer;
 
     // also honored by the poller (LatencyStoringServiceMonitorAdaptor, default false there); collectd defaults to enabled
     private static final String THRESHOLDING_ENABLED_PARAM = "thresholding-enabled";
@@ -142,25 +177,35 @@ public class CollectableService implements ReadyRunnable {
      * @param scheduler a {@link org.opennms.netmgt.scheduler.Scheduler} object.
      * @param schedulingCompletedFlag a {@link org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag} object.
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
+     * @param monitoredServiceDao used to record the completion time of each collection on the service
      */
-    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec,
-            Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr,
-            PersisterFactory persisterFactory, ThresholdingService thresholdingService) throws CollectionInitializationException {
+    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, MonitoredServiceDao monitoredServiceDao,
+            CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag,
+            PlatformTransactionManager transMgr, PersisterFactory persisterFactory,
+            ThresholdingService thresholdingService, MetricRegistry metricRegistry) throws CollectionInitializationException {
 
         m_agent = DefaultSnmpCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
         m_spec = spec;
         m_scheduler = scheduler;
         m_schedulingCompletedFlag = schedulingCompletedFlag;
         m_ifaceDao = ifaceDao;
+        m_monitoredServiceDao = monitoredServiceDao;
         m_transMgr = transMgr;
+        m_transTemplate = new TransactionTemplate(transMgr);
         m_persisterFactory = persisterFactory;
 
         m_nodeId = iface.getNode().getId().intValue();
-        m_status = CollectionStatus.SUCCEEDED;
+        // Start out with no opinion rather than assuming success, so the first successful collection is a
+        // transition and emits the event that clears an alarm left over from a previous scheduling
+        // generation. A restart and a collectd reload both discard and rebuild every CollectableService.
+        m_status = CollectionStatus.UNKNOWN;
 
         m_updates = new CollectorUpdates();
 
         m_lastScheduledCollectionTime = 0L;
+
+        m_collectionTimer = collectionTimer(metricRegistry, COLLECTIONS_METRIC);
+        m_serviceCollectionTimer = collectionTimer(metricRegistry, MetricRegistry.name(COLLECTIONS_METRIC, m_spec.getServiceName()));
 
         m_spec.initialize(m_agent);
 
@@ -175,6 +220,26 @@ public class CollectableService implements ReadyRunnable {
         } else {
             LOG.info("Thresholding is disabled for {}/{}/{} ({}=false).", m_nodeId, getHostAddress(), m_spec.getServiceName(), THRESHOLDING_ENABLED_PARAM);
         }
+    }
+
+    private static Timer collectionTimer(MetricRegistry metricRegistry, String name) {
+        return metricRegistry.timer(safeTimerName(name), () -> new Timer(LockFreeExponentiallyDecayingReservoir.builder().build()));
+    }
+
+    private static String safeTimerName(String name) {
+        // JMX quotes ObjectName values containing these, which the name=collections* collection pattern can't match
+        return name.replaceAll("[:,=\"*?\\n]", "_");
+    }
+
+    /**
+     * Removes the per-service timers of services that are no longer configured,
+     * which would otherwise stay registered, and collected, until a restart.
+     */
+    public static void removeUnconfiguredTimers(MetricRegistry metricRegistry, Collection<String> configuredServiceNames) {
+        final var keep = configuredServiceNames.stream()
+                .map(svc -> safeTimerName(MetricRegistry.name(COLLECTIONS_METRIC, svc)))
+                .collect(Collectors.toSet());
+        metricRegistry.removeMatching((name, metric) -> name.startsWith(COLLECTIONS_METRIC + ".") && !keep.contains(name));
     }
 
     private static boolean isThresholdingEnabled(final ServiceParameters serviceParameters) {
@@ -207,6 +272,16 @@ public class CollectableService implements ReadyRunnable {
      */
     public int getNodeId() {
         return m_nodeId;
+    }
+
+    /**
+     * True if this service belongs to the node, or is marked for reparenting to it.
+     * The node id itself only changes at the service's next run. Lock-free: the
+     * fields read here are volatile, and the caller may hold the global list lock.
+     */
+    public boolean belongsOrIsMovingToNode(int nodeId) {
+        return m_nodeId == nodeId
+                || (m_updates.isReparentingFlagSet() && Integer.toString(nodeId).equals(m_updates.getReparentNewNodeId()));
     }
 
     /**
@@ -412,6 +487,69 @@ public class CollectableService implements ReadyRunnable {
 
         // Set the new status
         m_status = status;
+
+        trackCollection(status, new Date());
+    }
+
+    /**
+     * Records the completion time of a collection on the ifservices row: collectlastgood when the
+     * status is SUCCEEDED, collectlastfail when it is FAILED. Unknown outcomes never reach here,
+     * since doRun omits the status update for them. Runs one UPDATE by primary key per collection
+     * (plus a one-time lookup of the key), and never lets a database problem affect collection.
+     */
+    private void trackCollection(final CollectionStatus status, final Date completed) {
+        if (DISABLE_COLLECTION_TIMESTAMP_TRACKING || m_monitoredServiceDao == null) {
+            return;
+        }
+        if (status != CollectionStatus.SUCCEEDED && status != CollectionStatus.FAILED) {
+            return;
+        }
+        try {
+            final Integer updated = m_transTemplate.execute(tx -> {
+                Integer ifServiceId = m_ifServiceId;
+                final boolean usedCachedKey = ifServiceId != null;
+                if (!usedCachedKey) {
+                    ifServiceId = resolveIfServiceId();
+                    if (ifServiceId == null) {
+                        return 0;
+                    }
+                }
+                int rows = writeCollectionTimestamp(status, ifServiceId, completed);
+                if (rows == 0 && usedCachedKey) {
+                    // The cached key matches no row: the service was deleted and re-added since the
+                    // key was resolved. Look it up again and retry once so this collection is not lost.
+                    ifServiceId = resolveIfServiceId();
+                    if (ifServiceId == null) {
+                        return 0;
+                    }
+                    rows = writeCollectionTimestamp(status, ifServiceId, completed);
+                }
+                return rows;
+            });
+            if (updated == null || updated == 0) {
+                // No row for this service, even after a fresh lookup. Forget the key so the next
+                // collection resolves it again rather than updating nothing forever.
+                m_ifServiceId = null;
+                LOG.debug("trackCollection: no ifservices row for {}/{}/{}, collection timestamp not recorded.", m_nodeId, getHostAddress(), getServiceName());
+            } else {
+                LOG.debug("trackCollection: recorded {} collection at {} for {}/{}/{}", status, completed, m_nodeId, getHostAddress(), getServiceName());
+            }
+        } catch (Exception e) {
+            LOG.warn("trackCollection: failed to record {} collection timestamp for {}/{}/{}", status, m_nodeId, getHostAddress(), getServiceName(), e);
+        }
+    }
+
+    /** Looks up the ifservices key for this collector's service and caches it; null if there is no such row. */
+    private Integer resolveIfServiceId() {
+        final OnmsMonitoredService svc = m_monitoredServiceDao.get(m_nodeId, getAddress(), getServiceName());
+        m_ifServiceId = svc == null ? null : svc.getId();
+        return m_ifServiceId;
+    }
+
+    private int writeCollectionTimestamp(final CollectionStatus status, final int ifServiceId, final Date completed) {
+        return status == CollectionStatus.SUCCEEDED
+                ? m_monitoredServiceDao.updateCollectLastGood(ifServiceId, completed)
+                : m_monitoredServiceDao.updateCollectLastFail(ifServiceId, completed);
     }
 
     /**
@@ -420,6 +558,8 @@ public class CollectableService implements ReadyRunnable {
     private void doCollection() throws CollectionException {
         LOG.info("run: starting new collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
         CollectionSet result = null;
+        // Includes persisting and thresholding, not the status bookkeeping that follows
+        final long startNanos = System.nanoTime();
         try {
             final ServiceParameters serviceParameters = m_spec.getServiceParameters();
             final RrdRepository rrdRepository = m_spec.getRrdRepository(serviceParameters.getCollectionName());
@@ -463,6 +603,10 @@ public class CollectableService implements ReadyRunnable {
         } catch (Throwable t) {
             LOG.warn("run: failed collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
             throw new CollectionException("An undeclared throwable was caught during data collection for interface " + m_nodeId + "/" + getHostAddress() + "/" + m_spec.getServiceName(), t);
+        } finally {
+            final long elapsedNanos = System.nanoTime() - startNanos;
+            m_collectionTimer.update(elapsedNanos, TimeUnit.NANOSECONDS);
+            m_serviceCollectionTimer.update(elapsedNanos, TimeUnit.NANOSECONDS);
         }
         LOG.info("run: finished collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
     }
@@ -623,6 +767,7 @@ public class CollectableService implements ReadyRunnable {
     }
 
     private void reinitialize(OnmsIpInterface newIface) throws CollectionInitializationException {
+        m_ifServiceId = null;
         m_spec.release(m_agent);
         m_agent = DefaultSnmpCollectionAgent.create(newIface.getId(), m_ifaceDao,
                                                 m_transMgr);

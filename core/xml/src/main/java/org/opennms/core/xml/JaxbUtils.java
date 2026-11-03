@@ -23,12 +23,9 @@ package org.opennms.core.xml;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
@@ -45,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -78,6 +76,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public abstract class JaxbUtils {
     private static final Logger LOG = LoggerFactory.getLogger(JaxbUtils.class);
+
+    private static final String XERCES_SECURITY_MANAGER_CLASS = "org.apache.xerces.util.SecurityManager";
+    private static final String XERCES_SECURITY_MANAGER_PROPERTY = "http://apache.org/xml/properties/security-manager";
+    private static volatile boolean s_warnedNoEntityExpansionLimit = false;
+    private static final String JDK_MAX_GENERAL_ENTITY_SIZE_LIMIT = "jdk.xml.maxGeneralEntitySizeLimit";
+    private static final String JDK_TOTAL_ENTITY_SIZE_LIMIT = "jdk.xml.totalEntitySizeLimit";
 
     private static final Class<?>[] EMPTY_CLASS_LIST = new Class<?>[0];
     private static final Source[] EMPTY_SOURCE_LIST = new Source[0];
@@ -167,13 +171,21 @@ public abstract class JaxbUtils {
         return namespaces;
     }
 
+    /**
+     * MOXy's Writer output escapes each half of a UTF-16 surrogate pair as its own character
+     * reference, which no XML parser accepts (NMS-19814), so the output is repaired on the way out.
+     */
     public static void marshal(final Object obj, final Writer writer) {
         final Marshaller jaxbMarshaller = getMarshallerFor(obj, null);
         try {
-            jaxbMarshaller.marshal(obj, writer);
+            final SurrogateCharacterReferences.RepairingWriter repairing = SurrogateCharacterReferences.repairing(writer);
+            jaxbMarshaller.marshal(obj, repairing);
+            repairing.finish();
         } catch (final JAXBException e) {
             throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
         } catch (final FactoryConfigurationError e) {
+            throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
+        } catch (final IOException e) {
             throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
         }
     }
@@ -183,15 +195,7 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final File file, final boolean validate) {
-        FileReader reader = null;
-        try {
-            reader = new FileReader(file);
-            return unmarshal(clazz, new InputSource(reader), null, validate, false);
-        } catch (final FileNotFoundException e) {
-            throw EXCEPTION_TRANSLATOR.translate("reading " + file, e);
-        } finally {
-            IOUtils.closeQuietly(reader);
-        }
+        return unmarshal(clazz, file, validate, false);
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Reader reader) {
@@ -203,16 +207,12 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final InputStream stream) {
-        try (final Reader reader = new InputStreamReader(stream)) {
-            return unmarshal(clazz, reader, VALIDATE_IF_POSSIBLE);
-        } catch (final IOException e) {
-            throw EXCEPTION_TRANSLATOR.translate("reading stream", e);
-        }
+        return unmarshal(clazz, stream, VALIDATE_IF_POSSIBLE);
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final InputStream stream, final boolean validate) {
-        try (final Reader reader = new InputStreamReader(stream)) {
-            return unmarshal(clazz, new InputSource(reader), null, validate, false);
+        try (final InputStream closing = stream) {
+            return unmarshal(clazz, new InputSource(closing), null, validate, false);
         } catch (final IOException e) {
             throw EXCEPTION_TRANSLATOR.translate("reading stream", e);
         }
@@ -223,13 +223,7 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final String xml, final boolean validate) {
-        final StringReader sr = new StringReader(xml);
-        final InputSource is = new InputSource(sr);
-        try {
-            return unmarshal(clazz, is, null, validate, false);
-        } finally {
-            IOUtils.closeQuietly(sr);
-        }
+        return unmarshal(clazz, xml, validate, false);
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Resource resource) {
@@ -237,8 +231,36 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Resource resource, final boolean validate) {
+        return unmarshal(clazz, resource, validate, false);
+    }
+
+    /**
+     * Unmarshals with the option to disable DOCTYPE processing. Use disableDOCTYPE=true for formats that do not
+     * need a DOCTYPE, such as requisition and foreign-source XML. Disabling it blocks XML entity-expansion
+     * denial of service, which the entity-expansion count limit alone does not stop on all parsers.
+     */
+    public static <T> T unmarshal(final Class<T> clazz, final File file, final boolean validate, final boolean disableDOCTYPE) {
+        // a byte stream, so the parser decodes by the file's own declaration
+        try (final InputStream stream = new FileInputStream(file)) {
+            return unmarshal(clazz, new InputSource(stream), null, validate, disableDOCTYPE);
+        } catch (final IOException e) {
+            throw EXCEPTION_TRANSLATOR.translate("reading " + file, e);
+        }
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final String xml, final boolean validate, final boolean disableDOCTYPE) {
+        final StringReader sr = new StringReader(SurrogateCharacterReferences.repair(xml));
+        final InputSource is = new InputSource(sr);
         try {
-            return unmarshal(clazz, new InputSource(resource.getInputStream()), null, validate, false);
+            return unmarshal(clazz, is, null, validate, disableDOCTYPE, false);
+        } finally {
+            IOUtils.closeQuietly(sr);
+        }
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final Resource resource, final boolean validate, final boolean disableDOCTYPE) {
+        try (final InputStream stream = resource.getInputStream()) {
+            return unmarshal(clazz, new InputSource(stream), null, validate, disableDOCTYPE);
         } catch (final IOException e) {
             throw EXCEPTION_TRANSLATOR.translate("getting a configuration resource from spring", e);
         }
@@ -261,12 +283,20 @@ public abstract class JaxbUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext, final boolean validate, final boolean disableDOCTYPE) {
+        return unmarshal(clazz, inputSource, jaxbContext, validate, disableDOCTYPE, true);
+    }
+
+    /**
+     * Rows and files written before NMS-19814 hold the broken references, so every stream
+     * is read through the repairing filter unless the caller already repaired it.
+     */
+    private static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext, final boolean validate, final boolean disableDOCTYPE, final boolean repair) {
         final Unmarshaller um = getUnmarshallerFor(clazz, jaxbContext, validate);
 
         LOG.trace("unmarshalling class {} from input source {} with unmarshaller {}", clazz.getSimpleName(), inputSource, um);
         try {
             final XMLFilter filter = getXMLFilterForClass(clazz, disableDOCTYPE);
-            final SAXSource source = new SAXSource(filter, inputSource);
+            final SAXSource source = new SAXSource(filter, repair ? repairing(inputSource) : inputSource);
 
             um.setEventHandler(new LoggingValidationEventHandler());
 
@@ -290,6 +320,23 @@ public abstract class JaxbUtils {
         return null;
     }
 
+    /** A copy of the source whose stream, if it has one, is read through the repairing filter. */
+    private static InputSource repairing(final InputSource inputSource) {
+        if (inputSource.getCharacterStream() == null && inputSource.getByteStream() == null) {
+            return inputSource;
+        }
+        final InputSource repaired = new InputSource();
+        repaired.setPublicId(inputSource.getPublicId());
+        repaired.setSystemId(inputSource.getSystemId());
+        repaired.setEncoding(inputSource.getEncoding());
+        if (inputSource.getCharacterStream() != null) {
+            repaired.setCharacterStream(SurrogateCharacterReferences.repairing(inputSource.getCharacterStream()));
+        } else {
+            repaired.setByteStream(SurrogateCharacterReferences.repairing(inputSource.getByteStream()));
+        }
+        return repaired;
+    }
+
     public static <T> XMLFilter getXMLFilterForClass(final Class<T> clazz, boolean disableDOCTYPE) throws SAXException {
         final String namespace = getNamespaceForClass(clazz);
         XMLFilter filter = namespace == null? new SimpleNamespaceFilter("", false) : new SimpleNamespaceFilter(namespace, true);
@@ -302,9 +349,55 @@ public abstract class JaxbUtils {
         xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
         xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        limitEntityExpansion(xmlReader);
 
         filter.setParent(xmlReader);
         return filter;
+    }
+
+    /**
+     * Caps entity expansion so a DOCTYPE with nested internal entities ("billion laughs") cannot
+     * exhaust memory, while still allowing ordinary internal entities (e.g. named characters in
+     * imported requisitions). The JDK parser honours FEATURE_SECURE_PROCESSING; standalone Xerces
+     * does not, so it gets its own SecurityManager, loaded from the parser's classloader.
+     */
+    private static void limitEntityExpansion(final XMLReader xmlReader) {
+        try {
+            xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            relaxEntitySizeLimits(xmlReader);
+            return;
+        } catch (final SAXException e) {
+            LOG.trace("{} does not support secure processing, trying the Xerces security manager", xmlReader.getClass().getName());
+        }
+        final ClassLoader parserClassLoader = xmlReader.getClass().getClassLoader();
+        if (parserClassLoader != null) {
+            try {
+                final Object securityManager = parserClassLoader.loadClass(XERCES_SECURITY_MANAGER_CLASS).getDeclaredConstructor().newInstance();
+                xmlReader.setProperty(XERCES_SECURITY_MANAGER_PROPERTY, securityManager);
+                return;
+            } catch (final ReflectiveOperationException | SAXException e) {
+                LOG.trace("unable to install the Xerces security manager on {}", xmlReader.getClass().getName(), e);
+            }
+        }
+        if (!s_warnedNoEntityExpansionLimit) {
+            s_warnedNoEntityExpansionLimit = true;
+            LOG.warn("XML parser {} does not support an entity expansion limit; documents with a DOCTYPE are parsed without one", xmlReader.getClass().getName());
+        }
+    }
+
+    /**
+     * JDK 24 and later set a limit of 100,000 on the general and total entity size in jaxp.properties.
+     * The JDK parser counts each predefined entity reference (for example "&amp;lt;") in the document against these limits.
+     * Thus, large event files such as CPQHPIM.events.xml do not parse.
+     * This sets the values that secure processing used on JDK 21. The entity expansion limit stays in effect.
+     */
+    private static void relaxEntitySizeLimits(final XMLReader xmlReader) {
+        try {
+            xmlReader.setProperty(JDK_MAX_GENERAL_ENTITY_SIZE_LIMIT, "0");
+            xmlReader.setProperty(JDK_TOTAL_ENTITY_SIZE_LIMIT, "50000000");
+        } catch (final SAXException e) {
+            LOG.trace("{} does not support the JDK entity size limits", xmlReader.getClass().getName());
+        }
     }
 
     public static XMLFilter getXMLFilterForNamespace(final String namespace) throws SAXException {

@@ -9,7 +9,7 @@ In addition to that IPFIX also supports vendor-specific "Information Elements" b
 == Adding Vendor-specific Definitions
 Any additional definitions need to be placed in the directory `$\{OPENNMS_HOME}/etc/ipfix.d`.
 The following example shows a definition for a vendor "Foobar-Company" with a Private Enterprise Number (PEN) of "1234".
-After the starting `scope` definition the file just lists all defined information elements including their names, their identfiers and their data-types.
+After the starting `scope` definition the file just lists all defined information elements including their names, their identifiers and their data-types.
 See https://www.iana.org/assignments/ipfix/ipfix.xhtml#ipfix-information-element-data-types for available data-types.
 [source, xml]
 ----

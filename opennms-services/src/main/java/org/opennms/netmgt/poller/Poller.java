@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
@@ -66,6 +67,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 
 /**
@@ -115,6 +117,8 @@ public class Poller extends AbstractServiceDaemon {
     
     @Autowired
     private ReadablePollOutagesDao m_pollOutagesDao;
+
+    private MetricRegistry m_metricRegistry = new MetricRegistry();
 
     @Autowired()
     @Qualifier("deviceConfigMonitorAdaptor")
@@ -256,6 +260,20 @@ public class Poller extends AbstractServiceDaemon {
         m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
     }
 
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        m_metricRegistry = Objects.requireNonNull(metricRegistry);
+    }
+
+    /**
+     * Removes the poll timers of services that a configuration reload dropped.
+     */
+    public void removeUnconfiguredPollTimers() {
+        PollableServiceConfig.removeUnconfiguredTimers(m_metricRegistry, getPollerConfig().getPackages().stream()
+                .flatMap(pkg -> pkg.getServices().stream())
+                .map(org.opennms.netmgt.config.poller.Service::getName)
+                .collect(Collectors.toSet()));
+    }
+
     /**
      * <p>getScheduler</p>
      *
@@ -263,6 +281,19 @@ public class Poller extends AbstractServiceDaemon {
      */
     public Scheduler getScheduler() {
         return m_scheduler;
+    }
+
+    /**
+     * Applies the {@code threads} setting from the current poller configuration to the
+     * running scheduler. Called after the configuration has been reloaded, so that a
+     * changed thread count takes effect without a restart.
+     */
+    public void resizeScheduler() {
+        if (m_scheduler == null) {
+            LOG.debug("resizeScheduler: no scheduler yet, nothing to resize.");
+            return;
+        }
+        m_scheduler.setThreads(getPollerConfig().getThreads());
     }
 
     /**
@@ -523,7 +554,8 @@ public class Poller extends AbstractServiceDaemon {
         PollableService svc = getNetwork().createService(service.getNodeId(), iface.getNode().getLabel(), iface.getNode().getLocation().getLocationName(), addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, pkg,
                                                                      getScheduler(), m_persisterFactory, m_thresholdingService,
-                                                                     m_locationAwarePollerClient, m_pollOutagesDao, serviceMonitorAdaptor);
+                                                                     m_locationAwarePollerClient, m_pollOutagesDao, serviceMonitorAdaptor,
+                                                                     m_metricRegistry);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {

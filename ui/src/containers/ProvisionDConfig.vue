@@ -7,7 +7,6 @@
   <div class="onms-row">
     <div class="onms-col-12">
       <div class="wrapper onms-container center">
-        <Snackbar />
         <ConfigurationHeader
           title="Configuration"
           headline="External Requisitions and Thread Pools"
@@ -26,7 +25,6 @@
 >
 import { computed } from 'vue'
 
-import Snackbar from '@/components/Common/Snackbar.vue'
 import ConfigurationHeader from '@/components/Configuration/ConfigurationHeader.vue'
 import ConfigurationTableWrapper from '@/components/Configuration/ConfigurationTableWrapper.vue'
 import ThreadPools from '@/components/Configuration/ConfigurationThreadPools.vue'

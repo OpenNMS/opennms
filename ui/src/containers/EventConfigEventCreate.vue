@@ -10,7 +10,7 @@
     class="not-found-container"
   >
     <p>No event configuration found.</p>
-    <Button
+    <OnmsButton
       label="Go Back"
       @click="goBack()"
     />
@@ -23,7 +23,7 @@ import { useRouter } from 'vue-router'
 import BasicInformation from '@/components/EventConfigEventCreate/BasicInformation.vue'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
-import Button from 'primevue/button'
+import { OnmsButton } from '@opennms/onms-ui'
 
 const router = useRouter()
 const store = useEventModificationStore()

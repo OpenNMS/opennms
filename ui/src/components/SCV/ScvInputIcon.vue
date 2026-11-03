@@ -1,25 +1,17 @@
 <template>
-  <PButton
-    text
-    :aria-label="title ?? tooltipTitle"
+  <OnmsIconButton
     class="scv-edit-icon"
+    :aria-label="title ?? tooltipTitle"
     :disabled="disabled"
-    v-tooltip="title ?? tooltipTitle"
+    :tooltip="title ?? tooltipTitle"
+    :icon="IconSecurity"
     @click="$emit('click')"
-  >
-    <OnmsIcon
-      :icon="IconSecurity"
-      class="scv-icon"
-    />
-  </PButton>
+  />
 </template>
 
 <script setup lang="ts">
-import Button from 'primevue/button'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
-import IconSecurity from '@/components/icons/network/Security.vue'
-
-const PButton = Button
+import { OnmsIconButton } from '@opennms/onms-ui'
+import IconSecurity from '@opennms/onms-ui/icons/network/Security.vue'
 
 defineProps<{
   title?: string
@@ -41,12 +33,5 @@ const tooltipTitle = 'Use SCV to populate this field'
   width: 2rem;
   min-width: 2rem;
   padding: 0;
-
-  :deep(svg.scv-icon) {
-    cursor: pointer;
-    font-size: 1.25em !important;
-    width: 1.5em;
-    height: 1.5em;
-  }
 }
 </style>

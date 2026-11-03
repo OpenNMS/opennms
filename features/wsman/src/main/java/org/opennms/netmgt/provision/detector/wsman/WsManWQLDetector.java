@@ -82,8 +82,7 @@ public class WsManWQLDetector extends SyncAbstractDetector {
 
         // Issue the query!
         List<Node> nodes = Lists.newLinkedList();
-        final WSManClient client = m_factory.getClient(endpoint);
-        try {
+        try (WSManClient client = m_factory.getClient(endpoint)) {
             LOG.debug("Issuing an ENUM on '{}' with query '{}'", resourceUri, wql);
             client.enumerateAndPullUsingFilter(resourceUri, WSManConstants.XML_NS_WQL_DIALECT, wql, nodes, true);
         } catch (WSManException e) {

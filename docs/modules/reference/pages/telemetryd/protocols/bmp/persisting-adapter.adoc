@@ -8,7 +8,7 @@ It handles BMP messages the xref:telemetryd/protocols/bmp/parser.adoc[BMP parser
 persisted in the OpenNMS PostgreSQL DB.
 
 NOTE: The BMP persisting adapter can produce huge volumes of data.
-You must have the proper setup for PostgreSQL with TimeScale, and for more throughput, you should use Sentinels.
+You must have the proper setup for PostgreSQL with TimescaleDB, and for more throughput, you should use Sentinels.
 Failure to do so can cause issues with other {page-component-title} functionality.
 
 == Facts
@@ -100,7 +100,7 @@ config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols
 config:update
 ----
 
-You can immediately activate following features via Karaf shell to start processing BMP messages on Sentinel.
+You can immediately activate the following features via Karaf shell to start processing BMP messages on Sentinel.
 
 [source, karaf]
 ----

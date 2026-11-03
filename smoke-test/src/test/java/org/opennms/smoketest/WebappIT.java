@@ -22,9 +22,12 @@
 package org.opennms.smoketest;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -103,9 +106,11 @@ public class WebappIT {
 
   @Test
   public void verifyNoCachingOfRequestWithSessionIdInUrl() {
-    // if an internal page is called we get a 302 with the Location header that contains the sessionid which we don't want to cache
+    // if an internal page is called we get a 302 with the Location header that contains the sessionid which we don't want to cache.
+    // Accept text/html like a browser: only a page navigation is saved for after login, and only then is a session created (NMS-20178).
     String sessionId = given().redirects().follow(false)
         .log().all()
+        .header("Accept", "text/html")
         .get("admin/classification/index.jsp")
         .getHeader("Set-Cookie").split("=")[1].split(";")[0];
 
@@ -135,6 +140,107 @@ public class WebappIT {
             .statusCode(200)
             .header("Cache-Control", not("no-store"))
             .header("Pragma", not("no-cache"));
+  }
+
+  /**
+   * NMS-20178: the static files of the Vue SPA and of the Vue menu bundle are for logged-in
+   * users only. Without login, the server sends a plain, uncacheable 401: no redirect to
+   * login.jsp, because rendering the login page for an asset creates a session, which can
+   * replace the session of a login form that is open at the same time; and nothing that
+   * Safari or Firefox can cache under the asset URL (NMS-20174). No WWW-Authenticate header,
+   * so the browser shows no login dialog.
+   */
+  @Test
+  public void verifyVueAssetsRequireAuthenticationWithPlain401() {
+    for (String asset : Arrays.asList("ui/assets/index.js", "ui-components/assets/index.js", "ui-components/assets/index.css")) {
+      given().redirects().follow(false)
+          .get(asset)
+          .then().assertThat()
+          .statusCode(401)
+          .header("Cache-Control", containsString("no-store"))
+          .header("WWW-Authenticate", nullValue())
+          .header("Set-Cookie", nullValue())
+          .header("Location", nullValue());
+    }
+  }
+
+  /**
+   * NMS-20178: the pages open to anonymous users (login.jsp, logoff.jsp, accessDenied.jsp, error
+   * pages) load the menu bundle's base styles from this one anonymous file.
+   */
+  @Test
+  public void verifyAnonymousPagesCssIsAnonymouslyAccessible() {
+    given().redirects().follow(false)
+        .get("ui-components/assets/anonymous-pages.css")
+        .then().assertThat()
+        .statusCode(200)
+        .header("Content-Type", containsString("css"))
+        .header("Set-Cookie", nullValue());
+  }
+
+  @Test
+  public void verifyMenuBundleJsAssetIsAccessibleWhenAuthenticated() {
+    given().redirects().follow(false)
+        .auth().preemptive().basic(AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME, AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD)
+        .get("ui-components/assets/index.js")
+        .then().assertThat()
+        .statusCode(200)
+        .header("Content-Type", containsString("javascript"));
+  }
+
+  @Test
+  public void verifyMenuBundleCssAssetIsAccessibleWhenAuthenticated() {
+    given().redirects().follow(false)
+        .auth().preemptive().basic(AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME, AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD)
+        .get("ui-components/assets/index.css")
+        .then().assertThat()
+        .statusCode(200)
+        .header("Content-Type", containsString("css"));
+  }
+
+  /**
+   * NMS-20180: the dist-menu artifact also ships an index.html (the Vite build
+   * input) at /ui-components/, which nothing links to. Like any other page, it
+   * requires authentication and redirects to the login page.
+   */
+  @Test
+  public void verifyMenuIndexHtmlRequiresAuthentication() {
+    given().redirects().follow(false)
+        .get("ui-components/index.html")
+        .then().assertThat()
+        .statusCode(302)
+        .header("Location", containsString("login.jsp"));
+  }
+
+  /**
+   * NMS-18978, NMS-20178: the login page never mounts the Vue menu, and without
+   * login the menu bundle files get a 401, so the login page must not reference
+   * them at all (bootstrap.jsp loads the menu bundle only for logged-in users).
+   * It links the anonymous base styles (anonymous-pages.css) instead.
+   * In particular it must never execute the bundle (NMS-20174): an
+   * unauthenticated menu run fires REST calls that pollute the post-login
+   * saved request.
+   */
+  @Test
+  public void verifyLoginPageDoesNotReferenceMenuBundle() {
+    final String body = given()
+        .get("login.jsp")
+        .then().assertThat()
+        .statusCode(200)
+        .extract().response().body().asString();
+
+    // Positive controls: this really is the rendered login page, and it links
+    // the anonymous base styles from the same directory, so the negative
+    // assertions below can't pass vacuously on an error page or if the asset
+    // URLs change shape.
+    assertTrue("expected login.jsp to render the login form. Body: " + body,
+        body.contains("id=\"loginForm\""));
+    assertTrue("expected login.jsp to link the anonymous base styles. Body: " + body,
+        body.contains("ui-components/assets/anonymous-pages.css"));
+    assertFalse("login.jsp must not reference the menu bundle JavaScript. Body: " + body,
+        body.contains("ui-components/assets/index.js"));
+    assertFalse("login.jsp must not reference the menu bundle stylesheet. Body: " + body,
+        body.contains("ui-components/assets/index.css"));
   }
 
   /**

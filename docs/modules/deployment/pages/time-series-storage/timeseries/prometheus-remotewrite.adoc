@@ -4,7 +4,7 @@
 
 The Prometheus RemoteWrite plugin enables {page-component-title} to persist time series performance and latency data to any Prometheus remote-write compatible time series store (for example, https://victoriametrics.com/[VictoriaMetrics], https://grafana.com/oss/mimir/[Mimir], or https://cortexmetrics.io/[Cortex]).
 The plugin uses the xref:time-series-storage/timeseries/ts-integration-layer.adoc[time series storage integration layer] to convert metrics to a Prometheus model and delegate writes and reads to the configured time series store.
-It also lets you visualize graphs from the time series store in the https://docs.opennms.com/grafana-plugin/latest/index.html[OpenNMS plugin for Grafana] through the OpenNMS performance data source or the https://grafana.com/grafana/plugins/prometheus/[Prometheus data source].
+It also lets you visualize graphs from the time series store in the https://docs.opennms.com/grafana-plugin/latest/index.html[OpenNMS Plugin for Grafana] through the OpenNMS performance data source or the https://grafana.com/grafana/plugins/prometheus/[Prometheus data source].
 
 .Prometheus RemoteWrite plugin architecture
 image::time-series-storage/cortex-plugin.png["Architecture diagram displaying the Prometheus RemoteWrite plugin and how it integrates with {page-component-title}", 600]
@@ -23,6 +23,9 @@ To use the Prometheus RemoteWrite plugin, follow these steps:
 If your aim is to get up to speed quickly in a test environment, you can use Docker Compose to deploy a https://github.com/opennms-forge/stack-play/tree/master/standalone-cortex-minimal[minimal, standalone Cortex node].
 . Download the plugin's `.kar` file from https://github.com/OpenNMS-Plugins/opennms-prometheus-remotewrite-plugin/releases[GitHub].
 . Copy the `.kar` file into `$\{OPENNMS_HOME}/deploy`.
+ifeval::["{page-component-title}" == "Horizon"]
+If you run {page-component-title} in a container, see xref:deployment:core/install.adoc#docker-install-plugins[Install plugins from KAR files].
+endif::[]
 . Enable and configure time series database plugins in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`:
 +
 [source, properties]

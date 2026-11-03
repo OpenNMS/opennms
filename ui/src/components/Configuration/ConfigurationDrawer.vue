@@ -22,16 +22,11 @@
             Requisition
           </div>
           <div class="icon">
-            <PButton
-              text
+            <OnmsIconButton
               aria-label="Cancel"
+              :icon="cancelIcon"
               @click="props.closePanel"
-            >
-              <OnmsIcon
-                class="close-icon"
-                :icon="cancelIcon"
-              />
-            </PButton>
+            />
           </div>
         </div>
       </div>
@@ -64,7 +59,7 @@
         />
         <ConfigurationGeneratedUrl :item="props.item.config" />
         <div class="spinner-button flex button-align-right mt-20">
-          <PButton
+          <OnmsButton
             label="Save & Close"
             :loading="loading"
             :disabled="loading"
@@ -82,18 +77,15 @@
 >
 import { PropType, computed, ref, watch } from 'vue'
 
-import Button from 'primevue/button'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
+import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 
-import Cancel from '@/components/icons/navigation/Cancel.vue'
+import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 
 import ConfigurationAdvancedPanel from './ConfigurationAdvancedPanel.vue'
 import ConfigurationGeneratedUrl from './ConfigurationGeneratedUrl.vue'
 import ConfigurationHelpPanel from './ConfigurationHelpPanel.vue'
 import ProvisionDForm from './ProvisionDForm.vue'
 import { LocalConfigurationWrapper } from './configuration.types'
-
-const PButton = Button
 
 /**
  * Props
@@ -274,9 +266,6 @@ const toggleHelp = () => {
   :deep(.p-button) {
     margin: 0;
   }
-}
-.close-icon {
-  font-size: 32px;
 }
 .sideshared {
   z-index: 2;

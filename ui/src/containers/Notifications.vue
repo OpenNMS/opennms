@@ -1,0 +1,145 @@
+<template>
+  <div class="onms-row">
+    <div class="onms-col-12">
+      <BreadCrumbs :items="breadcrumbs" />
+    </div>
+  </div>
+  <div class="notifications-container">
+    <div class="page-header">
+      <div class="title-with-help">
+        <h1 class="page-title">Notifications</h1>
+        <OnmsIconButton
+          variant="text"
+          :icon="InfoIcon"
+          title="About Notifications and Escalation"
+          tooltip="About Notifications and Escalation"
+          aria-label="About Notifications and Escalation"
+          data-test="notifications-about-button"
+          @click="showAboutDialog = true"
+        />
+      </div>
+      <OnmsButton
+        v-if="adminRole"
+        variant="outlined"
+        label="Configure Notifications"
+        data-test="configure-notifications-button"
+        @click="router.push('/notifications-config')"
+      />
+    </div>
+
+    <NotificationQueriesCard />
+    <NotificationsTable />
+
+    <NotificationsHelpDialog v-model:visible="showAboutDialog" />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
+
+import { useEventListener, whenever } from '@vueuse/core'
+
+import NotificationsTable from '@/components/Notifications/NotificationsTable.vue'
+import NotificationsHelpDialog from '@/components/Notifications/NotificationsHelpDialog.vue'
+import NotificationQueriesCard from '@/components/Notifications/NotificationQueriesCard.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
+import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
+import useRole from '@/composables/useRole'
+import { SAME_PAGE_NAVIGATION_EVENT } from '@/lib/navigation'
+import { useAuthStore } from '@/stores/authStore'
+import { useMenuStore } from '@/stores/menuStore'
+import { useNotificationsStore } from '@/stores/notificationsStore'
+import { BreadCrumb } from '@/types'
+import { NotificationQueryPreset } from '@/types/notifications'
+
+const authStore = useAuthStore()
+const route = useRoute()
+const router = useRouter()
+const menuStore = useMenuStore()
+const notificationsStore = useNotificationsStore()
+const { adminRole } = useRole()
+const { withSpinner, report } = useActionFeedback()
+
+const showAboutDialog = ref(false)
+
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
+
+const breadcrumbs = computed<BreadCrumb[]>(() => {
+  return [
+    { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
+    { label: 'Notifications', to: '#', position: 'last' }
+  ]
+})
+
+// The default preset filters by the logged-in user; whoAmI is fetched
+// fire-and-forget at app startup, so wait for it or the first query would
+// silently drop the user filter and show every user's notifications.
+const authLoaded = computed<boolean>(() => authStore.loaded)
+
+// the top-bar bell deep-links here with a preset (NMS-20124)
+const PRESETS = ['yourOutstanding', 'teamOutstanding', 'allOutstanding', 'allAcknowledged'] as const
+const initialLoad = async () => {
+  const preset = route.query.preset as string
+  if ((PRESETS as readonly string[]).includes(preset)) {
+    report(await withSpinner(() => notificationsStore.applyPreset(preset as NotificationQueryPreset)))
+  } else {
+    report(await withSpinner(() => notificationsStore.load()))
+  }
+}
+
+onMounted(() => {
+  if (authLoaded.value) {
+    initialLoad()
+  } else {
+    whenever(authLoaded, () => initialLoad(), { once: true })
+  }
+})
+
+// Clicking a bell link while already on this page only changes the hash query,
+// so the component is not remounted — re-apply the preset when it changes.
+watch(() => route.query.preset, () => {
+  if (authLoaded.value) {
+    initialLoad()
+  }
+})
+
+// ...and re-clicking the link for the preset already showing leaves the hash
+// unchanged, so the watch above never fires; the menu signals it instead.
+useEventListener(window, SAME_PAGE_NAVIGATION_EVENT, () => {
+  if (authLoaded.value) {
+    initialLoad()
+  }
+})
+</script>
+
+<style lang="scss" scoped>
+.notifications-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0 2px 2rem 2px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .title-with-help {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .page-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+</style>

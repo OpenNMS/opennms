@@ -55,6 +55,41 @@
         <build.assembly.format>dir</build.assembly.format>
       </properties>
     </profile>
+    <profile>
+      <id>build-meridian</id>
+      <activation>
+        <property>
+          <name>build.meridian</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.karaf.tooling</groupId>
+            <artifactId>karaf-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>features-add-to-repository-ha</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>features-add-to-repository</goal>
+                </goals>
+                <configuration>
+                  <descriptors>
+                    <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
+                  </descriptors>
+                  <features>
+                    <feature>opennms-ha-shell</feature>
+                    <feature>opennms-ha-rest</feature>
+                  </features>
+                  <repository>${project.build.directory}/opennms-repo</repository>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
   <build>
     <plugins>
@@ -217,7 +252,7 @@
                 <artifactItem>
                   <groupId>com.fasterxml.jackson.core</groupId>
                   <artifactId>jackson-annotations</artifactId>
-                  <version>${jackson2Version}</version>
+                  <version>${jackson2AnnotationsVersion}</version>
                   <outputDirectory>${project.build.directory}/hawtio-webapp/WEB-INF/lib</outputDirectory>
                 </artifactItem>
                 <artifactItem>
@@ -295,7 +330,6 @@
                 <feature>kar</feature>
                 <feature>log</feature>
                 <feature>management</feature>
-                <feature>minimal</feature>
                 <feature>obr</feature>
                 <feature>package</feature>
                 <!-- Replaced by opennms-bridge-http-service -->
@@ -309,7 +343,6 @@
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
                 <feature>ssh/${karafSshdVersion}</feature>
-                <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
                 <feature>wrap</feature>
@@ -357,7 +390,6 @@
                 <feature>kar</feature>
                 <feature>log</feature>
                 <feature>management</feature>
-                <feature>minimal</feature>
                 <feature>obr</feature>
                 <feature>opennms-bridge-http-service</feature>
                 <feature>package</feature>
@@ -369,7 +401,6 @@
                 <feature>service-wrapper</feature>
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
-                <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
                 <feature>wrap</feature>
@@ -398,10 +429,8 @@
                 <feature>jaxb</feature>
                 <feature>jolokia</feature>
                 <feature>json-lib</feature>
-                <feature>lmax-disruptor</feature>
                 <feature>opennms-activemq-pool</feature>
                 <feature>opennms-activemq-shell</feature>
-                <feature>opennms-bootstrap</feature>
                 <feature>opennms-collection-api</feature>
                 <feature>opennms-collection-commands</feature>
                 <feature>opennms-collection-persistence-rrd</feature>
@@ -455,8 +484,6 @@
                 <feature>opennms-osgi-core-rest</feature>
                 <feature>org.json</feature>
                 <feature>postgresql</feature>
-                <feature>smack</feature>
-                <feature>twitter4j</feature>
                 <feature>opennms-jaas-login-module</feature>
                 <feature>nrtg</feature>
                 <feature>opennms-amqp-event-forwarder</feature>
@@ -701,6 +728,25 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
+          <!-- NMS-20061: Karaf's own feature repo pins jline 3.21.0 (CVE-2026-56740);
+               force jlineVersion (see root pom.xml) instead of reverting this. -->
+          <execution>
+            <id>remove-superseded-jline</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <delete includeemptydirs="true">
+                  <fileset dir="${project.build.directory}/opennms-repo/org/jline/jline"
+                           excludes="${jlineVersion}/**" erroronmissingdir="false"/>
+                  <fileset dir="${project.build.directory}/experimental-repo/org/jline/jline"
+                           excludes="${jlineVersion}/**" erroronmissingdir="false"/>
+                </delete>
+              </target>
+            </configuration>
+          </execution>
           <execution>
             <phase>verify</phase>
             <goals>
@@ -828,23 +874,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.cifs</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.nsclient</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.nsclient</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.radius</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -859,6 +888,10 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>etc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>com.github.mwiede</groupId>
+      <artifactId>jsch</artifactId>
     </dependency>
     <dependency>
       <groupId>com.ximpleware</groupId>
@@ -893,18 +926,6 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>lib</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.juniper-tca-collector</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
     </dependency>
     <dependency>
       <groupId>io.hawt</groupId>

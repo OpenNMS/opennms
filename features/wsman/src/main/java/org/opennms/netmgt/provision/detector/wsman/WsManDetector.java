@@ -77,10 +77,9 @@ public class WsManDetector extends SyncAbstractDetector {
 
     public DetectResults isServiceDetected(InetAddress address, WSManEndpoint endpoint) {
         // Issue the "Identify" request
-        final WSManClient client = m_factory.getClient(endpoint);
         Identity identity = null;
         final Map<String, String> attributes = new HashMap<>();
-        try {
+        try (WSManClient client = m_factory.getClient(endpoint)) {
             identity = client.identify();
             LOG.info("Identify succeeded for address {} with product vendor '{}' and product version '{}'.", address, identity.getProductVendor(), identity.getProductVersion());
             attributes.put(UPDATE_ASSETS, Boolean.toString(m_updateAssets));

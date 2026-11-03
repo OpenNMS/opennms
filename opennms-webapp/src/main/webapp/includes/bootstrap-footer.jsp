@@ -48,6 +48,21 @@
     XssRequestWrapper req = new XssRequestWrapper(request);
 %>
 
+<%-- Close the #content-body wrapper opened in bootstrap.jsp, so the footer is a
+     sibling of it rather than inside it — that is what lets #content-body take
+     the slack and leave the footer at the bottom. Guarded by the same
+     'superQuiet' test as the #content close below, since that branch emits
+     neither div. Closed here, ahead of the footer markup, rather than with
+     #content at the end of this file. --%>
+<c:choose>
+    <c:when test="${param.superQuiet == 'true'}">
+        <%-- nothing to do --%>
+    </c:when>
+    <c:otherwise>
+        <%= "</div>" %><!-- id="content-body" -->
+    </c:otherwise>
+</c:choose>
+
 <c:choose>
     <c:when test="${param.quiet == 'true'}">
         <!-- Not displaying footer -->
@@ -58,7 +73,7 @@
 
         <footer id="footer" class="card-footer">
             <p>
-                OpenNMS <a href="about/index.jsp">Copyright</a> &copy; 1999-2026
+                OpenNMS <a href="ui/index.html#/about">Copyright</a> &copy; 1999-2026
                 <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
                 OpenNMS&reg; is a registered trademark of
                 <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
@@ -80,9 +95,20 @@
     </c:otherwise>
 </c:choose>
 
+<%--
+  Whatever an install drops in includes/custom-footer lands here, between the
+  footer and the close of #content — which is a flex column (see #content in
+  opennms-theme.scss). Give it a plain block of its own to live in, for the same
+  reason #content-body exists: as direct flex items, inline-level markup would be
+  stretched and anything sized by auto margins would collapse. Inside this div it
+  lays out normally, and #content keeps a hand-countable set of items.
+--%>
 <%
     File extraIncludes = new File(request.getSession().getServletContext().getRealPath("includes") + File.separator + "custom-footer");
     if (extraIncludes.exists()) {
+%>
+<div id="custom-footer">
+<%
         for (File file : extraIncludes.listFiles()) {
             if (file.isFile()) {
                 pageContext.setAttribute("file", "custom-footer/" + file.getName());
@@ -91,6 +117,9 @@
 <%
             }
         }
+%>
+</div>
+<%
     }
 %>
 

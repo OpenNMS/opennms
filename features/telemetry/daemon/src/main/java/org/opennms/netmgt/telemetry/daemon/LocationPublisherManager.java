@@ -41,9 +41,13 @@ public class LocationPublisherManager {
 
     public void removeIfEmpty(String location) {
         LocationPublisher lp = publishers.get(location);
-        if (lp != null && !lp.hasConfigs()) {
+        if (lp != null && !lp.hasConfigs() && !lp.isPublishPending()) {
             publishers.remove(location, lp);
         }
+    }
+
+    public void setTwinPublisher(TwinPublisher twinPublisher) {
+        this.twinPublisher = twinPublisher;
     }
 
     public void forceCloseAll() {

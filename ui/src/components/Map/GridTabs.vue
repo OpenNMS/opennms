@@ -1,10 +1,10 @@
 <template>
-  <PTabs :value="activeTab" class="tabs">
-    <PTabList>
-      <PTab value="alarms" @click="goToAlarms">Alarms ({{ alarms.length }})</PTab>
-      <PTab value="nodes" @click="goToNodes">Nodes ({{ nodes.length }})</PTab>
-    </PTabList>
-  </PTabs>
+  <OnmsTabs :value="activeTab" class="tabs">
+    <OnmsTabList>
+      <OnmsTab value="alarms" @click="goToAlarms">Alarms ({{ alarms.length }})</OnmsTab>
+      <OnmsTab value="nodes" @click="goToNodes">Nodes ({{ nodes.length }})</OnmsTab>
+    </OnmsTabList>
+  </OnmsTabs>
   <router-view />
 </template>
 <script setup lang="ts">
@@ -12,14 +12,8 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { useMapStore } from '@/stores/mapStore'
-import Tabs from 'primevue/tabs'
-import TabList from 'primevue/tablist'
-import Tab from 'primevue/tab'
+import { OnmsTab, OnmsTabList, OnmsTabs } from '@opennms/onms-ui'
 import { Alarm, Node } from '@/types'
-
-const PTabs = Tabs
-const PTabList = TabList
-const PTab = Tab
 
 const mapStore = useMapStore()
 const router = useRouter()
@@ -40,9 +34,5 @@ const goToNodes = () => router.push('/map/nodes')
   padding-bottom: 10px;
   margin-bottom: -29px;
   background: var(--p-content-background);
-
-  :deep(.p-tab) {
-    text-transform: uppercase;
-  }
 }
 </style>

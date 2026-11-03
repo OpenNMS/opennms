@@ -35,27 +35,6 @@
           "roles": null
         },
         {
-          "id": "heatmap",
-          "name": "Heatmap",
-          "url": "heatmap/index.jsp",
-          "locationMatch": "heatmap",
-          "roles": null
-        },
-        {
-          "id": "trend",
-          "name": "Trends",
-          "url": "trend/index.jsp",
-          "locationMatch": "trend",
-          "roles": null
-        },
-        {
-          "id": "charts",
-          "name": "Charts",
-          "url": "charts/index.jsp",
-          "locationMatch": "chart",
-          "roles": null
-        },
-        {
           "id": "databaseReports",
           "name": "Database Reports",
           "url": "report/database/index.jsp",
@@ -63,16 +42,9 @@
           "roles": null
         },
         {
-          "id": "statistics",
-          "name": "Metrics Statistics (statsd)",
-          "url": "statisticsReports/index.htm",
-          "locationMatch": "reports",
-          "roles": null
-        },
-        {
           "id": "kscReports",
           "name": "Graph Collections",
-          "url": "KSC/index.jsp",
+          "url": "ui/index.html#/graph-collections",
           "locationMatch": "ksc",
           "roles": null
         }
@@ -91,13 +63,6 @@
           "name": "Nodes",
           "url": "ui/index.html#/nodes",
           "locationMatch": "configurationManagement",
-          "roles": null
-        },
-        {
-          "id": "legacyNodes",
-          "name": "Nodes (Legacy)",
-          "url": "element/nodeList.htm",
-          "locationMatch": "nodelist",
           "roles": null
         },
         {
@@ -206,14 +171,21 @@
         {
           "id": "resourceGraphs",
           "name": "Resource Graphs",
+          "url": "graph/index.jsp",
+          "locationMatch": "performance",
+          "roles": null
+        },
+        {
+          "id": "resourceGraphsPreview",
+          "name": "Resource Graphs (Preview)",
           "url": "ui/index.html#/resource-graphs",
           "locationMatch": "performance",
           "roles": null
         },
         {
-          "id": "resourceGraphsOld",
-          "name": "Resource Graphs (Legacy)",
-          "url": "graph/index.jsp",
+          "id": "adhocGraphs",
+          "name": "Custom Performance Graphs (Preview)",
+          "url": "ui/index.html#/adhoc-graphs",
           "locationMatch": "performance",
           "roles": null
         }
@@ -267,6 +239,20 @@
           "roles": null
         },
         {
+          "id": "notificationsPreview",
+          "name": "Notifications (Preview)",
+          "url": "ui/index.html#/notifications",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "notificationsConfigPreview",
+          "name": "Notifications Config (Preview)",
+          "url": "ui/index.html#/notifications-config",
+          "locationMatch": null,
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
           "id": "manageEventConfigurations",
           "name": "Manage Event Configurations",
           "url": "ui/index.html#/event-config",
@@ -290,9 +276,9 @@
         {
           "id": "scheduledOutages",
           "name": "Scheduled Outages",
-          "url": "admin/sched-outages/index.jsp",
-          "locationMatch": null,
-          "roles": null
+          "url": "ui/index.html#/scheduled-outages",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
         },
         {
           "id": "productUpdateEnrollment",
@@ -319,23 +305,16 @@
       "roles": null,
       "items": [
         {
-          "id": "manageMinions",
-          "name": "Manage Minions",
-          "url": "minion/index.jsp",
+          "id": "distributedMonitoring",
+          "name": "Manage Minions and Locations",
+          "url": "ui/index.html#/distributed-monitoring",
           "locationMatch": "",
-          "roles": null
+          "roles": ["ROLE_ADMIN"]
         },
         {
           "id": "manageApplications",
           "name": "Manage Applications",
           "url": "admin/applications.htm",
-          "locationMatch": "",
-          "roles": null
-        },
-        {
-          "id": "manageMonitoringLocations",
-          "name": "Manage Monitoring Locations",
-          "url": "locations/index.jsp",
           "locationMatch": "",
           "roles": null
         }
@@ -390,6 +369,13 @@
           "url": "admin/bsm/adminpage.jsp",
           "locationMatch": "",
           "roles": null
+        },
+        {
+          "id": "manageWsman",
+          "name": "Manage WS-Man",
+          "url": "ui/index.html#/admin/wsman-config",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
         }
       ]
     },
@@ -404,14 +390,14 @@
         {
           "id": "manageUsers",
           "name": "Manage Users",
-          "url": "admin/userGroupView/users/list.jsp",
+          "url": "ui/index.html#/admin/users",
           "locationMatch": "",
           "roles": null
         },
         {
           "id": "manageGroups",
           "name": "Manage Groups",
-          "url": "admin/userGroupView/groups/list.htm",
+          "url": "ui/index.html#/admin/groups",
           "locationMatch": "",
           "roles": null
         },
@@ -502,6 +488,13 @@
           "roles": null
         },
         {
+          "id": "snmpMibCompilerUi",
+          "name": "SNMP MIB Compiler (New UI)",
+          "url": "ui/index.html#/mib-compiler",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
           "id": "jmxMetricConfigurationGenerator",
           "name": "JMX Metric Configuration Generator",
           "url": "admin/jmxConfigGenerator.jsp",
@@ -575,7 +568,7 @@
       "items": [
         {
           "id": "restOpenApiDocumentation",
-          "name": "REST Open API Documentation",
+          "name": "OpenAPI Documentation",
           "url": "ui/index.html#/open-api",
           "locationMatch": "",
           "roles": null
@@ -583,7 +576,7 @@
         {
           "id": "restApiReferenceDocumentation",
           "name": "REST API Reference Documentation",
-          "url": "https://docs.opennms.com/meridian/2024/development/rest/rest-api.html",
+          "url": "https://docs.opennms.com/$PRODUCT/$DOCS_VERSION/development/rest/rest-api.html",
           "isExternalLink": true,
           "linkTarget": "_blank",
           "locationMatch": "",
@@ -603,92 +596,46 @@
     {
       "id": "helpDocumentationMenu",
       "name": "Help",
-      "url": "https://docs.opennms.com/meridian/2024",
+      "url": "https://docs.opennms.com/$PRODUCT/$DOCS_VERSION",
       "isExternalLink": true,
       "locationMatch": null,
       "icon": "action/Help",
       "roles": null,
       "items": [
         {
-          "id": "helpMain",
-          "name": "Help",
-          "url": "help/index.jsp",
-          "locationMatch": null,
-          "roles": null
-        },
-        {
           "id": "helpAbout",
           "name": "About",
-          "url": "about/index.jsp",
+          "url": "ui/index.html#/about",
           "locationMatch": null,
           "roles": null
         },
         {
-          "id": "apiDocumentation",
-          "name": "API Documentation",
-          "url": "ui/index.html#/open-api",
+          "id": "documentation",
+          "name": "Documentation",
+          "url": "ui/index.html#/documentation",
           "locationMatch": null,
           "roles": null
         },
         {
-          "id": "support",
-          "name": "Support",
-          "url": "support/index.jsp",
+          "id": "commercialSupport",
+          "name": "Commercial Support",
+          "url": "ui/index.html#/commercial-support",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "communityResources",
+          "name": "Community Resources",
+          "url": "ui/index.html#/community-resources",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "systemReport",
+          "name": "System Report",
+          "url": "ui/index.html#/system-report",
           "locationMatch": null,
           "roles": ["ROLE_ADMIN"]
-        }
-      ]
-    },
-    {
-      "id": "supportMenu",
-      "name": "Support",
-      "url": "#",
-      "locationMatch": null,
-      "icon": "action/ContactSupport",
-      "roles": null,
-      "items": [
-        {
-          "id": "professionalSupport",
-          "name": "Professional Support",
-          "url": "https://www.opennms.com/support",
-          "isExternalLink": true,
-          "linkTarget": "_blank",
-          "locationMatch": null,
-          "roles": null
-        },
-        {
-          "id": "chat",
-          "name": "Chat",
-          "url": "https://chat.opennms.org",
-          "isExternalLink": true,
-          "linkTarget": "_blank",
-          "locationMatch": null,
-          "roles": null
-        },
-        {
-          "id": "communitySupportDiscourse",
-          "name": "Community Support (Discourse)",
-          "url": "https://opennms.discourse.group",
-          "isExternalLink": true,
-          "linkTarget": "_blank",
-          "locationMatch": null,
-          "roles": null
-        },
-        {
-          "id": "publicIssueTracker`",
-          "name": "Public Issue Tracker",
-          "url": "https://issues.opennms.org/secure/Dashboard.jspa",
-          "isExternalLink": true,
-          "linkTarget": "_blank",
-          "locationMatch": null,
-          "roles": null
-        },
-        {
-          "id": "generateSystemReport",
-          "name": "Generate System Report",
-          "url": "admin/support/systemReportList.htm",
-          "locationMatch": null,
-          "roles": null
         }
       ]
     }
@@ -700,6 +647,13 @@
     "locationMatch": null,
     "roles": null,
     "items": [
+      {
+        "id": "helpMain",
+        "name": "Help",
+        "url": "ui/index.html#/documentation",
+        "locationMatch": null,
+        "roles": null
+      }
     ]
   },
   "selfServiceMenu": {
@@ -736,21 +690,21 @@
       {
         "id": "userNotificationConfiguration",
         "name": null,
-        "url": "admin/notification/index.jsp",
+        "url": "ui/index.html#/notifications",
         "locationMatch": null,
         "roles": null
       },
       {
         "id": "userNotificationUser",
         "name": null,
-        "url": "notification/browse?acktype=unack&filter=user==$USER",
+        "url": "ui/index.html#/notifications?preset=yourOutstanding",
         "locationMatch": null,
         "roles": null
       },
       {
         "id": "userNotificationTeam",
         "name": null,
-        "url": "notification/browse?acktype=unack",
+        "url": "ui/index.html#/notifications?preset=teamOutstanding",
         "locationMatch": null,
         "roles": null
       },

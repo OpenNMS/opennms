@@ -35,6 +35,15 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -45,6 +54,7 @@ import org.opennms.netmgt.model.OnmsAcknowledgmentCollection;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.web.rest.support.SecurityHelper;
+import org.opennms.web.rest.v1.model.AcknowledgmentForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +68,10 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("acknowledgmentRestService")
 @Path("acks")
+@Tag(name = "Acknowledgments", description = """
+        Acknowledging, unacknowledging, clearing or escalating an alarm or a notification appends a new row rather
+        than changing an existing one. The state of the alarm or notification comes from the newest row that
+        refers to it.""")
 public class AcknowledgmentRestService extends OnmsRestService {
     @Autowired
     private AcknowledgmentDao m_ackDao;
@@ -78,7 +92,41 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{id}")
     @Transactional
-    public OnmsAcknowledgment getAcknowledgment(@PathParam("id") Integer acknowledgmentId) {
+    @Operation(
+            summary = "Get an acknowledgement",
+            description = """
+                    Return one acknowledgement row by id. `refId` is the id of the alarm or notification the row
+                    refers to, and `ackType` says which of the two.
+                    `ackTime` is epoch milliseconds in JSON and an ISO-8601 string in XML. The XML root element is
+                    `ack`, while the list endpoint wraps its entries in `onmsAcknowledgment`.""",
+            operationId = "getAcknowledgmentV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The acknowledgement.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsAcknowledgment.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "id": 23632,
+                      "log": null,
+                      "ackType": "ALARM",
+                      "ackAction": "ACKNOWLEDGE",
+                      "ackTime": 1787727613204,
+                      "ackUser": "admin",
+                      "refId": 4547
+                    }"""))),
+            @ApiResponse(responseCode = "404", description = "No acknowledgement with that id, or the path segment is not an integer.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Acknowledgement object 99999999 was not found."))),
+            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`. The container rejects the request before the resource is reached, so the body is its HTML error page rather than a REST payload.",
+                    content = @Content(mediaType = MediaType.TEXT_HTML,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "<html>\n<head>\n<title>Error 403 Forbidden</title>\n</head>\n<body><h2>HTTP ERROR 403 Forbidden</h2>\n</body>\n</html>")))
+    })
+    public OnmsAcknowledgment getAcknowledgment(
+            @Parameter(description = "Acknowledgement id.", example = "23632", required = true)
+            @PathParam("id") Integer acknowledgmentId) {
         final OnmsAcknowledgment ack = m_ackDao.get(acknowledgmentId);
         if (ack == null) {
             throw getException(Status.NOT_FOUND, "Acknowledgement object {} was not found.", Integer.toString(acknowledgmentId));
@@ -95,6 +143,22 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @Produces(MediaType.TEXT_PLAIN)
     @Path("count")
     @Transactional
+    @Operation(
+            summary = "Count all acknowledgements",
+            description = "Return the total number of acknowledgement rows as a plain-text integer. Query "
+                    + "parameters are ignored.",
+            operationId = "getAcknowledgmentCountV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The acknowledgement count.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "7"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`. The container rejects the request before the resource is reached, so the body is its HTML error page rather than a REST payload.",
+                    content = @Content(mediaType = MediaType.TEXT_HTML,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "<html>\n<head>\n<title>Error 403 Forbidden</title>\n</head>\n<body><h2>HTTP ERROR 403 Forbidden</h2>\n</body>\n</html>")))
+    })
     public String getCount() {
         return Integer.toString(m_ackDao.countAll());
     }
@@ -107,6 +171,56 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
+    @Operation(
+            summary = "Search acknowledgements",
+            description = """
+                    Return acknowledgement rows matching the query parameters, newest `ackTime` first unless
+                    `orderBy` says otherwise.
+                    Filters are `OnmsAcknowledgment` property names such as `ackType`, `ackAction`, `ackUser` and
+                    `refId`. `limit` (default 10), `offset`, `orderBy`, `order`, `match` and `comparator` shape the
+                    result. A filter name that is not a property of the entity fails with 500.
+                    `totalCount` is the unpaged match count; `count` is the size of this page.""",
+            operationId = "getAcknowledgmentsV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The matching acknowledgements.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsAcknowledgmentCollection.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 7,
+                      "count": 2,
+                      "offset": 0,
+                      "onmsAcknowledgment": [
+                        {
+                          "id": 23631,
+                          "log": null,
+                          "ackType": "ALARM",
+                          "ackAction": "CLEAR",
+                          "ackTime": 1787727588461,
+                          "ackUser": "admin",
+                          "refId": 4547
+                        },
+                        {
+                          "id": 23630,
+                          "log": null,
+                          "ackType": "ALARM",
+                          "ackAction": "ESCALATE",
+                          "ackTime": 1787727588337,
+                          "ackUser": "admin",
+                          "refId": 4547
+                        }
+                      ]
+                    }"""))),
+            @ApiResponse(responseCode = "500", description = "A query parameter is not a property of the acknowledgement entity.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Unknown entity: null; nested exception is org.hibernate.HibernateException: Unknown entity: null"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds none of `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER` or `ROLE_MOBILE`. The container rejects the request before the resource is reached, so the body is its HTML error page rather than a REST payload.",
+                    content = @Content(mediaType = MediaType.TEXT_HTML,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "<html>\n<head>\n<title>Error 403 Forbidden</title>\n</head>\n<body><h2>HTTP ERROR 403 Forbidden</h2>\n</body>\n</html>")))
+    })
     public OnmsAcknowledgmentCollection getAcks(@Context final UriInfo uriInfo) {
         final CriteriaBuilder builder = getQueryFilters(uriInfo.getQueryParameters());
         OnmsAcknowledgmentCollection coll = new OnmsAcknowledgmentCollection(m_ackDao.findMatching(builder.toCriteria()));
@@ -130,6 +244,47 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
+    @Operation(
+            summary = "Acknowledge an alarm or a notification",
+            description = """
+                    Append an acknowledgement row for one alarm or one notification. The body is form-encoded;
+                    JSON is rejected with 415.
+                    Exactly one of `alarmId` and `notifId` has to be present. `action` defaults to `ack`. `ackUser`
+                    defaults to the authenticated user, and a non-admin caller may only name themselves.
+                    An id that parses as an integer but matches no row yields 304 rather than 404.
+                    The method declares no `@Produces`, so the entity is serialized according to the request's
+                    `Accept` header, XML by default. The XML root element is `ack`.""",
+            operationId = "createAcknowledgmentV1"
+    )
+    @RequestBody(required = true, description = "The alarm or notification to act on, and the action to record.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(implementation = AcknowledgmentForm.class),
+                    examples = @ExampleObject(value = "alarmId=4547&action=ack")))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The acknowledgement row that was written.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OnmsAcknowledgment.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "id": 23632,
+                      "log": null,
+                      "ackType": "ALARM",
+                      "ackAction": "ACKNOWLEDGE",
+                      "ackTime": 1787727613204,
+                      "ackUser": "admin",
+                      "refId": 4547
+                    }"""))),
+            @ApiResponse(responseCode = "304", description = "The id parsed but no alarm or notification has it."),
+            @ApiResponse(responseCode = "400", description = "Neither or both ids were supplied, an id was not an integer, or `action` was not one of the four verbs.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "You must supply either an alarmId or notifId"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'jroe', is not allowed to perform updates to alarms as user 'admin'"))),
+            @ApiResponse(responseCode = "415", description = "The body was not `application/x-www-form-urlencoded`.")
+    })
     public Response acknowledge(@Context final SecurityContext securityContext, MultivaluedMap<String, String> formParams) {
         String alarmId = formParams.getFirst("alarmId");
         String notifId = formParams.getFirst("notifId");

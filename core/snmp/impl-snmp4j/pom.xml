@@ -73,12 +73,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>snmp4j-agent-dependencies</artifactId>
-      <scope>test</scope>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
       <scope>test</scope>
       <type>pom</type>

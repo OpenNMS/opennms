@@ -20,7 +20,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.netmgt.provision.detector.icmp.*;org.opennms.netmgt.provision.detector.loop.*;org.opennms.netmgt.provision.detector.smb.*;org.opennms.netmgt.provision.detector.snmp.*;version="${project.version}"</Export-Package>
+            <Export-Package>org.opennms.netmgt.provision.detector.icmp.*;org.opennms.netmgt.provision.detector.loop.*;org.opennms.netmgt.provision.detector.snmp.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -63,11 +63,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-best</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jcifs-dependencies</artifactId>
-      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

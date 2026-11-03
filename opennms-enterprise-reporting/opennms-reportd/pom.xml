@@ -56,6 +56,14 @@
       <artifactId>opennms-javamail-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>jakarta.mail</groupId>
+      <artifactId>jakarta.mail-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>quartz-dependencies</artifactId>
       <type>pom</type>

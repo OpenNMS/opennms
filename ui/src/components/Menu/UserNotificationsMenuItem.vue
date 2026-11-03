@@ -9,8 +9,8 @@
       {{ notificationSummary.teamUnacknowledgedCount }}
     </span>
 
-    <Button
-      text
+    <OnmsButton
+      variant="text"
       class="menubar-dropdown-button-dark"
       aria-haspopup="true"
       aria-label="User notifications menu"
@@ -22,9 +22,9 @@
       />
 
       <OnmsIcon class="user-notification-arrow-dropdown" :icon="IconArrowDropDown" />
-    </Button>
+    </OnmsButton>
 
-    <Popover
+    <OnmsPopover
       ref="pop"
       appendTo="self"
       class="onms-user-dropdown-panel user-notification-dropdown-panel"
@@ -52,7 +52,7 @@
         <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
           <OnmsIcon :icon="IconPerson" class="user-notifications-icon" />
           <span class="left-margin-small">
-            {{ notificationSummary.userUnacknowledgedCount ?? 0 }} notices assigned to you
+            {{ notificationSummary.userUnacknowledgedCount ?? 0 }} notifications assigned to you
           </span>
         </a>
       </div>
@@ -69,11 +69,7 @@
             <i :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase() ?? 'indeterminate'}`" />
             <div class="full-width-left">
               <div>
-                <span class="font-weight-bold">
-                  {{ new Date(item.pageTime).toLocaleDateString() }} {{ new
-                  Date(item.pageTime).toLocaleTimeString()
-                  }}
-                </span>
+                <span class="font-weight-bold">{{ formatPageTime(item.pageTime) }}</span>
               </div>
               <div class="dropdown-info-bar">
                 <span>{{ item.notificationName }}</span>
@@ -123,29 +119,28 @@
           </span>
         </a>
       </div>
-    </Popover>
+    </OnmsPopover>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, markRaw, ref, watch } from 'vue'
 
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
-import IconArrowDropDown from '@/components/icons/navigation/ArrowDropDown.vue'
-import IconCalendar from '@/components/icons/action/Calendar.vue'
-import IconGroup from '@/components/icons/action/Group.vue'
-import IconNotificationsOff from '@/components/icons/notification/NotificationsOff.vue'
-import IconNotificationSelected from '@/components/icons/notification/NotificationSelected.vue'
-import IconPerson from '@/components/icons/action/Person.vue'
-import Button from 'primevue/button'
-import Popover from 'primevue/popover'
+import { OnmsIcon, OnmsButton, OnmsPopover } from '@opennms/onms-ui'
+import IconArrowDropDown from '@opennms/onms-ui/icons/navigation/ArrowDropDown.vue'
+import IconCalendar from '@opennms/onms-ui/icons/action/Calendar.vue'
+import IconGroup from '@opennms/onms-ui/icons/action/Group.vue'
+import IconNotificationsOff from '@opennms/onms-ui/icons/notification/NotificationsOff.vue'
+import IconNotificationSelected from '@opennms/onms-ui/icons/notification/NotificationSelected.vue'
+import IconPerson from '@opennms/onms-ui/icons/action/Person.vue'
+import { navigateTo } from '@/lib/navigation'
 import { useMenuStore } from '@/stores/menuStore'
 import {
   MainMenu,
   NoticeStatusDisplay,
-  NotificationSummary,
-  OnmsNotification
+  NotificationSummary
 } from '@/types/mainMenu'
+import { OnmsNotification } from '@/types/notifications'
 
 const menuStore = useMenuStore()
 const maxNotifications = 2
@@ -209,14 +204,14 @@ const noticeStatusDisplay = computed<NoticeStatusDisplay>(() => {
       icon: 'fa-solid fa-bell',
       iconComponent: markRaw(IconNotificationSelected),
       colorClass: 'alarm-ok',
-      title: 'Notices: On'
+      title: 'Notifications: On'
     }
   } else if (status === 'Off') {
     return {
       icon: 'fa-solid fa-bell-slash',
       iconComponent: markRaw(IconNotificationsOff),
       colorClass: 'alarm-error',
-      title: 'Notices: Off'
+      title: 'Notifications: Off'
     }
   }
 
@@ -225,7 +220,7 @@ const noticeStatusDisplay = computed<NoticeStatusDisplay>(() => {
     icon: 'fa-solid fa-bell',
     iconComponent: markRaw(IconNotificationSelected),
     colorClass: 'alarm-unknown',
-    title: 'Notices: Unknown'
+    title: 'Notifications: Unknown'
   }
 })
 
@@ -264,13 +259,23 @@ const computeLink = (url: string) => {
 }
 
 const onMenuItemClick = (url: string) => {
-  const link = computeLink(url)
-  window.location.assign(link)
+  // re-clicking the link for the page already open (e.g. a preset of the
+  // Notifications page) refreshes that page instead of doing nothing
+  navigateTo(computeLink(url))
 }
 
-const onNotificationItemClick = (item: OnmsNotification) => {
-  const url = `notification/detail.jsp?notice=${item.id}`
-  onMenuItemClick(url)
+const formatPageTime = (pageTime: OnmsNotification['pageTime']) => {
+  if (pageTime === null || pageTime === undefined) {
+    return ''
+  }
+  const date = new Date(pageTime)
+  return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
+}
+
+const onNotificationItemClick = (_item: OnmsNotification) => {
+  // open the new Notifications page filtered to the user's outstanding notices
+  // (which include this one) instead of the legacy per-notice detail page
+  onMenuItemClick('ui/index.html#/notifications?preset=yourOutstanding')
 }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <FormField label="Show Severity" class="severity-select">
-    <PSelect
+    <OnmsSelect
       v-model="selectedSeverity"
       :options="options"
       optionLabel="option"
@@ -12,11 +12,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import Select from 'primevue/select'
+import { OnmsSelect } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { useMapStore } from '@/stores/mapStore'
-
-const PSelect = Select
 
 const mapStore = useMapStore()
 
@@ -37,7 +35,7 @@ const onSeveritySelect = () => mapStore.setSelectedSeverity(selectedSeverity.val
   position: absolute;
   width: 250px;
   right: 80px;
-  top: 80px;
+  top: 2em;
   /* below the app bar's z-index (1030) */
   z-index: 1020;
   /* Translucent panel so the control reads clearly over the map. Follows the

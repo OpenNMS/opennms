@@ -34,4 +34,5 @@ public interface WsmanAgentConfig {
     String getProductVendor();
     String getProductVersion();
     Boolean isGssAuth();
+    Boolean isKerberosEncryption();
 }

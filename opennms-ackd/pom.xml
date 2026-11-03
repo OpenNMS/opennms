@@ -56,8 +56,8 @@
       <artifactId>org.opennms.features.events.api</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
+      <groupId>jakarta.mail</groupId>
+      <artifactId>jakarta.mail-api</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>

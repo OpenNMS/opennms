@@ -30,16 +30,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.mail.Address;
-import javax.mail.Authenticator;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.event.TransportEvent;
-import javax.mail.event.TransportListener;
-import javax.mail.internet.MimeBodyPart;
+import jakarta.activation.DataHandler;
+import jakarta.activation.FileDataSource;
+import jakarta.mail.Address;
+import jakarta.mail.Authenticator;
+import jakarta.mail.MessagingException;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.event.TransportEvent;
+import jakarta.mail.event.TransportListener;
+import jakarta.mail.internet.MimeBodyPart;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +86,7 @@ public abstract class JavaMailer2 {
      *
      * @param user a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.
-     * @return a {@link javax.mail.Authenticator} object.
+     * @return a {@link jakarta.mail.Authenticator} object.
      */
     public Authenticator createAuthenticator(final String user, final String password) {
         Authenticator auth;
@@ -142,7 +142,7 @@ public abstract class JavaMailer2 {
      *
      * @param file file to attach
      * @return attachment body part
-     * @throws javax.mail.MessagingException if we can't set the data handler or
+     * @throws jakarta.mail.MessagingException if we can't set the data handler or
      *      the file name on the MimeBodyPart
      * @throws org.opennms.javamail.JavaMailerException if the file does not exist or is not
      *      readable

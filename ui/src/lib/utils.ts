@@ -55,6 +55,15 @@ export const ellipsify = (text: string, count: number) => {
   return text
 }
 
+/** The text of an HTML fragment, without its markup -- for a tooltip or a title attribute. */
+export const htmlToText = (html?: string | null): string => {
+  if (!html) {
+    return ''
+  }
+
+  return (new DOMParser().parseFromString(html, 'text/html').body.textContent ?? '').replace(/\s+/g, ' ').trim()
+}
+
 /**
  * Returns whether the object has at least one valid (non-empty) string property.
  */
@@ -72,3 +81,6 @@ export const hasNonEmptyProperty = (obj?: any) => {
 }
 
 export const VENDOR_OPENNMS = 'opennms'
+
+/** Pinned event-conf source that is always evaluated last and cannot be reordered. */
+export const EVENT_CONF_CATCH_ALL_SOURCE = 'opennms.catch-all.events'

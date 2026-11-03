@@ -32,14 +32,18 @@ import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
 @Command(scope = "opennms", name = "kafka-evaluate-filter", description = "Compiles the given expression and optionally test it against an object.")
 @Service
 public class EvaluateFilter implements Action {
     private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
+    // Match how the producer evaluates filters: no type references, constructors, or reflection.
+    private static final EvaluationContext SPEL_CONTEXT = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
 
     @Reference
     private AlarmDao alarmDao;
@@ -69,7 +73,7 @@ public class EvaluateFilter implements Action {
                     } else {
                         System.out.printf("Alarm with ID %d has reduction key: %s\n", alarmId, alarm.getReductionKey());
                     }
-                    System.out.printf("Result: %s\n", expression.getValue(alarm, Boolean.class));
+                    System.out.printf("Result: %s\n", expression.getValue(SPEL_CONTEXT, alarm, Boolean.class));
                 }
                 return null;
             });
@@ -78,7 +82,7 @@ public class EvaluateFilter implements Action {
             final Event event = new EventBuilder(eventUei, "kafka-producer:evaluate-filter")
                     .getEvent();
             System.out.printf("Event has UEI: %s\n", event.getUei());
-            System.out.printf("Result: %s\n", expression.getValue(event, Boolean.class));
+            System.out.printf("Result: %s\n", expression.getValue(SPEL_CONTEXT, event, Boolean.class));
         }
         return null;
     }

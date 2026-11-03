@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.FileUtils;
 import org.apache.curator.test.TestingServer;
 import org.apache.kafka.admin.BrokerMetadata;
-import org.apache.kafka.common.utils.SystemTime;
+import org.apache.kafka.common.utils.Time;
 import org.junit.After;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.TemporaryFolder;
@@ -117,7 +117,7 @@ public class JUnitKafkaServer extends ExternalResource {
         System.err.println("Kafka server properties: " + properties);
         kafkaConfig = new KafkaConfig(properties);
 
-        kafkaServer = new KafkaServer(kafkaConfig, new SystemTime(), Option.<String>empty(), false);
+        kafkaServer = new KafkaServer(kafkaConfig, Time.SYSTEM, Option.<String>empty(), false);
         kafkaServer.startup();
         await().atMost(1, MINUTES).until(this::getBrokers, hasSize(greaterThanOrEqualTo(1)));
 

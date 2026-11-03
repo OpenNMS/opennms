@@ -2,7 +2,7 @@
 <features name="minion-core-features" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
 
     <!-- Apache ActiveMQ features -->
-    <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
+    <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/activemq</repository>
 
     <!-- Apache Camel features -->
     <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/camel</repository>
@@ -33,6 +33,8 @@
 
         <!-- netty-transport-classes-epoll is required by netty-transport-native-epoll at runtime -->
         <bundle dependency="true">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
+
+        <feature>opennms-core-camel-hardening</feature>
 
         <!-- This is also defined in "sentinel-jms" -->
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>

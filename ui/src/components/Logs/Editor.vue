@@ -1,27 +1,23 @@
 <template>
   <div class="editor">
     <div class="toolbar">
-      <PButton
+      <OnmsIconButton
         v-if="reverseLog"
-        text
         :disabled="!selectedLog"
         class="btn"
         aria-label="Display oldest first."
+        :icon="KeyboardArrowDown"
         @click="getLog(false)"
-      >
-        <OnmsIcon :icon="KeyboardArrowDown" />
-      </PButton>
+      />
 
-      <PButton
+      <OnmsIconButton
         v-if="!reverseLog"
-        text
         :disabled="!selectedLog"
         class="btn"
         aria-label="Display newest first."
+        :icon="KeyboardArrowUp"
         @click="getLog(true)"
-      >
-        <OnmsIcon :icon="KeyboardArrowUp" />
-      </PButton>
+      />
     </div>
     <VAceEditor
       v-model:value="content"
@@ -38,11 +34,10 @@
 import { computed, ref, watchEffect } from 'vue'
 
 import { VAceEditor } from 'vue3-ace-editor'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
-import Button from 'primevue/button'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import { onKeyStroke } from '@vueuse/core'
-import KeyboardArrowUp from '@/components/icons/hardware/KeyboardArrowUp.vue'
-import KeyboardArrowDown from '@/components/icons/hardware/KeyboardArrowDown.vue'
+import KeyboardArrowUp from '@opennms/onms-ui/icons/hardware/KeyboardArrowUp.vue'
+import KeyboardArrowDown from '@opennms/onms-ui/icons/hardware/KeyboardArrowDown.vue'
 import ace from 'ace-builds'
 import 'ace-builds/src-noconflict/mode-text'
 import 'ace-builds/src-noconflict/theme-xcode'
@@ -50,8 +45,6 @@ import 'ace-builds/src-noconflict/theme-dracula'
 import 'ace-builds/src-noconflict/ext-searchbox'
 import { useAppStore } from '@/stores/appStore'
 import { useLogStore } from '@/stores/logStore'
-
-const PButton = Button
 
 const appStore = useAppStore()
 const logStore = useLogStore()
@@ -100,8 +93,14 @@ const init = (editor: any) => {
 
 <style lang="scss" scoped>
 @import "@/styles/onms-tokens";
+// Fit the height the app shell leaves for page content, or the page pushes the
+// footer past the bottom of the window and clips it. The shell takes the masthead
+// (--onms-header-height) off the top and the footer band (--onms-footer-height) off the bottom.
+//
+// This page also stacks a breadcrumb row (51px) above the card the editor sits
+// in, and that card pads it by 15px top and bottom.
 .editor {
-  height: calc(100vh - 120px);
+  height: calc(100vh - var(--onms-header-height, 3.75rem) - var(--onms-footer-height, 41px) - 51px - 30px);
   display: flex;
   flex-direction: column;
   border: 1px solid var(--p-content-border-color);
@@ -120,9 +119,6 @@ const init = (editor: any) => {
       min-width: 25px !important;
       margin-right: 5px;
       margin-top: 2px;
-      :deep(svg) {
-        font-size: 20px !important;
-      }
     }
   }
 }

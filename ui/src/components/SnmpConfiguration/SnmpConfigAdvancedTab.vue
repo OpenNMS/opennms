@@ -1,26 +1,26 @@
 <template>
   <div class="snmp-config-advanced-tab">
-    <PTabs
+    <OnmsTabs
       class="nested-tabs"
       v-model:value="activeAdvancedSubtab"
     >
-      <PTabList>
-        <PTab :value="0">Default Overrides</PTab>
-        <PTab :value="1">Profiles</PTab>
-        <PTab :value="2">Upload/Download</PTab>
-      </PTabList>
-      <PTabPanels>
-        <PTabPanel :value="0">
+      <OnmsTabList>
+        <OnmsTab :value="0">Default Overrides</OnmsTab>
+        <OnmsTab :value="1">Profiles</OnmsTab>
+        <OnmsTab :value="2">Upload/Download</OnmsTab>
+      </OnmsTabList>
+      <OnmsTabPanels>
+        <OnmsTabPanel :value="0">
           <SnmpConfigDefaultsPanel />
-        </PTabPanel>
-        <PTabPanel :value="1">
+        </OnmsTabPanel>
+        <OnmsTabPanel :value="1">
           <SnmpConfigProfilesTab />
-        </PTabPanel>
-        <PTabPanel :value="2">
+        </OnmsTabPanel>
+        <OnmsTabPanel :value="2">
           <SnmpConfigUploadDownloadTab />
-        </PTabPanel>
-      </PTabPanels>
-    </PTabs>
+        </OnmsTabPanel>
+      </OnmsTabPanels>
+    </OnmsTabs>
    </div>
 </template>
 
@@ -28,20 +28,10 @@
 import { computed } from 'vue'
 
 import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
-import Tabs from 'primevue/tabs'
-import TabList from 'primevue/tablist'
-import Tab from 'primevue/tab'
-import TabPanels from 'primevue/tabpanels'
-import TabPanel from 'primevue/tabpanel'
+import { OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
 import SnmpConfigDefaultsPanel from './SnmpConfigDefaultsPanel.vue'
 import SnmpConfigProfilesTab from './SnmpConfigProfilesTab.vue'
 import SnmpConfigUploadDownloadTab from './SnmpConfigUploadDownloadTab.vue'
-
-const PTabs = Tabs
-const PTabList = TabList
-const PTab = Tab
-const PTabPanels = TabPanels
-const PTabPanel = TabPanel
 
 const store = useSnmpConfigStore()
 
@@ -66,10 +56,6 @@ const activeAdvancedSubtab = computed({
 
   .nested-tabs {
     margin-top: 1em;
-
-    :deep(.p-tab) {
-      text-transform: uppercase;
-    }
   }
 }
 </style>

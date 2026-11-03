@@ -415,7 +415,7 @@ public class SyslogMessageTest {
     }
 
     static int getExpectedYear(String dateFragment) throws ParseException {
-        Date date = new SimpleDateFormat("yyyy MMM dd hh:mm:ss", Locale.ENGLISH).parse("0000 " + dateFragment);
+        Date date = new SimpleDateFormat("yyyy MMM dd HH:mm:ss", Locale.ENGLISH).parse("0000 " + dateFragment);
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         LocalDateTime ldt = LocalDateTime.of(0, cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DATE),

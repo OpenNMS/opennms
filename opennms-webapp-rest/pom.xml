@@ -18,6 +18,23 @@
   </properties>
 
   <build>
+    <resources>
+      <!-- AbstractSwaggerUiResource resolves the webjar path from swaggerUIVersion. -->
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>openapi/swagger-ui.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>openapi/swagger-ui.properties</exclude>
+        </excludes>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -155,6 +172,18 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.system-report</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.wsman</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-dependencies</artifactId>
       <type>pom</type>
@@ -185,6 +214,12 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- the IT registers a fake time-series storage plugin; production code finds the interface by name -->
+    <dependency>
+      <groupId>org.opennms.integration.api</groupId>
+      <artifactId>api</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.soa</artifactId>
@@ -198,6 +233,18 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.db</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.common</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.common</artifactId>
+      <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
@@ -282,12 +329,29 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.features.surveillance-views</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-web-api</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.mib-compiler</groupId>
+      <artifactId>org.opennms.features.mib-compiler.parser</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <!-- jsmiparser is scope=provided (bnd-embedded) in the parser bundle, so it is not transitive -->
+      <groupId>org.jsmiparser</groupId>
+      <artifactId>jsmiparser-api</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
@@ -407,6 +471,16 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.collection</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.tests</groupId>
+      <artifactId>org.opennms.tests.mock-wsman-agent</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.xml</artifactId>
     </dependency>
     <dependency>
@@ -477,6 +551,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
       <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
@@ -502,58 +581,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!--OpenAPI-->
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-rs-service-description-openapi-v3</artifactId>
-      <version>${cxfVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.dataformat</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.datatype</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.jaxrs</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.activation</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.xml.messaging.saaj</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>jakarta.annotation</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>jakarta.jws</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>jakarta.xml.soap</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>jakarta.xml.ws</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.cxf</groupId>
-          <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.geronimo.specs</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+    <!-- Read straight off the classpath by AbstractSwaggerUiResource. -->
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>swagger-ui</artifactId>
@@ -602,9 +630,8 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>jakarta.activation</groupId>
-      <artifactId>jakarta.activation-api</artifactId>
-      <version>1.2.2</version>
+      <groupId>com.sun.activation</groupId>
+      <artifactId>jakarta.activation</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>

@@ -41,7 +41,7 @@ import org.opennms.netmgt.config.trapd.Snmpv3User;
  */
 @XmlRootElement(name = "trapd-configuration")
 @XmlAccessorType(XmlAccessType.NONE)
-@ValidateUsing("trapd-configuration.xsd")
+@ValidateUsing("trapd-configuration-1.1.xsd")
 @SuppressWarnings("all")
 public class FakeXsdForTest implements Serializable {
     private static final long serialVersionUID = 2;

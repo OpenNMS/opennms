@@ -127,15 +127,6 @@
                     
                     <tr>
                       <th>
-                        XMPP Address:
-                      </th>
-                      <td ng-non-bindable>
-                        <%=userFactory.getXMPPAddress(userID)%>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <th>
                         Numerical Service:
                       </th>
                       <td ng-non-bindable>

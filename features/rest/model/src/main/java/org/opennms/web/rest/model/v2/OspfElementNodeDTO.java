@@ -23,6 +23,8 @@ package org.opennms.web.rest.model.v2;
 
 import java.util.Objects;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,6 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 
 @XmlRootElement(name="ospfElementNode")
 @JsonRootName("ospfElementNode")
+@Schema(description = "The OSPF process on the node itself. Omitted from EnlinkdDTO entirely, not serialized as null, when the node has no OSPF element.")
 public class OspfElementNodeDTO {
 
     private String ospfRouterId;
@@ -45,6 +48,7 @@ public class OspfElementNodeDTO {
 
     @XmlElement(name="ospfRouterId")
     @JsonProperty("ospfRouterId")
+    @Schema(description = "ospfRouterId of the node.", example = "10.255.0.1")
     public String getOspfRouterId() {
         return ospfRouterId;
     }
@@ -60,6 +64,7 @@ public class OspfElementNodeDTO {
 
     @XmlElement(name="ospfVersionNumber")
     @JsonProperty("ospfVersionNumber")
+    @Schema(description = "OSPF version advertised by the node.", example = "2")
     public Integer getOspfVersionNumber() {
         return ospfVersionNumber;
     }
@@ -75,6 +80,7 @@ public class OspfElementNodeDTO {
 
     @XmlElement(name="ospfAdminStat")
     @JsonProperty("ospfAdminStat")
+    @Schema(description = "Administrative status of the OSPF process, as a word rather than the SNMP integer.", example = "enabled", allowableValues = {"enabled", "disabled"})
     public String getOspfAdminStat() {
         return ospfAdminStat;
     }
@@ -90,6 +96,7 @@ public class OspfElementNodeDTO {
 
     @XmlElement(name="ospfCreateTime")
     @JsonProperty("ospfCreateTime")
+    @Schema(description = "Create timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/17/26, 5:20:39\u202fPM")
     public String getOspfCreateTime() {
         return ospfCreateTime;
     }
@@ -105,6 +112,7 @@ public class OspfElementNodeDTO {
 
     @XmlElement(name="ospfLastPollTime")
     @JsonProperty("ospfLastPollTime")
+    @Schema(description = "Last-poll timestamp rendered as a locale-formatted display string, not epoch milliseconds. The separator before AM/PM is U+202F (narrow no-break space), not a plain space.", example = "8/17/26, 5:20:39\u202fPM")
     public String getOspfLastPollTime() {
         return ospfLastPollTime;
     }

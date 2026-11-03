@@ -36,10 +36,11 @@ import org.opennms.netmgt.dao.WSManDataCollectionConfigDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -149,8 +150,8 @@ public class WSManDataCollectionConfigDaoJaxb extends AbstractMergingJaxbConfigD
             productVersion = Strings.nullToEmpty(productVersion);
         }
 
-        // Build the evaluation context
-        StandardEvaluationContext context = new StandardEvaluationContext(node);
+        // Build the evaluation context. Restricted context: a configured rule cannot reference types, call constructors, or use reflection.
+        EvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().withInstanceMethods().build();
         // Add the agent, so that the rule can determine the IP address in question, if required
         context.setVariable("agent", agent);
         context.setVariable("productVendor", productVendor);
@@ -162,7 +163,7 @@ public class WSManDataCollectionConfigDaoJaxb extends AbstractMergingJaxbConfigD
             Expression exp = parser.parseExpression(rule);
             boolean passed = false;
             try {
-                passed = exp.getValue(context, Boolean.class);
+                passed = exp.getValue(context, node, Boolean.class);
             } catch (Exception e) {
                 LOG.error("Failed to evaluate expression {} for agent {} with context {}. System defintion with name {} will not be used. Msg: {}", rule, agent, context, sysDef.getName(), e.getMessage());
             }

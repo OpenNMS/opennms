@@ -8,12 +8,15 @@
                 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
 ">
 
-    <reference id="databaseReportService"   interface="org.opennms.web.svclayer.DatabaseReportListService" availability="mandatory" />
-    <reference id="categoryConfigDao"       interface="org.opennms.web.svclayer.dao.CategoryConfigDao" availability="mandatory" />
+    <!-- These services are supplied by the web application when it is running. -->
+    <reference id="databaseReportService"   interface="org.opennms.web.svclayer.DatabaseReportListService" availability="optional" />
+    <reference id="categoryConfigDao"       interface="org.opennms.web.svclayer.dao.CategoryConfigDao" availability="optional" />
+    <reference id="reportSchedulerService"  interface="org.opennms.web.svclayer.SchedulerService" availability="optional" />
+
+    <!-- These services are supplied by daemon-owned Spring contexts. -->
     <reference id="categoryDao"             interface="org.opennms.netmgt.dao.api.CategoryDao" availability="mandatory" />
     <reference id="reportWrapperService"    interface="org.opennms.reporting.core.svclayer.ReportWrapperService" availability="mandatory" />
     <reference id="reportStoreService"      interface="org.opennms.reporting.core.svclayer.ReportStoreService" availability="mandatory" />
-    <reference id="reportSchedulerService"  interface="org.opennms.web.svclayer.SchedulerService" availability="mandatory" />
     <reference id="reportCatalogDao"        interface="org.opennms.netmgt.dao.api.ReportCatalogDao" availability="mandatory" />
 
     <bean id="reportRestService" class="org.opennms.features.reporting.rest.internal.ReportRestServiceImpl">

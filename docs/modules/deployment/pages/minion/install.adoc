@@ -1,7 +1,7 @@
 
 [[install-minion]]
 = Install Minion
-:description: How to install OpenNMS Minion on CentOS/RHEL 7-9, Debian/Ubuntu, Docker, and configure with message brokers: Kafka, ActiveMQ, Embedded ActiveMQ, gRPC.
+:description: How to install OpenNMS Minion on CentOS/RHEL, Debian/Ubuntu, or Docker, and configure with message brokers: Kafka, ActiveMQ, Embedded ActiveMQ, gRPC.
 
 [[objectives]]
 == Objectives
@@ -37,6 +37,12 @@ CentOS/RHEL 9::
 +
 --
 include::centos-rhel9/install-minion.adoc[]
+--
+
+CentOS/RHEL 10::
++
+--
+include::centos-rhel10/install-minion.adoc[]
 --
 
 Docker::
@@ -105,7 +111,7 @@ IMPORTANT: Change the default username and password (_admin/admin_) for the Kara
 
 [{tabs}]
 ====
-Linux::
+CentOS/RHEL::
 +
 --
 include::secure-karaf.adoc[]

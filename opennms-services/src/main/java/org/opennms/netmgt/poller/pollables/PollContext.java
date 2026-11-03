@@ -83,16 +83,18 @@ public interface PollContext {
      *
      * @param pSvc a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      * @param svcLostEvent a {@link org.opennms.netmgt.poller.pollables.PollEvent} object.
+     * @return false if the outage could not be persisted
      */
-    public void openOutage(PollableService pSvc, PollEvent svcLostEvent);
+    public boolean openOutage(PollableService pSvc, PollEvent svcLostEvent);
 
     /**
      * <p>resolveOutage</p>
      *
      * @param pSvc a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      * @param svcRegainEvent a {@link org.opennms.netmgt.poller.pollables.PollEvent} object.
+     * @return false if an open outage could not be resolved
      */
-    public void resolveOutage(PollableService pSvc, PollEvent svcRegainEvent);
+    public boolean resolveOutage(PollableService pSvc, PollEvent svcRegainEvent);
     /**
      * <p>isServiceUnresponsiveEnabled</p>
      *

@@ -1,23 +1,19 @@
 <template>
-  <PButton
-    text
+  <OnmsIconButton
     class="compare-btn"
     aria-label="Compare configs"
-    v-tooltip="'Compare configs'"
+    tooltip="Compare configs"
+    :icon="Compare"
     @click="emit('onCompare')"
-  >
-    <OnmsIcon :icon="Compare" />
-  </PButton>
+  />
 
-  <PButton
-    text
+  <OnmsIconButton
     class="dwnld-btn"
     aria-label="Download config"
-    v-tooltip="'Download config'"
+    tooltip="Download config"
+    :icon="Download"
     @click="onDownload"
-  >
-    <OnmsIcon :icon="Download" />
-  </PButton>
+  />
 
   <span class="title">
     {{ selectedConfig?.configName }}
@@ -47,15 +43,12 @@
 import { onMounted, ref, watch } from 'vue'
 
 import { storeToRefs } from 'pinia'
-import Button from 'primevue/button'
-import OnmsIcon from '@/components/icons/OnmsIcon.vue'
-import Download from '@/components/icons/action/DownloadFile.vue'
+import { OnmsIconButton } from '@opennms/onms-ui'
+import Download from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import Compare from '@/assets/Compare.vue'
 import DCBDiff from './DCBDiff.vue'
 import { DeviceConfigBackup } from '@/types/deviceConfig'
 import { useDeviceStore } from '@/stores/deviceStore'
-
-const PButton = Button
 
 const emit = defineEmits(['onCompare'])
 

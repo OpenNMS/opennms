@@ -49,6 +49,8 @@ This includes the ID and node label.
 
 | /nodes/\{id}/assetRecord
 | Get the asset record associated with the given node.
+The response does not show the values of the `password`, `enable` and `snmpcommunity` fields.
+You can set these fields, but you cannot read them.
 
 | /nodes/\{id}/hardwareInventory
 | Get the hardware inventory information collected by the xref:reference:provisioning/adapters/hardware-inventory.adoc[hardware inventory plugin].

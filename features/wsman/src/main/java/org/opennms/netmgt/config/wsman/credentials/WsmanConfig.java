@@ -96,6 +96,8 @@ public class WsmanConfig implements WsmanAgentConfig {
     protected String productVersion;
     @XmlAttribute(name = "gss-auth")
     protected Boolean gssAuth;
+    @XmlAttribute(name = "kerberos-encryption")
+    protected Boolean kerberosEncryption;
 
     /**
      * Maps IP addresses to specific WS-Man parameters(retries, timeouts...) Gets the value of the definition property.
@@ -379,9 +381,18 @@ public class WsmanConfig implements WsmanAgentConfig {
     }
 
     @Override
+    public Boolean isKerberosEncryption() {
+        return kerberosEncryption;
+    }
+
+    public void setKerberosEncryption(Boolean value) {
+        this.kerberosEncryption = value;
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(definition, timeout, retry, username, password, port,
-                maxElements, ssl, strictSsl, path, productVendor, productVersion, gssAuth);
+                maxElements, ssl, strictSsl, path, productVendor, productVersion, gssAuth, kerberosEncryption);
     }
 
     @Override
@@ -405,6 +416,7 @@ public class WsmanConfig implements WsmanAgentConfig {
                 Objects.equals(this.path, other.path) &&
                 Objects.equals(this.productVendor, other.productVendor) &&
                 Objects.equals(this.productVersion, other.productVersion) &&
-                Objects.equals(this.gssAuth, other.gssAuth);
+                Objects.equals(this.gssAuth, other.gssAuth) &&
+                Objects.equals(this.kerberosEncryption, other.kerberosEncryption);
     }
 }

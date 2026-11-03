@@ -31,6 +31,8 @@
 		<property name="brokerURL" value="$[org.opennms.activemq.broker.url]" />
 		<property name="userName" value="$[org.opennms.activemq.broker.username]" />
 		<property name="password" value="$[org.opennms.activemq.broker.password]" />
+		<!-- Camel's JmsBinding deserializes ObjectMessage payloads; OpenNMS never sends any (CVE-2026-40860) -->
+		<property name="trustedPackages"><list/></property>
 	</bean>
 
 	<!-- Setup JMS connection pooling -->
@@ -46,8 +48,20 @@
 		<property name="concurrentConsumers" value="$[org.opennms.activemq.client.concurrent-consumers]" />
 	</bean>
 
+	<!-- Keep only the inbound properties OpenNMS reads, so a JMS producer cannot set Camel internals (CVE-2026-40453) -->
+	<bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.hardening.InboundHeaderAllowList">
+		<argument>
+			<bean class="org.apache.camel.component.jms.JmsHeaderFilterStrategy">
+				<argument>
+					<bean factory-ref="jmsConfig" factory-method="isIncludeAllJMSXProperties"/>
+				</argument>
+			</bean>
+		</argument>
+	</bean>
+
 	<bean id="activemq" class="org.apache.camel.component.jms.JmsComponent">
 		<property name="configuration" ref="jmsConfig" />
+		<property name="headerFilterStrategy" ref="jmsHeaderFilterStrategy" />
 	</bean>
 
 	<service id="queuingservice" ref="activemq" interface="org.apache.camel.Component">

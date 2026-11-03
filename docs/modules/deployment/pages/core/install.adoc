@@ -1,7 +1,7 @@
 
 [[getting-started-core]]
 = Installation and Configuration
-:description: Install and configure OpenNMS instance including PostgreSQL setup on CentOS/RHEL 9, Debian/Ubuntu, and Docker.
+:description: Install and configure OpenNMS instance including PostgreSQL setup on CentOS/RHEL 9 and 10, Debian/Ubuntu, and Docker.
 
 This section explains how to install and configure a new {page-component-title} instance, including the following tasks:
 
@@ -45,7 +45,7 @@ ifeval::["{page-component-title}" == "Meridian"]
 * Credentials to access the Meridian repositories.
 endif::[]
 * A Linux physical server, or a virtual machine running a <<./system-requirements.adoc#operating-systems-core, supported Linux operating system>>.
-* Internet access to download the installation packages. xref:system-requirements.adoc
+* Internet access to download the installation packages (see xref:core/system-requirements.adoc[]).
 * A working DNS server, and a localhost and server name that resolve properly.
 * A system user with administrative permissions (`sudo`) to perform installation.
 * A SELinux policy that permits binding to the ICMP service, if necessary.
@@ -63,8 +63,8 @@ include::../time-sync.adoc[]
 [[setup-postgresql]]
 == Set up PostgreSQL
 
-TIP: PostgreSQL 14 and 15 use the `scram-sha-256` https://www.postgresql.org/docs/14/auth-password.html[password authentication] method by default.
-If you use older versions of PostgreSQL, you should change the method to `md5` in the `pg_hba.conf` before installing the {page-component-title} core instance.
+TIP: The supported PostgreSQL versions ({compatible-postgresql}) use the `scram-sha-256` https://www.postgresql.org/docs/current/auth-password.html[password authentication] method by default, and {page-component-title} supports it.
+You do not need to change the method to `md5` in `pg_hba.conf`.
 
 == Pool size and maximum database connections
 
@@ -74,7 +74,7 @@ The `maxSize` is not used with the `HikariCPConnectionFactory`, which is depreca
 
 If you change the max pool size, make sure you also update the `max_connections`.
 You typically set this in `PG_HOME/data/postgresql.conf`, but you may also use the `ALTER SYSTEM` syntax.
-You must restart the PostgreSQL server to take effect.
+You must restart the PostgreSQL server for the change to take effect.
 
 NOTE: You may find https://pgtune.leopard.in.ua/[PGTune] useful to calculate configuration parameters for PostgreSQL.
 As with all third-party tools, we do not endorse or guarantee it.
@@ -82,7 +82,7 @@ Use it at your own discretion.
 
 [{tabs}]
 ====
-CentOS 9::
+CentOS/RHEL 9::
 +
 --
 include::centos9/postgresql.adoc[]
@@ -109,6 +109,17 @@ include::docker/postgresql.adoc[]
 endif::[]
 ====
 
+[[set-up-java]]
+== Set up Java
+
+{page-component-title} {page-component-version} requires Java {compatible-javajdk}.
+
+Many supported distributions ship an OpenJDK {compatible-javajdk} build in their own repositories.
+Refer to your operating system's package manager to search and find a compatible version (for example, `java-{compatible-javajdk}-openjdk-devel` on RHEL-based systems, or `openjdk-{compatible-javajdk}-jdk` on Debian and Ubuntu).
+
+If your distribution does not provide OpenJDK {compatible-javajdk}, or you would rather use a vendor build, Eclipse Temurin from Adoptium is an option that we can recommend.
+See the https://adoptium.net/installation[Adoptium installation documentation] for packages and instructions for your platform.
+
 [[install-core-instance]]
 == Install the core instance
 
@@ -117,7 +128,7 @@ Do not expose the web console or sign-in pages directly to the Internet without 
 
 [{tabs}]
 ====
-CentOS 9::
+CentOS/RHEL 9::
 +
 --
 include::centos9/install-core.adoc[]
@@ -187,7 +198,7 @@ The default user credentials are as follows:
 * *Password:* `admin`
 
 When you try to sign in with these credentials, {page-component-title} prompts you to change your password.
-Although you can also skip this action and sign in with default the credentials, we strongly recommend that you change the `admin` account's password to a secure one.
+Although you can also skip this action and sign in with the default credentials, we strongly recommend that you change the `admin` account's password to a secure one.
 
 . Type your current password.
 . Type your new password and confirm it.

@@ -26,6 +26,9 @@ public class BrowserNotificationMessage {
     private String head;
     private String body;
 
+    /** Notice this message came from, null if notificationCommands.xml does not pass it. */
+    private String noticeId;
+
     public String getId() {
         return this.id;
     }
@@ -48,6 +51,14 @@ public class BrowserNotificationMessage {
 
     public void setBody(final String body) {
         this.body = body;
+    }
+
+    public String getNoticeId() {
+        return this.noticeId;
+    }
+
+    public void setNoticeId(final String noticeId) {
+        this.noticeId = noticeId;
     }
 
 }

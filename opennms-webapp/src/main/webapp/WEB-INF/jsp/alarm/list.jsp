@@ -319,8 +319,8 @@
     <a class="btn btn-secondary" href="<%=this.makeLink(callback, parms, "long", favorite)%>" title="Detailed List of Alarms">Long Listing</a>
       </c:otherwise>
     </c:choose>
-    <a class="btn btn-secondary text-white" onclick="$('#severityLegendModal').modal()">Severity Legend</a>
-    <a class="btn btn-secondary text-white" onclick="$('#helpModal').modal()">Help</a>
+    <a class="btn btn-secondary" onclick="$('#severityLegendModal').modal()">Severity Legend</a>
+    <a class="btn btn-secondary" onclick="$('#helpModal').modal()">Help</a>
 
     <% if (req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY)) { %>
       <% if ( alarmCount > 0 ) { %>

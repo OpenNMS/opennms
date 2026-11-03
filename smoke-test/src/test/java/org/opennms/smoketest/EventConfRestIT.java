@@ -37,6 +37,7 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.preemptive;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class EventConfRestIT {
 
@@ -79,8 +80,23 @@ public class EventConfRestIT {
         Map<String, Object> responseMap = mapper.readValue(jsonResponse, Map.class);
 
         List<Map<String, Object>> successList = (List<Map<String, Object>>) responseMap.get("success");
-        int successCount = successList != null ? successList.size() : 0;
 
-        assertEquals("Mismatch in successfully uploaded file count!", eventFiles.length, successCount);
+        // Uploaded sources are the success entries without a "message"; entries carrying one are
+        // report steps, such as the applied source order of the eventconf.xml manifest.
+        long uploadedCount = successList == null ? 0
+                : successList.stream().filter(entry -> entry.get("message") == null).count();
+
+        // eventconf.xml is the ordering manifest: it defines the source order and is not stored as a source
+        long manifestCount = java.util.Arrays.stream(eventFiles)
+                .filter(f -> f.getName().equalsIgnoreCase("eventconf.xml")).count();
+        assertEquals("Mismatch in successfully uploaded file count!", eventFiles.length - manifestCount, uploadedCount);
+        assertTrue("the ordering manifest must not be stored as a source",
+                successList.stream().noneMatch(entry -> "eventconf".equals(entry.get("file"))));
+        if (manifestCount > 0) {
+            assertTrue("the applied source order must show up in the report",
+                    successList.stream().anyMatch(entry -> String.valueOf(entry.get("message")).contains("Source order applied")));
+        }
+        List<Map<String, Object>> errorList = (List<Map<String, Object>>) responseMap.get("errors");
+        assertTrue("no upload errors expected: " + errorList, errorList == null || errorList.isEmpty());
     }
 }

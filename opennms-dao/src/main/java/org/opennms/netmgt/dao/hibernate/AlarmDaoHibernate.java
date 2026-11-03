@@ -22,8 +22,6 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -33,23 +31,13 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
-import org.hibernate.type.StringType;
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsIpInterfaceList;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.SituationSummary;
 import org.springframework.orm.hibernate5.HibernateCallback;
 
-import com.google.common.collect.Lists;
 
 /**
  * <p>AlarmDaoHibernate class.</p>
@@ -147,85 +135,6 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                         return collection;
                     }
                 }).list());
-    }
-
-    @Override
-    public List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, boolean processAcknowledgedAlarms, String restrictionColumn, String restrictionValue, String... groupByColumns) {
-
-        String grouping = "";
-
-        if (groupByColumns != null && groupByColumns.length > 0) {
-            for (String groupByColumn : groupByColumns) {
-                if (!"".equals(grouping)) {
-                    grouping += ", ";
-                }
-
-                grouping += groupByColumn;
-            }
-        } else {
-            grouping = entityNameColumn + ", " + entityIdColumn;
-        }
-
-        final String groupByClause = grouping;
-
-        final String maximumSeverityQuery = (processAcknowledgedAlarms ? "max(distinct greatest(alarms.severity,3)) as maxSeverity " : "max(distinct case when alarms.alarmacktime is not null then 3 else greatest(alarms.severity,3) end) as maxSeverity ");
-
-        return getHibernateTemplate().execute(new HibernateCallback<List<HeatMapElement>>() {
-            @Override
-            public List<HeatMapElement> doInHibernate(Session session) throws HibernateException {
-
-                // We can't use a prepared statement here as the variables are column names, and postgres
-                // does not allow for parameter binding of column names.
-                // Instead, we compare the values against all valid column names to validate.
-                List<String> columns = new ArrayList<>(Arrays.asList(groupByColumns));
-                if (entityIdColumn != null) {
-                    columns.add(entityIdColumn);
-                }
-                columns.add(entityNameColumn);
-                if (restrictionColumn != null) {
-                    columns.add(restrictionColumn);
-                }
-                HibernateUtils.validateHibernateColumnNames(session.getSessionFactory(), Lists.newArrayList(OnmsServiceType.class, OnmsIpInterface.class, OnmsCategory.class, OnmsMonitoredService.class, OnmsAlarm.class, OnmsNode.class), true, columns.toArray(new String[0]));
-
-                String queryStr =
-                        "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + (entityIdColumn != null ? entityIdColumn : "0") + ", " +
-                                "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
-                                "count(distinct node.nodeid) as nodeTotalCount, " +
-                                maximumSeverityQuery +
-                                "from node " +
-                                "left join category_node using (nodeid) " +
-                                "left join categories using (categoryid) " +
-                                "left outer join ipinterface using (nodeid) " +
-                                "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
-                                "left outer join service on (ifservices.serviceid = service.serviceid) " +
-                                "left outer join alarms on (alarms.nodeid = node.nodeid and alarms.alarmtype in (1,3)) " +
-                                "where nodeType <> 'D' " +
-                                (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')=:restrictionValue " : "") +
-                                "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
-                
-                Query query = session.createNativeQuery(queryStr);
-
-                if (restrictionColumn != null) {
-                    query.setParameter("restrictionValue",  restrictionValue, StringType.INSTANCE);
-                }
-
-                query.setResultTransformer(new ResultTransformer() {
-                        private static final long serialVersionUID = 5152094813503430377L;
-
-                        @Override
-                        public Object transformTuple(Object[] tuple, String[] aliases) {
-                            return new HeatMapElement((String) tuple[0], (Number) tuple[1], (Number) tuple[2], (Number) tuple[3], (Number) tuple[4]);
-                        }
-
-                        @SuppressWarnings("rawtypes")
-                        @Override
-                        public List transformList(List collection) {
-                            return collection;
-                        }
-                });
-                return (List<HeatMapElement>) query.list();
-            }
-        });
     }
 
     @Override

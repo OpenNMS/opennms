@@ -30,6 +30,10 @@
         </plugins>
     </build>
     <dependencies>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.camel.hardening</artifactId>
+    </dependency>
         <dependency>
             <!-- provides the <camelContext> spring XML namespace handler used by
                  applicationContext-twin-jms-publisher.xml (split out of camel-spring in Camel 3) -->

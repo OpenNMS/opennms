@@ -117,24 +117,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testActiondConfiguration() {
-        testConfigFile("actiond-configuration.xml");
-    }
-
-    @Test
-    public void testAmiConfig() {
-        testConfigFile("ami-config.xml");
-    }
-
-    @Test
-    /**
-     * FIXME: AsteriskConfig doesn't appear to be in our classpath.
-     */
-    public void testAsteriskConfiguration() {
-        ignoreConfigFile("asterisk-configuration.properties");
-    }
-
-    @Test
     public void testAvailabilityReports() {
         testConfigFile("availability-reports.xml");
     }
@@ -149,10 +131,6 @@ public class ConfigTesterTest {
         testConfigFile("categories.xml");
     }
 
-    @Test
-    public void testChartConfiguration() {
-        testConfigFile("chart-configuration.xml");
-    }
 
     @Test
     public void testCollectdConfiguration() {
@@ -255,11 +233,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testJmsNorthbounderConfiguration() {
-        ignoreConfigFile("jms-northbounder-configuration.xml");
-    }
-
-    @Test
     public void testJmxDatacollectionConfig() {
         testConfigFile("jmx-datacollection-config.xml");
     }
@@ -285,11 +258,6 @@ public class ConfigTesterTest {
      */
     public void testMapsadapterConfiguration() {
         ignoreConfigFile("mapsadapter-configuration.xml");
-    }
-
-    @Test
-    public void testMicroblogConfiguration() {
-        testConfigFile("microblog-configuration.xml");
     }
 
     @Test
@@ -376,11 +344,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testRt() {
-        ignoreConfigFile("rt.properties");
-    }
-
-    @Test
     public void testRtcConfiguration() {
         testConfigFile("rtc-configuration.xml");
     }
@@ -459,10 +422,6 @@ public class ConfigTesterTest {
         testConfigFile("snmptrap-northbounder-configuration.xml");
     }
 
-    @Test
-    public void testStatsdConfiguration() {
-        testConfigFile("statsd-configuration.xml");
-    }
 
     @Test
     public void testSurveillanceViews() {
@@ -504,10 +463,6 @@ public class ConfigTesterTest {
         ignoreConfigFile("trapd-configuration.xml");
     }
 
-    @Test
-    public void testTrendConfiguration() {
-        ignoreConfigFile("trend-configuration.xml");
-    }
 
     @Test
     public void testUsers() {
@@ -543,16 +498,6 @@ public class ConfigTesterTest {
     public void testWSManConfigFiles() {
         testConfigFile("wsman-config.xml");
         testConfigFile("wsman-datacollection-config.xml");
-    }
-
-    @Test
-    /**
-     * FIXME: Configuration code is not in its own class.
-     * 
-     * It's embedded in XMPPNotificationManager's constructor.
-     */
-    public void testXmppConfiguration() {
-        ignoreConfigFile("xmpp-configuration.properties");
     }
 
     @Test

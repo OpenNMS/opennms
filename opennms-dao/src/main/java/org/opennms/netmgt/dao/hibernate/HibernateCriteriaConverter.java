@@ -23,22 +23,27 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.hibernate.FetchMode;
+import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.criterion.Subqueries;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.StandardBasicTypes;
+import org.hibernate.type.Type;
 import org.opennms.core.criteria.AbstractCriteriaVisitor;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
@@ -69,12 +74,14 @@ import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.RestrictionVisitor;
 import org.opennms.core.criteria.restrictions.SqlRestriction;
 import org.opennms.netmgt.dao.api.CriteriaConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
 public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCriteria> {
     public org.hibernate.Criteria convert(final Criteria criteria, final Session session) {
-        final HibernateCriteriaVisitor visitor = new HibernateCriteriaVisitor();
+        final HibernateCriteriaVisitor visitor = new HibernateCriteriaVisitor(session.getSessionFactory());
         criteria.visit(visitor);
 
         return visitor.getCriteria(session);
@@ -89,7 +96,7 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
     }
 
     public org.hibernate.Criteria convertForCount(final Criteria criteria, final Session session) {
-        final HibernateCriteriaVisitor visitor = new CountHibernateCriteriaVisitor();
+        final HibernateCriteriaVisitor visitor = new CountHibernateCriteriaVisitor(session.getSessionFactory());
         criteria.visit(visitor);
 
         return visitor.getCriteria(session);
@@ -109,6 +116,10 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
     }
 
     public static class CountHibernateCriteriaVisitor extends HibernateCriteriaVisitor {
+        public CountHibernateCriteriaVisitor(final SessionFactory sessionFactory) {
+            super(sessionFactory);
+        }
+
         @Override
         public void visitOrder(final Order order) {
             // skip order-by when converting for count
@@ -116,19 +127,34 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
     }
 
     public static class HibernateCriteriaVisitor extends AbstractCriteriaVisitor {
+        private static final Logger LOG = LoggerFactory.getLogger(HibernateCriteriaVisitor.class);
+
         private DetachedCriteria m_criteria;
 
         private Class<?> m_class;
 
+        /** Null when the criteria is converted without a session; see isToMany(). */
+        private final SessionFactory m_sessionFactory;
+
         private Set<org.hibernate.criterion.Order> m_orders = new LinkedHashSet<>();
 
         private Set<org.hibernate.criterion.Criterion> m_criterions = new LinkedHashSet<>();
+
+        private Map<String, FetchMode> m_fetchModes = new LinkedHashMap<>();
 
         private boolean m_distinct = false;
 
         private Integer m_limit;
 
         private Integer m_offset;
+
+        public HibernateCriteriaVisitor() {
+            this(null);
+        }
+
+        public HibernateCriteriaVisitor(final SessionFactory sessionFactory) {
+            m_sessionFactory = sessionFactory;
+        }
 
         public org.hibernate.Criteria getCriteria(final Session session) {
             // In Hibernate 5, DetachedCriteria.getExecutableCriteria() requires SessionImplementor
@@ -161,7 +187,9 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
             /*
              * By implementing distinct() as a subquery, we lose the ability to sort the
              * results on any of the aliased columns. See bug NMS-7830 for more details.
-             * 
+             * Orders and fetch modes are therefore applied to the outer criteria below,
+             * after the rewrite has replaced m_criteria. See bug NMS-20161.
+             *
              * @see http://issues.opennms.org/browse/NMS-7830
              */
             if (m_distinct) {
@@ -178,11 +206,47 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
                 m_criteria = newCriteria;
             }
 
+            for (final Map.Entry<String, FetchMode> fetchMode : m_fetchModes.entrySet()) {
+                if (m_distinct && FetchMode.JOIN.equals(fetchMode.getValue()) && isToMany(fetchMode.getKey())) {
+                    // joining a to-many association yields one outer row per element, which
+                    // would undo the distinct() rewrite above and make limit/offset count
+                    // rows rather than entities
+                    LOG.warn("Ignoring the eager fetch of '{}' on {}: a to-many association cannot be join-fetched by a distinct() criteria.",
+                             fetchMode.getKey(), m_class.getName());
+                    continue;
+                }
+                m_criteria.setFetchMode(fetchMode.getKey(), fetchMode.getValue());
+            }
+
             for (final org.hibernate.criterion.Order order : m_orders) {
                 m_criteria.addOrder(order);
             }
 
             return m_criteria;
+        }
+
+        /**
+         * Whether an association path on the root entity is collection-valued.
+         * Returns false when there is no session factory to ask, and for paths
+         * Hibernate cannot resolve, since it ignores fetch modes for those anyway.
+         */
+        private boolean isToMany(final String path) {
+            if (m_sessionFactory == null) {
+                return false;
+            }
+
+            final ClassMetadata metadata = m_sessionFactory.getClassMetadata(m_class);
+            if (metadata == null) {
+                return false;
+            }
+
+            try {
+                final Type type = metadata.getPropertyType(path);
+                return type != null && type.isCollectionType();
+            } catch (final HibernateException e) {
+                LOG.debug("Unable to determine the type of '{}' on {}.", path, m_class.getName(), e);
+                return false;
+            }
         }
 
         /**
@@ -236,18 +300,20 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 
         @Override
         public void visitFetch(final Fetch fetch) {
+            // held rather than applied here, because the distinct rewrite in
+            // getCriteria() replaces the criteria these would be set on
             switch (fetch.getFetchType()) {
             case DEFAULT:
-                m_criteria.setFetchMode(fetch.getAttribute(), FetchMode.DEFAULT);
+                m_fetchModes.put(fetch.getAttribute(), FetchMode.DEFAULT);
                 break;
             case EAGER:
-                m_criteria.setFetchMode(fetch.getAttribute(), FetchMode.JOIN);
+                m_fetchModes.put(fetch.getAttribute(), FetchMode.JOIN);
                 break;
             case LAZY:
-                m_criteria.setFetchMode(fetch.getAttribute(), FetchMode.SELECT);
+                m_fetchModes.put(fetch.getAttribute(), FetchMode.SELECT);
                 break;
             default:
-                m_criteria.setFetchMode(fetch.getAttribute(), FetchMode.DEFAULT);
+                m_fetchModes.put(fetch.getAttribute(), FetchMode.DEFAULT);
                 break;
             }
         }

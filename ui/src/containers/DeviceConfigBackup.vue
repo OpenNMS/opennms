@@ -89,7 +89,7 @@ onMounted(() => deviceStore.getDeviceConfigBackups(true))
         }
 
         .dcb-search {
-          width: 250px;
+          width: 30rem;
           margin-top: 16px;
         }
       }

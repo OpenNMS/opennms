@@ -22,10 +22,19 @@
 
 import { describe, expect, test } from 'vitest'
 import {
+  ALL_ASSET_COLUMN_OPTIONS,
+  ALLOWED_ASSET_COLUMNS,
+  ASSET_COLUMN_FIQL_MAP,
+  ASSET_COLUMN_OPTIONS,
+  ASSET_COLUMN_TITLES,
+  UI_HIDDEN_ASSET_COLUMNS,
+  getAssetColumnFiqlProperty,
+  getAssetColumnLabel,
   parseAssetFilters,
   parseCategories,
   parseDownAggregateStatus,
   parseNodesWithAssets,
+  parseNodesWithOutages,
   parseFlows,
   parseForeignSource,
   parseIplike,
@@ -451,6 +460,19 @@ describe('Nodes queryStringParser test', () => {
     })
   })
 
+  describe('parseNodesWithOutages', () => {
+    test.each([
+      ['empty', {}, false],
+      ['true', { nodesWithOutages: 'true' }, true],
+      ['TRUE (case-insensitive)', { nodesWithOutages: 'TRUE' }, true],
+      ['boolean true', { nodesWithOutages: true }, true],
+      ['false', { nodesWithOutages: 'false' }, false],
+      ['garbage', { nodesWithOutages: 'yes' }, false]
+    ]) ('parseNodesWithOutages: %s', (title, queryObject, expected) => {
+      expect(parseNodesWithOutages(queryObject)).toBe(expected)
+    })
+  })
+
   describe('parseAssetFilters', () => {
     test.each([
       ['empty', {}, []],
@@ -458,7 +480,8 @@ describe('Nodes queryStringParser test', () => {
       ['value only', { assetValue: 'HQ' }, []],
       ['single valid building', { assetColumn: 'building', assetValue: 'HQ' }, [{ column: 'building', value: 'HQ' }]],
       ['single valid region', { assetColumn: 'region', assetValue: 'East' }, [{ column: 'region', value: 'East' }]],
-      ['disallowed column (geolocation) skipped', { assetColumn: 'city', assetValue: 'Pittsburgh' }, []],
+      ['formerly-rejected geolocation column (city) now accepted', { assetColumn: 'city', assetValue: 'Pittsburgh' }, [{ column: 'city', value: 'Pittsburgh' }]],
+      ['formerly-rejected non-curated column (assetNumber) now accepted', { assetColumn: 'assetNumber', assetValue: 'A-123' }, [{ column: 'assetNumber', value: 'A-123' }]],
       ['unknown column skipped', { assetColumn: 'bogus', assetValue: 'X' }, []]
     ]) ('parseAssetFilters: %s', (title, queryObject, expected) => {
       expect(parseAssetFilters(queryObject)).toEqual(expected)
@@ -475,10 +498,10 @@ describe('Nodes queryStringParser test', () => {
       ])
     })
 
-    test('skips disallowed columns within a repeated set', () => {
+    test('skips disallowed (unknown) columns within a repeated set', () => {
       const result = parseAssetFilters({
-        assetColumn: ['building', 'city', 'rack'],
-        assetValue: ['HQ', 'Pittsburgh', 'R1']
+        assetColumn: ['building', 'bogus', 'rack'],
+        assetValue: ['HQ', 'Whatever', 'R1']
       })
       expect(result).toEqual([
         { column: 'building', value: 'HQ' },
@@ -492,6 +515,113 @@ describe('Nodes queryStringParser test', () => {
         assetValue: ['HQ', 'DC2']
       })
       expect(result).toEqual([{ column: 'building', value: 'DC2' }])
+    })
+  })
+
+  describe('ASSET_COLUMN_FIQL_MAP / getAssetColumnFiqlProperty', () => {
+    test('getAssetColumnFiqlProperty maps geolocation-backed columns to nested properties', () => {
+      expect(getAssetColumnFiqlProperty('city')).toBe('geolocation.city')
+      expect(getAssetColumnFiqlProperty('state')).toBe('geolocation.state')
+      expect(getAssetColumnFiqlProperty('zip')).toBe('geolocation.zip')
+      expect(getAssetColumnFiqlProperty('country')).toBe('geolocation.country')
+      expect(getAssetColumnFiqlProperty('address1')).toBe('geolocation.address1')
+      expect(getAssetColumnFiqlProperty('address2')).toBe('geolocation.address2')
+    })
+
+    test('getAssetColumnFiqlProperty is identity for direct columns', () => {
+      expect(getAssetColumnFiqlProperty('building')).toBe('building')
+      expect(getAssetColumnFiqlProperty('assetNumber')).toBe('assetNumber')
+    })
+
+    test('getAssetColumnFiqlProperty falls back to identity for an unmapped column', () => {
+      expect(getAssetColumnFiqlProperty('notARealColumn')).toBe('notARealColumn')
+    })
+
+    test('every ASSET_COLUMN_OPTIONS dropdown value is a key in ASSET_COLUMN_FIQL_MAP (identity)', () => {
+      for (const option of ASSET_COLUMN_OPTIONS) {
+        expect(ASSET_COLUMN_FIQL_MAP[option.value]).toBe(option.value)
+      }
+    })
+
+    test('every ASSET_COLUMN_OPTIONS label stays in sync with ASSET_COLUMN_TITLES', () => {
+      // ASSET_COLUMN_OPTIONS hardcodes its 10 featured labels independently of
+      // ASSET_COLUMN_TITLES — this guards against the two silently drifting apart.
+      for (const option of ASSET_COLUMN_OPTIONS) {
+        expect(option.label).toBe(ASSET_COLUMN_TITLES[option.value])
+      }
+    })
+  })
+
+  describe('ASSET_COLUMN_TITLES / ALL_ASSET_COLUMN_OPTIONS / getAssetColumnLabel', () => {
+    test('every ASSET_COLUMN_FIQL_MAP key has a title', () => {
+      for (const column of Object.keys(ASSET_COLUMN_FIQL_MAP)) {
+        expect(ASSET_COLUMN_TITLES[column]).toBeTruthy()
+      }
+    })
+
+    test('every non-hidden ASSET_COLUMN_FIQL_MAP key appears exactly once in ALL_ASSET_COLUMN_OPTIONS', () => {
+      // UI_HIDDEN_ASSET_COLUMNS keys need a title (asserted below) but must NOT get a dropdown
+      // option -- see UI_HIDDEN_ASSET_COLUMNS's own describe block for that half of the contract.
+      const mapKeys = Object.keys(ASSET_COLUMN_FIQL_MAP).filter(k => !UI_HIDDEN_ASSET_COLUMNS.has(k)).sort()
+      const optionValues = ALL_ASSET_COLUMN_OPTIONS.map(o => o.value).sort()
+      expect(optionValues).toEqual(mapKeys)
+
+      const counts = new Map<string, number>()
+      for (const option of ALL_ASSET_COLUMN_OPTIONS) {
+        counts.set(option.value, (counts.get(option.value) ?? 0) + 1)
+      }
+      for (const count of counts.values()) {
+        expect(count).toBe(1)
+      }
+    })
+
+    test('ALL_ASSET_COLUMN_OPTIONS is sorted alphabetically by label', () => {
+      const labels = ALL_ASSET_COLUMN_OPTIONS.map(o => o.label)
+      const sorted = [...labels].sort((a, b) => a.localeCompare(b))
+      expect(labels).toEqual(sorted)
+    })
+
+    test('getAssetColumnLabel resolves titles for curated and non-curated columns', () => {
+      expect(getAssetColumnLabel('city')).toBe('City')
+      expect(getAssetColumnLabel('assetNumber')).toBe('Asset Number')
+      expect(getAssetColumnLabel('building')).toBe('Building')
+      expect(getAssetColumnLabel('cpu')).toBe('CPU')
+      expect(getAssetColumnLabel('snmpcommunity')).toBe('SNMP Community')
+    })
+
+    test('getAssetColumnLabel falls back to the raw key for an unknown column', () => {
+      expect(getAssetColumnLabel('notARealColumn')).toBe('notARealColumn')
+    })
+  })
+
+  describe('UI_HIDDEN_ASSET_COLUMNS: credential-ish asset columns are hidden from the dropdown but kept for URL drill-down', () => {
+    const hiddenColumns = ['password', 'enable', 'username', 'connection', 'snmpcommunity']
+
+    test('the hidden set matches exactly the five credential-ish columns', () => {
+      expect(Array.from(UI_HIDDEN_ASSET_COLUMNS).sort()).toEqual([...hiddenColumns].sort())
+    })
+
+    test.each(hiddenColumns)('%s is absent from ALL_ASSET_COLUMN_OPTIONS', (column) => {
+      expect(ALL_ASSET_COLUMN_OPTIONS.some(o => o.value === column)).toBe(false)
+    })
+
+    test.each(hiddenColumns)('%s is still allowed by ALLOWED_ASSET_COLUMNS / parseAssetFilters (URL drill-down parity)', (column) => {
+      expect(ALLOWED_ASSET_COLUMNS.has(column)).toBe(true)
+      expect(parseAssetFilters({ assetColumn: column, assetValue: 'x' })).toEqual([{ column, value: 'x' }])
+    })
+
+    test('getAssetColumnLabel still resolves a proper title for a hidden column (chip labeling)', () => {
+      expect(getAssetColumnLabel('password')).toBe('Password')
+      expect(getAssetColumnLabel('enable')).toBe('Enable')
+      expect(getAssetColumnLabel('username')).toBe('Username')
+      expect(getAssetColumnLabel('connection')).toBe('Connection')
+      expect(getAssetColumnLabel('snmpcommunity')).toBe('SNMP Community')
+    })
+
+    test('hidden columns still have identity ASSET_COLUMN_FIQL_MAP entries (URL drill-down parity)', () => {
+      for (const column of hiddenColumns) {
+        expect(ASSET_COLUMN_FIQL_MAP[column]).toBe(column)
+      }
     })
   })
 

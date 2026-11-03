@@ -164,6 +164,7 @@ export const mapSnmpDataCollectionMibGroupPayloadToServer = (
   ifType: string,
   mibGroupNames: string[],
   mibObjects: any[],
+  mibObjProperties: string | null,
   enabled: boolean,
   selectedMibGroupId: number,
   isEditMode: CreateEditMode
@@ -178,7 +179,8 @@ export const mapSnmpDataCollectionMibGroupPayloadToServer = (
     mibGroupNames: names,
     mibObjects: JSON.stringify(mibObjects),
     enabled: enabled,
-    mibObjProperties: ''
+    // The form does not show the <property> definitions. Thus an edit sends the stored value again.
+    mibObjProperties: isEditMode === CreateEditMode.Edit ? mibObjProperties : ''
   } as SnmpCollectionMibGroupPayload
 
   if (isEditMode === CreateEditMode.Edit) {

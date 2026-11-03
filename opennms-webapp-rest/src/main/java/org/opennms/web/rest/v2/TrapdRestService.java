@@ -36,8 +36,11 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.exception.ValidationException;
+import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.dao.api.TrapdConfigDao;
+import org.opennms.web.api.Authentication;
+import org.opennms.web.rest.support.SecurityHelper;
 import org.opennms.web.rest.v2.api.TrapdRestApi;
 import org.opennms.web.rest.v2.model.Snmpv3UserDto;
 import org.opennms.web.rest.v2.model.TrapdConfigDto;
@@ -69,26 +72,44 @@ public class TrapdRestService implements TrapdRestApi {
     }
 
     private Response uploadTrapdConfigurationInternal(final Attachment attachment, final SecurityContext securityContext, boolean isXml) {
+        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            return Response.status(Status.FORBIDDEN).entity("Admin role required to upload Trapd configuration.").build();
+        }
+
         final String fileType = isXml ? "XML" : "JSON";
 
         if (attachment == null) {
             return Response.status(Status.BAD_REQUEST).entity("Missing uploaded file for Trap Configuration " + fileType + " file upload.").build();
         }
 
-        TrapdConfiguration config;
         TrapdConfigDto dto;
 
         try (InputStream inputStream = attachment.getObject(InputStream.class)) {
             if (isXml) {
-                config = JaxbUtils.unmarshal(TrapdConfiguration.class, inputStream);
-                dto = TrapdConfigDto.toDto(config);
+                dto = TrapdConfigDto.toDto(JaxbUtils.unmarshal(TrapdConfiguration.class, inputStream));
             } else {
                 dto = objectMapper.readValue(inputStream, TrapdConfigDto.class);
-                config = dto.toEntity();
             }
         } catch (Exception e) {
             LOG.warn("Failed to parse uploaded Trapd " + fileType + " configuration.", e);
             return Response.status(Status.BAD_REQUEST).entity("Invalid Trapd " + fileType + " configuration.").build();
+        }
+
+        if (dto.getSnmpv3User() != null && !dto.getSnmpv3User().isEmpty()) {
+            final TrapdConfiguration existing = trapdConfigDao.getConfig();
+            for (Snmpv3UserDto incomingUser : dto.getSnmpv3User()) {
+                if (incomingUser == null) {
+                    continue;
+                }
+                final Snmpv3User existingUser = existing != null
+                    ? existing.getSnmpv3UserById(incomingUser.getId())
+                    : null;
+                try {
+                    SecurityHelper.resolveCredentials(incomingUser, () -> existingUser);
+                } catch (IllegalArgumentException e) {
+                    return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+                }
+            }
         }
 
         String validationMessage = validateTrapdConfigRequest(dto);
@@ -98,7 +119,7 @@ public class TrapdRestService implements TrapdRestApi {
         }
 
         try {
-            trapdConfigDao.replaceConfig(config);
+            trapdConfigDao.replaceConfig(dto.toEntity());
             return Response.ok().build();
         } catch (ValidationException e) {
             LOG.warn("Uploaded Trapd configuration failed schema validation.", e);
@@ -110,7 +131,11 @@ public class TrapdRestService implements TrapdRestApi {
     }
 
     @Override
-    public Response downloadTrapdConfig(final String format) {
+    public Response downloadTrapdConfig(final String format, final SecurityContext securityContext) {
+        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            return Response.status(Status.FORBIDDEN).entity("Admin role required to download Trapd configuration.").build();
+        }
+
         final boolean isXml = format != null && format.equalsIgnoreCase("xml");
         final String fileType = isXml ? "XML" : "JSON";
 
@@ -163,7 +188,14 @@ public class TrapdRestService implements TrapdRestApi {
             if (config == null) {
                 return Response.status(Status.NOT_FOUND).entity("Trapd configuration not found.").build();
             }
-            return Response.ok(TrapdConfigDto.toDto(config)).build();
+
+            TrapdConfigDto dto = TrapdConfigDto.toDto(config);
+            if (dto.getSnmpv3User() != null) {
+                for (Snmpv3UserDto user : dto.getSnmpv3User()) {
+                    SecurityHelper.maskCredentials(user);
+                }
+            }
+            return Response.ok(dto).build();
         } catch (Exception e) {
             LOG.error("Failed to retrieve Trapd configuration.", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to retrieve Trapd configuration.").build();
@@ -174,6 +206,23 @@ public class TrapdRestService implements TrapdRestApi {
     public Response updateTrapdConfiguration(TrapdConfigDto configDto, SecurityContext securityContext) {
         if (configDto == null) {
             return Response.status(Status.BAD_REQUEST).entity("Missing Trapd configuration in request body.").build();
+        }
+
+        if (configDto.getSnmpv3User() != null && !configDto.getSnmpv3User().isEmpty()) {
+            final TrapdConfiguration existing = trapdConfigDao.getConfig();
+            for (Snmpv3UserDto incomingUser : configDto.getSnmpv3User()) {
+                if (incomingUser == null) {
+                    continue;
+                }
+                final Snmpv3User existingUser = existing != null
+                    ? existing.getSnmpv3UserById(incomingUser.getId())
+                    : null;
+                try {
+                    SecurityHelper.resolveCredentials(incomingUser, () -> existingUser);
+                } catch (IllegalArgumentException e) {
+                    return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+                }
+            }
         }
 
         String validationMessage = validateTrapdConfigRequest(configDto);
@@ -234,11 +283,21 @@ public class TrapdRestService implements TrapdRestApi {
         }
 
         if (configDto.getSnmpv3User() != null) {
+            final Set<String> seenUserIds = new HashSet<>();
             int index = 0;
             for (Snmpv3UserDto user : configDto.getSnmpv3User()) {
                 String userValidation = validateSnmpv3UserPayload(user);
                 if (userValidation != null) {
                     return "Invalid SNMPv3 user at index " + index + ": " + userValidation;
+                }
+                // Ids correlate users across read/write cycles; masked-credential resolution relies on
+                // getSnmpv3UserById() returning a unique match, so duplicate ids would silently corrupt
+                // credentials on the next round-trip. Blank ids are new users (assigned an id at persist
+                // time), so only guard non-blank ids here.
+                final String userId = user.getId();
+                if (StringUtils.isNotBlank(userId) && !seenUserIds.add(userId)) {
+                    return "Duplicate SNMPv3 user id '" + userId + "' at index " + index
+                            + "; each SNMPv3 user id must be unique.";
                 }
                 index++;
             }
@@ -293,13 +352,24 @@ public class TrapdRestService implements TrapdRestApi {
             return "privacyProtocol and privacyPassphrase must be provided together.";
         }
 
+        // Star-prefix check before length: a value like "*short" is more usefully rejected as
+        // "must not begin with *" than as "too short", since the star prefix is the real mistake.
+        if (hasAuthPassphrase && !SecurityHelper.isMaskedPassword(user.getAuthPassphrase()) && user.getAuthPassphrase().startsWith("*")) {
+            return "authPassphrase must not begin with '*'.";
+        }
+        if (hasPrivacyPassphrase && !SecurityHelper.isMaskedPassword(user.getPrivacyPassphrase()) && user.getPrivacyPassphrase().startsWith("*")) {
+            return "privacyPassphrase must not begin with '*'.";
+        }
+
         // SNMP4J rejects short passphrases at UsmUser construction; catch it here so the trap
-        // daemon doesn't fail to restart on reload. A well-formed ${scv:...} placeholder
-        // trivially passes the length check; the resolved secret must also be long enough.
-        if (hasAuthPassphrase && user.getAuthPassphrase().getBytes(StandardCharsets.UTF_8).length < MIN_PASSPHRASE_BYTES) {
+        // daemon doesn't fail to restart on reload. A well-formed ${scv:...} placeholder or
+        // the masked sentinel trivially passes the length check.
+        if (hasAuthPassphrase && !SecurityHelper.isMaskedPassword(user.getAuthPassphrase())
+                && user.getAuthPassphrase().getBytes(StandardCharsets.UTF_8).length < MIN_PASSPHRASE_BYTES) {
             return "authPassphrase must be at least " + MIN_PASSPHRASE_BYTES + " bytes.";
         }
-        if (hasPrivacyPassphrase && user.getPrivacyPassphrase().getBytes(StandardCharsets.UTF_8).length < MIN_PASSPHRASE_BYTES) {
+        if (hasPrivacyPassphrase && !SecurityHelper.isMaskedPassword(user.getPrivacyPassphrase())
+                && user.getPrivacyPassphrase().getBytes(StandardCharsets.UTF_8).length < MIN_PASSPHRASE_BYTES) {
             return "privacyPassphrase must be at least " + MIN_PASSPHRASE_BYTES + " bytes.";
         }
 

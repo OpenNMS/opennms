@@ -2,10 +2,10 @@
   <div class="onms-row">
     <div class="onms-col-12">
       <div class="action-buttons" v-if="resources.length">
-        <PButton @click="selectAll">Select All</PButton>
-        <PButton @click="clearAll">Clear All</PButton>
-        <PButton @click="graphAll">Graph All</PButton>
-        <PButton @click="graphSelected" :disabled="!resourceIsSelected">Graph Selected</PButton>
+        <OnmsButton @click="selectAll">Select All</OnmsButton>
+        <OnmsButton @click="clearAll">Clear All</OnmsButton>
+        <OnmsButton @click="graphAll">Graph All</OnmsButton>
+        <OnmsButton @click="graphSelected" :disabled="!resourceIsSelected">Graph Selected</OnmsButton>
       </div>
       <ul class="onms-list">
         <template v-for="(resources, header) in groupedResourcesObject" :key="header">
@@ -15,8 +15,7 @@
             v-for="resource in resources"
             :key="resource.label"
           >
-            <PCheckbox
-              binary
+            <OnmsCheckbox
               :inputId="`resource-${resource.id}`"
               @update:modelValue="selectCheckbox(resource.id)"
               :modelValue="selectedResourceObject[resource.id]"
@@ -35,14 +34,10 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { groupBy } from 'lodash'
-import Checkbox from 'primevue/checkbox'
-import Button from 'primevue/button'
+import { OnmsButton, OnmsCheckbox } from '@opennms/onms-ui'
 import { useGraphStore } from '@/stores/graphStore'
 import { useResourceStore } from '@/stores/resourceStore'
 import { Resource } from '@/types'
-
-const PCheckbox = Checkbox
-const PButton = Button
 
 interface GroupedResourcesObject {
   [x: string]: Resource[]
@@ -83,7 +78,10 @@ const graphSelected = async () => {
 
 const graphAll = async () => {
   const resourceIds = resources.value.map(resource => resource.id)
-  graphStore.getGraphDefinitionsByResourceIds(resourceIds, resources.value)
+  // Await the definitions before navigating: Graphs.vue snapshots
+  // graphStore.definitionsList on mount, so if this fetch is still in flight
+  // the graph list is empty and nothing renders on the first attempt.
+  await graphStore.getGraphDefinitionsByResourceIds(resourceIds, resources.value)
   router.push('/resource-graphs/graphs')
 }
 </script>
