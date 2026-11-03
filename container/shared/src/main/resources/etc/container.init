@@ -139,8 +139,10 @@ case "$COMMAND" in
 		fi
 
 		# karaf.clean.cache removes data/cache but not data/kar, so the deployer would skip the .kar files
-		if [ -x "$CONTAINER_HOME/bin/clean-kar-storage.sh" ]; then
-			"$CONTAINER_HOME/bin/clean-kar-storage.sh" "$CONTAINER_HOME" || true
+		if [ -x "$CONTAINER_HOME/bin/_clean-kar-storage.sh" ]; then
+			"$CONTAINER_HOME/bin/_clean-kar-storage.sh" "$CONTAINER_HOME" || true
+		else
+			echo "WARNING: $CONTAINER_HOME/bin/_clean-kar-storage.sh not found, the .kar files in data/kar will not be installed again" >&2
 		fi
 
 		if [ ! -d "$CONTAINER_HOME/data/tmp" ]; then

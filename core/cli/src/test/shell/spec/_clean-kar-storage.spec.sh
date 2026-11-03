@@ -8,8 +8,8 @@ TESTDIR="$(get_testdir clean-kar-storage)"
 oneTimeSetUp() {
   rm -rf "$TESTDIR"
   mkdir -p "$TESTDIR/bin"
-  install -m 755 "${PROJECTDIR}/target/classes/bin/clean-kar-storage.sh" "$TESTDIR/bin/"
-  CLEAN_KAR_STORAGE="$TESTDIR/bin/clean-kar-storage.sh"
+  install -m 755 "${PROJECTDIR}/target/classes/bin/_clean-kar-storage.sh" "$TESTDIR/bin/"
+  CLEAN_KAR_STORAGE="$TESTDIR/bin/_clean-kar-storage.sh"
   unset JAVA_OPTS EXTRA_JAVA_OPTS KARAF_OPTS KARAF_DATA KARAF_ETC KARAF_CLEAN_CACHE
 }
 
@@ -31,7 +31,7 @@ runCleanKarStorage() {
 testShellcheck() {
   if [ -n "$SHELLCHECK" ] && [ -x "$SHELLCHECK" ]; then
     "$SHELLCHECK" "$CLEAN_KAR_STORAGE"
-    assertTrue "shellcheck on bin/clean-kar-storage.sh should pass" $?
+    assertTrue "shellcheck on bin/_clean-kar-storage.sh should pass" $?
   fi
 }
 

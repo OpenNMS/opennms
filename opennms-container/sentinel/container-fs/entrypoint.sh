@@ -178,7 +178,11 @@ applyKarafDebugLogging() {
 start() {
     export KARAF_EXEC="exec"
     # karaf.clean.cache removes data/cache but not data/kar, so the deployer would skip the .kar files
-    ${SENTINEL_HOME}/bin/clean-kar-storage.sh ${SENTINEL_HOME} || true
+    if [ -x "${SENTINEL_HOME}/bin/_clean-kar-storage.sh" ]; then
+      "${SENTINEL_HOME}/bin/_clean-kar-storage.sh" "${SENTINEL_HOME}" || true
+    else
+      echo "WARNING: ${SENTINEL_HOME}/bin/_clean-kar-storage.sh not found, the .kar files in data/kar will not be installed again" >&2
+    fi
     cd ${SENTINEL_HOME}/bin
     exec ./karaf server ${SENTINEL_DEBUG}
 }
