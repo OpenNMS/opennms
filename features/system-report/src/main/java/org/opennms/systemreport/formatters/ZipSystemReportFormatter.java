@@ -28,12 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -42,18 +38,11 @@ import java.util.zip.ZipOutputStream;
 
 public class ZipSystemReportFormatter extends AbstractSystemReportFormatter implements SystemReportFormatter {
     private static final Logger LOG = LoggerFactory.getLogger(ZipSystemReportFormatter.class);
-    private File m_tempFile;
     private ZipOutputStream m_zipOutputStream;
-    private Set<String> m_directories = new HashSet<>();
+    private final Set<String> m_directories = new HashSet<>();
 
     public ZipSystemReportFormatter() {
         super();
-        try {
-            m_tempFile = File.createTempFile(getName(), null);
-            m_tempFile.deleteOnExit();
-        } catch (final IOException e) {
-            LOG.error("Unable to create temporary file!", e);
-        }
     }
 
     @Override
@@ -87,17 +76,27 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
     @Override
     public void begin() {
         super.begin();
-        try {
-            m_zipOutputStream = new ZipOutputStream(new FileOutputStream(m_tempFile));
-            m_zipOutputStream.setLevel(9);
-        } catch (final Exception e) {
-            LOG.error("Unable to create zip file '{}'", m_tempFile, e);
+        // stream straight to the output (no temp file) so a download starts immediately;
+        // reset per report, since the registered instance is reused
+        m_directories.clear();
+        m_zipOutputStream = null;
+        if (getOutputStream() == null) {
             return;
+        }
+        m_zipOutputStream = new ZipOutputStream(getOutputStream());
+        m_zipOutputStream.setLevel(9);
+        try {
+            createDirectory("");
+        } catch (final IOException e) {
+            LOG.error("Unable to start the zip file", e);
         }
     }
 
     @Override
     public void write(final SystemReportPlugin plugin) {
+        if (m_zipOutputStream == null) {
+            return;
+        }
         final String name = plugin.getName() + plugin.defaultFormat();
         try {
             createDirectory("");
@@ -161,26 +160,16 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
 
     @Override
     public void end() {
+        if (m_zipOutputStream == null) {
+            return;
+        }
         try {
             m_zipOutputStream.closeEntry();
-        } catch (IOException e) {
-            LOG.warn("Unable to close last entry.", e);
-        }
-        IOUtils.closeQuietly(m_zipOutputStream);
-        
-        InputStream is = null;
-        try {
-            byte[] buf = new byte[1024];
-            is = new FileInputStream(m_tempFile);
-            final OutputStream os = getOutputStream();
-            int len;
-            while ((len = is.read(buf)) > 0) {
-                os.write(buf, 0, len);
-            }
-        } catch (final Exception e) {
-            LOG.warn("Unable to read temporary zip file '{}'", m_tempFile, e);
-        } finally {
-            IOUtils.closeQuietly(is);
+            // finish, not close: the caller owns the underlying stream
+            m_zipOutputStream.finish();
+            m_zipOutputStream.flush();
+        } catch (final IOException e) {
+            LOG.warn("Unable to finish the zip file.", e);
         }
     }
 
