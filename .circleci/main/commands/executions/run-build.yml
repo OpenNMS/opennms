@@ -47,7 +47,9 @@ commands:
                 ;;
             esac
             echo "export OPENNMS_VERSION=\"$OPENNMS_VERSION\"" >> $BASH_ENV
+            # No job uses the javadoc jars from this build. The publish job generates its own.
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+              -Dmaven.javadoc.skip=true \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
@@ -63,14 +65,6 @@ commands:
               -Prun-expensive-tasks \
               -Pbuild-bamboo \
               org.opennms.maven.plugins:structure-maven-plugin:1.0:structure || exit 1
-      - run:
-          name: Check if we have generated apidocs
-          command: |
-            if [ -d target/site/apidocs ] && [ "$(find target/site/apidocs -name \*.html | wc -l)" -gt 1 ]; then
-              pushd target/site/apidocs
-                tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
-              popd
-            fi
       - run:
           name: Remove Extra Maven Repository OpenNMS Files
           command: |
