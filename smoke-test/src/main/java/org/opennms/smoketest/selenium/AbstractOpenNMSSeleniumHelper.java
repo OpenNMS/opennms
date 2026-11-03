@@ -790,11 +790,6 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         getDriver().get(getBaseUrlInternal() + "opennms/element/index.jsp");
     }
 
-    protected void supportPage() {
-        LOG.debug("navigating to the support page");
-        getDriver().get(getBaseUrlInternal() + "opennms/support/index.jsp");
-    }
-
     protected void goBack() {
         LOG.warn("hitting the 'back' button");
         getDriver().navigate().back();
