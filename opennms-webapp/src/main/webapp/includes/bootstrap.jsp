@@ -248,13 +248,16 @@
         // localStorage unavailable; fall through to the default theme
       }
       document.documentElement.classList.add(theme);
-      // Mirrors isFramed() in ui/src/lib/framing.ts; a framed page gets no menu.
+      // Mirrors hidesMenuInFrame() in ui/src/lib/framing.ts: a framed page gets no menu,
+      // unless the frame's name contains "-with-header" (e.g. <iframe name="noc-with-header">).
+      var framed;
       try {
-        if (window.self !== window.top) {
-          document.documentElement.classList.add('onms-embedded');
-        }
+        framed = window.self !== window.top;
       } catch (e) {
         // top is not accessible (cross-origin), so we are framed
+        framed = true;
+      }
+      if (framed && String(window.name || '').indexOf('-with-header') === -1) {
         document.documentElement.classList.add('onms-embedded');
       }
     })();

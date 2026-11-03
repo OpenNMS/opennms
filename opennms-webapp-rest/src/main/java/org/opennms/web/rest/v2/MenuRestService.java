@@ -182,7 +182,7 @@ public class MenuRestService {
         try {
             return this.menuProvider.getMainMenu(
                     new HttpMenuRequestContext(request),
-                    MenuTemplatePaths.resolve(menuProvider.getMenuTemplateFilePath(), request.getServletContext()));
+                    MenuTemplatePaths.resolve(request.getServletContext()));
         } catch (Exception e) {
             LOG.error("Error creating menu entries: " + e.getMessage(), e);
             throw e;

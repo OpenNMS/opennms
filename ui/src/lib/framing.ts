@@ -22,8 +22,7 @@
 
 /**
  * True when the page runs inside a frame/iframe. Treats a cross-origin
- * SecurityError on `top` as framed. Mirrored by the pre-paint script in
- * opennms-webapp/src/main/webapp/includes/bootstrap.jsp.
+ * SecurityError on `top` as framed.
  */
 export const isFramed = (win: Window = window): boolean => {
   try {
@@ -31,4 +30,21 @@ export const isFramed = (win: Window = window): boolean => {
   } catch {
     return true
   }
+}
+
+/**
+ * An embedder keeps the menu in a frame by putting this in the frame's name,
+ * e.g. `<iframe name="noc-with-header" src="...">`. The name stays with the
+ * frame as it navigates. Same marker as the legacy navbar's.
+ */
+export const MENU_IN_FRAME_MARKER = '-with-header'
+
+/**
+ * True when the page is framed and the frame did not ask for the menu
+ * (see MENU_IN_FRAME_MARKER): the host page supplies the chrome, so OpenNMS
+ * shows no menu. Mirrored by the pre-paint script in
+ * opennms-webapp/src/main/webapp/includes/bootstrap.jsp.
+ */
+export const hidesMenuInFrame = (win: Window = window): boolean => {
+  return isFramed(win) && !(win.name ?? '').includes(MENU_IN_FRAME_MARKER)
 }

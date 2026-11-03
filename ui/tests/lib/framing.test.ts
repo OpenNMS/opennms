@@ -21,7 +21,7 @@
 ///
 
 import { describe, expect, it } from 'vitest'
-import { isFramed } from '@/lib/framing'
+import { hidesMenuInFrame, isFramed } from '@/lib/framing'
 
 describe('isFramed', () => {
   it('returns false at top level', () => {
@@ -45,5 +45,25 @@ describe('isFramed', () => {
       }
     })
     expect(isFramed(win)).toBe(true)
+  })
+})
+
+describe('hidesMenuInFrame', () => {
+  const framed = (name: string) => ({ self: {}, top: {}, name }) as unknown as Window
+
+  it('returns false at top level', () => {
+    const win = { name: '' } as Window
+    Object.defineProperty(win, 'self', { value: win })
+    Object.defineProperty(win, 'top', { value: win })
+    expect(hidesMenuInFrame(win)).toBe(false)
+  })
+
+  it('returns true in a frame without the marker', () => {
+    expect(hidesMenuInFrame(framed(''))).toBe(true)
+    expect(hidesMenuInFrame(framed('opennms-0.123'))).toBe(true)
+  })
+
+  it('returns false in a frame whose name asks for the menu', () => {
+    expect(hidesMenuInFrame(framed('noc-with-header'))).toBe(false)
   })
 })

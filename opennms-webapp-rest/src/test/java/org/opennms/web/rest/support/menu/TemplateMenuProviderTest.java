@@ -175,31 +175,15 @@ public class TemplateMenuProviderTest {
     }
 
     @Test
-    public void resolvedPlaceholderPathIsReRootedAtServletContextWebInf() throws Exception {
-        Path file = writeTemplate("{\"menus\":[{\"name\":\"Rerooted\",\"url\":\"r.jsp\",\"action\":\"link\"}]}");
+    public void defaultReadsTheTemplateUnderTheServletContextWebInf() throws Exception {
+        Path file = writeTemplate("{\"menus\":[{\"name\":\"Deployed\",\"url\":\"d.jsp\",\"action\":\"link\"}]}");
         Path webInf = file.getParent().getParent();
         MockServletContext sc = new MockServletContext() {
             @Override public String getRealPath(String path) { return "/WEB-INF".equals(path) ? webInf.toString() : null; }
         };
-        TemplateMenuProvider provider = new TemplateMenuProvider("/nonexistent/opennms-home/jetty-webapps/opennms/WEB-INF/menu/menu-template.json");
+        TemplateMenuProvider provider = new TemplateMenuProvider();
         provider.setServletContext(sc);
 
-        assertNotNull(byName(provider.getMenu(ctx(Set.of(), true)), "Rerooted"));
-    }
-
-    @Test
-    public void nullRealPathFallsBackToConfiguredPath() {
-        MockServletContext sc = new MockServletContext() {
-            @Override public String getRealPath(String path) { return null; }
-        };
-        TemplateMenuProvider provider = new TemplateMenuProvider(SHIPPED);
-        provider.setServletContext(sc);
-
-        assertNotNull(byName(provider.getMenu(ctx(Set.of(), true)), "Alarms"));
-    }
-
-    @Test
-    public void noServletContextUsesConfiguredPath() {
-        assertNotNull(byName(new TemplateMenuProvider(SHIPPED).getMenu(ctx(Set.of(), true)), "Alarms"));
+        assertNotNull(byName(provider.getMenu(ctx(Set.of(), true)), "Deployed"));
     }
 }

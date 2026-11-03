@@ -29,7 +29,7 @@ import App from '@/main/App.vue'
 
 // While the SPA is inside an iframe it is always chromeless. A separate file from
 // AppLayoutClasses because vi.mock of the framing helper is hoisted for the whole file.
-vi.mock('@/lib/framing', () => ({ isFramed: () => true }))
+vi.mock('@/lib/framing', () => ({ isFramed: () => true, hidesMenuInFrame: () => true }))
 vi.mock('@/components/Menu/Menubar.vue', () => ({
   default: { name: 'Menubar', render: () => h('div', { class: 'stub-menubar' }) }
 }))

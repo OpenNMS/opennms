@@ -42,12 +42,16 @@ import org.springframework.web.context.ServletContextAware;
 public class TemplateMenuProvider implements org.opennms.web.api.MenuProvider, ServletContextAware {
     private static final Logger LOG = LoggerFactory.getLogger(TemplateMenuProvider.class);
 
-    private static final String WEB_INF = "/WEB-INF";
-
+    /** An explicit template file, or null to use MenuTemplatePaths. */
     private final String menuTemplateFilePath;
     private volatile ServletContext servletContext;
 
-    public TemplateMenuProvider(String menuTemplateFilePath) {
+    public TemplateMenuProvider() {
+        this(null);
+    }
+
+    /** Reads this template file instead of the webapp's active one. For tests. */
+    TemplateMenuProvider(String menuTemplateFilePath) {
         this.menuTemplateFilePath = menuTemplateFilePath;
     }
 
@@ -59,10 +63,10 @@ public class TemplateMenuProvider implements org.opennms.web.api.MenuProvider, S
     @Override
     public List<org.opennms.web.navigate.MenuEntry> getMenu(MenuContext context) {
         final String path = resolvePath();
-        final MainMenu mainMenu = new MenuProvider(path).parseMenuTemplate(path);
+        final MainMenu mainMenu = MenuProvider.parseMenuTemplate(path);
 
         if (mainMenu == null) {
-            LOG.warn("Unable to parse menu template '{}'; no menu actions available", path);
+            LOG.warn("No search menu actions available, because menu template '{}' could not be read", path);
             return new ArrayList<>();
         }
 
@@ -87,28 +91,7 @@ public class TemplateMenuProvider implements org.opennms.web.api.MenuProvider, S
     }
 
     private String resolvePath() {
-        final ServletContext sc = this.servletContext;
-
-        if (sc == null) {
-            return menuTemplateFilePath;
-        }
-
-        final String realWebInf = sc.getRealPath("/WEB-INF");
-
-        if (realWebInf == null) {
-            // e.g. unexpanded WAR
-            LOG.warn("Could not determine real path of /WEB-INF; using configured menu template path '{}'", menuTemplateFilePath);
-            return menuTemplateFilePath;
-        }
-
-        // The placeholder may already have been resolved by Spring, so re-root on the WEB-INF segment itself.
-        final int idx = menuTemplateFilePath.lastIndexOf(WEB_INF);
-
-        if (idx < 0) {
-            return menuTemplateFilePath;
-        }
-
-        return realWebInf + menuTemplateFilePath.substring(idx + WEB_INF.length());
+        return menuTemplateFilePath != null ? menuTemplateFilePath : MenuTemplatePaths.resolve(servletContext);
     }
 
     private static void collect(List<MenuEntry> entries, boolean topLevel, List<org.opennms.web.navigate.MenuEntry> result) {
@@ -117,30 +100,12 @@ public class TemplateMenuProvider implements org.opennms.web.api.MenuProvider, S
         }
 
         for (MenuEntry e : entries) {
-            if (isClickable(e, topLevel)) {
+            if (MenuEntryFilter.isLink(e, topLevel)) {
                 result.add(new DefaultMenuEntry(e.name, e.url, DisplayStatus.DISPLAY_LINK,
                         Boolean.TRUE.equals(e.isExternalLink), e.linkTarget));
             }
 
             collect(e.items, false, result);
         }
-    }
-
-    private static boolean isClickable(MenuEntry e, boolean topLevel) {
-        final String type = e.type;
-
-        if (MenuEntry.MenuEntryTypes.TYPE_SEPARATOR.equals(type) || "header".equals(type) || "plugins".equals(type)) {
-            return false;
-        }
-
-        if (e.url == null || e.url.isEmpty() || "#".equals(e.url)) {
-            return false;
-        }
-
-        if (e.action != null && !"link".equals(e.action)) {
-            return false;
-        }
-
-        return !topLevel || "link".equals(e.action);
     }
 }

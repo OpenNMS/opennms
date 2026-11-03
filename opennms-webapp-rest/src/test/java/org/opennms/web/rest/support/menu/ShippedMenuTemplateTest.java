@@ -46,6 +46,12 @@ public class ShippedMenuTemplateTest {
     private static final String SHIPPED = "src/main/webapp/WEB-INF/menu/menu-template.json";
     private static final String DEFAULT = "src/main/webapp/WEB-INF/menu/menu-template-default.json";
 
+    /*
+     * Hand-kept copy of the admin-only pages, NOT derived from the code that enforces them. When you add an
+     * admin-only page, add its URL here and "roles": ["ROLE_ADMIN"] to its template entry. Sources:
+     * - Vue routes guarded by requireRole('adminRole', ...) in ui/src/main/router/index.ts
+     * - URL rules in opennms-webapp/src/main/webapp/WEB-INF/applicationContext-spring-security.xml
+     */
     private static final Set<String> ADMIN_ONLY_URLS = Set.of(
             "ui/index.html#/admin/users", "ui/index.html#/admin/groups", "ui/index.html#/usage-statistics",
             "ui/index.html#/system-report", "ui/index.html#/logs", "ui/index.html#/scv",
@@ -54,7 +60,7 @@ public class ShippedMenuTemplateTest {
             "ui/index.html#/admin/wsman-config", "ui/index.html#/configuration");
 
     private static MainMenu menuFor(String... roles) throws Exception {
-        return new MenuProvider(SHIPPED).getMainMenu(
+        return new MenuProvider().getMainMenu(
                 new TestMenuRequestContext("tester", false, Arrays.asList(roles)), SHIPPED);
     }
 

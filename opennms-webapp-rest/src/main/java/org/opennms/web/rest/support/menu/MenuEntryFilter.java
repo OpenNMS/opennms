@@ -33,8 +33,6 @@ import com.google.common.base.Strings;
  * empty and tidies separators. Stateless; does not modify its input.
  */
 public final class MenuEntryFilter {
-    private static final String LINK_ACTION = "link";
-
     private MenuEntryFilter() {
     }
 
@@ -60,7 +58,7 @@ public final class MenuEntryFilter {
             if (hadItems) {
                 copy.items = filter(entry.items, ctx, false);
 
-                if (copy.items.isEmpty() && !isNavigable(entry, topLevel)) {
+                if (copy.items.isEmpty() && !isLink(entry, topLevel)) {
                     continue;
                 }
             }
@@ -93,17 +91,20 @@ public final class MenuEntryFilter {
     }
 
     /**
-     * Whether an entry emptied by filtering still works as a link. The side menu only turns a
-     * top-level entry into a link when its action is "link"; nested entries with a url are links.
+     * Whether the side menu renders this entry as a link to its url. A top-level entry is a link only
+     * when its action is "link"; a nested entry is a link when it has a url and no other action.
+     * Both the side menu's pruning and the search "Open ..." results use this rule.
      */
-    private static boolean isNavigable(MenuEntry e, boolean topLevel) {
-        final boolean hasUrl = !Strings.isNullOrEmpty(e.url) && !"#".equals(e.url);
-
-        if (topLevel) {
-            return hasUrl && LINK_ACTION.equals(e.action);
+    public static boolean isLink(MenuEntry e, boolean topLevel) {
+        if (isSeparator(e) || Strings.isNullOrEmpty(e.url) || "#".equals(e.url)) {
+            return false;
         }
 
-        return hasUrl || LINK_ACTION.equals(e.action);
+        if (topLevel) {
+            return MenuEntry.MenuEntryActions.ACTION_LINK.equals(e.action);
+        }
+
+        return e.action == null || MenuEntry.MenuEntryActions.ACTION_LINK.equals(e.action);
     }
 
     private static boolean isSeparator(MenuEntry e) {
@@ -128,7 +129,8 @@ public final class MenuEntryFilter {
         return result;
     }
 
-    private static MenuEntry copyOf(MenuEntry e) {
+    /** A shallow copy. MenuEntryFilterTest checks that every field of MenuEntry is copied. */
+    static MenuEntry copyOf(MenuEntry e) {
         MenuEntry c = new MenuEntry();
         c.type = e.type;
         c.id = e.id;

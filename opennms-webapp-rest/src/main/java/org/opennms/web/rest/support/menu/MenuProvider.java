@@ -22,17 +22,17 @@
 package org.opennms.web.rest.support.menu;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opennms.core.resource.Vault;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.support.menu.model.MainMenu;
 import org.opennms.web.rest.support.menu.model.MenuEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
@@ -45,6 +45,9 @@ import com.google.common.collect.ImmutableSet;
  * due to runtime data and role or system property evaluation.
  */
 public class MenuProvider {
+    private static final Logger LOG = LoggerFactory.getLogger(MenuProvider.class);
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     private final String ADMIN_ROLE_ICON = "fa-cogs";
 
     public static final String ZENITH_CONNECT_ENABLED_KEY = "opennms.zenithConnect.enabled";
@@ -60,15 +63,17 @@ public class MenuProvider {
         Authentication.ROLE_FILESYSTEM_EDITOR
     );
 
-    /** Full file path to menu-template.json file, see "applicationContext-cxf-rest-v2.xml" */
-    private final String menuTemplateFilePath;
-
-    public MenuProvider(String menuTemplateFilePath) {
-        this.menuTemplateFilePath = menuTemplateFilePath;
+    public MenuProvider() {
     }
 
-    public String getMenuTemplateFilePath() {
-        return this.menuTemplateFilePath;
+    /**
+     * Kept so that an applicationContext-cxf-rest-v2.xml from an earlier release, which passes the template
+     * path here, still loads (it is a package conffile, so an edited copy can survive an upgrade).
+     * The path is ignored: MenuTemplatePaths decides which file is read.
+     */
+    @Deprecated
+    public MenuProvider(String ignoredMenuTemplateFilePath) {
+        this();
     }
 
     /**
@@ -178,31 +183,13 @@ public class MenuProvider {
         }
     }
 
-    public MainMenu parseMenuTemplate() {
-        return parseMenuTemplate(null);
-    }
-
-    public MainMenu parseMenuTemplate(String menuTemplateFile) {
-        final String MENU_TEMPLATE_FILE = "./menu-template.json";
-
-        var objectMapper = new ObjectMapper();
-        MainMenu template = null;
-        String path = menuTemplateFile != null ? menuTemplateFile : MENU_TEMPLATE_FILE;
-
-        try (var fis = new FileInputStream(path)) {
-            template = objectMapper.readValue(fis, MainMenu.class);
-        } catch (FileNotFoundException fnfe) {
-            // TODO: Log error and return null
-            System.out.println("ERROR: FileNotFoundException: " + fnfe.getMessage());
-            return null;
-        } catch (DatabindException dbex) {
-            System.out.println("ERROR: DatabindException: " + dbex.getMessage());
-            return null;
+    /** Reads a menu template. Returns null, after logging why, when it is missing or invalid. */
+    public static MainMenu parseMenuTemplate(String menuTemplateFile) {
+        try (var fis = new FileInputStream(menuTemplateFile)) {
+            return OBJECT_MAPPER.readValue(fis, MainMenu.class);
         } catch (Exception e) {
-            System.out.println("ERROR: Exception: " + e.getMessage());
+            LOG.warn("Unable to read menu template '{}': {}", menuTemplateFile, e.getMessage(), e);
             return null;
         }
-
-        return template;
     }
 }

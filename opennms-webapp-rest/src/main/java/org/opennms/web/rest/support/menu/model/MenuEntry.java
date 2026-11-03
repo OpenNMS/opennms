@@ -42,8 +42,8 @@ public class MenuEntry {
     public Boolean isExternalLink;
 
     /**
-     * An optional action identifier which informs the UI to do additional processing.
-     * Currently used for 'logout' which prompts the UI to wire clicking the menu item to a logout action.
+     * An optional MenuEntryActions value which informs the UI to do additional processing.
+     * 'link' makes a top-level entry a link to its url; 'logout' wires clicking the item to a logout action.
      */
     public String action;
 
@@ -88,5 +88,10 @@ public class MenuEntry {
     public static class MenuEntryTypes {
         public static final String TYPE_ITEM = "item";
         public static final String TYPE_SEPARATOR = "separator";
+    }
+
+    public static class MenuEntryActions {
+        public static final String ACTION_LINK = "link";
+        public static final String ACTION_LOGOUT = "logout";
     }
 }

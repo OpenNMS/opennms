@@ -63,7 +63,7 @@ public class MenuProviderTest {
                 + " \"unknownTopLevel\": true}";
         Files.write(file.toPath(), json.getBytes(StandardCharsets.UTF_8));
 
-        MainMenu menu = new MenuProvider(null).parseMenuTemplate(file.getAbsolutePath());
+        MainMenu menu = MenuProvider.parseMenuTemplate(file.getAbsolutePath());
 
         assertNotNull(menu);
         assertEquals(1, menu.menus.size());
@@ -213,9 +213,14 @@ public class MenuProviderTest {
         }
     }
 
+    /**
+     * Regression guard: MenuProvider used to store each request's user and roles in fields of the shared
+     * singleton, so concurrent requests could get each other's menu. It is stateless now, so this cannot
+     * fail today; it is here to catch per-request state being added back.
+     */
     @Test
     public void concurrentContextsDoNotLeak() throws Exception {
-        final MenuProvider provider = new MenuProvider(MENU_TEMPLATE_PATH);
+        final MenuProvider provider = new MenuProvider();
         final ExecutorService executor = Executors.newFixedThreadPool(8);
 
         try {
@@ -247,7 +252,7 @@ public class MenuProviderTest {
         List<String> roleList = Arrays.stream(roles).toList();
 
         try {
-            MenuProvider provider = new MenuProvider(MENU_TEMPLATE_PATH);
+            MenuProvider provider = new MenuProvider();
 
             mainMenu = provider.getMainMenu(
                     new MenuProviderTest.TestMenuRequestContext("admin1", isZenithConnectEnabled, roleList),

@@ -268,9 +268,7 @@
         <property name="successView" value="newsfeed/newsFeedPanel"/>
     </bean>
 
-    <bean id="templateMenuProvider" class="org.opennms.web.rest.support.menu.TemplateMenuProvider">
-        <constructor-arg value="${opennms.home}/jetty-webapps/opennms/WEB-INF/menu/menu-template.json" />
-    </bean>
+    <bean id="templateMenuProvider" class="org.opennms.web.rest.support.menu.TemplateMenuProvider" />
     <onmsgi:service ref="templateMenuProvider" interface="org.opennms.web.api.MenuProvider" />
 
     <bean name="/includes/nodeCategory-box.htm" class="org.opennms.web.controller.NodeCategoryBoxController">
