@@ -20,7 +20,7 @@
 ///
 
 import { enableAutoUnmount, mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { defineComponent, h, nextTick, ref } from 'vue'
 import PrimeVue from 'primevue/config'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
@@ -85,5 +85,28 @@ describe('OnCallSchedulesTab', () => {
       // @ts-expect-error restoring the missing DOM method
       delete Element.prototype.scrollIntoView
     }
+  })
+
+  it('keeps a time row mounted while it is edited through reactive v-model state', async () => {
+    const Parent = defineComponent({
+      setup() {
+        const cards = ref([newCard('bob', 'daily')])
+        return () => h(OnCallSchedulesTab, {
+          cards: cards.value,
+          'onUpdate:cards': (c: typeof cards.value) => {
+            cards.value = c
+          },
+          members: ['bob'],
+          highlightKey: null
+        })
+      }
+    })
+    const w = mount(Parent, { global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}})
+    await w.find('[data-test="add-time"]').trigger('click')
+    await nextTick()
+    const before = w.find('[data-test="time-begin-0"]').element
+    await w.find('[data-test="time-begin-0"]').setValue('08:00')
+    await w.find('[data-test="time-begin-0"]').setValue('08:30')
+    expect(w.find('[data-test="time-begin-0"]').element).toBe(before)
   })
 })

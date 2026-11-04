@@ -158,7 +158,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, toRaw } from 'vue'
 
 import { OnmsButton, OnmsCheckbox, OnmsConfirmationDialog, OnmsIconButton, OnmsSelect, OnmsTag } from '@opennms/onms-ui'
 
@@ -207,11 +207,13 @@ const setUser = (user: unknown) => update({ user: user as string })
 // an edited row is a new object that inherits its predecessor's key.
 const rowKeys = new WeakMap<TimeRange, number>()
 let rowCounter = 0
+// Keyed on the raw object: the parent's reactive state hands this component proxies.
 const rowKey = (r: TimeRange): number => {
-  let k = rowKeys.get(r)
+  const raw = toRaw(r)
+  let k = rowKeys.get(raw)
   if (k === undefined) {
     k = ++rowCounter
-    rowKeys.set(r, k)
+    rowKeys.set(raw, k)
   }
   return k
 }
