@@ -60,6 +60,13 @@ public class OnCallScheduleExpanderTest {
         "<schedule name=\"gina\" type=\"weekly\"><time begins=\"12:00:00\" ends=\"13:00:00\"/></schedule>",
         "<schedule name=\"hank\" type=\"specific\"><time begins=\"11:00:00\" ends=\"11:30:00\"/></schedule>",
         "<schedule name=\"ivy\" type=\"daily\"><time begins=\"18:00:00\" ends=\"07:00:00\"/></schedule>",
+        // unreadable times: notifd compares against the instant itself, so a bad end reaches to the end of the day
+        // and a bad begin starts at midnight
+        "<schedule name=\"jon\" type=\"daily\"><time begins=\"23:00:00\" ends=\"14-Xyz-2026 20:00:00\"/></schedule>",
+        "<schedule name=\"kim\" type=\"daily\"><time begins=\"01-Xyz-2026 00:00:00\" ends=\"00:30:00\"/></schedule>",
+        // lee: a 21-character begin (German month, see role()) is not read; the valid end then covers everything
+        // up to 2 March
+        "<schedule name=\"lee\" type=\"specific\"><time begins=\"14-Mar-2026 18:00:00\" ends=\"02-Mar-2026 20:00:00\"/></schedule>",
     };
 
     private TimeZone m_zone;
@@ -87,7 +94,12 @@ public class OnCallScheduleExpanderTest {
             if (!withAllDay && xml == ALL_DAY) {
                 continue;
             }
-            role.addSchedule(JaxbUtils.unmarshal(Schedule.class, xml));
+            final Schedule schedule = JaxbUtils.unmarshal(Schedule.class, xml);
+            if ("lee".equals(schedule.getName())) {
+                // the schema only allows 3-letter months, so a 21-character time cannot be unmarshalled
+                schedule.getTimes().get(0).setBegins("14-M\u00e4rz-2026 18:00:00");
+            }
+            role.addSchedule(schedule);
         }
         return role;
     }

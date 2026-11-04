@@ -101,8 +101,8 @@ public final class OnCallScheduleExpander {
                     if (!appliesTo(time, day)) {
                         continue;
                     }
-                    final long b = Math.max(from, timeOfDay(day, time.getBegins(), false));
-                    final long e = Math.min(to, timeOfDay(day, time.getEnds(), true));
+                    final long b = Math.max(from, timeOfDay(day, dayEnd, time.getBegins(), false));
+                    final long e = Math.min(to, timeOfDay(day, dayEnd, time.getEnds(), true));
                     if (b < e) {
                         own.add(new long[] { b, e });
                     }
@@ -180,9 +180,15 @@ public final class OnCallScheduleExpander {
      * Reads a begin or end the way notifd does on the day {@code day} (00:00), floored to the second; an end is
      * exclusive, so one second is added to it.
      */
-    private static long timeOfDay(final Calendar day, final String text, final boolean isEnd) {
+    private static long timeOfDay(final Calendar day, final long dayEnd, final String text, final boolean isEnd) {
         final Calendar cal = (Calendar) day.clone();
+        cal.set(Calendar.MILLISECOND, 1); // a successful parse resets this to 0
         BasicScheduleUtils.setOutCalTime(cal, text);
+        if (cal.get(Calendar.MILLISECOND) == 1) {
+            // unparseable: notifd compares against the instant itself, so a begin never lies after it and an end
+            // never lies before it, i.e. both reach to the edges of the day
+            return isEnd ? dayEnd : day.getTimeInMillis();
+        }
         final long floored = cal.getTimeInMillis() / 1000 * 1000;
         return isEnd ? floored + 1000 : floored;
     }
