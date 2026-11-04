@@ -44,7 +44,13 @@ Project routes make use of [vue-router](https://next.router.vuejs.org/guide/).
 
 ## Developer workflow
 
-Developer workflow for development -> build -> fast deploy. There may be issues running the vite development server since it runs on a different port than OpenNMS; OpenNMS menu items and URLs will point to that port instead of the vite port.
+### Dev server
+
+With an OpenNMS instance running on `http://localhost:8980`, run `pnpm dev` and open `http://localhost:3001/opennms/`. The dev server serves the Vue SPA at `/opennms/ui/` with hot reload and proxies the rest of `/opennms` to the instance, so login, the menu and legacy pages work as usual. Set `VITE_DEV_PROXY_TARGET` (e.g. in `.env.development.local`) to use another instance.
+
+The menu app embedded in legacy pages still comes from the instance's deployed build; to change it, use the build and deploy workflow below.
+
+### Build and deploy
 
 - assuming your local OpenNMS Horizon code is in `~/projects/opennms`
 
