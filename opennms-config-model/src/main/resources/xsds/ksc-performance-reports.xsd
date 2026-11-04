@@ -67,9 +67,16 @@
 
       <attribute name="timespan" type="string" use="required"/>
 
-      <attribute name="graphtype" type="string" use="required"/>
+      <!-- required for a prefab graph, absent on an adhoc one -->
+      <attribute name="graphtype" type="string" use="optional"/>
 
       <attribute name="extlink" type="string" use="optional"/>
+
+      <!-- "prefab" (the default when absent) or "adhoc" -->
+      <attribute name="kind" type="string" use="optional"/>
+
+      <!-- the ad-hoc graph builder's state, as the query string of its share link; adhoc graphs only -->
+      <attribute name="adhocState" type="string" use="optional"/>
     </complexType>
   </element>
 </schema>

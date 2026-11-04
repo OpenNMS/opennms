@@ -322,6 +322,26 @@ const router = createRouter({
       beforeEnter: requireRole('adminRole', 'Must be admin to generate a system report.')
     },
     {
+      path: '/about',
+      name: 'About',
+      component: () => import('@/containers/About.vue')
+    },
+    {
+      path: '/documentation',
+      name: 'Documentation',
+      component: () => import('@/containers/Documentation.vue')
+    },
+    {
+      path: '/commercial-support',
+      name: 'Commercial Support',
+      component: () => import('@/containers/CommercialSupport.vue')
+    },
+    {
+      path: '/community-resources',
+      name: 'Community Resources',
+      component: () => import('@/containers/CommunityResources.vue')
+    },
+    {
       path: '/snmp-config',
       name: 'SNMP Config',
       component: () => import('@/containers/SnmpConfiguration.vue'),

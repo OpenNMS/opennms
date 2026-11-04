@@ -63,8 +63,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
         A graph collection is a titled, ordered list of graphs plus the layout options of its view page. Each
         graph carries a `kind`: `prefab`, a prefabricated graph drawn for one resource over a named timespan,
-        is the only kind stored today; `adhoc`, reserved for graphs from the ad-hoc graph builder, is rejected
-        with 400 until it is implemented. A graph without a `kind` is `prefab`. Ids are assigned by the server.
+        or `adhoc`, a graph from the ad-hoc graph builder carried as the query string of the builder's share
+        link in `adhocState` (without its time window, which the entry's `timespan` supplies) and drawn by
+        the client. A graph without a `kind` is `prefab`. Ids are assigned by the server.
         The whole collection is the unit of update: `PUT /graph-collections/{id}` replaces title, options
         and graph list in one call, which is how graphs are edited, reordered and removed.
 
@@ -103,7 +104,21 @@ public interface GraphCollectionRestApi {
                   "nodeId": null,
                   "nodeSource": null,
                   "domain": null,
-                  "interfaceId": null
+                  "interfaceId": null,
+                  "adhocState": null
+                },
+                {
+                  "kind": "adhoc",
+                  "title": "Core CPU",
+                  "resourceId": null,
+                  "graphtype": null,
+                  "timespan": "1_day",
+                  "extlink": null,
+                  "nodeId": null,
+                  "nodeSource": null,
+                  "domain": null,
+                  "interfaceId": null,
+                  "adhocState": "nf=Routers&rf=nodeSnmp&df=CpuRawUser&n=2&title=Core+CPU"
                 }
               ]
             }""";
@@ -321,7 +336,7 @@ public interface GraphCollectionRestApi {
                     headers = @Header(name = "ETag", description = ETAG_DESCRIPTION, schema = @Schema(type = "string")),
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = GraphCollectionDto.class))),
-            @ApiResponse(responseCode = "400", description = "The body is missing or invalid: no title, a negative `graphsPerLine`, or a graph without a resource, graph type or known timespan.",
+            @ApiResponse(responseCode = "400", description = "The body is missing or invalid: no title, a negative `graphsPerLine`, a prefab graph without a resource or graph type, an adhoc graph without a well-formed `adhocState`, or a graph without a known timespan.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Graph 1: unknown timespan 'fortnight'."))),
             @ApiResponse(responseCode = "403", description = "The user holds `ROLE_READONLY`.",

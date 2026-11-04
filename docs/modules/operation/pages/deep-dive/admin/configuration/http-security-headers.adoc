@@ -43,3 +43,15 @@ This is safe for modern browsers but offers no clickjacking protection for legac
 Browsers that honor `X-Frame-Options` and do not support CSP `frame-ancestors` will continue to block the cross-origin frame.
 
 After modifying either file, restart {page-component-title} for the changes to take effect.
+
+== Menu in embedded pages
+
+A {page-component-title} page displayed inside a frame or iframe does not show the {page-component-title} menu, because the embedding page is expected to provide its own navigation.
+To show the menu in a frame, include `-with-header` in the frame's name:
+
+[source, html]
+----
+<iframe name="noc-with-header" src="https://opennms.example.com/opennms/"></iframe>
+----
+
+The frame keeps its name as the user navigates inside it, so the menu stays on every page in the frame.

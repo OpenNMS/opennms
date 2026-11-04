@@ -28,7 +28,6 @@ export interface MenuItem {
   name: string | null
   url: string | null
   isExternalLink?: boolean | null
-  locationMatch: string | null
   action?: string | null
   linkTarget?: string | null
   icon?: string | null
@@ -53,6 +52,9 @@ export interface MainMenu {
   baseNodeUrl: string
   copyrightDates: string
   version: string
+  // docs.opennms.com path segments, e.g. 'horizon' and '36'; null when unknown
+  product?: string | null
+  docsVersion?: string | null
   zenithConnectEnabled: boolean
   zenithConnectBaseUrl: string
   zenithConnectRelativeUrl: string

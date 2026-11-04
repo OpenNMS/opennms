@@ -231,7 +231,6 @@
               org.opennms.web.element,
               org.opennms.web.event,
               org.opennms.web.graph,
-              org.opennms.web.mail,
               org.opennms.web.nodelabel
               -->
               !*
@@ -914,12 +913,6 @@
           <artifactId>concurrent</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.freemarker</groupId>
-      <artifactId>freemarker</artifactId>
-      <version>${freemarkerVersion}</version>
-      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.topology</groupId>

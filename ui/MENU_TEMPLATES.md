@@ -10,19 +10,21 @@ The `menu-template.json` file controls the menu configuration.
 
 It is read by the Rest API v2 Menu service and displayed by the UI.
 
-Configuration changes made in the file will take effect as soon as the browser page is refreshed (no need to restart OpenNMS).
+Configuration changes made in the file will take effect as soon as the browser page is refreshed (no need to restart OpenNMS). The search "Open ..." results are cached per user and pick up changes within 5 minutes.
+Two template files are installed:
+- `menu-template-default.json` is the default template shipped with OpenNMS and represents our latest recommended design.
+  Never edit this file. To restore the default menu, copy it over `menu-template.json`.
+- `menu-template.json` is the active template, the one the menu actually uses. It is identical to the default when installed.
+  Customize it only if you know what you are doing.
 
-Currently there are 3 menu templates:
+Package (RPM and Debian) upgrades replace both files, so a customized `menu-template.json` is lost on upgrade:
+keep a copy and re-apply your changes to the new file. In containers, a copy placed at `menu/menu-template.json` under
+`/opt/opennms-jetty-webinf-overlay` is applied at every start; compare it with `menu-template-default.json` after upgrading.
+Note that `roles` controls what both the menu and the search results show. Access is enforced by Spring Security and by the UI route guards,
+so hiding an entry does not grant or revoke access to a page.
 
-- `menu-template-default.json`: This is the default template (the same as the `menu-template.json` that is installed by default) and represents our latest recommended design.
-
-- `menu-template-alt.json` is an alternative configuration.
-
-- `menu-template-legacy.json` organizes the menu similar to previous versions of OpenNMS.
-
-To use any of these menus, simply copy one of them to `menu-template.json`.
-
-If you wish to create your own configuration, we recommend creating a new file, then copying it to `menu-template.json`.
+Groups that have no visible children for the current user, and stray separators (leading, trailing or doubled),
+are dropped automatically, so you only need to set `roles` on the individual items.
 
 
 ## Template structure
@@ -41,7 +43,7 @@ The menu template structure can be found in the Java code in: `org.opennms.web.r
   <tr>
     <td>baseHref, homeUrl, formattedDateTime, formattedDate, formattedTime,
   noticeStatus, username, baseNodeUrl, zenithConnectEnabled, zenithConnectBaseUrl,
-  zenithConnectRelativeUrl, copyrightDates, version</td>
+  zenithConnectRelativeUrl, copyrightDates, version, product, docsVersion</td>
     <td>These are filled in at runtime with values. Any values you enter will be ignored.</td>
   </tr>
   <tr>
@@ -96,10 +98,6 @@ Within the `menus` array, each item is a top-level menu item for the side menu.
   <tr>
     <td>action</td>
     <td>See <code>url</code>, this treat the top-level menu item as a link.</td>
-  </tr>
-   <tr>
-    <td>locationMatch</td>
-    <td>Used by the Search feature.</td>
   </tr>
   <tr>
     <td>icon</td>
@@ -161,12 +159,9 @@ The `items` under each top level menu contain the individual menu items.
     <td>The url that the menu item links to.
     If it is non-external, should be a relative link under the main <code>/opennms</code> path.
     Example: <code>"url": "element/index.jsp"</code> to link to the Search Inventory page.
-    If it is an external link, provide the entire absolute URL, e.g. <code>"url": "https://www.opennms.com"</code>.</td>
-  </tr>
-
-  <tr>
-    <td>locationMatch</td>
-    <td>See above.</td>
+    If it is an external link, provide the entire absolute URL, e.g. <code>"url": "https://www.opennms.com"</code>.
+    <code>$PRODUCT</code> and <code>$DOCS_VERSION</code> are replaced with this install's docs site product and version,
+    e.g. <code>"url": "https://docs.opennms.com/$PRODUCT/$DOCS_VERSION/operation/overview/overview.html"</code>.</td>
   </tr>
 
   <tr>
