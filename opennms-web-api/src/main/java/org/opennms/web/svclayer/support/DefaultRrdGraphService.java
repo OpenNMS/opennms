@@ -125,12 +125,15 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     static void validateAdhocParameters(String title, String[] dataSources,
             String[] aggregateFunctions, String[] colors,
             String[] dataSourceTitles, String[] styles) {
+        // The ad-hoc wizard sends values for all four data source slots, but
+        // sends a data source name only for each selected slot. Only the
+        // first entries are used, so do not check the unused entries.
         int count = dataSources.length;
-        Assert.isTrue(aggregateFunctions.length == count
-                && colors.length == count
-                && dataSourceTitles.length == count
-                && styles.length == count,
-                "each data source must have one aggregate function, color, title and style");
+        Assert.isTrue(aggregateFunctions.length >= count
+                && colors.length >= count
+                && dataSourceTitles.length >= count
+                && styles.length >= count,
+                "each data source must have an aggregate function, color, title and style");
 
         Assert.isTrue(isSafeTitle(title), "graph title contains a character that is not permitted");
         for (int i = 0; i < count; i++) {

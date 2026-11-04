@@ -223,6 +223,15 @@ public class DefaultRrdGraphServiceTest extends TestCase {
         }
     }
 
+    public void testAdhocAcceptsDefaultWizardSubmission() {
+        // The wizard selects one data source and sends four values for each other parameter.
+        DefaultRrdGraphService.validateAdhocParameters("Graph Title", new String[] { "ifInOctets" },
+                new String[] { "AVERAGE", "AVERAGE", "AVERAGE", "AVERAGE" },
+                new String[] { "ff0000", "00ff00", "0000ff", "ffff00" },
+                new String[] { "Data Source 1", "Data Source 2", "Data Source 3", "Data Source 4" },
+                new String[] { "LINE2", "LINE2", "LINE2", "LINE2" });
+    }
+
     public void testAdhocRejectsMismatchedArrays() {
         try {
             DefaultRrdGraphService.validateAdhocParameters("Title", new String[] { "ds0", "ds1" },
