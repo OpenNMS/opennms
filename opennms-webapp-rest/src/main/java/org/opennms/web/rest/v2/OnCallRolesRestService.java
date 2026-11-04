@@ -265,6 +265,34 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
 
     @Override
     @Transactional(readOnly = true)
+    public Response getOnCallRoleByQuery(final SecurityContext securityContext, final String name) {
+        m_support.checkTarget(securityContext, WHAT, "name", name);
+        return getOnCallRole(securityContext, name);
+    }
+
+    @Override
+    @Transactional
+    public Response updateOnCallRoleByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name, final OnCallRoleDto dto) {
+        m_support.checkTarget(securityContext, WHAT, "name", name);
+        return updateOnCallRole(securityContext, headers, name, dto);
+    }
+
+    @Override
+    @Transactional
+    public Response renameOnCallRoleByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name, final OnCallRoleRenameRequest body) {
+        m_support.checkTarget(securityContext, WHAT, "name", name);
+        return renameOnCallRole(securityContext, headers, name, body);
+    }
+
+    @Override
+    @Transactional
+    public Response deleteOnCallRoleByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name) {
+        m_support.checkTarget(securityContext, WHAT, "name", name);
+        return deleteOnCallRole(securityContext, headers, name);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Response getScheduleSettings(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, WHAT);
         m_support.requireDatabaseStore();

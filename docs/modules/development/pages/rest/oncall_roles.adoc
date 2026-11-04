@@ -31,6 +31,25 @@ Error responses carry a plain-text message.
 | 503 | The user-management store is `xml`.
 |===
 
+[[oncall-query-form]]
+== Names that a path cannot carry
+
+A role name stored before the name rules existed (for example `night/shift` from a migrated `groups.xml`) can contain `/`, `\` or `%`, which a URL path cannot carry reliably.
+Every per-role endpoint therefore has a query form, `item`, that takes the name in the `name` query parameter.
+URL-encode the value (`night%2Fshift`).
+The query form behaves exactly like the path form, with the same `If-Match` and `ETag` rules, bodies and status codes.
+A missing or blank `name` returns `400`.
+
+[cols="1,2"]
+|===
+| Path form | Query form
+
+| `GET /oncall-roles/{name}` | `GET /oncall-roles/item?name={name}`
+| `PUT /oncall-roles/{name}` | `PUT /oncall-roles/item?name={name}`
+| `POST /oncall-roles/{name}/rename` | `POST /oncall-roles/item/rename?name={name}`
+| `DELETE /oncall-roles/{name}` | `DELETE /oncall-roles/item?name={name}`
+|===
+
 == GETs (reading data)
 
 [caption=]

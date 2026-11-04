@@ -116,4 +116,38 @@ public interface OnCallRolesRestApi {
             @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
     })
     Response deleteOnCallRole(@Context SecurityContext securityContext, @Context HttpHeaders headers, @PathParam("name") String name);
+
+    @GET
+    @Path("item")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get one on-call role by query parameter (for names a path cannot carry)", operationId = "getOnCallRoleByQuery")
+    Response getOnCallRoleByQuery(@Context SecurityContext securityContext, @QueryParam("name") String name);
+
+    @PUT
+    @Path("item")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Update an on-call role by query parameter (for names a path cannot carry)", operationId = "updateOnCallRoleByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response updateOnCallRoleByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("name") String name, OnCallRoleDto role);
+
+    @POST
+    @Path("item/rename")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Rename an on-call role by query parameter (for names a path cannot carry)", operationId = "renameOnCallRoleByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response renameOnCallRoleByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("name") String name, OnCallRoleRenameRequest body);
+
+    @DELETE
+    @Path("item")
+    @Operation(summary = "Delete an on-call role by query parameter (for names a path cannot carry)", operationId = "deleteOnCallRoleByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response deleteOnCallRoleByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("name") String name);
 }

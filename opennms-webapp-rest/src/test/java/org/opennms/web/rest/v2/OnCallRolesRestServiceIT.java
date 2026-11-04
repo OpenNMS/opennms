@@ -699,6 +699,32 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testItemFormForNamesWithSlash() throws Exception {
+        inTx(() -> {
+            m_onCallRoleDao.save(new OnCallRole("a/b", m_userGroupDao.findByName("Ops"), m_userAccountDao.findByUsername("alice")));
+            return null;
+        });
+        final MockHttpServletResponse read = exec(GET, "/oncall-roles/item?name=a%2Fb", null, null, 200);
+        assertEquals("a/b", new JSONObject(read.getContentAsString()).getString("name"));
+        final String etag = read.getHeader("ETag");
+        final MockHttpServletResponse updated = exec(PUT, "/oncall-roles/item?name=a%2Fb", "{\"description\":\"edited\"}", etag, 200);
+        assertEquals("edited", new JSONObject(updated.getContentAsString()).getString("description"));
+        final MockHttpServletResponse renamed = exec(POST, "/oncall-roles/item/rename?name=a%2Fb", "{\"newName\":\"ab\"}", updated.getHeader("ETag"), 200);
+        assertEquals("ab", new JSONObject(renamed.getContentAsString()).getString("name"));
+        exec(DELETE, "/oncall-roles/item?name=ab", null, renamed.getHeader("ETag"), 204);
+        sendRequest(GET, "/oncall-roles/ab", 404);
+    }
+
+    @Test
+    public void testItemFormWithoutNameIs400() throws Exception {
+        sendRequest(GET, "/oncall-roles/item", 400);
+        sendRequest(GET, "/oncall-roles/item?name=", 400);
+        exec(PUT, "/oncall-roles/item", "{\"description\":\"x\"}", null, 400);
+        exec(POST, "/oncall-roles/item/rename", "{\"newName\":\"x\"}", null, 400);
+        sendRequest(DELETE, "/oncall-roles/item", 400);
+    }
+
+    @Test
     public void testForbiddenForNonAdmin() throws Exception {
         setUser("nobody", new String[]{ "ROLE_USER" });
         try {
