@@ -115,7 +115,8 @@ public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.ope
     }
 
     /**
-     * The executor is created in the daemon's onInit(), so it is null until then.
+     * Package-private so tests can supply an executor without a Spring context. When the
+     * context is not running, getDaemon() throws and the JMX collector skips the attribute.
      */
     LegacyPriorityExecutor getPriorityExecutor() {
         return getDaemon().getExecutor();

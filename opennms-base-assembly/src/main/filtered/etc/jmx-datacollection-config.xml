@@ -689,8 +689,6 @@
             <attrib name="ActiveThreads" alias="ONMSELDThrdAct" type="gauge"/>
             <attrib name="NumPoolThreads" alias="ONMSELDPoolThrd" type="gauge"/>
             <attrib name="CorePoolThreads" alias="ONMSELDPoolCore" type="gauge"/>
-            <attrib name="MaxPoolThreads" alias="ONMSELDPoolMax" type="gauge"/>
-            <attrib name="PeakPoolThreads" alias="ONMSELDPoolPeak" type="gauge"/>
             <attrib name="TasksTotal" alias="ONMSELDTasksTot" type="counter"/>
             <attrib name="TasksCompleted" alias="ONMSELDTasksCpt" type="counter"/>
             <attrib name="TaskQueuePendingCount" alias="ONMSELDTskQPCnt" type="gauge"/>

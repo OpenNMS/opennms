@@ -38,7 +38,7 @@ public class EnhancedLinkdMBeanTest {
     }
 
     @Test
-    public void reportsZeroBeforeTheExecutorExists() {
+    public void reportsZeroWithoutAnExecutor() {
         final EnhancedLinkd mbean = mbeanFor(null);
         assertEquals(0L, mbean.getActiveThreads());
         assertEquals(0L, mbean.getTasksTotal());
