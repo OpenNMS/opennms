@@ -67,10 +67,6 @@ Requires:       /usr/bin/id
 Requires:       /usr/bin/sudo
 Requires(post): util-linux
 Requires:       util-linux
-Requires:       jicmp >= 3.0.0
-Requires(pre):  jicmp >= 3.0.0
-Requires:       jicmp6 >= 3.0.0
-Requires(pre):  jicmp6 >= 3.0.0
 Provides:	opennms-plugin-api = %{opa_version}
 Provides:   user(minion)
 Provides:   group(minion)

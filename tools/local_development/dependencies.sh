@@ -20,8 +20,6 @@ usage(){
     echo "  --install-jrrd2              Install jrrd2 library, from prebuilt binaries"
     echo "  --install-jrrd2-from-source  Compile and install jrrd2 from source code"
     echo "  --enable-jrrd2               Update OpenNMS configuration to use jrrd2 library that is detected/installed"
-    # echo "  --install-jicmp         Install jicmp library"
-    # echo "  --install-jicmp6        Install jicmp6 library"
     exit 1
 }
 
@@ -34,8 +32,6 @@ DEPLOY_POSTGRESQL="no"
 INSTALL_JRRD2="no" # install prebuilt jrrd2
 INSTALL_JRRD2_FROM_SOURCE="no"
 ENABLE_JRRD2_CONFIGURATION="no"
-# INSTALL_JICMP="no"
-# INSTALL_JICMP6="no"
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -66,19 +62,9 @@ while [[ $# -gt 0 ]]; do
         --all)
             DEPLOY_POSTGRESQL="yes"
             INSTALL_JRRD2_FROM_SOURCE="yes"
-            # INSTALL_JICMP="yes"
-            # INSTALL_JICMP6="yes"
             shift
             ;;
 
-        # --install-jicmp)
-        #     INSTALL_JICMP="yes"
-        #     shift
-        #     ;;
-        # --install-jicmp6)
-        #     INSTALL_JICMP6="yes"
-        #     shift
-        #     ;;
         *)
             echo "Unknown option: $1"
             usage

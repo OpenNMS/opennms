@@ -94,10 +94,6 @@ webapp package.
 %package core
 Summary:	The core OpenNMS backend.
 Group:		Applications/System
-Requires(pre):	jicmp >= 3.0.0
-Requires:	jicmp >= 3.0.0
-Requires(pre):	jicmp6 >= 3.0.0
-Requires:	jicmp6 >= 3.0.0
 Requires(pre):	jrrd2 >= 2.0.0
 Requires:	jrrd2 >= 2.0.0
 Requires(pre):	/usr/sbin/useradd
@@ -799,7 +795,7 @@ fi
 
 rm -f $ROOT_INST/etc/configured
 
-for LIBNAME in jicmp jicmp6 jrrd jrrd2; do
+for LIBNAME in jrrd jrrd2; do
 	if [ `grep "opennms.library.${LIBNAME}" "$ROOT_INST/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
 		LIBRARY_PATH=`rpm -ql "${LIBNAME}" 2>/dev/null | grep "/lib${LIBNAME}.so\$" | head -n 1`
 		if [ -n "$LIBRARY_PATH" ]; then

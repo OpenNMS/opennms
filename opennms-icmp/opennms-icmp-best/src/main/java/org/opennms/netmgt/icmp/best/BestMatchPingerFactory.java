@@ -22,7 +22,7 @@
 package org.opennms.netmgt.icmp.best;
 
 import java.net.InetAddress;
-import java.util.Arrays;
+import java.util.List;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -31,8 +31,6 @@ import org.opennms.netmgt.icmp.AbstractPingerFactory;
 import org.opennms.netmgt.icmp.NullPinger;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.jna.JnaPinger;
-import org.opennms.netmgt.icmp.jni.JniPinger;
-import org.opennms.netmgt.icmp.jni6.Jni6Pinger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,7 +124,7 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
         Class<? extends Pinger> pinger = NullPinger.class;
 
         LOG.info("Searching for best available pinger...");
-        for (final Class<? extends Pinger> pingerClass : Arrays.asList(JniPinger.class, Jni6Pinger.class, JnaPinger.class)) {
+        for (final Class<? extends Pinger> pingerClass : List.<Class<? extends Pinger>>of(JnaPinger.class)) {
             final PingerMatch tried = tryPinger(pingerClass);
             if (tried.compareTo(match) > 0) {
                 match = tried;

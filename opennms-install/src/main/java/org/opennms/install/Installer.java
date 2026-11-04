@@ -97,6 +97,8 @@ public class Installer {
 
     static final String LIBRARY_PROPERTY_FILE = "libraries.properties";
 
+
+
     String m_opennms_home = null;
     boolean m_update_database = false;
     boolean m_update_iplike = false;
@@ -204,15 +206,13 @@ public class Installer {
         }
 
         /*
-         * make sure we can load the ICMP library before we go any farther
+         * record the location of the RRD libraries (jrrd, jrrd2)
          */
 
         if (!Boolean.getBoolean("skip-native")) {
-            String icmp_path = findLibrary("jicmp", m_library_search_path, false);
-            String icmp6_path = findLibrary("jicmp6", m_library_search_path, false);
             String jrrd_path = findLibrary("jrrd", m_library_search_path, false);
             String jrrd2_path = findLibrary("jrrd2", m_library_search_path, false);
-            writeLibraryConfig(icmp_path, icmp6_path, jrrd_path, jrrd2_path);
+            writeLibraryConfig(jrrd_path, jrrd2_path);
         }
 
         /*
@@ -1110,11 +1110,7 @@ public class Installer {
             String[] defaults = {
                     "/usr/lib/jni",
                     "/usr/lib",
-                    "/usr/local/lib",
-                    "/opt/NMSjicmp/lib/32",
-                    "/opt/NMSjicmp/lib/64",
-                    "/opt/NMSjicmp6/lib/32",
-                    "/opt/NMSjicmp6/lib/64"
+                    "/usr/local/lib"
             };
             for (final String entry : defaults) {
                 searchPaths.add(entry);
@@ -1191,22 +1187,13 @@ public class Installer {
     /**
      * <p>writeLibraryConfig</p>
      *
-     * @param jicmp_path a {@link java.lang.String} object.
-     * @param jicmp6_path TODO
      * @param jrrd_path a {@link java.lang.String} object.
+     * @param jrrd2_path a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
-    public void writeLibraryConfig(final String jicmp_path, final String jicmp6_path, final String jrrd_path, final String jrrd2_path)
+    public void writeLibraryConfig(final String jrrd_path, final String jrrd2_path)
             throws IOException {
         Properties libraryProps = new Properties();
-
-        if (jicmp_path != null && jicmp_path.length() != 0) {
-            libraryProps.put("opennms.library.jicmp", jicmp_path);
-        }
-
-        if (jicmp6_path != null && jicmp6_path.length() != 0) {
-            libraryProps.put("opennms.library.jicmp6", jicmp6_path);
-        }
 
         if (jrrd_path != null && jrrd_path.length() != 0) {
             libraryProps.put("opennms.library.jrrd", jrrd_path);
@@ -1253,18 +1240,6 @@ public class Installer {
 
             pinger = new BestMatchPingerFactory().getInstance();
 
-        } catch (UnsatisfiedLinkError e) {
-            System.out.println("UnsatisfiedLinkError while creating an ICMP Pinger.  Most likely failed to load "
-                    + "libjicmp.so.  Try setting the property 'opennms.library.jicmp' to point at the "
-                    + "full path name of the libjicmp.so shared library or switch to using the JnaPinger "
-                    + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')\n"
-                    + "You can also set the 'opennms.library.jicmp6' property in the same manner to specify "
-                    + "the location of the JICMP6 library.");
-            throw e;
-        } catch (NoClassDefFoundError e) {
-            System.out.println("NoClassDefFoundError while creating an IcmpSocket.  Most likely failed to load libjicmp.so" +
-                    "or libjicmp6.so.");
-            throw e;
         } catch (Exception e) {
             System.out.println("Exception while creating Pinger.");
             throw e;
