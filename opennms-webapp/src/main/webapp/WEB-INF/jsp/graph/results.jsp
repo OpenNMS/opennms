@@ -67,7 +67,8 @@
         <c:set var="showCustom">style="display: none;"</c:set>
     </c:if>
     <div id="customTimeForm" class="mb-3" name="customTimeForm" ${showCustom}>
-        <form role="form" class="form top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get">
+        <%-- The hidden fields contain request values. ng-non-bindable stops AngularJS from evaluating {{...}} in these values. --%>
+        <form role="form" class="form top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get" ng-non-bindable>
             <c:if test="${empty results.generatedId && empty results.nodeCriteria}">
                 <c:forEach var="resultSet" items="${results.graphResultSets}">
                     <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>

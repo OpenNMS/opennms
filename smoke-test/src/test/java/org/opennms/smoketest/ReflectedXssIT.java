@@ -30,6 +30,7 @@ package org.opennms.smoketest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URLEncoder;
@@ -73,6 +74,7 @@ public class ReflectedXssIT extends OpenNMSSeleniumIT {
             final String common = "&resourceId=" + enc("node[smoketests:xssGraphNode].responseTime[" + fixtureIp + "]") + "&reports=all";
             assertNoScriptRuns("graph/results.htm?zoom=" + enc(HTML) + common, ".graph-container[data-graph-zooming]");
             assertNoScriptRuns("graph/results.htm?zoom=" + enc(NG) + common, ".graph-container[data-graph-zooming]");
+            assertNoScriptRuns("graph/results.htm?generatedId=" + enc(NG) + common, "#range_form input[name='generatedId']");
         } finally {
             stack.opennms().execInContainer("rm", "-rf", rrdDir);
             sendDelete("rest/nodes/smoketests:xssGraphNode", 202);
@@ -96,8 +98,16 @@ public class ReflectedXssIT extends OpenNMSSeleniumIT {
     }
 
     @Test
-    public void testNodeCategoryBox() {
-        assertNoScriptRuns("includes/nodeCategory-box.htm?node=1" + enc(HTML));
+    public void testNodeCategoryBox() throws Exception {
+        // The page shows the Edit link only for a node that exists.
+        sendPost("rest/nodes", "<node type=\"A\" label=\"xssCategoryNode\" foreignSource=\"smoketests\" foreignId=\"xssCategoryNode\"/>", 201);
+        try {
+            final Integer nodeId = stack.opennms().getRestClient().getNode("smoketests:xssCategoryNode").getId();
+            // The controller removes all characters that are not digits, thus the payload has no digits.
+            assertNoScriptRuns("includes/nodeCategory-box.htm?node=" + nodeId + enc(HTML), "a[href*='admin/categories.htm']");
+        } finally {
+            sendDelete("rest/nodes/smoketests:xssCategoryNode", 202);
+        }
     }
 
     @Test
@@ -112,6 +122,8 @@ public class ReflectedXssIT extends OpenNMSSeleniumIT {
         assertNoScriptRuns("status/index.jsp?title=" + enc(NG));
         assertNoScriptRuns("status/index.jsp?type=" + enc(NG));
         assertNoScriptRuns("status/index.jsp?title=" + enc("${param.x}") + "&x=" + enc(HTML));
+        assertTrue("The page title must show the value as text: " + getDriver().getTitle(),
+                getDriver().getTitle().contains("${param.x}"));
     }
 
     @Test
