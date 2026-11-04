@@ -33,8 +33,6 @@ package org.opennms.netmgt.enlinkd.jmx;
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 import org.opennms.netmgt.scheduler.LegacyPriorityExecutor;
 
-import java.util.concurrent.ThreadPoolExecutor;
-
 public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.enlinkd.EnhancedLinkd> implements EnhancedLinkdMBean {
 
     /** {@inheritDoc} */
@@ -52,117 +50,74 @@ public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.ope
     /** {@inheritDoc} */
     @Override
     public long getActiveThreads() {
-        if (getThreadPoolStatsStatus()) {
-            return getThreadPoolExecutor().getActiveCount();
-        } else {
-            return 0L;
-        }
+        final LegacyPriorityExecutor executor = getPriorityExecutor();
+        return executor == null ? 0L : executor.getActiveThreads();
     }
 
-    /** {@inheritDoc} */
     @Override
     public long getTasksTotal() {
-        if (getThreadPoolStatsStatus()) {
-            return getThreadPoolExecutor().getTaskCount();
-        } else {
-            return 0L;
-        }
+        final LegacyPriorityExecutor executor = getPriorityExecutor();
+        return executor == null ? 0L : executor.getTaskCount();
     }
 
-    /** {@inheritDoc} */
     @Override
     public long getTasksCompleted() {
-        if (getThreadPoolStatsStatus()) {
-            return getThreadPoolExecutor().getCompletedTaskCount();
-        } else {
-            return 0L;
-        }
+        final LegacyPriorityExecutor executor = getPriorityExecutor();
+        return executor == null ? 0L : executor.getCompletedTaskCount();
     }
 
-    /** {@inheritDoc} */
     @Override
     public double getTaskCompletionRatio() {
-        if (getThreadPoolStatsStatus()) {
-            if (getThreadPoolExecutor().getTaskCount() > 0) {
-                return (double) getThreadPoolExecutor().getCompletedTaskCount() / (double) getThreadPoolExecutor().getTaskCount();
-            } else {
-                return 0;
-            }
-        } else {
-            return 0;
+        final LegacyPriorityExecutor executor = getPriorityExecutor();
+        if (executor == null) {
+            return 0d;
         }
+        // Read completed first: both counts only grow, so the ratio cannot exceed 1.
+        final long completed = executor.getCompletedTaskCount();
+        final long total = executor.getTaskCount();
+        return total > 0 ? (double) completed / (double) total : 0d;
     }
 
-    /** {@inheritDoc} */
     @Override
     public long getNumPoolThreads() {
-        if (getThreadPoolStatsStatus()) {
-            return getThreadPoolExecutor().getPoolSize();
-        } else {
-            return 0L;
-        }
+        final LegacyPriorityExecutor executor = getPriorityExecutor();
+        return executor == null ? 0L : executor.getPoolThreads();
     }
 
-    /** {@inheritDoc} */
     @Override
     public long getPeakPoolThreads() {
-        if (getThreadPoolStatsStatus()) {
-            return getThreadPoolExecutor().getLargestPoolSize();
-        } else {
-            return 0L;
-        }
+        final LegacyPriorityExecutor executor = getPriorityExecutor();
+        return executor == null ? 0L : executor.getLargestPoolThreads();
     }
 
-    /** {@inheritDoc} */
     @Override
     public long getCorePoolThreads() {
-        if (getThreadPoolStatsStatus()) {
-            return getThreadPoolExecutor().getCorePoolSize();
-        } else {
-            return 0L;
-        }
+        final LegacyPriorityExecutor executor = getPriorityExecutor();
+        return executor == null ? 0L : executor.getThreads();
     }
 
-    /** {@inheritDoc} */
     @Override
     public long getMaxPoolThreads() {
-        if (getThreadPoolStatsStatus()) {
-            return getThreadPoolExecutor().getMaximumPoolSize();
-        } else {
-            return 0L;
-        }
+        final LegacyPriorityExecutor executor = getPriorityExecutor();
+        return executor == null ? 0L : executor.getMaxThreads();
     }
 
     @Override
     public long getTaskQueuePendingCount() {
         final LegacyPriorityExecutor executor = getPriorityExecutor();
-        if (executor != null) {
-            return executor.getTaskQueuePendingCount();
-        } else {
-            return 0L;
-        }
+        return executor == null ? 0L : executor.getReadyQueueSize();
     }
 
     @Override
-    public long getTaskQueueRemainingCapacity() {
+    public long getTaskQueueDelayedCount() {
         final LegacyPriorityExecutor executor = getPriorityExecutor();
-        if (executor != null) {
-            return executor.getTaskQueueRemainingCapacity();
-        } else {
-            return 0L;
-        }
+        return executor == null ? 0L : executor.getDelayedQueueSize();
     }
 
-    private LegacyPriorityExecutor getPriorityExecutor() {
+    /**
+     * The executor is created in the daemon's onInit(), so it is null until then.
+     */
+    LegacyPriorityExecutor getPriorityExecutor() {
         return getDaemon().getExecutor();
-    }
-
-    private ThreadPoolExecutor getThreadPoolExecutor() {
-        return (ThreadPoolExecutor) getPriorityExecutor().getRunner();
-    }
-
-    private boolean getThreadPoolStatsStatus() {
-        final LegacyPriorityExecutor executor = getPriorityExecutor();
-        return executor != null && executor.getRunner() instanceof ThreadPoolExecutor;
     }
 }

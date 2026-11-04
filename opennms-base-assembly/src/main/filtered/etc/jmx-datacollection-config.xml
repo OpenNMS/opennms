@@ -694,7 +694,7 @@
             <attrib name="TasksTotal" alias="ONMSELDTasksTot" type="counter"/>
             <attrib name="TasksCompleted" alias="ONMSELDTasksCpt" type="counter"/>
             <attrib name="TaskQueuePendingCount" alias="ONMSELDTskQPCnt" type="gauge"/>
-            <attrib name="TaskQueueRemainingCapacity" alias="ONMSELDTskQRCap" type="gauge"/>
+            <attrib name="TaskQueueDelayedCount" alias="ONMSELDTskQDCnt" type="gauge"/>
          </mbean>
       </mbeans>
    </jmx-collection>

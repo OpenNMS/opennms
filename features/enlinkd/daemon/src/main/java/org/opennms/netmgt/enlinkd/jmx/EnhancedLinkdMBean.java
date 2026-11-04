@@ -31,50 +31,53 @@ import org.opennms.netmgt.daemon.BaseOnmsMBean;
  */
 public interface EnhancedLinkdMBean extends BaseOnmsMBean {
 
-    public long getActiveThreads();
-    
     /**
-     * @return The cumulative number of EnhancedLinkd discovery tasks scheduled since startup
+     * @return the number of discovery tasks currently running
      */
-    public long getTasksTotal();
-    
-    /**
-     * @return The cumulative number of EnhancedLinkd discovery tasks completed since startup
-     */
-    public long getTasksCompleted();
-    
-    /**
-     * @return The ratio of completed to scheduled EnhancedLinkd discovery tasks since startup
-     */
-    public double getTaskCompletionRatio();
-    
-     /**
-     * @return The current number of threads in the pool
-     */
-    public long getNumPoolThreads();
+    long getActiveThreads();
 
     /**
-     * @return The largest size of the EnhancedLinkd thread pool since startup
+     * @return the cumulative number of discovery tasks handed to the thread pool since startup
      */
-    public long getPeakPoolThreads();
+    long getTasksTotal();
 
     /**
-     * @return The core number of threads
+     * @return the cumulative number of discovery tasks completed since startup
      */
-    public long getCorePoolThreads();
+    long getTasksCompleted();
 
     /**
-     * @return The maximum number of threads allowed in the EnhancedLinkd thread pool
+     * @return the ratio of completed to submitted discovery tasks since startup
      */
-    public long getMaxPoolThreads();
+    double getTaskCompletionRatio();
 
     /**
-     * @return The number of pending tasks on our ExecutorService
+     * @return the current number of threads in the pool
      */
-    public long getTaskQueuePendingCount();
+    long getNumPoolThreads();
 
     /**
-     * @return The number of open slots on our ExecutorService queue.
+     * @return the largest size of the thread pool since startup
      */
-    public long getTaskQueueRemainingCapacity();
+    long getPeakPoolThreads();
+
+    /**
+     * @return the configured core size of the thread pool
+     */
+    long getCorePoolThreads();
+
+    /**
+     * @return the configured maximum size of the thread pool
+     */
+    long getMaxPoolThreads();
+
+    /**
+     * @return discovery tasks that are ready to run and waiting for a free thread
+     */
+    long getTaskQueuePendingCount();
+
+    /**
+     * @return discovery tasks waiting in the delay queue, including those backing off
+     */
+    long getTaskQueueDelayedCount();
 }

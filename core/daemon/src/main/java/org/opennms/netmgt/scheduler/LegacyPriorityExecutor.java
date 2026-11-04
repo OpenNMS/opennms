@@ -41,7 +41,7 @@ public class LegacyPriorityExecutor implements PausableFiber {
     private static final long MAX_DELAY_MS = 60000;
 
     private final String m_parent;
-    private final ExecutorService priorityJobPoolExecutor;
+    private final ThreadPoolExecutor priorityJobPoolExecutor;
     private final LogPreservingThreadFactory m_threadFactory;
     private final DelayQueue<PriorityReadyRunnable> priorityQueue;
     private final ExecutorService m_worker = Executors.newSingleThreadExecutor();
@@ -50,7 +50,7 @@ public class LegacyPriorityExecutor implements PausableFiber {
         m_parent=parent;
         m_status = START_PENDING;
         m_threadFactory = new LogPreservingThreadFactory(parent, poolSize);
-        priorityJobPoolExecutor = Executors.newFixedThreadPool(poolSize, m_threadFactory);
+        priorityJobPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(poolSize, m_threadFactory);
         priorityQueue = new DelayQueue<>();
     }
 
@@ -189,14 +189,52 @@ public class LegacyPriorityExecutor implements PausableFiber {
      * @param threads the wanted pool size; values below one are applied as one
      */
     public synchronized void setThreads(final int threads) {
-        FixedThreadPools.resize((ThreadPoolExecutor) priorityJobPoolExecutor, m_threadFactory, m_parent + " priority executor", threads);
+        FixedThreadPools.resize(priorityJobPoolExecutor, m_threadFactory, m_parent + " priority executor", threads);
     }
 
     /**
      * @return the current size of the pool that runs priority jobs
      */
     public int getThreads() {
-        return ((ThreadPoolExecutor) priorityJobPoolExecutor).getCorePoolSize();
+        return priorityJobPoolExecutor.getCorePoolSize();
+    }
+
+    public int getActiveThreads() {
+        return priorityJobPoolExecutor.getActiveCount();
+    }
+
+    public int getPoolThreads() {
+        return priorityJobPoolExecutor.getPoolSize();
+    }
+
+    public int getLargestPoolThreads() {
+        return priorityJobPoolExecutor.getLargestPoolSize();
+    }
+
+    public int getMaxThreads() {
+        return priorityJobPoolExecutor.getMaximumPoolSize();
+    }
+
+    public long getTaskCount() {
+        return priorityJobPoolExecutor.getTaskCount();
+    }
+
+    public long getCompletedTaskCount() {
+        return priorityJobPoolExecutor.getCompletedTaskCount();
+    }
+
+    /**
+     * @return jobs that are ready to run and waiting for a free pool thread
+     */
+    public int getReadyQueueSize() {
+        return priorityJobPoolExecutor.getQueue().size();
+    }
+
+    /**
+     * @return jobs waiting in the delay queue, including those backing off after not being ready
+     */
+    public int getDelayedQueueSize() {
+        return priorityQueue.size();
     }
 
 }
