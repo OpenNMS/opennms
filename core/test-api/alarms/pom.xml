@@ -83,5 +83,10 @@
       <artifactId>awaitility</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-ffm</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
