@@ -584,6 +584,7 @@
         <feature>opennms-icmp-api</feature>
         <feature>java-native-access</feature>
         <bundle>mvn:org.opennms.core/org.opennms.core.icmp-jna/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.icmp-ffm/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-icmp-jna/${project.version}</bundle>
     </feature>
     <feature name="opennms-javamail" version="${project.version}" description="OpenNMS :: Javamail">

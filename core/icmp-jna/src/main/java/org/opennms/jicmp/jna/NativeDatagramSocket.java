@@ -23,19 +23,21 @@ package org.opennms.jicmp.jna;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.UnknownHostException;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.jna.LastErrorException;
-import com.sun.jna.Native;
-import com.sun.jna.Platform;
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
-
 /**
  * NativeDatagramSocket
+ *
+ * <p>Sockets are created by {@link #create(int, int, int)}, which uses the
+ * Java Foreign Function &amp; Memory implementation
+ * ({@value #FFM_IMPLEMENTATION}) when it is available and falls back to the
+ * JNA implementations otherwise. The {@value #IMPLEMENTATION_PROPERTY} system
+ * property selects {@code auto} (default), {@code ffm} or {@code jna}.
  *
  * @author brozow
  */
@@ -44,17 +46,17 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
 
     public static final int AF_INET = 2;
     public static final int PF_INET = AF_INET;
-    public static final int AF_INET6 = Platform.isMac() ? 30 
-                                     : Platform.isLinux() ? 10 
-                                     : Platform.isWindows() ? 23 
-                                     : Platform.isFreeBSD() ? 28 
-                                     : Platform.isSolaris() ? 26 
+    public static final int AF_INET6 = NativeOs.isMac() ? 30 
+                                     : NativeOs.isLinux() ? 10 
+                                     : NativeOs.isWindows() ? 23 
+                                     : NativeOs.isFreeBSD() ? 28 
+                                     : NativeOs.isSolaris() ? 26 
                                      : -1;
     public static final int PF_INET6 = AF_INET6;
 
-    public static final int SOCK_DGRAM = Platform.isSolaris() ? 1 
+    public static final int SOCK_DGRAM = NativeOs.isSolaris() ? 1 
                                         : 2;
-    public static final int SOCK_RAW = Platform.isSolaris() ? 4 
+    public static final int SOCK_RAW = NativeOs.isSolaris() ? 4 
                                      : 3;
 
     public static final int IPPROTO_IP = 0;
@@ -69,23 +71,67 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
     // platform-specific  :/
     // public static final int IPV6_TCLASS = 36;
 
+    /** System property selecting the socket implementation: {@code auto}, {@code ffm} or {@code jna}. */
+    public static final String IMPLEMENTATION_PROPERTY = "org.opennms.netmgt.icmp.socket";
+    public static final String FFM_IMPLEMENTATION = "org.opennms.jicmp.ffm.FfmNativeDatagramSocket";
+
     public NativeDatagramSocket() {
         if (AF_INET6 == -1) {
             throw new UnsupportedPlatformException(System.getProperty("os.name"));
         }
     }
-    
+
     public static NativeDatagramSocket create(final int family, final int protocol, final int listenPort) throws Exception {
+        final String mode = System.getProperty(IMPLEMENTATION_PROPERTY, "auto").trim().toLowerCase(Locale.ROOT);
+        switch (mode) {
+            case "jna":
+                return createJna(family, protocol, listenPort);
+            case "ffm":
+                return createFfm(family, protocol, listenPort);
+            case "auto":
+            default:
+                try {
+                    return createFfm(family, protocol, listenPort);
+                } catch (final Throwable t) {
+                    LOG.debug("FFM socket implementation unavailable ({}); using JNA.", t.toString());
+                    LOG.trace("FFM socket implementation unavailable.", t);
+                    return createJna(family, protocol, listenPort);
+                }
+        }
+    }
+
+    private static NativeDatagramSocket createFfm(final int family, final int protocol, final int listenPort) throws Exception {
+        final Class<? extends NativeDatagramSocket> implementationClass;
+        try {
+            implementationClass = Class.forName(FFM_IMPLEMENTATION, true, NativeDatagramSocket.class.getClassLoader()).asSubclass(NativeDatagramSocket.class);
+        } catch (final ClassNotFoundException | LinkageError e) {
+            throw new UnsupportedOperationException("FFM socket implementation is not available: " + e, e);
+        }
+        return newInstance(implementationClass, family, protocol, listenPort);
+    }
+
+    private static NativeDatagramSocket createJna(final int family, final int protocol, final int listenPort) throws Exception {
         final String implClassName = NativeDatagramSocket.getImplementationClassName(family);
-        LOG.debug("{}({}, {}, {})", implClassName, family, protocol, listenPort);
-        final Class<? extends NativeDatagramSocket> implementationClass = Class.forName(implClassName).asSubclass(NativeDatagramSocket.class);
+        return newInstance(Class.forName(implClassName).asSubclass(NativeDatagramSocket.class), family, protocol, listenPort);
+    }
+
+    /** Tries a {@code SOCK_DGRAM} (unprivileged) socket first, then {@code SOCK_RAW}. */
+    private static NativeDatagramSocket newInstance(final Class<? extends NativeDatagramSocket> implementationClass, final int family, final int protocol, final int listenPort) throws Exception {
+        LOG.debug("{}({}, {}, {})", implementationClass.getName(), family, protocol, listenPort);
         final Constructor<? extends NativeDatagramSocket> constructor = implementationClass.getDeclaredConstructor(Integer.TYPE, Integer.TYPE, Integer.TYPE, Integer.TYPE);
         try {
             return constructor.newInstance(family, SOCK_DGRAM, protocol, listenPort);
         } catch (final Exception e) {
             LOG.debug("Failed to create {} SOCK_DGRAM socket ({}).  Trying with SOCK_RAW.", implementationClass, e.getMessage());
             LOG.trace("Failed to create {} SOCK_DGRAM socket.  Trying with SOCK_RAW.", implementationClass, e);
-            return constructor.newInstance(family, SOCK_RAW, protocol, listenPort);
+            try {
+                return constructor.newInstance(family, SOCK_RAW, protocol, listenPort);
+            } catch (final InvocationTargetException ite) {
+                if (ite.getCause() instanceof Exception) {
+                    throw (Exception) ite.getCause();
+                }
+                throw ite;
+            }
         }
     }
 
@@ -94,9 +140,9 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
     }
     
     private static String getClassPrefix() {
-        return Platform.isWindows() ? "Win32" 
-              : Platform.isSolaris() ? "Sun" 
-              : (Platform.isMac() || Platform.isFreeBSD() || Platform.isOpenBSD()) ? "BSD" 
+        return NativeOs.isWindows() ? "Win32" 
+              : NativeOs.isSolaris() ? "Sun" 
+              : NativeOs.isBsdFamily() ? "BSD" 
               : "Unix";
     }
 
@@ -116,22 +162,6 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
             NativeDatagramSocket.getClassPrefix()+
             NativeDatagramSocket.getFamilyPrefix(family)+
             "NativeSocket";
-    }
-
-    public native String strerror(int errnum);
-    public native int setsockopt(int socket, int level, int option_name, Pointer value, int option_len);
-
-    public void allowFragmentation(final int level, final int option_name, final boolean frag) throws IOException {
-        final int socket = getSock();
-        if (socket < 0) {
-            throw new IOException("Invalid socket!");
-        }
-        final IntByReference dontfragment = new IntByReference(frag == true? 0 : 1);
-        try {
-            setsockopt(socket, level, option_name, dontfragment.getPointer(), Native.POINTER_SIZE);
-        } catch (final LastErrorException e) {
-            throw new IOException("setsockopt: " + strerror(e.getErrorCode()));
-        }
     }
 
     public abstract int getSock();

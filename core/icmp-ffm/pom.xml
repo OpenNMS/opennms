@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.core</artifactId>
+    <version>37.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.core</groupId>
+  <artifactId>org.opennms.core.icmp-ffm</artifactId>
+  <name>OpenNMS :: Core :: ICMP FFM</name>
+  <description>
+    NativeDatagramSocket implementation using the Java Foreign Function and Memory API.
+    Loaded reflectively by NativeDatagramSocket.create() in org.opennms.core.icmp-jna.
+  </description>
+  <packaging>bundle</packaging>
+  <properties>
+    <!-- java.lang.foreign is final as of Java 22; the rest of the build still targets Java 21 -->
+    <ffm.java.release>22</ffm.java.release>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <release>${ffm.java.release}</release>
+          <source>${ffm.java.release}</source>
+          <target>${ffm.java.release}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>${argLineAllowReflection} --enable-native-access=ALL-UNNAMED</argLine>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.opennms.jicmp.ffm;version="${project.version}"</Export-Package>
+            <!-- Don't emit an osgi.ee requirement: Karaf's config only lists execution
+                 environments up to Java 21. The java.lang.foreign import already
+                 requires Java 22+. -->
+            <_noee>true</_noee>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.icmp-jna</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

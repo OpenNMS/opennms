@@ -3468,6 +3468,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.icmp-ffm</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-javamail-api</artifactId>
         <version>${project.version}</version>

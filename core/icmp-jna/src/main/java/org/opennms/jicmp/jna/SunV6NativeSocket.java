@@ -36,7 +36,7 @@ import com.sun.jna.ptr.IntByReference;
  *
  * @author brozow
  */
-public class SunV6NativeSocket extends NativeDatagramSocket {
+public class SunV6NativeSocket extends AbstractJnaNativeSocket {
 
     static {
         Native.register((String)null);
