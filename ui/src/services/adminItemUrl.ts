@@ -23,7 +23,7 @@
 import { isPathAddressable } from '@/lib/adminValidation'
 import { ifMatch } from './axiosInstances'
 
-export type AdminCollection = 'users' | 'groups'
+export type AdminCollection = 'users' | 'groups' | 'oncall-roles'
 export type AdminItemAction = 'rename' | 'password'
 
 export interface AdminItemTarget {
@@ -32,15 +32,17 @@ export interface AdminItemTarget {
 }
 
 // Segments under each collection that are endpoints of their own: the path form of a
-// user or group with one of these names would reach that endpoint instead.
+// user, group or on-call role with one of these names would reach that endpoint instead.
 const RESERVED_SEGMENTS: Record<AdminCollection, string[]> = {
   users: ['item', 'available-roles'],
-  groups: ['item', 'available-categories']
+  groups: ['item', 'available-categories'],
+  'oncall-roles': ['item', 'calendar', 'schedule-settings']
 }
 
 const QUERY_PARAM: Record<AdminCollection, string> = {
   users: 'userId',
-  groups: 'name'
+  groups: 'name',
+  'oncall-roles': 'name'
 }
 
 // Where a per-item v2 request goes, relative to the v2 base URL. The path form is used

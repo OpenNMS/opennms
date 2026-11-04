@@ -33,13 +33,14 @@ const EMAIL_SHAPE = /[^\s@]+@[^\s@]+/
 // away in a URL path, and the others are endpoints of their own under /users or /groups
 export const RESERVED_USER_IDS = ['.', '..', 'item', 'available-roles']
 export const RESERVED_GROUP_NAMES = ['.', '..', 'item', 'available-categories']
+export const RESERVED_ONCALL_ROLE_NAMES = ['.', '..', 'item', 'calendar', 'schedule-settings']
 
 /**
  * Validates a new user-id or group name, as UserMgmtValidation.validateName does.
  * Returns a problem description, or null when the value is acceptable.
  * Emptiness is not checked here; required-ness is a per-form concern.
  *
- * @param reserved the reserved names of its collection: RESERVED_USER_IDS or RESERVED_GROUP_NAMES
+ * @param reserved the reserved names of its collection: RESERVED_USER_IDS, RESERVED_GROUP_NAMES or RESERVED_ONCALL_ROLE_NAMES
  */
 export const validateAdminName = (value: string, label: string, reserved: string[]): string | null => {
   const trimmed = value.trim()

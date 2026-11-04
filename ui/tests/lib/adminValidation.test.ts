@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   isPathAddressable,
   RESERVED_GROUP_NAMES,
+  RESERVED_ONCALL_ROLE_NAMES,
   RESERVED_USER_IDS,
   validateAdminComments,
   validateAdminName,
@@ -12,6 +13,13 @@ import {
 import { PROTECTED_USER_IDS } from '@/types/userAdmin'
 
 describe('validateAdminName', () => {
+  it('reserves the endpoints under /oncall-roles', () => {
+    for (const reserved of ['.', '..', 'item', 'calendar', 'schedule-settings']) {
+      expect(validateAdminName(reserved, 'on-call role name', RESERVED_ONCALL_ROLE_NAMES), reserved).toContain('is reserved')
+    }
+    expect(validateAdminName('Night', 'on-call role name', RESERVED_ONCALL_ROLE_NAMES)).toBeNull()
+  })
+
   it('accepts ordinary names and empty values', () => {
     expect(validateAdminName('NOC-Duty_1', 'group name', RESERVED_GROUP_NAMES)).toBeNull()
     expect(validateAdminName('', 'group name', RESERVED_GROUP_NAMES)).toBeNull()
