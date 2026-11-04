@@ -24,6 +24,7 @@ package org.opennms.web.rest.v2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +39,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opennms.netmgt.config.OnCallScheduleExpander;
+import org.opennms.netmgt.config.OnCallScheduleExpander.OnCallNow;
 import org.opennms.netmgt.config.UserMgmtJaxbMapper;
 import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
@@ -460,6 +463,19 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
             schedules.add(scheduleDto);
         }
         dto.setSchedules(schedules);
+        final OnCallNow now = onCallNow(role);
+        dto.setOnCallNow(now.users());
+        dto.setOnCallNowIsSupervisor(now.supervisorFallback());
         return dto;
+    }
+
+    /** Who is on call now; a stored schedule notifd cannot evaluate must not fail the read, so it reports nobody. */
+    private static OnCallNow onCallNow(final OnCallRole role) {
+        try {
+            return OnCallScheduleExpander.onCallAt(UserMgmtJaxbMapper.toRole(role), new Date());
+        } catch (final RuntimeException e) {
+            LOG.warn("Cannot evaluate the schedules of on-call role {}: {}", role.getName(), e.getMessage());
+            return new OnCallNow(new ArrayList<>(), false);
+        }
     }
 }

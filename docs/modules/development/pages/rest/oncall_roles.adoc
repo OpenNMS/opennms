@@ -139,6 +139,8 @@ To detect concurrent edits, send the version in `If-Match`.
 | supervisor | User id of an existing user. Required on create.
 | schedules | List of schedules (see below).
 | version | Opaque row version, also sent as the `ETag`. Ignored on input.
+| onCallNow | Read-only list of the user ids on call at the time of the request, evaluated the way notifd does. Ignored on input. Empty if the role's schedules cannot be evaluated.
+| onCallNowIsSupervisor | Read-only. `true` when nobody is scheduled now and `onCallNow` holds the supervisor instead. Ignored on input.
 |===
 
 == Schedule fields

@@ -517,6 +517,64 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testOnCallNow() throws Exception {
+        exec(POST, "/oncall-roles", role("rota-now", "{\"user\":\"bob\",\"type\":\"daily\",\"times\":["
+                + "{\"begins\":\"00:00:00\",\"ends\":\"23:59:59\"}]}"), null, 201);
+        exec(POST, "/oncall-roles", role("rota-sup", null), null, 201);
+
+        assertOnCallNow(new JSONObject(getJson("/oncall-roles/rota-now", 200)), false, "bob");
+        assertOnCallNow(new JSONObject(getJson("/oncall-roles/rota-sup", 200)), true, "alice");
+
+        final JSONArray list = new JSONArray(getJson("/oncall-roles", 200));
+        for (int i = 0; i < list.length(); i++) {
+            final JSONObject listed = list.getJSONObject(i);
+            if ("rota-now".equals(listed.getString("name"))) {
+                assertOnCallNow(listed, false, "bob");
+            } else if ("rota-sup".equals(listed.getString("name"))) {
+                assertOnCallNow(listed, true, "alice");
+            }
+        }
+
+        // the fields are output only
+        final MockHttpServletResponse put = exec(PUT, "/oncall-roles/rota-now",
+                "{\"name\":\"rota-now\",\"onCallNow\":[\"x\"],\"onCallNowIsSupervisor\":true}", null, 200);
+        assertOnCallNow(new JSONObject(put.getContentAsString()), false, "bob");
+    }
+
+    @Test
+    public void testStoredUnparseableMonthlyDayDoesNotBreakTheReads() throws Exception {
+        inTx(() -> {
+            final OnCallRole stored = new OnCallRole("rota-bad-day", m_userGroupDao.findByName("Ops"), m_userAccountDao.findByUsername("alice"));
+            final OnCallSchedule schedule = new OnCallSchedule(m_userAccountDao.findByUsername("bob"), OnCallSchedule.Type.monthly);
+            // a day the JSP-era XML could hold; notifd's schedule check cannot parse it
+            schedule.getTimes().add(new OnCallScheduleTime("x", "08:00:00", "17:00:00"));
+            stored.getSchedules().add(schedule);
+            m_onCallRoleDao.save(stored);
+            return null;
+        });
+
+        assertOnCallNow(new JSONObject(getJson("/oncall-roles/rota-bad-day", 200)), false);
+        final JSONArray list = new JSONArray(getJson("/oncall-roles", 200));
+        boolean found = false;
+        for (int i = 0; i < list.length(); i++) {
+            if ("rota-bad-day".equals(list.getJSONObject(i).getString("name"))) {
+                assertOnCallNow(list.getJSONObject(i), false);
+                found = true;
+            }
+        }
+        assertTrue(found);
+    }
+
+    private static void assertOnCallNow(final JSONObject role, final boolean supervisor, final String... users) {
+        final JSONArray now = role.getJSONArray("onCallNow");
+        assertEquals(users.length, now.length());
+        for (int i = 0; i < users.length; i++) {
+            assertEquals(users[i], now.getString(i));
+        }
+        assertEquals(supervisor, role.getBoolean("onCallNowIsSupervisor"));
+    }
+
+    @Test
     public void testSpecificScheduleRoundTrips() throws Exception {
         final String specific = "{\"user\":\"bob\",\"type\":\"specific\",\"times\":["
                 + "{\"id\":\"s1\",\"begins\":\"21-Oct-2030 08:00:00\",\"ends\":\"21-Oct-2030 17:00:00\"},"
