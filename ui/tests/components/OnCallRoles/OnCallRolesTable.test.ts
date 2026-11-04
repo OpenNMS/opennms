@@ -22,6 +22,7 @@ import PrimeVue from 'primevue/config'
 import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import OnCallRoleRenameDialog from '@/components/OnCallRoles/OnCallRoleRenameDialog.vue'
 import OnCallRolesAbout from '@/components/OnCallRoles/OnCallRolesAbout.vue'
 import OnCallRolesTable from '@/components/OnCallRoles/OnCallRolesTable.vue'
 import { adminWriteSuccess } from '@/types/adminWrite'
@@ -122,6 +123,25 @@ describe('OnCallRolesTable', () => {
       await type(wrapper, 'nobody-has-this')
       expect(wrapper.find('[data-test="no-match"]').text()).toBe('No on-call roles match the filter.')
     })
+  })
+
+  it('opens the rename dialog for the role of the row menu', async () => {
+    const wrapper = mountTable()
+    expect(wrapper.findComponent(OnCallRoleRenameDialog).props('visible')).toBe(false)
+
+    await rowOf(wrapper, 'Network').find('[data-test="oncall-role-actions-menu-button"]').trigger('click')
+    await nextTick()
+    // the popup menu is teleported to the body
+    const rename = Array.from(document.body.querySelectorAll('[role="menuitem"] a, [role="menuitem"] .p-menu-item-link'))
+      .find(e => e.textContent?.trim() === 'Rename') as HTMLElement
+    expect(rename).toBeTruthy()
+    rename.click()
+    await nextTick()
+
+    const dialog = wrapper.findComponent(OnCallRoleRenameDialog)
+    expect(dialog.props('visible')).toBe(true)
+    expect(dialog.props('roleName')).toBe('Network')
+    expect(dialog.props('version')).toBe(2)
   })
 
   describe('delete', () => {

@@ -6,8 +6,14 @@
   </div>
   <div class="manage-oncall-roles-container">
     <h1 class="page-title">Manage On-Call Roles</h1>
-    <!-- hidden, not removed, while the editor is open: the table keeps its filter, page and sort -->
-    <OnCallRolesTable v-show="store.editMode === AdminEditMode.Table" />
+    <!-- hidden, not removed, while the editor is open: the table keeps its filter, page and sort.
+         The wrapper carries the v-show: the table has several root nodes, and v-show does nothing on those -->
+    <div
+      v-show="store.editMode === AdminEditMode.Table"
+      data-test="oncall-roles-table-wrapper"
+    >
+      <OnCallRolesTable />
+    </div>
     <OnCallRoleEditorPanel
       v-if="store.editMode !== AdminEditMode.Table"
       :role="store.currentRole"
