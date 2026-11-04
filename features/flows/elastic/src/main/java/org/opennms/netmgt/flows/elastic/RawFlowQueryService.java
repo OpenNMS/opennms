@@ -486,11 +486,11 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                     final boolean isIngress = isIngress(directionBucket);
                     final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
                     final List<ProportionalSumAggregation.DateHistogram> sumBuckets = sumAgg.getBuckets();
-                    // There should only be a single bucket here
-                    if (sumBuckets.size() != 1) {
-                        throw new IllegalStateException("Expected 1 bucket, but got: " + sumBuckets);
+                    // A single bucket, or none when every document in it was skipped (missing fields)
+                    if (sumBuckets.size() > 1) {
+                        throw new IllegalStateException("Expected at most 1 bucket, but got: " + sumBuckets);
                     }
-                    final Double sum = sumBuckets.iterator().next().getValue();
+                    final Double sum = sumBuckets.isEmpty() ? 0d : sumBuckets.get(0).getValue();
                     if (!isIngress) {
                         trafficSummary.withBytesOut(sum.longValue());
                     } else {
@@ -635,11 +635,11 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 final boolean isIngress = isIngress(directionBucket);
                 final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
                 final List<ProportionalSumAggregation.DateHistogram> sumBuckets = sumAgg.getBuckets();
-                // There should only be a single bucket here
-                if (sumBuckets.size() != 1) {
-                    throw new IllegalStateException("Expected 1 bucket, but got: " + sumBuckets);
+                // A single bucket, or none when every document in it was skipped (missing fields)
+                if (sumBuckets.size() > 1) {
+                    throw new IllegalStateException("Expected at most 1 bucket, but got: " + sumBuckets);
                 }
-                final Double sum = sumBuckets.iterator().next().getValue();
+                final Double sum = sumBuckets.isEmpty() ? 0d : sumBuckets.get(0).getValue();
                 if (!isIngress) {
                     trafficSummary.withBytesOut(sum.longValue());
                 } else {

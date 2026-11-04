@@ -28,6 +28,8 @@
         "terms": {
           "field": "${key?json_string}",
           "size": ${N?long?c},
+          <#-- Defer the per-key proportional sums to the top keys; depth_first would run them for every key. -->
+          "collect_mode": "breadth_first",
           "order": [
             {
               "bytes_total": "desc"

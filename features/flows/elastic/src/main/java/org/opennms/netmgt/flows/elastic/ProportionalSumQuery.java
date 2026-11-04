@@ -21,6 +21,9 @@
  */
 package org.opennms.netmgt.flows.elastic;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -54,14 +57,20 @@ import com.google.gson.JsonObject;
  */
 public final class ProportionalSumQuery {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ProportionalSumQuery.class);
+
     public enum Strategy {
         PAINLESS,
         PLUGIN;
 
         public static Strategy parse(String value) {
-            if (value != null && "plugin".equalsIgnoreCase(value.trim())) {
+            if (value == null || value.isBlank() || "painless".equalsIgnoreCase(value.trim())) {
+                return PAINLESS;
+            }
+            if ("plugin".equalsIgnoreCase(value.trim())) {
                 return PLUGIN;
             }
+            LOG.warn("Unknown proportionalSumStrategy '{}', expected 'painless' or 'plugin'. Using 'painless'.", value);
             return PAINLESS;
         }
     }
@@ -87,9 +96,9 @@ public final class ProportionalSumQuery {
     private static final String MAP_PROLOGUE_TEMPLATE = "" +
             "if (doc[@START@].size() > 0 && doc[@END@].size() > 0 && doc[@VALUE@].size() > 0) {\n" +
             "  def sv = doc[@START@].value;\n" +
-            "  long rs = sv instanceof ZonedDateTime ? sv.toInstant().toEpochMilli() : ((Number) sv).longValue();\n" +
+            "  long rs = sv instanceof Number ? ((Number) sv).longValue() : sv.toInstant().toEpochMilli();\n" +
             "  def ev = doc[@END@].value;\n" +
-            "  long re = ev instanceof ZonedDateTime ? ev.toInstant().toEpochMilli() : ((Number) ev).longValue();\n" +
+            "  long re = ev instanceof Number ? ((Number) ev).longValue() : ev.toInstant().toEpochMilli();\n" +
             "  if (re >= rs && rs >= 0) {\n" +
             "    double v = ((Number) doc[@VALUE@].value).doubleValue();\n" +
             "@SAMPLING@" +
@@ -255,6 +264,9 @@ public final class ProportionalSumQuery {
     public static String aggregationFor(Strategy strategy, long stepMs, long start, long end,
                                         String startField, String endField, String valueField,
                                         String samplingField) {
+        // A zero-length window (start == end) yields a zero step; one millisecond gives the
+        // same single bucket without dividing by zero.
+        stepMs = Math.max(stepMs, 1L);
         if (strategy == Strategy.PLUGIN) {
             return pluginAggregation(stepMs, start, end, startField, endField, valueField, samplingField);
         }

@@ -122,6 +122,32 @@ public class ProportionalSumQueryTest {
     }
 
     @Test
+    public void zeroLengthWindowShouldRenderSingleBucket() {
+        // start == end makes callers pass a zero step
+        for (ProportionalSumQuery.Strategy strategy : ProportionalSumQuery.Strategy.values()) {
+            final JsonObject json = JsonParser.parseString(ProportionalSumQuery.aggregationFor(strategy,
+                    0L, 1_500_000L, 1_500_000L, "range_start", "range_end", "bytes_ingress", null)).getAsJsonObject();
+            if (strategy == ProportionalSumQuery.Strategy.PLUGIN) {
+                assertThat(json.getAsJsonObject("proportional_sum").get("interval").getAsString(), equalTo("1ms"));
+            } else {
+                final JsonObject params = json.getAsJsonObject("scripted_metric").getAsJsonObject("params");
+                assertThat(params.get("interval").getAsLong(), equalTo(1L));
+                assertThat(params.get("nBuckets").getAsLong(), equalTo(1L));
+            }
+        }
+    }
+
+    @Test
+    public void mapScriptShouldNotAssumeDateFieldsAreZonedDateTime() {
+        // ES 7.x and OpenSearch 2.x return JodaCompatibleZonedDateTime, which is not a ZonedDateTime
+        final String mapScript = JsonParser.parseString(ProportionalSumQuery.aggregationFor(ProportionalSumQuery.Strategy.PAINLESS,
+                300_000L, 1_500_000L, 3_000_000L, "range_start", "range_end", "bytes_ingress", null))
+                .getAsJsonObject().getAsJsonObject("scripted_metric").get("map_script").getAsString();
+        assertThat(mapScript, Matchers.not(Matchers.containsString("ZonedDateTime")));
+        assertThat(mapScript, Matchers.containsString("sv instanceof Number ? ((Number) sv).longValue() : sv.toInstant().toEpochMilli()"));
+    }
+
+    @Test
     public void seriesTemplatesShouldRenderValidJsonForBothStrategies() {
         for (ProportionalSumQuery.Strategy strategy : ProportionalSumQuery.Strategy.values()) {
             final SearchQueryProvider provider = new SearchQueryProvider(strategy);
