@@ -98,12 +98,6 @@
 * xref:oia/introduction.adoc[]
 ** xref:oia/mcp-server.adoc[]
 
-* xref:amqp/introduction.adoc[]
-** xref:amqp/event_forwarder.adoc[]
-** xref:amqp/event_receiver.adoc[]
-** xref:amqp/alarm_northbounder.adoc[]
-** xref:amqp/custom_processors.adoc[]
-
 * xref:ticketing/inmemory-plugin.adoc[]
 
 * xref:reporting/jasperreport-styleguide.adoc[]
