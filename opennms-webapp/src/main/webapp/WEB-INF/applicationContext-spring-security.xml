@@ -59,6 +59,15 @@
       <intercept-url pattern="/rest/cm/provisiond/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
       <intercept-url pattern="/rest/cm/provisiond/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
 
+    <!-- The snmp-config and trapd-config CM configurations contain SNMP communities and SNMPv3 passphrases.
+         Only the provision and admin roles can read or change them, the same as /api/v2/snmp-config and /api/v2/trapd.
+         The v1 REST API maps the .xml, .json and .atom suffixes to the same resource, so each "<root>.*" pattern
+         applies the rule of its "<root>/**" pattern to these paths. These rules must come before the general /rest/** rules. -->
+    <intercept-url pattern="/rest/cm/snmp-config/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/cm/snmp-config.*" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/cm/trapd-config/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/cm/trapd-config.*" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+
 
     <!-- Calls to health/overview are always accepted -->
     <intercept-url pattern="/rest/health/probe" method="GET" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_REST','ROLE_ADMIN','ROLE_USER','ROLE_MOBILE')"/>
