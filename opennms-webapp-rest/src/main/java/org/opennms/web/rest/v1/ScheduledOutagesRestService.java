@@ -21,6 +21,9 @@
  */
 package org.opennms.web.rest.v1;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -37,6 +40,7 @@ import javax.ws.rs.core.UriInfo;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -53,14 +57,17 @@ import org.opennms.netmgt.config.dao.outages.api.WriteablePollOutagesDao;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao;
 import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.poller.outages.Outages;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>ScheduledOutagesRestService class.</p>
@@ -86,6 +93,7 @@ import org.springframework.stereotype.Component;
  * <li><b>GET /sched-outages/{outageName}/interfaceInOutage/{ipAddr}</b><br>to check if an interface (with a specific IP address) is currently on outage for a specific scheduled outage calendar.</li>
  * <li><b>GET /sched-outages/nodeInOutage/{nodeId}</b><br>to check if a node (with a specific nodeId) is currently in outage.</li>
  * <li><b>GET /sched-outages/interfaceInOutage/{ipAddr}</b><br>to check if an interface (with a specific IP address) is currently on outage.</li>
+ * <li><b>GET /sched-outages/activeForNode/{nodeId}</b><br>to get the names of the outages currently in effect for a node or any of its interfaces.</li>
  * </ul>
  * 
  * @author Alejandro Galue <agalue@opennms.org>
@@ -121,6 +129,9 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     
     @Autowired
     private WriteablePollOutagesDao m_pollOutagesDao;
+
+    @Autowired
+    private IpInterfaceDao m_ipInterfaceDao;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
@@ -670,6 +681,46 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     }
 
     @GET
+    @Path("activeForNode/{nodeId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional(readOnly = true)
+    @Operation(
+            summary = "List the names of the scheduled outages currently affecting a node",
+            description = """
+                    Return the name of every calendar that is inside one of its windows right now and covers the
+                    node, either by naming the node or by covering one of its interfaces (an exact address, or
+                    `match-any`). Deleted interfaces are not considered. This is what the node page shows as
+                    "currently affected by the following scheduled outages". Only the names are returned, as the
+                    legacy node page showed them; the calendars themselves are at `GET /sched-outages/{outageName}`.
+                    An unknown node id is not an error and answers an empty list.""",
+            operationId = "getActiveScheduledOutagesForNodeV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The names of the calendars currently in effect for the node.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(type = "string")),
+                            examples = @ExampleObject(value = """
+                    [ "Weekend maintenance" ]"""))),
+            @ApiResponse(responseCode = "404", description = "The node id is not an integer.")
+    })
+    public List<String> getActiveOutagesForNode(
+            @Parameter(description = "Node id.", example = "2", required = true)
+            @PathParam("nodeId") int nodeId) {
+        // As NetworkElementFactory.getActiveInterfacesOnNode: every interface not marked deleted.
+        final List<String> addresses = m_ipInterfaceDao.findByNodeId(nodeId).stream()
+                .filter(intf -> !"D".equals(intf.getIsManaged()))
+                .map(OnmsIpInterface::getIpAddressAsString)
+                .collect(Collectors.toList());
+
+        return m_pollOutagesDao.getReadOnlyConfig().getOutages().stream()
+                .filter(outage -> m_pollOutagesDao.isCurTimeInOutage(outage))
+                .filter(outage -> m_pollOutagesDao.isNodeIdInOutage(nodeId, outage)
+                        || addresses.stream().anyMatch(address -> m_pollOutagesDao.isInterfaceInOutage(address, outage)))
+                .map(Outage::getName)
+                .collect(Collectors.toList());
+    }
+
+    @GET
     @Path("{outageName}/interfaceInOutage/{ipAddr}")
     @Produces(MediaType.TEXT_PLAIN)
     @Operation(
@@ -677,7 +728,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             description = """
                     Return `true` when the calendar covers the address and the current time falls inside one of its
                     windows, and `false` otherwise. The address is checked against the calendar's `interface`
-                    entries, which may be exact addresses or ranges.
+                    entries, each an exact address or `match-any`.
                     The address is validated here, so a malformed one is a 400.""",
             operationId = "isInterfaceInScheduledOutageV1"
     )

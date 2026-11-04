@@ -7,12 +7,8 @@ import { describe, expect, it, vi } from 'vitest'
 import { useAuthStore } from '@/stores/authStore'
 import PrimeVue from 'primevue/config'
 
-// One pinia for the whole file, with store state set BEFORE mounting. useRole caches the auth
-// store the first time it reads a role (module-level `computed(() => useAuthStore())`), so a
-// fresh createTestingPinia per mount would leave later tests reading the first test's roles.
-const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
-
 const mountPanel = (username = 'admin', node: any = { id: '1' }, roles: string[] = ['ROLE_ADMIN']) => {
+  const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
   const menuStore = useMenuStore(pinia)
   menuStore.mainMenu = { baseHref: '/opennms/', username } as any
 

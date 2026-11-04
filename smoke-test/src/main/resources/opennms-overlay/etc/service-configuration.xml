@@ -11,7 +11,7 @@
   <service><name>OpenNMS:Name=Scriptd</name></service>
   <service><name>OpenNMS:Name=Rtcd</name></service>
   <service><name>OpenNMS:Name=Pollerd</name></service>
-  <service enabled="false"><name>OpenNMS:Name=SnmpPoller</name></service>
+  <service><name>OpenNMS:Name=SnmpPoller</name></service>
   <service><name>OpenNMS:Name=EnhancedLinkd</name></service>
   <service><name>OpenNMS:Name=Collectd</name></service>
   <service><name>OpenNMS:Name=Discovery</name></service>

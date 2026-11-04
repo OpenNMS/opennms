@@ -30,9 +30,9 @@ import java.util.Collection;
 
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class WsmanConfigTest extends XmlTestNoCastor<WsmanConfig> {
+public class WsmanConfigTest extends XmlTest<WsmanConfig> {
 
     public WsmanConfigTest(WsmanConfig sampleObject, Object sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

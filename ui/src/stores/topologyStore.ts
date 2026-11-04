@@ -41,15 +41,18 @@ import {
   deleteView,
   getNodeSeverities,
   getNodeIconIds,
+  getNodeIconsAndLocations,
   getNodeCategories,
   getNodeNeighbors,
   loadDiscoveredGraph,
-  listGraphContainers
+  listGraphContainers,
+  type NodeIconsAndLocations
 } from '@/services/topologyService'
 import type { GraphContainerMeta } from '@/services/topologyService'
 import { buildSources, type TopologySourceOption } from '@/components/Topology/sources'
 import { focusSubgraph } from '@/components/Topology/focus'
 import type { DeviceIconId } from '@/components/Topology/deviceIcons'
+import type { GeoPoint } from '@/components/Topology/geo'
 
 /**
  * The live canvas geometry the canvas component hands back on save:
@@ -394,6 +397,110 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     nodeIconIds.value = ids.length === 0 ? {} : await getNodeIconIds(ids)
   }
 
+  /** True while the open custom view draws a geographic map behind its nodes. */
+  const isGeomap = computed<boolean>(() =>
+    discoveredGraph.value === null && currentView.value?.background?.type === 'geomap'
+  )
+
+  /**
+   * Asset location per placed node while the geomap is on: a point, or null once
+   * looked up and found to have none. Absent means not looked up yet, so the
+   * canvas can tell a node still loading from one it has to park.
+   */
+  const nodeLocations = ref<Record<number, GeoPoint | null>>({})
+
+  // The lookup in flight, so the same set is not asked for twice at once: opening
+  // a geomap view both changes the visible nodes and turns the map on.
+  let lookupInFlight: { key: string, promise: Promise<NodeIconsAndLocations> } | null = null
+
+  const lookUpIconsAndLocations = (ids: number[]): Promise<NodeIconsAndLocations> => {
+    const key = ids.join(',')
+    if (lookupInFlight?.key === key) {
+      return lookupInFlight.promise
+    }
+    const promise = getNodeIconsAndLocations(ids)
+    lookupInFlight = { key, promise }
+    void promise.finally(() => {
+      if (lookupInFlight?.promise === promise) {
+        lookupInFlight = null
+      }
+    })
+    return promise
+  }
+
+  /**
+   * Look up the nodes not looked up yet, or with `all`, every placed node again
+   * (done when the map is turned on, so asset edits are picked up). Reading every
+   * node also refreshes the device icons, which come off the same payload.
+   */
+  const refreshNodeLocations = async (all = false): Promise<void> => {
+    if (!isGeomap.value) {
+      return
+    }
+    const ids = visibleNodeIds.value.filter(id => all || !(id in nodeLocations.value))
+    if (ids.length === 0) {
+      return
+    }
+    const { locations, icons, failed } = await lookUpIconsAndLocations(ids)
+    if (all) {
+      nodeIconIds.value = icons
+    }
+    const next = { ...nodeLocations.value }
+    const failures = new Set(nodeLocationFailures.value)
+    const retry = new Set(failed)
+    for (const id of ids) {
+      if (retry.has(id)) {
+        // Not looked up after all, so the next refresh asks again.
+        delete next[id]
+        failures.add(id)
+      } else {
+        next[id] = locations[id] ?? null
+        failures.delete(id)
+      }
+    }
+    nodeLocationFailures.value = failures
+    nodeLocations.value = next
+    scheduleLocationRetry()
+  }
+
+  /**
+   * Nodes whose last lookup failed. The canvas parks them rather than waiting on
+   * them, and they are asked for again on a backoff until a lookup answers.
+   */
+  const nodeLocationFailures = ref<Set<number>>(new Set())
+  let locationRetryTimer: ReturnType<typeof setTimeout> | undefined
+  let locationRetryDelay = 0
+
+  const scheduleLocationRetry = () => {
+    clearTimeout(locationRetryTimer)
+    locationRetryTimer = undefined
+    if (nodeLocationFailures.value.size === 0 || !isGeomap.value) {
+      locationRetryDelay = 0
+      return
+    }
+    locationRetryDelay = Math.min(Math.max(locationRetryDelay * 2, 2000), 60000)
+    locationRetryTimer = setTimeout(() => {
+      locationRetryTimer = undefined
+      void refreshNodeLocations()
+    }, locationRetryDelay)
+  }
+
+  /**
+   * Whether the canvas is drawing the map. Unlike isGeomap, false while the
+   * canvas still holds another graph, as it does mid-switch between views.
+   */
+  const isGeomapShown = ref<boolean>(false)
+
+  /**
+   * Id of the view the last Save or Save As wrote from the canvas. The canvas
+   * graph is unchanged by a save, so it adopts this id as its own.
+   */
+  const lastSavedViewId = ref<string>()
+
+  const setGeomapShown = (shown: boolean) => {
+    isGeomapShown.value = shown
+  }
+
   // Whenever the set of nodes on screen changes -- a view load, a discovered
   // load, a palette drop, or a change of focus or zoom level -- refresh the icon
   // map AND severities. This followed placedNodeIds, which does not change when
@@ -402,7 +509,12 @@ export const useTopologyStore = defineStore('topologyStore', () => {
   // where the poll is stopped. Fetching here rather than only on the poll is
   // also what colors nodes on the initial load.
   watch(visibleNodeIds, () => {
-    void refreshDeviceIcons()
+    // On a geomap view one /nodes read serves both the icons and the locations.
+    if (isGeomap.value) {
+      void refreshNodeLocations(true)
+    } else {
+      void refreshDeviceIcons()
+    }
     void refreshStatus()
     // Ghost links / neighbor tray only matter while composing a custom view.
     if (isEditMode.value && discoveredGraph.value === null) {
@@ -517,6 +629,9 @@ export const useTopologyStore = defineStore('topologyStore', () => {
 
   /** Clear discovered state when switching back to a custom source. */
   const clearDiscovered = () => {
+    // The discovered graph seeded these; left in place they would count as a
+    // custom view's nodes until the next view loads (and be looked up for the map).
+    placedNodeIds.value = new Set()
     discoveredGraph.value = null
     discoveredError.value = false
     focusNodeId.value = null
@@ -569,6 +684,7 @@ export const useTopologyStore = defineStore('topologyStore', () => {
       if (saved === false) {
         return false
       }
+      lastSavedViewId.value = saved.id
       currentView.value = saved
       await refreshCatalog()
       return true
@@ -644,6 +760,7 @@ export const useTopologyStore = defineStore('topologyStore', () => {
       if (saved === false) {
         return false
       }
+      lastSavedViewId.value = saved.id
       currentView.value = saved
       await refreshCatalog()
       return true
@@ -886,6 +1003,13 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     refreshStatus,
     nodeIconIds,
     refreshDeviceIcons,
+    isGeomap,
+    isGeomapShown,
+    setGeomapShown,
+    nodeLocations,
+    nodeLocationFailures,
+    lastSavedViewId,
+    refreshNodeLocations,
     nodeSize,
     setNodeSize,
     setNodeSizeForCount,

@@ -1089,6 +1089,16 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <!-- the MIB compiler REST API in opennms-webapp-rest uses the parser on the flat classpath -->
+      <groupId>org.opennms.features.mib-compiler</groupId>
+      <artifactId>org.opennms.features.mib-compiler.parser</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jsmiparser</groupId>
+      <artifactId>jsmiparser-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.rest</groupId>
       <artifactId>org.opennms.features.rest.mapper</artifactId>
       <version>${project.version}</version>
@@ -1218,6 +1228,13 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>org.opennms.features.topology-views</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Surveillance view definitions (kv-store persistence) + the
+         status/drill-down data services behind /api/v2/surveillance/views. -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.features.surveillance-views</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- Postgres BlobStore for topology-asset image bytes (only the no-op

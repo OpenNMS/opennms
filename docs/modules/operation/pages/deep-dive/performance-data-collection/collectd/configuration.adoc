@@ -12,6 +12,8 @@ Edit the `collectd-configuration.xml` file to:
 * xref:operation:deep-dive/performance-data-collection/collectd/collection-packages.adoc[Configure collector packages].
 * Specify collectors to use.
 
+To change how collectd schedules collections, see <<ga-collectd-strict-interval, Collection scheduling>>.
+
 In addition to editing `collectd-configuration.xml`, you need to xref:reference:performance-data-collection/introduction.adoc[configure collectors] for the protocols from which you want to collect data by editing the configuration files associated with them.
 
 [[ga-thread-pool-edit]]
@@ -23,4 +25,20 @@ Increase or decrease this value based on your network and the size of your serve
 [source, xml]
 ----
 <collectd-configuration threads="50">
+----
+
+[[ga-collectd-strict-interval]]
+== Collection scheduling
+
+By default, collectd schedules each collection on a fixed grid: the next collection starts one interval after the previous one was scheduled, regardless of how long the previous collection took.
+This keeps the time between stored samples close to the configured interval.
+
+The `org.opennms.netmgt.collectd.strictInterval` system property controls this behavior and defaults to `true`.
+When you set it to `false`, collectd schedules the next collection one interval after the previous collection finished, so the time between samples grows by the duration of each collection.
+
+To change it, create a file in `$\{OPENNMS_HOME}/etc/opennms.properties.d/` (for example, `collectd.properties`) with the following content, then restart {page-component-title}:
+
+[source, properties]
+----
+org.opennms.netmgt.collectd.strictInterval=false
 ----

@@ -143,8 +143,18 @@ applyOverlayConfig() {
   # Overlay relative to the root of the install dir
   if [ -d "${OPENNMS_OVERLAY}" ] && [ -n "$(ls -A ${OPENNMS_OVERLAY})" ]; then
     echo "Apply custom configuration from ${OPENNMS_OVERLAY}."
-    # Use rsync so that we can overlay files into directories that are symlinked
-    rsync -K -rl --out-format="%n %C" ${OPENNMS_OVERLAY}/* ${OPENNMS_HOME}/. || exit ${E_INIT_CONFIG}
+    # rsync >= 3.5 refuses to traverse symlinks below the destination, even with -K. Overlay
+    # directories that map onto a symlinked directory (e.g. share/rrd -> /opennms-data/rrd) are
+    # synced on their own with the symlink as the destination and excluded from the main sync.
+    local excludes=() dir rel
+    while IFS= read -r -d '' dir; do
+      rel="${dir#${OPENNMS_OVERLAY}/}"
+      if [ -L "${OPENNMS_HOME}/${rel}" ] && [ -d "${OPENNMS_HOME}/${rel}" ]; then
+        excludes+=("--exclude=/${rel}")
+        rsync -K -rl --out-format="%n %C" "${dir}/" "${OPENNMS_HOME}/${rel}/" || exit ${E_INIT_CONFIG}
+      fi
+    done < <(find "${OPENNMS_OVERLAY}" -mindepth 1 -type d -print0)
+    rsync -K -rl --out-format="%n %C" "${excludes[@]}" ${OPENNMS_OVERLAY}/* ${OPENNMS_HOME}/. || exit ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${OPENNMS_OVERLAY}. Use default configuration."
   fi

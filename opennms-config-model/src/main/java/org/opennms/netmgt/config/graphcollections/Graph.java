@@ -41,7 +41,7 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("ksc-performance-reports.xsd")
 public class Graph implements Serializable {
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
 
     @XmlAttribute(name = "title", required = true)
     private String m_title;
@@ -64,11 +64,20 @@ public class Graph implements Serializable {
     @XmlAttribute(name = "timespan", required = true)
     private String m_timespan;
 
-    @XmlAttribute(name = "graphtype", required = true)
+    /** Required for a prefab graph, absent on an adhoc one. */
+    @XmlAttribute(name = "graphtype")
     private String m_graphtype;
 
     @XmlAttribute(name = "extlink")
     private String m_extlink;
+
+    /** "prefab" or "adhoc"; absent means prefab, so files written before the attribute existed keep working. */
+    @XmlAttribute(name = "kind")
+    private String m_kind;
+
+    /** The ad-hoc graph builder's state, as the query string of its share link. Adhoc graphs only. */
+    @XmlAttribute(name = "adhocState")
+    private String m_adhocState;
 
     public Graph() {
     }
@@ -129,12 +138,12 @@ public class Graph implements Serializable {
         m_timespan = ConfigUtils.assertNotEmpty(timespan, "timespan");
     }
 
-    public String getGraphtype() {
-        return m_graphtype;
+    public Optional<String> getGraphtype() {
+        return Optional.ofNullable(m_graphtype);
     }
 
     public void setGraphtype(final String graphtype) {
-        m_graphtype = ConfigUtils.assertNotEmpty(graphtype, "graphtype");
+        m_graphtype = ConfigUtils.normalizeString(graphtype);
     }
 
     public Optional<String> getExtlink() {
@@ -143,6 +152,22 @@ public class Graph implements Serializable {
 
     public void setExtlink(final String extlink) {
         m_extlink = ConfigUtils.normalizeString(extlink);
+    }
+
+    public Optional<String> getKind() {
+        return Optional.ofNullable(m_kind);
+    }
+
+    public void setKind(final String kind) {
+        m_kind = ConfigUtils.normalizeString(kind);
+    }
+
+    public Optional<String> getAdhocState() {
+        return Optional.ofNullable(m_adhocState);
+    }
+
+    public void setAdhocState(final String adhocState) {
+        m_adhocState = ConfigUtils.normalizeString(adhocState);
     }
 
     @Override
@@ -155,7 +180,9 @@ public class Graph implements Serializable {
                             m_interfaceId, 
                             m_timespan, 
                             m_graphtype, 
-                            m_extlink);
+                            m_extlink,
+                            m_kind,
+                            m_adhocState);
     }
 
     @Override
@@ -174,7 +201,9 @@ public class Graph implements Serializable {
                     && Objects.equals(this.m_interfaceId, that.m_interfaceId)
                     && Objects.equals(this.m_timespan, that.m_timespan)
                     && Objects.equals(this.m_graphtype, that.m_graphtype)
-                    && Objects.equals(this.m_extlink, that.m_extlink);
+                    && Objects.equals(this.m_extlink, that.m_extlink)
+                    && Objects.equals(this.m_kind, that.m_kind)
+                    && Objects.equals(this.m_adhocState, that.m_adhocState);
         }
         return false;
     }

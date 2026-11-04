@@ -134,6 +134,34 @@ describe('OnmsDatePicker', () => {
     expect(wrapper.emitted('hide')).toHaveLength(1)
   })
 
+  // primevue@4.5.5 called toLowerCase() on the missing AM/PM token of a 24-hour
+  // time and swallowed the error, so typed times never reached the model.
+  // patches/primevue@4.5.5.patch backports the 5.x guard.
+  it('accepts a typed 24-hour time', async () => {
+    const wrapper = mount(OnmsDatePicker, {
+      props: { timeOnly: true, showSeconds: true, modelValue: new Date(2026, 0, 1, 0, 0, 0) },
+      global: globalPlugins
+    })
+
+    await wrapper.get('input').setValue('22:25:30')
+
+    const value = wrapper.emitted('update:modelValue')?.at(-1)?.[0] as Date
+    expect([value.getHours(), value.getMinutes(), value.getSeconds()]).toEqual([22, 25, 30])
+  })
+
+  it('accepts a typed 24-hour date and time', async () => {
+    const wrapper = mount(OnmsDatePicker, {
+      props: { showTime: true, showSeconds: true, modelValue: new Date(2026, 0, 1, 0, 0, 0) },
+      global: globalPlugins
+    })
+
+    await wrapper.get('input').setValue('12/24/2026 18:05:00')
+
+    const value = wrapper.emitted('update:modelValue')?.at(-1)?.[0] as Date
+    expect([value.getFullYear(), value.getMonth(), value.getDate(), value.getHours(), value.getMinutes()])
+      .toEqual([2026, 11, 24, 18, 5])
+  })
+
   // Needed so a FormField label can be associated with the real <input>:
   // PrimeVue renders the input inside a wrapper, so an `id` falling through to
   // the root lands on the wrapper, where a label's `for` cannot reach it.

@@ -36,7 +36,8 @@ vi.mock('vue-router', () => ({
   useRouter: () => ({ push })
 }))
 
-vi.mock('@/services/scheduledOutagesService', () => ({
+vi.mock('@/services/scheduledOutagesService', async importOriginal => ({
+  outageNameProblem: (await importOriginal<typeof import('@/services/scheduledOutagesService')>()).outageNameProblem,
   getScheduledOutages: vi.fn(),
   getOutageApplicability: vi.fn(),
   getNodeLabels: vi.fn(),
@@ -120,6 +121,30 @@ describe('ScheduledOutages.vue', () => {
     expect(text).toContain('All nodes and interfaces')
   })
 
+  // NMS-9646: the list showed only a span count, so a weekly day was never visible
+  it('lists the time spans themselves, with the day of a weekly span', async () => {
+    vi.mocked(getScheduledOutages).mockResolvedValue([
+      ...OUTAGES,
+      { name: 'friday', type: 'weekly', time: [
+        { day: 'friday', begins: '22:25:00', ends: '22:40:00' },
+        { day: 'monday', begins: '01:00:00', ends: '02:00:00' },
+        { day: 'tuesday', begins: '01:00:00', ends: '02:00:00' }
+      ], node: [{ id: 5 }], interface: [] }
+    ] as any)
+    const wrapper = await mountPage()
+    const times = wrapper.findAll('[data-test="outage-times"]')
+    expect(times[0].text()).toBe('01:00:00 → 02:00:00')
+    expect(times[1].text()).toBe('--')
+    expect(times[2].text()).toBe('Friday 22:25:00 → 22:40:00; Monday 01:00:00 → 02:00:00; +1 more')
+    expect(times[2].attributes('title')).toContain('Tuesday 01:00:00 → 02:00:00')
+    expect(wrapper.text()).not.toContain('null')
+  })
+
+  it('wraps long names instead of widening the table', async () => {
+    const wrapper = await mountPage()
+    expect(wrapper.find('[data-test="outage-name"]').classes()).toContain('wrap-cell')
+  })
+
   it('reports a first-load failure without claiming a last known list', async () => {
     vi.mocked(getScheduledOutages).mockResolvedValue(null)
     const wrapper = await mountPage()
@@ -144,6 +169,41 @@ describe('ScheduledOutages.vue', () => {
 
     expect(push).not.toHaveBeenCalled()
     expect(wrapper.text()).toContain('already exists')
+  })
+
+  it('rejects a name with a slash, which the REST path cannot read back or delete', async () => {
+    const wrapper = await mountPage()
+    await wrapper.find('[data-test="create-outage"]').trigger('click')
+    await wrapper.find('[data-test="new-name"]').setValue('rack/7')
+    await wrapper.find('[data-test="create-confirm"]').trigger('click')
+
+    expect(push).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain('cannot contain a slash')
+  })
+
+  it('rejects reserved names and clears the error once the name changes', async () => {
+    const wrapper = await mountPage()
+    await wrapper.find('[data-test="create-outage"]').trigger('click')
+    const input = wrapper.find('[data-test="new-name"]')
+    for (const reserved of ['applies-to', '..']) {
+      await input.setValue(reserved)
+      await wrapper.find('[data-test="create-confirm"]').trigger('click')
+      expect(wrapper.text()).toContain('is reserved')
+    }
+    await input.setValue('applies-to-rack')
+    expect(wrapper.text()).not.toContain('is reserved')
+    expect(push).not.toHaveBeenCalled()
+  })
+
+  it('trims the name and creates on Enter', async () => {
+    const wrapper = await mountPage()
+    await wrapper.find('[data-test="create-outage"]').trigger('click')
+    const input = wrapper.find('[data-test="new-name"]')
+    expect(input.attributes('autofocus')).toBeDefined()
+    await input.setValue('  weekend  ')
+    await input.trigger('keyup.enter')
+
+    expect(push).toHaveBeenCalledWith({ path: '/scheduled-outages/edit', query: { name: 'weekend', new: 'true' }})
   })
 
   it('keeps a failed delete visible after the list reloads', async () => {

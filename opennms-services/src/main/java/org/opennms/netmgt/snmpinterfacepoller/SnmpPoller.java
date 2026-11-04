@@ -30,6 +30,7 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpInterfacePollerConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
@@ -44,6 +45,7 @@ import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -67,6 +69,9 @@ public class SnmpPoller extends AbstractServiceDaemon {
     private LegacyScheduler m_scheduler = null;
 
     private SnmpInterfacePollerConfig m_pollerConfig;
+
+    /** The daemon name that a reloadDaemonConfig event has to carry to be handled here. */
+    public static final String DAEMON_NAME = "SnmpPoller";
     
     private PollableNetwork m_network;
         
@@ -421,13 +426,53 @@ public class SnmpPoller extends AbstractServiceDaemon {
     public void reloadConfig(IEvent event) {
         LOG.debug("reloadConfig: managing event: {}", event.getUei());
         try {
-            getPollerConfig().update();
-            getNetwork().deleteAll();
-            scheduleExistingSnmpInterfaces();
+            reloadConfiguration();
         } catch (Throwable e) {
             LOG.error("Update SnmpPoller configuration file failed",e);
         }
     }
+
+    /**
+     * Handles the generic reloadDaemonConfig event when it is addressed to this daemon,
+     * so that it can be reloaded the same way as the other daemons. Reports the outcome
+     * with a reloadDaemonConfigSuccessful or reloadDaemonConfigFailed event.
+     *
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
+     */
+    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void handleReloadDaemonConfig(IEvent event) {
+        DaemonTools.handleReloadEvent(event, DAEMON_NAME, e -> reloadConfiguration());
+    }
+
+    /**
+     * Re-reads the configuration, applies the configured thread count to the scheduler,
+     * and reschedules every SNMP interface against the new packages.
+     *
+     * @throws IllegalStateException if the configuration cannot be read; the cause carries the detail
+     */
+    protected void reloadConfiguration() {
+        try {
+            getPollerConfig().update();
+        } catch (IOException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+        resizeScheduler();
+        getNetwork().deleteAll();
+        scheduleExistingSnmpInterfaces();
+    }
+
+    /**
+     * Applies the {@code threads} setting from the current configuration to the
+     * running scheduler, so that a changed thread count takes effect without a restart.
+     */
+    public void resizeScheduler() {
+        if (m_scheduler == null) {
+            LOG.debug("resizeScheduler: no scheduler yet, nothing to resize.");
+            return;
+        }
+        m_scheduler.setThreads(getPollerConfig().getThreads());
+    }
+
 
     /**
      * <p>primarychangeHandler</p>

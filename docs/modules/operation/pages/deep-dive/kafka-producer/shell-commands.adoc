@@ -104,3 +104,107 @@ Omit them to see what a collection would resolve to from the node's meta-data al
 
 Resolved topics are cached, so a meta-data change made through a requisition import or the REST API can take a few minutes to show up.
 Pass `-c` (`--clear-cache`) to drop the cached decisions first.
+
+[[kafka-evaluate-metric-filter]]
+== opennms:kafka-evaluate-metric-filter
+
+Use the `opennms:kafka-evaluate-metric-filter` command to see which collected resources a `metricFilter` expression would forward to Kafka.
+The command walks the resources that have already been persisted in the resource tree, builds the protobuf representation the producer builds at collection time, and evaluates the expression against each resource with the producer's own filter implementation.
+It does not trigger a collection: the result reflects what has been collected so far, not what the next collection will produce.
+
+The metric filter is evaluated once per resource, not per metric.
+A resource either keeps all of its attributes or loses all of them, so the command reports one line per resource.
+
+[cols="1,3"]
+|===
+| Option | Description
+
+| `-n`, `--node`
+| Node ID or FS:FID to evaluate. When omitted, all nodes are walked one by one until the limit is reached.
+
+| `-l`, `--limit`
+| Maximum number of resources to evaluate, also when a node is given. Defaults to 100, 0 means no limit.
+
+| `-c`, `--show-config`
+| Prints the metric forwarding configuration, including the configured and the running filter.
+
+| `-v`, `--verbose`
+| Prints every property the expression can see for each resource, together with the resource tree id.
+
+| `-j`, `--json`
+| Prints the surviving resources in the JSON encoding the producer uses with `metrics.useJson=true`. This shows the shape only (attribute names and types): the resource tree holds no values, so none are printed.
+|===
+
+The expression is given as the only argument.
+When it is omitted, the configured `metricFilter` is used, which makes the command a quick way to check what the current configuration forwards.
+
+[source, console]
+----
+admin@opennms> opennms:kafka-evaluate-metric-filter --show-config -n 1
+Configuration (org.opennms.features.kafka.producer):
+    forward.metrics            = true
+    metricTopic                = (not set)
+    metricFilter               = resourceTypeName == 'nodeSnmp'
+Running metric filter: resourceTypeName == 'nodeSnmp'
+
+SPEL Expression: resourceTypeName == 'nodeSnmp' (from configuration (org.opennms.features.kafka.producer))
+Node: localhost (id=1, foreignSource=selfmonitor, foreignId=1, location=Default)
+Type         │ Resource                                               │ Instance          │ ifIndex │ Node          │ Location │ Numeric │ Strings │ Result
+─────────────┼────────────────────────────────────────────────────────┼───────────────────┼─────────┼───────────────┼──────────┼─────────┼─────────┼────────
+nodeSnmp     │ nodeSource[selfmonitor:1].nodeSnmp[]                   │ -                 │ -       │ 1 (localhost) │ Default  │ 223     │ 0       │ FORWARD
+responseTime │ -                                                      │ 127.0.0.1         │ -       │ 1 (localhost) │ -        │ 2       │ 0       │ DROP
+Eventlogs    │ nodeSource[selfmonitor:1].Eventlogs[eventlogs.process] │ eventlogs.process │ -       │ 1 (localhost) │ Default  │ 14      │ 3       │ DROP
+pgDatabase   │ nodeSource[selfmonitor:1].pgDatabase[postgres]         │ postgres          │ -       │ 1 (localhost) │ Default  │ 6       │ 1       │ DROP
+...
+
+Resources: 44, forwarded: 1, dropped: 43, errors (forwarded anyway): 0, uncertain: 0
+Skipped 1 resource(s) the producer never forwards:
+    node[selfmonitor:1].status[127.0.0.1]: service status is never forwarded
+----
+
+The `Result` column shows `FORWARD` or `DROP`.
+A resource for which the expression fails to evaluate is reported as `ERROR` with the cause, and is forwarded anyway, because the producer forwards resources on evaluation errors to avoid losing data.
+A summary line follows the table, and the command says explicitly when no resource matches, since the producer then sends no message at all.
+
+The `Resource` column shows the `resourceId` the producer sends, which differs from the id the resource tree uses.
+Resources the producer never forwards are listed separately with the reason: resources that are not associated with a node, service status resources, and perspective response time resources.
+Node directories without a matching SNMP interface in the database hold the node-level data of other collectors (JMX, XML, WMI), which the producer forwards as a node-level resource: they are merged into the node's `nodeSnmp` row, and `--verbose` lists the directories behind the row.
+
+The `instance` of a generic resource is known to the resource tree only by its storage label, while the producer sends the raw index.
+The two are the same for resource types that use the `IndexStorageStrategy`, but differ for any other storage strategy, for example `hrStorage` with the `SiblingColumnStorageStrategy` (`_root_fs` in the tree, `1` at the producer).
+When the expression refers to `instance` and a resource belongs to such a type, the row is marked `(uncertain)`: the shown result may not match what the producer does for that resource.
+Filter on `resourceName` or `resourceId` instead, which carry the storage label on both sides.
+
+Pass an expression to try a filter before configuring it:
+
+[source, console]
+----
+admin@opennms> opennms:kafka-evaluate-metric-filter -n 1 -v "resourceTypeName == 'responseTime'"
+SPEL Expression: resourceTypeName == 'responseTime' (from command line)
+Node: localhost (id=1, foreignSource=selfmonitor, foreignId=1, location=Default)
+Type         │ Resource                             │ Instance  │ ifIndex │ Node          │ Location │ Numeric │ Strings │ Result
+─────────────┼──────────────────────────────────────┼───────────┼─────────┼───────────────┼──────────┼─────────┼─────────┼────────
+nodeSnmp     │ nodeSource[selfmonitor:1].nodeSnmp[] │ -         │ -       │ 1 (localhost) │ Default  │ 22      │ 0       │ DROP
+responseTime │ -                                    │ 127.0.0.1 │ -       │ 1 (localhost) │ -        │ 2       │ 0       │ FORWARD
+...
+
+FORWARD: node[selfmonitor:1].responseTime[127.0.0.1]
+    treeResource     = node[selfmonitor:1].responseTime[127.0.0.1]
+    nodeId           = 1
+    nodeLabel        = localhost
+    foreignSource    = selfmonitor
+    foreignId        = 1
+    location         = null
+    resourceTypeName = responseTime
+    resourceName     = null
+    resourceId       =
+    ifIndex          = null
+    instance         = 127.0.0.1
+----
+
+The verbose output lists the properties exactly as the expression sees them, which helps explain unexpected results.
+In the example above, the response time resource has no `location` although its node is in the `Default` location: the producer only sets the location of a response time resource when the node is outside the default location.
+Likewise, `resourceTypeName` holds `nodeSnmp` for node-level resources, `interfaceSnmp` for interface-level resources, `responseTime` for response time resources and the data collection resource type name for everything else.
+
+NOTE: The metric filter, the metric topic, `disable.metrics.splitting` and `metrics.useJson` are read when the `opennms-kafka-producer` feature starts.
+`--show-config` prints the configured and the running values and warns when they differ: restart the feature to apply the new configuration.

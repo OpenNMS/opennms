@@ -186,6 +186,16 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
     }
 
     @Override
+    public List<SnmpCollectionSystemDef> findAllByName(String name) {
+        return find("from SnmpCollectionSystemDef d join fetch d.collectionSource s where d.name = ?1 order by s.name, d.id", name);
+    }
+
+    @Override
+    public List<String> findAllSystemDefNames() {
+        return findObjects(String.class, "select distinct d.name from SnmpCollectionSystemDef d order by d.name");
+    }
+
+    @Override
     public void updateSystemDefEnabledFlag(Integer snmpDataCollectionSourceId, List<Integer> ids, boolean enabled) {
         if (ids == null || ids.isEmpty()) {
             LOG.warn("No SystemDef IDs provided for update. Skipping...");

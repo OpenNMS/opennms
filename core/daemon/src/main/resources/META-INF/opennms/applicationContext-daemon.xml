@@ -36,6 +36,8 @@
     <property name="brokerURL" value="#{T(java.lang.System).getProperty('org.opennms.activemq.broker.url', 'vm://localhost?create=false&amp;jms.useAsyncSend=true')}" />
     <property name="userName" value="#{T(java.lang.System).getProperty('org.opennms.activemq.broker.username', '')}" />
     <property name="password" value="#{T(java.lang.System).getProperty('org.opennms.activemq.broker.password', '')}" />
+    <!-- Camel's JmsBinding deserializes ObjectMessage payloads; OpenNMS never sends any (CVE-2026-40860) -->
+    <property name="trustedPackages"><list/></property>
   </bean>
 
   <bean id="pooledConnectionFactory" class="org.opennms.features.activemq.PooledConnectionFactory"
@@ -52,8 +54,20 @@
   </bean>
 
   <!-- JMS component (backed by ActiveMQ) to be used by spring applicationContext/camelContext  -->
+  <!-- Keep only the inbound properties OpenNMS reads, so a JMS producer cannot set Camel internals (CVE-2026-40453) -->
+  <bean id="jmsHeaderFilterStrategy" class="org.opennms.core.camel.hardening.InboundHeaderAllowList" lazy-init="true">
+    <constructor-arg>
+      <bean class="org.apache.camel.component.jms.JmsHeaderFilterStrategy">
+        <constructor-arg>
+          <bean factory-bean="jmsConfig" factory-method="isIncludeAllJMSXProperties"/>
+        </constructor-arg>
+      </bean>
+    </constructor-arg>
+  </bean>
+
   <bean id="queuingservice" class="org.apache.camel.component.jms.JmsComponent" lazy-init="true">
     <property name="configuration" ref="jmsConfig" />
+    <property name="headerFilterStrategy" ref="jmsHeaderFilterStrategy" />
   </bean>
 
 </beans>

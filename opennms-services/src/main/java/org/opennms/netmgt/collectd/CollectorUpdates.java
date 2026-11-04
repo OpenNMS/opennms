@@ -72,7 +72,8 @@ final class CollectorUpdates {
     /**
      * Set to true if the interface has been marked for reparenting.
      */
-    private boolean m_reparentFlag;
+    // Read without the CollectableService lock by belongsOrIsMovingToNode().
+    private volatile boolean m_reparentFlag;
 
     /**
      * Old nodeId for reparenting
@@ -82,7 +83,7 @@ final class CollectorUpdates {
     /**
      * New nodeId for reparenting
      */
-    private String m_reparentNewNodeId;
+    private volatile String m_reparentNewNodeId;
     
     private OnmsIpInterface m_newIface = null;
 
@@ -147,10 +148,11 @@ final class CollectorUpdates {
      * @param iface 
      */
     void markForReparenting(String oldNodeId, String newNodeId, OnmsIpInterface iface) {
-        m_reparentFlag = true;
         m_reparentOldNodeId = oldNodeId;
         m_reparentNewNodeId = newNodeId;
         m_newIface = iface;
+        // Last, so a lock-free reader that sees the flag also sees the new node id.
+        m_reparentFlag = true;
         m_hasUpdates = true;
     }
 

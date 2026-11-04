@@ -21,31 +21,5 @@
     License.
 
 --%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-<%@page language="java"
-        contentType="text/html"
-        session="true"
-%>
-
-<%@ page import="org.opennms.web.utils.Bootstrap" %>
-<% Bootstrap.with(pageContext)
-          .headTitle("Help")
-          .breadcrumb("Help")
-          .build(request);
-%>
-<jsp:directive.include file="/includes/bootstrap.jsp" />
-
-<div class="row">
-<div class="col-md-4">
-    <jsp:include page="/includes/help-documentation.jsp" flush="false" />
-</div>
-<div class="col-md-4">
-    <jsp:include page="/includes/help-contact.jsp" flush="false" />
-</div>
-<div class="col-md-4">
-    <jsp:include page="/includes/help-software-management.jsp" flush="false" />
-</div>
-</div>
-
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
+<%-- Split into the Vue Documentation, Commercial Support, and Community Resources pages; keep old links working. --%>
+<% response.sendRedirect(request.getContextPath() + "/ui/index.html#/documentation"); %>

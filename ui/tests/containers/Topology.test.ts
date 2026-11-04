@@ -85,6 +85,7 @@ vi.mock('@/services/topologyService', () => ({
   deleteView: vi.fn().mockResolvedValue(true),
   getNodeSeverities: vi.fn().mockResolvedValue({}),
   getNodeIconIds: vi.fn().mockResolvedValue({}),
+  getNodeIconsAndLocations: vi.fn().mockResolvedValue({ locations: {}, failed: [] }),
   // Returns DiscoveredGraph | false, never null: false is the failure value.
   loadDiscoveredGraph: vi.fn().mockResolvedValue(false),
   listGraphContainers: vi.fn().mockResolvedValue([]),

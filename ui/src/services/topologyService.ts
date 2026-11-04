@@ -22,6 +22,7 @@
 
 import { v2 } from './axiosInstances'
 import { getNodes } from './nodeService'
+import { assetLocation, type GeoPoint } from '@/components/Topology/geo'
 import { placedIdFor } from '@/components/Topology/nodeIds'
 import type {
   CanvasLink,
@@ -783,6 +784,50 @@ const getNodeIconIds = async (nodeIds: number[]): Promise<Record<number, DeviceI
 }
 
 /**
+ * Device icon and asset lat/long per node id, for a geomap view, and the ids
+ * whose lookup failed. Both come off the same /nodes payload, so a geomap view
+ * reads it once rather than once for icons and again for locations. Nodes
+ * without a usable location are omitted from `locations`.
+ */
+const getNodeIconsAndLocations = async (nodeIds: number[]): Promise<NodeIconsAndLocations> => {
+  const out: Record<number, GeoPoint> = {}
+  const icons: Record<number, DeviceIconId> = {}
+  const failed: number[] = []
+  for (const chunk of chunkByQueryLength(nodeIds, id => `id==${id}`)) {
+    try {
+      const resp = await getNodes({ _s: chunk.map(id => `id==${id}`).join(','), limit: chunk.length })
+      if (!resp) {
+        failed.push(...chunk)
+        continue
+      }
+      for (const n of resp.node ?? []) {
+        const id = Number(n.id)
+        if (!Number.isFinite(id)) {
+          continue
+        }
+        const location = assetLocation(n.assetRecord as { latitude?: unknown, longitude?: unknown } | undefined)
+        if (location) {
+          out[id] = location
+        }
+        const icon = deviceIconForSysObjectId(n.sysObjectId)
+        if (icon) {
+          icons[id] = icon
+        }
+      }
+    } catch {
+      failed.push(...chunk)
+    }
+  }
+  return { locations: out, icons, failed }
+}
+
+export interface NodeIconsAndLocations {
+  locations: Record<number, GeoPoint>
+  icons: Record<number, DeviceIconId>
+  failed: number[]
+}
+
+/**
  * Categories per node id, read off the node payload rather than filtered by
  * category: v2 /nodes has its `categories` alias join commented out in
  * NodeRestService, so any category filter answers 500 from Hibernate.
@@ -961,6 +1006,7 @@ export {
   getEdgeInfoPanel,
   getNodeInfoPanel,
   getNodeIconIds,
+  getNodeIconsAndLocations,
   getNodeCategories,
   getInterfaceState,
   assetUrl,

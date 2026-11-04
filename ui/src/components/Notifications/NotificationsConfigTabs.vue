@@ -44,6 +44,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 import { OnmsTabs, OnmsTabList, OnmsTab, OnmsTabPanels, OnmsTabPanel, OnmsToggleSwitch } from '@opennms/onms-ui'
 
@@ -58,8 +59,12 @@ import { createSuccessResponse, ValidationResult } from '@/types/validation'
 const store = useNotificationConfigStore()
 const { withSpinner, report, showError, showSuccess } = useActionFeedback()
 
-// Open on Event Notifications, the first tab in the final order (now live).
-const activeTab = ref('event-notifications')
+const TABS = ['event-notifications', 'destination-paths', 'path-outages', 'general']
+
+// Open on Event Notifications, the first tab in the final order, unless a link asks for another
+// with ?tab= -- the Node Details critical path panel links straight to Path Outages.
+const requestedTab = String(useRoute().query.tab ?? '')
+const activeTab = ref(TABS.includes(requestedTab) ? requestedTab : 'event-notifications')
 
 const statusPending = ref(false)
 

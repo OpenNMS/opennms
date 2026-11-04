@@ -22,6 +22,8 @@
 
 import { describe, expect, test } from 'vitest'
 import {
+  alarmDetailLink,
+  nodeAlarmListLink,
   INTERFACE_PATH,
   OUTAGE_DETAIL_PATH,
   OUTAGE_LIST_PATH,
@@ -160,5 +162,15 @@ describe('linkUtils', () => {
     ])('%s', (actual, expected) => {
       expect(actual).toBe(expected)
     })
+  })
+})
+
+describe('alarm links', () => {
+  test('links an alarm to its legacy detail page', () => {
+    expect(alarmDetailLink('/opennms/', 12)).toBe('/opennms/alarm/detail.htm?id=12')
+  })
+
+  test('links a node to the legacy alarm list filtered to it', () => {
+    expect(nodeAlarmListLink('/opennms/', '144')).toBe('/opennms/alarm/list.htm?filter=node%3D144')
   })
 })

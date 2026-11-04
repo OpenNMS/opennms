@@ -15,6 +15,13 @@
         data-test="availability-range"
         @update-time="onUpdateTime"
       />
+      <OnmsIconButton
+        aria-label="View Availability"
+        tooltip="View Availability"
+        data-test="availability-details-button"
+        :icon="IconViewDetails"
+        @click="onViewDetailsClick"
+      />
     </template>
 
     <div class="availability-summary">
@@ -33,8 +40,9 @@
         :content="errorContent"
         data-test="availability-error"
       />
+      <!-- From the node's total, not this page: an empty page is not a node with nothing monitored. -->
       <EmptyList
-        v-else-if="hasLoaded && (!model || model.interfaces.length === 0)"
+        v-else-if="hasLoaded && totalInterfaces === 0"
         :content="emptyContent"
         data-test="availability-empty"
       />
@@ -54,13 +62,23 @@
           :range-label="rangeLabel"
         />
       </template>
+      <!-- Outside the branch above, so a page that comes back empty can still be paged away from. -->
+      <OnmsPaginator
+        v-if="!loadFailed && totalInterfaces > PAGE_SIZE"
+        :first="first"
+        :rows="PAGE_SIZE"
+        :totalRecords="totalInterfaces"
+        data-test="availability-paginator"
+        @page="onPage"
+      />
     </template>
   </NodeDetailsPanel>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { OnmsSpinner } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsPaginator, OnmsSpinner, type OnmsTablePageEvent } from '@opennms/onms-ui'
+import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import AvailabilityTimeline from './AvailabilityTimeline.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
@@ -126,6 +144,23 @@ const errorContent = {
 }
 const emptyContent = { msg: 'No monitored services on this node.' }
 
+/**
+ * Interfaces per page. The roster's figures are a database query each -- per interface and per
+ * service -- so the server computes only the page asked for, rather than every interface on a node
+ * that may have hundreds. The legacy node page dropped its availability box altogether past 10
+ * interfaces; this pages through them instead. (The full Availability page can use larger pages.)
+ */
+const PAGE_SIZE = 10
+
+// Index of the first interface on the page shown, and the node's total, from the last answer.
+const first = ref(0)
+const totalInterfaces = ref(0)
+
+// The legacy page lists every interface and service; it is where the button below goes.
+const onViewDetailsClick = () => {
+  window.location.assign(`${props.baseHref}element/availability.jsp?node=${props.node.id}`)
+}
+
 const model = computed(() =>
   availability.value ? buildTimelineModel(availability.value, timeline.value, activeWindow.value) : undefined)
 
@@ -153,7 +188,9 @@ const fetchAll = async () => {
 
   try {
     const [avail, outages] = await Promise.all([
-      API.getNodeAvailabilityPercentage(String(id), start, end),
+      // withServices: the timeline drops interfaces with no monitored services, so the server pages
+      // over the others only -- otherwise a page of unmonitored interfaces would show as empty.
+      API.getNodeAvailabilityPercentage(String(id), start, end, { limit: PAGE_SIZE, offset: first.value, withServices: true }),
       API.getNodeOutageTimeline(id, start, end)
     ])
 
@@ -178,9 +215,18 @@ const fetchAll = async () => {
     rangeLabel.value = requestedLabel
     availability.value = avail
     timeline.value = outages
+    // A server without the count sends every interface: count the ones the timeline would show.
+    totalInterfaces.value = avail.ipinterfaceCount ?? avail.ipinterfaces.filter(iface => (iface.services ?? []).length > 0).length
   } finally {
     stopLoading()
   }
+}
+
+// A page of the roster. The timeline is fetched again with it -- one cheap query -- so the bars and
+// the percentages always describe the same window.
+const onPage = (event: OnmsTablePageEvent) => {
+  first.value = event.first
+  fetchAll()
 }
 
 const onUpdateTime = (time: StartEndTime) => {
@@ -195,7 +241,14 @@ const onUpdateTime = (time: StartEndTime) => {
 // immediate is what actually fetches. The page rebuilds this panel for each node rather than
 // feeding a new id to the existing one, so props.node.id never changes during an instance's life
 // and a change-only watch would never fire at all.
-watch([() => props.node?.id, selection], fetchAll, { immediate: true })
+watch([() => props.node?.id, selection], ([id], [previousId]) => {
+  // A new node starts on its first page; a new range keeps the page the user was on.
+  if (id !== previousId) {
+    first.value = 0
+  }
+
+  fetchAll()
+}, { immediate: true })
 </script>
 
 <style lang="scss" scoped>

@@ -22,6 +22,7 @@
 package org.opennms.netmgt.poller.client.rpc;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.when;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -49,13 +51,16 @@ public class PollerExecutorLifecycleTest {
         reader.loadBeanDefinitions(new ClassPathResource(
                 "META-INF/opennms/applicationContext-rpc-poller.xml"));
 
+        assertEquals("shutdownNow", beanFactory.getBeanDefinition("pollerExecutor").getDestroyMethodName());
         final ExecutorService executor = beanFactory.getBean("pollerExecutor", ExecutorService.class);
+        final AtomicReference<String> threadName = new AtomicReference<>();
         final CountDownLatch taskStarted = new CountDownLatch(1);
         final CountDownLatch taskInterrupted = new CountDownLatch(1);
         final CountDownLatch blocker = new CountDownLatch(1);
 
         final ServiceMonitor monitor = mock(ServiceMonitor.class);
         when(monitor.poll(any(MonitoredService.class), anyMap())).thenAnswer(invocation -> {
+            threadName.set(Thread.currentThread().getName());
             taskStarted.countDown();
             try {
                 blocker.await();
@@ -81,6 +86,7 @@ public class PollerExecutorLifecycleTest {
 
         try {
             assertTrue("Monitor task did not start", taskStarted.await(1, SECONDS));
+            assertTrue("Unexpected thread name " + threadName.get(), threadName.get().matches("Poller-RPC-\\d+"));
 
             // This exercises Spring's destruction of the pollerExecutor bean from
             // the production context. It must interrupt the task rather than wait for it.

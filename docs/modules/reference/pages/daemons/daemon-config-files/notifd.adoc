@@ -15,7 +15,7 @@ Generates xref:operation:deep-dive/notifications/introduction.adoc[notifications
 | Restart Required
 
 | notifd-configuration.xml
-| Describes auto-acknowledge prefix (for example, prefix "RESOLVED: " for nodeUp/nodeDown events).
+| Global notification status, event matching mode, automatic acknowledgment rules, and notice queues (see <<notifd-configuration>>).
 | yes
 | no
 
@@ -62,3 +62,48 @@ Metadata expressions can be used for the authenticateUser and authenticatePasswo
 | notifd.log
 | Information about the notifications that were or were not sent.
 |===
+
+[[notifd-configuration]]
+== notifd-configuration.xml
+
+The top-level `notifd-configuration` element accepts the following attributes, among others that override internal SQL statements:
+
+[options="header"]
+[cols="2,3,1"]
+|===
+| Attribute
+| Description
+| Default
+
+| status
+| `on` turns notifications on globally; `off` turns them off.
+The web UI's Notification Status setting changes this attribute.
+| `off` in a new installation
+
+| match-all
+| `true` sends a notice for every notification that matches an event; `false` sends one only for the first match in `notifications.xml`.
+| `true` in a new installation
+
+| email-address-command
+| Notification command used for destination path targets that are email addresses rather than users or groups.
+| `javaEmail`
+
+| numeric-skip-resolution-prefix
+| `true` leaves the numeric message of resolution notices without the resolution prefix.
+| `false`
+
+| max-threads
+| Maximum number of threads that send notices.
+A value of `0` removes the limit.
+| `100`
+|===
+
+The element contains the following child elements:
+
+* `auto-acknowledge` pairs a resolving event with the problem notices it acknowledges, and `auto-acknowledge-alarm` acknowledges notices through alarm clear keys.
+For how both work, see xref:operation:deep-dive/notifications/concepts.adoc#automatic-acknowledgment[Automatic acknowledgment].
+* `queue` defines a notice queue with its `queue-id`, the `interval` at which it is processed, and its `handler-class`.
+A notification selects a queue with `<notice-queue>`; the default queue is `default`.
+* `outage-calendar` names a scheduled outage during which notifd does not send notices.
+
+For how notifd matches events to notifications, see xref:operation:deep-dive/notifications/concepts.adoc#event-matching[Matching events to notifications].

@@ -51,6 +51,17 @@
   white-space: pre-line;
 }
 
+// Size a tooltip to its text (still capped by the theme's max-width), never to the room left
+// beside its target. PrimeVue sets an inline `width: fit-content`, and fit-content is bounded by
+// the space between the tooltip's `left` and the viewport edge -- so a right-placed tooltip on a
+// button near the right edge shrinks to a sliver, one character per line, and still fits on
+// screen. Its isOutOfBounds check then never fires and it never flips to the other side. At
+// max-content the tooltip overflows instead, the check fires, and PrimeVue tries left, then top
+// and bottom. `!important` because the width it overrides is an inline style.
+.p-tooltip {
+  width: max-content !important;
+}
+
 // Standard field height across the app. Height is not a PrimeVue theme token,
 // so it lives here. Applies to InputText and the inner input of InputNumber
 // (both render .p-inputtext). Formerly 3.75rem with FormField overriding to

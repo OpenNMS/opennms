@@ -49,9 +49,11 @@ const EXPECTED_RUNTIME_EXPORTS = [
   'OnmsInputText',
   'OnmsListbox',
   'OnmsMenu',
+  'OnmsMenubar',
   'OnmsMessage',
   'OnmsMessageDialog',
   'OnmsMultiSelect',
+  'OnmsPaginator',
   'OnmsPanel',
   'OnmsPassword',
   'OnmsPopover',
@@ -75,6 +77,8 @@ const EXPECTED_RUNTIME_EXPORTS = [
   'OnmsTooltip',
   'OnmsVirtualScroller',
   'releaseActiveToast',
+  'useOnmsChromeless',
+  'useOnmsChromelessHost',
   'useOnmsToast'
 ]
 

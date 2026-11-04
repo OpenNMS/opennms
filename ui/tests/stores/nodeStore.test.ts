@@ -30,9 +30,11 @@ vi.mock('@/services', () => ({
   default: {
     getSnmpInterfaces: vi.fn(),
     getIpInterfaces: vi.fn(),
-    getNodeOutages: vi.fn(),
     getNodeById: vi.fn(),
     getNodeIpInterfaces: vi.fn(),
+    nodeExistsInRequisition: vi.fn(),
+    getNodeCriticalPath: vi.fn(),
+    getNodeServicesByName: vi.fn(),
     getNodeSnmpInterfaces: vi.fn(),
     getNodeAvailabilityPercentage: vi.fn()
   }
@@ -343,21 +345,6 @@ describe('nodeStore getNodeById', () => {
     expect(store.snmpInterfacesTotalCount).toBe(0)
   })
 
-  // Everything this store holds is scoped to the node that failed to load, so none of it
-  // should stay on screen under an id that has no node. Events belong to their own store and
-  // are cleared by the page.
-  it('clears the outages when the request fails', async () => {
-    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
-    const store = useNodeStore()
-    store.outages = [{ id: 1 }] as never
-    store.outagesTotalCount = 1
-
-    await store.getNodeById({ id: '99' } as Node)
-
-    expect(store.outages).toEqual([])
-    expect(store.outagesTotalCount).toBe(0)
-  })
-
   it('clears the failure flag when a later fetch succeeds', async () => {
     vi.mocked(API.getNodeById).mockResolvedValue(false as never)
     const store = useNodeStore()
@@ -463,7 +450,7 @@ describe('nodeStore stale node responses', () => {
       .mockImplementationOnce(() => first.promise as never)
       .mockImplementationOnce(() => second.promise as never)
     const store = useNodeStore()
-    store.outages = [{ id: 7 }] as never
+    store.ipInterfaces = [{ id: 7 }] as never
 
     const firstCall = store.getNodeById({ id: '1' } as Node)
     const secondCall = store.getNodeById({ id: '2' } as Node)
@@ -475,7 +462,7 @@ describe('nodeStore stale node responses', () => {
 
     expect(store.node).toEqual({ id: '2', label: 'node-2' })
     expect(store.nodeLoadFailed).toBe(false)
-    expect(store.outages).toEqual([{ id: 7 }])
+    expect(store.ipInterfaces).toEqual([{ id: 7 }])
   })
 
   // A stale address here builds admin/updateSnmp.jsp for an address that is not the node's.
@@ -630,20 +617,190 @@ describe('nodeStore stale panel responses', () => {
     expect(store.ipInterfaces).toEqual([{ id: 'ip2' }])
     expect(store.ipInterfacesTotalCount).toBe(1)
   })
+})
 
-  it('discards superseded outages', async () => {
-    const { first, second } = racePair(vi.mocked(API.getNodeOutages) as never)
+describe('nodeStore getNodeExistsInRequisition', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    vi.clearAllMocks()
+  })
+
+  it('asks about the node\'s foreign source and id, and keeps the answer', async () => {
+    vi.mocked(API.nodeExistsInRequisition).mockResolvedValue(true)
     const store = useNodeStore()
 
-    const firstCall = store.getNodeOutages({ id: '1' })
-    const secondCall = store.getNodeOutages({ id: '2' })
+    await store.getNodeExistsInRequisition({ foreignSource: 'fs', foreignId: 'fid' })
 
-    second.resolve({ outage: [{ id: 2 }], totalCount: 1 } as never)
-    await secondCall
-    first.resolve({ outage: [{ id: 1 }], totalCount: 9 } as never)
-    await firstCall
+    expect(API.nodeExistsInRequisition).toHaveBeenCalledWith('fs', 'fid')
+    expect(store.existsInRequisition).toBe(true)
+  })
 
-    expect(store.outages).toEqual([{ id: 2 }])
-    expect(store.outagesTotalCount).toBe(1)
+  it('does not ask about a node with no foreign source', async () => {
+    const store = useNodeStore()
+    store.existsInRequisition = true
+
+    await store.getNodeExistsInRequisition({ foreignSource: null as never, foreignId: null as never })
+
+    expect(API.nodeExistsInRequisition).not.toHaveBeenCalled()
+    expect(store.existsInRequisition).toBe(false)
+  })
+
+  // null is "could not tell"; offering a link that may 404 is worse than leaving it out.
+  it('treats a failed check as not in a requisition', async () => {
+    vi.mocked(API.nodeExistsInRequisition).mockResolvedValue(null)
+    const store = useNodeStore()
+
+    await store.getNodeExistsInRequisition({ foreignSource: 'fs', foreignId: 'fid' })
+
+    expect(store.existsInRequisition).toBe(false)
+  })
+
+  it('discards a superseded answer', async () => {
+    let resolveFirst: (value: boolean) => void = () => undefined
+    vi.mocked(API.nodeExistsInRequisition)
+      .mockImplementationOnce(() => new Promise((r) => {
+        resolveFirst = r
+      }))
+      .mockResolvedValueOnce(false)
+    const store = useNodeStore()
+
+    const first = store.getNodeExistsInRequisition({ foreignSource: 'fs', foreignId: 'one' })
+    await store.getNodeExistsInRequisition({ foreignSource: 'fs', foreignId: 'two' })
+    resolveFirst(true)
+    await first
+
+    expect(store.existsInRequisition).toBe(false)
+  })
+
+  it('is cleared when the next node fails to load', async () => {
+    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    const store = useNodeStore()
+    store.existsInRequisition = true
+
+    await store.getNodeById({ id: '99' } as Node)
+
+    expect(store.existsInRequisition).toBe(false)
+  })
+})
+
+describe('nodeStore getNodeCriticalPath', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    vi.clearAllMocks()
+  })
+
+  const path = { criticalPathIp: '10.0.0.3', criticalPathServiceName: 'ICMP' }
+
+  it('keeps the node\'s critical path', async () => {
+    vi.mocked(API.getNodeCriticalPath).mockResolvedValue({ success: true, message: '', payload: path })
+    const store = useNodeStore()
+
+    await store.getNodeCriticalPath('144')
+
+    expect(API.getNodeCriticalPath).toHaveBeenCalledWith('144')
+    expect(store.criticalPath).toEqual(path)
+  })
+
+  it('holds none for a node without one', async () => {
+    vi.mocked(API.getNodeCriticalPath).mockResolvedValue({ success: true, message: '', payload: null })
+    const store = useNodeStore()
+    store.criticalPath = path
+
+    await store.getNodeCriticalPath('161')
+
+    expect(store.criticalPath).toBeUndefined()
+  })
+
+  it('holds none when the request fails', async () => {
+    vi.mocked(API.getNodeCriticalPath).mockResolvedValue({ success: false, message: 'boom' })
+    const store = useNodeStore()
+    store.criticalPath = path
+
+    await store.getNodeCriticalPath('161')
+
+    expect(store.criticalPath).toBeUndefined()
+  })
+
+  it('discards a superseded answer', async () => {
+    let resolveFirst: (value: unknown) => void = () => undefined
+    vi.mocked(API.getNodeCriticalPath)
+      .mockImplementationOnce(() => new Promise((r) => {
+        resolveFirst = r
+      }) as never)
+      .mockResolvedValueOnce({ success: true, message: '', payload: null })
+    const store = useNodeStore()
+
+    const first = store.getNodeCriticalPath('144')
+    await store.getNodeCriticalPath('161')
+    resolveFirst({ success: true, message: '', payload: path })
+    await first
+
+    expect(store.criticalPath).toBeUndefined()
+  })
+
+  it('is cleared when the next node fails to load', async () => {
+    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    const store = useNodeStore()
+    store.criticalPath = path
+
+    await store.getNodeById({ id: '99' } as Node)
+
+    expect(store.criticalPath).toBeUndefined()
+  })
+})
+
+describe('nodeStore getNodeLinkServices', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    vi.clearAllMocks()
+  })
+
+  const ssh = [{ serviceName: 'SSH', ipAddress: '10.0.0.1' }]
+
+  it('asks for the six link services and keeps them', async () => {
+    vi.mocked(API.getNodeServicesByName).mockResolvedValue({ success: true, message: '', payload: ssh })
+    const store = useNodeStore()
+
+    await store.getNodeLinkServices('152')
+
+    expect(API.getNodeServicesByName).toHaveBeenCalledWith('152', ['Telnet', 'SSH', 'HTTP', 'HTTPS', 'Dell-OpenManage', 'MS-RDP'])
+    expect(store.linkServices).toEqual(ssh)
+  })
+
+  it('holds none when the request fails', async () => {
+    vi.mocked(API.getNodeServicesByName).mockResolvedValue({ success: false, message: 'boom' })
+    const store = useNodeStore()
+    store.linkServices = ssh
+
+    await store.getNodeLinkServices('152')
+
+    expect(store.linkServices).toEqual([])
+  })
+
+  it('discards a superseded answer', async () => {
+    let resolveFirst: (value: unknown) => void = () => undefined
+    vi.mocked(API.getNodeServicesByName)
+      .mockImplementationOnce(() => new Promise((r) => {
+        resolveFirst = r
+      }) as never)
+      .mockResolvedValueOnce({ success: true, message: '', payload: [] })
+    const store = useNodeStore()
+
+    const first = store.getNodeLinkServices('152')
+    await store.getNodeLinkServices('161')
+    resolveFirst({ success: true, message: '', payload: ssh })
+    await first
+
+    expect(store.linkServices).toEqual([])
+  })
+
+  it('is cleared when the next node fails to load', async () => {
+    vi.mocked(API.getNodeById).mockResolvedValue(false as never)
+    const store = useNodeStore()
+    store.linkServices = ssh
+
+    await store.getNodeById({ id: '99' } as Node)
+
+    expect(store.linkServices).toEqual([])
   })
 })

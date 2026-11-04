@@ -36,32 +36,29 @@ const enum Roles {
 
 type Role = typeof Roles[keyof typeof Roles]
 
-const authStore = computed(() => useAuthStore())
-
-const roles = computed(() => authStore.value.whoAmI.roles)
-const rolesAreLoaded = computed(() => authStore.value.loaded)
-
+// The auth store is looked up on every read, never held at module level: a module-level
+// store stays bound to the first pinia it saw. The lookup is also lazy, so useRole() can be
+// called before pinia is installed (the router does this at module load).
 const hasOneOf = (...rolesToCheck: Role[]) => {
-  for (const role of rolesToCheck) {
-    if (roles.value.includes(role)) {
-      return true
-    }
-  }
-  return false
+  const roles = useAuthStore().whoAmI.roles
+  return rolesToCheck.some(role => roles.includes(role))
 }
 
 const useRole = () => {
+  const rolesAreLoaded = computed<boolean>(() => useAuthStore().loaded)
   const adminRole = computed<boolean>(() => hasOneOf(Roles.ROLE_ADMIN))
   const filesystemEditorRole = computed<boolean>(() => hasOneOf(Roles.ROLE_FILESYSTEM_EDITOR))
   const dcbRole = computed<boolean>(() => hasOneOf(Roles.ROLE_ADMIN, Roles.ROLE_REST, Roles.ROLE_DEVICE_CONFIG_BACKUP))
   const snmpRole = computed<boolean>(() => hasOneOf(Roles.ROLE_ADMIN, Roles.ROLE_PROVISION))
+  // Who may edit requisitions; the legacy node page's `model.admin || model.provision`.
+  const provisionRole = computed<boolean>(() => hasOneOf(Roles.ROLE_ADMIN, Roles.ROLE_PROVISION))
   const readOnlyRole = computed<boolean>(() => hasOneOf(Roles.ROLE_READONLY))
   // Mirrors the server-side carve-out for PUT /rest/notifications/**: a normal user
   // may acknowledge, a read-only user may not.
   const canAcknowledgeNotifications = computed<boolean>(() =>
     hasOneOf(Roles.ROLE_USER, Roles.ROLE_MOBILE, Roles.ROLE_REST, Roles.ROLE_ADMIN) && !readOnlyRole.value)
 
-  return { adminRole, filesystemEditorRole, dcbRole, snmpRole, readOnlyRole, canAcknowledgeNotifications, rolesAreLoaded }
+  return { adminRole, filesystemEditorRole, dcbRole, snmpRole, provisionRole, readOnlyRole, canAcknowledgeNotifications, rolesAreLoaded }
 }
 
 export default useRole

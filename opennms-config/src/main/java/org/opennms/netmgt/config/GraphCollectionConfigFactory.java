@@ -32,9 +32,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.graphcollections.Graph;
 import org.opennms.netmgt.config.graphcollections.GraphCollection;
 import org.opennms.netmgt.config.graphcollections.GraphCollectionList;
 import org.slf4j.Logger;
@@ -95,6 +97,15 @@ public class GraphCollectionConfigFactory {
     private Map<Integer, GraphCollection> m_reportList;
 
     /**
+     * Whether the given string is one of the named timespans in {@link #TIMESPAN_OPTIONS}.
+     */
+    public static boolean isValidTimespan(final String timespan) {
+        return timespan != null && TIMESPANS.contains(timespan);
+    }
+
+    private static final Set<String> TIMESPANS = Set.of(TIMESPAN_OPTIONS);
+
+    /**
      * Empty Private Constructor. Cannot be instantiated outside itself.
      */
     private GraphCollectionConfigFactory() {
@@ -141,6 +152,7 @@ public class GraphCollectionConfigFactory {
 
         m_config = JaxbUtils.unmarshal(GraphCollectionList.class, new FileSystemResource(s_configFile));
 
+        decodeLegacyTitles();
         setIdsOnAllReports();
 
         m_reportList = createReportList();
@@ -148,6 +160,44 @@ public class GraphCollectionConfigFactory {
 
     public static void setConfigFile(final File configFile) {
         s_configFile = configFile;
+    }
+
+    /**
+     * Older versions stored report and graph titles from the web UI as HTML-encoded text.
+     * The web UI now stores titles raw and encodes them on output.
+     * Decode the stored titles so that they do not show as encoded text.
+     */
+    private void decodeLegacyTitles() {
+        if (m_config == null || m_config.getCollections() == null) {
+            return;
+        }
+        for (final GraphCollection report : m_config.getCollections()) {
+            final String reportTitle = decodeLegacyTitle(report.getTitle());
+            if (!Objects.equals(reportTitle, report.getTitle())) {
+                report.setTitle(reportTitle);
+            }
+            for (final Graph graph : report.getGraphs()) {
+                final String graphTitle = decodeLegacyTitle(graph.getTitle());
+                if (!Objects.equals(graphTitle, graph.getTitle())) {
+                    graph.setTitle(graphTitle);
+                }
+            }
+        }
+    }
+
+    /**
+     * Reverses the HTML encoding that older versions applied to KSC titles.
+     * Decodes only the entities that the encoder wrote. Decodes "&amp;" last, so that "&amp;lt;" becomes "&lt;" and not "<".
+     */
+    static String decodeLegacyTitle(final String title) {
+        if (title == null || title.indexOf('&') < 0) {
+            return title;
+        }
+        return title.replace("&lt;", "<")
+                .replace("&gt;", ">")
+                .replace("&#34;", "\"")
+                .replace("&#39;", "'")
+                .replace("&amp;", "&");
     }
 
     private void setIdsOnAllReports() {
@@ -211,7 +261,7 @@ public class GraphCollectionConfigFactory {
      * @param index a int.
      * @return a {@link org.opennms.netmgt.config.graphcollections.GraphCollection} object.
      */
-    public GraphCollection getCollectionById(int index) {
+    public synchronized GraphCollection getCollectionById(int index) {
         return m_reportList.get(index);
     }
 
@@ -236,7 +286,7 @@ public class GraphCollectionConfigFactory {
      *
      * @return a {@link java.util.Map} object.
      */
-    public Map<Integer, String> getCollectionTitles() {
+    public synchronized Map<Integer, String> getCollectionTitles() {
         LinkedHashMap<Integer, String> reports = new LinkedHashMap<Integer, String>(m_config.getCollections().size());
 
         List<GraphCollection> reportList = m_config.getCollections();
@@ -259,7 +309,7 @@ public class GraphCollectionConfigFactory {
      *
      * @return a {@link java.util.Map} object.
      */
-    public Map<Integer, GraphCollection> getCollectionMap() {
+    public synchronized Map<Integer, GraphCollection> getCollectionMap() {
         Map<Integer, GraphCollection> reports = new HashMap<Integer, GraphCollection>(m_config.getCollections().size());
 
         for (GraphCollection report : m_config.getCollections()) {
@@ -277,7 +327,7 @@ public class GraphCollectionConfigFactory {
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
      */
-    public void deleteCollectionAndSave(int index) throws ArrayIndexOutOfBoundsException, IOException, FileNotFoundException {
+    public synchronized void deleteCollectionAndSave(int index) throws ArrayIndexOutOfBoundsException, IOException, FileNotFoundException {
         GraphCollection report = getCollectionById(index);
         if (report == null) {
             throw new ArrayIndexOutOfBoundsException("Reports List index to be deleted is out of bounds: " + index);
@@ -287,13 +337,13 @@ public class GraphCollectionConfigFactory {
         saveCurrent();
     }
 
-    public void addCollection(GraphCollection report) {
+    public synchronized void addCollection(GraphCollection report) {
         LOG.debug("addCollection: {}", report);
         m_config.addCollection(report);
         setIdsOnAllReports();
     }
 
-    public void setCollection(int index, GraphCollection report) {
+    public synchronized void setCollection(int index, GraphCollection report) {
         int arrayIndex = getArrayIndex(index);
         if (arrayIndex == -1) {
             throw new IllegalArgumentException("Could not find report with ID of " + index);

@@ -91,7 +91,7 @@ curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo tee -a /etc/apt/trus
 echo "deb mirror://mirrors.ubuntu.com/mirrors.txt $(lsb_release -cs) main restricted universe multiverse
 deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -cs) main restricted" | sudo tee -a /etc/apt/sources.list
 sudo add-apt-repository -y 'deb https://debian.opennms.org stable main'
- 
+
 # add the R repository
 sudo add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
 
@@ -99,7 +99,7 @@ retry sudo apt update && \
       RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
       echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
       retry sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
-        openjdk-21-jdk-headless \
+        openjdk-25-jdk-headless \
         r-base \
         "rrdtool=$RRDTOOL_VERSION" \
         jrrd2 \
@@ -107,7 +107,7 @@ retry sudo apt update && \
         jicmp6 \
       || exit 1
 
-export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/java-25-openjdk-amd64
 export MAVEN_OPTS="$MAVEN_OPTS -Xmx4g -XX:ReservedCodeCacheSize=1g"
 
 # shellcheck disable=SC3045

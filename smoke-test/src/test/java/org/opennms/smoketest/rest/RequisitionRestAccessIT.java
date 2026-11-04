@@ -28,24 +28,14 @@
 
 package org.opennms.smoketest.rest;
 
-import static io.restassured.RestAssured.authentication;
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.preemptive;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
-
-import javax.xml.bind.JAXB;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.model.OnmsUser;
 
 import io.restassured.http.ContentType;
 
@@ -62,7 +52,6 @@ public class RequisitionRestAccessIT extends AbstractRestIT {
     private static final String REST_USER = "nms20407-rest-only";
     private static final String PROVISION_USER = "nms20407-provision-only";
     private static final String PASSWORD = "nms20407-password";
-    private static final String USERS_PATH = "/opennms/rest/users";
     private static final String FOREIGN_SOURCE = "nms20407";
     private static final String REQUISITIONS_PATH = "/opennms/rest/requisitions";
 
@@ -79,8 +68,8 @@ public class RequisitionRestAccessIT extends AbstractRestIT {
 
     @Before
     public void createUsers() {
-        createUser(REST_USER, "ROLE_REST");
-        createUser(PROVISION_USER, "ROLE_PROVISION");
+        addUser(REST_USER, PASSWORD, "ROLE_REST");
+        addUser(PROVISION_USER, PASSWORD, "ROLE_PROVISION");
     }
 
     @After
@@ -89,12 +78,8 @@ public class RequisitionRestAccessIT extends AbstractRestIT {
         given().delete("/" + FOREIGN_SOURCE)
                 .then().log().status()
                 .assertThat().statusCode(anyOf(is(202), is(204), is(404)));
-        for (final String user : new String[] { REST_USER, PROVISION_USER }) {
-            given().basePath(USERS_PATH + "/" + user)
-                    .delete()
-                    .then().log().status()
-                    .assertThat().statusCode(anyOf(is(200), is(204), is(404)));
-        }
+        removeUser(REST_USER);
+        removeUser(PROVISION_USER);
     }
 
     @Test
@@ -148,35 +133,7 @@ public class RequisitionRestAccessIT extends AbstractRestIT {
                 .assertThat().statusCode(200);
     }
 
-    private void createUser(final String username, final String role) {
-        final OnmsUser user = new OnmsUser();
-        user.setUsername(username);
-        user.setFullName(role + " only");
-        user.setPassword(PASSWORD);
-        user.setPasswordSalted(false);
-        user.setRoles(Collections.singletonList(role));
-
-        final StringWriter xml = new StringWriter();
-        JAXB.marshal(user, xml);
-
-        // AbstractRestIT.before() has already selected admin credentials.
-        given().basePath(USERS_PATH)
-                .contentType(ContentType.XML)
-                .queryParam("hashPassword", true)
-                .body(xml.toString())
-                .post()
-                .then().log().status()
-                .assertThat().statusCode(201);
-
-        // UserFactory checks users.xml for changes at most once per second, so a new user cannot log in at once.
-        // Wait until the login is accepted. A ROLE_PROVISION-only user gets 403 from whoami, but not 401.
-        as(username);
-        await().atMost(30, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS)
-                .until(() -> given().basePath("/opennms/rest/whoami").get().getStatusCode() != 401);
-        applyDefaultCredentials();
-    }
-
     private void as(final String username) {
-        authentication = preemptive().basic(username, PASSWORD);
+        useCredentials(username, PASSWORD);
     }
 }

@@ -1,0 +1,18 @@
+<div class="form-group">
+  <div class="input-group">
+    <input type="text" class="form-control" ng-model="asyncGraphCollection" placeholder="Type the Graph Collection name"
+      uib-typeahead="collection as collection.title for collection in getGraphCollections($viewValue)"
+      typeahead-editable="false"
+      typeahead-loading="graphCollectionsLoading"
+      typeahead-no-results="graphCollectionsNoResults"
+      typeahead-min-length="1"
+      typeahead-on-select="goToGraphCollection($item)">
+    <div class="input-group-append">
+      <span class="input-group-text"><i class="fas fa-magnifying-glass"></i></span>
+    </div>
+  </div>
+  <i ng-show="graphCollectionsLoading" class="fas fa-arrows-rotate"></i>
+  <p class="form-text text-muted" ng-show="graphCollectionsNoResults">
+    <i class="fas fa-xmark"></i> No Results Found
+  </p>
+</div>

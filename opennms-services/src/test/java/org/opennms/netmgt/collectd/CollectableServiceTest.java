@@ -37,10 +37,12 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 
 import org.jrobin.core.RrdException;
 import org.junit.After;
@@ -81,6 +83,8 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.FileAnticipator;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.codahale.metrics.MetricRegistry;
+
 public class CollectableServiceTest {
 
     private CollectionSpecification spec;
@@ -88,6 +92,7 @@ public class CollectableServiceTest {
     private CollectableService service;
     private ThresholdingService thresholdingService;
     private MonitoredServiceDao monitoredServiceDao;
+    private MetricRegistry metricRegistry;
 
     private File snmpDirectory;
     private FileAnticipator fileAnticipator;
@@ -386,6 +391,44 @@ public class CollectableServiceTest {
         verify(monitoredServiceDao, times(2)).get(eq(1), any(InetAddress.class), eq("SNMP"));
     }
 
+    /**
+     * Every attempted collection is timed, failed ones included, under both the overall
+     * and the per-service timer. Collections skipped by a scheduled outage are not.
+     */
+    @Test
+    public void timesAttemptedCollections() throws CollectionInitializationException, CollectionException, IOException {
+        createCollectableService();
+
+        when(spec.collect(any())).thenReturn(null);
+        service.run();
+        when(spec.collect(any())).thenThrow(new org.opennms.netmgt.collection.api.CollectionTimedOut("timed out"));
+        service.run();
+
+        assertEquals(2, metricRegistry.timer("collections").getCount());
+        assertEquals(2, metricRegistry.timer("collections.SNMP").getCount());
+
+        when(spec.scheduledOutage(any())).thenReturn(true);
+        service.run();
+
+        assertEquals(2, metricRegistry.timer("collections").getCount());
+        assertEquals(2, metricRegistry.timer("collections.SNMP").getCount());
+    }
+
+    /**
+     * Timers of services dropped from the configuration are removed; the overall timer stays.
+     */
+    @Test
+    public void removesTimersOfUnconfiguredServices() {
+        final MetricRegistry registry = new MetricRegistry();
+        registry.timer("collections");
+        registry.timer("collections.SNMP");
+        registry.timer("collections.JMX-Cassandra");
+
+        CollectableService.removeUnconfiguredTimers(registry, Collections.singleton("SNMP"));
+
+        assertEquals(new TreeSet<>(Arrays.asList("collections", "collections.SNMP")), registry.getNames());
+    }
+
     private void createCollectableService() throws CollectionInitializationException, IOException {
         // Disable thresholding
         Map<String, Object> paramsMap = new HashMap<>();
@@ -424,7 +467,8 @@ public class CollectableServiceTest {
         when(monitoredServiceDao.updateCollectLastGood(anyInt(), any())).thenReturn(1);
         when(monitoredServiceDao.updateCollectLastFail(anyInt(), any())).thenReturn(1);
 
-        service = new CollectableService(iface, ifaceDao, monitoredServiceDao, spec, scheduler, schedulingCompletedFlag, transMgr, persisterFactory, thresholdingService);
+        metricRegistry = new MetricRegistry();
+        service = new CollectableService(iface, ifaceDao, monitoredServiceDao, spec, scheduler, schedulingCompletedFlag, transMgr, persisterFactory, thresholdingService, metricRegistry);
     }
 
     private RrdRepository createRrdRepository() throws IOException {

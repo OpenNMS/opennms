@@ -24,7 +24,6 @@ package org.opennms.web.controller;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 /**
  * Open redirects are a security issue:
@@ -43,7 +42,8 @@ public class RedirectRestricter {
         if(redirect == null || redirect.isEmpty()) {
             return false;
         }
-        String redirectWithoutParameters =  new StringTokenizer(redirect, "?", false).nextToken();
+        final int queryStart = redirect.indexOf('?');
+        final String redirectWithoutParameters = queryStart < 0 ? redirect : redirect.substring(0, queryStart);
         return this.allowedRedirects.contains(redirectWithoutParameters);
     }
 

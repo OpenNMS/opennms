@@ -293,6 +293,9 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
                                     id.type,
                                     id.name);
 
+        } catch (final ObjectRetrievalFailureException e) {
+            LOG.debug("Could not get resource for resource ID \"{}\"", id, e);
+            return null;
         } catch (final Throwable e) {
             LOG.warn("Could not get resource for resource ID \"{}\"", id, e);
             return null;
