@@ -105,8 +105,11 @@
             </div>
           </OnmsTabPanel>
           <OnmsTabPanel value="schedules">
-            <!-- placeholder: the schedule cards arrive in a later step -->
-            <p class="placeholder">{{ cards.length }} schedule(s).</p>
+            <OnCallSchedulesTab
+              v-model:cards="cards"
+              :members="members"
+              :highlightKey="highlightKey"
+            />
           </OnmsTabPanel>
           <OnmsTabPanel value="calendar">
             <!-- placeholder: the calendar preview arrives in a later step -->
@@ -151,6 +154,7 @@ import {
 import FormField from '@/components/Common/FormField.vue'
 import TabProblemMarker from '@/components/Common/TabProblemMarker.vue'
 import TableCard from '@/components/Common/TableCard.vue'
+import OnCallSchedulesTab from '@/components/OnCallRoles/OnCallSchedulesTab.vue'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
@@ -180,6 +184,8 @@ const membershipGroup = ref('')
 // the schedule cards of the draft; empty until the schedule settings are loaded
 const cards = ref<ScheduleCard[]>([])
 const cardsReady = ref(false)
+// the card the Schedules tab scrolls to and marks; set by the calendar preview
+const highlightKey = ref<string | null>(null)
 const saving = ref(false)
 const errorText = ref('')
 
@@ -223,6 +229,8 @@ const onCallNowText = computed(() => {
   const text = now.join(', ')
   return props.role?.onCallNowIsSupervisor ? `${text} (supervisor, nobody scheduled)` : text
 })
+
+const members = computed(() => store.groupMembers(membershipGroup.value))
 
 const supervisorMissing = computed(() => !supervisor.value)
 const groupMissing = computed(() => !membershipGroup.value)

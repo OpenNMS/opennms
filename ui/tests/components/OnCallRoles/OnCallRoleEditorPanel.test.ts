@@ -212,6 +212,34 @@ describe('OnCallRoleEditorPanel', () => {
     expect(wrapper.emitted('close')).toBeUndefined()
   })
 
+  it('marks the Schedules tab and disables Save while a card has a problem', async () => {
+    const role = storedRole()
+    role.schedules = [{ user: 'bob', type: 'daily', times: [{ id: null, day: null, begins: '08:00:00', ends: '17:00:00' }] }]
+    const wrapper = await mountPanel(role)
+    expect(wrapper.find('[data-test="tab-schedules"] [data-test="tab-problem-marker"]').exists()).toBe(false)
+    await wrapper.find('[data-test="tab-schedules"]').trigger('click')
+    await wrapper.find('[data-test="add-schedule"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-test="tab-schedules"] [data-test="tab-problem-marker"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('sends an edited time while the untouched stored schedules stay byte-identical', async () => {
+    const role = storedRole()
+    role.schedules.push({ user: 'bob', type: 'weekly', times: [{ id: null, day: 'monday', begins: '08:00:00', ends: '17:00:00' }] })
+    const wrapper = await mountPanel(role)
+    await wrapper.find('[data-test="tab-schedules"]').trigger('click')
+    await flushPromises()
+    const cards = wrapper.findAll('[data-test="oncall-schedule-card"]')
+    await cards[0].find('[data-test="time-end-0"]').setValue('17:30')
+    await save(wrapper)
+
+    const schedules = store.updateRole.mock.calls[0][0].schedules
+    expect(schedules[0]).toEqual({ user: 'bob', type: 'daily', times: [{ id: null, day: null, begins: '08:00:00', ends: '17:30:00' }] })
+    expect(schedules[1]).toEqual(storedRole().schedules[1])
+    expect(schedules[2]).toEqual(role.schedules[2])
+  })
+
   it('closes on Back and on Cancel without saving', async () => {
     const wrapper = await mountPanel(storedRole())
     await wrapper.find('[data-test="back-button"]').trigger('click')
