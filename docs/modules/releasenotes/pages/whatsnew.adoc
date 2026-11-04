@@ -87,6 +87,11 @@ The raw SQL `query` parameter of the v1 REST API now requires `ROLE_ADMIN`.
 Requisition and foreign-source XML that contains a `DOCTYPE` is now rejected on import.
 Remove the `DOCTYPE` from requisitions that external tools write, or set the system property `org.opennms.provision.requisition.allowDoctype=true` to accept it.
 
+=== ROLE_MINION no longer reads /rest/config and /rest/info
+`ROLE_MINION` no longer gives read access to `/rest/config/**` or `/rest/info`.
+Minion does not use these endpoints.
+`ROLE_MINION` still gives access to the embedded ActiveMQ broker.
+
 === SNMP4J upgrade
 The SNMP4J library has been upgraded to version 2.8.15.
 As part of this upgrade, the SNMP4J logger configuration in opennms.properties has been updated to use the SLF4J logging implementation:
