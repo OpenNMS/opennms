@@ -543,13 +543,19 @@ function confirmAssetEdit() {
   </c:if>
 
   <%-- AngularJS runs only inside this widget. The rest of the page shows values that a device can set,
-       and AngularJS must not evaluate them as expressions. --%>
-  <div id="onms-interfaces" class="card" ng-app="onms-interfaces">
+       and AngularJS must not evaluate them as expressions. The navbar has an ng-app before this widget,
+       and AngularJS starts only the first ng-app on a page. Thus, the script below starts this widget. --%>
+  <div id="onms-interfaces" class="card">
     <div class="card-header">
         <span>Node Interfaces</span>
     </div>
     <onms-interfaces node="${model.id}"/>
   </div>
+  <script type="text/javascript">
+    angular.element(document).ready(function() {
+      angular.bootstrap(document.getElementById('onms-interfaces'), ['onms-interfaces']);
+    });
+  </script>
 
   <!-- LLDP box, if info available --> 
   <c:if test="${! empty model.lldp }">

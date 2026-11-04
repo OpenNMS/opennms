@@ -37,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 import org.junit.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -71,6 +72,59 @@ public class StoredAngularJsIT extends OpenNMSSeleniumIT {
         } finally {
             stack.opennms().execInContainer("rm", "-rf", rrdDir);
             sendDelete("rest/nodes/smoketests:xssLabelNode", 202);
+        }
+    }
+
+    @Test
+    public void testIfAliasIsNotEvaluated() throws Exception {
+        // A device sets ifAlias. The node page shows it in the interface widget, and the graph page shows it
+        // in the label of the SNMP interface resource.
+        final String fixtureIp = "192.0.2.13";
+        final String ifName = "eth1";
+        final String physAddr = "74d02b3f2671";
+        String rrdDir = null;
+        try {
+            sendPost("rest/nodes", "<node type=\"A\" label=\"xssAliasNode\" foreignSource=\"smoketests\" foreignId=\"xssAliasNode\"/>", 201);
+            sendPost("rest/nodes/smoketests:xssAliasNode/ipinterfaces",
+                    "<ipInterface isManaged=\"M\" snmpPrimary=\"P\"><ipAddress>" + fixtureIp + "</ipAddress></ipInterface>", 201);
+            sendPost("rest/nodes/smoketests:xssAliasNode/snmpinterfaces",
+                    "<snmpInterface collectFlag=\"C\" ifIndex=\"1\" pollFlag=\"N\">"
+                    + "<ifAlias>" + LABEL + "</ifAlias><ifDescr>" + ifName + "</ifDescr><ifName>" + ifName + "</ifName>"
+                    + "<ifType>6</ifType><physAddr>" + physAddr + "</physAddr></snmpInterface>", 201);
+
+            // The smoke-test container stores RRD files by node ID.
+            final Integer nodeId = stack.opennms().getRestClient().getNode("smoketests:xssAliasNode").getId();
+            rrdDir = "/opt/opennms/share/rrd/snmp/" + nodeId + "/" + ifName + "-" + physAddr;
+            final Container.ExecResult result = stack.opennms().execInContainer("sh", "-c",
+                    "mkdir -p " + rrdDir + " && rrdtool create " + rrdDir + "/ifInOctets.rrd --step 300 DS:ifInOctets:COUNTER:600:U:U RRA:AVERAGE:0.5:1:12");
+            assertEquals(result.getStderr(), 0, result.getExitCode());
+
+            getDriver().get(getBaseUrlInternal() + "opennms/element/node.jsp?node=smoketests:xssAliasNode");
+            // The interface widget must start and show its rows. Otherwise, the test can pass because AngularJS does not run.
+            new WebDriverWait(getDriver(), Duration.ofSeconds(20))
+                    .until(d -> !d.findElements(By.cssSelector("#onms-interfaces td.ng-binding")).isEmpty());
+            assertLabelNotEvaluated("element/node.jsp?node=smoketests:xssAliasNode");
+
+            assertLabelShownAsText("graph/results.htm?reports=all&resourceId="
+                    + URLEncoder.encode("node[smoketests:xssAliasNode].interfaceSnmp[" + ifName + "-" + physAddr + "]", StandardCharsets.UTF_8));
+        } finally {
+            if (rrdDir != null) {
+                stack.opennms().execInContainer("rm", "-rf", rrdDir);
+            }
+            sendDelete("rest/nodes/smoketests:xssAliasNode", 202);
+        }
+    }
+
+    /**
+     * Waits for AngularJS on the current page, and fails if it evaluated the label.
+     */
+    private void assertLabelNotEvaluated(final String path) {
+        try {
+            new WebDriverWait(getDriver(), Duration.ofSeconds(3))
+                    .until(d -> Boolean.TRUE.equals(((JavascriptExecutor) d).executeScript("return window.__xss === true")));
+            fail("AngularJS evaluated the label on " + path);
+        } catch (final TimeoutException e) {
+            // Expected: the page did not run the expression.
         }
     }
 
