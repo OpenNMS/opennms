@@ -257,10 +257,10 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         String starttime = Long.toString(start / 1000);
         String endtime = Long.toString(end / 1000);
 
+        // Format the command prefix and the title template only one time.
+        // The DEF and graph lines contain values from the request and the RRD path, so do not format them again.
         final StringBuilder buf = new StringBuilder();
-        buf.append(commandPrefix);
-        buf.append(" ");
-        buf.append(title);
+        buf.append(MessageFormat.format(commandPrefix + " " + title, "bogus-rrd", starttime, endtime, graphtitle));
 
         String[] rrdFiles = getRrdNames(resource, dsNames);
 
@@ -297,8 +297,8 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             buf.append(line);
         }
 
-        LOG.debug("formatting: {}, bogus-rrd, {}, {}, {}", buf, starttime, endtime, graphtitle);
-        return MessageFormat.format(buf.toString(), "bogus-rrd", starttime, endtime, graphtitle);
+        LOG.debug("ad-hoc graph command: {}", buf);
+        return buf.toString();
     }
 
     private static String[] getRrdNames(OnmsResource resource, String[] dsNames) {

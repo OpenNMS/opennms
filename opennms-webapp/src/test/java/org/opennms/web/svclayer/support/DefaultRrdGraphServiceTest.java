@@ -157,6 +157,37 @@ public class DefaultRrdGraphServiceTest extends TestCase {
         assertEquals(expected, Arrays.asList(StringUtils.createCommandArray(command)));
     }
 
+    public void testAdhocCommandKeepsQuotesAndBracesInValues() {
+        AdhocGraphType type = new AdhocGraphType();
+        type.setCommandPrefix("rrdtool graph - --imgformat PNG --start {1} --end {2}");
+        type.setTitleTemplate("--title=\"{3}\"");
+        type.setDataSourceTemplate("DEF:{4}={0}:{5}:{6}");
+        type.setGraphLineTemplate("{7}:{4}#{8}:\"{9}\"");
+
+        // A foreign source or foreign ID can contain ' and { characters.
+        OnmsResource resource = mock(OnmsResource.class);
+        when(resource.getRrdGraphAttributes()).thenReturn(Collections.singletonMap("ifInOctets",
+                new RrdGraphAttribute("ifInOctets", "snmp/fs/It's{0}/eth0", "ifInOctets.rrd")));
+
+        String title = "It's a {graph} {3}";
+        String[] dataSources = { "ifInOctets" };
+        String[] aggregateFunctions = { "AVERAGE" };
+        String[] colors = { "ff0000" };
+        String[] dataSourceTitles = { "It's {1} {graph}" };
+        String[] styles = { "LINE2" };
+        DefaultRrdGraphService.validateAdhocParameters(title, dataSources, aggregateFunctions, colors, dataSourceTitles, styles);
+
+        String command = m_service.createAdHocCommand(type, resource, 1000000L, 2000000L,
+                title, dataSources, aggregateFunctions, colors, dataSourceTitles, styles);
+
+        List<String> expected = Arrays.asList("rrdtool", "graph", "-", "--imgformat", "PNG",
+                "--start", "1000", "--end", "2000",
+                "--title=It's a {graph} {3}",
+                "DEF:ds0=snmp/fs/It's{0}/eth0/ifInOctets.rrd:ifInOctets:AVERAGE",
+                "LINE2:ds0#ff0000:It's {1} {graph}");
+        assertEquals(expected, Arrays.asList(StringUtils.createCommandArray(command)));
+    }
+
     public void testAdhocAcceptsValuesFromTheUserInterface() {
         for (String aggregateFunction : new String[] { "AVERAGE", "MIN", "MAX", "LAST" }) {
             for (String style : new String[] { "LINE1", "LINE2", "LINE3", "AREA", "STACK" }) {
