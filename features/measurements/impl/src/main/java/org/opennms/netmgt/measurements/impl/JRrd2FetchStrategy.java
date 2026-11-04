@@ -31,14 +31,14 @@ import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2Exception;
-import org.opennms.netmgt.rrd.jrrd2.impl.JRrd2Jni;
+import org.opennms.netmgt.rrd.rrdtool.JRrd2Provider;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class JRrd2FetchStrategy extends AbstractRrdBasedFetchStrategy {
 
-    private JRrd2 jrrd2 = new JRrd2Jni();
+    private JRrd2 jrrd2 = JRrd2Provider.newInstance();
 
     @Override
     protected FetchResults fetchMeasurements(long start, long end, long step,

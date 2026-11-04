@@ -33,19 +33,18 @@ import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.jrrd2.api.FetchResults;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2Exception;
-import org.opennms.netmgt.rrd.jrrd2.impl.JRrd2Jni;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A multi-threaded JNI-based RRD strategy using jrrd2.
+ * A multi-threaded RRD strategy using jrrd2 (FFM binding to librrd, or the libjrrd2 JNI shim; see {@link JRrd2Provider}).
  *
  * @author jwhite <jesse@opennms.com>
  */
 public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<MultithreadedJniRrdStrategy.CreateCommand, MultithreadedJniRrdStrategy.UpdateCommand> {
     private static final Logger LOG = LoggerFactory.getLogger(MultithreadedJniRrdStrategy.class);
 
-	private final JRrd2 jrrd2 = new JRrd2Jni();
+	private final JRrd2 jrrd2 = JRrd2Provider.newInstance();
 	
     private Properties m_configurationProperties;
 

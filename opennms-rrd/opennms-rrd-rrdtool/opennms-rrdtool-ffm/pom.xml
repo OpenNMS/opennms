@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>opennms-rrd-rrdtool</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>37.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>opennms-rrdtool-ffm</artifactId>
+  <name>OpenNMS :: RRD :: RRDTool :: FFM</name>
+  <description>
+    JRrd2 implementation that calls the system librrd through the Java Foreign Function and Memory API,
+    replacing the libjrrd2 JNI shim.
+  </description>
+  <packaging>jar</packaging>
+  <properties>
+    <!-- java.lang.foreign is final as of Java 22. This module is compiled separately from the
+         rest of the build (still Java 21) and is only ever loaded reflectively. -->
+    <ffm.java.release>22</ffm.java.release>
+    <!-- optional absolute path to librrd for tests; blank = auto-detect -->
+    <opennms.library.rrd></opennms.library.rrd>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <release>${ffm.java.release}</release>
+          <source>${ffm.java.release}</source>
+          <target>${ffm.java.release}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>${argLineAllowReflection} --enable-native-access=ALL-UNNAMED</argLine>
+          <systemPropertyVariables>
+            <opennms.library.rrd>${opennms.library.rrd}</opennms.library.rrd>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd2-dependencies</artifactId>
+      <scope>provided</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
