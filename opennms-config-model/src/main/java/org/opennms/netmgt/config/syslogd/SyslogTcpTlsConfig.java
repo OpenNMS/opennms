@@ -73,7 +73,8 @@ public class SyslogTcpTlsConfig {
     }
 
     public String getCertFilePath() {
-        return certFilePath;
+        // Normalized here as well as in the setters: JAXB writes the fields directly.
+        return normalizePath(certFilePath);
     }
 
     public void setCertFilePath(final String certFilePath) {
@@ -81,7 +82,7 @@ public class SyslogTcpTlsConfig {
     }
 
     public String getPrivateKeyFilePath() {
-        return privateKeyFilePath;
+        return normalizePath(privateKeyFilePath);
     }
 
     public void setPrivateKeyFilePath(final String privateKeyFilePath) {
@@ -89,7 +90,7 @@ public class SyslogTcpTlsConfig {
     }
 
     public String getTrustCertFilePath() {
-        return trustCertFilePath;
+        return normalizePath(trustCertFilePath);
     }
 
     public void setTrustCertFilePath(final String trustCertFilePath) {
@@ -121,7 +122,7 @@ public class SyslogTcpTlsConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hash(Boolean.valueOf(enabled), certFilePath, privateKeyFilePath, trustCertFilePath, clientAuth);
+        return Objects.hash(Boolean.valueOf(enabled), getCertFilePath(), getPrivateKeyFilePath(), getTrustCertFilePath(), clientAuth);
     }
 
     @Override
@@ -134,9 +135,9 @@ public class SyslogTcpTlsConfig {
         }
         final SyslogTcpTlsConfig other = (SyslogTcpTlsConfig) obj;
         return enabled == other.enabled
-                && Objects.equals(certFilePath, other.certFilePath)
-                && Objects.equals(privateKeyFilePath, other.privateKeyFilePath)
-                && Objects.equals(trustCertFilePath, other.trustCertFilePath)
+                && Objects.equals(getCertFilePath(), other.getCertFilePath())
+                && Objects.equals(getPrivateKeyFilePath(), other.getPrivateKeyFilePath())
+                && Objects.equals(getTrustCertFilePath(), other.getTrustCertFilePath())
                 && Objects.equals(clientAuth, other.clientAuth);
     }
 

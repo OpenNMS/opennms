@@ -36,8 +36,10 @@
         * framing: "auto" (the default), "octet-counting" or "non-transparent". TCP has no
           message boundaries and RFC 6587 defines two ways to mark them, so "auto" reads the
           framing from the first message of a connection and keeps it for that connection.
-        * max-message-size: default 65536 bytes. A sender that exceeds it has its connection
-          closed, since the position of the next message is then unknown.
+          A connection that opens with digits and a space is taken as octet-counting.
+        * max-message-size: default 65536 bytes. An oversized newline-delimited message is
+          discarded and the connection kept. An oversized octet-counted message closes the
+          connection, since the position of the next message is then unknown.
         * max-connections: default 1024.
         * idle-timeout: seconds before a silent connection is closed. 0 disables.
         * ordered: whether one connection's messages are guaranteed to become events in the

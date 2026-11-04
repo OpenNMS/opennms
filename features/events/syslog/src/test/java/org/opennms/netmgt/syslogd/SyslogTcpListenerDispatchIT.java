@@ -153,7 +153,7 @@ public class SyslogTcpListenerDispatchIT {
     public void keepsIngestingWhenTheDispatchFutureNeverCompletes() throws Exception {
         // A Minion whose syslog configuration had been reloaded delivered the message but
         // never completed the future for it, because a previous dispatcher's drain thread
-        // completed the wrong one. Ordered is the only mode that waits on that future, so it
+        // completed the wrong one (NMS-20577). Ordered is the only mode that waits on that future, so it
         // is the only one that has to bound the wait. Shortened here from the shipped thirty
         // seconds.
         final int count = 5;
@@ -171,6 +171,83 @@ public class SyslogTcpListenerDispatchIT {
             for (int i = 0; i < count; i++) {
                 assertEquals("message " + i, dispatcher.nextMessage());
             }
+        }
+    }
+
+    @Test(timeout = 60 * 1000)
+    public void orderedWaitsDoNotHoldTheSharedDispatchThreads() throws Exception {
+        // Every connection shares one dispatch pool sized to the cores. Ordered connections
+        // waiting on a sink that has not confirmed must not take those threads from the rest.
+        final int stuckConnections = Math.max(2, Runtime.getRuntime().availableProcessors()) + 2;
+        final RecordingDispatcher dispatcher = new RecordingDispatcher(0);
+        dispatcher.setStuckMarker("stuck");
+        final int port = startOrdered(dispatcher, TimeUnit.MINUTES.toMillis(5));
+
+        final List<Socket> stuck = new ArrayList<>();
+        try {
+            for (int i = 0; i < stuckConnections; i++) {
+                final Socket socket = new Socket("127.0.0.1", port);
+                stuck.add(socket);
+                write(socket, "<34>Oct 11 22:14:15 host app: stuck " + i + "\n");
+            }
+            for (int i = 0; i < stuckConnections; i++) {
+                assertTrue(dispatcher.nextMessage().startsWith("stuck "));
+            }
+
+            sendBurst(port, 20);
+            for (int i = 0; i < 20; i++) {
+                assertNotNull(dispatcher.nextMessage());
+            }
+        } finally {
+            for (Socket socket : stuck) {
+                socket.close();
+            }
+        }
+    }
+
+    @Test(timeout = 60 * 1000)
+    public void stopDoesNotWaitOutUnconfirmedOrderedDispatches() throws Exception {
+        // A reload goes through stop(), so threads parked on the sink would hold it up.
+        final RecordingDispatcher dispatcher = new RecordingDispatcher(0);
+        dispatcher.setStuckMarker("stuck");
+        final int port = startOrdered(dispatcher, TimeUnit.MINUTES.toMillis(5));
+
+        final List<Socket> stuck = new ArrayList<>();
+        try {
+            for (int i = 0; i < 4; i++) {
+                final Socket socket = new Socket("127.0.0.1", port);
+                stuck.add(socket);
+                write(socket, "<34>Oct 11 22:14:15 host app: stuck " + i + "\n");
+            }
+            for (int i = 0; i < 4; i++) {
+                dispatcher.nextMessage();
+            }
+
+            final long started = System.nanoTime();
+            m_listener.stop();
+            final long elapsedMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started);
+            assertTrue("stop() took " + elapsedMs + "ms", elapsedMs < 5000);
+        } finally {
+            for (Socket socket : stuck) {
+                socket.close();
+            }
+        }
+    }
+
+    @Test(timeout = 60 * 1000)
+    public void orderedKeepsTheConnectionWhenTheSinkFailsAMessage() throws Exception {
+        final RecordingDispatcher dispatcher = new RecordingDispatcher(0);
+        dispatcher.setFailMarker("poison");
+        final int port = startOrdered(dispatcher, 0);
+
+        try (Socket socket = new Socket("127.0.0.1", port)) {
+            write(socket, "<34>Oct 11 22:14:15 host app: poison\n<34>Oct 11 22:14:15 host app: after 0\n");
+            assertEquals("poison", dispatcher.nextMessage());
+            assertEquals("after 0", dispatcher.nextMessage());
+
+            // Still the same connection: a closed one would fail this write or never deliver.
+            write(socket, "<34>Oct 11 22:14:15 host app: after 1\n");
+            assertEquals("after 1", dispatcher.nextMessage());
         }
     }
 
@@ -438,6 +515,12 @@ public class SyslogTcpListenerDispatchIT {
 
         private volatile boolean neverCompleteFutures;
 
+        /** Messages containing this get a future that never completes. */
+        private volatile String stuckMarker;
+
+        /** Messages containing this get a future that fails. */
+        private volatile String failMarker;
+
         private volatile long confirmAfterMillis;
         private final AtomicInteger unconfirmed = new AtomicInteger();
         private final AtomicInteger maxUnconfirmed = new AtomicInteger();
@@ -475,8 +558,12 @@ public class SyslogTcpListenerDispatchIT {
                     Thread.currentThread().interrupt();
                 }
             }
+            final String text = new String(bytes, StandardCharsets.UTF_8);
+            if (failMarker != null && text.contains(failMarker)) {
+                return CompletableFuture.failedFuture(new IllegalStateException("sink failed " + text));
+            }
             // An uncompleted future, the way a reloaded Minion leaves them.
-            if (neverCompleteFutures) {
+            if (neverCompleteFutures || (stuckMarker != null && text.contains(stuckMarker))) {
                 return new CompletableFuture<>();
             }
             if (confirmAfterMillis > 0) {
@@ -508,6 +595,14 @@ public class SyslogTcpListenerDispatchIT {
 
         void setNeverCompleteFutures(final boolean neverCompleteFutures) {
             this.neverCompleteFutures = neverCompleteFutures;
+        }
+
+        void setStuckMarker(final String stuckMarker) {
+            this.stuckMarker = stuckMarker;
+        }
+
+        void setFailMarker(final String failMarker) {
+            this.failMarker = failMarker;
         }
 
         void release() {

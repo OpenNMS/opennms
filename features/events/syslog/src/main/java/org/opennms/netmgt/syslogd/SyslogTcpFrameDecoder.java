@@ -70,6 +70,13 @@ public class SyslogTcpFrameDecoder extends ByteToMessageDecoder {
 
     private SyslogTcpFraming activeFraming;
 
+    /** Non-transparent only: skipping the rest of an oversized frame until its trailer arrives. */
+    private boolean discarding;
+
+    private long discardedBytes;
+
+    private boolean warnedOversized;
+
     public SyslogTcpFrameDecoder(final InetSocketAddress source, final SyslogTcpFraming configuredFraming, final int maxMessageSize) {
         this.source = Objects.requireNonNull(source);
         this.configuredFraming = Objects.requireNonNull(configuredFraming);
@@ -85,6 +92,11 @@ public class SyslogTcpFrameDecoder extends ByteToMessageDecoder {
         return activeFraming;
     }
 
+    /** Bytes held between reads; exposed so tests can check the buffer stays bounded. */
+    int bufferedBytes() {
+        return actualReadableBytes();
+    }
+
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) throws Exception {
         if (activeFraming == null) {
@@ -94,10 +106,10 @@ public class SyslogTcpFrameDecoder extends ByteToMessageDecoder {
             if (!in.isReadable()) {
                 return;
             }
-            final byte first = in.getByte(in.readerIndex());
-            activeFraming = (first >= '0' && first <= '9')
-                    ? SyslogTcpFraming.OCTET_COUNTING
-                    : SyslogTcpFraming.NON_TRANSPARENT;
+            activeFraming = detectFraming(in);
+            if (activeFraming == null) {
+                return;
+            }
             LOG.info("Detected {} framing for syslog TCP connection from {}", activeFraming, source);
         }
 
@@ -106,6 +118,26 @@ public class SyslogTcpFrameDecoder extends ByteToMessageDecoder {
         } else {
             decodeNonTransparent(in, out);
         }
+    }
+
+    /**
+     * Octet-counting only for digits followed by a space, so a sender that omits PRI and
+     * starts with a timestamp such as 2024-01-01 is not mistaken for a length prefix. Null
+     * while the buffer holds nothing but digits.
+     */
+    private static SyslogTcpFraming detectFraming(final ByteBuf in) {
+        final int start = in.readerIndex();
+        final int limit = Math.min(in.writerIndex(), start + MAX_LENGTH_PREFIX_DIGITS + 1);
+        for (int i = start; i < limit; i++) {
+            final byte b = in.getByte(i);
+            if (b == SPACE && i > start) {
+                return SyslogTcpFraming.OCTET_COUNTING;
+            }
+            if (b < '0' || b > '9') {
+                return SyslogTcpFraming.NON_TRANSPARENT;
+            }
+        }
+        return limit - start > MAX_LENGTH_PREFIX_DIGITS ? SyslogTcpFraming.NON_TRANSPARENT : null;
     }
 
     /**
@@ -181,6 +213,20 @@ public class SyslogTcpFrameDecoder extends ByteToMessageDecoder {
      */
     private void decodeNonTransparent(final ByteBuf in, final List<Object> out) {
         while (true) {
+            if (discarding) {
+                final int trailerIndex = in.forEachByte(in.readerIndex(), in.readableBytes(), FIND_TRAILER);
+                if (trailerIndex < 0) {
+                    discardedBytes += in.readableBytes();
+                    in.skipBytes(in.readableBytes());
+                    return;
+                }
+                discardedBytes += trailerIndex - in.readerIndex();
+                in.readerIndex(trailerIndex + 1);
+                discarding = false;
+                warnOversized(discardedBytes);
+                continue;
+            }
+
             skipEmptyFrameTrailers(in);
             if (!in.isReadable()) {
                 return;
@@ -191,22 +237,21 @@ public class SyslogTcpFrameDecoder extends ByteToMessageDecoder {
 
             if (trailerIndex < 0) {
                 if (in.readableBytes() > maxMessageSize) {
-                    throw new TooLongFrameException(String.format(
-                            "Syslog frame from %s exceeds the %d byte maximum with no trailer in sight",
-                            source, maxMessageSize));
+                    // Drop the message rather than the connection, whether or not its trailer
+                    // has arrived yet: the next message starts right after that trailer. Only
+                    // the octet-counted path has to close, because there a bad length leaves
+                    // the next message nowhere in particular.
+                    discarding = true;
+                    discardedBytes = in.readableBytes();
+                    in.skipBytes(in.readableBytes());
                 }
                 return;
             }
 
             final int frameLength = trailerIndex - start;
             if (frameLength > maxMessageSize) {
-                // Drop the message rather than the connection: the trailer is already in
-                // hand, so the next message starts right after it. Only the octet-counted
-                // path has to close, because there a bad length leaves the next message
-                // nowhere in particular.
-                LOG.warn("Discarding a {} byte syslog frame from {}, which exceeds the {} byte maximum",
-                        frameLength, source, maxMessageSize);
                 in.skipBytes(frameLength + 1);
+                warnOversized(frameLength);
                 continue;
             }
 
@@ -216,6 +261,18 @@ public class SyslogTcpFrameDecoder extends ByteToMessageDecoder {
             }
             // Consume the frame and its trailer whether or not it produced a message.
             in.skipBytes(frameLength + 1);
+        }
+    }
+
+    /** WARN for the first oversized frame on a connection, DEBUG after, so a looping sender cannot fill the log. */
+    private void warnOversized(final long length) {
+        if (!warnedOversized) {
+            warnedOversized = true;
+            LOG.warn("Discarded a {} byte syslog frame from {}, which exceeds the {} byte maximum."
+                    + " Further oversized frames on this connection are logged at DEBUG.", length, source, maxMessageSize);
+        } else {
+            LOG.debug("Discarded a {} byte syslog frame from {}, which exceeds the {} byte maximum",
+                    length, source, maxMessageSize);
         }
     }
 

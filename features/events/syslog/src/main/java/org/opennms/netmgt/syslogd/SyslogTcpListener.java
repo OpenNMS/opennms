@@ -26,6 +26,7 @@ import java.util.ArrayDeque;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -99,6 +100,10 @@ public class SyslogTcpListener {
     private volatile SyslogTcpFraming m_framing;
 
     private final AtomicLong m_lastRefusalWarning = new AtomicLong();
+
+    private final AtomicLong m_lastSinkFailureWarning = new AtomicLong();
+
+    private final AtomicLong m_suppressedSinkFailures = new AtomicLong();
 
     /** Runs the calls into the sink dispatcher, which block and so must stay off the event loops. */
     private volatile ExecutorService m_dispatchPool;
@@ -257,9 +262,10 @@ public class SyslogTcpListener {
 
     /**
      * Hands decoded messages to the dispatcher one at a time, in arrival order, from a pool
-     * thread. One outstanding dispatch is what preserves ordering, since the sink drains its
-     * queue with several threads. Reads stay off until it returns, so a slow sink becomes TCP
-     * backpressure rather than unbounded buffering.
+     * thread. Reads stay off until send() returns, so a sink whose queue blocks when full
+     * becomes TCP backpressure rather than unbounded buffering. With ordered set, the next
+     * message also waits for the sink to confirm this one, since the sink drains its queue
+     * with several threads.
      *
      * One instance per channel; pending and dispatchInFlight are event-loop confined.
      */
@@ -305,47 +311,54 @@ public class SyslogTcpListener {
             dispatchInFlight = true;
             try {
                 pool.execute(() -> {
-                    Throwable failure = null;
+                    final CompletableFuture<?> dispatched;
                     try {
-                        final CompletableFuture<?> dispatched = m_dispatcher.send(next);
-                        if (!m_config.isOrdered()) {
-                            // send() returning means the sink took the message, which is all
-                            // that is needed to read the next one. The sink still reorders
-                            // pairs on its own, so waiting buys a guarantee only while nothing
-                            // else is in flight, and it costs two orders of magnitude.
-                            dispatched.whenComplete((r, e) -> {
-                                if (e != null) {
-                                    LOG.warn("The sink failed a syslog message from {}", next.getSource(), e);
-                                }
-                            });
-                        } else if (waitForDispatch && m_dispatchTimeoutMs <= 0) {
-                            dispatched.get();
-                        } else if (waitForDispatch) {
-                            try {
-                                dispatched.get(m_dispatchTimeoutMs, TimeUnit.MILLISECONDS);
-                            } catch (TimeoutException e) {
-                                // Any sink slow enough to leave a future uncompleted for this
-                                // long would otherwise stall the connection, since reads stay
-                                // off until the dispatch returns. A Minion after a reload is
-                                // the case that never recovers, because the sink completes the
-                                // wrong futures, but a merely busy sink reaches it too. Paying
-                                // the timeout per message is worse than losing ordering, so
-                                // stop waiting for the rest of this connection.
-                                waitForDispatch = false;
-                                LOG.warn("The sink took a syslog message from {} but did not report it dispatched"
-                                        + " within {}ms. This connection will no longer wait for confirmation, so"
-                                        + " its messages may reach the consumer out of order and are no longer"
-                                        + " subject to read backpressure. Raise dispatch-timeout if the sink is"
-                                        + " merely slow, or clear ordered if this sender does not need it.",
-                                        next.getSource(), m_dispatchTimeoutMs);
-                            }
-                        }
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
+                        dispatched = m_dispatcher.send(next);
                     } catch (Throwable e) {
-                        failure = e;
+                        onDispatched(ctx, e);
+                        return;
                     }
-                    onDispatched(ctx, failure);
+                    if (!m_config.isOrdered() || !waitForDispatch) {
+                        // send() returning means the sink took the message, which is all
+                        // that is needed to read the next one. The sink still reorders
+                        // pairs on its own, so waiting buys a guarantee only while nothing
+                        // else is in flight, and it costs two orders of magnitude.
+                        dispatched.whenComplete((r, e) -> {
+                            if (e != null) {
+                                warnSinkFailure(next, e);
+                            }
+                        });
+                        onDispatched(ctx, null);
+                        return;
+                    }
+                    // Waited on without holding this thread: the pool is shared by every
+                    // connection, so parking it here would stall the others behind a slow sink.
+                    final CompletableFuture<?> confirmed = m_dispatchTimeoutMs > 0
+                            ? dispatched.copy().orTimeout(m_dispatchTimeoutMs, TimeUnit.MILLISECONDS)
+                            : dispatched;
+                    confirmed.whenComplete((r, e) -> {
+                        final Throwable cause = e instanceof CompletionException && e.getCause() != null ? e.getCause() : e;
+                        if (cause instanceof TimeoutException) {
+                            // Any sink slow enough to leave a future uncompleted for this
+                            // long would otherwise stall the connection, since reads stay
+                            // off until the dispatch returns. A Minion after a reload is
+                            // the case that never recovers, because the sink completes the
+                            // wrong futures (NMS-20577), but a merely busy sink reaches it too. Paying
+                            // the timeout per message is worse than losing ordering, so
+                            // stop waiting for the rest of this connection.
+                            waitForDispatch = false;
+                            LOG.warn("The sink took a syslog message from {} but did not report it dispatched"
+                                    + " within {}ms. This connection will no longer wait for confirmation, so"
+                                    + " its messages may reach the consumer out of order and are no longer"
+                                    + " subject to read backpressure. Raise dispatch-timeout if the sink is"
+                                    + " merely slow, or clear ordered if this sender does not need it.",
+                                    next.getSource(), m_dispatchTimeoutMs);
+                        } else if (cause != null) {
+                            // One failed message is no reason to drop the sender's connection.
+                            warnSinkFailure(next, cause);
+                        }
+                        onDispatched(ctx, null);
+                    });
                 });
             } catch (RejectedExecutionException e) {
                 dispatchInFlight = false;
@@ -370,6 +383,24 @@ public class SyslogTcpListener {
             } catch (RejectedExecutionException e) {
                 LOG.debug("Syslog TCP channel on {} went away before its dispatch completed", m_config.getPort(), e);
             }
+        }
+    }
+
+    /**
+     * Once a minute at WARN, like connection refusals: a failing sink fails every message, and
+     * a stack trace per message would bury the log.
+     */
+    private void warnSinkFailure(final SyslogConnection message, final Throwable cause) {
+        final long now = System.nanoTime();
+        final long last = m_lastSinkFailureWarning.get();
+        if (now - last > REFUSAL_WARNING_INTERVAL_NS && m_lastSinkFailureWarning.compareAndSet(last, now)) {
+            final long suppressed = m_suppressedSinkFailures.getAndSet(0);
+            LOG.warn("The sink failed a syslog message from {}: {}{}", message.getSource(), cause.toString(),
+                    suppressed > 0 ? " (" + suppressed + " more failures since the last warning)" : "");
+            LOG.debug("Sink failure for a syslog message from {}", message.getSource(), cause);
+        } else {
+            m_suppressedSinkFailures.incrementAndGet();
+            LOG.debug("The sink failed a syslog message from {}", message.getSource(), cause);
         }
     }
 

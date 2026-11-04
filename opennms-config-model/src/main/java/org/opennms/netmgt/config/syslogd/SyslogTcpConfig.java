@@ -98,7 +98,9 @@ public class SyslogTcpConfig {
     }
 
     public String getListenAddress() {
-        return listenAddress;
+        // JAXB writes the field directly, so listen-address="" arrives here unnormalized, and
+        // an empty host binds loopback.
+        return listenAddress == null || listenAddress.trim().isEmpty() ? null : listenAddress.trim();
     }
 
     public void setListenAddress(final String listenAddress) {
@@ -224,7 +226,7 @@ public class SyslogTcpConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hash(port, listenAddress, framing, maxMessageSize, maxConnections, idleTimeoutSeconds,
+        return Objects.hash(port, getListenAddress(), framing, maxMessageSize, maxConnections, idleTimeoutSeconds,
                 Boolean.valueOf(ordered), dispatchTimeoutSeconds, tls);
     }
 
@@ -238,7 +240,7 @@ public class SyslogTcpConfig {
         }
         final SyslogTcpConfig other = (SyslogTcpConfig) obj;
         return Objects.equals(port, other.port)
-                && Objects.equals(listenAddress, other.listenAddress)
+                && Objects.equals(getListenAddress(), other.getListenAddress())
                 && Objects.equals(framing, other.framing)
                 && Objects.equals(maxMessageSize, other.maxMessageSize)
                 && Objects.equals(maxConnections, other.maxConnections)
@@ -251,7 +253,7 @@ public class SyslogTcpConfig {
     @Override
     public String toString() {
         return "SyslogTcpConfig[port=" + port
-                + ", listenAddress=" + (listenAddress == null ? "0.0.0.0" : listenAddress)
+                + ", listenAddress=" + (getListenAddress() == null ? "0.0.0.0" : getListenAddress())
                 + ", framing=" + getFraming()
                 + ", maxMessageSize=" + getMaxMessageSize()
                 + ", maxConnections=" + getMaxConnections()

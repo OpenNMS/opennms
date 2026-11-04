@@ -38,6 +38,7 @@ RFC 6587 describes two ways of doing this, and senders differ in which one they 
 
 The `framing` attribute selects between them.
 The default, `auto`, reads the framing from the first message of each connection and then keeps it for the rest of that connection.
+A connection that opens with digits followed by a space is taken as octet-counting, so a newline-delimited sender whose messages start with a bare number and no `<PRI>` should have `framing` set explicitly.
 Setting it to `octet-counting` or `non-transparent` may help if a sender is inconsistent, though it will then reject anything that arrives in the other framing.
 
 Non-transparent framing accepts either a newline or a NUL as the message separator, since senders differ, and strips a trailing carriage return.
@@ -47,7 +48,7 @@ A framing mismatch shows up differently depending on which way round it is.
 Under `octet-counting` against a newline-delimited sender, the first byte is not a digit, so the connection is dropped and the reason is logged in `syslogd.log`.
 
 Under `non-transparent` against an octet-counting sender, the symptom depends on whether the sender's messages happen to contain a newline or a NUL.
-Octet-counted frames normally do not, in which case the listener never sees a message boundary: nothing arrives at all, and the connection is eventually dropped once the buffered stream passes `max-message-size`.
+Octet-counted frames normally do not, in which case the listener never sees a message boundary: nothing arrives at all, and the stream is discarded in `max-message-size` pieces with a warning in `syslogd.log`.
 If the messages do contain one, events arrive instead with the length prefix at the front of the body.
 
 [caption=]
@@ -66,7 +67,8 @@ If the messages do contain one, events arrive instead with the length prefix at 
 
 | max-message-size
 | Largest message accepted, in bytes.
-A sender that exceeds it has its connection closed, since the position of the next message is no longer known.
+An oversized newline-delimited message is discarded and the connection kept.
+An oversized octet-counted message closes the connection, since the position of the next message is no longer known.
 | 65536
 
 | max-connections

@@ -204,12 +204,18 @@ public class SyslogTcpFrameDecoderTest {
     }
 
     @Test
-    public void unterminatedLfDelimitedFrameOverMaximumIsRejected() {
+    public void unterminatedLfDelimitedFrameOverMaximumIsNotBuffered() {
         // A sender that never sends a trailer must not be able to grow the cumulation
         // buffer without bound.
         final EmbeddedChannel channel = channel(SyslogTcpFraming.AUTO, 32);
 
-        assertThrows(TooLongFrameException.class, () -> channel.writeInbound(buf(MESSAGE)));
+        for (int i = 0; i < 100; i++) {
+            channel.writeInbound(buf(MESSAGE));
+        }
+
+        assertEquals(List.of(), drain(channel));
+        assertEquals(0, decoderOf(channel).bufferedBytes());
+        assertTrue(channel.isOpen());
     }
 
     @Test
@@ -385,14 +391,43 @@ public class SyslogTcpFrameDecoderTest {
     }
 
     @Test
-    public void stillClosesWhenNoTrailerArrivesWithinTheLimit() {
-        final EmbeddedChannel channel = guardedChannel(SyslogTcpFraming.NON_TRANSPARENT, 64);
+    public void dropsAnOversizedFrameWhoseTrailerArrivesInALaterRead() {
+        // The outcome must not depend on how TCP happened to segment the frame.
+        final EmbeddedChannel channel = guardedChannel(SyslogTcpFraming.NON_TRANSPARENT, 128);
 
-        // No delimiter anywhere, so the position of the next message is unknown.
-        channel.writeInbound(buf("<34>" + "x".repeat(200)));
+        channel.writeInbound(buf("<34>" + "x".repeat(300)));
+        channel.writeInbound(buf("x".repeat(50)));
+        channel.writeInbound(buf("xx\n" + OTHER_MESSAGE + "\n"));
 
-        assertEquals(List.of(), drain(channel));
-        assertFalse(channel.isOpen());
+        assertEquals(List.of(OTHER_MESSAGE), drain(channel));
+        assertTrue(channel.isOpen());
+    }
+
+    @Test
+    public void autoDetectionDoesNotTakeALeadingTimestampForALengthPrefix() {
+        // A sender that omits PRI starts with the year.
+        final String noPri = "2024-01-01T10:00:00Z host app: started";
+        final EmbeddedChannel channel = guardedChannel(SyslogTcpFraming.AUTO, DEFAULT_MAX);
+
+        channel.writeInbound(buf(noPri + "\n"));
+
+        assertEquals(List.of(noPri), drain(channel));
+        assertEquals(SyslogTcpFraming.NON_TRANSPARENT, decoderOf(channel).getActiveFraming());
+        assertTrue(channel.isOpen());
+    }
+
+    @Test
+    public void autoDetectionWaitsForTheSpaceAfterALengthPrefixSplitAcrossReads() {
+        final EmbeddedChannel channel = channel(SyslogTcpFraming.AUTO, DEFAULT_MAX);
+        final String framed = octetCounted(MESSAGE);
+        final int space = framed.indexOf(' ');
+
+        channel.writeInbound(buf(framed.substring(0, space - 1)));
+        assertNull(decoderOf(channel).getActiveFraming());
+
+        channel.writeInbound(buf(framed.substring(space - 1)));
+        assertEquals(List.of(MESSAGE), drain(channel));
+        assertEquals(SyslogTcpFraming.OCTET_COUNTING, decoderOf(channel).getActiveFraming());
     }
 
     private static EmbeddedChannel channel(final SyslogTcpFraming framing, final int maxMessageSize) {

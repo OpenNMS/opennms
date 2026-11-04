@@ -22,6 +22,7 @@
 package org.opennms.netmgt.config.syslogd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -127,6 +128,25 @@ public class SyslogdConfigurationTest extends XmlTest<SyslogdConfiguration> {
         daemonConfig.setConfiguration(config);
 
         return daemonConfig;
+    }
+
+    @Test
+    public void emptyAttributesInTheXmlReadAsUnset() {
+        // JAXB writes the fields directly, past the setters' normalization. An empty
+        // listen-address would otherwise bind loopback.
+        final String xml = "<syslogd-configuration>\n" +
+                "    <configuration syslog-port=\"10514\">\n" +
+                "        <tcp port=\"10601\" listen-address=\"\">\n" +
+                "            <tls enabled=\"true\" cert-filepath=\" \" private-key-filepath=\"\" trust-cert-filepath=\"\"/>\n" +
+                "        </tcp>\n" +
+                "    </configuration>\n" +
+                "</syslogd-configuration>";
+
+        final SyslogTcpConfig tcp = JaxbUtils.unmarshal(SyslogdConfiguration.class, xml).getConfiguration().getTcpConfig();
+        assertNull(tcp.getListenAddress());
+        assertNull(tcp.getTls().getCertFilePath());
+        assertNull(tcp.getTls().getPrivateKeyFilePath());
+        assertNull(tcp.getTls().getTrustCertFilePath());
     }
 
     @Test
