@@ -63,10 +63,10 @@ const pad = (n: number) => String(n).padStart(2, '0')
 
 export function formatSpecific(isoLocal: string, shortMonths: string[]): string {
   const m = ISO_LOCAL.exec(isoLocal)
-  if (!m) {
-    return ''
+  const month = m ? shortMonths[Number(m[2]) - 1] : undefined
+  if (!m || month === undefined) {
+    throw new Error(`Cannot format '${isoLocal}' as a specific date`)
   }
-  const month = shortMonths[Number(m[2]) - 1] ?? m[2]
   return `${m[3]}-${month}-${m[1]} ${m[4]}:${m[5]}:${m[6] ?? '00'}`
 }
 
@@ -214,7 +214,9 @@ export function cardProblems(c: ScheduleCard): string[] {
     if (c.type === 'monthly' && !isMonthDay(r.day)) {
       add('The day of the month must be between 1 and 31.')
     }
-    if (!r.begin || (!r.endOfDay && !r.end)) {
+    const valueFormat = c.type === 'specific' ? /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/ : /^\d{2}:\d{2}$/
+    const endOk = valueFormat.test(r.end) || (r.endOfDay && c.type !== 'specific')
+    if (!valueFormat.test(r.begin) || !endOk) {
       add('Enter a begin and an end for each time range.')
       continue
     }

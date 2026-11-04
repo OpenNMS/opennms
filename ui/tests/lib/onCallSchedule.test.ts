@@ -1,3 +1,25 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
 import { describe, expect, it } from 'vitest'
 import {
   cardProblems,
@@ -53,6 +75,13 @@ describe('round trip', () => {
       s.times[0],
       { id: '2', day: 'tuesday', begins: '08:00:00', ends: '13:15:00' }
     ])
+  })
+
+  it('drops the day when a weekly card becomes daily', () => {
+    const card = toCard({ user: 'a', type: 'weekly', times: [{ id: '2', day: 'monday', begins: '09:00:00', ends: '12:00:00' }] }, en)
+    card.type = 'daily'
+    card.dirty = true
+    expect(toSchedule(card, en).times).toEqual([{ id: '2', day: null, begins: '09:00:00', ends: '12:00:00' }])
   })
 
   it('serializes end of day as 23:59:59', () => {
@@ -144,6 +173,11 @@ describe('specific dates', () => {
     expect(parseSpecific('14-mar-2026 18:00:00', en)).toBe('2026-03-14T18:00:00')
   })
 
+  it('refuses to format an unparseable value', () => {
+    expect(() => formatSpecific('08:00', en)).toThrow()
+    expect(() => formatSpecific('2026-13-01T08:00', en)).toThrow()
+  })
+
   it('rejects malformed or impossible values', () => {
     expect(parseSpecific('14-Mar-2026 18:00', en)).toBeNull()
     expect(parseSpecific('31-Feb-2026 18:00:00', en)).toBeNull()
@@ -184,11 +218,11 @@ describe('cardProblems', () => {
   it('requires a user', () => {
     const c = valid()
     c.user = ''
-    expect(cardProblems(c)).toHaveLength(1)
+    expect(cardProblems(c)).toEqual(['Choose a user.'])
   })
 
   it('requires a time', () => {
-    expect(cardProblems(newCard('admin', 'daily'))).toHaveLength(1)
+    expect(cardProblems(newCard('admin', 'daily'))).toEqual(['Add at least one time range.'])
   })
 
   it('hints at two ranges for a shift past midnight', () => {
@@ -219,7 +253,7 @@ describe('cardProblems', () => {
   it('requires a weekday for weekly', () => {
     const c = valid()
     c.type = 'weekly'
-    expect(cardProblems(c)).toHaveLength(1)
+    expect(cardProblems(c)).toEqual(['Choose a weekday for each time range.'])
     c.times[0].day = 'monday'
     expect(cardProblems(c)).toEqual([])
   })
@@ -228,7 +262,7 @@ describe('cardProblems', () => {
     const c = valid()
     c.type = 'monthly'
     c.times[0].day = '32'
-    expect(cardProblems(c)).toHaveLength(1)
+    expect(cardProblems(c)).toEqual(['The day of the month must be between 1 and 31.'])
     c.times[0].day = '31'
     expect(cardProblems(c)).toEqual([])
   })
@@ -236,6 +270,21 @@ describe('cardProblems', () => {
   it('requires begin and end values', () => {
     const c = valid()
     c.times[0].begin = ''
-    expect(cardProblems(c)).toHaveLength(1)
+    expect(cardProblems(c)).toEqual(['Enter a begin and an end for each time range.'])
+  })
+
+  it('requires an end date for a specific time even with end of day', () => {
+    const c = newCard('admin', 'specific')
+    c.times.push({ id: null, day: null, begin: '2026-03-14T10:00', end: '', endOfDay: true, original: null })
+    expect(cardProblems(c)).toEqual(['Enter a begin and an end for each time range.'])
+  })
+
+  it('rejects values in the wrong format for the type', () => {
+    const c = newCard('admin', 'specific')
+    c.times.push({ id: null, day: null, begin: '08:00', end: '17:00', endOfDay: false, original: null })
+    expect(cardProblems(c)).toEqual(['Enter a begin and an end for each time range.'])
+    const d = valid()
+    d.times[0].begin = '2026-03-14T10:00'
+    expect(cardProblems(d)).toEqual(['Enter a begin and an end for each time range.'])
   })
 })
