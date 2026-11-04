@@ -146,8 +146,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1
       ip-address:
-        specifier: ^10.5.0
-        version: 10.5.0
+        specifier: ^10.7.4
+        version: 10.7.4
       jquery:
         specifier: ^3.6.0
         version: 3.7.1
@@ -3225,8 +3225,8 @@ packages:
   ionicons@2.0.1:
     resolution: {integrity: sha512-ySWjaL3PxB4JFMvr7/02sByWM7TQv1mrvRYFvUwFcVEEHEK/RKEP6MFhcnTmKhoPM6Ih6s5wH003fkVk1wiXLQ==}
 
-  ip-address@10.5.0:
-    resolution: {integrity: sha512-R5SnVLJmgYYvf2F2ZgwSBnelz5G4q5AxIC277GDfUaNbrZKNANcBC7RHqYYePlszf4kBolVkJauG0ZjHHFh55g==}
+  ip-address@10.7.4:
+    resolution: {integrity: sha512-DWBMKyeM25D70nrIiTkgQth59/G+naKOTep6huF9j+GmeK3DMD60Zvxg5d5qQnz+38AHgou6ean2LECX+lrKDg==}
     engines: {node: '>= 12'}
 
   is-absolute-url@2.1.0:
@@ -8931,7 +8931,7 @@ snapshots:
 
   ionicons@2.0.1: {}
 
-  ip-address@10.5.0: {}
+  ip-address@10.7.4: {}
 
   is-absolute-url@2.1.0: {}
 
