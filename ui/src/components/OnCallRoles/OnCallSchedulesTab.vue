@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 import { OnmsButton } from '@opennms/onms-ui'
 
@@ -44,6 +44,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:cards': [cards: ScheduleCard[]]
+  // the highlight has started: the parent clears highlightKey so the same card can be highlighted again
+  highlighted: []
 }>()
 
 const HIGHLIGHT_MS = 2000
@@ -70,21 +72,27 @@ const addCard = () => {
   emit('update:cards', [...props.cards, newCard('', 'weekly')])
 }
 
-watch(() => props.highlightKey, (key) => {
+// immediate, so a key already set when the tab mounts (switching tabs and highlighting in one tick) works
+watch(() => props.highlightKey, async (key) => {
   if (!key) {
     return
   }
+  // let the card render first
+  await nextTick()
   const el = (refs.get(key) as { $el?: HTMLElement } | undefined)?.$el
   // scrollIntoView is missing in jsdom/happy-dom
   if (el && typeof el.scrollIntoView === 'function') {
     el.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
   highlighted.value = key
+  emit('highlighted')
   clearTimeout(timer)
   timer = setTimeout(() => {
     highlighted.value = null
   }, HIGHLIGHT_MS)
-})
+}, { immediate: true })
+
+onBeforeUnmount(() => clearTimeout(timer))
 </script>
 
 <style lang="scss" scoped>

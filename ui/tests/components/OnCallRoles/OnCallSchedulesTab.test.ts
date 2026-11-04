@@ -20,8 +20,9 @@
 ///
 
 import { enableAutoUnmount, mount } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import PrimeVue from 'primevue/config'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import OnCallSchedulesTab from '@/components/OnCallRoles/OnCallSchedulesTab.vue'
 import { cardProblems, newCard } from '@/lib/onCallSchedule'
@@ -55,8 +56,34 @@ describe('OnCallSchedulesTab', () => {
     const cards = [newCard('bob', 'daily'), newCard('bob', 'weekly')]
     const w = mountTab(cards)
     await w.setProps({ highlightKey: cards[1].key })
+    await nextTick()
+    await nextTick()
     const els = w.findAll('[data-test="oncall-schedule-card"]')
     expect(els[1].classes()).toContain('highlight')
     expect(els[0].classes()).not.toContain('highlight')
+  })
+
+  it('highlights a card named by a highlightKey already set at mount, then clears after 2 s', async () => {
+    vi.useFakeTimers()
+    try {
+      const scroll = vi.fn()
+      Element.prototype.scrollIntoView = scroll
+      const cards = [newCard('bob', 'daily'), newCard('bob', 'weekly')]
+      const w = mount(OnCallSchedulesTab, {
+        props: { cards, members: ['bob'], highlightKey: cards[1].key },
+        global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
+      })
+      await nextTick()
+      await nextTick()
+      expect(w.findAll('[data-test="oncall-schedule-card"]')[1].classes()).toContain('highlight')
+      expect(scroll).toHaveBeenCalled()
+      expect(w.emitted('highlighted')).toHaveLength(1)
+      await vi.advanceTimersByTimeAsync(2000)
+      expect(w.findAll('[data-test="oncall-schedule-card"]')[1].classes()).not.toContain('highlight')
+    } finally {
+      vi.useRealTimers()
+      // @ts-expect-error restoring the missing DOM method
+      delete Element.prototype.scrollIntoView
+    }
   })
 })

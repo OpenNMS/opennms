@@ -109,6 +109,7 @@
               v-model:cards="cards"
               :members="members"
               :highlightKey="highlightKey"
+              @highlighted="highlightKey = null"
             />
           </OnmsTabPanel>
           <OnmsTabPanel value="calendar">

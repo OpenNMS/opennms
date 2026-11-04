@@ -101,6 +101,19 @@ describe('OnCallScheduleCard', () => {
     })
   })
 
+  it('keeps the end date editable for a specific time that runs to the end of the day', async () => {
+    const w = mountCard(newCard('bob', 'specific'))
+    await w.find('[data-test="add-time"]').trigger('click')
+    await w.setProps({ card: lastCard(w) })
+    await w.find('[data-test="time-begin-0"]').setValue('2026-03-05T08:00')
+    await w.setProps({ card: lastCard(w) })
+    await w.find('[data-test="time-end-of-day-0"] input').setValue(true)
+    await w.setProps({ card: lastCard(w) })
+    await w.find('[data-test="time-end-date-0"]').setValue('2026-03-06')
+    const card = lastCard(w)
+    expect(toSchedule(card, SHORT_MONTHS).times[0]).toEqual({ id: null, day: null, begins: '05-Mar-2026 08:00:00', ends: '06-Mar-2026 23:59:59' })
+  })
+
   it('shows no inputs on a legacy card and Remove works', async () => {
     const w = mountCard(toCard({ user: 'bob', type: 'fortnightly', times: [{ id: null, day: 'x', begins: 'whenever', ends: 'later' }] }, SHORT_MONTHS))
     expect(w.find('[data-test="oncall-schedule-legacy"]').exists()).toBe(true)

@@ -66,7 +66,7 @@
       </div>
       <div
         v-for="(r, i) in card.times"
-        :key="i"
+        :key="rowKey(r)"
         class="time-row"
       >
         <OnmsSelect
@@ -89,7 +89,18 @@
           @input="setTime(i, { begin: ($event.target as HTMLInputElement).value })"
         >
         <span class="to">to</span>
+        <!-- a specific time still needs its end date when it runs to the end of the day -->
         <input
+          v-if="card.type === 'specific' && r.endOfDay"
+          :value="r.end.slice(0, 10)"
+          type="date"
+          class="time-input"
+          aria-label="End date"
+          :data-test="`time-end-date-${i}`"
+          @input="setEndDate(i, ($event.target as HTMLInputElement).value)"
+        >
+        <input
+          v-else
           :value="r.end"
           :type="inputType"
           class="time-input"
@@ -103,7 +114,7 @@
             :modelValue="r.endOfDay"
             :inputId="`${card.key}-eod-${i}`"
             :data-test="`time-end-of-day-${i}`"
-            @update:modelValue="v => setTime(i, { endOfDay: v })"
+            @update:modelValue="v => setEndOfDay(i, v)"
           />
           <label :for="`${card.key}-eod-${i}`">End of day</label>
         </span>
@@ -192,9 +203,43 @@ const update = (changes: Partial<ScheduleCard>) => {
 
 const setUser = (user: unknown) => update({ user: user as string })
 
-const setTime = (index: number, changes: Partial<TimeRange>) => {
-  update({ times: props.card.times.map((t, i) => i === index ? { ...t, ...changes } : t) })
+// Stable v-for keys for the time rows. Kept outside TimeRange so nothing leaks into serialization;
+// an edited row is a new object that inherits its predecessor's key.
+const rowKeys = new WeakMap<TimeRange, number>()
+let rowCounter = 0
+const rowKey = (r: TimeRange): number => {
+  let k = rowKeys.get(r)
+  if (k === undefined) {
+    k = ++rowCounter
+    rowKeys.set(r, k)
+  }
+  return k
 }
+
+const setTime = (index: number, changes: Partial<TimeRange>) => {
+  update({
+    times: props.card.times.map((t, i) => {
+      if (i !== index) {
+        return t
+      }
+      const next = { ...t, ...changes }
+      rowKeys.set(next, rowKey(t))
+      return next
+    })
+  })
+}
+
+// a specific time keeps its end date, with the end clock fixed at the end of that day
+const setEndOfDay = (index: number, endOfDay: boolean) => {
+  const end = props.card.times[index].end
+  if (endOfDay && props.card.type === 'specific') {
+    setTime(index, { endOfDay, end: end.length >= 10 ? `${end.slice(0, 10)}T23:59` : '' })
+  } else {
+    setTime(index, { endOfDay })
+  }
+}
+
+const setEndDate = (index: number, date: string) => setTime(index, { end: date ? `${date}T23:59` : '' })
 
 const addTime = () => {
   update({ times: [...props.card.times, { id: null, day: null, begin: '', end: '', endOfDay: false, original: null }] })
