@@ -349,6 +349,13 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testReservedNameIs400OnCreateAndRename() throws Exception {
+        exec(POST, "/oncall-roles", role("calendar", null), null, 400);
+        exec(POST, "/oncall-roles", role("rota9", null), null, 201);
+        exec(POST, "/oncall-roles/rota9/rename", "{\"newName\":\"item\"}", null, 400);
+    }
+
+    @Test
     public void testDuplicateIs409() throws Exception {
         exec(POST, "/oncall-roles", role("rota6", null), null, 201);
         final MockHttpServletResponse response = exec(POST, "/oncall-roles", role("rota6", null), null, 409);

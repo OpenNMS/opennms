@@ -21,6 +21,7 @@
  */
 package org.opennms.web.rest.v2;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -34,6 +35,7 @@ import java.util.TimeZone;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.web.rest.v2.model.OnCallScheduleDto;
 import org.opennms.web.rest.v2.model.OnCallTimeDto;
 
@@ -161,5 +163,18 @@ public class OnCallScheduleValidatorTest {
         }
         assertNull(OnCallScheduleValidator.validateName("x".repeat(256)));
         assertNotNull(OnCallScheduleValidator.validateName("x".repeat(257)));
+    }
+
+    @Test
+    public void testReservedNamesRejected() {
+        for (final String reserved : ReservedNames.ONCALL_ROLE_NAMES) {
+            if (".".equals(reserved) || "..".equals(reserved)) {
+                // the name pattern already refuses them
+                assertNotNull(OnCallScheduleValidator.validateName(reserved));
+            } else {
+                assertEquals("The on-call role name \"" + reserved + "\" is reserved.", OnCallScheduleValidator.validateName(reserved));
+            }
+        }
+        assertNull(OnCallScheduleValidator.validateName("calendar 2"));
     }
 }

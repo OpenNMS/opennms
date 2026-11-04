@@ -24,8 +24,8 @@ package org.opennms.netmgt.model.usermgmt;
 import java.util.List;
 
 /**
- * The names no user, or no group, may have. The v2 API addresses a user or group by its name as a path segment
- * ({@code /users/{userId}}, {@code /groups/{name}}): a client resolves {@code .} and {@code ..} away before
+ * The names no user, no group, and no on-call role may have. The v2 API addresses a user or group by its name as a path segment
+ * ({@code /users/{userId}}, {@code /groups/{name}}, {@code /oncall-roles/{name}}): a client resolves {@code .} and {@code ..} away before
  * sending, and the other names are endpoints of their own in that collection ({@code /users/available-roles},
  * {@code /groups/available-categories}). The v2 API refuses them as new names, and the migration of users.xml and
  * groups.xml stops on them. The match is exact, as the path match is.
@@ -35,6 +35,9 @@ public final class ReservedNames {
     public static final List<String> USER_IDS = List.of(".", "..", "item", "available-roles");
 
     public static final List<String> GROUP_NAMES = List.of(".", "..", "item", "available-categories");
+
+    /** {@code item}, {@code calendar} and {@code schedule-settings} are endpoints of {@code /oncall-roles} next to {@code /oncall-roles/{name}}. */
+    public static final List<String> ONCALL_ROLE_NAMES = List.of(".", "..", "item", "calendar", "schedule-settings");
 
     private ReservedNames() {
     }

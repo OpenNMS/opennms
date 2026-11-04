@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.UserMgmtJaxbMapper;
 import org.opennms.netmgt.model.usermgmt.OnCallSchedule;
+import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.web.rest.v2.model.OnCallScheduleDto;
 import org.opennms.web.rest.v2.model.OnCallTimeDto;
 
@@ -93,6 +94,9 @@ public final class OnCallScheduleValidator {
         }
         if (name.codePointCount(0, name.length()) > UserMgmtJaxbMapper.ONCALL_ROLE_NAME_LENGTH) {
             return "The on-call role name must not be longer than " + UserMgmtJaxbMapper.ONCALL_ROLE_NAME_LENGTH + " characters.";
+        }
+        if (ReservedNames.ONCALL_ROLE_NAMES.contains(name)) {
+            return "The on-call role name \"" + name + "\" is reserved.";
         }
         return null;
     }
