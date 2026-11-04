@@ -47,30 +47,16 @@ detect_postgres_installed(){
     
 }
 
-# Function to detect jrrd2 locations
-detect_jrrd2_location(){
-export JRRD_JAR=${JRRD_JAR:-$( \
+# Function to detect the system librrd (provided by the rrdtool package)
+detect_librrd_location(){
+export LIBRRD=${LIBRRD:-$( \
   for path in \
-    "$ROOT"/built/jrrd2-*.jar \
-    "$ROOT"/built/jrrd2*.jar \
-    ./java/jrrd2.jar \
-    /usr/share/java/jrrd2.jar \
-    /usr/local/lib/jrrd2.jar
-  do
-    # Handle wildcards safely
-    if compgen -G "$path" > /dev/null; then
-      ls -1 -- "$path" | sort -V | head -n1
-      break
-    fi
-  done
-)}
-
-export JRRD_LIB=${JRRD_LIB:-$( \
-  for path in \
-    "$ROOT"/built/lib/libjrrd2.so \
-    ./lib/libjrrd2.so \
-    /usr/lib64/libjrrd2.so \
-    /usr/local/lib/libjrrd2.dylib
+    /usr/lib/x86_64-linux-gnu/librrd.so.8 \
+    /usr/lib/aarch64-linux-gnu/librrd.so.8 \
+    /usr/lib64/librrd.so.8 \
+    /usr/lib/librrd.so.8 \
+    /opt/homebrew/lib/librrd.8.dylib \
+    /usr/local/lib/librrd.8.dylib
   do
     if [[ -f "$path" ]]; then
       echo "$path"
@@ -79,17 +65,9 @@ export JRRD_LIB=${JRRD_LIB:-$( \
   done
 )}
 
-#  Check that they exist
-if [[ ! -f "$JRRD_JAR" ]]; then
-  echo "Warning: jrrd2.jar not found." >&2
+if [[ -z "$LIBRRD" ]] || [[ ! -f "$LIBRRD" ]]; then
+  echo "Warning: librrd not found. Install rrdtool (Debian/Ubuntu: apt-get install rrdtool, macOS: brew install rrdtool)." >&2
 else
-  echo "Found jrrd2.jar at $JRRD_JAR"
-fi
-
-if [[ ! -f "$JRRD_LIB" ]]; then
-  echo "Warning: libjrrd2 not found " >&2
-else
-  echo "Found libjrrd2 at $JRRD_LIB"
+  echo "Found librrd at $LIBRRD"
 fi
 }
-

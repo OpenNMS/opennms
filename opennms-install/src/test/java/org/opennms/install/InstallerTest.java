@@ -217,12 +217,12 @@ public class InstallerTest {
                 @Override
                 public boolean loadLibrary(String p) {
                     // library exists in the given location
-                    return p.equals(path + "/libjrrd2." + extension);
+                    return p.equals(path + "/libjicmp." + extension);
                 }
             };
-            final String lib = installer.findLibrary("jrrd2", null, true);
+            final String lib = installer.findLibrary("jicmp", null, true);
             // check that library was found in the given location
-            assertEquals(path + "/libjrrd2." + extension, lib);
+            assertEquals(path + "/libjicmp." + extension, lib);
             System.out.println(lib);
         }
     }

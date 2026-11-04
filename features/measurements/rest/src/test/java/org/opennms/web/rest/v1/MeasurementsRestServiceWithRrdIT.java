@@ -65,7 +65,7 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-measurements-rest-test.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy"
+        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy"
 })
 @JUnitTemporaryDatabase
 @Transactional
@@ -81,7 +81,7 @@ public class MeasurementsRestServiceWithRrdIT extends MeasurementsRestServiceITC
         System.setProperty("rrd.base.dir", s_rrdDirectory.getAbsolutePath());
         System.setProperty("rrd.binary", findRrdtool());
 
-        assumeRrdtoolExists("jrrd");
+        assumeRrdtoolExists();
     }
 
     @Before

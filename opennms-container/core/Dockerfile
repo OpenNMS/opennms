@@ -46,7 +46,7 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
 
 FROM ${BASE_IMAGE} AS core-base
 
-ARG REQUIRED_RPMS="diffutils hostname jrrd2 jq rrdtool"
+ARG REQUIRED_RPMS="diffutils hostname jq rrdtool"
 
 SHELL ["/bin/bash", "-c"]
 

@@ -35,8 +35,6 @@
     <module>jradius</module>
     <module>jradius-extended</module>
     <module>jrobin</module>
-    <module>jrrd</module>
-    <module>jrrd2</module>
     <module>jstl</module>
     <module>jung</module>
     <module>liquibase</module>

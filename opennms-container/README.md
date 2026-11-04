@@ -50,5 +50,5 @@ The argument for REQUIRED_DEBS are different for Horizon, Minion and Sentinel
 
 | Argument        | Description                      | Default
 |:----------------|:---------------------------------|:----------
-| `REQUIRED_DEBS` | Dependency packages for Horizon  | `rrdtool jrrd2 jicmp jicmp6 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo`
+| `REQUIRED_DEBS` | Dependency packages for Horizon  | `rrdtool jicmp jicmp6 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo`
 | `REQUIRED_DEBS` | Dependency packages for Sentinel | `hostname wget gettext openssh-client`

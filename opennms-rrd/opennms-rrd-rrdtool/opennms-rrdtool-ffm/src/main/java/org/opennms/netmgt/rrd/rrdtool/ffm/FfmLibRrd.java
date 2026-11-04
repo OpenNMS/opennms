@@ -37,19 +37,18 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.rrd.jrrd2.api.FetchResults;
-import org.opennms.netmgt.rrd.jrrd2.api.JRrd2;
-import org.opennms.netmgt.rrd.jrrd2.api.JRrd2Exception;
+import org.opennms.netmgt.rrd.rrdtool.librrd.FetchResults;
+import org.opennms.netmgt.rrd.rrdtool.librrd.LibRrd;
+import org.opennms.netmgt.rrd.rrdtool.librrd.LibRrdException;
 
 /**
- * {@link JRrd2} implementation that calls the system's stock {@code librrd}
- * through the Foreign Function &amp; Memory API (JEP 454) instead of the
- * custom {@code libjrrd2} JNI shim.
+ * {@link LibRrd} implementation that calls the system's stock {@code librrd}
+ * through the Foreign Function &amp; Memory API (JEP 454).
  *
- * <p>Behaviour mirrors {@code rrd_jinterface.c} from the jrrd2 project:
+ * <p>Behaviour:
  * <ul>
  *   <li>each thread calls {@code rrd_get_context()} once before using librrd;</li>
- *   <li>errors are read back from {@code rrd_get_error()} and thrown as {@link JRrd2Exception};</li>
+ *   <li>errors are read back from {@code rrd_get_error()} and thrown as {@link LibRrdException};</li>
  *   <li>fetch/xport results start at {@code start + step} and have {@code (end - start) / step} rows;</li>
  *   <li>values are returned column-major ({@code values[column][row]});</li>
  *   <li>{@code rrd_xport} is not thread-safe in librrd, so calls are serialized.</li>
@@ -61,14 +60,14 @@ import org.opennms.netmgt.rrd.jrrd2.api.JRrd2Exception;
  * <p>The library is located via the {@value #LIBRARY_PROPERTY} system
  * property (an absolute path), falling back to well-known names/locations.
  */
-public final class JRrd2Ffm implements JRrd2 {
+public final class FfmLibRrd implements LibRrd {
 
     /** System property holding an absolute path to librrd. */
     public static final String LIBRARY_PROPERTY = "opennms.library.rrd";
 
     private static final ThreadLocal<Boolean> CONTEXT = ThreadLocal.withInitial(() -> {
         try {
-            final MemorySegment ctx = (MemorySegment) LibRrd.get().rrdGetContext.invokeExact();
+            final MemorySegment ctx = (MemorySegment) Native.get().rrdGetContext.invokeExact();
             if (ctx.equals(MemorySegment.NULL)) {
                 throw new IllegalStateException("rrd_get_context() returned NULL");
             }
@@ -83,21 +82,21 @@ public final class JRrd2Ffm implements JRrd2 {
     /**
      * @throws UnsatisfiedLinkError if librrd cannot be found or lacks a required symbol
      */
-    public JRrd2Ffm() {
-        LibRrd.get();
+    public FfmLibRrd() {
+        Native.get();
     }
 
     /** @return the path or name librrd was loaded from */
     public static String getLibrarySource() {
-        return LibRrd.get().source;
+        return Native.get().source;
     }
 
     @Override
-    public void create(final String filename, final long pdpStep, final long lastUp, final String[] argv) throws JRrd2Exception {
+    public void create(final String filename, final long pdpStep, final long lastUp, final String[] argv) throws LibRrdException {
         requireNonNull(filename, "filename");
         requireNonNull(argv, "argv");
         CONTEXT.get();
-        final LibRrd lib = LibRrd.get();
+        final Native lib = Native.get();
         try (Arena arena = Arena.ofConfined()) {
             final MemorySegment nFilename = arena.allocateFrom(filename);
             final MemorySegment nArgv = toCStringArray(arena, argv);
@@ -106,7 +105,7 @@ public final class JRrd2Ffm implements JRrd2 {
             if (result == -1) {
                 throw lib.lastError("rrd_create_r");
             }
-        } catch (final JRrd2Exception e) {
+        } catch (final LibRrdException e) {
             throw e;
         } catch (final Throwable t) {
             throw wrap("rrd_create_r", t);
@@ -114,11 +113,11 @@ public final class JRrd2Ffm implements JRrd2 {
     }
 
     @Override
-    public void update(final String filename, final String template, final String[] argv) throws JRrd2Exception {
+    public void update(final String filename, final String template, final String[] argv) throws LibRrdException {
         requireNonNull(filename, "filename");
         requireNonNull(argv, "argv");
         CONTEXT.get();
-        final LibRrd lib = LibRrd.get();
+        final Native lib = Native.get();
         try (Arena arena = Arena.ofConfined()) {
             final MemorySegment nFilename = arena.allocateFrom(filename);
             final MemorySegment nTemplate = template == null ? MemorySegment.NULL : arena.allocateFrom(template);
@@ -128,7 +127,7 @@ public final class JRrd2Ffm implements JRrd2 {
             if (result == -1) {
                 throw lib.lastError("rrd_update_r");
             }
-        } catch (final JRrd2Exception e) {
+        } catch (final LibRrdException e) {
             throw e;
         } catch (final Throwable t) {
             throw wrap("rrd_update_r", t);
@@ -136,11 +135,11 @@ public final class JRrd2Ffm implements JRrd2 {
     }
 
     @Override
-    public FetchResults fetch(final String filename, final String cf, final long start, final long end, final long step) throws JRrd2Exception {
+    public FetchResults fetch(final String filename, final String cf, final long start, final long end, final long step) throws LibRrdException {
         requireNonNull(filename, "filename");
         requireNonNull(cf, "cf");
         CONTEXT.get();
-        final LibRrd lib = LibRrd.get();
+        final Native lib = Native.get();
         try (Arena arena = Arena.ofConfined()) {
             final MemorySegment pStart = arena.allocateFrom(JAVA_LONG, start);
             final MemorySegment pEnd = arena.allocateFrom(JAVA_LONG, end);
@@ -156,7 +155,7 @@ public final class JRrd2Ffm implements JRrd2 {
             }
             return lib.toFetchResults(pStart.get(JAVA_LONG, 0), pEnd.get(JAVA_LONG, 0), pStep.get(JAVA_LONG, 0),
                     pDsCnt.get(JAVA_LONG, 0), pDsNamv.get(ADDRESS, 0), pData.get(ADDRESS, 0));
-        } catch (final JRrd2Exception e) {
+        } catch (final LibRrdException e) {
             throw e;
         } catch (final Throwable t) {
             throw wrap("rrd_fetch_r", t);
@@ -164,7 +163,7 @@ public final class JRrd2Ffm implements JRrd2 {
     }
 
     @Override
-    public FetchResults xport(final long start, final long end, final long step, final long maxrows, final String[] argv) throws JRrd2Exception {
+    public FetchResults xport(final long start, final long end, final long step, final long maxrows, final String[] argv) throws LibRrdException {
         requireNonNull(argv, "argv");
         final List<String> args = new ArrayList<>(argv.length + 9);
         args.add("xport");
@@ -181,7 +180,7 @@ public final class JRrd2Ffm implements JRrd2 {
         args.addAll(List.of(argv));
 
         CONTEXT.get();
-        final LibRrd lib = LibRrd.get();
+        final Native lib = Native.get();
         synchronized (XPORT_LOCK) {
             try (Arena arena = Arena.ofConfined()) {
                 final MemorySegment nArgv = toCStringArray(arena, args.toArray(new String[0]));
@@ -200,7 +199,7 @@ public final class JRrd2Ffm implements JRrd2 {
                 }
                 return lib.toFetchResults(pStart.get(JAVA_LONG, 0), pEnd.get(JAVA_LONG, 0), pStep.get(JAVA_LONG, 0),
                         pColCnt.get(JAVA_LONG, 0), pLegendV.get(ADDRESS, 0), pData.get(ADDRESS, 0));
-            } catch (final JRrd2Exception e) {
+            } catch (final LibRrdException e) {
                 throw e;
             } catch (final Throwable t) {
                 throw wrap("rrd_xport", t);
@@ -208,14 +207,14 @@ public final class JRrd2Ffm implements JRrd2 {
         }
     }
 
-    private static void requireNonNull(final Object value, final String name) throws JRrd2Exception {
+    private static void requireNonNull(final Object value, final String name) throws LibRrdException {
         if (value == null) {
-            throw new JRrd2Exception(name + " cannot be null.");
+            throw new LibRrdException(name + " cannot be null.");
         }
     }
 
-    private static JRrd2Exception wrap(final String function, final Throwable t) {
-        final JRrd2Exception e = new JRrd2Exception(function + "() failed: " + t);
+    private static LibRrdException wrap(final String function, final Throwable t) {
+        final LibRrdException e = new LibRrdException(function + "() failed: " + t);
         e.initCause(t);
         return e;
     }
@@ -233,9 +232,9 @@ public final class JRrd2Ffm implements JRrd2 {
         return array;
     }
 
-    /** Lazily-loaded librrd bindings, shared by all instances. */
-    private static final class LibRrd {
-        private static volatile LibRrd instance;
+    /** Lazily-loaded librrd downcall handles, shared by all instances. */
+    private static final class Native {
+        private static volatile Native instance;
         private static volatile UnsatisfiedLinkError failure;
 
         final String source;
@@ -249,15 +248,15 @@ public final class JRrd2Ffm implements JRrd2 {
         final MethodHandle rrdFetchR;
         final MethodHandle rrdXport;
 
-        static LibRrd get() {
-            LibRrd lib = instance;
+        static Native get() {
+            Native lib = instance;
             if (lib != null) {
                 return lib;
             }
-            synchronized (LibRrd.class) {
+            synchronized (Native.class) {
                 if (instance == null && failure == null) {
                     try {
-                        instance = new LibRrd();
+                        instance = new Native();
                     } catch (final UnsatisfiedLinkError e) {
                         failure = e;
                     }
@@ -269,7 +268,7 @@ public final class JRrd2Ffm implements JRrd2 {
             }
         }
 
-        private LibRrd() {
+        private Native() {
             final Linker linker = Linker.nativeLinker();
             final List<String> tried = new ArrayList<>();
             SymbolLookup lookup = null;
@@ -351,7 +350,7 @@ public final class JRrd2Ffm implements JRrd2 {
             rrdClearError.invokeExact();
         }
 
-        JRrd2Exception lastError(final String function) throws Throwable {
+        LibRrdException lastError(final String function) throws Throwable {
             final int hasError = (int) rrdTestError.invokeExact();
             String message = null;
             if (hasError != 0) {
@@ -361,7 +360,7 @@ public final class JRrd2Ffm implements JRrd2 {
                 }
                 rrdClearError.invokeExact();
             }
-            return new JRrd2Exception(message != null ? message : function + "() failed, but no error code was set.");
+            return new LibRrdException(message != null ? message : function + "() failed, but no error code was set.");
         }
 
         /**

@@ -28,7 +28,7 @@ usage(){
     echo "Usage: $0 [options]"
     echo "Options:"
     echo "  --help                  Show this help message"
-    echo "  --disable-jrrd2         Disable building jrrd2 library"
+    echo "  --disable-rrdtool       Do not configure OpenNMS to use RRDtool"
     echo "  --skip-cleanup          Skip cleanup of previous build artifacts"
     echo "  --enable-tests          Enable running tests during build"
     echo "  --run-opennms-foreground    Start OpenNMS in foreground after build"
@@ -38,7 +38,7 @@ usage(){
 # Default options
 ENABLE_TESTS="no"
 SKIP_CLEANUP="no"
-DISABLE_JRRD2=${DISABLE_JRRD2:-"false"}
+DISABLE_RRDTOOL=${DISABLE_RRDTOOL:-"false"}
 RUN_OPENNMS_FOREGROUND="no"
 
 while [[ $# -gt 0 ]]; do
@@ -46,8 +46,8 @@ while [[ $# -gt 0 ]]; do
         --help)
             usage
             ;;
-        --disable-jrrd2 )
-            DISABLE_JRRD2="true"
+        --disable-rrdtool )
+            DISABLE_RRDTOOL="true"
             shift
             ;;
         --enable-tests )
@@ -63,7 +63,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --all)
-            DISABLE_JRRD2="false"
+            DISABLE_RRDTOOL="false"
             shift
             ;;
         *)
@@ -92,22 +92,8 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
-if [[ "$DISABLE_JRRD2" != "true" ]]; then
-   # if $JAVA_HOME is not set, ask user to setup JAVA_HOME
-   if [[ -z "${JAVA_HOME:-}" ]]; then
-     echo "JAVA_HOME is not set. Detecting required JDK version from pom.xml..."
-     detect_jdk_version_required
-     echo "Detected required JDK version: $REQUIRED_VERSION"
-     echo "Please set JAVA_HOME to a JDK $REQUIRED_VERSION installation and re-run this script."
-     exit 1
-   fi
-
-   detect_jrrd2_location
-   if [[ -z "$JRRD_JAR" ]] || [[ ! -f "$JRRD_JAR" ]] || [[ -z "$JRRD_LIB" ]] || [[ ! -f "$JRRD_LIB" ]]; then
-     # Build JRRD2 from source then run the rest of script
-     "$SCRIPT_DIR/dependencies.sh" --install-jrrd2-from-source || true
-     detect_jrrd2_location  
-   fi
+if [[ "$DISABLE_RRDTOOL" != "true" ]]; then
+   detect_librrd_location
 fi
 
 detect_postgres_installed
@@ -150,16 +136,15 @@ tar -zxvf "./target/opennms-$RELEASE.tar.gz" -C "$ROOT/target/opennms-$RELEASE"
 # Set runtime user
 echo "RUNAS=$(id -u -n)" > "$ROOT/target/opennms/etc/opennms.conf"
 
-# If jrrd2 is installed, setup config
-if [[ "$DISABLE_JRRD2" != "true" ]]; then 
+# If librrd is installed, setup config
+if [[ "$DISABLE_RRDTOOL" != "true" ]] && [[ -n "$LIBRRD" ]]; then
     # Figure out where rrdtool is installed
     RRD_TOOL_PATH=$(which rrdtool || echo "/usr/local/bin/rrdtool")
     echo "Detected rrdtool at: $RRD_TOOL_PATH"
 
-    echo "Configuring OpenNMS to use jrrd2 library..."
+    echo "Configuring OpenNMS to use RRDtool (librrd at $LIBRRD)..."
     echo "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
-org.opennms.rrd.interfaceJar=$JRRD_JAR
-opennms.library.jrrd2=$JRRD_LIB
+opennms.library.rrd=$LIBRRD
 org.opennms.web.graphs.engine=rrdtool
 rrd.binary=$RRD_TOOL_PATH
 " > "$ROOT/target/opennms/etc/opennms.properties.d/timeseries.properties"

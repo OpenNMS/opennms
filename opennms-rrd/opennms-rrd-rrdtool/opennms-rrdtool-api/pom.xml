@@ -12,14 +12,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <!-- JRrd2Provider may load the FFM librrd binding -->
-          <argLine>${argLineAllowReflection} --enable-native-access=ALL-UNNAMED</argLine>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
         <extensions>true</extensions>
@@ -36,27 +28,8 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jrrd-dependencies</artifactId>
-      <scope>provided</scope>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jrrd2-dependencies</artifactId>
-      <scope>provided</scope>
-      <type>pom</type>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-api</artifactId>
-    </dependency>
-    <dependency>
-      <!-- loaded reflectively by JRrd2Provider; compiled for a newer Java release -->
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrdtool-ffm</artifactId>
-      <version>${project.version}</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

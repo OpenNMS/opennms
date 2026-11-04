@@ -42,10 +42,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.opennms.netmgt.rrd.jrrd2.api.FetchResults;
-import org.opennms.netmgt.rrd.jrrd2.api.JRrd2Exception;
+import org.opennms.netmgt.rrd.rrdtool.librrd.FetchResults;
+import org.opennms.netmgt.rrd.rrdtool.librrd.LibRrdException;
 
-public class JRrd2FfmTest {
+public class FfmLibRrdTest {
 
     private static final long STEP = 300;
     /** Step-aligned base time. */
@@ -54,21 +54,21 @@ public class JRrd2FfmTest {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
-    private JRrd2Ffm jrrd2;
+    private FfmLibRrd librrd;
 
     @Before
     public void setUp() {
         try {
-            jrrd2 = new JRrd2Ffm();
+            librrd = new FfmLibRrd();
         } catch (final UnsatisfiedLinkError e) {
             Assume.assumeNoException("librrd not available: skipping", e);
         }
-        System.err.println("librrd loaded from: " + JRrd2Ffm.getLibrarySource());
+        System.err.println("librrd loaded from: " + FfmLibRrd.getLibrarySource());
     }
 
     private String createAndPopulate(final String name, final double... values) throws Exception {
         final String file = new File(tempFolder.getRoot(), name).getAbsolutePath();
-        jrrd2.create(file, STEP, T0 - 1, new String[] {
+        librrd.create(file, STEP, T0 - 1, new String[] {
                 "DS:x:GAUGE:600:U:U",
                 "DS:y:GAUGE:600:U:U",
                 "RRA:AVERAGE:0.5:1:100"
@@ -77,7 +77,7 @@ public class JRrd2FfmTest {
         for (int i = 0; i < values.length; i++) {
             updates[i] = (T0 + (i + 1) * STEP) + ":" + values[i] + ":" + (values[i] * 2);
         }
-        jrrd2.update(file, null, updates);
+        librrd.update(file, null, updates);
         return file;
     }
 
@@ -97,7 +97,7 @@ public class JRrd2FfmTest {
         final String file = createAndPopulate("fetch.rrd", 10, 20, 30, 40);
         assertTrue(new File(file).exists());
 
-        final FetchResults results = jrrd2.fetch(file, "AVERAGE", T0, T0 + 4 * STEP, 1);
+        final FetchResults results = librrd.fetch(file, "AVERAGE", T0, T0 + 4 * STEP, 1);
         assertNotNull(results);
         assertEquals(STEP, results.getStep());
         assertArrayEquals(new String[] { "x", "y" }, results.getColumns());
@@ -115,10 +115,10 @@ public class JRrd2FfmTest {
     @Test
     public void canUpdateWithTemplate() throws Exception {
         final String file = new File(tempFolder.getRoot(), "template.rrd").getAbsolutePath();
-        jrrd2.create(file, STEP, T0 - 1, new String[] { "DS:x:GAUGE:600:U:U", "DS:y:GAUGE:600:U:U", "RRA:AVERAGE:0.5:1:100" });
-        jrrd2.update(file, "y:x", new String[] { (T0 + STEP) + ":5:7", (T0 + 2 * STEP) + ":5:7" });
+        librrd.create(file, STEP, T0 - 1, new String[] { "DS:x:GAUGE:600:U:U", "DS:y:GAUGE:600:U:U", "RRA:AVERAGE:0.5:1:100" });
+        librrd.update(file, "y:x", new String[] { (T0 + STEP) + ":5:7", (T0 + 2 * STEP) + ":5:7" });
 
-        final FetchResults results = jrrd2.fetch(file, "AVERAGE", T0, T0 + 2 * STEP, 1);
+        final FetchResults results = librrd.fetch(file, "AVERAGE", T0, T0 + 2 * STEP, 1);
         assertEquals(7.0, series(results, 0).get(T0 + STEP), 0.0001);
         assertEquals(5.0, series(results, 1).get(T0 + STEP), 0.0001);
     }
@@ -127,7 +127,7 @@ public class JRrd2FfmTest {
     public void canXport() throws Exception {
         final String file = createAndPopulate("xport.rrd", 1, 2, 3, 4, 5);
 
-        final FetchResults results = jrrd2.xport(T0, T0 + 5 * STEP, STEP, 0, new String[] {
+        final FetchResults results = librrd.xport(T0, T0 + 5 * STEP, STEP, 0, new String[] {
                 "DEF:a=" + file + ":x:AVERAGE",
                 "DEF:b=" + file + ":y:AVERAGE",
                 "CDEF:c=a,b,+",
@@ -145,12 +145,12 @@ public class JRrd2FfmTest {
     }
 
     @Test
-    public void errorsAreReportedAsJRrd2Exception() throws Exception {
+    public void errorsAreReportedAsLibRrdException() throws Exception {
         final String missing = new File(tempFolder.getRoot(), "does-not-exist.rrd").getAbsolutePath();
         try {
-            jrrd2.update(missing, null, new String[] { "N:1:2" });
-            fail("expected JRrd2Exception");
-        } catch (final JRrd2Exception e) {
+            librrd.update(missing, null, new String[] { "N:1:2" });
+            fail("expected LibRrdException");
+        } catch (final LibRrdException e) {
             assertTrue("unexpected message: " + e.getMessage(), e.getMessage().contains("does-not-exist.rrd"));
         }
 
@@ -158,16 +158,16 @@ public class JRrd2FfmTest {
         createAndPopulate("after-error.rrd", 1);
 
         try {
-            jrrd2.create(new File(tempFolder.getRoot(), "bad.rrd").getAbsolutePath(), STEP, T0, new String[] { "DS:bogus" });
-            fail("expected JRrd2Exception");
-        } catch (final JRrd2Exception e) {
+            librrd.create(new File(tempFolder.getRoot(), "bad.rrd").getAbsolutePath(), STEP, T0, new String[] { "DS:bogus" });
+            fail("expected LibRrdException");
+        } catch (final LibRrdException e) {
             assertNotNull(e.getMessage());
         }
 
         try {
-            jrrd2.xport(T0, T0 + STEP, STEP, 0, new String[] { "XPORT:undefined:nope" });
-            fail("expected JRrd2Exception");
-        } catch (final JRrd2Exception e) {
+            librrd.xport(T0, T0 + STEP, STEP, 0, new String[] { "XPORT:undefined:nope" });
+            fail("expected LibRrdException");
+        } catch (final LibRrdException e) {
             assertNotNull(e.getMessage());
         }
     }
@@ -175,15 +175,15 @@ public class JRrd2FfmTest {
     @Test
     public void nullArgumentsAreRejected() {
         try {
-            jrrd2.update(null, null, new String[0]);
-            fail("expected JRrd2Exception");
-        } catch (final JRrd2Exception e) {
+            librrd.update(null, null, new String[0]);
+            fail("expected LibRrdException");
+        } catch (final LibRrdException e) {
             assertEquals("filename cannot be null.", e.getMessage());
         }
         try {
-            jrrd2.fetch("x.rrd", null, 0, 1, 1);
-            fail("expected JRrd2Exception");
-        } catch (final JRrd2Exception e) {
+            librrd.fetch("x.rrd", null, 0, 1, 1);
+            fail("expected LibRrdException");
+        } catch (final LibRrdException e) {
             assertEquals("cf cannot be null.", e.getMessage());
         }
     }
@@ -201,13 +201,13 @@ public class JRrd2FfmTest {
                     for (int f = 0; f < filesPerThread; f++) {
                         final double v = thread * 1000 + f;
                         final String file = createAndPopulate("mt-" + thread + "-" + f + ".rrd", v, v, v);
-                        final FetchResults r = jrrd2.fetch(file, "AVERAGE", T0, T0 + 3 * STEP, 1);
+                        final FetchResults r = librrd.fetch(file, "AVERAGE", T0, T0 + 3 * STEP, 1);
                         assertEquals(v, series(r, 0).get(T0 + 2 * STEP), 0.0001);
                         // interleave failures to check per-thread error isolation
                         try {
-                            jrrd2.update(file + ".missing", null, new String[] { "N:1:1" });
-                            fail("expected JRrd2Exception");
-                        } catch (final JRrd2Exception expected) {
+                            librrd.update(file + ".missing", null, new String[] { "N:1:1" });
+                            fail("expected LibRrdException");
+                        } catch (final LibRrdException expected) {
                             assertTrue(expected.getMessage(), expected.getMessage().contains(".missing"));
                         }
                     }

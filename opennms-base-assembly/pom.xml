@@ -489,12 +489,6 @@
       <artifactId>opennms-rrd-util</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jrrd2-dependencies</artifactId>
-      <scope>test</scope>
-      <type>pom</type>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-tcp</artifactId>
       <scope>compile</scope>
@@ -502,6 +496,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-ffm</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>

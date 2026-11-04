@@ -12,6 +12,12 @@
   <name>OpenNMS :: Features :: Measurements :: ReST</name>
 
   <dependencies>
+    <dependency>
+      <!-- LibRrd implementation used by MultithreadedJniRrdStrategy -->
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-ffm</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- Annotations only; swagger-annotations already ships in the webapp's WEB-INF/lib. -->
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
@@ -38,12 +44,6 @@
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.impl</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jrrd2-dependencies</artifactId>
-      <scope>provided</scope>
-      <type>pom</type>
     </dependency>
 
     <!-- Third party -->

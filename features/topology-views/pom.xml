@@ -152,11 +152,5 @@
       <artifactId>org.opennms.features.collection.persistence.osgi</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jrrd2-dependencies</artifactId>
-      <type>pom</type>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 </project>

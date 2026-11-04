@@ -94,6 +94,7 @@
     <module>../opennms-provision/opennms-provision-persistence</module>
     <module>../opennms-rrd/opennms-rrd-api</module>
     <module>../opennms-rrd/opennms-rrd-rrdtool/opennms-rrdtool-api</module>
+    <module>../opennms-rrd/opennms-rrd-rrdtool/opennms-rrdtool-ffm</module>
     <module>../opennms-util</module>
     <module>../opennms-web-api</module>
     <module>../smoke-test</module>

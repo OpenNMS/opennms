@@ -93,8 +93,9 @@ public class SnmpInterfaceMetricsRestService {
     // groups read twelve counters per interface where traffic alone reads two.
     private static final int MAX_SOURCES = 12_000;
 
-    // Sources per store query. The jrrd2 native xport crashes the JVM somewhere
-    // above 5200 DEFs in one call, and nothing above this is faster anyway.
+    // Sources per store query. A single native rrd_xport call crashed the JVM
+    // somewhere above 5200 DEFs (seen with the former jrrd2 JNI binding), and
+    // nothing above this is faster anyway.
     private static final int SOURCES_PER_QUERY = 1_000;
 
     private static final long IF_SPEED_CEILING = 4_294_967_295L;

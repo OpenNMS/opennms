@@ -53,6 +53,7 @@ import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.rrd.rrdtool.librrd.LibRrdProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -317,21 +318,16 @@ public abstract class MeasurementsRestServiceITCase {
         }
     }
 
-    protected static void assumeRrdtoolExists(final String libraryName) {
-        final String libraryPath = System.getProperty("java.library.path", "");
-        if (!libraryPath.contains(":/usr/local/lib")) {
-            System.setProperty("java.library.path", libraryPath + ":/usr/local/lib");
-        }
+    protected static void assumeRrdtoolExists() {
         boolean rrdtoolExists = false;
         try {
             final CommandLauncher cl = CommandLauncherFactory.createVMLauncher();
             final Process p = cl.exec(new CommandLine(findRrdtool()), EnvironmentUtils.getProcEnvironment());
             final int returnCode = p.waitFor();
-            LOG.debug("Loading library from java.library.path={}", System.getProperty("java.library.path"));
-            System.loadLibrary(libraryName);
+            LibRrdProvider.get();
             rrdtoolExists = returnCode == 0;
         } catch (final Exception e) {
-            LOG.warn("Failed to run 'rrdtool' or libjrrd(2)? is missing.", e);
+            LOG.warn("Failed to run 'rrdtool' or librrd is not available.", e);
         }
         Assume.assumeTrue(rrdtoolExists);
     }

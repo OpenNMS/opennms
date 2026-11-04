@@ -411,10 +411,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         }
 
         if (TimeSeriesStrategy.RRD.equals(model.getTimeSeriesStrategy())) {
-            // Use jrrd2
+            // Use RRDtool (system librrd)
             props.put("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy");
-            props.put("org.opennms.rrd.interfaceJar", "/usr/share/java/jrrd2.jar");
-            props.put("opennms.library.jrrd2", "/usr/lib/jni/libjrrd2.so");
         } else if (TimeSeriesStrategy.NEWTS.equals(model.getTimeSeriesStrategy())) {
             // Use Newts
             props.put("org.opennms.timeseries.strategy", "newts");

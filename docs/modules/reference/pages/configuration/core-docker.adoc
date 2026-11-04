@@ -58,8 +58,7 @@ via `JAVA_OPTS`, e.g. `JAVA_OPTS="-Djava.io.tmpdir=/some/path -Dactivemq.data=/s
 | `OPENNMS_TIMESERIES_STRATEGY`      | Used Timeseries storage strategy                                        | optional | `rrd`
 | `OPENNMS_RRD_STOREBYFOREIGNSOURCE` | Store timeseries data by foreign source instead of the database node id | optional | `true`
 | `OPENNMS_RRD_STRATEGYCLASS`        | Java RRD Strategy class                                                 | optional | `org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy`
-| `OPENNMS_RRD_INTERFACEJAR`         | Java RRD Interface library                                              | optional | `/usr/share/java/jrrd2.jar`
-| `OPENNMS_LIBRARY_JRRD2`            | JRRD2 library path                                                      | optional | `/usr/lib64/libjrrd2.so`
+| `OPENNMS_LIBRARY_RRD`              | Path to `librrd`; detected automatically when unset                     | optional |
 |===
 
 The following trapd variables are written to `trapd-configuration.xml`, which {page-component-title} imports into the database only once, when the trapd configuration is first initialized.

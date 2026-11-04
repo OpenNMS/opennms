@@ -19,16 +19,16 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.rrd.rrdtool;
+package org.opennms.netmgt.rrd.rrdtool.ffm;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,49 +36,32 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.netmgt.rrd.RrdAttributeType;
 import org.opennms.netmgt.rrd.RrdDataSource;
-import org.opennms.netmgt.rrd.jrrd2.api.JRrd2;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
+import org.opennms.netmgt.rrd.rrdtool.librrd.LibRrd;
+import org.opennms.netmgt.rrd.rrdtool.librrd.LibRrdProvider;
 
 /**
- * Runs the default RRD strategy end-to-end on the FFM librrd binding,
- * i.e. without libjrrd2 installed.
+ * Runs the default RRD strategy end-to-end on the FFM librrd binding.
  */
 public class MultithreadedJniRrdStrategyFfmTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
-    private String previousImpl;
-
     @Before
     public void setUp() {
-        previousImpl = System.getProperty(JRrd2Provider.IMPL_PROPERTY);
-        System.setProperty(JRrd2Provider.IMPL_PROPERTY, "ffm");
         try {
-            JRrd2Provider.newInstance();
-        } catch (final Throwable t) {
-            Assume.assumeNoException("FFM librrd binding unavailable (needs Java 22+ and librrd): skipping", t);
-        }
-    }
-
-    @After
-    public void tearDown() {
-        if (previousImpl == null) {
-            System.clearProperty(JRrd2Provider.IMPL_PROPERTY);
-        } else {
-            System.setProperty(JRrd2Provider.IMPL_PROPERTY, previousImpl);
+            LibRrdProvider.get();
+        } catch (final IllegalStateException e) {
+            Assume.assumeNoException("librrd not available: skipping", e);
         }
     }
 
     @Test
-    public void providerReturnsFfmImplementation() {
-        final JRrd2 jrrd2 = JRrd2Provider.newInstance();
-        assertEquals(JRrd2Provider.FFM_CLASS, jrrd2.getClass().getName());
-    }
-
-    @Test
-    public void autoModePrefersFfm() {
-        System.setProperty(JRrd2Provider.IMPL_PROPERTY, "auto");
-        assertEquals(JRrd2Provider.FFM_CLASS, JRrd2Provider.newInstance().getClass().getName());
+    public void providerReturnsSharedFfmImplementation() {
+        final LibRrd librrd = LibRrdProvider.get();
+        assertEquals(FfmLibRrd.class, librrd.getClass());
+        assertSame(librrd, LibRrdProvider.get());
     }
 
     @Test

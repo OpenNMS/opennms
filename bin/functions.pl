@@ -521,7 +521,6 @@ sub get_dependencies {
 
 	my @SKIP = qw(
 		org\.opennms\:jicmp-api
-		org\.opennms\:jrrd-api
 		org\.opennms\.lib
 	);
 

@@ -9,13 +9,12 @@
   <artifactId>opennms-rrdtool-ffm</artifactId>
   <name>OpenNMS :: RRD :: RRDTool :: FFM</name>
   <description>
-    JRrd2 implementation that calls the system librrd through the Java Foreign Function and Memory API,
-    replacing the libjrrd2 JNI shim.
+    LibRrd implementation that calls the system librrd through the Java Foreign Function and Memory API.
   </description>
   <packaging>jar</packaging>
   <properties>
     <!-- java.lang.foreign is final as of Java 22. This module is compiled separately from the
-         rest of the build (still Java 21) and is only ever loaded reflectively. -->
+         rest of the build (still Java 21) and is only ever loaded reflectively (see LibRrdProvider). -->
     <ffm.java.release>22</ffm.java.release>
     <!-- optional absolute path to librrd for tests; blank = auto-detect -->
     <opennms.library.rrd></opennms.library.rrd>
@@ -45,10 +44,8 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jrrd2-dependencies</artifactId>
-      <scope>provided</scope>
-      <type>pom</type>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-api</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
