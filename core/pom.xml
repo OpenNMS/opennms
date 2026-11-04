@@ -38,6 +38,7 @@
     <module>db-install</module>
     <module>health</module>
     <module>icmp-jna</module>
+    <module>icmp-ffm</module>
     <module>ipc</module>
     <module>jmx</module>
     <module>jstl-support</module>

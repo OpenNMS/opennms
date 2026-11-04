@@ -403,6 +403,10 @@ Many of the properties here are documented with much greater detail in their rel
 | "detect"
 | Used to force IPv6 ICMP support explicitly
 
+| `org.opennms.netmgt.icmp.socket`
+| "auto"
+| Socket implementation used by the ICMP pinger: `ffm` (Java Foreign Function & Memory API; Linux, macOS, BSD), `jna`, or `auto` to use FFM when available and fall back to JNA.
+
 | `org.opennms.netmgt.jetty.host`
 | "0.0.0.0"
 | IP address the Jetty HTTP listener binds to; by default it listens on all interfaces. If you change it, you may also need to update `opennms.rtc-client.http-post.base-url`.

@@ -89,6 +89,8 @@ done
 for OPEN in "${JAVA_OPENS[@]}"; do
     printf -- '--add-opens %s ' "${OPEN}"
 done
+# native code is called through java.lang.foreign (librrd, ICMP sockets) and JNA
+printf -- '--enable-native-access=ALL-UNNAMED '
 # this was in newer Karaf init, but I'm not convinced it works for us
 #for PATCH in "${JAVA_PATCHES[@]}"; do
 #    printf -- '--patch-module %s ' "${PATCH}"

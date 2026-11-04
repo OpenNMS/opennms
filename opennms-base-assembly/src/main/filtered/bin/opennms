@@ -837,9 +837,6 @@ else
 	# extra options that aren't shared with Minion and Sentinel
 	JAVA_CMD+=("--add-exports" "org.apache.karaf.specs/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED")
 
-	# allow the librrd binding (java.lang.foreign) to call native code without warnings
-	JAVA_CMD+=("--enable-native-access=ALL-UNNAMED")
-
 	# see NMS-12261 -- use backwards-compatible locale provider by default
 	JAVA_CMD+=("-Djava.locale.providers=CLDR,COMPAT")
 fi
