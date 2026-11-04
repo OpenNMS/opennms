@@ -441,10 +441,10 @@ Individual adapters are defined by overlaying one configuration file per adapter
 `org.opennms.features.telemetry.adapters-<name>.cfg`, where `<name>` uniquely identifies the adapter. This is the same factory-PID convention used to
 configure Minion listeners.
 
-.Example: `org.opennms.features.telemetry.adapters-NetFlow-5.cfg`
+.Example: `org.opennms.features.telemetry.adapters-Netflow-5.cfg`
 [source, properties]
 ----
-name = NetFlow-5
+name = Netflow-5
 class-name = org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter
 parameters.some-key = some-value
 ----

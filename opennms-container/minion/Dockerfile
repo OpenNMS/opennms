@@ -88,8 +88,12 @@ COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yam
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
 COPY --chown=10001:0 --from=minion-base /opt /opt
 
-# Overlay container-specific etc files (config files and featuresBoot templates)
+# Overlay container-specific etc config files
 COPY --chown=10001:0 container-fs/etc/ /opt/minion/etc/
+
+# featuresBoot and telemetry listener templates. Kept outside /opt/minion/etc so a mounted or
+# persisted etc directory cannot hide them; the entrypoint applies them from here.
+COPY --chown=10001:0 container-fs/templates/ /opt/minion/container-fs/templates/
 
 # Create the directory for server certificates
 RUN install -d -m 750 /opt/minion/server-certs

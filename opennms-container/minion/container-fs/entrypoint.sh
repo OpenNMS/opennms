@@ -19,8 +19,10 @@ MINION_SERVER_CERTS_CFG="${MINION_HOME}/etc/minion-server-certs.env"
 MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
 CACERTS="${MINION_HOME}/cacerts"
 FEATURES_BOOT_DIR="${MINION_HOME}/etc/featuresBoot.d"
-FEATURES_BOOT_TEMPLATES_DIR="${FEATURES_BOOT_DIR}/templates"
-TELEMETRY_TEMPLATES_DIR="${MINION_HOME}/etc/telemetry-templates"
+# Templates live outside the etc volume so a mounted or persisted etc cannot hide them.
+CONTAINER_TEMPLATES_DIR="${MINION_HOME}/container-fs/templates"
+FEATURES_BOOT_TEMPLATES_DIR="${CONTAINER_TEMPLATES_DIR}/featuresBoot.d"
+TELEMETRY_TEMPLATES_DIR="${CONTAINER_TEMPLATES_DIR}/telemetry"
 LEGACY_CONFIG_FILE="${MINION_HOME}/minion-config.yaml"
 export JAVA_OPTS="${JAVA_OPTS} -Xms${JAVA_MIN_MEM:-2g} -Xmx${JAVA_MAX_MEM:-2g}"
 
@@ -96,13 +98,21 @@ setCredentials() {
 
 function applyFeatureBootTemplates() {
     # Clean only files managed by this script; keep baseline boot files from the image/package.
+    # Also includes files written by earlier image versions (old entrypoint and confd) so they
+    # do not stay active in a persisted etc directory.
     local managed_boot_files=(
       "kafka-ipc.boot"
       "grpc.boot"
       "disable-jms.boot"
       "jaeger.boot"
       "dominion-scv.boot"
+      "kafka.boot"
+      "disable-activemq.boot"
+      "kafka-rpc.boot"
+      "kafka-sink.boot"
+      "kafka-twin.boot"
     )
+    mkdir -p "${FEATURES_BOOT_DIR}"
     local boot_file
     for boot_file in "${managed_boot_files[@]}"; do
       rm -f "${FEATURES_BOOT_DIR}/${boot_file}"
