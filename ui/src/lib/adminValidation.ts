@@ -40,7 +40,7 @@ export const RESERVED_ONCALL_ROLE_NAMES = ['.', '..', 'item', 'calendar', 'sched
  * Returns a problem description, or null when the value is acceptable.
  * Emptiness is not checked here; required-ness is a per-form concern.
  *
- * @param reserved the reserved names of its collection: RESERVED_USER_IDS, RESERVED_GROUP_NAMES or RESERVED_ONCALL_ROLE_NAMES
+ * @param reserved the reserved names of its collection: RESERVED_USER_IDS or RESERVED_GROUP_NAMES
  */
 export const validateAdminName = (value: string, label: string, reserved: string[]): string | null => {
   const trimmed = value.trim()

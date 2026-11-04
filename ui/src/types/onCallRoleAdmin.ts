@@ -17,6 +17,8 @@
 /// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 /// either express or implied.  See the License for the specific
 /// language governing permissions and limitations under the
+/// License.
+///
 
 // Wire shapes of the v2 on-call role management API (/api/v2/oncall-roles). A role
 // is a notification rota: a membership group, a supervisor and per-user schedules.
