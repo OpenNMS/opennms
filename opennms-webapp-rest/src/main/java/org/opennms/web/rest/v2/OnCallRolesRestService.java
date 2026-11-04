@@ -21,6 +21,11 @@
  */
 package org.opennms.web.rest.v2;
 
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.time.YearMonth;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -31,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -42,6 +48,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.opennms.netmgt.config.OnCallScheduleExpander;
 import org.opennms.netmgt.config.OnCallScheduleExpander.OnCallNow;
 import org.opennms.netmgt.config.UserMgmtJaxbMapper;
+import org.opennms.netmgt.config.groups.Role;
+import org.opennms.netmgt.config.groups.Schedule;
+import org.opennms.netmgt.config.groups.Time;
 import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
 import org.opennms.netmgt.dao.api.UserGroupDao;
@@ -52,9 +61,12 @@ import org.opennms.netmgt.model.usermgmt.OnCallScheduleTime;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.netmgt.model.usermgmt.UserGroup;
 import org.opennms.web.rest.v2.api.OnCallRolesRestApi;
+import org.opennms.web.rest.v2.model.OnCallCalendarDto;
+import org.opennms.web.rest.v2.model.OnCallCalendarEntryDto;
 import org.opennms.web.rest.v2.model.OnCallRoleDto;
 import org.opennms.web.rest.v2.model.OnCallRoleRenameRequest;
 import org.opennms.web.rest.v2.model.OnCallScheduleDto;
+import org.opennms.web.rest.v2.model.OnCallScheduleSettingsDto;
 import org.opennms.web.rest.v2.model.OnCallTimeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -249,6 +261,95 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         } catch (final Exception e) {
             throw m_support.translate("delete on-call role", e);
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Response getScheduleSettings(final SecurityContext securityContext) {
+        m_support.assertAdmin(securityContext, WHAT);
+        m_support.requireDatabaseStore();
+        final OnCallScheduleSettingsDto settings = new OnCallScheduleSettingsDto();
+        settings.setTimeZone(TimeZone.getDefault().getID());
+        settings.setShortMonths(Arrays.asList(DateFormatSymbols.getInstance().getShortMonths()).subList(0, 12));
+        return Response.ok(settings).build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Response previewCalendar(final SecurityContext securityContext, final String month, final OnCallRoleDto draft) {
+        m_support.assertAdmin(securityContext, WHAT);
+        m_support.requireDatabaseStore();
+        final YearMonth yearMonth;
+        try {
+            if (month == null || !month.matches("\\d{4}-\\d{2}")) {
+                throw new DateTimeParseException("bad month", String.valueOf(month), 0);
+            }
+            yearMonth = YearMonth.parse(month);
+        } catch (final DateTimeParseException e) {
+            throw m_support.badRequest("month must be YYYY-MM.");
+        }
+        if (draft == null) {
+            throw m_support.badRequest("An on-call role body is required.");
+        }
+        try {
+            // a schedule stored on the role the draft names is grandfathered, as in a PUT
+            final OnCallRole stored = StringUtils.isBlank(draft.getName()) ? null : m_onCallRoleDao.findByName(draft.getName());
+            final List<Object> storedKeys = stored == null ? List.of() : key(stored.getSchedules());
+            final List<OnCallScheduleDto> schedules = Objects.requireNonNullElse(draft.getSchedules(), List.<OnCallScheduleDto>of());
+            for (final OnCallScheduleDto schedule : schedules) {
+                if (schedule == null) {
+                    throw new UserMgmtValidationException("A schedule must not be null.");
+                }
+                if (!storedKeys.contains(key(normalized(schedule)))) {
+                    OnCallScheduleValidator.validate(schedule);
+                }
+            }
+            final ZoneId zone = TimeZone.getDefault().toZoneId();
+            final Date start = Date.from(yearMonth.atDay(1).atStartOfDay(zone).toInstant());
+            final Date end = Date.from(yearMonth.plusMonths(1).atDay(1).atStartOfDay(zone).toInstant());
+            final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            final List<OnCallCalendarEntryDto> entries = new ArrayList<>();
+            for (final OnCallScheduleExpander.Entry entry : OnCallScheduleExpander.entries(toJaxbRole(draft), start, end)) {
+                if (entry.user() == null) {
+                    continue; // the supervisor fallback of a draft without a supervisor
+                }
+                final OnCallCalendarEntryDto entryDto = new OnCallCalendarEntryDto();
+                entryDto.setStart(format.format(entry.start()));
+                entryDto.setEnd(format.format(entry.end()));
+                entryDto.setUser(entry.user());
+                entryDto.setScheduleIndex(entry.scheduleIndex());
+                entries.add(entryDto);
+            }
+            final OnCallCalendarDto calendar = new OnCallCalendarDto();
+            calendar.setTimeZone(TimeZone.getDefault().getID());
+            calendar.setMonth(yearMonth.toString());
+            calendar.setEntries(entries);
+            return Response.ok(calendar).build();
+        } catch (final Exception e) {
+            throw m_support.translate("preview on-call calendar", e);
+        }
+    }
+
+    /** The JAXB role notifd evaluates, straight from a draft; users and groups are not looked up. */
+    private static Role toJaxbRole(final OnCallRoleDto dto) {
+        final Role role = new Role();
+        role.setName(dto.getName());
+        role.setSupervisor(StringUtils.trimToNull(dto.getSupervisor()));
+        for (final OnCallScheduleDto scheduleDto : Objects.requireNonNullElse(dto.getSchedules(), List.<OnCallScheduleDto>of())) {
+            final Schedule schedule = new Schedule();
+            schedule.setName(scheduleDto.getUser());
+            schedule.setType(scheduleDto.getType());
+            for (final OnCallTimeDto timeDto : Objects.requireNonNullElse(scheduleDto.getTimes(), List.<OnCallTimeDto>of())) {
+                final Time time = new Time();
+                time.setId(timeDto.getId());
+                time.setDay(timeDto.getDay());
+                time.setBegins(timeDto.getBegins());
+                time.setEnds(timeDto.getEnds());
+                schedule.addTime(time);
+            }
+            role.addSchedule(schedule);
+        }
+        return role;
     }
 
     /** @throws javax.ws.rs.WebApplicationException 404 if there is no such object */

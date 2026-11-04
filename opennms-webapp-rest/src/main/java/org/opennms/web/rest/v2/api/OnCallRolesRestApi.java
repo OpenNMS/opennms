@@ -35,6 +35,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import javax.ws.rs.QueryParam;
+
 import org.opennms.web.rest.v2.model.OnCallRoleDto;
 import org.opennms.web.rest.v2.model.OnCallRoleRenameRequest;
 
@@ -59,6 +61,21 @@ public interface OnCallRolesRestApi {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "List all on-call roles, with their schedules, by name", operationId = "listOnCallRoles")
     Response listOnCallRoles(@Context SecurityContext securityContext);
+
+    @GET
+    @Path("schedule-settings")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "The server's time zone and short month names, for writing dd-MMM-yyyy HH:mm:ss times", operationId = "getOnCallScheduleSettings")
+    Response getScheduleSettings(@Context SecurityContext securityContext);
+
+    @POST
+    @Path("calendar")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Preview one month of an unsaved on-call role draft: who is on call when, in server-local time", operationId = "previewOnCallCalendar")
+    Response previewCalendar(@Context SecurityContext securityContext,
+                             @Parameter(description = "The month, YYYY-MM", example = "2026-11") @QueryParam("month") String month,
+                             OnCallRoleDto draft);
 
     @GET
     @Path("{name}")

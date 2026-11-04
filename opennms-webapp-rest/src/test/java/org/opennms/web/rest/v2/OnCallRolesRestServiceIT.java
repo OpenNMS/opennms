@@ -27,9 +27,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.text.DateFormatSymbols;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.function.Supplier;
 
 import javax.sql.DataSource;
@@ -703,9 +705,87 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
             sendRequest(GET, "/oncall-roles", 403);
             exec(POST, "/oncall-roles", role("x", null), null, 403);
             sendRequest(DELETE, "/oncall-roles/x", 403);
+            exec(POST, "/oncall-roles/calendar?month=2026-11", role("x", null), null, 403);
+            sendRequest(GET, "/oncall-roles/schedule-settings", 403);
         } finally {
             setUser("admin", new String[]{ "ROLE_ADMIN" });
         }
+    }
+
+    @Test
+    public void testCalendarPreview() throws Exception {
+        final MockHttpServletResponse response = exec(POST, "/oncall-roles/calendar?month=2026-11", role("draft-x", DAILY_CAROL), null, 200);
+        final JSONObject calendar = new JSONObject(response.getContentAsString());
+        assertEquals(TimeZone.getDefault().getID(), calendar.getString("timeZone"));
+        assertEquals("2026-11", calendar.getString("month"));
+        final JSONArray entries = calendar.getJSONArray("entries");
+        int carol = 0;
+        int before = 0;
+        int after = 0;
+        for (int i = 0; i < entries.length(); i++) {
+            final JSONObject entry = entries.getJSONObject(i);
+            if (!entry.getString("start").startsWith("2026-11-03")) {
+                continue;
+            }
+            if ("carol".equals(entry.getString("user"))) {
+                carol++;
+                assertEquals("2026-11-03T08:00:00", entry.getString("start"));
+                assertEquals("2026-11-03T17:00:01", entry.getString("end"));
+                assertEquals(0, entry.getInt("scheduleIndex"));
+            } else {
+                assertEquals("alice", entry.getString("user"));
+                assertTrue(entry.isNull("scheduleIndex"));
+                if ("2026-11-03T00:00:00".equals(entry.getString("start"))) {
+                    before++;
+                    assertEquals("2026-11-03T08:00:00", entry.getString("end"));
+                } else {
+                    after++;
+                    assertEquals("2026-11-03T17:00:01", entry.getString("start"));
+                }
+            }
+        }
+        assertEquals(1, carol);
+        assertEquals(1, before);
+        assertEquals(1, after);
+        assertNull(inTx(() -> m_onCallRoleDao.findByName("draft-x")));
+    }
+
+    @Test
+    public void testCalendarPreviewInvalidIs400() throws Exception {
+        final String weeklyNoDay = "{\"user\":\"bob\",\"type\":\"weekly\",\"times\":[{\"begins\":\"18:00:00\",\"ends\":\"23:59:59\"}]}";
+        final MockHttpServletResponse invalid = exec(POST, "/oncall-roles/calendar?month=2026-11", role("draft-y", weeklyNoDay), null, 400);
+        assertTrue(invalid.getContentAsString(), invalid.getContentAsString().contains("bob"));
+        exec(POST, "/oncall-roles/calendar?month=2026-13", role("draft-y", DAILY_CAROL), null, 400);
+        final MockHttpServletResponse missing = exec(POST, "/oncall-roles/calendar", role("draft-y", DAILY_CAROL), null, 400);
+        assertEquals("month must be YYYY-MM.", missing.getContentAsString());
+    }
+
+    @Test
+    public void testCalendarPreviewGrandfathersStoredSchedules() throws Exception {
+        inTx(() -> {
+            final UserAccount bob = m_userAccountDao.findByUsername("bob");
+            final OnCallRole role = new OnCallRole("legacy-cal", m_userGroupDao.findByName("Ops"), bob);
+            final OnCallSchedule legacy = new OnCallSchedule(bob, OnCallSchedule.Type.weekly);
+            legacy.getTimes().add(new OnCallScheduleTime(null, "18:00:00", "23:59:59"));
+            role.getSchedules().add(legacy);
+            m_onCallRoleDao.save(role);
+            return null;
+        });
+        final String legacyDraft = "{\"name\":\"legacy-cal\",\"membershipGroup\":\"Ops\",\"supervisor\":\"bob\",\"schedules\":["
+                + "{\"user\":\"bob\",\"type\":\"weekly\",\"times\":[{\"begins\":\"18:00:00\",\"ends\":\"23:59:59\"}]}]}";
+        exec(POST, "/oncall-roles/calendar?month=2026-11", legacyDraft, null, 200);
+        // the same schedule under another name is not grandfathered
+        exec(POST, "/oncall-roles/calendar?month=2026-11", legacyDraft.replace("legacy-cal", "other-cal"), null, 400);
+    }
+
+    @Test
+    public void testScheduleSettings() throws Exception {
+        Locale.setDefault(Locale.GERMAN);
+        final JSONObject settings = new JSONObject(sendRequest(GET, "/oncall-roles/schedule-settings", 200));
+        assertEquals(TimeZone.getDefault().getID(), settings.getString("timeZone"));
+        final JSONArray months = settings.getJSONArray("shortMonths");
+        assertEquals(12, months.length());
+        assertEquals(DateFormatSymbols.getInstance(Locale.GERMAN).getShortMonths()[2], months.getString(2));
     }
 
     @Test

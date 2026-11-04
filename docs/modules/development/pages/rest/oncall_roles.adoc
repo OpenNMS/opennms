@@ -47,6 +47,10 @@ To use `If-Match`, send the version in quotes, or the `ETag` of a GET of the sin
 
 | /oncall-roles/\{name}
 | Get one role. The response carries an `ETag` header.
+
+| /oncall-roles/schedule-settings
+| Get `{"timeZone": "Europe/Berlin", "shortMonths": ["Jan", ...]}`: the server's time zone and its 12 short month names.
+Use them to write the `begins` and `ends` of a `specific` schedule (`dd-MMM-yyyy HH:mm:ss`) the way the server reads them.
 |===
 
 == POSTs (adding data)
@@ -65,6 +69,17 @@ Returns `201 Created` with the role and its `ETag`, or `409` when it already exi
 | /oncall-roles/\{name}/rename
 | Rename a role in place. The body is `{"newName": "NewName"}`.
 Returns `200` with the role and its `ETag`, `400` when the new name is the current name, or `409` when the new name is taken.
+
+| /oncall-roles/calendar?month=YYYY-MM
+| Preview one month of an unsaved draft role; nothing is stored.
+The body is a role as for create, and `name` is optional.
+Each schedule must be valid for notifd, except one identical to a stored schedule of the role the draft names.
+Users and groups are not looked up, and without a `supervisor` there are no fallback entries.
+Returns `200` with `{"timeZone": "...", "month": "YYYY-MM", "entries": [{"start": "2026-11-03T08:00:00", "end": "2026-11-03T17:00:01", "user": "carol", "scheduleIndex": 0}]}`.
+Times are in the server's time zone, without an offset, and `end` is exclusive.
+Each entry lies within one local day.
+A `scheduleIndex` of `null` is the supervisor, who is on call when no schedule applies.
+A missing or malformed `month` returns `400`.
 |===
 
 WARNING: A rename does not update `destinationPaths.xml`.
