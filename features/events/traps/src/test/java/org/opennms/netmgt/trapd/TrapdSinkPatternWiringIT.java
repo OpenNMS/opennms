@@ -60,7 +60,6 @@ import org.opennms.core.ipc.twin.memory.MemoryTwinPublisher;
 import org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.distributed.core.api.RestClient;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
