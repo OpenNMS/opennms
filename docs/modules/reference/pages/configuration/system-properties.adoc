@@ -544,10 +544,6 @@ Setting it also enables the HSTS header for `https://` requests.
 | true
 | If `true`, NewTS replaces counter wraps with NaN values instead of processing them.
 
-| `org.opennms.protocols.icmp.interfaceJar`
-| `null`
-| This path is added to the `opennms.classpath` at startup
-
 | `org.opennms.protocols.vmware.housekeepingInterval`
 | 300000
 | Interval, in milliseconds, at which the VMware integration checks for and closes idle connections.

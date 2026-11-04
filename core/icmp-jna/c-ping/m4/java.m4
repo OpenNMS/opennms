@@ -10,7 +10,7 @@ AC_DEFUN([ONMS_CHECK_JDK],
       [],
       [with_jvm_arch=none])
 
-    AS_IF([test "x$with_java" = "xno"], [AC_MSG_ERROR([the path to a JDK is required to build jrrd])])
+    AS_IF([test "x$with_java" = "xno"], [AC_MSG_ERROR([the path to a JDK is required to build c-ping])])
     AS_IF([test "x$with_java" = "xyes"], [AC_MSG_ERROR([the argument to --with-java must specify a JDK])])
     AS_IF([test "x$with_java" = "xcheck"], 
           [ONMS_FIND_JDK([$1], [$with_jvm_arch])],

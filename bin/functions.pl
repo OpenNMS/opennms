@@ -520,7 +520,6 @@ sub get_dependencies {
 	my $directory = shift;
 
 	my @SKIP = qw(
-		org\.opennms\:jicmp-api
 		org\.opennms\.lib
 	);
 

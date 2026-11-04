@@ -102,8 +102,6 @@ retry sudo apt update && \
         openjdk-25-jdk-headless \
         r-base \
         "rrdtool=$RRDTOOL_VERSION" \
-        jicmp \
-        jicmp6 \
       || exit 1
 
 export JAVA_HOME=/usr/lib/jvm/java-25-openjdk-amd64

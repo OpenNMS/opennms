@@ -54,7 +54,7 @@ public abstract class AbstractPingerFactory implements PingerFactory {
         try {
             clazz = getPingerClass();
         } catch (final RuntimeException e) {
-            IllegalArgumentException ex = new IllegalArgumentException("Unable to find class named " + System.getProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jni6.Jni6Pinger"), e);
+            IllegalArgumentException ex = new IllegalArgumentException("Unable to find class named " + System.getProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.best.BestMatchPinger"), e);
             LOG.error(ex.getLocalizedMessage(), ex);
             throw ex;
         }

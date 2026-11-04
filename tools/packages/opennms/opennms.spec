@@ -94,10 +94,6 @@ webapp package.
 %package core
 Summary:	The core OpenNMS backend.
 Group:		Applications/System
-Requires(pre):	jicmp >= 3.0.0
-Requires:	jicmp >= 3.0.0
-Requires(pre):	jicmp6 >= 3.0.0
-Requires:	jicmp6 >= 3.0.0
 Requires:	librrd.so.8()(64bit)
 Requires(pre):	/usr/sbin/useradd
 Requires:	/usr/sbin/useradd
@@ -797,16 +793,6 @@ else
 fi
 
 rm -f $ROOT_INST/etc/configured
-
-for LIBNAME in jicmp jicmp6; do
-	if [ `grep "opennms.library.${LIBNAME}" "$ROOT_INST/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
-		LIBRARY_PATH=`rpm -ql "${LIBNAME}" 2>/dev/null | grep "/lib${LIBNAME}.so\$" | head -n 1`
-		if [ -n "$LIBRARY_PATH" ]; then
-			echo "opennms.library.${LIBNAME}=${LIBRARY_PATH}" >> "$ROOT_INST/etc/libraries.properties"
-		fi
-	fi
-done
-"$ROOT_INST/bin/fix-permissions" -R "$ROOT_INST/etc/libraries.properties"
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
 if [ -d "$ROOT_INST/data" ]; then

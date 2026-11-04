@@ -95,7 +95,6 @@ public class Installer {
     private static final Pattern QUOTE_PATTERN = Pattern.compile("^\"(.*)\"");
 
 
-    static final String LIBRARY_PROPERTY_FILE = "libraries.properties";
 
     String m_opennms_home = null;
     boolean m_update_database = false;
@@ -201,16 +200,6 @@ public class Installer {
                 throw new Exception("Cannot execute the rrdtool binary '" + rrd_binary.getAbsolutePath()
                 + "' required by the current RRD strategy. Update the rrd.binary field in opennms.properties appropriately.");
             }
-        }
-
-        /*
-         * make sure we can load the ICMP library before we go any farther
-         */
-
-        if (!Boolean.getBoolean("skip-native")) {
-            String icmp_path = findLibrary("jicmp", m_library_search_path, false);
-            String icmp6_path = findLibrary("jicmp6", m_library_search_path, false);
-            writeLibraryConfig(icmp_path, icmp6_path);
         }
 
         /*
@@ -502,8 +491,7 @@ public class Installer {
 
         // general installation options
         options.addOption("l", "library-path", true,
-                          "library search path (directories separated by '"
-                                  + File.pathSeparator + "')");
+                          "deprecated; ignored (native ICMP libraries are no longer used)");
         options.addOption("R", "reset-webui-password", true,
                 "set password of the web application admin account");
         options.addOption("r", "rpm-install", false,
@@ -1061,165 +1049,6 @@ public class Installer {
     }
 
     /**
-     * <p>findLibrary</p>
-     *
-     * @param libname a {@link java.lang.String} object.
-     * @param path a {@link java.lang.String} object.
-     * @param isRequired a boolean.
-     * @return a {@link java.lang.String} object.
-     * @throws java.lang.Exception if any.
-     */
-    public String findLibrary(String libname, String path, boolean isRequired) throws Exception {
-        String fullname = System.mapLibraryName(libname);
-
-        ArrayList<String> searchPaths = new ArrayList<>();
-
-        if (path != null) {
-            for (String entry : path.split(File.pathSeparator)) {
-                searchPaths.add(entry);
-            }
-        }
-
-        try {
-            File confFile = new File(m_opennms_home + File.separator + "etc" + File.separator + LIBRARY_PROPERTY_FILE);
-            final Properties p = new Properties();
-            final InputStream is = new FileInputStream(confFile);
-            p.load(is);
-            is.close();
-            for (final Object k : p.keySet()) {
-                String key = (String)k;
-                if (key.startsWith("opennms.library")) {
-                    String value = p.getProperty(key);
-                    value = value.replaceAll(File.separator + "[^" + File.separator + "]*$", "");
-                    searchPaths.add(value);
-                }
-            }
-        } catch (Throwable e) {
-            // ok if we can't read these, we'll try to find them
-        }
-
-        if (System.getProperty("java.library.path") != null) {
-            for (final String entry : System.getProperty("java.library.path").split(File.pathSeparator)) {
-                searchPaths.add(entry);
-            }
-        }
-
-        if (!System.getProperty("os.name").contains("Windows")) {
-            String[] defaults = {
-                    "/usr/lib/jni",
-                    "/usr/lib",
-                    "/usr/local/lib",
-                    "/opt/NMSjicmp/lib/32",
-                    "/opt/NMSjicmp/lib/64",
-                    "/opt/NMSjicmp6/lib/32",
-                    "/opt/NMSjicmp6/lib/64"
-            };
-            for (final String entry : defaults) {
-                searchPaths.add(entry);
-            }
-        }
-
-        if (Files.exists(Paths.get("/usr/lib64"))) {
-            searchPaths.add("/usr/lib64");
-        }
-
-        if (Files.exists(Paths.get("/usr/lib/jni"))) {
-            searchPaths.add("/usr/lib/jni");
-        }
-
-        System.out.println("- searching for " + fullname + ":");
-        for (String dirname : searchPaths) {
-            File entry = new File(dirname);
-
-            if (entry.isFile()) {
-                // if they specified a file, try the parent directory instead
-                dirname = entry.getParent();
-            }
-
-
-
-            String fullpath = dirname + File.separator + fullname;
-            if (loadLibrary(fullpath)) {
-                return fullpath;
-            }
-
-            if (fullname.endsWith(".dylib")) {
-                final String fullPathOldExtension = fullpath.replace(".dylib", ".jnilib");
-                if (loadLibrary(fullPathOldExtension)) {
-                    return fullPathOldExtension;
-                }
-            }
-        }
-
-        if (isRequired) {
-            final StringBuilder buf = new StringBuilder();
-            for (final String pathEntry : System.getProperty("java.library.path").split(File.pathSeparator)) {
-                buf.append(" ");
-                buf.append(pathEntry);
-            }
-
-            throw new Exception("Failed to load the required " + libname + " library that is required at runtime.  By default, we search the Java library path:" + buf.toString() + ".  For more information, see http://www.opennms.org/index.php/" + libname);
-        } else {
-            System.out.println("- Failed to load the optional " + libname + " library.");
-            System.out.println("  - This error is not fatal, since " + libname + " is only required for optional features.");
-            System.out.println("  - For more information, see http://www.opennms.org/index.php/" + libname);
-        }
-
-        return null;
-    }
-
-    /**
-     * <p>loadLibrary</p>
-     *
-     * @param path a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public boolean loadLibrary(final String path) {
-        try {
-            System.out.print("  - trying to load " + path + ": ");
-            System.load(path);
-            System.out.println("OK");
-            return true;
-        } catch (final UnsatisfiedLinkError ule) {
-            System.out.println("NO");
-        }
-        return false;
-    }
-
-    /**
-     * <p>writeLibraryConfig</p>
-     *
-     * @param jicmp_path a {@link java.lang.String} object.
-     * @param jicmp6_path a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     */
-    public void writeLibraryConfig(final String jicmp_path, final String jicmp6_path)
-            throws IOException {
-        Properties libraryProps = new Properties();
-
-        if (jicmp_path != null && jicmp_path.length() != 0) {
-            libraryProps.put("opennms.library.jicmp", jicmp_path);
-        }
-
-        if (jicmp6_path != null && jicmp6_path.length() != 0) {
-            libraryProps.put("opennms.library.jicmp6", jicmp6_path);
-        }
-
-        File f = null;
-        try {
-            f = new File(m_opennms_home + File.separator + "etc" + File.separator + LIBRARY_PROPERTY_FILE);
-            if(!f.createNewFile()) {
-                LOG.warn("Could not create file: {}", f.getPath());
-            }
-            FileOutputStream os = new FileOutputStream(f);
-            libraryProps.store(os, null);
-        } catch (IOException e) {
-            System.out.println("unable to write to " + f.getPath());
-            throw e;
-        }
-    }
-
-    /**
      * <p>pingLocalhost</p>
      *
      * @throws java.io.IOException if any.
@@ -1242,18 +1071,6 @@ public class Installer {
 
             pinger = new BestMatchPingerFactory().getInstance();
 
-        } catch (UnsatisfiedLinkError e) {
-            System.out.println("UnsatisfiedLinkError while creating an ICMP Pinger.  Most likely failed to load "
-                    + "libjicmp.so.  Try setting the property 'opennms.library.jicmp' to point at the "
-                    + "full path name of the libjicmp.so shared library or switch to using the JnaPinger "
-                    + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')\n"
-                    + "You can also set the 'opennms.library.jicmp6' property in the same manner to specify "
-                    + "the location of the JICMP6 library.");
-            throw e;
-        } catch (NoClassDefFoundError e) {
-            System.out.println("NoClassDefFoundError while creating an IcmpSocket.  Most likely failed to load libjicmp.so" +
-                    "or libjicmp6.so.");
-            throw e;
         } catch (Exception e) {
             System.out.println("Exception while creating Pinger.");
             throw e;

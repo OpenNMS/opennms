@@ -1418,7 +1418,6 @@
             <mock.db.adminPassword>${mock.db.adminPassword}</mock.db.adminPassword>
             <mock.runSnmpTests>${mock.runSnmpTests}</mock.runSnmpTests>
             <mock.snmpHost>${mock.snmpHost}</mock.snmpHost>
-            <opennms.library.jicmp>${opennms.library.jicmp}</opennms.library.jicmp>
             <install.rrdtool.bin>${install.rrdtool.bin}</install.rrdtool.bin>
             <runRtTests>${runRtTests}</runRtTests>
             <runMailTests>${runMailTests}</runMailTests>
@@ -1872,8 +1871,6 @@
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.5.4</jfreechartVersion>
-    <jicmpVersion>4.0.0</jicmpVersion>
-    <jicmp6Version>4.0.0</jicmp6Version>
     <jinteropVersion>3.4.0</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
     <jmhVersion>1.37</jmhVersion>
@@ -3438,16 +3435,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-icmp-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-icmp-jni</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-icmp-jni6</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

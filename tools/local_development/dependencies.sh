@@ -18,8 +18,6 @@ usage(){
     echo "  --check-dependencies         Check if required dependencies are installed (default action)"
     echo "  --deploy-postgresql          Deploy and setup PostgreSQL using Docker"
     echo "  --enable-rrdtool             Update OpenNMS configuration to use RRDtool (system librrd)"
-    # echo "  --install-jicmp         Install jicmp library"
-    # echo "  --install-jicmp6        Install jicmp6 library"
     exit 1
 }
 
@@ -30,8 +28,6 @@ fi
 
 DEPLOY_POSTGRESQL="no"
 ENABLE_RRDTOOL_CONFIGURATION="no"
-# INSTALL_JICMP="no"
-# INSTALL_JICMP6="no"
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -52,19 +48,9 @@ while [[ $# -gt 0 ]]; do
             ;;
         --all)
             DEPLOY_POSTGRESQL="yes"
-            # INSTALL_JICMP="yes"
-            # INSTALL_JICMP6="yes"
             shift
             ;;
 
-        # --install-jicmp)
-        #     INSTALL_JICMP="yes"
-        #     shift
-        #     ;;
-        # --install-jicmp6)
-        #     INSTALL_JICMP6="yes"
-        #     shift
-        #     ;;
         *)
             echo "Unknown option: $1"
             usage
