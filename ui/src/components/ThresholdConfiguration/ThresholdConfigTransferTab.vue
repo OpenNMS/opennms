@@ -51,7 +51,7 @@
 import { ref } from 'vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import useDownload from '@/composables/useDownload'
-import useSnackbar from '@/composables/useSnackbar'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useThreshdConfigurationStore } from '@/stores/threshdConfigurationStore'
 import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
 import API from '@/services'
@@ -69,7 +69,7 @@ interface TransferSection {
 const groupStore = useThresholdGroupStore()
 const threshdStore = useThreshdConfigurationStore()
 const { downloadFile } = useDownload()
-const { showSnackBar } = useSnackbar()
+const { report, showError } = useActionFeedback()
 
 const pendingUpload = ref<{ section: TransferSection, file: File, isXml: boolean, input: HTMLInputElement } | null>(null)
 
@@ -96,7 +96,7 @@ const onDownload = async (section: TransferSection, isXml: boolean) => {
   const response = await section.download(isXml)
 
   if (!response) {
-    showSnackBar({ msg: `Failed to download the ${section.title.toLowerCase()}.`, error: true })
+    showError(`Failed to download the ${section.title.toLowerCase()}.`)
     return
   }
 
@@ -135,12 +135,7 @@ const onConfirmUpload = async () => {
 
   const result = await upload.section.upload(upload.file, upload.isXml)
 
-  showSnackBar({
-    msg: result.success ? `${upload.section.title} replaced.` : result.message,
-    error: !result.success
-  })
-
-  if (result.success) {
+  if (report(result, `${upload.section.title} replaced.`)) {
     await upload.section.refresh()
   }
 }

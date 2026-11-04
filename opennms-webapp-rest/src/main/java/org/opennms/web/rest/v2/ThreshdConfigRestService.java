@@ -68,7 +68,6 @@ public class ThreshdConfigRestService implements ThreshdConfigRestApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ThreshdConfigRestService.class);
 
-    private static final String CONFIG_FILE_NAME = "threshd-configuration.xml";
     private static final String NO_CONFIG_MESSAGE = "Threshd configuration not found.";
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -184,7 +183,7 @@ public class ThreshdConfigRestService implements ThreshdConfigRestApi {
             return failure.get();
         }
 
-        sendReload();
+        sendConfigChanged();
         return Response.noContent().build();
     }
 
@@ -228,7 +227,7 @@ public class ThreshdConfigRestService implements ThreshdConfigRestApi {
             return failure.get();
         }
 
-        sendReload();
+        sendConfigChanged();
         return Response.created(URI.create("threshd/packages/" + packageName)).build();
     }
 
@@ -289,7 +288,7 @@ public class ThreshdConfigRestService implements ThreshdConfigRestApi {
             return failure.get();
         }
 
-        sendReload();
+        sendConfigChanged();
         return Response.noContent().build();
     }
 
@@ -339,7 +338,7 @@ public class ThreshdConfigRestService implements ThreshdConfigRestApi {
             return failure.get();
         }
 
-        sendReload();
+        sendConfigChanged();
         return Response.noContent().build();
     }
 
@@ -456,7 +455,7 @@ public class ThreshdConfigRestService implements ThreshdConfigRestApi {
             return failure.get();
         }
 
-        sendReload();
+        sendConfigChanged();
         return Response.ok().build();
     }
 
@@ -475,12 +474,12 @@ public class ThreshdConfigRestService implements ThreshdConfigRestApi {
         return "Threshd package '" + packageName + "' does not exist.";
     }
 
-    private void sendReload() {
+    private void sendConfigChanged() {
         try {
-            ThresholdRestSupport.sendReloadEvent(eventProxy, CONFIG_FILE_NAME);
+            ThresholdRestSupport.sendConfigChangedEvent(eventProxy);
         } catch (final Exception e) {
             // The configuration is already stored at this point, so failing the request would be misleading.
-            LOG.warn("Saved the threshd configuration but could not send the reload event for {}.", CONFIG_FILE_NAME, e);
+            LOG.warn("Saved the threshd configuration but could not tell the thresholding service it changed.", e);
         }
     }
 }

@@ -20,7 +20,7 @@
 import { computed, onMounted } from 'vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import ThresholdConfigTabContainer from '@/components/ThresholdConfiguration/ThresholdConfigTabContainer.vue'
-import useSnackbar from '@/composables/useSnackbar'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useMenuStore } from '@/stores/menuStore'
 import { useThreshdConfigurationStore } from '@/stores/threshdConfigurationStore'
 import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
@@ -29,7 +29,7 @@ import { BreadCrumb } from '@/types'
 const menuStore = useMenuStore()
 const groupStore = useThresholdGroupStore()
 const threshdStore = useThreshdConfigurationStore()
-const { showSnackBar } = useSnackbar()
+const { report } = useActionFeedback()
 
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
@@ -50,7 +50,7 @@ onMounted(async () => {
   const failure = [groups, threshd].find(result => !result.success)
 
   if (failure) {
-    showSnackBar({ msg: failure.message, error: true })
+    report(failure)
   }
 })
 </script>

@@ -67,7 +67,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import useSnackbar from '@/composables/useSnackbar'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { PACKAGE_CREATE_PATH, packagePath } from '@/lib/thresholdRoutes'
 import { THRESHOLDING_GROUP_PARAMETER } from '@/lib/thresholdValidator'
 import { useThreshdConfigurationStore } from '@/stores/threshdConfigurationStore'
@@ -77,7 +77,7 @@ import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 
 const store = useThreshdConfigurationStore()
 const router = useRouter()
-const { showSnackBar } = useSnackbar()
+const { report } = useActionFeedback()
 
 const pendingDelete = ref('')
 
@@ -96,7 +96,7 @@ const onConfirmDelete = async () => {
 
   const result = await store.deletePackage(name)
 
-  showSnackBar({ msg: result.success ? 'Threshd package deleted.' : result.message, error: !result.success })
+  report(result, 'Threshd package deleted.')
 }
 </script>
 

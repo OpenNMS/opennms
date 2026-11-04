@@ -70,7 +70,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import useSnackbar from '@/composables/useSnackbar'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { GROUP_CREATE_PATH, groupPath } from '@/lib/thresholdRoutes'
 import { useThreshdConfigurationStore } from '@/stores/threshdConfigurationStore'
 import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
@@ -88,7 +88,7 @@ import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 const store = useThresholdGroupStore()
 const threshdStore = useThreshdConfigurationStore()
 const router = useRouter()
-const { showSnackBar } = useSnackbar()
+const { report } = useActionFeedback()
 
 const search = ref('')
 const pendingDelete = ref('')
@@ -124,7 +124,7 @@ const onConfirmDelete = async () => {
 
   const result = await store.deleteGroup(name)
 
-  showSnackBar({ msg: result.success ? 'Threshold group deleted.' : result.message, error: !result.success })
+  report(result, 'Threshold group deleted.')
 }
 </script>
 

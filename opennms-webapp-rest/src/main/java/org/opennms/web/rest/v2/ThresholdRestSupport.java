@@ -39,8 +39,6 @@ abstract class ThresholdRestSupport {
     /** Matches the source string the JSP threshold editor used, so event history stays continuous. */
     private static final String EVENT_SOURCE = "Web UI";
 
-    private static final String DAEMON_NAME = "Threshd";
-
     private ThresholdRestSupport() {
     }
 
@@ -99,17 +97,16 @@ abstract class ThresholdRestSupport {
     }
 
     /**
-     * Tells the threshd daemon to re-read one of its configuration files.
+     * Tells the thresholding service that its configuration changed, so it rebuilds its thresholding sets.
      *
-     * <p>Distinct from the configuration manager's own update notification, which only keeps the DAOs in
-     * this JVM current: without this event the daemon keeps running against the configuration it read at
-     * startup.</p>
+     * <p>Not {@code reloadDaemonConfig}: the save already reloaded the DAOs, which the webapp shares with the
+     * daemons, through the configuration manager's update notification. A daemon reload would re-read both
+     * documents from the database a second time, outside the lock the write held, before doing the one thing
+     * still needed here.</p>
      */
-    static void sendReloadEvent(final EventProxy eventProxy, final String configFileName) throws Exception {
-        final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, EVENT_SOURCE);
+    static void sendConfigChangedEvent(final EventProxy eventProxy) throws Exception {
+        final EventBuilder builder = new EventBuilder(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI, EVENT_SOURCE);
         builder.setHost(InetAddressUtils.getLocalHostName());
-        builder.addParam(EventConstants.PARM_DAEMON_NAME, DAEMON_NAME);
-        builder.addParam(EventConstants.PARM_CONFIG_FILE_NAME, configFileName);
         eventProxy.send(builder.getEvent());
     }
 }

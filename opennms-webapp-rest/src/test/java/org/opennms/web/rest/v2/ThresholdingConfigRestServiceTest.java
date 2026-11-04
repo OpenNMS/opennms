@@ -58,7 +58,6 @@ import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.v2.FakeThresholdingDaos.FakeThreshdDao;
 import org.opennms.web.rest.v2.FakeThresholdingDaos.FakeThresholdingDao;
@@ -341,7 +340,8 @@ public class ThresholdingConfigRestServiceTest {
         assertEquals(1, thresholdingDao.getSaveCount());
         assertEquals(1, threshdDao.getSaveCount());
         assertEquals("cisco-new", groupOf(threshdDao.getWriteableConfig(), "example1"));
-        assertEquals(List.of("thresholds.xml", "threshd-configuration.xml"), reloadedConfigFiles());
+        // Both documents changed, but one notification covers them.
+        assertSentOneConfigChangedEvent();
     }
 
     @Test
@@ -352,7 +352,7 @@ public class ThresholdingConfigRestServiceTest {
 
         assertEquals(0, threshdDao.getSaveCount());
         assertEquals("cisco", groupOf(threshdDao.getWriteableConfig(), "example1"));
-        assertEquals(List.of("thresholds.xml"), reloadedConfigFiles());
+        assertSentOneConfigChangedEvent();
     }
 
     @Test
@@ -506,12 +506,12 @@ public class ThresholdingConfigRestServiceTest {
     // ------------------------------------------------------------------ events
 
     @Test
-    public void tellsTheDaemonToReloadAfterAWrite() {
+    public void tellsTheThresholdingServiceTheConfigurationChangedAfterAWrite() {
         try (Response response = restService.createThresholdGroup(groupDto("newGroup"), adminContext())) {
             assertEquals(201, response.getStatus());
         }
 
-        assertEquals("thresholds.xml", reloadedConfigFile());
+        assertSentOneConfigChangedEvent();
     }
 
     @Test
@@ -624,16 +624,6 @@ public class ThresholdingConfigRestServiceTest {
 
     // ------------------------------------------------------------------ helpers
 
-    private List<String> reloadedConfigFiles() {
-        final ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
-        try {
-            verify(eventProxy, org.mockito.Mockito.atLeastOnce()).send(captor.capture());
-        } catch (final Exception e) {
-            throw new AssertionError(e);
-        }
-        return captor.getAllValues().stream().map(e -> parm(e, EventConstants.PARM_CONFIG_FILE_NAME)).toList();
-    }
-
     private static String xmlWith(final String... groupNames) {
         final StringBuilder xml = new StringBuilder("<thresholding-config xmlns=\"http://xmlns.opennms.org/xsd/config/thresholding\">");
         for (final String name : groupNames) {
@@ -678,27 +668,16 @@ public class ThresholdingConfigRestServiceTest {
         return config.getPackage(packageName).orElseThrow().getServices().get(0).getParameters().get(0).getValue();
     }
 
-    private String reloadedConfigFile() {
+    /** Exactly one event per write, and it is the config-changed notification rather than a daemon reload. */
+    private void assertSentOneConfigChangedEvent() {
         final ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
         try {
-            verify(eventProxy).send(captor.capture());
+            verify(eventProxy, org.mockito.Mockito.atLeastOnce()).send(captor.capture());
         } catch (final Exception e) {
             throw new AssertionError(e);
         }
-
-        final Event event = captor.getValue();
-        assertEquals(EventConstants.RELOAD_DAEMON_CONFIG_UEI, event.getUei());
-        assertEquals("Threshd", parm(event, EventConstants.PARM_DAEMON_NAME));
-        return parm(event, EventConstants.PARM_CONFIG_FILE_NAME);
-    }
-
-    private static String parm(final Event event, final String name) {
-        for (final Parm parm : event.getParmCollection()) {
-            if (name.equals(parm.getParmName())) {
-                return parm.getValue().getContent();
-            }
-        }
-        return null;
+        assertEquals(List.of(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI),
+                captor.getAllValues().stream().map(Event::getUei).toList());
     }
 
     private static ThresholdGroupSummaryDto byName(final List<ThresholdGroupSummaryDto> groups, final String name) {

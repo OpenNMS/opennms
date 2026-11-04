@@ -97,7 +97,7 @@ import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import FormField from '@/components/Common/FormField.vue'
 import ParameterListEditor from '@/components/ThresholdConfiguration/Common/ParameterListEditor.vue'
 import ThresholdEditPage from '@/components/ThresholdConfiguration/Common/ThresholdEditPage.vue'
-import useSnackbar from '@/composables/useSnackbar'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { THRESHOLD_FIELD_HINTS } from '@/lib/thresholdHelpText'
 import { indexFromParam, isPackagePageOf, nameFromParam, packagePath } from '@/lib/thresholdRoutes'
 import {
@@ -118,7 +118,7 @@ const route = useRoute()
 const router = useRouter()
 const store = useThreshdConfigurationStore()
 const groupStore = useThresholdGroupStore()
-const { showSnackBar } = useSnackbar()
+const { report } = useActionFeedback()
 
 const isLoaded = ref(false)
 const isSaving = ref(false)
@@ -200,11 +200,8 @@ const onSave = async () => {
   const result = await store.saveService(isCreate.value ? null : index.value, draft.value)
   isSaving.value = false
 
-  if (result.success) {
-    showSnackBar({ msg: 'Service saved.' })
+  if (report(result, 'Service saved.')) {
     goBack()
-  } else {
-    showSnackBar({ msg: result.message, error: true })
   }
 }
 </script>

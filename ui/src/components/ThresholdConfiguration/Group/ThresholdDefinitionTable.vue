@@ -84,7 +84,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import TableCard from '@/components/Common/TableCard.vue'
 import ThresholdUeiCell from '@/components/ThresholdConfiguration/Group/ThresholdUeiCell.vue'
-import useSnackbar from '@/composables/useSnackbar'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { definitionCreatePath, definitionEditPath } from '@/lib/thresholdRoutes'
 import { ThresholdDefinitionKind } from '@/lib/thresholdValidator'
 import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
@@ -100,7 +100,7 @@ const props = defineProps<{
 
 const store = useThresholdGroupStore()
 const router = useRouter()
-const { showSnackBar } = useSnackbar()
+const { report } = useActionFeedback()
 
 const pendingDeleteIndex = ref(-1)
 
@@ -152,10 +152,7 @@ const onConfirmDelete = async () => {
 
   const result = await store.deleteDefinition(props.kind, index)
 
-  showSnackBar({
-    msg: result.success ? 'Threshold deleted.' : result.message,
-    error: !result.success
-  })
+  report(result, 'Threshold deleted.')
 }
 </script>
 

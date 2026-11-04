@@ -47,7 +47,7 @@ import EmptyList from '@/components/Common/EmptyList.vue'
 import PackageAddressEditor from '@/components/ThresholdConfiguration/Package/PackageAddressEditor.vue'
 import PackageBasicsForm from '@/components/ThresholdConfiguration/Package/PackageBasicsForm.vue'
 import PackageServicesTable from '@/components/ThresholdConfiguration/Package/PackageServicesTable.vue'
-import useSnackbar from '@/composables/useSnackbar'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { PACKAGES_TAB_PATH, isServicePageOf, nameFromParam, packagePath } from '@/lib/thresholdRoutes'
 import { hasErrors, validateThreshdPackage } from '@/lib/thresholdValidator'
 import { useMenuStore } from '@/stores/menuStore'
@@ -62,7 +62,7 @@ const router = useRouter()
 const menuStore = useMenuStore()
 const store = useThreshdConfigurationStore()
 const groupStore = useThresholdGroupStore()
-const { showSnackBar } = useSnackbar()
+const { report } = useActionFeedback()
 
 const packageName = computed(() => nameFromParam(route.params.name))
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
@@ -89,9 +89,7 @@ const load = async () => {
   // The group names drive the threshold group picker on each service.
   const [pkg] = await Promise.all([store.fetchPackage(packageName.value), groupStore.fetchGroups()])
 
-  if (!pkg.success) {
-    showSnackBar({ msg: pkg.message, error: true })
-  }
+  report(pkg)
 }
 
 onMounted(load)
@@ -120,7 +118,7 @@ onBeforeRouteLeave((to) => {
 const onSave = async () => {
   const result = await store.saveCurrentPackage()
 
-  showSnackBar({ msg: result.success ? 'Threshd package saved.' : result.message, error: !result.success })
+  report(result, 'Threshd package saved.')
 }
 </script>
 

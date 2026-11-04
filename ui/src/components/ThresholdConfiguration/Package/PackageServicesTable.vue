@@ -69,7 +69,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import useSnackbar from '@/composables/useSnackbar'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { serviceCreatePath, serviceEditPath } from '@/lib/thresholdRoutes'
 import { THRESHOLDING_GROUP_PARAMETER } from '@/lib/thresholdValidator'
 import { useThreshdConfigurationStore } from '@/stores/threshdConfigurationStore'
@@ -80,7 +80,7 @@ import EditIcon from '@opennms/onms-ui/icons/action/Edit.vue'
 
 const store = useThreshdConfigurationStore()
 const router = useRouter()
-const { showSnackBar } = useSnackbar()
+const { report } = useActionFeedback()
 
 const pendingDeleteIndex = ref(-1)
 
@@ -106,7 +106,7 @@ const onConfirmDelete = async () => {
 
   const result = await store.deleteService(index)
 
-  showSnackBar({ msg: result.success ? 'Service deleted.' : result.message, error: !result.success })
+  report(result, 'Service deleted.')
 }
 </script>
 

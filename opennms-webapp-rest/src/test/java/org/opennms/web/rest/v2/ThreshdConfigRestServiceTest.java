@@ -49,7 +49,6 @@ import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.v2.FakeThresholdingDaos.FakeThreshdDao;
 import org.opennms.web.rest.v2.model.IpRangeDto;
@@ -359,12 +358,12 @@ public class ThreshdConfigRestServiceTest {
     // ------------------------------------------------------------------ events
 
     @Test
-    public void tellsTheDaemonToReloadTheRightFileAfterAWrite() {
+    public void tellsTheThresholdingServiceTheConfigurationChangedAfterAWrite() {
         try (Response response = restService.createThreshdPackage(packageDto("example3"), adminContext())) {
             assertEquals(201, response.getStatus());
         }
 
-        assertEquals("threshd-configuration.xml", reloadedConfigFile());
+        assertSentOneConfigChangedEvent();
     }
 
     // ---------------------------------------------------------------- download
@@ -403,27 +402,16 @@ public class ThreshdConfigRestServiceTest {
 
     // ------------------------------------------------------------------ helpers
 
-    private String reloadedConfigFile() {
+    /** Exactly one event per write, and it is the config-changed notification rather than a daemon reload. */
+    private void assertSentOneConfigChangedEvent() {
         final ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
         try {
-            verify(eventProxy).send(captor.capture());
+            verify(eventProxy, org.mockito.Mockito.atLeastOnce()).send(captor.capture());
         } catch (final Exception e) {
             throw new AssertionError(e);
         }
-
-        final Event event = captor.getValue();
-        assertEquals(EventConstants.RELOAD_DAEMON_CONFIG_UEI, event.getUei());
-        assertEquals("Threshd", parm(event, EventConstants.PARM_DAEMON_NAME));
-        return parm(event, EventConstants.PARM_CONFIG_FILE_NAME);
-    }
-
-    private static String parm(final Event event, final String name) {
-        for (final Parm parm : event.getParmCollection()) {
-            if (name.equals(parm.getParmName())) {
-                return parm.getValue().getContent();
-            }
-        }
-        return null;
+        assertEquals(List.of(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI),
+                captor.getAllValues().stream().map(Event::getUei).toList());
     }
 
     private static ThreshdConfiguration configWith(final Package... packages) {

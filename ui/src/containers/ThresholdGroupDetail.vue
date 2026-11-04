@@ -54,7 +54,7 @@ import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import ThresholdDefinitionTable from '@/components/ThresholdConfiguration/Group/ThresholdDefinitionTable.vue'
 import ThresholdGroupHeader from '@/components/ThresholdConfiguration/Group/ThresholdGroupHeader.vue'
-import useSnackbar from '@/composables/useSnackbar'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { groupEditPath, nameFromParam } from '@/lib/thresholdRoutes'
 import { ThresholdDefinitionKind } from '@/lib/thresholdValidator'
 import { useMenuStore } from '@/stores/menuStore'
@@ -66,7 +66,7 @@ const route = useRoute()
 const router = useRouter()
 const menuStore = useMenuStore()
 const store = useThresholdGroupStore()
-const { showSnackBar } = useSnackbar()
+const { report } = useActionFeedback()
 
 const isDeleteConfirmVisible = ref(false)
 
@@ -84,9 +84,7 @@ const load = async () => {
 
   store.fetchMetadata()
 
-  if (!group.success) {
-    showSnackBar({ msg: group.message, error: true })
-  }
+  report(group)
 }
 
 onMounted(load)
@@ -98,9 +96,7 @@ const onDeleteGroup = async () => {
 
   const result = await store.deleteGroup(groupName.value, store.currentGroup?.version)
 
-  showSnackBar({ msg: result.success ? 'Threshold group deleted.' : result.message, error: !result.success })
-
-  if (result.success) {
+  if (report(result, 'Threshold group deleted.')) {
     router.push('/threshold-config')
   }
 }

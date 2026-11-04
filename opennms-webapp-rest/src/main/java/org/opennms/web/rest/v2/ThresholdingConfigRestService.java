@@ -90,8 +90,6 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
 
     private static final Logger LOG = LoggerFactory.getLogger(ThresholdingConfigRestService.class);
 
-    private static final String CONFIG_FILE_NAME = "thresholds.xml";
-    private static final String THRESHD_CONFIG_FILE_NAME = "threshd-configuration.xml";
 
     /** Service parameter through which a threshd package binds a service to a threshold group. */
     static final String THRESHOLDING_GROUP_PARAMETER = "thresholding-group";
@@ -265,7 +263,7 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
             return failure.get();
         }
 
-        sendReload(CONFIG_FILE_NAME);
+        sendConfigChanged();
         return Response.created(URI.create("thresholding/groups/" + groupName)).build();
     }
 
@@ -281,7 +279,6 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
         final boolean renamed = !newName.equals(groupName);
         final AtomicReference<Response> failure = new AtomicReference<>();
         final AtomicBoolean eventsCreated = new AtomicBoolean();
-        final AtomicBoolean threshdChanged = new AtomicBoolean();
 
         try {
             thresholdingDao.withWriteLock(config -> {
@@ -347,7 +344,6 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
                             restoreGroups(config, previousGroups, e);
                             throw e;
                         }
-                        threshdChanged.set(true);
                     });
                 } else {
                     thresholdingDao.saveConfig();
@@ -369,10 +365,8 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
             return failure.get();
         }
 
-        sendReload(CONFIG_FILE_NAME);
-        if (threshdChanged.get()) {
-            sendReload(THRESHD_CONFIG_FILE_NAME);
-        }
+        // One notification covers both documents: the thresholding sets are rebuilt from both either way.
+        sendConfigChanged();
         return Response.noContent().build();
     }
 
@@ -426,7 +420,7 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
             return failure.get();
         }
 
-        sendReload(CONFIG_FILE_NAME);
+        sendConfigChanged();
         return Response.noContent().build();
     }
 
@@ -590,7 +584,7 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
             return failure.get();
         }
 
-        sendReload(CONFIG_FILE_NAME);
+        sendConfigChanged();
         return Response.ok().build();
     }
 
@@ -751,12 +745,12 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
         }
     }
 
-    private void sendReload(final String fileName) {
+    private void sendConfigChanged() {
         try {
-            ThresholdRestSupport.sendReloadEvent(eventProxy, fileName);
+            ThresholdRestSupport.sendConfigChangedEvent(eventProxy);
         } catch (final Exception e) {
             // The configuration is already stored at this point, so failing the request would be misleading.
-            LOG.warn("Saved the configuration but could not send the reload event for {}.", fileName, e);
+            LOG.warn("Saved the thresholding configuration but could not tell the thresholding service it changed.", e);
         }
     }
 }

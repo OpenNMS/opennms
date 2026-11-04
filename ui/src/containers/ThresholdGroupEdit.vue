@@ -45,7 +45,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import FormField from '@/components/Common/FormField.vue'
 import ThresholdEditPage from '@/components/ThresholdConfiguration/Common/ThresholdEditPage.vue'
-import useSnackbar from '@/composables/useSnackbar'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { THRESHOLD_FIELD_HINTS } from '@/lib/thresholdHelpText'
 import { GROUPS_TAB_PATH, groupPath, nameFromParam } from '@/lib/thresholdRoutes'
 import { hasErrors, validateThresholdGroup } from '@/lib/thresholdValidator'
@@ -56,7 +56,7 @@ import { OnmsInputText } from '@opennms/onms-ui'
 const route = useRoute()
 const router = useRouter()
 const store = useThresholdGroupStore()
-const { showSnackBar } = useSnackbar()
+const { report } = useActionFeedback()
 
 const isLoaded = ref(false)
 const isSaving = ref(false)
@@ -120,11 +120,8 @@ const onSave = async () => {
 
   isSaving.value = false
 
-  if (result.success) {
-    showSnackBar({ msg: isCreate.value ? 'Threshold group created.' : 'Threshold group saved.' })
+  if (report(result, isCreate.value ? 'Threshold group created.' : 'Threshold group saved.')) {
     router.push(groupPath(group.name))
-  } else {
-    showSnackBar({ msg: result.message, error: true })
   }
 }
 </script>

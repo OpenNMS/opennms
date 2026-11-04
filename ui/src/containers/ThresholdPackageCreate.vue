@@ -46,7 +46,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import FormField from '@/components/Common/FormField.vue'
 import ThresholdEditPage from '@/components/ThresholdConfiguration/Common/ThresholdEditPage.vue'
-import useSnackbar from '@/composables/useSnackbar'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { THRESHOLD_FIELD_HINTS } from '@/lib/thresholdHelpText'
 import { PACKAGES_TAB_PATH, packagePath } from '@/lib/thresholdRoutes'
 import { hasErrors, validateThreshdPackage } from '@/lib/thresholdValidator'
@@ -56,7 +56,7 @@ import { OnmsInputText } from '@opennms/onms-ui'
 
 const router = useRouter()
 const store = useThreshdConfigurationStore()
-const { showSnackBar } = useSnackbar()
+const { report } = useActionFeedback()
 
 const isLoaded = ref(false)
 const isSaving = ref(false)
@@ -81,11 +81,8 @@ const onSave = async () => {
   const result = await store.createPackage(pkg)
   isSaving.value = false
 
-  if (result.success) {
-    showSnackBar({ msg: 'Threshd package created.' })
+  if (report(result, 'Threshd package created.')) {
     router.push(packagePath(pkg.name))
-  } else {
-    showSnackBar({ msg: result.message, error: true })
   }
 }
 </script>

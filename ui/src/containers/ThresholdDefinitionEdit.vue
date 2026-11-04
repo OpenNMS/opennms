@@ -54,7 +54,7 @@ import ResourceFilterEditor from '@/components/ThresholdConfiguration/Group/Reso
 import ThresholdDefinitionForm from '@/components/ThresholdConfiguration/Group/ThresholdDefinitionForm.vue'
 import ThresholdEditPage from '@/components/ThresholdConfiguration/Common/ThresholdEditPage.vue'
 import ThresholdHelpDialog from '@/components/ThresholdConfiguration/Common/ThresholdHelpDialog.vue'
-import useSnackbar from '@/composables/useSnackbar'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { THRESHOLD_DEFINITION_HELP } from '@/lib/thresholdHelpText'
 import { groupPath, indexFromParam, nameFromParam } from '@/lib/thresholdRoutes'
 import {
@@ -71,7 +71,7 @@ import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 const route = useRoute()
 const router = useRouter()
 const store = useThresholdGroupStore()
-const { showSnackBar } = useSnackbar()
+const { report } = useActionFeedback()
 
 const isLoaded = ref(false)
 const isSaving = ref(false)
@@ -128,11 +128,8 @@ const onSave = async () => {
   const result = await store.saveDefinition(kind.value, isCreate.value ? null : index.value, definition.value)
   isSaving.value = false
 
-  if (result.success) {
-    showSnackBar({ msg: 'Threshold saved.' })
+  if (report(result, 'Threshold saved.')) {
     goBack()
-  } else {
-    showSnackBar({ msg: result.message, error: true })
   }
 }
 </script>
