@@ -165,7 +165,7 @@ public class ThreshdConfigRestService implements ThreshdConfigRestApi {
                 }
 
                 final ThreshdConfiguration replacement = ThreshdConfigMapper.toEntity(configDto);
-                // Mutate the instance the DAO holds: saveConfig() serializes its own field, not an argument.
+                // config is the DAO's draft for this write: saveConfig() persists it, not an argument.
                 config.setPackages(replacement.getPackages());
 
                 threshdDao.saveConfig();

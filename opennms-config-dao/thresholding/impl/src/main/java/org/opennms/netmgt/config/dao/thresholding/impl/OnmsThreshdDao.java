@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.function.Consumer;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.config.api.ConfigReloadContainer;
@@ -42,6 +44,16 @@ import org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 
+/**
+ * Threshd configuration stored in the configuration manager.
+ *
+ * <p>The published configuration ({@link #getReadOnlyConfig()}, {@link #getWriteableConfig()}) is never
+ * mutated; it is only ever replaced. Readers therefore need no lock: whatever they got stays consistent while
+ * they iterate it. Writers get a private draft through {@link #withWriteLock}, and {@link #saveConfig()}
+ * persists that draft; the published configuration only changes once the configuration manager has accepted
+ * it. Every replacement happens under the write lock, so a reload can no longer slip in between a writer's
+ * edits and its save.</p>
+ */
 public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThreshdDao {
     public static final String CONFIG_NAME = "threshd-config";
 
@@ -50,6 +62,16 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
     private volatile ThreshdConfiguration dbConfig;
     private volatile ConfigurationManagerService cms;
     private volatile boolean initialized;
+    /** Set when a configuration manager update arrived while the write lock was held; see {@link #onCmsUpdate()}. */
+    private volatile boolean reloadPending;
+
+    // The fields below are only accessed while holding the write lock.
+    /** True while the first load runs, so the reentrant IPMap lookup does not load again. */
+    private boolean loading;
+    /** The draft handed to the current {@link #withWriteLock} consumer, if any. */
+    private ThreshdConfiguration pendingDraft;
+    /** Incremented by every successful reload, so a save can tell whether its update event reloaded. */
+    private long reloadCount;
 
     public OnmsThreshdDao(JsonStore jsonStore) {
         super(jsonStore);
@@ -79,20 +101,30 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
     private ConfigurationManagerService registerWith(ConfigurationManagerService cms) {
         cms.registerEventHandler(EventType.UPDATE,
                 new ConfigUpdateInfo(CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID),
-                info -> onConfigChanged());
+                info -> onCmsUpdate());
         return cms;
     }
 
     private void ensureInitialized() {
-        if (!initialized) {
-            synchronized (this) {
-                if (!initialized) {
-                    // Set the flag first so any reentrant calls during reload() (e.g. from IPMap construction
-                    // via super.reload() → getReadOnlyConfig()) don't recurse back into reload().
-                    initialized = true;
+        if (initialized) {
+            return;
+        }
+        final Lock lock = getWriteLock();
+        lock.lock();
+        try {
+            // reload() → super.reload() → IPMap → getReadOnlyConfig() comes back here on the same thread;
+            // dbConfig is already set by then, so just let it through. initialized is only set by a
+            // successful reload(), so a failed first load is retried on the next access.
+            if (!initialized && !loading) {
+                loading = true;
+                try {
                     reload();
+                } finally {
+                    loading = false;
                 }
             }
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -107,7 +139,9 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
     }
 
     /**
-     * @return just the configuration from the database since configuration provided by extensions is read only
+     * @return just the configuration from the database since configuration provided by extensions is read only.
+     * The returned instance is shared with every other reader and must not be modified; use
+     * {@link #withWriteLock} to make changes.
      */
     @Override
     public ThreshdConfiguration getWriteableConfig() {
@@ -115,37 +149,98 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
         return dbConfig;
     }
 
+    /**
+     * Hands the consumer a private copy of the database configuration (or {@code null} if there is none) while
+     * holding the write lock. Changes become visible to readers only once {@link #saveConfig()} succeeds.
+     */
     @Override
-    public synchronized void reload() {
-        dbConfig = loadFromDb();
-        super.reload();
-        publishMergedConfig();
+    public void withWriteLock(Consumer<ThreshdConfiguration> consumerWithLock) {
+        final Lock lock = getWriteLock();
+        lock.lock();
+        final ThreshdConfiguration previousDraft = pendingDraft;
+        try {
+            ensureInitialized();
+            if (pendingDraft == null) {
+                pendingDraft = copyOf(dbConfig);
+            }
+            consumerWithLock.accept(pendingDraft);
+        } finally {
+            pendingDraft = previousDraft;
+            lock.unlock();
+        }
+        drainPendingReload();
     }
 
     @Override
-    public void saveConfig() {
-        ThreshdConfiguration config = dbConfig;
-        if (config == null) {
-            throw new IllegalStateException("No threshd configuration loaded; cannot save");
-        }
+    public void reload() {
+        final Lock lock = getWriteLock();
+        lock.lock();
         try {
+            reloadPending = false;
+            dbConfig = loadFromDb();
+            super.reload();
+            publishMergedConfig();
+            initialized = true;
+            reloadCount++;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Persists the draft of the enclosing {@link #withWriteLock} call, or the published configuration when called
+     * outside of one. If the configuration manager rejects it, the published configuration is left as it was.
+     */
+    @Override
+    public void saveConfig() {
+        final Lock lock = getWriteLock();
+        lock.lock();
+        try {
+            final ThreshdConfiguration config = pendingDraft != null ? pendingDraft : dbConfig;
+            if (config == null) {
+                throw new IllegalStateException("No threshd configuration loaded; cannot save");
+            }
+            final long reloadsBefore = reloadCount;
             getCms().updateConfiguration(CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID,
                     new JsonAsString(ConfigConvertUtil.objectToJson(config)), true);
-        } catch (RuntimeException e) {
-            // Callers edit dbConfig in place before saving, so a rejected save (e.g. schema validation) would
-            // otherwise leave those edits live. Put back what the database holds.
-            try {
+            // The update event normally reloads synchronously on this thread. If it did not (no handler, or the
+            // handler failed and the configuration manager only logged it), publish what was stored ourselves.
+            if (reloadCount == reloadsBefore) {
                 reload();
-            } catch (RuntimeException reloadFailure) {
-                e.addSuppressed(reloadFailure);
             }
-            throw e;
+        } finally {
+            lock.unlock();
         }
+        drainPendingReload();
     }
 
     @Override
     public void onConfigChanged() {
         reload();
+    }
+
+    /**
+     * Update handler registered with the configuration manager. It runs while the configuration manager holds a
+     * lock of its own (its handler map entry), and a writer holding our write lock may be waiting for that very
+     * lock in {@code updateConfiguration()}. Blocking here would deadlock, so if the write lock is taken the
+     * reload is left to whoever releases it.
+     */
+    private void onCmsUpdate() {
+        reloadPending = true;
+        drainPendingReload();
+    }
+
+    private void drainPendingReload() {
+        final Lock lock = getWriteLock();
+        while (reloadPending && lock.tryLock()) {
+            try {
+                if (reloadPending) {
+                    reload();
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
     }
 
     private ThreshdConfiguration loadFromDb() {
@@ -154,14 +249,20 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
                 .orElse(null);
     }
 
-    private synchronized ThreshdConfiguration getMergedConfig() {
-        ThreshdConfiguration externalConfig = extContainer.getObject();
+    private static ThreshdConfiguration copyOf(ThreshdConfiguration config) {
+        return config == null ? null
+                : ConfigConvertUtil.jsonToObject(ConfigConvertUtil.objectToJson(config), ThreshdConfiguration.class);
+    }
 
-        if (dbConfig == null && externalConfig == null) {
+    private ThreshdConfiguration getMergedConfig() {
+        final ThreshdConfiguration databaseConfig = dbConfig;
+        final ThreshdConfiguration externalConfig = extContainer.getObject();
+
+        if (databaseConfig == null && externalConfig == null) {
             return null;
         } else if (externalConfig == null) {
-            return dbConfig;
-        } else if (dbConfig == null) {
+            return databaseConfig;
+        } else if (databaseConfig == null) {
             return externalConfig;
         }
 
@@ -169,14 +270,15 @@ public class OnmsThreshdDao extends AbstractThreshdDao implements WriteableThres
         ThreshdConfiguration mergedConfig = new ThreshdConfiguration();
 
         List<Package> mergedPackages = new ArrayList<>();
-        mergedPackages.addAll(dbConfig.getPackages());
+        mergedPackages.addAll(databaseConfig.getPackages());
         mergedPackages.addAll(externalConfig.getPackages());
         mergedConfig.setPackages(Collections.unmodifiableList(mergedPackages));
 
         return mergedConfig;
     }
 
-    private synchronized void publishMergedConfig() {
+    /** Called with the write lock held. */
+    private void publishMergedConfig() {
         ThreshdConfiguration merged = getMergedConfig();
         if (merged == null) {
             return;

@@ -29,8 +29,8 @@ import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 
 public interface WriteableThresholdingDao extends WriteableDao<ThresholdingConfig>, ReadableThresholdingDao {
     /**
-     * A lock guarding the configuration held by this DAO. Readers that need a stable view across several
-     * calls should hold this while reading.
+     * A lock guarding the configuration held by this DAO. Implementations that only ever replace the published
+     * configuration (never mutate it) do not need readers to take this.
      */
     Lock getReadLock();
 
@@ -42,8 +42,10 @@ public interface WriteableThresholdingDao extends WriteableDao<ThresholdingConfi
     Lock getWriteLock();
 
     /**
-     * Run a mutation against the writeable configuration while holding the write lock. Note that the
-     * configuration is passed in fresh, so callers must not retain the reference beyond the consumer.
+     * Run a mutation against the writeable configuration while holding the write lock, then persist it with
+     * {@link #saveConfig()} from inside the consumer. This is the only place the configuration may be modified;
+     * implementations may pass a private draft that becomes visible to readers only once the save succeeds.
+     * Callers must not retain the reference beyond the consumer.
      */
     default void withWriteLock(Consumer<ThresholdingConfig> consumerWithLock) {
         getWriteLock().lock();

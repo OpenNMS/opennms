@@ -47,7 +47,7 @@ public abstract class AbstractThreshdDao implements ReadableThreshdDao {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractThreshdDao.class);
     public static final String JSON_STORE_KEY = "threshd-configuration";
 
-    private IPMap ipMap;
+    private volatile IPMap ipMap;
     final JsonStore jsonStore;
 
     AbstractThreshdDao() {
