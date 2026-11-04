@@ -86,12 +86,14 @@ import { computed, ref, watch } from 'vue'
 import { OnmsButton, OnmsCheckbox, OnmsDialog, OnmsSelect } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
+import { monthProblem } from '@/lib/onCallSchedule'
 
 const props = defineProps<{
   visible: boolean
   // yyyy-MM-dd
   day: string
   members: string[]
+  shortMonths: string[]
 }>()
 
 const emit = defineEmits<{
@@ -135,7 +137,10 @@ const problem = computed(() => {
   if (!begin.value || !effectiveEnd.value || effectiveEnd.value.startsWith('T')) {
     return 'Enter a begin and an end.'
   }
-  return begin.value >= effectiveEnd.value ? 'The time must begin before it ends.' : null
+  if (begin.value >= effectiveEnd.value) {
+    return 'The time must begin before it ends.'
+  }
+  return monthProblem([begin.value, effectiveEnd.value], props.shortMonths)
 })
 
 const ok = () => {

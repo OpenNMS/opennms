@@ -108,6 +108,8 @@
             <OnCallSchedulesTab
               v-model:cards="cards"
               :members="members"
+              :shortMonths="shortMonths"
+              :settingsMissing="!store.scheduleSettings"
               :highlightKey="highlightKey"
               @highlighted="highlightKey = null"
             />
@@ -118,7 +120,10 @@
               v-if="activeTab === 'calendar'"
               :draft="calendarDraft"
               :cards="cards"
+              v-model:month="calendarMonth"
               :members="members"
+              :shortMonths="shortMonths"
+              :settingsMissing="!store.scheduleSettings"
               :timeZone="store.scheduleSettings?.timeZone ?? ''"
               @add-entry="addEntry"
               @show-schedule="showSchedule"
@@ -196,6 +201,8 @@ const cards = ref<ScheduleCard[]>([])
 const cardsReady = ref(false)
 // the card the Schedules tab scrolls to and marks; set by the calendar preview
 const highlightKey = ref<string | null>(null)
+// the month the calendar shows; null until it is first opened (the tab remounts on every visit)
+const calendarMonth = ref<string | null>(null)
 const saving = ref(false)
 const errorText = ref('')
 
@@ -240,13 +247,14 @@ const onCallNowText = computed(() => {
   return props.role?.onCallNowIsSupervisor ? `${text} (supervisor, nobody scheduled)` : text
 })
 
+const shortMonths = computed(() => store.scheduleSettings?.shortMonths ?? [])
 const members = computed(() => store.groupMembers(membershipGroup.value))
 
 const supervisorMissing = computed(() => !supervisor.value)
 const groupMissing = computed(() => !membershipGroup.value)
 const detailsTabProblem = computed(() =>
   !!(nameProblem.value || descriptionProblem.value || supervisorMissing.value || groupMissing.value))
-const schedulesProblem = computed(() => cards.value.some(c => cardProblems(c).length > 0))
+const schedulesProblem = computed(() => cards.value.some(c => cardProblems(c, shortMonths.value).length > 0))
 
 const isValid = computed(() =>
   cardsReady.value && !detailsTabProblem.value && !schedulesProblem.value && (isEditing.value || !!name.value))
@@ -266,6 +274,7 @@ watch(
   () => {
     errorText.value = ''
     activeTab.value = 'details'
+    calendarMonth.value = null
     cards.value = []
     cardsReady.value = false
     name.value = ''
@@ -289,13 +298,12 @@ watch(
 // The role as the draft stands, schedules in card order. Call it only while no card has problems:
 // a card with malformed values cannot be serialized.
 const draftRole = (): ManagedOnCallRoleCreate => {
-  const shortMonths = store.scheduleSettings?.shortMonths ?? []
   return {
     name: isEditing.value ? originalName.value : name.value,
     description: descriptionUnchanged.value && props.role ? (props.role.description ?? '') : description.value.trim(),
     membershipGroup: membershipGroup.value,
     supervisor: supervisor.value,
-    schedules: cards.value.map(c => toSchedule(c, shortMonths))
+    schedules: cards.value.map(c => toSchedule(c, shortMonths.value))
   }
 }
 

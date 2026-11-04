@@ -19,7 +19,13 @@
       />
     </div>
     <div
-      v-if="errorText"
+      v-if="settingsMissing"
+      class="calendar-error"
+      role="alert"
+      data-test="calendar-settings-missing"
+    >{{ SETTINGS_MISSING_MESSAGE }}</div>
+    <div
+      v-else-if="errorText"
       class="calendar-error"
       role="alert"
       data-test="calendar-error"
@@ -67,6 +73,7 @@
       v-model:visible="dialogVisible"
       :day="dialogDay"
       :members="members"
+      :shortMonths="shortMonths"
       @ok="entry => emit('add-entry', entry)"
     />
   </div>
@@ -89,16 +96,22 @@ const props = defineProps<{
   draft: ManagedOnCallRoleCreate | null
   cards: ScheduleCard[]
   members: string[]
+  shortMonths: string[]
   timeZone: string
+  settingsMissing?: boolean
+  // the shown month (yyyy-MM), kept by the parent so that it survives the tab being unmounted
+  month?: string | null
 }>()
 
 const emit = defineEmits<{
   'add-entry': [entry: { user: string, start: string, end: string, endOfDay: boolean }]
   'show-schedule': [index: number]
+  'update:month': [month: string]
 }>()
 
 const DEBOUNCE_MS = 400
 const WEEKDAY_HEADERS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const SETTINGS_MISSING_MESSAGE = 'Schedule settings could not be loaded; reload the page.'
 const NOT_READY_MESSAGE = 'Fix the problems on the Schedules tab to see the calendar.'
 
 const pad = (n: number) => String(n).padStart(2, '0')
@@ -119,7 +132,8 @@ const serverMonth = (): string => {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}`
 }
 
-const month = ref(serverMonth())
+const month = ref(props.month ?? serverMonth())
+watch(month, m => emit('update:month', m), { immediate: true })
 const entries = ref<OnCallCalendarEntry[]>([])
 const errorText = ref('')
 const loading = ref(false)

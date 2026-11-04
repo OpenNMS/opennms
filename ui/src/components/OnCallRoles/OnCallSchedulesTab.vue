@@ -1,7 +1,13 @@
 <template>
   <div class="schedules-tab">
     <p
-      v-if="!cards.length"
+      v-if="settingsMissing"
+      class="empty"
+      role="alert"
+      data-test="settings-missing"
+    >Schedule settings could not be loaded; reload the page.</p>
+    <p
+      v-else-if="!cards.length"
       class="empty"
       data-test="no-schedules"
     >No schedules: the supervisor covers every time.</p>
@@ -11,6 +17,7 @@
       :ref="el => setRef(card.key, el)"
       :card="card"
       :members="members"
+      :shortMonths="shortMonths"
       :highlighted="highlighted === card.key"
       @update:card="c => replaceCard(index, c)"
       @remove="removeCard(index)"
@@ -39,6 +46,9 @@ import { newCard, ScheduleCard } from '@/lib/onCallSchedule'
 const props = defineProps<{
   cards: ScheduleCard[]
   members: string[]
+  shortMonths: string[]
+  // the schedule settings failed to load, so the cards are not the role's schedules
+  settingsMissing?: boolean
   highlightKey: string | null
 }>()
 

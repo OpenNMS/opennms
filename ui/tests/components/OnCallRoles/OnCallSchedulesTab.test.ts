@@ -30,20 +30,27 @@ import { cardProblems, newCard } from '@/lib/onCallSchedule'
 enableAutoUnmount(afterEach)
 
 const noop = { mounted: () => undefined }
+const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 describe('OnCallSchedulesTab', () => {
-  const mountTab = (cards = [newCard('bob', 'daily')]) =>
+  const mountTab = (cards = [newCard('bob', 'daily')], extra: Record<string, unknown> = {}) =>
     mount(OnCallSchedulesTab, {
-      props: { cards, members: ['bob'], highlightKey: null },
+      props: { ...extra, cards, members: ['bob'], shortMonths: SHORT_MONTHS, highlightKey: null },
       global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
     })
+
+  it('says the settings could not be loaded instead of claiming the supervisor covers every time', () => {
+    const w = mountTab([], { settingsMissing: true })
+    expect(w.find('[data-test="settings-missing"]').text()).toBe('Schedule settings could not be loaded; reload the page.')
+    expect(w.find('[data-test="no-schedules"]').exists()).toBe(false)
+  })
 
   it('appends an empty card with a problem on Add Schedule', async () => {
     const w = mountTab([])
     await w.find('[data-test="add-schedule"]').trigger('click')
     const cards = w.emitted('update:cards')!.at(-1)![0] as ReturnType<typeof newCard>[]
     expect(cards).toHaveLength(1)
-    expect(cardProblems(cards[0]).length).toBeGreaterThan(0)
+    expect(cardProblems(cards[0], SHORT_MONTHS).length).toBeGreaterThan(0)
   })
 
   it('removes a card', async () => {
@@ -70,7 +77,7 @@ describe('OnCallSchedulesTab', () => {
       Element.prototype.scrollIntoView = scroll
       const cards = [newCard('bob', 'daily'), newCard('bob', 'weekly')]
       const w = mount(OnCallSchedulesTab, {
-        props: { cards, members: ['bob'], highlightKey: cards[1].key },
+        props: { cards, members: ['bob'], shortMonths: SHORT_MONTHS, highlightKey: cards[1].key },
         global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
       })
       await nextTick()
@@ -97,6 +104,7 @@ describe('OnCallSchedulesTab', () => {
             cards.value = c
           },
           members: ['bob'],
+          shortMonths: SHORT_MONTHS,
           highlightKey: null
         })
       }

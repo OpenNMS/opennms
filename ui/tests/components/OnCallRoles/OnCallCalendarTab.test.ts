@@ -46,11 +46,13 @@ const calendar = (month = '2026-11'): OnCallCalendar => ({
   ]
 })
 
+const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
 const ok = (payload: OnCallCalendar) => ({ success: true, message: '', payload })
 
 const mountTab = async (props: Record<string, unknown> = {}) => {
   const wrapper = mount(OnCallCalendarTab, {
-    props: { draft: draft(), cards: [newCard('bob', 'daily')], members: ['bob', 'carol'], timeZone: 'UTC', ...props },
+    props: { draft: draft(), cards: [newCard('bob', 'daily')], members: ['bob', 'carol'], shortMonths: SHORT_MONTHS, timeZone: 'UTC', ...props },
     global: { plugins: [PrimeVue], directives: { 'onms-tooltip': { mounted: () => undefined }}}
   })
   await flushPromises()
@@ -66,6 +68,21 @@ describe('OnCallCalendarTab', () => {
   })
   afterEach(() => {
     vi.useRealTimers()
+  })
+
+  it('starts at the month it is given and reports the shown month', async () => {
+    const wrapper = await mountTab({ month: '2027-02' })
+    expect(api.previewOnCallCalendar).toHaveBeenCalledWith(draft(), '2027-02')
+    expect(wrapper.text()).toContain('February 2027')
+    await wrapper.find('[data-test="calendar-next"]').trigger('click')
+    expect(wrapper.emitted('update:month')!.at(-1)).toEqual(['2027-03'])
+  })
+
+  it('says the settings could not be loaded rather than asking to fix the schedules', async () => {
+    const wrapper = await mountTab({ draft: null, settingsMissing: true })
+    expect(wrapper.find('[data-test="calendar-settings-missing"]').text()).toBe('Schedule settings could not be loaded; reload the page.')
+    expect(wrapper.text()).not.toContain('Fix the problems on the Schedules tab')
+    expect(wrapper.find('[data-test="calendar-error"]').exists()).toBe(false)
   })
 
   it('shows the server month with the time zone and a grid that starts on the Sunday', async () => {
@@ -154,7 +171,7 @@ describe('OnCallCalendarTab', () => {
       slow.resolve = resolve
     }))
     const wrapper = mount(OnCallCalendarTab, {
-      props: { draft: draft(), cards: [newCard('bob', 'daily')], members: [], timeZone: 'UTC' },
+      props: { draft: draft(), cards: [newCard('bob', 'daily')], members: [], shortMonths: SHORT_MONTHS, timeZone: 'UTC' },
       global: { plugins: [PrimeVue], directives: { 'onms-tooltip': { mounted: () => undefined }}}
     })
     await wrapper.find('[data-test="calendar-next"]').trigger('click')

@@ -33,7 +33,8 @@ const TYPES: string[] = ['specific', 'daily', 'weekly', 'monthly']
 const CLOCK = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/
 const SPECIFIC = /^(\d{2})-(.+?)-(\d{4}) (\d{2}):(\d{2}):(\d{2})$/
 const ISO_LOCAL = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/
-const OVERNIGHT_HINT = 'For a shift past midnight, add two time ranges (for example 22:00 to 23:59 and 00:00 to 06:00).'
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+const OVERNIGHT_HINT = 'For a shift past midnight, add two time ranges (for example 22:00 to End of day, and 00:00 to 06:00).'
 
 export interface TimeRange {
   id: string | null
@@ -189,7 +190,21 @@ export function toSchedule(c: ScheduleCard, shortMonths: string[]): OnCallSchedu
   return { user: c.user, type: c.type, times }
 }
 
-export function cardProblems(c: ScheduleCard): string[] {
+// notifd only reads specific times whose month abbreviation is exactly 3 characters (the format is 20 characters
+// long); returns the problem for the first date (yyyy-MM-dd...) whose month the server locale writes differently.
+export function monthProblem(isoDates: string[], shortMonths: string[]): string | null {
+  for (const iso of isoDates) {
+    const m = ISO_LOCAL.exec(iso.length === 10 ? `${iso}T00:00` : iso)
+    const index = m ? Number(m[2]) - 1 : -1
+    const abbr = shortMonths[index]
+    if (abbr !== undefined && abbr.length !== 3) {
+      return `This server's locale writes ${MONTH_NAMES[index]} as '${abbr}', which notifd cannot read; run OpenNMS with an English locale to use one-time entries in this month.`
+    }
+  }
+  return null
+}
+
+export function cardProblems(c: ScheduleCard, shortMonths: string[]): string[] {
   if (c.legacy) {
     return []
   }
@@ -219,6 +234,12 @@ export function cardProblems(c: ScheduleCard): string[] {
     if (!valueFormat.test(r.begin) || !endOk) {
       add('Enter a begin and an end for each time range.')
       continue
+    }
+    if (c.type === 'specific' && !(r.original && sameAsOriginal(r, c.type, shortMonths))) {
+      const problem = monthProblem([r.begin, r.end], shortMonths)
+      if (problem) {
+        add(problem)
+      }
     }
     const effectiveEnd = r.endOfDay
       ? (c.type === 'specific' ? `${r.end.slice(0, 10)}T${END_OF_DAY}` : END_OF_DAY)

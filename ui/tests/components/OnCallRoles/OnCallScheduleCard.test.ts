@@ -34,7 +34,7 @@ const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'S
 
 const mountCard = (card: ScheduleCard, members = ['bob', 'carol']) =>
   mount(OnCallScheduleCard, {
-    props: { card, members, highlighted: false },
+    props: { card, members, shortMonths: SHORT_MONTHS, highlighted: false },
     global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
   })
 

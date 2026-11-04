@@ -189,6 +189,33 @@ describe('OnCallRoleEditorPanel', () => {
     expect(store.updateRole.mock.calls[0][0].schedules).toEqual(role.schedules)
   })
 
+  it('says the settings could not be loaded on the Schedules and Calendar tabs while they are missing', async () => {
+    store.scheduleSettings = null
+    const wrapper = await mountPanel(storedRole())
+    await wrapper.find('[data-test="tab-schedules"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-test="settings-missing"]').text()).toBe('Schedule settings could not be loaded; reload the page.')
+    expect(wrapper.text()).not.toContain('No schedules: the supervisor covers every time.')
+    await wrapper.find('[data-test="tab-calendar"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-test="calendar-settings-missing"]').exists()).toBe(true)
+    expect(wrapper.text()).not.toContain('Fix the problems on the Schedules tab')
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('flags an edited specific time in a month the server locale abbreviates to other than 3 characters', async () => {
+    store.scheduleSettings = { timeZone: 'UTC', shortMonths: ['Jan.', 'Feb.', 'März', ...SHORT_MONTHS.slice(3)] }
+    const role = storedRole()
+    role.schedules = [{ user: 'bob', type: 'specific', times: [{ id: null, day: null, begins: '05-Apr-2026 08:00:00', ends: '05-Apr-2026 17:00:00' }] }]
+    const wrapper = await mountPanel(role)
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeUndefined()
+    await wrapper.find('[data-test="tab-schedules"]').trigger('click')
+    await wrapper.find('[data-test="time-begin-0"]').setValue('2026-03-05T08:00')
+    await flushPromises()
+    expect(wrapper.text()).toContain('This server\'s locale writes March as \'März\'')
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
+  })
+
   it('rejects a description over 4096 characters unless it is the untouched stored one', async () => {
     const long = 'x'.repeat(4100)
     const wrapper = await mountPanel({ ...storedRole(), description: long })
@@ -265,6 +292,22 @@ describe('OnCallRoleEditorPanel', () => {
       return wrapper.findComponent(OnCallCalendarTab)
     }
     const entry = (user: string, start: string, end: string, endOfDay = false) => ({ user, start, end, endOfDay })
+
+    it('keeps the shown month when leaving the tab and coming back', async () => {
+      const wrapper = await mountPanel(specificRole())
+      const calendar = await openCalendar(wrapper)
+      const first = api.previewOnCallCalendar.mock.calls[0][1] as string
+      await calendar.find('[data-test="calendar-next"]').trigger('click')
+      await flushPromises()
+      const shifted = api.previewOnCallCalendar.mock.calls.at(-1)![1] as string
+      expect(shifted).not.toBe(first)
+      await wrapper.find('[data-test="tab-schedules"]').trigger('click')
+      await flushPromises()
+      expect(wrapper.findComponent(OnCallCalendarTab).exists()).toBe(false)
+      api.previewOnCallCalendar.mockClear()
+      await openCalendar(wrapper)
+      expect(api.previewOnCallCalendar.mock.calls[0][1]).toBe(shifted)
+    })
 
     it('previews the draft, with the stored role name, once the tab is shown', async () => {
       const wrapper = await mountPanel(specificRole())
