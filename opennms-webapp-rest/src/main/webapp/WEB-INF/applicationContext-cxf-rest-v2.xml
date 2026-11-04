@@ -37,13 +37,8 @@
     -->
     <bean id="springResourceContextProvider" class="org.opennms.web.rest.support.SpringResourceContextProvider"/>
 
-    <!-- Used by MenuRestService -->
-    <bean id="menuTemplatePath" class="java.lang.String">
-        <constructor-arg value="${opennms.home}/jetty-webapps/opennms/WEB-INF/menu/menu-template.json" />
-    </bean>
-    <bean id="menuProvider" class="org.opennms.web.rest.support.menu.MenuProvider">
-        <constructor-arg ref="menuTemplatePath" />
-    </bean>
+    <!-- Used by MenuRestService; the template location comes from MenuTemplatePaths -->
+    <bean id="menuProvider" class="org.opennms.web.rest.support.menu.MenuProvider" />
 
     <!--
       openapi.json is served by org.opennms.web.rest.v2.OpenApiResource from the
