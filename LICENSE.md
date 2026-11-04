@@ -29,10 +29,19 @@ For more information contact:
 Documentation
 =============
 
-The documentation in the docs/ directory is Copyright (C) 2015-2026
+The documentation in the docs/ directory is Copyright (C) 2002-2026
 The OpenNMS Group, Inc. and is licensed under the Creative Commons
 Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0).
 See docs/LICENSE or https://creativecommons.org/licenses/by-sa/4.0/
+
+Earlier releases distributed the documentation under the AGPLv3 along
+with the code.  Contributions to it were made under the OpenNMS
+Contributor Agreement, under which The OpenNMS Group, Inc. now
+relicenses them under CC BY-SA 4.0.
+
+Source code in the docs/ directory that builds the documentation, such
+as docs/lib/tabs-block.js, remains under the AGPLv3; see the header in
+each file.
 
 Special Cases
 =============
