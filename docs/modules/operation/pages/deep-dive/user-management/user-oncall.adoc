@@ -28,6 +28,7 @@ Schedules::
 One card per schedule.
 Each card sets a user, who must be a member of the membership group, a type and the time ranges.
 The type is Specific, Daily, Weekly or Monthly.
+One-time (Specific) entries need a server locale whose short month names have 3 letters, for example English, because notifd cannot read other month names.
 "End of day" stores 23:59:59 and covers the whole rest of the day.
 To enter a shift that runs past midnight, add two time ranges: one ending at the end of the day and one starting at 00:00:00 on the next day.
 Schedules imported from an older `groups.xml` that the editor cannot represent are shown read-only and marked as legacy.
