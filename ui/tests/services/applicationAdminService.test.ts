@@ -44,13 +44,15 @@ describe('applicationAdminService', () => {
   })
   afterEach(() => vi.restoreAllMocks())
 
-  it('lists the summaries, and returns null (not []) when the load fails', async () => {
+  it('lists the summaries, and reports a failed load apart from an empty one', async () => {
     vi.mocked(v2.get).mockResolvedValue({ data: [{ id: 1, name: 'Web', serviceCount: 2, perspectiveLocations: [] }] })
-    expect(await listApplicationSummaries()).toEqual([{ id: 1, name: 'Web', serviceCount: 2, perspectiveLocations: [] }])
+    expect(await listApplicationSummaries()).toEqual({
+      success: true, message: '', payload: [{ id: 1, name: 'Web', serviceCount: 2, perspectiveLocations: [] }]
+    })
     expect(vi.mocked(v2.get).mock.calls[0][0]).toBe('/applications/summaries')
 
     vi.mocked(v2.get).mockRejectedValue(http(500))
-    expect(await listApplicationSummaries()).toBeNull()
+    expect(await listApplicationSummaries()).toEqual({ success: false, message: 'Failed to load applications.', payload: undefined })
   })
 
   it('creates by name and surfaces a short 4xx message', async () => {
@@ -77,13 +79,13 @@ describe('applicationAdminService', () => {
     expect(v2.delete).toHaveBeenCalledWith('/applications/3')
   })
 
-  it('reads the members, defaulting missing lists, and null on failure', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ data: { id: 3, name: 'Web', services: [service] }})
-    expect(await getApplicationMembers(3)).toEqual({ id: 3, name: 'Web', services: [service], perspectiveLocations: [] })
+  it('reads the members with their revision, defaulting missing lists, and reports a failure', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ data: { id: 3, name: 'Web', services: [service], revision: 'r1' }})
+    expect((await getApplicationMembers(3)).payload).toEqual({ id: 3, name: 'Web', services: [service], perspectiveLocations: [], revision: 'r1' })
     expect(vi.mocked(v2.get).mock.calls[0][0]).toBe('/applications/3/members')
 
     vi.mocked(v2.get).mockRejectedValue(http(404))
-    expect(await getApplicationMembers(3)).toBeNull()
+    expect((await getApplicationMembers(3)).success).toBe(false)
   })
 
   it('puts the members and surfaces a rejection', async () => {
@@ -92,16 +94,22 @@ describe('applicationAdminService', () => {
     expect((await updateApplicationMembers(3, 'Web', update)).success).toBe(true)
     expect(v2.put).toHaveBeenCalledWith('/applications/3/members', update)
 
-    vi.mocked(v2.put).mockRejectedValue(http(400, 'Monitored service 7 was not found.'))
-    expect((await updateApplicationMembers(3, 'Web', update)).message).toBe('Monitored service 7 was not found.')
+    vi.mocked(v2.put).mockRejectedValue(http(409, 'Application Web was changed by someone else after you opened it. Reopen it to see the current members.'))
+    expect((await updateApplicationMembers(3, 'Web', update)).message).toBe('Application Web was changed by someone else after you opened it. Reopen it to see the current members.')
+  })
+
+  it('returns the services the server reports as gone, with its message', async () => {
+    const message = 'A selected service no longer exists. Remove it and save again.'
+    vi.mocked(v2.put).mockRejectedValue(http(400, { message, missingServiceIds: [7] }))
+    expect(await updateApplicationMembers(3, 'Web', { serviceIds: [7] })).toEqual({ success: false, message, payload: [7] })
   })
 
   it('searches candidates with the text and limit as query parameters', async () => {
     vi.mocked(v2.get).mockResolvedValue({ data: { totalCount: 120, services: [service] }})
-    expect(await searchServiceCandidates('web', 50)).toEqual({ totalCount: 120, services: [service] })
+    expect((await searchServiceCandidates('web', 50)).payload).toEqual({ totalCount: 120, services: [service] })
     expect(v2.get).toHaveBeenCalledWith('/applications/service-candidates', { params: { search: 'web', limit: 50 }})
 
     vi.mocked(v2.get).mockRejectedValue(http(500))
-    expect(await searchServiceCandidates('web', 50)).toBeNull()
+    expect((await searchServiceCandidates('web', 50)).success).toBe(false)
   })
 })

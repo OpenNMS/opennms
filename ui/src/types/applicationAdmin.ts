@@ -44,12 +44,15 @@ export interface ApplicationMembers {
   name: string
   services: ApplicationService[]
   perspectiveLocations: string[]
+  // changes with every change to the members; sent back on save to detect edits made meanwhile
+  revision?: string
 }
 
 // a list left out keeps the current members of that kind
 export interface ApplicationMembersUpdate {
   serviceIds?: number[]
   perspectiveLocations?: string[]
+  revision?: string
 }
 
 export interface ServiceCandidatePage {

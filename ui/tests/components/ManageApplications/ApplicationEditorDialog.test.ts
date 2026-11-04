@@ -28,10 +28,9 @@ import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { showToast } = vi.hoisted(() => ({ showToast: vi.fn() }))
-vi.mock('@opennms/onms-ui', async importOriginal => ({
-  ...(await importOriginal<typeof import('@opennms/onms-ui')>()),
-  useOnmsToast: () => ({ showToast })
+const { report } = vi.hoisted(() => ({ report: vi.fn(() => true) }))
+vi.mock('@/composables/useActionFeedback', () => ({
+  default: () => ({ report, showError: vi.fn(), showSuccess: vi.fn(), withSpinner: (action: () => Promise<unknown>) => action() })
 }))
 
 const DialogStub = {
@@ -44,6 +43,8 @@ const svc = (id: number, nodeLabel: string, serviceName = 'HTTP') =>
   ({ id, nodeId: id, nodeLabel, ipInterfaceId: id, ipAddress: `10.0.0.${id}`, serviceName })
 const loc = (name: string) => ({ 'location-name': name, 'monitoring-area': name } as any)
 const web = { id: 4, name: 'Web Store', serviceCount: 1, perspectiveLocations: ['RDU'] }
+const loaded = (payload: any) => ({ success: true, message: '', payload })
+const failed = (message: string, payload?: any) => ({ success: false, message, payload })
 
 const mountDialog = async (opts: { members?: any; locations?: any[]; locationsOk?: boolean; candidates?: any } = {}) => {
   const wrapper = mount(ApplicationEditorDialog, {
@@ -57,10 +58,12 @@ const mountDialog = async (opts: { members?: any; locations?: any[]; locationsOk
   const locationStore = useMonitoringLocationAdminStore()
   locationStore.locations = opts.locations ?? [loc('RDU'), loc('Fulda'), loc('Default')]
   vi.mocked(locationStore.getLocations).mockResolvedValue(opts.locationsOk ?? true)
-  vi.mocked(store.getMembers).mockResolvedValue(opts.members === undefined
-    ? { id: 4, name: 'Web Store', services: [svc(1, 'web-01')], perspectiveLocations: ['RDU'] }
-    : opts.members)
-  vi.mocked(store.searchServices).mockResolvedValue(opts.candidates ?? { totalCount: 2, services: [svc(1, 'web-01'), svc(2, 'db-01', 'PostgreSQL')] })
+  vi.mocked(store.getMembers).mockResolvedValue(opts.members === null
+    ? failed('The application could not be loaded.')
+    : loaded(opts.members ?? { id: 4, name: 'Web Store', services: [svc(1, 'web-01')], perspectiveLocations: ['RDU'], revision: 'r1' }))
+  vi.mocked(store.searchServices).mockResolvedValue(opts.candidates === null
+    ? failed('The services could not be searched.')
+    : loaded(opts.candidates ?? { totalCount: 2, services: [svc(1, 'web-01'), svc(2, 'db-01', 'PostgreSQL')] }))
   vi.mocked(store.updateMembers).mockResolvedValue({ success: true, message: '' })
   await wrapper.setProps({ visible: true })
   await flushPromises()
@@ -73,12 +76,14 @@ const candidateRows = (wrapper: VueWrapper<any>) => wrapper.findAll('[data-test=
 const multiSelect = (wrapper: VueWrapper<any>) => wrapper.findComponent({ name: 'MultiSelect' })
 
 describe('ApplicationEditorDialog.vue', () => {
-  beforeEach(() => showToast.mockClear())
+  beforeEach(() => report.mockClear())
   afterEach(() => vi.useRealTimers())
 
   it('loads the members, the locations and a first page of candidates', async () => {
-    const { wrapper, store } = await mountDialog()
+    const { wrapper, store, locationStore } = await mountDialog()
     expect(store.getMembers).toHaveBeenCalledWith(4)
+    // re-read on every opening, so a location added meanwhile is offered
+    expect(locationStore.getLocations).toHaveBeenCalledTimes(1)
     expect(store.searchServices).toHaveBeenCalledWith('', 50)
     expect(wrapper.find('[data-test="members-title"]').text()).toBe('Services (1)')
     expect(memberRows(wrapper)[0].text()).toContain('web-01')
@@ -108,9 +113,9 @@ describe('ApplicationEditorDialog.vue', () => {
     await flushPromises()
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()
-    expect(store.updateMembers).toHaveBeenCalledWith(web, { serviceIds: [2], perspectiveLocations: ['RDU', 'Fulda'] })
+    expect(store.updateMembers).toHaveBeenCalledWith(web, { serviceIds: [2], perspectiveLocations: ['RDU', 'Fulda'], revision: 'r1' })
     expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
-    expect(showToast).toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }))
+    expect(report).toHaveBeenCalledWith({ success: true, message: '' }, 'Application \'Web Store\' saved.')
   })
 
   it('is not dirty after undoing a change', async () => {
@@ -133,13 +138,19 @@ describe('ApplicationEditorDialog.vue', () => {
     expect(wrapper.emitted('update:visible')).toBeUndefined()
   })
 
-  it('names the member service that vanished instead of its id', async () => {
+  it('marks the member services the server reports as gone, and clears the error once they are removed', async () => {
     const { wrapper, store } = await mountDialog()
-    vi.mocked(store.updateMembers).mockResolvedValue({ success: false, message: 'Monitored service 2 was not found.' })
+    const message = 'A selected service no longer exists. Remove it and save again.'
+    vi.mocked(store.updateMembers).mockResolvedValue(failed(message, [2]))
     await candidateRows(wrapper)[1].find('[data-test="add-service-button"]').trigger('click')
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()
-    expect(wrapper.find('[data-test="dialog-error"]').text()).toBe('db-01 / 10.0.0.2 / PostgreSQL no longer exists. Remove it from the services and save again.')
+    expect(wrapper.find('[data-test="dialog-error"]').text()).toBe(message)
+    const gone = memberRows(wrapper).find(row => row.text().includes('db-01'))!
+    expect(gone.find('[data-test="missing-service"]').exists()).toBe(true)
+    expect(memberRows(wrapper).find(row => row.text().includes('web-01'))!.find('[data-test="missing-service"]').exists()).toBe(false)
+    await gone.find('[data-test="remove-service-button"]').trigger('click')
+    expect(wrapper.find('[data-test="dialog-error"]').exists()).toBe(false)
   })
 
   it('is not dirty after adding and then removing a service', async () => {
@@ -195,13 +206,13 @@ describe('ApplicationEditorDialog.vue', () => {
       .mockImplementationOnce(() => new Promise((resolve) => {
         answerFirst = resolve
       }))
-      .mockResolvedValueOnce({ id: 4, name: 'Web Store', services: [svc(1, 'web-01'), svc(2, 'db-01')], perspectiveLocations: [] })
+      .mockResolvedValueOnce(loaded({ id: 4, name: 'Web Store', services: [svc(1, 'web-01'), svc(2, 'db-01')], perspectiveLocations: [] }))
     await wrapper.setProps({ visible: false })
     await wrapper.setProps({ visible: true })
     await wrapper.setProps({ visible: false })
     await wrapper.setProps({ visible: true })
     await flushPromises()
-    answerFirst(null)
+    answerFirst(failed('The application could not be loaded.'))
     await flushPromises()
     expect(wrapper.find('[data-test="load-error"]').exists()).toBe(false)
     expect(wrapper.find('[data-test="members-title"]').text()).toBe('Services (2)')
@@ -237,7 +248,7 @@ describe('ApplicationEditorDialog.vue', () => {
   it('debounces the search and says when the matches were cut off', async () => {
     const { wrapper, store } = await mountDialog()
     vi.useFakeTimers()
-    vi.mocked(store.searchServices).mockResolvedValue({ totalCount: 500, services: [svc(9, 'web-09')] })
+    vi.mocked(store.searchServices).mockResolvedValue(loaded({ totalCount: 500, services: [svc(9, 'web-09')] }))
     await wrapper.find('[data-test="candidate-search"]').setValue('web')
     expect(store.searchServices).toHaveBeenCalledTimes(1)
     await vi.advanceTimersByTimeAsync(300)
@@ -254,13 +265,13 @@ describe('ApplicationEditorDialog.vue', () => {
       .mockImplementationOnce(() => new Promise((resolve) => {
         answerOld = resolve
       }))
-      .mockResolvedValueOnce({ totalCount: 1, services: [svc(5, 'new-one')] })
+      .mockResolvedValueOnce(loaded({ totalCount: 1, services: [svc(5, 'new-one')] }))
     await wrapper.find('[data-test="candidate-search"]').setValue('old')
     await vi.advanceTimersByTimeAsync(300)
     await wrapper.find('[data-test="candidate-search"]').setValue('new')
     await vi.advanceTimersByTimeAsync(300)
     await flushPromises()
-    answerOld({ totalCount: 1, services: [svc(6, 'old-one')] })
+    answerOld(loaded({ totalCount: 1, services: [svc(6, 'old-one')] }))
     await flushPromises()
     expect(candidateRows(wrapper).map(row => row.text()).join()).toContain('new-one')
     expect(candidateRows(wrapper).map(row => row.text()).join()).not.toContain('old-one')
@@ -271,7 +282,7 @@ describe('ApplicationEditorDialog.vue', () => {
     // the default mock resolves a page; replace the first result with a failure
     const store = useApplicationAdminStore()
     vi.useFakeTimers()
-    vi.mocked(store.searchServices).mockResolvedValue(null)
+    vi.mocked(store.searchServices).mockResolvedValue(failed('The services could not be searched.'))
     await wrapper.find('[data-test="candidate-search"]').setValue('x')
     await vi.advanceTimersByTimeAsync(300)
     await flushPromises()

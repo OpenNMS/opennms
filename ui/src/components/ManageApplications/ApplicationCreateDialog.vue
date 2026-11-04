@@ -9,7 +9,7 @@
     @update:visible="(value: boolean) => emit('update:visible', value)"
   >
     <div class="form-column">
-      <div v-if="errorText" class="dialog-error" role="alert" data-test="dialog-error">{{ errorText }}</div>
+      <OnmsMessage v-if="errorText" severity="error" data-test="dialog-error">{{ errorText }}</OnmsMessage>
 
       <FormField
         label="Name"
@@ -53,8 +53,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsDialog, OnmsInputText, useOnmsToast } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDialog, OnmsInputText, OnmsMessage } from '@opennms/onms-ui'
 
+import useActionFeedback from '@/composables/useActionFeedback'
 import FormField from '@/components/Common/FormField.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
 import { useApplicationAdminStore } from '@/stores/applicationAdminStore'
@@ -72,7 +73,7 @@ const emit = defineEmits<{
 const MAX_NAME_LENGTH = 32
 
 const store = useApplicationAdminStore()
-const { showToast } = useOnmsToast()
+const { report } = useActionFeedback()
 
 const name = ref('')
 const saving = ref(false)
@@ -107,7 +108,7 @@ const save = async () => {
   try {
     const result = await store.createApplication(trimmed)
     if (result.success) {
-      showToast({ message: `Application '${trimmed}' created.`, severity: 'success' })
+      report(result, `Application '${trimmed}' created.`)
       emit('update:visible', false)
       emit('created', trimmed, result.payload)
     } else {
@@ -125,14 +126,5 @@ const save = async () => {
   flex-direction: column;
   gap: 1rem;
   padding-top: 0.5rem;
-}
-
-.dialog-error {
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  border: 1px solid var(--p-red-200, #fecaca);
-  background: var(--p-red-50, #fef2f2);
-  color: var(--p-red-700, #b91c1c);
-  font-size: 0.9rem;
 }
 </style>

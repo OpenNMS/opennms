@@ -39,6 +39,7 @@ vi.mock('@/services', () => ({
 const app = (id: number, name: string) => ({ id, name, serviceCount: 0, perspectiveLocations: [] })
 const ok = { success: true, message: '' }
 const failed = (message: string) => ({ success: false, message })
+const listed = (payload: any[]) => ({ success: true, message: '', payload })
 
 describe('useApplicationAdminStore', () => {
   let store: ReturnType<typeof useApplicationAdminStore>
@@ -50,13 +51,13 @@ describe('useApplicationAdminStore', () => {
   })
 
   it('loads the applications and keeps the previous list when a reload fails', async () => {
-    vi.mocked(API.listApplicationSummaries).mockResolvedValueOnce([app(1, 'Web')])
-    expect(await store.getApplications()).toBe(true)
+    vi.mocked(API.listApplicationSummaries).mockResolvedValueOnce(listed([app(1, 'Web')]))
+    expect((await store.getApplications()).success).toBe(true)
     expect(store.applications).toEqual([app(1, 'Web')])
     expect(store.loadError).toBe(false)
 
-    vi.mocked(API.listApplicationSummaries).mockResolvedValueOnce(null)
-    expect(await store.getApplications()).toBe(false)
+    vi.mocked(API.listApplicationSummaries).mockResolvedValueOnce(failed('Failed to load applications.'))
+    expect((await store.getApplications()).success).toBe(false)
     expect(store.applications).toEqual([app(1, 'Web')])
     expect(store.loadError).toBe(true)
     expect(store.loading).toBe(false)
@@ -68,17 +69,17 @@ describe('useApplicationAdminStore', () => {
       .mockImplementationOnce(() => new Promise((resolve) => {
         answerOld = resolve
       }))
-      .mockResolvedValueOnce([app(1, 'Web'), app(2, 'Billing')])
+      .mockResolvedValueOnce(listed([app(1, 'Web'), app(2, 'Billing')]))
     const older = store.getApplications()
     await store.getApplications()
-    answerOld([app(1, 'Web')])
+    answerOld(listed([app(1, 'Web')]))
     await older
     expect(store.applications).toEqual([app(1, 'Web'), app(2, 'Billing')])
     expect(store.loading).toBe(false)
   })
 
   it('reloads after a successful create, delete or member update, and not after a failure', async () => {
-    vi.mocked(API.listApplicationSummaries).mockResolvedValue([])
+    vi.mocked(API.listApplicationSummaries).mockResolvedValue(listed([]))
     vi.mocked(API.createApplication).mockResolvedValueOnce(ok).mockResolvedValueOnce(failed('taken'))
     vi.mocked(API.deleteApplication).mockResolvedValueOnce(ok)
     vi.mocked(API.updateApplicationMembers).mockResolvedValueOnce(ok)
@@ -90,5 +91,10 @@ describe('useApplicationAdminStore', () => {
     expect(await store.updateMembers({ id: 1, name: 'Web' }, { serviceIds: [] })).toEqual(ok)
     expect(API.updateApplicationMembers).toHaveBeenCalledWith(1, 'Web', { serviceIds: [] })
     expect(API.listApplicationSummaries).toHaveBeenCalledTimes(3)
+  })
+  it('reports a failed list refresh after a successful change in errors', async () => {
+    vi.mocked(API.deleteApplication).mockResolvedValueOnce(ok)
+    vi.mocked(API.listApplicationSummaries).mockResolvedValueOnce(failed('Failed to load applications.'))
+    expect(await store.deleteApplication(app(1, 'Web'))).toEqual({ ...ok, errors: ['Failed to load applications.'] })
   })
 })

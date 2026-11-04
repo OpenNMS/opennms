@@ -9,7 +9,7 @@
     @update:visible="(value: boolean) => value ? emit('update:visible', true) : requestClose()"
   >
     <div class="editor">
-      <div v-if="errorText" class="dialog-error" role="alert" data-test="dialog-error">{{ errorText }}</div>
+      <OnmsMessage v-if="errorText" severity="error" data-test="dialog-error">{{ errorText }}</OnmsMessage>
 
       <OnmsMessage v-if="confirmingDiscard" severity="warn" data-test="discard-prompt">
         <div class="discard-prompt">
@@ -82,14 +82,19 @@
               </template>
             </OnmsColumn>
             <OnmsColumn field="ipAddress" header="IP address" sortable />
-            <OnmsColumn field="serviceName" header="Service" sortable />
+            <OnmsColumn field="serviceName" header="Service" sortable>
+              <template #body="{ data }">
+                {{ data.serviceName }}
+                <OnmsTag v-if="missingIds.has(data.id)" severity="danger" value="No longer exists" data-test="missing-service" />
+              </template>
+            </OnmsColumn>
             <OnmsColumn header="" class="action-column">
               <template #body="{ data }">
                 <OnmsIconButton
                   :icon="Delete"
                   severity="danger"
-                  :title="`Remove ${describe(data)}`"
-                  :aria-label="`Remove ${describe(data)}`"
+                  :tooltip="`Remove ${describe(data)}`"
+                  tooltipPosition="left"
                   data-test="remove-service-button"
                   @click="removeService(data)"
                 />
@@ -186,10 +191,11 @@ import {
   OnmsSearchInput,
   OnmsSpinner,
   OnmsTable,
-  useOnmsToast
+  OnmsTag
 } from '@opennms/onms-ui'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 
+import useActionFeedback from '@/composables/useActionFeedback'
 import FormField from '@/components/Common/FormField.vue'
 import HelpBadge from '@/components/Common/HelpBadge.vue'
 import { useApplicationAdminStore } from '@/stores/applicationAdminStore'
@@ -211,7 +217,7 @@ const SEARCH_DEBOUNCE_MS = 300
 
 const store = useApplicationAdminStore()
 const locationStore = useMonitoringLocationAdminStore()
-const { showToast } = useOnmsToast()
+const { report } = useActionFeedback()
 
 const loading = ref(false)
 const loadFailed = ref(false)
@@ -223,6 +229,9 @@ const originalServiceIds = ref<number[]>([])
 const selectedLocations = ref<string[]>([])
 const originalLocations = ref<string[]>([])
 const locationsUnavailable = ref(false)
+const revision = ref<string | undefined>(undefined)
+// member services the server reported as gone on the last save
+const missingIds = ref(new Set<number>())
 
 const memberIds = computed(() => new Set(services.value.map(service => service.id)))
 
@@ -246,6 +255,9 @@ const describe = (service: ApplicationService) =>
 
 const removeService = (service: ApplicationService) => {
   services.value = services.value.filter(member => member.id !== service.id)
+  if (missingIds.value.delete(service.id) && !missingIds.value.size && errorText.value) {
+    errorText.value = ''
+  }
 }
 
 const addService = (service: ApplicationService) => {
@@ -282,14 +294,14 @@ let searchTimer: ReturnType<typeof setTimeout> | undefined
 const runSearch = async () => {
   const request = ++searchRequest
   searching.value = true
-  const page = await store.searchServices((candidateSearch.value ?? '').trim(), CANDIDATE_LIMIT)
+  const result = await store.searchServices((candidateSearch.value ?? '').trim(), CANDIDATE_LIMIT)
   if (request !== searchRequest) {
     return
   }
   searching.value = false
-  candidateError.value = page === null
-  candidates.value = page?.services ?? []
-  candidateTotal.value = page?.totalCount ?? 0
+  candidateError.value = !result.success
+  candidates.value = result.payload?.services ?? []
+  candidateTotal.value = result.payload?.totalCount ?? 0
 }
 
 // set while opening resets the search text, which must not start a second search
@@ -314,19 +326,22 @@ const load = async (application: ApplicationSummary) => {
   const request = ++loadRequest
   loading.value = true
   loadFailed.value = false
-  const [members, locationsOk] = await Promise.all([
+  // locations are re-read on every opening, so one added meanwhile can be chosen
+  const [result, locationsOk] = await Promise.all([
     store.getMembers(application.id),
-    locationStore.locations.length ? Promise.resolve(true) : locationStore.getLocations()
+    locationStore.getLocations()
   ])
   if (request !== loadRequest) {
     return
   }
   loading.value = false
   locationsUnavailable.value = !locationsOk
-  if (members === null) {
+  const members = result.payload
+  if (!result.success || !members) {
     loadFailed.value = true
     return
   }
+  revision.value = members.revision
   services.value = members.services
   originalServiceIds.value = members.services.map(service => service.id)
   selectedLocations.value = [...members.perspectiveLocations]
@@ -342,6 +357,8 @@ watch(() => props.visible, (isVisible) => {
   }
   errorText.value = ''
   confirmingDiscard.value = false
+  revision.value = undefined
+  missingIds.value = new Set()
   services.value = []
   originalServiceIds.value = []
   selectedLocations.value = []
@@ -357,13 +374,6 @@ watch(() => props.visible, (isVisible) => {
   runSearch()
 })
 
-// the server names a vanished service by id only; say which row it is
-const explainSaveError = (message: string) => {
-  const missing = message.match(/^Monitored service (\d+) was not found\.$/)
-  const service = missing ? services.value.find(member => member.id === Number(missing[1])) : undefined
-  return service ? `${describe(service)} no longer exists. Remove it from the services and save again.` : message
-}
-
 const save = async () => {
   confirmingDiscard.value = false
   if (!props.application) {
@@ -375,13 +385,15 @@ const save = async () => {
   try {
     const result = await store.updateMembers(application, {
       serviceIds: services.value.map(service => service.id),
-      perspectiveLocations: selectedLocations.value
+      perspectiveLocations: selectedLocations.value,
+      revision: revision.value
     })
     if (result.success) {
-      showToast({ message: `Application '${application.name}' saved.`, severity: 'success' })
+      report(result, `Application '${application.name}' saved.`)
       emit('update:visible', false)
     } else {
-      errorText.value = explainSaveError(result.message)
+      missingIds.value = new Set(result.payload ?? [])
+      errorText.value = result.message
     }
   } finally {
     saving.value = false
@@ -465,14 +477,5 @@ const save = async () => {
   margin-right: auto;
   font-size: 0.85rem;
   color: var(--p-text-muted-color);
-}
-
-.dialog-error {
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  border: 1px solid var(--p-red-200, #fecaca);
-  background: var(--p-red-50, #fef2f2);
-  color: var(--p-red-700, #b91c1c);
-  font-size: 0.9rem;
 }
 </style>

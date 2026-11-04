@@ -75,16 +75,16 @@
           <div class="action-container">
             <OnmsIconButton
               :icon="Edit"
-              :title="`Edit ${data.name}`"
-              :aria-label="`Edit ${data.name}`"
+              :tooltip="`Edit ${data.name}`"
+              tooltipPosition="left"
               data-test="edit-application-button"
               @click="openEditor(data)"
             />
             <OnmsIconButton
               :icon="Delete"
               severity="danger"
-              :title="`Delete ${data.name}`"
-              :aria-label="`Delete ${data.name}`"
+              :tooltip="`Delete ${data.name}`"
+              tooltipPosition="left"
               data-test="delete-application-button"
               @click="askDelete(data)"
             />
@@ -111,10 +111,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsColumn, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 
+import useActionFeedback from '@/composables/useActionFeedback'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import ApplicationCreateDialog from '@/components/ManageApplications/ApplicationCreateDialog.vue'
@@ -127,7 +128,7 @@ import { ApplicationSummary } from '@/types/applicationAdmin'
 const PAGE_SIZE = 25
 
 const store = useApplicationAdminStore()
-const { showToast } = useOnmsToast()
+const { showError } = useActionFeedback()
 
 const emptyListContent = { msg: 'No applications yet. Add one to group the services it depends on.' }
 const filteredOutContent = { msg: 'No applications match the search.' }
@@ -165,7 +166,7 @@ const onCreated = (name: string, id: number | undefined) => {
   if (created) {
     openEditor(created)
   } else {
-    showToast({ message: `Application '${name}' was created, but the list could not be reloaded. Refresh the page to edit it.`, severity: 'warn' })
+    showError(`Application '${name}' was created, but the list could not be reloaded. Refresh the page to edit it.`)
   }
 }
 </script>

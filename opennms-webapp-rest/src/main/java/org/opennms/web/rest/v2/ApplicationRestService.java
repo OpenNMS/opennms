@@ -24,16 +24,19 @@ package org.opennms.web.rest.v2;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_ID;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -52,6 +55,7 @@ import javax.ws.rs.core.UriInfo;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.criteria.restrictions.SqlRestriction;
 import org.opennms.netmgt.dao.api.ApplicationDao;
@@ -70,6 +74,7 @@ import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.v1.support.OnmsApplicationList;
 import org.opennms.web.rest.v2.model.ApplicationMembersDto;
+import org.opennms.web.rest.v2.model.ApplicationMembersError;
 import org.opennms.web.rest.v2.model.ApplicationMembersUpdate;
 import org.opennms.web.rest.v2.model.ApplicationServiceDto;
 import org.opennms.web.rest.v2.model.ApplicationServicePage;
@@ -188,14 +193,14 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
         }
         object.setName(name);
         final Integer id = getDao().save(object);
-        sendEvent(object, EventConstants.APPLICATION_CREATED_EVENT_UEI);
+        sendEventAfterCommit(object, EventConstants.APPLICATION_CREATED_EVENT_UEI);
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
     }
 
     @Override
     protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsApplication object) {
         getDao().delete(object);
-        sendEvent(object, EventConstants.APPLICATION_DELETED_EVENT_UEI);
+        sendEventAfterCommit(object, EventConstants.APPLICATION_DELETED_EVENT_UEI);
     }
 
     private void sendEvent(final OnmsApplication application, final String uei) {
@@ -548,13 +553,20 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
                             [ { "id": 3, "name": "Review Analytics", "serviceCount": 2, "perspectiveLocations": [ "Default" ] } ]""")))
     })
     public Response getSummaries() {
-        final List<ApplicationSummaryDto> summaries = getDao().findAll().stream()
+        final Map<Integer, Long> serviceCounts = getDao().getMonitoredServiceCounts();
+        // the locations are fetched in the same query; the join repeats an application once per location
+        final Map<Integer, OnmsApplication> applications = new LinkedHashMap<>();
+        getDao().findMatching(new CriteriaBuilder(OnmsApplication.class)
+                        .fetch("perspectiveLocations", Fetch.FetchType.EAGER)
+                        .toCriteria())
+                .forEach(application -> applications.putIfAbsent(application.getId(), application));
+        final List<ApplicationSummaryDto> summaries = applications.values().stream()
                 .sorted(Comparator.comparing(OnmsApplication::getName, String.CASE_INSENSITIVE_ORDER))
                 .map(application -> {
                     final ApplicationSummaryDto summary = new ApplicationSummaryDto();
                     summary.setId(application.getId());
                     summary.setName(application.getName());
-                    summary.setServiceCount(application.getMonitoredServices().size());
+                    summary.setServiceCount(serviceCounts.getOrDefault(application.getId(), 0L).intValue());
                     summary.setPerspectiveLocations(locationNames(application));
                     return summary;
                 })
@@ -577,7 +589,8 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
                               "id": 3,
                               "name": "Review Analytics",
                               "services": [ { "id": 1021, "nodeId": 12, "nodeLabel": "web-01", "ipInterfaceId": 40, "ipAddress": "10.0.0.5", "serviceName": "HTTP" } ],
-                              "perspectiveLocations": [ "Default" ]
+                              "perspectiveLocations": [ "Default" ],
+                              "revision": "5f0c6e1a-2b1d-3c4e-9f8a-0b1c2d3e4f5a"
                             }"""))),
             @ApiResponse(responseCode = "404", description = "No application has that identifier. The body is a `text/plain` message.")
     })
@@ -597,6 +610,7 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
                 .map(ApplicationRestService::toServiceDto)
                 .collect(Collectors.toList()));
         members.setPerspectiveLocations(locationNames(application));
+        members.setRevision(revision(application));
         return Response.ok(members).build();
     }
 
@@ -605,12 +619,19 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Replace the members of one application",
             description = """
-                    Replaces the member services, the perspective locations, or both. A list left out keeps the current members of that kind. Nothing changes when any identifier or location is unknown. An `applicationChanged` event is sent when the members change.""",
+                    Replaces the member services, the perspective locations, or both. A list left out keeps the current members of that kind. Nothing changes when any identifier or location is unknown. An `applicationChanged` event is sent after the change is committed.
+
+                    `revision` is optional. When it is given and differs from the `revision` the members GET now returns, the update is rejected with 409, so an editor working from an older copy cannot overwrite someone else's change.""",
             operationId = "applicationsUpdateMembers")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "The members were replaced. The response has no body."),
-            @ApiResponse(responseCode = "400", description = "The body is missing, or names a service or location that does not exist. The body is a `text/plain` message."),
-            @ApiResponse(responseCode = "404", description = "No application has that identifier. The body is a `text/plain` message.")
+            @ApiResponse(responseCode = "400", description = """
+                    The body is missing or names a location that does not exist, with a `text/plain` message; or it names services that no longer exist, with a JSON body listing them.""",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApplicationMembersError.class),
+                            examples = @ExampleObject(value = """
+                            { "message": "A selected service no longer exists. Remove it and save again.", "missingServiceIds": [ 1039 ] }"""))),
+            @ApiResponse(responseCode = "404", description = "No application has that identifier. The body is a `text/plain` message."),
+            @ApiResponse(responseCode = "409", description = "`revision` does not match the current members. The body is a `text/plain` message.")
     })
     public Response updateMembers(
             @Parameter(description = "Database identifier of the application.", required = true, example = "3")
@@ -618,7 +639,7 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
             @RequestBody(description = "The new members.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApplicationMembersUpdate.class),
                             examples = @ExampleObject(value = """
-                            { "serviceIds": [ 1021, 1039 ], "perspectiveLocations": [ "Default" ] }""")))
+                            { "serviceIds": [ 1021, 1039 ], "perspectiveLocations": [ "Default" ], "revision": "5f0c6e1a-2b1d-3c4e-9f8a-0b1c2d3e4f5a" }""")))
             final ApplicationMembersUpdate update) {
         if (update == null) {
             return badRequest("A members body is required.");
@@ -629,17 +650,32 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
             if (application == null) {
                 return notFound(id);
             }
+            if (update.getRevision() != null && !update.getRevision().equals(revision(application))) {
+                return Response.status(Response.Status.CONFLICT).type(MediaType.TEXT_PLAIN)
+                        .entity("Application " + application.getName() + " was changed by someone else after you opened it. Reopen it to see the current members.")
+                        .build();
+            }
 
             // resolve everything before changing anything, so a bad entry leaves the application as it was
             final Map<Integer, OnmsMonitoredService> services = new HashMap<>();
+            final List<Integer> missingServiceIds = new ArrayList<>();
             if (update.getServiceIds() != null) {
                 for (final Integer serviceId : new LinkedHashSet<>(update.getServiceIds())) {
                     final OnmsMonitoredService service = serviceId == null ? null : m_monitoredServiceDao.get(serviceId);
                     if (service == null) {
-                        return badRequest("Monitored service " + serviceId + " was not found.");
+                        missingServiceIds.add(serviceId);
+                    } else {
+                        services.put(serviceId, service);
                     }
-                    services.put(serviceId, service);
                 }
+            }
+            if (!missingServiceIds.isEmpty()) {
+                final String message = missingServiceIds.size() == 1
+                        ? "A selected service no longer exists. Remove it and save again."
+                        : missingServiceIds.size() + " selected services no longer exist. Remove them and save again.";
+                return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON)
+                        .entity(new ApplicationMembersError(message, missingServiceIds))
+                        .build();
             }
             final Set<OnmsMonitoringLocation> locations = new HashSet<>();
             if (update.getPerspectiveLocations() != null) {
@@ -706,7 +742,7 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
     public Response getServiceCandidates(
             @Parameter(description = "Text to look for in the node label, IP address or service name.", example = "web")
             @QueryParam("search") final String search,
-            @Parameter(description = "Maximum number of services returned, at most 200.", example = "50")
+            @Parameter(description = "Maximum number of services returned, at most 200. Zero or less returns the maximum.", example = "50")
             @QueryParam("limit") @DefaultValue("50") final int limit) {
         final ApplicationServicePage page = new ApplicationServicePage();
         page.setTotalCount(m_monitoredServiceDao.countMatching(serviceCandidateCriteria(search).toCriteria()));
@@ -714,7 +750,7 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
                         .orderBy("node.label").asc()
                         .orderBy("ipInterface.ipAddress").asc()
                         .orderBy("serviceType.name").asc()
-                        .limit(Math.max(1, Math.min(limit, MAX_SERVICE_PAGE)))
+                        .limit(limit <= 0 ? MAX_SERVICE_PAGE : Math.min(limit, MAX_SERVICE_PAGE))
                         .toCriteria())
                 .stream()
                 .map(ApplicationRestService::toServiceDto)
@@ -767,6 +803,17 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
                 sendEvent(application, uei);
             }
         });
+    }
+
+    // changes whenever the member services or perspective locations change
+    private static String revision(final OnmsApplication application) {
+        final String members = application.getMonitoredServices().stream()
+                .map(OnmsMonitoredService::getId)
+                .sorted()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","))
+                + "|" + String.join(",", locationNames(application));
+        return UUID.nameUUIDFromBytes(members.getBytes(StandardCharsets.UTF_8)).toString();
     }
 
     private static List<String> locationNames(final OnmsApplication application) {

@@ -25,7 +25,7 @@
         <template v-if="application?.perspectiveLocations.length">Services that no other application checks from these locations stop being checked from there, and their open perspective outages are closed.</template>
       </OnmsMessage>
 
-      <div v-if="errorText" class="dialog-error" role="alert" data-test="dialog-error">{{ errorText }}</div>
+      <OnmsMessage v-if="errorText" severity="error" data-test="dialog-error">{{ errorText }}</OnmsMessage>
     </div>
 
     <template #footer>
@@ -45,8 +45,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { OnmsButton, OnmsDialog, OnmsMessage, useOnmsToast } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDialog, OnmsMessage } from '@opennms/onms-ui'
 
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useApplicationAdminStore } from '@/stores/applicationAdminStore'
 import { ApplicationSummary } from '@/types/applicationAdmin'
 
@@ -60,7 +61,7 @@ const emit = defineEmits<{
 }>()
 
 const store = useApplicationAdminStore()
-const { showToast } = useOnmsToast()
+const { report } = useActionFeedback()
 
 const deleting = ref(false)
 const errorText = ref('')
@@ -80,7 +81,7 @@ const confirmDelete = async () => {
   try {
     const result = await store.deleteApplication(application)
     if (result.success) {
-      showToast({ message: `Application '${application.name}' deleted.`, severity: 'success' })
+      report(result, `Application '${application.name}' deleted.`)
       emit('update:visible', false)
     } else {
       errorText.value = result.message
@@ -117,14 +118,5 @@ const confirmDelete = async () => {
     margin: 0;
     overflow-wrap: anywhere;
   }
-}
-
-.dialog-error {
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  border: 1px solid var(--p-red-200, #fecaca);
-  background: var(--p-red-50, #fef2f2);
-  color: var(--p-red-700, #b91c1c);
-  font-size: 0.9rem;
 }
 </style>

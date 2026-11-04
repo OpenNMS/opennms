@@ -34,6 +34,7 @@ import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -206,16 +207,21 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
             }
         });
 
-        // navigate to the applications page
-        driver.get(getBaseUrlInternal() + "opennms/admin/applications.htm");
-        // enter an application name...
-        enterText(By.name("newApplicationName"), "foobar");
-        // ...and create it by hitting the button
-        findElementByName("newApplicationSubmit").click();
-        // now click the edit link...
-        findElementByXpath("//*[@id=\"content\"]//table/tbody/tr[2]/td[2]/a").click();
-        // ...and check for the given text.
-        // This will fail if the text is not properly escaped, as a user dialogue will appear.
-        waitUntil(pageContainsText("Edit application foobar"));
+        // create an application on Manage Applications; saving it opens its editor
+        getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/admin/applications");
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("[data-test='add-application-button']"))).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("[data-test='application-name-input']"))).sendKeys("foobar");
+        getDriver().findElement(By.cssSelector("[data-test='application-create-dialog'] [data-test='save-button']")).click();
+
+        // the editor offers the location as a perspective; it must be listed as text, not run
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("[data-test='perspective-locations']"))).click();
+        wait.until(driver -> {
+            try {
+                return driver.findElements(By.cssSelector(".p-multiselect-option")).stream()
+                        .anyMatch(option -> evilString.equals(option.getText().trim()));
+            } catch (final StaleElementReferenceException e) {
+                return false;
+            }
+        });
     }
 }

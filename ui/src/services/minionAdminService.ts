@@ -22,23 +22,11 @@
 import { Minion } from '@/types/minionAdmin'
 import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
 import { rest, v2 } from './axiosInstances'
+import { serverErrorMessage } from './serviceHelpers'
 
 // Uses the existing v2 AbstractDaoRestService CRUD at /api/v2/minions.
 
 const endpoint = '/minions'
-
-// Only surface a server detail if it looks like a short, plain message — a 500
-// often returns a servlet HTML error page, which must not be shown verbatim.
-const errorMessage = (err: any, fallback: string): string => {
-  const detail = err?.response?.data
-  if (typeof detail === 'string') {
-    const trimmed = detail.trim()
-    if (trimmed && trimmed.length <= 200 && !/[<>]/.test(trimmed)) {
-      return trimmed
-    }
-  }
-  return fallback
-}
 
 // null on failure (not []) so callers can keep showing the previous list
 // Bound the fetch rather than limit=0 (unbounded); minions are few in practice.
@@ -127,7 +115,7 @@ const deleteMinion = async (id: string): Promise<ValidationResult> => {
       return createSuccessResponse()
     }
     console.error('Error deleting minion:', err)
-    return createFailureResult(errorMessage(err, `Failed to delete minion '${id}'.`))
+    return createFailureResult(serverErrorMessage(err, `Failed to delete minion '${id}'.`))
   }
 }
 

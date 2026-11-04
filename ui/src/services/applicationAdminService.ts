@@ -23,34 +23,23 @@
 import { ApplicationMembers, ApplicationMembersUpdate, ApplicationSummary, ServiceCandidatePage } from '@/types/applicationAdmin'
 import { createFailureResult, createResultWithPayload, createSuccessResponse, ValidationResult, ValidationResultWithPayload } from '@/types/validation'
 import { v2 } from './axiosInstances'
+import { serverErrorMessage } from './serviceHelpers'
 
 // Manage Applications (NMS-20425), over /api/v2/applications: the generic
 // create and delete, plus the summaries, members and service-candidates operations.
 
 const endpoint = '/applications'
 
-// Only surface a server detail from a 4xx that looks like a short, plain message;
-// a 500 carries an HTML page or a raw persistence exception, neither for the user.
-const errorMessage = (err: any, fallback: string): string => {
-  const detail = err?.response?.data
-  const status = Number(err?.response?.status ?? 0)
-  if (typeof detail === 'string' && status >= 400 && status < 500) {
-    const trimmed = detail.trim()
-    if (trimmed && trimmed.length <= 200 && !/[<>]/.test(trimmed)) {
-      return trimmed
-    }
-  }
-  return fallback
-}
+const loaded = <T>(payload: T): ValidationResultWithPayload<T> => createResultWithPayload(true, '', payload)
+const loadFailed = <T>(message: string): ValidationResultWithPayload<T> => createResultWithPayload<T>(false, message)
 
-// null on failure (not []) so callers can keep showing the previous list
-const listApplicationSummaries = async (): Promise<ApplicationSummary[] | null> => {
+const listApplicationSummaries = async (): Promise<ValidationResultWithPayload<ApplicationSummary[]>> => {
   try {
     const resp = await v2.get(`${endpoint}/summaries`)
-    return Array.isArray(resp.data) ? resp.data : []
+    return loaded<ApplicationSummary[]>(Array.isArray(resp.data) ? resp.data : [])
   } catch (err) {
     console.error('Error loading applications:', err)
-    return null
+    return loadFailed('Failed to load applications.')
   }
 }
 
@@ -63,7 +52,7 @@ const createApplication = async (name: string): Promise<ValidationResultWithPayl
     return createResultWithPayload(true, '', Number.isFinite(id) ? id : undefined)
   } catch (err: any) {
     console.error('Error creating application:', err)
-    return createFailureResult(errorMessage(err, `Failed to create application '${name}'.`))
+    return createFailureResult(serverErrorMessage(err, `Failed to create application '${name}'.`))
   }
 }
 
@@ -73,49 +62,54 @@ const deleteApplication = async (id: number, name: string): Promise<ValidationRe
     return createSuccessResponse()
   } catch (err: any) {
     console.error('Error deleting application:', err)
-    return createFailureResult(errorMessage(err, `Failed to delete application '${name}'.`))
+    return createFailureResult(serverErrorMessage(err, `Failed to delete application '${name}'.`))
   }
 }
 
-// null when the members could not be read
-const getApplicationMembers = async (id: number): Promise<ApplicationMembers | null> => {
+const getApplicationMembers = async (id: number): Promise<ValidationResultWithPayload<ApplicationMembers>> => {
   try {
     const resp = await v2.get(`${endpoint}/${id}/members`)
     const data = resp.data ?? {}
-    return {
+    return loaded<ApplicationMembers>({
       id: data.id,
       name: data.name,
       services: Array.isArray(data.services) ? data.services : [],
-      perspectiveLocations: Array.isArray(data.perspectiveLocations) ? data.perspectiveLocations : []
-    }
+      perspectiveLocations: Array.isArray(data.perspectiveLocations) ? data.perspectiveLocations : [],
+      revision: typeof data.revision === 'string' ? data.revision : undefined
+    })
   } catch (err) {
     console.error(`Error loading the members of application ${id}:`, err)
-    return null
+    return loadFailed('The application could not be loaded.')
   }
 }
 
-const updateApplicationMembers = async (id: number, name: string, update: ApplicationMembersUpdate): Promise<ValidationResult> => {
+// On a rejected save the payload lists the member services that no longer
+// exist, as the server reports them in a JSON body.
+const updateApplicationMembers = async (id: number, name: string, update: ApplicationMembersUpdate): Promise<ValidationResultWithPayload<number[]>> => {
   try {
     await v2.put(`${endpoint}/${id}/members`, update)
     return createSuccessResponse()
   } catch (err: any) {
     console.error('Error updating application members:', err)
-    return createFailureResult(errorMessage(err, `Failed to save application '${name}'.`))
+    const data = err?.response?.data
+    if (Array.isArray(data?.missingServiceIds) && typeof data.message === 'string') {
+      return createResultWithPayload<number[]>(false, data.message, data.missingServiceIds)
+    }
+    return createFailureResult(serverErrorMessage(err, `Failed to save application '${name}'.`))
   }
 }
 
-// null when the search failed
-const searchServiceCandidates = async (search: string, limit: number): Promise<ServiceCandidatePage | null> => {
+const searchServiceCandidates = async (search: string, limit: number): Promise<ValidationResultWithPayload<ServiceCandidatePage>> => {
   try {
     const resp = await v2.get(`${endpoint}/service-candidates`, { params: { search, limit }})
     const data = resp.data ?? {}
-    return {
+    return loaded<ServiceCandidatePage>({
       totalCount: Number(data.totalCount ?? 0),
       services: Array.isArray(data.services) ? data.services : []
-    }
+    })
   } catch (err) {
     console.error('Error searching monitored services:', err)
-    return null
+    return loadFailed('The services could not be searched.')
   }
 }
 

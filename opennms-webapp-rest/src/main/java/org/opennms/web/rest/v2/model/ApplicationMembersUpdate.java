@@ -25,13 +25,16 @@ import java.util.List;
 
 /**
  * Replaces an application's member services and perspective locations. A list
- * left null keeps the current members of that kind.
+ * left null keeps the current members of that kind. A revision, when given, must
+ * match the members' current revision.
  */
 public class ApplicationMembersUpdate {
 
     private List<Integer> serviceIds;
 
     private List<String> perspectiveLocations;
+
+    private String revision;
 
     public List<Integer> getServiceIds() {
         return serviceIds;
@@ -47,5 +50,13 @@ public class ApplicationMembersUpdate {
 
     public void setPerspectiveLocations(final List<String> perspectiveLocations) {
         this.perspectiveLocations = perspectiveLocations;
+    }
+
+    public String getRevision() {
+        return revision;
+    }
+
+    public void setRevision(final String revision) {
+        this.revision = revision;
     }
 }

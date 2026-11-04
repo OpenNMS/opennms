@@ -32,47 +32,41 @@ export const useApplicationAdminStore = defineStore('applicationAdminStore', () 
   const loading = ref(false)
   let loadRequest = 0
 
-  // false when the load failed; the previous list is kept. Only the newest load
-  // commits, so a slow earlier one cannot overwrite the list after a change
-  const getApplications = async (): Promise<boolean> => {
+  // A failed load keeps the previous list. Only the newest load commits, so a
+  // slow earlier one cannot overwrite the list after a change
+  const getApplications = async (): Promise<ValidationResult> => {
     const request = ++loadRequest
     loading.value = true
     const result = await API.listApplicationSummaries()
     if (request !== loadRequest) {
-      return result !== null
+      return result
     }
     loading.value = false
-    if (result !== null) {
-      applications.value = result
-      loadError.value = false
-    } else {
-      loadError.value = true
+    if (result.success) {
+      applications.value = result.payload ?? []
     }
-    return result !== null
+    loadError.value = !result.success
+    return result
   }
+
+  // Mutations that refresh the list afterwards report a failed refresh in
+  // `errors` of an otherwise successful result, so the caller can show both.
+  const refreshed = <T extends ValidationResult>(result: T, refresh: ValidationResult): T =>
+    refresh.success ? result : { ...result, errors: [refresh.message] }
 
   const createApplication = async (name: string): Promise<ValidationResultWithPayload<number>> => {
     const result = await API.createApplication(name)
-    if (result.success) {
-      await getApplications()
-    }
-    return result
+    return result.success ? refreshed(result, await getApplications()) : result
   }
 
   const deleteApplication = async (application: ApplicationSummary): Promise<ValidationResult> => {
     const result = await API.deleteApplication(application.id, application.name)
-    if (result.success) {
-      await getApplications()
-    }
-    return result
+    return result.success ? refreshed(result, await getApplications()) : result
   }
 
-  const updateMembers = async (application: { id: number; name: string }, update: ApplicationMembersUpdate): Promise<ValidationResult> => {
+  const updateMembers = async (application: { id: number; name: string }, update: ApplicationMembersUpdate): Promise<ValidationResultWithPayload<number[]>> => {
     const result = await API.updateApplicationMembers(application.id, application.name, update)
-    if (result.success) {
-      await getApplications()
-    }
-    return result
+    return result.success ? refreshed(result, await getApplications()) : result
   }
 
   const getMembers = (id: number) => API.getApplicationMembers(id)

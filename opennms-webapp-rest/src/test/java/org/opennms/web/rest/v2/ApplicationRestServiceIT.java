@@ -25,12 +25,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
 
 import org.json.JSONArray;
@@ -45,6 +51,8 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -85,6 +93,9 @@ public class ApplicationRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private DataSource dataSource;
 
     public ApplicationRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -194,9 +205,10 @@ public class ApplicationRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendData(PUT, MediaType.APPLICATION_JSON, "/applications/" + id + "/members",
                 new JSONObject().put("serviceIds", new JSONArray(List.of(known))).toString(), 204);
 
-        assertEquals("Monitored service 999999 was not found.",
-                sendData(PUT, MediaType.APPLICATION_JSON, "/applications/" + id + "/members",
-                        new JSONObject().put("serviceIds", new JSONArray(List.of(999999))).toString(), 400).getContentAsString());
+        final JSONObject missing = new JSONObject(sendData(PUT, MediaType.APPLICATION_JSON, "/applications/" + id + "/members",
+                new JSONObject().put("serviceIds", new JSONArray(List.of(known, 999999, 999998))).toString(), 400).getContentAsString());
+        assertEquals("2 selected services no longer exist. Remove them and save again.", missing.getString("message"));
+        assertEquals(List.of(999999, 999998), missing.getJSONArray("missingServiceIds").toList());
         assertEquals("Monitoring location Nowhere was not found.",
                 sendData(PUT, MediaType.APPLICATION_JSON, "/applications/" + id + "/members",
                         new JSONObject().put("serviceIds", new JSONArray()).put("perspectiveLocations", new JSONArray(List.of("Nowhere"))).toString(), 400).getContentAsString());
@@ -257,5 +269,76 @@ public class ApplicationRestServiceIT extends AbstractSpringJerseyRestTestCase {
         page = new JSONObject(sendRequest(GET, "/applications/service-candidates?limit=2", 200));
         assertEquals(2, page.getJSONArray("services").length());
         assertEquals(total, page.getInt("totalCount"));
+    }
+
+    @Test
+    public void membersRejectAStaleRevision() throws Exception {
+        final int id = createApplication("Web Store");
+        final List<OnmsMonitoredService> services = databasePopulator.getMonitoredServiceDao().findAll();
+        final String opened = new JSONObject(sendRequest(GET, "/applications/" + id + "/members", 200)).getString("revision");
+
+        // someone else saves first
+        sendData(PUT, MediaType.APPLICATION_JSON, "/applications/" + id + "/members",
+                new JSONObject().put("serviceIds", new JSONArray(List.of(services.get(0).getId()))).put("revision", opened).toString(), 204);
+        final String current = new JSONObject(sendRequest(GET, "/applications/" + id + "/members", 200)).getString("revision");
+        assertTrue(!opened.equals(current));
+
+        assertEquals("Application Web Store was changed by someone else after you opened it. Reopen it to see the current members.",
+                sendData(PUT, MediaType.APPLICATION_JSON, "/applications/" + id + "/members",
+                        new JSONObject().put("serviceIds", new JSONArray(List.of(services.get(1).getId()))).put("revision", opened).toString(), 409).getContentAsString());
+        assertEquals(Set.of(services.get(0).getId()), memberServiceIds(id));
+
+        // without a revision the update is not checked
+        sendData(PUT, MediaType.APPLICATION_JSON, "/applications/" + id + "/members",
+                new JSONObject().put("serviceIds", new JSONArray(List.of(services.get(1).getId()))).toString(), 204);
+        assertEquals(Set.of(services.get(1).getId()), memberServiceIds(id));
+    }
+
+    @Test
+    public void eventsArriveAfterTheChangeIsCommitted() throws Exception {
+        // what a separate connection, like the perspective poller's, saw when each event arrived
+        final Map<String, Long> seen = new HashMap<>();
+        final EventListener listener = new EventListener() {
+            @Override
+            public String getName() {
+                return "ApplicationRestServiceIT";
+            }
+
+            @Override
+            public void onEvent(final IEvent event) {
+                final String sql = EventConstants.APPLICATION_CHANGED_EVENT_UEI.equals(event.getUei())
+                        ? "select count(*) from application_service_map m join applications a on a.id = m.appid where a.name = ?"
+                        : "select count(*) from applications where name = ?";
+                try (Connection connection = dataSource.getConnection();
+                     PreparedStatement statement = connection.prepareStatement(sql)) {
+                    statement.setString(1, "Committed");
+                    try (ResultSet result = statement.executeQuery()) {
+                        result.next();
+                        seen.put(event.getUei(), result.getLong(1));
+                    }
+                } catch (final Exception e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        };
+        eventIpcManager.addEventListener(listener, List.of(EventConstants.APPLICATION_CREATED_EVENT_UEI,
+                EventConstants.APPLICATION_CHANGED_EVENT_UEI, EventConstants.APPLICATION_DELETED_EVENT_UEI));
+        try {
+            final int id = createApplication("Committed");
+            sendData(PUT, MediaType.APPLICATION_JSON, "/applications/" + id + "/members",
+                    new JSONObject().put("serviceIds", new JSONArray(List.of(databasePopulator.getMonitoredServiceDao().findAll().get(0).getId()))).toString(), 204);
+            sendRequest(DELETE, "/applications/" + id, 204);
+        } finally {
+            eventIpcManager.removeEventListener(listener);
+        }
+        assertEquals(Long.valueOf(1), seen.get(EventConstants.APPLICATION_CREATED_EVENT_UEI));
+        assertEquals(Long.valueOf(1), seen.get(EventConstants.APPLICATION_CHANGED_EVENT_UEI));
+        assertEquals(Long.valueOf(0), seen.get(EventConstants.APPLICATION_DELETED_EVENT_UEI));
+    }
+
+    @Test
+    public void serviceCandidatesTreatAZeroLimitAsTheMaximum() throws Exception {
+        final int total = databasePopulator.getMonitoredServiceDao().countAll();
+        assertEquals(Math.min(total, 200), new JSONObject(sendRequest(GET, "/applications/service-candidates?limit=0", 200)).getJSONArray("services").length());
     }
 }

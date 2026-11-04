@@ -37,6 +37,8 @@ public class ApplicationMembersDto {
 
     private List<String> perspectiveLocations;
 
+    private String revision;
+
     public Integer getId() {
         return id;
     }
@@ -67,5 +69,13 @@ public class ApplicationMembersDto {
 
     public void setPerspectiveLocations(final List<String> perspectiveLocations) {
         this.perspectiveLocations = perspectiveLocations;
+    }
+
+    public String getRevision() {
+        return revision;
+    }
+
+    public void setRevision(final String revision) {
+        this.revision = revision;
     }
 }

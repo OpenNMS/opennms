@@ -155,6 +155,6 @@ describe('ApplicationsTable.vue', () => {
     wrapper.findComponent(CreateStub).vm.$emit('created', 'Web Store', 2)
     await flushPromises()
     expect(wrapper.findComponent(EditorStub).props('visible')).toBe(false)
-    expect(showToast).toHaveBeenCalledWith(expect.objectContaining({ severity: 'warn' }))
+    expect(showToast).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }))
   })
 })
