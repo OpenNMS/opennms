@@ -34,7 +34,7 @@ import com.sun.jna.Native;
  *
  * @author brozow
  */
-public class Win32V6NativeSocket extends NativeDatagramSocket {
+public class Win32V6NativeSocket extends AbstractJnaNativeSocket {
     
     static {
         Native.register((String)null);

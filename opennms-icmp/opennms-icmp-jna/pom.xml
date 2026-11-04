@@ -44,6 +44,12 @@
       <artifactId>org.opennms.core.icmp-jna</artifactId>
     </dependency>
     <dependency>
+      <!-- FFM socket implementation, loaded reflectively by NativeDatagramSocket.create() -->
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.icmp-ffm</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
