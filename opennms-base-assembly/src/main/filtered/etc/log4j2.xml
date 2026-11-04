@@ -132,6 +132,22 @@
       <SizeBasedTriggeringPolicy size="100MB" />
       <DefaultRolloverStrategy max="4" fileIndex="min" />
     </RollingFile>
+
+    <!-- SNMP trap audit log: one line per trap handed to the trap listener.
+         The file is only created once the trap-audit logger is enabled.
+         Entries are written through the Async appender so the SNMP receive thread
+         never waits on the file. -->
+    <RollingFile name="TrapAuditFile" fileName="\${logdir}/trap-audit.log"
+                 filePattern="\${logdir}/trap-audit.%i.log.gz" createOnDemand="true">
+      <PatternLayout>
+        <pattern>%d %encode{%m}{CRLF}%n</pattern>
+      </PatternLayout>
+      <SizeBasedTriggeringPolicy size="100MB" />
+      <DefaultRolloverStrategy max="4" fileIndex="min" />
+    </RollingFile>
+    <Async name="TrapAuditAsync" bufferSize="4096">
+      <AppenderRef ref="TrapAuditFile"/>
+    </Async>
   </appenders>
   <loggers>
     <!-- we always want this at info for the instrumentation log reader -->
@@ -269,6 +285,11 @@
     <!-- Web authentication audit log -->
     <logger name="web-audit" additivity="false" level="INFO">
       <appender-ref ref="WebAuditFile"/>
+    </logger>
+
+    <!-- SNMP trap audit log: disabled by default, set level to INFO to record every received trap -->
+    <logger name="trap-audit" additivity="false" level="OFF">
+      <appender-ref ref="TrapAuditAsync"/>
     </logger>
 
     <!-- Allow any message to pass through the root logger -->
