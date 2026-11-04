@@ -21,7 +21,9 @@
  */
 package org.opennms.web.rest.v2;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.config.threshd.ServiceStatus;
@@ -29,6 +31,7 @@ import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.web.rest.v2.mapper.ThresholdingConfigMapper;
 import org.opennms.web.rest.v2.model.BaseThresholdDefDto;
 import org.opennms.web.rest.v2.model.ExpressionDto;
+import org.opennms.web.rest.v2.model.IpRangeDto;
 import org.opennms.web.rest.v2.model.ParameterDto;
 import org.opennms.web.rest.v2.model.ResourceFilterDto;
 import org.opennms.web.rest.v2.model.ThreshdConfigDto;
@@ -180,10 +183,16 @@ public abstract class ThresholdConfigValidator {
         if (config.getPackages() == null || config.getPackages().isEmpty()) {
             return "At least one threshd package is required.";
         }
+        final Set<String> names = new HashSet<>();
         for (int i = 0; i < config.getPackages().size(); i++) {
-            final String message = validatePackage(config.getPackages().get(i));
+            final ThreshdPackageDto pkg = config.getPackages().get(i);
+            final String message = validatePackage(pkg);
             if (message != null) {
                 return "Invalid package at index " + i + ": " + message;
+            }
+            // The name is the package's identity in the REST API; a second one could never be addressed.
+            if (!names.add(pkg.getName().trim())) {
+                return "Duplicate package name '" + pkg.getName().trim() + "'.";
             }
         }
         return null;
@@ -199,11 +208,19 @@ public abstract class ThresholdConfigValidator {
         if (isBlank(pkg.getFilter())) {
             return "package filter is required.";
         }
+        String message = validateRanges("include range", pkg.getIncludeRanges());
+        if (message != null) {
+            return message;
+        }
+        message = validateRanges("exclude range", pkg.getExcludeRanges());
+        if (message != null) {
+            return message;
+        }
         if (pkg.getServices() != null) {
             for (int i = 0; i < pkg.getServices().size(); i++) {
-                final String message = validateService(pkg.getServices().get(i));
-                if (message != null) {
-                    return "invalid service at index " + i + ": " + message;
+                final String serviceMessage = validateService(pkg.getServices().get(i));
+                if (serviceMessage != null) {
+                    return "invalid service at index " + i + ": " + serviceMessage;
                 }
             }
         }
@@ -235,8 +252,22 @@ public abstract class ThresholdConfigValidator {
             if (parameter == null || isBlank(parameter.getKey())) {
                 return "parameter at index " + i + " is missing its key.";
             }
-            if (parameter.getValue() == null) {
+            // Blank, not just null: Parameter.setValue rejects an empty string too.
+            if (isBlank(parameter.getValue())) {
                 return "parameter '" + parameter.getKey() + "' is missing its value.";
+            }
+        }
+        return null;
+    }
+
+    private static String validateRanges(final String label, final List<IpRangeDto> ranges) {
+        if (ranges == null) {
+            return null;
+        }
+        for (int i = 0; i < ranges.size(); i++) {
+            final IpRangeDto range = ranges.get(i);
+            if (range == null || isBlank(range.getBegin()) || isBlank(range.getEnd())) {
+                return label + " at index " + i + " needs both a begin and an end address.";
             }
         }
         return null;

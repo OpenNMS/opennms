@@ -42,6 +42,7 @@
     <FormField
       label="Threshold group"
       for="package-service-group"
+      required
       :error="errors.thresholdingGroup"
       :info="THRESHOLD_FIELD_HINTS.thresholdingGroup"
     >

@@ -6,7 +6,7 @@
         :key="index"
         class="row"
       >
-        <FormField label="Key" :for="`${idPrefix}-key-${index}`">
+        <FormField label="Key" :for="`${idPrefix}-key-${index}`" :error="errorAt(index)">
           <OnmsInputText
             :modelValue="parameter.key"
             :inputId="`${idPrefix}-key-${index}`"
@@ -45,6 +45,7 @@
 
 <script setup lang="ts">
 import FormField from '@/components/Common/FormField.vue'
+import { validateParameter } from '@/lib/thresholdValidator'
 import type { ThreshdParameter } from '@/types/thresholdConfig'
 import { OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
 import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
@@ -63,6 +64,12 @@ const emit = defineEmits<{
 }>()
 
 const isLocked = (key: string) => props.lockedKeys.includes(key)
+
+// A locked row is validated by the field that edits it.
+const errorAt = (index: number) => {
+  const parameter = props.modelValue[index]
+  return isLocked(parameter.key) ? undefined : validateParameter(parameter.key, parameter.value)
+}
 
 const onUpdate = (index: number, field: 'key' | 'value', value: unknown) => {
   const next = props.modelValue.map((parameter, i) =>

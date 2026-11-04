@@ -34,6 +34,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -41,10 +43,16 @@ import java.util.List;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.opennms.netmgt.config.threshd.Filter;
 import org.opennms.netmgt.config.threshd.Group;
+import org.opennms.netmgt.config.threshd.Package;
+import org.opennms.netmgt.config.threshd.Parameter;
+import org.opennms.netmgt.config.threshd.Service;
+import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -52,6 +60,7 @@ import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.web.api.Authentication;
+import org.opennms.web.rest.v2.FakeThresholdingDaos.FakeThreshdDao;
 import org.opennms.web.rest.v2.FakeThresholdingDaos.FakeThresholdingDao;
 import org.opennms.web.rest.v2.model.ExpressionDto;
 import org.opennms.web.rest.v2.model.ResourceFilterDto;
@@ -64,6 +73,7 @@ public class ThresholdingConfigRestServiceTest {
 
     private ThresholdingConfigRestService restService;
     private FakeThresholdingDao thresholdingDao;
+    private FakeThreshdDao threshdDao;
     private ThresholdUeiService thresholdUeiService;
     private EventConfPersistenceService eventConfPersistenceService;
     private EventProxy eventProxy;
@@ -72,11 +82,14 @@ public class ThresholdingConfigRestServiceTest {
     public void setUp() throws Exception {
         restService = new ThresholdingConfigRestService();
         thresholdingDao = new FakeThresholdingDao(configWith(group("mib2"), group("cisco")));
+        // example1 uses cisco; mib2 is unused unless a test says otherwise.
+        threshdDao = new FakeThreshdDao(threshdWith(pkgUsing("example1", "cisco")));
         thresholdUeiService = mock(ThresholdUeiService.class);
         eventConfPersistenceService = mock(EventConfPersistenceService.class);
         eventProxy = mock(EventProxy.class);
 
         setField(restService, "thresholdingDao", thresholdingDao);
+        setField(restService, "threshdDao", threshdDao);
         setField(restService, "thresholdUeiService", thresholdUeiService);
         setField(restService, "eventConfPersistenceService", eventConfPersistenceService);
         setField(restService, "eventProxy", eventProxy);
@@ -170,6 +183,18 @@ public class ThresholdingConfigRestServiceTest {
     public void refusesToCreateAGroupThatAlreadyExists() {
         try (Response response = restService.createThresholdGroup(groupDto("mib2"), adminContext())) {
             assertEquals(409, response.getStatus());
+        }
+        assertEquals(0, thresholdingDao.getSaveCount());
+    }
+
+    @Test
+    public void refusesToCreateAGroupThatAnExtensionAlreadyProvides() {
+        // The merged view keeps whichever duplicate comes last, so one definition would silently win.
+        thresholdingDao.setMergedConfig(configWith(group("mib2"), group("cisco"), group("fromExtension")));
+
+        try (Response response = restService.createThresholdGroup(groupDto("fromExtension"), adminContext())) {
+            assertEquals(409, response.getStatus());
+            assertTrue(response.getEntity().toString(), response.getEntity().toString().contains("extension"));
         }
         assertEquals(0, thresholdingDao.getSaveCount());
     }
@@ -297,6 +322,69 @@ public class ThresholdingConfigRestServiceTest {
     }
 
     @Test
+    public void refusesToRenameAGroupOntoANameAnExtensionProvides() {
+        thresholdingDao.setMergedConfig(configWith(group("mib2"), group("cisco"), group("fromExtension")));
+
+        try (Response response = restService.updateThresholdGroup("mib2", groupDto("fromExtension"), null,
+                adminContext())) {
+            assertEquals(409, response.getStatus());
+        }
+        assertEquals(0, thresholdingDao.getSaveCount());
+    }
+
+    @Test
+    public void renamingAGroupPointsThePackagesThatUseItAtTheNewName() {
+        try (Response response = restService.updateThresholdGroup("cisco", groupDto("cisco-new"), null, adminContext())) {
+            assertEquals(204, response.getStatus());
+        }
+
+        assertEquals(1, thresholdingDao.getSaveCount());
+        assertEquals(1, threshdDao.getSaveCount());
+        assertEquals("cisco-new", groupOf(threshdDao.getWriteableConfig(), "example1"));
+        assertEquals(List.of("thresholds.xml", "threshd-configuration.xml"), reloadedConfigFiles());
+    }
+
+    @Test
+    public void renamingAnUnusedGroupLeavesTheThreshdConfigurationAlone() {
+        try (Response response = restService.updateThresholdGroup("mib2", groupDto("mib2-new"), null, adminContext())) {
+            assertEquals(204, response.getStatus());
+        }
+
+        assertEquals(0, threshdDao.getSaveCount());
+        assertEquals("cisco", groupOf(threshdDao.getWriteableConfig(), "example1"));
+        assertEquals(List.of("thresholds.xml"), reloadedConfigFiles());
+    }
+
+    @Test
+    public void refusesToRenameAGroupAPackageFromAnExtensionUses() {
+        // That package cannot be rewritten, so it would be left pointing at nothing.
+        threshdDao.setMergedConfig(threshdWith(pkgUsing("example1", "cisco"), pkgUsing("fromExtension", "mib2")));
+
+        try (Response response = restService.updateThresholdGroup("mib2", groupDto("mib2-new"), null, adminContext())) {
+            assertEquals(409, response.getStatus());
+            assertTrue(response.getEntity().toString(), response.getEntity().toString().contains("fromExtension"));
+        }
+        assertEquals(0, thresholdingDao.getSaveCount());
+        assertEquals(0, threshdDao.getSaveCount());
+    }
+
+    @Test
+    public void restoresTheOldGroupNameWhenThePackagesCannotBeUpdated() throws Exception {
+        threshdDao.failNextSaveWith(new RuntimeException("db down"));
+
+        try (Response response = restService.updateThresholdGroup("cisco", groupDto("cisco-new"), null, adminContext())) {
+            assertEquals(500, response.getStatus());
+        }
+
+        // Saved once with the new name, then once more to put the old one back.
+        assertEquals(2, thresholdingDao.getSaveCount());
+        final ThresholdingConfig config = thresholdingDao.getWriteableConfig();
+        assertNotNull(config.getGroup("cisco"));
+        assertEquals(List.of("mib2", "cisco"), config.getGroups().stream().map(Group::getName).toList());
+        verify(eventProxy, never()).send(any(Event.class));
+    }
+
+    @Test
     public void rejectsAWriteWhoseIfMatchIsStale() {
         try (Response response = restService.updateThresholdGroup("mib2", groupDto("mib2"), "\"not-the-current-etag\"",
                 adminContext())) {
@@ -389,6 +477,25 @@ public class ThresholdingConfigRestServiceTest {
     }
 
     @Test
+    public void refusesToDeleteAGroupAPackageStillUses() {
+        try (Response response = restService.deleteThresholdGroup("cisco", null, adminContext())) {
+            assertEquals(409, response.getStatus());
+            assertTrue(response.getEntity().toString(), response.getEntity().toString().contains("example1"));
+        }
+        assertEquals(0, thresholdingDao.getSaveCount());
+    }
+
+    @Test
+    public void refusesToDeleteAGroupAPackageFromAnExtensionUses() {
+        threshdDao.setMergedConfig(threshdWith(pkgUsing("example1", "cisco"), pkgUsing("fromExtension", "mib2")));
+
+        try (Response response = restService.deleteThresholdGroup("mib2", null, adminContext())) {
+            assertEquals(409, response.getStatus());
+        }
+        assertEquals(0, thresholdingDao.getSaveCount());
+    }
+
+    @Test
     public void returnsNotFoundWhenDeletingAGroupThatIsNotThere() {
         try (Response response = restService.deleteThresholdGroup("nope", null, adminContext())) {
             assertEquals(404, response.getStatus());
@@ -459,7 +566,117 @@ public class ThresholdingConfigRestServiceTest {
         }
     }
 
+    // ------------------------------------------------------------------ upload
+
+    @Test
+    public void uploadReplacesTheStoredGroups() {
+        try (Response response = restService.uploadThresholdingConfigurationXml(
+                attachment(xmlWith("cisco", "other")), adminContext())) {
+            assertEquals(200, response.getStatus());
+        }
+
+        assertEquals(List.of("cisco", "other"),
+                thresholdingDao.getWriteableConfig().getGroups().stream().map(Group::getName).toList());
+    }
+
+    @Test
+    public void uploadRejectsTheSameGroupNameTwice() {
+        try (Response response = restService.uploadThresholdingConfigurationXml(
+                attachment(xmlWith("cisco", "cisco")), adminContext())) {
+            assertEquals(400, response.getStatus());
+        }
+        assertEquals(0, thresholdingDao.getSaveCount());
+    }
+
+    @Test
+    public void uploadRejectsAGroupNameAnExtensionProvides() {
+        thresholdingDao.setMergedConfig(configWith(group("mib2"), group("cisco"), group("fromExtension")));
+
+        try (Response response = restService.uploadThresholdingConfigurationXml(
+                attachment(xmlWith("cisco", "fromExtension")), adminContext())) {
+            assertEquals(409, response.getStatus());
+        }
+        assertEquals(0, thresholdingDao.getSaveCount());
+    }
+
+    @Test
+    public void uploadRefusesToDropAGroupAPackageStillUses() {
+        try (Response response = restService.uploadThresholdingConfigurationXml(
+                attachment(xmlWith("mib2")), adminContext())) {
+            assertEquals(409, response.getStatus());
+            assertTrue(response.getEntity().toString(), response.getEntity().toString().contains("'cisco' (used by example1)"));
+        }
+        assertEquals(0, thresholdingDao.getSaveCount());
+    }
+
+    @Test
+    public void uploadCreatesEventDefinitionsForCustomUeisLikeAWriteDoes() {
+        when(thresholdUeiService.ensureUeisInEventConf(any())).thenReturn(true);
+
+        try (Response response = restService.uploadThresholdingConfigurationXml(
+                attachment(xmlWith("cisco")), adminContext())) {
+            assertEquals(200, response.getStatus());
+        }
+
+        verify(thresholdUeiService).ensureUeisInEventConf(any());
+        verify(eventConfPersistenceService).reloadEventsIntoMemory();
+    }
+
     // ------------------------------------------------------------------ helpers
+
+    private List<String> reloadedConfigFiles() {
+        final ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
+        try {
+            verify(eventProxy, org.mockito.Mockito.atLeastOnce()).send(captor.capture());
+        } catch (final Exception e) {
+            throw new AssertionError(e);
+        }
+        return captor.getAllValues().stream().map(e -> parm(e, EventConstants.PARM_CONFIG_FILE_NAME)).toList();
+    }
+
+    private static String xmlWith(final String... groupNames) {
+        final StringBuilder xml = new StringBuilder("<thresholding-config xmlns=\"http://xmlns.opennms.org/xsd/config/thresholding\">");
+        for (final String name : groupNames) {
+            xml.append("<group name=\"").append(name).append("\" rrdRepository=\"/opt/opennms/share/rrd/snmp/\">")
+                    .append("<threshold type=\"high\" ds-name=\"cpu\" ds-type=\"node\" value=\"90\" rearm=\"70\" trigger=\"3\"/>")
+                    .append("</group>");
+        }
+        return xml.append("</thresholding-config>").toString();
+    }
+
+    private static Attachment attachment(final String body) {
+        final Attachment attachment = mock(Attachment.class);
+        final InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
+        when(attachment.getObject(InputStream.class)).thenReturn(stream);
+        return attachment;
+    }
+
+    private static ThreshdConfiguration threshdWith(final Package... packages) {
+        final ThreshdConfiguration config = new ThreshdConfiguration();
+        config.setPackages(List.of(packages));
+        return config;
+    }
+
+    private static Package pkgUsing(final String name, final String groupName) {
+        final Parameter parameter = new Parameter();
+        parameter.setKey("thresholding-group");
+        parameter.setValue(groupName);
+
+        final Service service = new Service();
+        service.setName("SNMP");
+        service.setInterval(300000L);
+        service.setParameters(List.of(parameter));
+
+        final Package pkg = new Package();
+        pkg.setName(name);
+        pkg.setFilter(new Filter("IPADDR != '0.0.0.0'"));
+        pkg.setServices(List.of(service));
+        return pkg;
+    }
+
+    private static String groupOf(final ThreshdConfiguration config, final String packageName) {
+        return config.getPackage(packageName).orElseThrow().getServices().get(0).getParameters().get(0).getValue();
+    }
 
     private String reloadedConfigFile() {
         final ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);

@@ -164,7 +164,7 @@ public interface ThresholdingConfigRestApi {
                             examples = @ExampleObject(value = "Invalid threshold at index 0: trigger '0' must be a positive integer or a metadata reference."))),
             @ApiResponse(responseCode = "404", description = "No thresholding configuration is stored yet.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
-            @ApiResponse(responseCode = "409", description = "A group of that name already exists.",
+            @ApiResponse(responseCode = "409", description = "A group of that name already exists, stored or provided by an extension.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Threshold group 'mib2' already exists.")))
@@ -180,7 +180,10 @@ public interface ThresholdingConfigRestApi {
             description = """
         Replace a threshold group in full. Requires ROLE_ADMIN. The body is not a patch: thresholds and
         expressions missing from it are removed. Giving the body a different `name` renames the group,
-        provided the new name is free. A group contributed by an OSGi extension cannot be written.""",
+        provided the new name is free, and points every threshd package service whose `thresholding-group`
+        parameter names the old group at the new name. A rename is refused while a threshd package provided
+        by an extension uses the group, because that package cannot be rewritten. A group contributed by an
+        OSGi extension cannot be written.""",
             operationId = "updateThresholdGroup"
     )
     @RequestBody(required = true, description = "The complete group.",
@@ -195,7 +198,7 @@ public interface ThresholdingConfigRestApi {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "404", description = "No group of that name exists.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
-            @ApiResponse(responseCode = "409", description = "The new name is already taken by another group.",
+            @ApiResponse(responseCode = "409", description = "The new name is already taken by another group, or a threshd package provided by an extension uses the group.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "412", description = "`If-Match` does not match the stored group; it changed since it was read.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
@@ -216,9 +219,9 @@ public interface ThresholdingConfigRestApi {
     @Operation(
             summary = "Delete a threshold group",
             description = """
-        Delete a threshold group. Requires ROLE_ADMIN. Note that threshd packages referencing the group
-        through a `thresholding-group` service parameter are not updated and will reference a group that no
-        longer exists.""",
+        Delete a threshold group. Requires ROLE_ADMIN. A group that a threshd package still uses through a
+        `thresholding-group` service parameter cannot be deleted; point those services at another group
+        first.""",
             operationId = "deleteThresholdGroup"
     )
     @ApiResponses(value = {
@@ -227,6 +230,10 @@ public interface ThresholdingConfigRestApi {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "404", description = "No group of that name exists.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "409", description = "A threshd package still uses the group.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Threshold group 'mib2' is used by threshd packages: example1."))),
             @ApiResponse(responseCode = "412", description = "`If-Match` does not match the stored group.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string")))
     })
@@ -298,7 +305,10 @@ public interface ThresholdingConfigRestApi {
             summary = "Upload the thresholding configuration in JSON format",
             description = """
         Replace the whole stored thresholding configuration. Requires ROLE_ADMIN. The single part must be
-        named `upload` and hold a JSON document of the same shape as `GET /thresholding/download`.""",
+        named `upload` and hold a JSON document of the same shape as `GET /thresholding/download`.
+        Group names must be unique and must not clash with groups provided by extensions, and every group a
+        threshd package uses must still be present. Event definitions are created for custom triggered and
+        rearmed UEIs, as for `POST` and `PUT`.""",
             operationId = "uploadThresholdingConfiguration"
     )
     @RequestBody(required = true,
@@ -310,6 +320,8 @@ public interface ThresholdingConfigRestApi {
             @ApiResponse(responseCode = "400", description = "Unparseable JSON or a failed validation rule.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "403", description = "Admin role required.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "409", description = "A group name clashes with a group provided by an extension, or the upload drops a group a threshd package still uses.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "Failed to persist the configuration.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string")))
@@ -327,7 +339,7 @@ public interface ThresholdingConfigRestApi {
         Replace the whole stored thresholding configuration. Requires ROLE_ADMIN. The single part must be
         named `upload` and hold a `<thresholding-config>` document, the form that
         `GET /thresholding/download?format=xml` produces. The document is validated against
-        `thresholding.xsd` before it is stored.""",
+        `thresholding.xsd` before it is stored. The same rules as for the JSON upload apply.""",
             operationId = "uploadThresholdingConfigurationXml"
     )
     @RequestBody(required = true,
@@ -339,6 +351,8 @@ public interface ThresholdingConfigRestApi {
             @ApiResponse(responseCode = "400", description = "Unparseable or schema-invalid XML.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "403", description = "Admin role required.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "409", description = "A group name clashes with a group provided by an extension, or the upload drops a group a threshd package still uses.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "Failed to persist the configuration.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string")))

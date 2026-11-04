@@ -26,8 +26,10 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -421,6 +423,14 @@ public class ThreshdConfigRestService implements ThreshdConfigRestApi {
         } catch (final Exception e) {
             LOG.warn("Failed to parse the uploaded threshd {} configuration.", fileType, e);
             return Response.status(Status.BAD_REQUEST).entity("Invalid threshd " + fileType + " configuration.").build();
+        }
+
+        // The JSON path checks this in the validator; the XML path only had the schema, which does not.
+        final Set<String> names = new HashSet<>();
+        for (final Package pkg : replacement.getPackages()) {
+            if (!names.add(pkg.getName())) {
+                return Response.status(Status.BAD_REQUEST).entity("Duplicate package name '" + pkg.getName() + "'.").build();
+            }
         }
 
         final AtomicReference<Response> failure = new AtomicReference<>();

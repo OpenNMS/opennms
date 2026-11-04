@@ -224,6 +224,42 @@ public class ThresholdConfigValidatorTest {
         parameter.setKey("thresholding-group");
         parameter.setValue(null);
         assertNotNull(ThresholdConfigValidator.validateService(service));
+
+        // Parameter.setValue rejects an empty value as well, so letting it through would mean a 500.
+        parameter.setValue("");
+        assertNotNull(ThresholdConfigValidator.validateService(service));
+        parameter.setValue("  ");
+        assertNotNull(ThresholdConfigValidator.validateService(service));
+    }
+
+    @Test
+    public void requiresBothEndsOfEveryAddressRange() {
+        assertNull(ThresholdConfigValidator.validatePackage(threshdPackage()));
+
+        final IpRangeDto range = new IpRangeDto();
+        range.setBegin("10.0.0.1");
+        final ThreshdPackageDto pkg = threshdPackage();
+        pkg.setIncludeRanges(List.of(range));
+        assertTrue(ThresholdConfigValidator.validatePackage(pkg).contains("include range at index 0"));
+
+        range.setEnd("");
+        assertNotNull(ThresholdConfigValidator.validatePackage(pkg));
+
+        range.setBegin(" ");
+        range.setEnd("10.0.0.9");
+        pkg.setIncludeRanges(List.of());
+        pkg.setExcludeRanges(List.of(range));
+        assertTrue(ThresholdConfigValidator.validatePackage(pkg).contains("exclude range at index 0"));
+    }
+
+    @Test
+    public void rejectsDuplicatePackageNames() {
+        final ThreshdPackageDto second = threshdPackage();
+        second.setName(" example1 ");
+        final ThreshdConfigDto config = new ThreshdConfigDto();
+        config.setPackages(List.of(threshdPackage(), second));
+
+        assertEquals("Duplicate package name 'example1'.", ThresholdConfigValidator.validateThreshdConfig(config));
     }
 
     // ------------------------------------------------------------------ fixtures

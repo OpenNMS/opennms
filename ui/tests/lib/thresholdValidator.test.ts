@@ -10,6 +10,7 @@ import {
   ThresholdType,
   hasErrors,
   validateAddressRange,
+  validateParameter,
   validateResourceFilter,
   validateThreshdPackage,
   validateThreshdService,
@@ -191,16 +192,40 @@ describe('threshd validation', () => {
     expect(validateThreshdService(service(), ['cisco']).thresholdingGroup).toBeDefined()
     expect(validateThreshdService(service(), ['mib2']).thresholdingGroup).toBeUndefined()
 
-    // An empty value means "not bound yet", which is a legitimate intermediate state.
-    const unbound = service({ parameters: [{ key: THRESHOLDING_GROUP_PARAMETER, value: '' }] })
-    expect(validateThreshdService(unbound, ['mib2']).thresholdingGroup).toBeUndefined()
   })
 
-  test('requires both halves of an address range', () => {
+  test('requires a threshold group', () => {
+    // The form seeds the parameter with '', which the server rejects; a service without it thresholds nothing.
+    const unbound = service({ parameters: [{ key: THRESHOLDING_GROUP_PARAMETER, value: '' }] })
+    expect(validateThreshdService(unbound, ['mib2']).thresholdingGroup).toBe('Threshold group is required.')
+    expect(validateThreshdService(service({ parameters: [] }), ['mib2']).thresholdingGroup)
+      .toBe('Threshold group is required.')
+  })
+
+  test('requires a key and a value on every other parameter', () => {
+    const withExtra = (key: string, value: string) => service({
+      parameters: [{ key: THRESHOLDING_GROUP_PARAMETER, value: 'mib2' }, { key, value }]
+    })
+    expect(validateThreshdService(withExtra('foo', ''), ['mib2']).parameters).toBeDefined()
+    expect(validateThreshdService(withExtra('', 'bar'), ['mib2']).parameters).toBeDefined()
+    expect(validateThreshdService(withExtra('foo', 'bar'), ['mib2']).parameters).toBeUndefined()
+    expect(validateParameter('foo', ' ')).toBe('Value is required.')
+  })
+
+  test('requires both halves of an address range, also on an empty row', () => {
     expect(validateAddressRange('1.1.1.1', '')).toBeDefined()
     expect(validateAddressRange('', '2.2.2.2')).toBeDefined()
-    expect(validateAddressRange('', '')).toBeUndefined()
+    expect(validateAddressRange('', '')).toBeDefined()
     expect(validateAddressRange('1.1.1.1', '2.2.2.2')).toBeUndefined()
+  })
+
+  test('does not let a package be saved with an incomplete address range', () => {
+    const range = (begin: string, end: string) => [{ begin, end }]
+    expect(validateThreshdPackage(threshdPackage({ includeRanges: range('', '') }), [], false).ranges).toBeDefined()
+    expect(validateThreshdPackage(threshdPackage({ excludeRanges: range('1.1.1.1', '') }), [], false).ranges)
+      .toBeDefined()
+    expect(validateThreshdPackage(threshdPackage({ includeRanges: range('1.1.1.1', '2.2.2.2') }), [], false).ranges)
+      .toBeUndefined()
   })
 })
 

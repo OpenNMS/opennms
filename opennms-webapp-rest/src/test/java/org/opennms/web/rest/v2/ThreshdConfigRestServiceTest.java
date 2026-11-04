@@ -30,6 +30,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -37,6 +39,7 @@ import java.util.List;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -49,6 +52,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.v2.FakeThresholdingDaos.FakeThreshdDao;
+import org.opennms.web.rest.v2.model.IpRangeDto;
 import org.opennms.web.rest.v2.model.ParameterDto;
 import org.opennms.web.rest.v2.model.ThreshdConfigDto;
 import org.opennms.web.rest.v2.model.ThreshdPackageDto;
@@ -297,6 +301,61 @@ public class ThreshdConfigRestServiceTest {
         assertEquals(0, threshdDao.getSaveCount());
     }
 
+    @Test
+    public void rejectsABlankParameterValueAsABadRequestRatherThanAServerError() {
+        // The UI seeds thresholding-group with '' until a group is picked; Parameter.setValue rejects that, so
+        // without the validator check this surfaced as a 500.
+        final ThreshdPackageDto dto = packageDto("example3");
+        dto.getServices().get(0).getParameters().get(0).setValue("");
+
+        try (Response response = restService.createThreshdPackage(dto, adminContext())) {
+            assertEquals(400, response.getStatus());
+            assertTrue(response.getEntity().toString(), response.getEntity().toString().contains("thresholding-group"));
+        }
+        assertEquals(0, threshdDao.getSaveCount());
+    }
+
+    @Test
+    public void rejectsABlankAddressRangeAsABadRequestRatherThanAServerError() {
+        final IpRangeDto range = new IpRangeDto();
+        range.setBegin("10.0.0.1");
+        range.setEnd(" ");
+        final ThreshdPackageDto dto = packageDto("example3");
+        dto.setIncludeRanges(List.of(range));
+
+        try (Response response = restService.createThreshdPackage(dto, adminContext())) {
+            assertEquals(400, response.getStatus());
+            assertTrue(response.getEntity().toString(), response.getEntity().toString().contains("include range"));
+        }
+        assertEquals(0, threshdDao.getSaveCount());
+    }
+
+    @Test
+    public void rejectsAConfigurationWithDuplicatePackageNames() {
+        final ThreshdConfigDto dto = new ThreshdConfigDto();
+        dto.setPackages(List.of(packageDto("same"), packageDto(" same ")));
+
+        try (Response response = restService.updateThreshdConfiguration(dto, null, adminContext())) {
+            assertEquals(400, response.getStatus());
+            assertTrue(response.getEntity().toString(), response.getEntity().toString().contains("Duplicate package name"));
+        }
+        assertEquals(0, threshdDao.getSaveCount());
+    }
+
+    @Test
+    public void rejectsAnXmlUploadWithDuplicatePackageNames() {
+        final String xml = "<threshd-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/thresholding\">"
+                + "<package name=\"same\"><filter>IPADDR != '0.0.0.0'</filter></package>"
+                + "<package name=\"same\"><filter>IPADDR != '0.0.0.0'</filter></package>"
+                + "</threshd-configuration>";
+
+        try (Response response = restService.uploadThreshdConfigurationXml(attachment(xml), adminContext())) {
+            assertEquals(400, response.getStatus());
+            assertTrue(response.getEntity().toString(), response.getEntity().toString().contains("Duplicate package name"));
+        }
+        assertEquals(0, threshdDao.getSaveCount());
+    }
+
     // ------------------------------------------------------------------ events
 
     @Test
@@ -396,6 +455,13 @@ public class ThreshdConfigRestServiceTest {
         dto.setFilter("IPADDR != '0.0.0.0'");
         dto.setServices(List.of(service));
         return dto;
+    }
+
+    private static Attachment attachment(final String body) {
+        final Attachment attachment = mock(Attachment.class);
+        final InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
+        when(attachment.getObject(InputStream.class)).thenReturn(stream);
+        return attachment;
     }
 
     private static SecurityContext adminContext() {

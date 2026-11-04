@@ -40,6 +40,11 @@ describe('ThresholdServiceEdit.vue', () => {
     services: [{ name: 'SNMP', interval: 300000, userDefined: false, status: 'on', parameters: [{ key: 'thresholding-group', value: 'mib2' }] }]
   })
 
+  const selectGroup = async (name: string) => {
+    (wrapper.findComponent('[data-test="package-service-group"]') as VueWrapper<any>).vm.$emit('update:modelValue', name)
+    await flushPromises()
+  }
+
   const mountComponent = async () => {
     wrapper = mount(ThresholdServiceEdit, { global: { plugins: [PrimeVue], stubs: { ParameterListEditor: true }}})
     await flushPromises()
@@ -92,11 +97,26 @@ describe('ThresholdServiceEdit.vue', () => {
     expect(wrapper.find('[data-test="threshold-edit-save"]').text()).toBe('Create Service')
 
     await wrapper.find('[data-test="package-service-name"]').setValue('ICMP')
+    await selectGroup('mib2')
     await wrapper.find('[data-test="threshold-edit-save"]').trigger('click')
     await flushPromises()
 
-    expect(store.saveService).toHaveBeenCalledWith(null, expect.objectContaining({ name: 'ICMP' }))
+    expect(store.saveService).toHaveBeenCalledWith(null, expect.objectContaining({
+      name: 'ICMP',
+      parameters: [{ key: 'thresholding-group', value: 'mib2' }]
+    }))
     expect(pushMock).toHaveBeenCalledWith('/threshold-config/package/example1')
+  })
+
+  it('does not save a new service until a threshold group is chosen', async () => {
+    // The form seeds thresholding-group with '', which the server would reject.
+    route.params = { name: 'example1' }
+
+    await mountComponent()
+    await wrapper.find('[data-test="package-service-name"]').setValue('ICMP')
+
+    expect(wrapper.text()).toContain('Threshold group is required.')
+    expect(wrapper.find('[data-test="threshold-edit-save"]').attributes('disabled')).toBeDefined()
   })
 
   it('follows a rename the save wrote along', async () => {

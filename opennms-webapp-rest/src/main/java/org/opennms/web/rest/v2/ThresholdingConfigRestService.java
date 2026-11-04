@@ -27,8 +27,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,9 +46,14 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.exception.ValidationException;
+import org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao;
+import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.FilterOperator;
 import org.opennms.netmgt.config.threshd.Group;
+import org.opennms.netmgt.config.threshd.Package;
+import org.opennms.netmgt.config.threshd.Parameter;
+import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -83,6 +91,10 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
     private static final Logger LOG = LoggerFactory.getLogger(ThresholdingConfigRestService.class);
 
     private static final String CONFIG_FILE_NAME = "thresholds.xml";
+    private static final String THRESHD_CONFIG_FILE_NAME = "threshd-configuration.xml";
+
+    /** Service parameter through which a threshd package binds a service to a threshold group. */
+    static final String THRESHOLDING_GROUP_PARAMETER = "thresholding-group";
     private static final String NO_CONFIG_MESSAGE = "Thresholding configuration not found.";
 
     // The REST stack is wired to the codehaus JsonProvider, so the download endpoint has to serialize with
@@ -91,6 +103,9 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
 
     @Autowired
     private WriteableThresholdingDao thresholdingDao;
+
+    @Autowired
+    private WriteableThreshdDao threshdDao;
 
     @Autowired
     private ResourceDao resourceDao;
@@ -218,9 +233,9 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
                     failure.set(Response.status(Status.NOT_FOUND).entity(NO_CONFIG_MESSAGE).build());
                     return;
                 }
-                if (findGroup(config, groupName).isPresent()) {
-                    failure.set(Response.status(Status.CONFLICT)
-                            .entity("Threshold group '" + groupName + "' already exists.").build());
+                final Response conflict = nameConflict(config, groupName);
+                if (conflict != null) {
+                    failure.set(conflict);
                     return;
                 }
 
@@ -250,7 +265,7 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
             return failure.get();
         }
 
-        sendReload();
+        sendReload(CONFIG_FILE_NAME);
         return Response.created(URI.create("thresholding/groups/" + groupName)).build();
     }
 
@@ -263,8 +278,10 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
         }
 
         final String newName = group.getName().trim();
+        final boolean renamed = !newName.equals(groupName);
         final AtomicReference<Response> failure = new AtomicReference<>();
         final AtomicBoolean eventsCreated = new AtomicBoolean();
+        final AtomicBoolean threshdChanged = new AtomicBoolean();
 
         try {
             thresholdingDao.withWriteLock(config -> {
@@ -278,10 +295,22 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
                     failure.set(readOnlyOrNotFound(groupName));
                     return;
                 }
-                if (!newName.equals(groupName) && findGroup(config, newName).isPresent()) {
-                    failure.set(Response.status(Status.CONFLICT)
-                            .entity("Threshold group '" + newName + "' already exists.").build());
-                    return;
+                if (renamed) {
+                    final Response conflict = nameConflict(config, newName);
+                    if (conflict != null) {
+                        failure.set(conflict);
+                        return;
+                    }
+                    // Packages contributed by extensions cannot be rewritten, so they would be left pointing
+                    // at a group that no longer exists.
+                    final Set<String> extensionUsers = extensionPackagesReferencing(groupName);
+                    if (!extensionUsers.isEmpty()) {
+                        failure.set(Response.status(Status.CONFLICT)
+                                .entity("Threshold group '" + groupName + "' cannot be renamed: it is used by threshd "
+                                        + "packages provided by an extension: " + String.join(", ", extensionUsers) + ".")
+                                .build());
+                        return;
+                    }
                 }
 
                 final String currentEtag = ThresholdRestSupport.etagOf(objectMapper,
@@ -295,13 +324,34 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
                 final Group entity = ThresholdingConfigMapper.toEntity(group);
                 eventsCreated.set(thresholdUeiService.ensureUeisInEventConf(entity.getThresholdsAndExpressions()));
 
+                final List<Group> previousGroups = new ArrayList<>(config.getGroups());
                 final List<Group> groups = new ArrayList<>();
-                for (final Group candidate : config.getGroups()) {
+                for (final Group candidate : previousGroups) {
                     groups.add(groupName.equals(candidate.getName()) ? entity : candidate);
                 }
                 config.setGroups(groups);
 
-                thresholdingDao.saveConfig();
+                if (renamed) {
+                    // Lock order: thresholding, then threshd. Nothing takes them the other way round.
+                    threshdDao.withWriteLock(threshd -> {
+                        final boolean referenced = renameReferences(threshd, groupName, newName);
+                        thresholdingDao.saveConfig();
+                        if (!referenced) {
+                            return;
+                        }
+                        try {
+                            threshdDao.saveConfig();
+                        } catch (final RuntimeException e) {
+                            // The group is already stored under its new name; put the old one back so the
+                            // packages that still use it keep working.
+                            restoreGroups(config, previousGroups, e);
+                            throw e;
+                        }
+                        threshdChanged.set(true);
+                    });
+                } else {
+                    thresholdingDao.saveConfig();
+                }
             });
         } catch (final ValidationException e) {
             LOG.warn("Threshold group {} failed schema validation.", groupName, e);
@@ -319,7 +369,10 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
             return failure.get();
         }
 
-        sendReload();
+        sendReload(CONFIG_FILE_NAME);
+        if (threshdChanged.get()) {
+            sendReload(THRESHD_CONFIG_FILE_NAME);
+        }
         return Response.noContent().build();
     }
 
@@ -349,6 +402,14 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
                     return;
                 }
 
+                final Set<String> users = packagesReferencing(threshdDao.getReadOnlyConfig(), groupName);
+                if (!users.isEmpty()) {
+                    failure.set(Response.status(Status.CONFLICT)
+                            .entity("Threshold group '" + groupName + "' is used by threshd packages: "
+                                    + String.join(", ", users) + ".").build());
+                    return;
+                }
+
                 final List<Group> groups = config.getGroups().stream()
                         .filter(candidate -> !groupName.equals(candidate.getName()))
                         .collect(Collectors.toList());
@@ -365,7 +426,7 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
             return failure.get();
         }
 
-        sendReload();
+        sendReload(CONFIG_FILE_NAME);
         return Response.noContent().build();
     }
 
@@ -459,7 +520,17 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
             return Response.status(Status.BAD_REQUEST).entity("Invalid thresholding " + fileType + " configuration.").build();
         }
 
+        final Set<String> uploadedNames = new HashSet<>();
+        for (final Group group : groups) {
+            if (!uploadedNames.add(group.getName())) {
+                return Response.status(Status.BAD_REQUEST)
+                        .entity("The uploaded configuration contains threshold group '" + group.getName() + "' more than once.")
+                        .build();
+            }
+        }
+
         final AtomicReference<Response> failure = new AtomicReference<>();
+        final AtomicBoolean eventsCreated = new AtomicBoolean();
 
         try {
             thresholdingDao.withWriteLock(config -> {
@@ -467,6 +538,41 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
                     failure.set(Response.status(Status.NOT_FOUND).entity(NO_CONFIG_MESSAGE).build());
                     return;
                 }
+
+                final Set<String> extensionGroups = extensionGroupNames(config);
+                for (final String name : uploadedNames) {
+                    if (extensionGroups.contains(name)) {
+                        failure.set(extensionConflict(name));
+                        return;
+                    }
+                }
+
+                // The same rule as for a delete: a group a package still uses must not disappear.
+                final Map<String, Set<String>> missing = new LinkedHashMap<>();
+                final ThreshdConfiguration threshd = threshdDao.getReadOnlyConfig();
+                if (threshd != null) {
+                    for (final Package pkg : threshd.getPackages()) {
+                        for (final String name : groupsReferencedBy(pkg)) {
+                            if (!uploadedNames.contains(name) && !extensionGroups.contains(name)) {
+                                missing.computeIfAbsent(name, k -> new LinkedHashSet<>()).add(pkg.getName());
+                            }
+                        }
+                    }
+                }
+                if (!missing.isEmpty()) {
+                    failure.set(Response.status(Status.CONFLICT)
+                            .entity("The uploaded configuration drops threshold groups that threshd packages still use: "
+                                    + missing.entrySet().stream()
+                                            .map(e -> "'" + e.getKey() + "' (used by " + String.join(", ", e.getValue()) + ")")
+                                            .collect(Collectors.joining(", ")) + ".")
+                            .build());
+                    return;
+                }
+
+                final List<Basethresholddef> defs = new ArrayList<>();
+                groups.forEach(group -> defs.addAll(group.getThresholdsAndExpressions()));
+                eventsCreated.set(thresholdUeiService.ensureUeisInEventConf(defs));
+
                 config.setGroups(groups);
                 thresholdingDao.saveConfig();
             });
@@ -476,13 +582,15 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
         } catch (final Exception e) {
             LOG.error("Failed to persist the uploaded thresholding configuration.", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to persist thresholding configuration.").build();
+        } finally {
+            reloadEventConfIf(eventsCreated.get());
         }
 
         if (failure.get() != null) {
             return failure.get();
         }
 
-        sendReload();
+        sendReload(CONFIG_FILE_NAME);
         return Response.ok().build();
     }
 
@@ -539,12 +647,116 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
         return "Threshold group '" + groupName + "' does not exist.";
     }
 
-    private void sendReload() {
+    /**
+     * Returns a 409 when {@code name} is taken, either by a stored group or by one an extension provides. The
+     * merged view keeps whichever duplicate comes last, so a clash with an extension group would silently
+     * shadow one of the two definitions.
+     */
+    private Response nameConflict(final ThresholdingConfig draft, final String name) {
+        if (findGroup(draft, name).isPresent()) {
+            return Response.status(Status.CONFLICT).entity("Threshold group '" + name + "' already exists.").build();
+        }
+        if (extensionGroupNames(draft).contains(name)) {
+            return extensionConflict(name);
+        }
+        return null;
+    }
+
+    private static Response extensionConflict(final String name) {
+        return Response.status(Status.CONFLICT)
+                .entity("Threshold group '" + name + "' already exists and is provided by an extension.").build();
+    }
+
+    /** Names of the groups only extensions provide: in the merged view, but not stored. */
+    private Set<String> extensionGroupNames(final ThresholdingConfig draft) {
+        final ThresholdingConfig merged = thresholdingDao.getReadOnlyConfig();
+        if (merged == null) {
+            return Set.of();
+        }
+        final Set<String> stored = new HashSet<>();
+        final ThresholdingConfig writeable = thresholdingDao.getWriteableConfig();
+        if (writeable != null) {
+            writeable.getGroups().forEach(group -> stored.add(group.getName()));
+        }
+        if (draft != null) {
+            draft.getGroups().forEach(group -> stored.add(group.getName()));
+        }
+        return merged.getGroups().stream()
+                .map(Group::getName)
+                .filter(name -> name != null && !stored.contains(name))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /** Names of the threshd packages, stored or provided by an extension, whose services use {@code groupName}. */
+    static Set<String> packagesReferencing(final ThreshdConfiguration threshd, final String groupName) {
+        if (threshd == null) {
+            return Set.of();
+        }
+        return threshd.getPackages().stream()
+                .filter(pkg -> groupsReferencedBy(pkg).contains(groupName))
+                .map(Package::getName)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private Set<String> extensionPackagesReferencing(final String groupName) {
+        final Set<String> users = new LinkedHashSet<>(packagesReferencing(threshdDao.getReadOnlyConfig(), groupName));
+        users.removeAll(packagesReferencing(threshdDao.getWriteableConfig(), groupName));
+        return users;
+    }
+
+    private static Set<String> groupsReferencedBy(final Package pkg) {
+        final Set<String> names = new LinkedHashSet<>();
+        for (final org.opennms.netmgt.config.threshd.Service service : pkg.getServices()) {
+            for (final Parameter parameter : service.getParameters()) {
+                if (THRESHOLDING_GROUP_PARAMETER.equals(parameter.getKey()) && parameter.getValue() != null) {
+                    names.add(parameter.getValue());
+                }
+            }
+        }
+        return names;
+    }
+
+    /**
+     * Points every {@code thresholding-group} parameter in the threshd draft that names {@code oldName} at
+     * {@code newName}. The draft is a private copy, so editing it in place is safe.
+     *
+     * @return whether any parameter was changed
+     */
+    private static boolean renameReferences(final ThreshdConfiguration threshd, final String oldName, final String newName) {
+        if (threshd == null) {
+            return false;
+        }
+        boolean changed = false;
+        for (final Package pkg : threshd.getPackages()) {
+            for (final org.opennms.netmgt.config.threshd.Service service : pkg.getServices()) {
+                for (final Parameter parameter : service.getParameters()) {
+                    if (THRESHOLDING_GROUP_PARAMETER.equals(parameter.getKey()) && oldName.equals(parameter.getValue())) {
+                        parameter.setValue(newName);
+                        changed = true;
+                    }
+                }
+            }
+        }
+        return changed;
+    }
+
+    private void restoreGroups(final ThresholdingConfig config, final List<Group> previousGroups, final RuntimeException cause) {
         try {
-            ThresholdRestSupport.sendReloadEvent(eventProxy, CONFIG_FILE_NAME);
+            config.setGroups(previousGroups);
+            thresholdingDao.saveConfig();
+        } catch (final RuntimeException e) {
+            LOG.error("Could not restore the thresholding configuration after the threshd save failed; threshd "
+                    + "packages may now reference a threshold group that no longer exists.", e);
+            cause.addSuppressed(e);
+        }
+    }
+
+    private void sendReload(final String fileName) {
+        try {
+            ThresholdRestSupport.sendReloadEvent(eventProxy, fileName);
         } catch (final Exception e) {
             // The configuration is already stored at this point, so failing the request would be misleading.
-            LOG.warn("Saved the thresholding configuration but could not send the reload event for {}.", CONFIG_FILE_NAME, e);
+            LOG.warn("Saved the configuration but could not send the reload event for {}.", fileName, e);
         }
     }
 }

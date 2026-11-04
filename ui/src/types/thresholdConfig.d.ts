@@ -150,10 +150,12 @@ export interface ResourceFilterErrors {
 export interface ThreshdPackageErrors {
   name?: string
   filter?: string
+  ranges?: string
 }
 
 export interface ThreshdServiceErrors {
   name?: string
   interval?: string
   thresholdingGroup?: string
+  parameters?: string
 }

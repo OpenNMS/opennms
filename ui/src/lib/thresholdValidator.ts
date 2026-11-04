@@ -228,6 +228,12 @@ export const validateThreshdPackage = (
     errors.filter = 'Filter is required.'
   }
 
+  // Each row shows its own message; this only keeps the package from being saved with an incomplete row.
+  const ranges = [...(pkg.includeRanges ?? []), ...(pkg.excludeRanges ?? [])]
+  if (ranges.some(range => validateAddressRange(range.begin, range.end))) {
+    errors.ranges = 'Every address range needs a begin and an end address.'
+  }
+
   return errors
 }
 
@@ -246,18 +252,37 @@ export const validateThreshdService = (service: ThreshdService, groupNames: stri
 
   const thresholdingGroup = service.parameters?.find(parameter => parameter.key === THRESHOLDING_GROUP_PARAMETER)
 
-  if (thresholdingGroup && !isBlank(thresholdingGroup.value) && !groupNames.includes(thresholdingGroup.value)) {
+  // A service without a group thresholds nothing, and the server rejects the empty value the form seeds.
+  if (!thresholdingGroup || isBlank(thresholdingGroup.value)) {
+    errors.thresholdingGroup = 'Threshold group is required.'
+  } else if (!groupNames.includes(thresholdingGroup.value)) {
     errors.thresholdingGroup = `No threshold group named '${thresholdingGroup.value}' exists.`
+  }
+
+  // The thresholding-group row is reported through its own field above.
+  if (service.parameters?.some(parameter =>
+    parameter.key !== THRESHOLDING_GROUP_PARAMETER && validateParameter(parameter.key, parameter.value))) {
+    errors.parameters = 'Every parameter needs a key and a value.'
   }
 
   return errors
 }
 
-export const validateAddressRange = (begin?: string, end?: string): string | undefined => {
-  const hasBegin = !isBlank(begin)
-  const hasEnd = !isBlank(end)
+export const validateParameter = (key?: string, value?: string): string | undefined => {
+  if (isBlank(key)) {
+    return 'Key is required.'
+  }
 
-  if (hasBegin !== hasEnd) {
+  if (isBlank(value)) {
+    return 'Value is required.'
+  }
+
+  return undefined
+}
+
+export const validateAddressRange = (begin?: string, end?: string): string | undefined => {
+  // An empty row is not ignored on save: the server stores every row and rejects a blank address.
+  if (isBlank(begin) || isBlank(end)) {
     return 'A range needs both a begin and an end address.'
   }
 

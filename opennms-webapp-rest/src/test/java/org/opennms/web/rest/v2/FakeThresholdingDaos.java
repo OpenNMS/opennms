@@ -111,10 +111,23 @@ abstract class FakeThresholdingDaos {
         private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
         private ThreshdConfiguration config;
+
+        /** Stands in for the configuration contributed by OSGi extensions; null means "no extensions". */
+        private ThreshdConfiguration mergedConfig;
+
         private int saveCount;
+        private RuntimeException saveFailure;
 
         FakeThreshdDao(final ThreshdConfiguration config) {
             this.config = config;
+        }
+
+        void setMergedConfig(final ThreshdConfiguration mergedConfig) {
+            this.mergedConfig = mergedConfig;
+        }
+
+        void failNextSaveWith(final RuntimeException saveFailure) {
+            this.saveFailure = saveFailure;
         }
 
         int getSaveCount() {
@@ -123,7 +136,7 @@ abstract class FakeThresholdingDaos {
 
         @Override
         public ThreshdConfiguration getReadOnlyConfig() {
-            return config;
+            return mergedConfig != null ? mergedConfig : config;
         }
 
         @Override
@@ -133,6 +146,11 @@ abstract class FakeThresholdingDaos {
 
         @Override
         public void saveConfig() {
+            if (saveFailure != null) {
+                final RuntimeException failure = saveFailure;
+                saveFailure = null;
+                throw failure;
+            }
             saveCount++;
         }
 
