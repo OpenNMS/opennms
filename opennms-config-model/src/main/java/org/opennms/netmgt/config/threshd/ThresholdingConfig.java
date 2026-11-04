@@ -35,6 +35,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Top-level element for the thresholds.xml configuration file.
  */
@@ -47,8 +50,10 @@ public class ThresholdingConfig implements Serializable {
     /**
      * Thresholding group element
      */
+    @JsonProperty("group") // written from the field ...
     private List<Group> groups = new ArrayList<>();
 
+    @JsonIgnore
     private final Map<String, Group> groupMap = new ConcurrentHashMap<>();
 
     public ThresholdingConfig() {
@@ -59,6 +64,7 @@ public class ThresholdingConfig implements Serializable {
         return groups;
     }
 
+    @JsonProperty("group") // ... but read through this setter, so that groupMap (and getGroup()) is populated
     public void setGroups(final List<Group> groups) {
         if (groups == this.groups) {
             // Cover the case where jax-b already set the field reflectively and is now calling our setter in which case

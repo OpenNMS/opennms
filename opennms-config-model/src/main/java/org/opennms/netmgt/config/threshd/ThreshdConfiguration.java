@@ -34,6 +34,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Top-level element for the threshd-configuration.xml
  *  configuration file.
@@ -49,6 +51,7 @@ public class ThreshdConfiguration implements Serializable {
      *  thresholding.
      */
     @XmlElement(name = "package", required = true)
+    @JsonProperty("package")
     private List<Package> packages = new ArrayList<>();
 
     public ThreshdConfiguration() { }

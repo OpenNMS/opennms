@@ -51,6 +51,7 @@ public class ResourceFilter implements Serializable {
     private String content;
 
     @XmlAttribute(name = "field", required = true)
+    @JsonProperty("field")
     private String m_field;
 
     public ResourceFilter() { }
