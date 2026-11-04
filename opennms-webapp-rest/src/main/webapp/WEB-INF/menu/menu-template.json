@@ -285,7 +285,7 @@
         {
           "id": "manageApplications",
           "name": "Manage Applications",
-          "url": "admin/applications.htm",
+          "url": "ui/index.html#/admin/applications",
           "roles": ["ROLE_ADMIN"]
         }
       ]

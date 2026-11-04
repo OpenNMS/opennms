@@ -113,6 +113,12 @@ const router = createRouter({
       component: () => import('@/containers/DistributedMonitoring.vue'),
       beforeEnter: requireRole('adminRole', 'Must be admin to manage distributed monitoring.')
     },
+    {
+      path: '/admin/applications',
+      name: 'Manage Applications',
+      component: () => import('@/containers/ManageApplications.vue'),
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage applications.')
+    },
     // redirects from the old page routes
     {
       path: '/admin/minions',
