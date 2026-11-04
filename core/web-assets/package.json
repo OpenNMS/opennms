@@ -20,7 +20,7 @@
         "@babel/plugin-transform-runtime": "^7.28.3",
         "@babel/preset-env": "^7.28.3",
         "@babel/preset-typescript": "^7.27.1",
-        "@babel/runtime-corejs3": "^7.28.4",
+        "@babel/runtime-corejs3": "^8.0.10",
         "@rangerrick/moment-javaformat": "^2.0.1",
         "@types/jest": "^29.5.2",
         "@types/lodash": "^4.14.141",
