@@ -37,14 +37,6 @@ ASSEMBLE_COMMAND        := ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests
 # These are defaults that some Makefiles will override so
 # ?= for conditional assignment is used for these.
 TAR_STRIP_COMPONENTS    ?= 0
-ADDITIONAL_TARGETS      ?=
-
-%.yml: %.yml.in
-	@echo "Generating $@..."
-	@sed -e 's,@VERSION@,$(VERSION),' \
-		-e 's,@REVISION@,$(REVISION),' \
-		-e 's,@BRANCH@,$(BUILD_BRANCH),' \
-		-e 's,@BUILD_NUMBER@,$(BUILD_NUMBER),' $< > $@
 
 help:
 	@echo ""
@@ -152,7 +144,7 @@ check-docker-buildx-default:
 
 # The docker-buildx target is intended to be called from another recipe
 # and DOCKER_OUTPUT needs to be set
-docker-buildx: $(README) $(ADDITIONAL_TARGETS)
+docker-buildx: $(README)
 ifndef DOCKER_OUTPUT
 	$(warning DOCKER_OUTPUT cannot be empty when running 'docker-buildx')
 	$(warning The 'docker-buildx' goal is not intended to be run directly.)
@@ -175,7 +167,7 @@ endif
 	  $(DOCKER_FLAGS) \
 	  .
 
-$(DOCKER_OCI): $(README) $(ADDITIONAL_TARGETS)
+$(DOCKER_OCI): $(README)
 	$(MAKE) DOCKER_OUTPUT="$(DOCKER_OUTPUT_OCI)" docker-buildx
 
 oci: $(DOCKER_OCI)
@@ -233,6 +225,5 @@ clean: clean-context
 	$(info Delete tarball and artifacts ...)
 	rm -rf images/*.oci
 	rm -rf tarball-root
-	rm -rf $(ADDITIONAL_TARGETS)
 
 clean-all: clean
