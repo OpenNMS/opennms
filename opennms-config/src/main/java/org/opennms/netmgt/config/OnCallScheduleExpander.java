@@ -87,6 +87,7 @@ public final class OnCallScheduleExpander {
             final long dayStart = day.getTimeInMillis();
             final Calendar next = (Calendar) day.clone();
             next.add(Calendar.DAY_OF_MONTH, 1);
+            startOfDay(next); // re-floor: a DST change at midnight makes the add land on 01:00
             final long dayEnd = next.getTimeInMillis();
             final long from = Math.max(dayStart, windowStart);
             final long to = Math.min(dayEnd, windowEnd);

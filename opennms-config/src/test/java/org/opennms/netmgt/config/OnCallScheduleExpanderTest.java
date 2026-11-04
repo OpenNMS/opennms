@@ -134,9 +134,19 @@ public class OnCallScheduleExpanderTest {
 
     @Test
     public void testAgreesWithIsTimeInSchedule() {
+        assertAgrees(new int[][] { { 2026, 3 }, { 2026, 4 }, { 2026, 11 } });
+    }
+
+    /** DST starts at local midnight in Havana, so 00:00 does not exist on the transition day. */
+    @Test
+    public void testAgreesWithIsTimeInScheduleWhenDstStartsAtMidnight() {
+        TimeZone.setDefault(TimeZone.getTimeZone("America/Havana"));
+        assertAgrees(new int[][] { { 2026, 3 }, { 2026, 11 } });
+    }
+
+    private static void assertAgrees(final int[][] months) {
         for (boolean withAllDay : new boolean[] { true, false }) {
             final Role role = role(withAllDay);
-            final int[][] months = { { 2026, 3 }, { 2026, 4 }, { 2026, 11 } };
             for (int[] ym : months) {
                 final Date start = at(ym[0], ym[1], 1, 0, 0, 0);
                 final Date end = new GregorianCalendar(ym[0], ym[1], 1).getTime();
