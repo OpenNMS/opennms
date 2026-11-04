@@ -24,9 +24,10 @@ FULL_RUN_PATHS = [
     r"^pom\.xml$", r"^core/xml/src/main/", r"^core/lib/src/main/", r"^core/spring/src/main/",
     r"^core/soa/src/main/", r"^core/test-api/", r"^opennms-model/src/main/", r"^opennms-dao-api/src/main/",
     r"^container/features/", r"^dependencies/.*pom\.xml$", r"^\.circleci/scripts/itest\.sh$",
+    r"^core/schema/src/main/",
 ]
 FULL_SMOKE_PATHS = [r"^smoke-test/pom\.xml$", r"^smoke-test/src/main/", r"^opennms-container/",
-                    r"^\.circleci/scripts/smoke\.sh$"]
+                    r"^container/karaf/", r"^\.circleci/scripts/smoke\.sh$"]
 MAX_CHANGED_FILES = 100
 # About 100K tokens; a larger diff costs much and gives little benefit.
 MAX_DIFF_CHARS = 400_000
