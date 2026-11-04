@@ -113,8 +113,16 @@
             />
           </OnmsTabPanel>
           <OnmsTabPanel value="calendar">
-            <!-- placeholder: the calendar preview arrives in a later step -->
-            <p class="placeholder">Calendar preview.</p>
+            <!-- mounted only while shown, so that the preview is not requested for every edit elsewhere -->
+            <OnCallCalendarTab
+              v-if="activeTab === 'calendar'"
+              :draft="calendarDraft"
+              :cards="cards"
+              :members="members"
+              :timeZone="store.scheduleSettings?.timeZone ?? ''"
+              @add-entry="addEntry"
+              @show-schedule="showSchedule"
+            />
           </OnmsTabPanel>
         </OnmsTabPanels>
       </OnmsTabs>
@@ -155,12 +163,13 @@ import {
 import FormField from '@/components/Common/FormField.vue'
 import TabProblemMarker from '@/components/Common/TabProblemMarker.vue'
 import TableCard from '@/components/Common/TableCard.vue'
+import OnCallCalendarTab from '@/components/OnCallRoles/OnCallCalendarTab.vue'
 import OnCallSchedulesTab from '@/components/OnCallRoles/OnCallSchedulesTab.vue'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
 import { FREE_TEXT_LENGTH, validateOnCallRoleName } from '@/lib/adminValidation'
-import { cardProblems, ScheduleCard, toCard, toSchedule } from '@/lib/onCallSchedule'
+import { cardProblems, newCard, ScheduleCard, TimeRange, toCard, toSchedule } from '@/lib/onCallSchedule'
 import { useOnCallRoleAdminStore } from '@/stores/onCallRoleAdminStore'
 import { ManagedOnCallRole, ManagedOnCallRoleCreate } from '@/types/onCallRoleAdmin'
 
@@ -290,6 +299,28 @@ const draftRole = (): ManagedOnCallRoleCreate => {
   }
 }
 
+// the draft for the calendar preview; null while a schedule has problems, as it cannot be serialized then
+const calendarDraft = computed(() => cardsReady.value && !schedulesProblem.value ? draftRole() : null)
+
+// A time added from the calendar goes to a card added in this session for that user, never to a stored one.
+const addEntry = (entry: { user: string, start: string, end: string, endOfDay: boolean }) => {
+  const range: TimeRange = { id: null, day: null, begin: entry.start, end: entry.end, endOfDay: entry.endOfDay, original: null }
+  const existing = cards.value.findIndex(c => c.addedThisSession && c.type === 'specific' && c.user === entry.user)
+  if (existing >= 0) {
+    cards.value = cards.value.map((c, i) => i === existing ? { ...c, times: [...c.times, range], dirty: true } : c)
+  } else {
+    cards.value = [...cards.value, { ...newCard(entry.user, 'specific'), addedThisSession: true, times: [range] }]
+  }
+}
+
+const showSchedule = (index: number) => {
+  const card = cards.value[index]
+  if (card) {
+    activeTab.value = 'schedules'
+    highlightKey.value = card.key
+  }
+}
+
 defineExpose({ draftRole, cards })
 
 const save = async () => {
@@ -367,9 +398,5 @@ const save = async () => {
   :deep(.p-multiselect) {
     width: 100%;
   }
-}
-
-.placeholder {
-  color: var(--p-text-muted-color);
 }
 </style>

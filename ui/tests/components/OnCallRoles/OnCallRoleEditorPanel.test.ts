@@ -24,6 +24,7 @@ import { OnmsSelect } from '@opennms/onms-ui'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import OnCallCalendarTab from '@/components/OnCallRoles/OnCallCalendarTab.vue'
 import OnCallRoleEditorPanel from '@/components/OnCallRoles/OnCallRoleEditorPanel.vue'
 import { useOnCallRoleAdminStore } from '@/stores/onCallRoleAdminStore'
 import { adminWriteSuccess } from '@/types/adminWrite'
@@ -44,6 +45,9 @@ vi.mock('@/stores/onCallRoleAdminStore', async () => {
   const live = reactive(store)
   return { useOnCallRoleAdminStore: () => live }
 })
+
+const api = vi.hoisted(() => ({ previewOnCallCalendar: vi.fn() }))
+vi.mock('@/services', () => ({ default: api }))
 
 const showSnackBar = vi.hoisted(() => vi.fn())
 vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
@@ -94,6 +98,7 @@ describe('OnCallRoleEditorPanel', () => {
     store.scheduleSettings = { timeZone: 'UTC', shortMonths: SHORT_MONTHS }
     store.createRole.mockResolvedValue(adminWriteSuccess())
     store.updateRole.mockResolvedValue(adminWriteSuccess())
+    api.previewOnCallCalendar.mockResolvedValue({ success: true, message: '', payload: { timeZone: 'UTC', month: '2026-11', entries: [] }})
   })
 
   it('creates a role with the four fields and no schedules, then closes', async () => {
@@ -246,5 +251,93 @@ describe('OnCallRoleEditorPanel', () => {
     await wrapper.find('[data-test="cancel-button"]').trigger('click')
     expect(wrapper.emitted('close')).toHaveLength(2)
     expect(store.updateRole).not.toHaveBeenCalled()
+  })
+
+  describe('calendar tab', () => {
+    const specificRole = () => {
+      const role = storedRole()
+      role.schedules = [{ user: 'bob', type: 'specific', times: [{ id: null, day: null, begins: '05-Mar-2026 08:00:00', ends: '05-Mar-2026 17:00:00' }] }]
+      return role
+    }
+    const openCalendar = async (wrapper: Awaited<ReturnType<typeof mountPanel>>) => {
+      await wrapper.find('[data-test="tab-calendar"]').trigger('click')
+      await flushPromises()
+      return wrapper.findComponent(OnCallCalendarTab)
+    }
+    const entry = (user: string, start: string, end: string, endOfDay = false) => ({ user, start, end, endOfDay })
+
+    it('previews the draft, with the stored role name, once the tab is shown', async () => {
+      const wrapper = await mountPanel(specificRole())
+      expect(api.previewOnCallCalendar).not.toHaveBeenCalled()
+      await openCalendar(wrapper)
+      expect(api.previewOnCallCalendar).toHaveBeenCalledTimes(1)
+      const [draft, month] = api.previewOnCallCalendar.mock.calls[0]
+      expect(draft.name).toBe('Ops')
+      expect(draft.schedules).toEqual(specificRole().schedules)
+      expect(month).toMatch(/^\d{4}-\d{2}$/)
+    })
+
+    it('adds a time from the calendar to a new Specific card, not to the stored one, and reuses it', async () => {
+      const wrapper = await mountPanel(specificRole())
+      const calendar = await openCalendar(wrapper)
+      calendar.vm.$emit('add-entry', entry('bob', '2026-11-05T00:00', '2026-11-05T23:59', true))
+      await flushPromises()
+      calendar.vm.$emit('add-entry', entry('bob', '2026-11-06T09:00', '2026-11-06T10:00'))
+      await flushPromises()
+      await save(wrapper)
+
+      const schedules = store.updateRole.mock.calls[0][0].schedules
+      expect(schedules).toHaveLength(2)
+      expect(schedules[0]).toEqual(specificRole().schedules[0])
+      expect(schedules[1]).toEqual({
+        user: 'bob',
+        type: 'specific',
+        times: [
+          { id: null, day: null, begins: '05-Nov-2026 00:00:00', ends: '05-Nov-2026 23:59:59' },
+          { id: null, day: null, begins: '06-Nov-2026 09:00:00', ends: '06-Nov-2026 10:00:00' }
+        ]
+      })
+    })
+
+    it('keeps separate new cards for different users', async () => {
+      const wrapper = await mountPanel(null)
+      const calendar = await openCalendar(wrapper)
+      calendar.vm.$emit('add-entry', entry('bob', '2026-11-05T00:00', '2026-11-05T23:59', true))
+      calendar.vm.$emit('add-entry', entry('carol', '2026-11-05T00:00', '2026-11-05T23:59', true))
+      await flushPromises()
+      expect((wrapper.vm as unknown as { cards: unknown[] }).cards).toHaveLength(2)
+    })
+
+    it('switches to the Schedules tab and highlights the card when an entry is clicked', async () => {
+      Element.prototype.scrollIntoView = vi.fn()
+      try {
+        const wrapper = await mountPanel(storedRole())
+        const calendar = await openCalendar(wrapper)
+        calendar.vm.$emit('show-schedule', 0)
+        await flushPromises()
+        expect(wrapper.find('[data-test="oncall-schedule-card"]').exists()).toBe(true)
+        expect(wrapper.findAll('[data-test="oncall-schedule-card"]')[0].classes()).toContain('highlight')
+      } finally {
+        // @ts-expect-error restoring the missing DOM method
+        delete Element.prototype.scrollIntoView
+      }
+    })
+
+    it('asks for the Schedules tab fixes instead of previewing a draft that cannot be built', async () => {
+      const wrapper = await mountPanel(storedRole())
+      await wrapper.find('[data-test="tab-schedules"]').trigger('click')
+      await wrapper.find('[data-test="add-schedule"]').trigger('click')
+      await flushPromises()
+      await openCalendar(wrapper)
+      expect(api.previewOnCallCalendar).not.toHaveBeenCalled()
+      expect(wrapper.find('[data-test="calendar-error"]').text()).toBe('Fix the problems on the Schedules tab to see the calendar.')
+    })
+
+    it('shows a server rejection of the draft in the calendar', async () => {
+      api.previewOnCallCalendar.mockResolvedValue({ success: false, message: 'The supervisor must be a user.' })
+      const wrapper = await mountPanel(storedRole())
+      await openCalendar(wrapper)
+      expect(wrapper.find('[data-test="calendar-error"]').text()).toBe('The supervisor must be a user.')
+    })
   })
 })
