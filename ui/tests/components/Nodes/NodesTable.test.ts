@@ -51,8 +51,7 @@ vi.mock('@/components/Nodes/hooks/useNodeExport', () => ({
 }))
 
 vi.mock('@/components/Nodes/hooks/useNodeQuery', async () => {
-  // Real (unmocked) module — delegated to below for sanitizeSearchTerm and for
-  // buildUpdatedNodeListQueryParameters, so tests that write a searchTerm directly into the
+  // Real (unmocked) module — delegated to below for buildUpdatedNodeListQueryParameters, so tests that write a searchTerm directly into the
   // store can assert on the ACTUAL request shape (e.g. that a term with FIQL-special characters
   // really does get double-encoded end-to-end), rather than a naive passthrough stub.
   const actual = await vi.importActual<typeof import('@/components/Nodes/hooks/useNodeQuery')>(
@@ -90,8 +89,7 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', async () => {
       getDefaultNodeQuerySysParams: () => ({ sysContact: '', sysDescription: '', sysLocation: '', sysName: '', sysObjectId: '' }),
       buildNodeQueryFilterFromQueryString: vi.fn().mockReturnValue(makeDefaultFilter()),
       queryStringHasTrackedValues: vi.fn().mockReturnValue(false)
-    }),
-    sanitizeSearchTerm: actual.sanitizeSearchTerm
+    })
   }
 })
 
@@ -998,9 +996,8 @@ describe('NodesTable.vue', () => {
       expect(wrapper.exists()).toBe(true)
     })
 
-    // The under-fetch guard must also cover ',' ';' '(' ')': ',' / ';' are FIQL set operators that
-    // sanitizeSearchTerm elsewhere neutralizes by replacing with spaces (making the server
-    // narrowing no longer a superset of the client match, same failure mode as % and _); '(' / ')'
+    // The under-fetch guard must also cover ',' ';' '(' ')': ',' / ';' are FIQL set operators
+    // (OR / AND) that, passed through raw, change what the server narrowing selects; '(' / ')'
     // are FIQL grouping delimiters that, passed through raw, unbalance the expression and cause a
     // server-side FIQL parse error (surfacing client-side as "No interfaces").
     it.each([

@@ -370,7 +370,9 @@ export const useNodeQuery = () => {
  * Build a FIQL query for the Node Rest service from a NodeQueryFilter.
  */
 const buildNodeListQuery = (filter: NodeQueryFilter) => {
-  const searchTerm = sanitizeSearchTerm(filter.searchTerm)
+  // Not sanitized: buildSearchQuery encodes every FIQL-reserved character, ',' and ';' included,
+  // so a label such as "ABC Systems, Inc." is matched as typed (NMS-18294).
+  const searchTerm = filter.searchTerm || ''
   // don't sanitize IP address — allow users to enter commas and other FIQL characters, since buildIpAddressQuery will handle them appropriately
   // (commas are valid in iplike patterns, and users may naturally enter comma-separated lists of IPs or CIDRs)
   const ipAddress = filter.ipAddress
@@ -391,7 +393,6 @@ const buildNodeListQuery = (filter: NodeQueryFilter) => {
   const assetQuery = buildAssetQuery(filter.assetFilters)
   const topologyQuery = buildTopologyQuery(filter.topology)
 
-  // TODO: May need more search term sanitizing and/or restrict characters in the input control above
   const querySeparator = getFiqlSetOperator(SetOperator.Intersection)
   const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery, serviceQuery, maclikeQuery, downStatusQuery, withAssetsQuery, withOutagesQuery, assetQuery, topologyQuery].filter(s => s.length > 0).join(querySeparator)
 
@@ -415,16 +416,9 @@ const buildNodeListQuery = (filter: NodeQueryFilter) => {
 
 const buildSearchQuery = (searchTerm: string) => {
   if (searchTerm?.length > 0) {
-    const startStar = searchTerm.startsWith('*') ? '' : '*'
-    const endStar = searchTerm.endsWith('*') ? '' : '*'
-    // '*' is the FIQL multi-character wildcard and must stay raw; every other character is
-    // FIQL/URL-transport-unsafe in the general case (label text may legitimately contain
-    // # % & ( ) — see e.g. "Core (bldg 3)", "R&D-sw1"). Split on '*', double-encode each segment
-    // (see encodeFiqlValue for why double), then rejoin with '*'. Splitting on '*' also preserves
-    // any leading/trailing/consecutive stars already in the term as empty segments, which
-    // round-trip through encodeFiqlValue ('') unchanged.
-    const encoded = searchTerm.split('*').map(encodeFiqlValue).join('*')
-    return `label==${startStar}${encoded}${endStar}`
+    // Label text may legitimately contain , ; # % & ( ) — e.g. "ABC Systems, Inc.",
+    // "Core (bldg 3)", "R&D-sw1". makeWildcard encodes them all and keeps '*' as the wildcard.
+    return `label==${makeWildcard(searchTerm)}`
   }
 
   return ''
@@ -514,7 +508,7 @@ const buildFlowsQuery = (selectedFlows: string[]) => {
 }
 
 const buildLocationsQuery = (selectedLocations: MonitoringLocation[]) => {
-  const locationItems = selectedLocations.map(loc => `node.location.locationName==${loc.name}`)
+  const locationItems = selectedLocations.map(loc => `node.location.locationName==${encodeFiqlPattern(loc.name)}`)
 
   if (locationItems.length === 1) {
     return `${locationItems[0]}`
@@ -527,7 +521,7 @@ const buildLocationsQuery = (selectedLocations: MonitoringLocation[]) => {
 
 const getSnmpSearchTerm = (name: string, field: any, wildcard = false) => {
   const fieldStr = (field as string) || ''
-  const searchValue = wildcard ? makeWildcard(fieldStr) : fieldStr
+  const searchValue = wildcard ? makeWildcard(fieldStr) : encodeFiqlPattern(fieldStr)
   return `snmpInterface.${name}==${searchValue}`
 }
 
@@ -548,10 +542,15 @@ const isValidFsFidParam = (value: string) => {
   return false
 }
 
+/**
+ * Build a 'contains' FIQL pattern: add a leading and a trailing '*' when the value does not
+ * already have one. A '*' that the user typed stays a wildcard (see encodeFiqlPattern).
+ */
 const makeWildcard = (value: string) => {
-  const s = value.replace('*', '')
+  const startStar = value.startsWith('*') ? '' : '*'
+  const endStar = value.endsWith('*') ? '' : '*'
 
-  return `*${s}*`
+  return `${startStar}${encodeFiqlPattern(value)}${endStar}`
 }
 
 /**
@@ -561,11 +560,11 @@ const buildForeignSourceQuery = (fsParams?: NodeQueryForeignSourceParams) => {
   if (fsParams) {
     if (isValidFsFidParam(fsParams.foreignSourceId)) {
       const arr = fsParams.foreignSourceId.split(':')
-      return `(node.foreignSource==${arr[0]};node.foreignId==${arr[1]})`
+      return `(node.foreignSource==${encodeFiqlPattern(arr[0])};node.foreignId==${encodeFiqlPattern(arr[1])})`
     } else if (isValidParam(fsParams.foreignSource)) {
-      return `node.foreignSource==${fsParams.foreignSource}`
+      return `node.foreignSource==${encodeFiqlPattern(fsParams.foreignSource)}`
     } else if (isValidParam(fsParams.foreignId)) {
-      return `node.foreignId==${fsParams.foreignId}`
+      return `node.foreignId==${encodeFiqlPattern(fsParams.foreignId)}`
     }
   }
 
@@ -579,7 +578,7 @@ const buildServiceQuery = (selectedServices: string[]) => {
 
   const items = selectedServices
     .filter(name => name && name.trim().length > 0)
-    .map(name => `serviceType.name==${name}`)
+    .map(name => `serviceType.name==${encodeFiqlPattern(name)}`)
 
   if (items.length === 1) {
     return items[0]
@@ -614,7 +613,7 @@ const buildSnmpQuery = (snmpParams?: NodeQuerySnmpParams) => {
     }
 
     if (isValidParam(snmpParams.physAddr)) {
-      arr.push(`snmpInterface.physAddr==*${snmpParams.physAddr!}*`)
+      arr.push(`snmpInterface.physAddr==*${encodeFiqlPattern(snmpParams.physAddr!)}*`)
     }
 
     if (arr.length > 0) {
@@ -633,7 +632,7 @@ const buildSysQuery = (sysParams?: NodeQuerySysParams) => {
     props.forEach((p) => {
       const value = (sysParams as any)[p]
       if (isValidParam(value)) {
-        const searchValue = sysParams.sysMatchType === MatchType.Equals ? value : makeWildcard(value)
+        const searchValue = sysParams.sysMatchType === MatchType.Equals ? encodeFiqlPattern(value) : makeWildcard(value)
         arr.push(`node.${p}==${searchValue}`)
       }
     })
@@ -699,6 +698,14 @@ const encodeFiqlValue = (value: string): string => {
   return strictEncode(strictEncode(value))
 }
 
+/**
+ * Encode a FIQL value in which '*' is the wildcard. '*' stays raw and each segment between stars
+ * is encoded with encodeFiqlValue, so ',' ';' '(' ')' and URL-structural characters arrive at the
+ * backend as literals. Leading, trailing and consecutive stars become empty segments, which
+ * encode to '' and so stay unchanged.
+ */
+const encodeFiqlPattern = (value: string): string => value.split('*').map(encodeFiqlValue).join('*')
+
 const buildAssetQuery = (assetFilters?: AssetFilter[]) => {
   if (!assetFilters || assetFilters.length === 0) {
     return ''
@@ -713,21 +720,10 @@ const buildAssetQuery = (assetFilters?: AssetFilter[]) => {
 }
 
 const buildTopologyQuery = (topology?: string) => {
-  const term = sanitizeSearchTerm(topology)
-  if (term.length > 0) {
-    const startStar = term.startsWith('*') ? '' : '*'
-    const endStar = term.endsWith('*') ? '' : '*'
-    return `topology==${startStar}${term}${endStar}`
+  if (topology && topology.length > 0) {
+    return `topology==${makeWildcard(topology)}`
   }
   return ''
-}
-
-/**
- * Remove any FIQL characters from a search term.
- * May need to do additional replacements here.
- */
-export const sanitizeSearchTerm = (s?: string) => {
-  return (s || '').replace(/[,;]/g, ' ')
 }
 
 export const getFiqlSetOperator = (op: SetOperator) => {

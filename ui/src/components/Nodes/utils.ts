@@ -112,10 +112,8 @@ export const getNodeStatusString = (node: Node) => {
 // - '%' / '_' are SQL-LIKE wildcards to the server's FIQL '==*value*' match (literal), while
 //   useInterfaceListing.ts's client-side matchesSnmpParm() treats them as SQL-LIKE wildcards — the
 //   server narrowing would no longer be a superset of the client match.
-// - ',' / ';' are FIQL set operators (OR / AND). sanitizeSearchTerm neutralizes them in other FIQL
-//   builders by replacing them with spaces, but doing that here has the same superset problem as
-//   '%'/'_': the narrowing sent to the server would search for something other than the exact
-//   value, so it could exclude rows the client-side match still considers a hit.
+// - ',' / ';' are FIQL set operators (OR / AND). Left in raw, they split the narrowing into an
+//   OR / AND of other values, so it could exclude rows the client-side match still considers a hit.
 // - '(' / ')' are FIQL grouping delimiters. Left in raw, they can produce an unbalanced FIQL
 //   expression that fails to parse server-side — surfacing client-side as "No interfaces".
 // If the value contains any of these, omit the attribute narrowing entirely; the node.id scoping

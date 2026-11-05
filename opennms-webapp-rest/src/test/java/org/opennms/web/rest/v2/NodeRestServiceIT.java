@@ -662,6 +662,63 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, url, parseParamData("_s=assetRecord.building==A%252CX"), 204);
     }
 
+    /**
+     * NMS-18294: the Vue node list sends wildcard ("contains") searches with ',' and ';' in the
+     * value. It double-encodes the value and keeps '*' raw, for example
+     * label==*ABC%2520Systems.%252C%2520Inc.*. The value must match as a literal, and the
+     * characters must not act as FIQL OR / AND.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testWildcardSearchValueWithFiqlCharacters() throws Exception {
+        saveNode("ABC Systems., Inc.", "abc-inc", "Cisco IOS Software, C2960 (rev;2)");
+        saveNode("ABC Systems", "abc-decoy", "Cisco IOS Software");
+        saveNode("Inc. Holdings", "inc-decoy", "C2960 switch");
+        saveNode("Alpha;Beta", "semi", null);
+        saveNode("Alpha", "semi-decoy", null);
+
+        final String url = "/nodes";
+
+        // Comma in a label 'contains' search: only the exact literal matches, not
+        // "ABC Systems" OR "Inc."
+        String json = sendRequest(GET, url, parseParamData("_s=(label==*ABC%2520Systems.%252C%2520Inc.*);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"ABC Systems., Inc.\""));
+        assertFalse(json, json.contains("\"label\":\"ABC Systems\""));
+        assertFalse(json, json.contains("\"label\":\"Inc. Holdings\""));
+
+        // Semicolon in a label 'contains' search: not "Alpha" AND "Beta"
+        json = sendRequest(GET, url, parseParamData("_s=(label==*Alpha%253BBeta*);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"Alpha;Beta\""));
+        assertFalse(json, json.contains("\"label\":\"Alpha\""));
+
+        // Comma, semicolon and parentheses in a sysDescription 'contains' search
+        json = sendRequest(GET, url, parseParamData("_s=(node.sysDescription==*Software%252C%2520C2960%2520%2528rev%253B2%2529*);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"ABC Systems., Inc.\""));
+        assertFalse(json, json.contains("\"label\":\"ABC Systems\""));
+        assertFalse(json, json.contains("\"label\":\"Inc. Holdings\""));
+
+        // A raw '*' between encoded segments is still a wildcard
+        json = sendRequest(GET, url, parseParamData("_s=(node.sysDescription==*IOS*C2960%2520%2528rev*);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"ABC Systems., Inc.\""));
+
+        // The value is a literal: a comma value that is in no label matches nothing
+        sendRequest(GET, url, parseParamData("_s=(label==*ABC%2520Systems%252C%2520Holdings*);node.type!=D"), 204);
+    }
+
+    private void saveNode(final String label, final String foreignId, final String sysDescription) {
+        final NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode(label).setForeignSource("JUnit").setForeignId(foreignId).setType(OnmsNode.NodeType.ACTIVE);
+        final OnmsNode node = builder.getCurrentNode();
+        node.setSysDescription(sysDescription);
+        // Commit the fixture so the separate-session REST reads can see it (see
+        // testAssetFilterValueWithFiqlCharacters).
+        m_databasePopulator.getTransactionTemplate().execute(status -> {
+            m_databasePopulator.getNodeDao().save(node);
+            m_databasePopulator.getNodeDao().flush();
+            return null;
+        });
+    }
+
     @Test
     public void testMaclikeSearch() throws Exception {
         // Create a node with a known SNMP interface MAC (physical) address via the REST API
