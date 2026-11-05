@@ -14,19 +14,25 @@ includeObjectNames:
 
 rules:
   - pattern: "java.lang.*"
+    cache: true
   - pattern: "kafka.producer.*"
+    cache: true
   - pattern: "org.apache.camel.*"
+    cache: true
   - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Value
     name: minion_$1_$2
     type: GAUGE
+    cache: true
 
   - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Count
     name: minion_$1_$2_count
     type: COUNTER
+    cache: true
 
   - pattern: org\.opennms\..+\.(.+)<name=(.+)><>(\d+)thPercentile
     name: minion_$1_$2
     type: GAUGE
+    cache: true
     labels:
       quantile: "0.$3"
 
@@ -34,6 +40,7 @@ rules:
   - pattern: 'org\.opennms\.netmgt\.trapd\.device<location="([^"]+)", ip="([^"]+)", type=([^>]+)><>(\w+)'
     name: trapd_device_$4
     type: COUNTER
+    cache: true
     labels:
       location: "$1"
       ip: "$2"
