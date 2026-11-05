@@ -75,6 +75,24 @@ public class HaInstanceStatusDto {
     public String getHostname() { return hostname; }
     public void setHostname(String hostname) { this.hostname = hostname; }
 
+    @XmlElement(name = "last-sync-success")
+    private String lastSyncSuccess;
+
+    @XmlElement(name = "last-sync-error")
+    private String lastSyncError;
+
+    /** Set when sync replaced a file that is only read at JVM startup: this
+     * node needs a restart before those values take effect. */
+    @XmlElement(name = "restart-required")
+    private boolean restartRequired;
+
+    public String getLastSyncSuccess() { return lastSyncSuccess; }
+    public void setLastSyncSuccess(String lastSyncSuccess) { this.lastSyncSuccess = lastSyncSuccess; }
+    public String getLastSyncError() { return lastSyncError; }
+    public void setLastSyncError(String lastSyncError) { this.lastSyncError = lastSyncError; }
+    public boolean isRestartRequired() { return restartRequired; }
+    public void setRestartRequired(boolean restartRequired) { this.restartRequired = restartRequired; }
+
     public boolean isHeartbeatStale() { return heartbeatStale; }
     public void setHeartbeatStale(boolean heartbeatStale) { this.heartbeatStale = heartbeatStale; }
 }

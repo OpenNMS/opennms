@@ -88,5 +88,5 @@ public interface HaRestService {
     @GET
     @Path("sync/file")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    Response getSyncFile(@QueryParam("f") String relativePath);
+    Response getSyncFile(@QueryParam("root") String root, @QueryParam("f") String relativePath);
 }
