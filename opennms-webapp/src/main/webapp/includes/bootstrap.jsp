@@ -59,7 +59,8 @@
      validator doesn't complain.  See bug #1728. --%>
 <%= "<html lang=\"en\">" %>
 <head>
-  <title>
+  <%-- Some AngularJS apps bootstrap on the full document. ng-non-bindable stops AngularJS from evaluating the title. --%>
+  <title ng-non-bindable>
     <c:forEach var="headTitle" items="${__bs_headTitles}">
       <c:out value="${headTitle}" escapeXml="true"/> |
     </c:forEach>
@@ -232,7 +233,7 @@
   </c:otherwise>
 </c:choose>
 <c:if test='${((not __bs_flags.contains("nonavbar")) && (!empty pageContext.request.remoteUser)) && (not __bs_flags.contains("nobreadcrumbs"))}'>
-  <nav aria-label="breadcrumb">
+  <nav aria-label="breadcrumb" ng-non-bindable>
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="<%= __baseHref %>index.jsp">Home</a></li>
 
@@ -247,10 +248,10 @@
       --%></c:choose><%--
       --%><c:choose><%--
         --%><c:when test="${breadcrumb.link != null}"><%--
-	  --%><a href="${breadcrumb.link}"><c:out value="${breadcrumb.title}" escapeXml="false"/></a><%--
+	  --%><a href="${Encode.forHtmlAttribute(breadcrumb.link)}"><c:out value="${breadcrumb.title}"/></a><%--
 	--%></c:when><%--
 	--%><c:otherwise><%--
-	  --%><c:out value="${breadcrumb.title}" escapeXml="false"/><%--
+	  --%><c:out value="${breadcrumb.title}"/><%--
         --%></c:otherwise><%--
       --%></c:choose><%--
       --%></li>

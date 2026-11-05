@@ -110,7 +110,7 @@
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
-          .headTitle(ipAddr)
+          .headTitleText(ipAddr)
           .headTitle("Interface")
           .breadcrumb("Search", "element/index.jsp")
           .breadcrumb("Node", "element/node.jsp?node=" + nodeId)

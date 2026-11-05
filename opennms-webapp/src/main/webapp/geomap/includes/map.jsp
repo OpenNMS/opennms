@@ -29,7 +29,7 @@
 
 --%>
 <%@page import="org.opennms.web.api.Util" %>
-<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@page language="java" contentType="text/html" session="true" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -50,7 +50,17 @@
 %>
 <%
   final String baseHref = Util.calculateUrlBase( request );
-  final String mapId = getParameter(request, "mapId", "map");
+  // The map ID goes into an HTML ID, a jQuery selector and a script. Accept only safe characters.
+  String mapId = getParameter(request, "mapId", "map");
+  if (!mapId.matches("[A-Za-z0-9_-]+")) {
+    mapId = "map";
+  }
+  // The height goes into a style attribute. Accept only "auto" or a CSS length.
+  String height = getParameter(request, "height", "400px");
+  if (!height.matches("auto|[0-9]+(\\.[0-9]+)?(px|%|em|rem|vh|vw|pt)")) {
+    height = "400px";
+  }
+  final boolean hideControlsOnStartup = Boolean.parseBoolean(getParameter(request, "hideControlsOnStartup"));
 %>
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
@@ -60,7 +70,7 @@
   <jsp:param name="asset" value="geomap-js" />
 </jsp:include>
 
-<div class="geomap" style="height: <%= WebSecurityUtils.sanitizeString(getParameter(request, "height", "400px"))%>">
+<div class="geomap" style="height: <%= height %>">
   <div style="width: 100%; height:100%" id="<%= mapId %>"></div>
 
   <!-- Template to build the popup for each single marker -->
@@ -112,9 +122,9 @@ $('<%= mapId %>').ready(function() {
     geomap.render({
         baseHref: "<%= baseHref %>",
         mapId: "<%= mapId %>",
-        hideControlsOnStartup: <%= WebSecurityUtils.sanitizeString(getParameter(request, "hideControlsOnStartup")) %> ,
-        strategy: "<%= WebSecurityUtils.sanitizeString(getParameter(request, "strategy")) %>" ,
-        severity: "<%= WebSecurityUtils.sanitizeString(getParameter(request, "severity")) %>"
+        hideControlsOnStartup: <%= hideControlsOnStartup %> ,
+        strategy: "<%= Encode.forJavaScript(getParameter(request, "strategy")) %>" ,
+        severity: "<%= Encode.forJavaScript(getParameter(request, "severity")) %>"
     })
 });
 </script>

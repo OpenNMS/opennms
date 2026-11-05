@@ -47,10 +47,10 @@
 
 <form name="frm" role="form" action="admin/thresholds/index.htm" method="post">
 <input type="hidden" name="finishThresholdEdit" value="1"/>
-<input type="hidden" name="thresholdIndex" value="${thresholdIndex}"/>
-<input type="hidden" name="groupName" value="${groupName}"/>
-<input type="hidden" name="isNew" value="${isNew}"/>
-<input type="hidden" name="filterSelected" value="${filterSelected}"/>
+<input type="hidden" name="thresholdIndex" value="${fn:escapeXml(thresholdIndex)}"/>
+<input type="hidden" name="groupName" value="${fn:escapeXml(groupName)}"/>
+<input type="hidden" name="isNew" value="${fn:escapeXml(isNew)}"/>
+<input type="hidden" name="filterSelected" value="${fn:escapeXml(filterSelected)}"/>
 
 <div class="row">
   <div class="col-md-8">
@@ -81,7 +81,7 @@
                         </c:forEach>
                     </select>
         		</td>
-        		<td><input type="text" name="dsName" class="form-control" size="30" maxlength="19" value="${threshold.dsName}"/></td>
+        		<td><input type="text" name="dsName" class="form-control" size="30" maxlength="19" value="${fn:escapeXml(threshold.dsName)}"/></td>
         		<td>
         		   	<select name="dsType" class="form-control custom-select">
         				<c:forEach items="${dsTypes}" var="thisDsType">
@@ -96,7 +96,7 @@
                             <option ${selected} value='${thisDsType.key}'>${thisDsType.value}</option>
         				</c:forEach>
         			</select></td>
-                <td><input type="text" class="form-control" name="dsLabel" size="30" value="${threshold.dsLabel.orElse(null)}"/></td>
+                <td><input type="text" class="form-control" name="dsLabel" size="30" value="${fn:escapeXml(threshold.dsLabel.orElse(null))}"/></td>
         	</tr>
       </table>
       <table class="table table-sm">
@@ -106,9 +106,9 @@
                 <th>Trigger</th>
             </tr>
             <tr>
-                <td><input type="text" class="form-control" name="value" size="60" value="${threshold.value}"/></td>
-                <td><input type="text" class="form-control" name="rearm" size="60" value="${threshold.rearm}"/></td>
-                <td><input type="text" class="form-control" name="trigger" size="60" value="${threshold.trigger}"/></td>
+                <td><input type="text" class="form-control" name="value" size="60" value="${fn:escapeXml(threshold.value)}"/></td>
+                <td><input type="text" class="form-control" name="rearm" size="60" value="${fn:escapeXml(threshold.rearm)}"/></td>
+                <td><input type="text" class="form-control" name="trigger" size="60" value="${fn:escapeXml(threshold.trigger)}"/></td>
             </tr>
       </table>
       <table class="table table-sm">
@@ -118,9 +118,9 @@
                     <th>Re-armed UEI</th>
             </tr>
         	<tr>
-                <td><input type="text" name="description" class="form-control" size="60" value="${threshold.description.orElse(null)}"/></td>
-                <td><input type="text" name="triggeredUEI" class="form-control" size="60" value="${threshold.triggeredUEI.orElse(null)}"/></td>
-                <td><input type="text" name="rearmedUEI" class="form-control" size="60" value="${threshold.rearmedUEI.orElse(null)}"/></td>
+                <td><input type="text" name="description" class="form-control" size="60" value="${fn:escapeXml(threshold.description.orElse(null))}"/></td>
+                <td><input type="text" name="triggeredUEI" class="form-control" size="60" value="${fn:escapeXml(threshold.triggeredUEI.orElse(null))}"/></td>
+                <td><input type="text" name="rearmedUEI" class="form-control" size="60" value="${fn:escapeXml(threshold.rearmedUEI.orElse(null))}"/></td>
         	</tr>
       </table>
       <div class="card-footer">

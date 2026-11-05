@@ -83,7 +83,7 @@
 
     <% String mode = request.getParameter("mode");
        if (mode != null && mode.endsWith("failed")) { %>
-        <h3 class="text-danger"><%=mode%>. Please check the entry for errors and re-submit.</h3>
+        <h3 class="text-danger"><%=WebSecurityUtils.sanitizeString(mode)%>. Please check the entry for errors and re-submit.</h3>
     <% } %>
 
 <div class="row">

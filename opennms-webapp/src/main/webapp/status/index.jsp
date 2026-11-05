@@ -28,16 +28,19 @@
  *******************************************************************************/
 
 --%>
-<%@ page import="org.owasp.encoder.Encode" %>
 <%
-    String title = Encode.forHtml(org.opennms.web.api.Util.getParameter(request, "title", "Undefined"));
-    String type = Encode.forHtml(org.opennms.web.api.Util.getParameter(request, "type"));
+    String title = org.opennms.web.api.Util.getParameter(request, "title", "Undefined");
+    // Accept only the list types that the onms-status-list directive knows.
+    String type = org.opennms.web.api.Util.getParameter(request, "type");
+    if (type == null || !java.util.Arrays.asList("applications", "business-services", "nodes").contains(type)) {
+        type = "unknown";
+    }
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
-          .headTitle(title)
-          .breadcrumb(title)
+          .headTitleText(title)
+          .breadcrumbText(title)
           .ngApp("onms.default.apps")
           .build(request);
 %>
