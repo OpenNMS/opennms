@@ -186,12 +186,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jrrd2-dependencies</artifactId>
-      <scope>test</scope>
-      <type>pom</type>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <scope>test</scope>
@@ -229,6 +223,11 @@
     <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.test-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-ffm</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

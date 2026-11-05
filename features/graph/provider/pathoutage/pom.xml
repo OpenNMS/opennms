@@ -103,12 +103,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>jrrd2-dependencies</artifactId>
-            <type>pom</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.features.config</groupId>
             <artifactId>org.opennms.features.config.mock</artifactId>
             <version>${project.version}</version>
@@ -125,5 +119,10 @@
             <artifactId>hibernate-validator</artifactId>
             <scope>test</scope>
         </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-rrdtool-ffm</artifactId>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
 </project>

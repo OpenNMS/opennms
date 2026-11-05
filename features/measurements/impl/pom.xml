@@ -45,15 +45,15 @@
       <artifactId>opennms-rrdtool-api</artifactId>
     </dependency>
     <dependency>
+      <!-- LibRrd implementation, loaded reflectively -->
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-ffm</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.persistence.osgi</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jrrd2-dependencies</artifactId>
-      <scope>provided</scope>
-      <type>pom</type>
     </dependency>
 
     <!-- Third party -->

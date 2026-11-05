@@ -12,11 +12,10 @@ Depending on your operating system, the home directory is `/opt/opennms` for Deb
 CentOS/RHEL::
 +
 --
-.Enable the OpenNMS repository and install rrdtool and jrrd2
+.Install rrdtool
 [source, console]
 ----
-sudo dnf config-manager --enable opennms-repo-stable-*
-sudo dnf -y install rrdtool jrrd2
+sudo dnf -y install rrdtool
 ----
 
 .Create a configuration file with the time series database settings
@@ -28,18 +27,17 @@ sudo vi etc/opennms.properties.d/timeseries.properties
 [source, properties]
 ----
 org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy<1>
-org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar<2>
-opennms.library.jrrd2=/usr/lib64/libjrrd2.so<3>
-org.opennms.web.graphs.engine=rrdtool<4>
-rrd.binary=/usr/bin/rrdtool<5>
+org.opennms.web.graphs.engine=rrdtool<2>
+rrd.binary=/usr/bin/rrdtool<3>
 ----
 
-<1> Set JNI RRD strategy class.
-<2> Use the internal JRRD library.
-<3> Use the JRRD library to interface with RRDtool.
-<4> This is optional; use RRDtool to render graphs.
+<1> Use the RRDtool strategy, which writes `.rrd` files by calling the system `librrd` installed with the `rrdtool` package.
+<2> This is optional; use RRDtool to render graphs.
 If unset, keep Backshift as default.
-<5> Path to the RRDtool binary file.
+<3> Path to the RRDtool binary file.
+
+NOTE: {page-component-title} finds `librrd` automatically in the standard library locations.
+If it is installed elsewhere, add `opennms.library.rrd=/path/to/librrd.so.8` to the same file.
 
 TIP: If your RRDtool binary is not in `/usr/bin/rrdtool`, adjust the path in the following files: +
      `response-adhoc-graph.properties`, +
@@ -66,10 +64,10 @@ NOTE: The first data collection creates RRDtool files with extension `.rrd`.
 Debian/Ubuntu::
 +
 --
-.Install rrdtool and jrrd2
+.Install rrdtool
 [source, console]
 ----
-apt -y install rrdtool jrrd2
+apt -y install rrdtool
 ----
 
 .Create a configuration file with the time series database settings
@@ -81,18 +79,17 @@ sudo vi etc/opennms.properties.d/timeseries.properties
 [source, properties]
 ----
 org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy<1>
-org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar<2>
-opennms.library.jrrd2=/usr/lib/jni/libjrrd2.so<3>
-org.opennms.web.graphs.engine=rrdtool<4>
-rrd.binary=/usr/bin/rrdtool<5>
+org.opennms.web.graphs.engine=rrdtool<2>
+rrd.binary=/usr/bin/rrdtool<3>
 ----
 
-<1> Set JNI RRD strategy class.
-<2> Use the internal JRRD library.
-<3> Use the JRRD library to interface with RRDtool.
-<4> This is optional; use RRDtool to render graphs.
-If unset, keep Backshift as default
-<5> Path to the RRDtool binary file.
+<1> Use the RRDtool strategy, which writes `.rrd` files by calling the system `librrd` installed with the `rrdtool` package.
+<2> This is optional; use RRDtool to render graphs.
+If unset, keep Backshift as default.
+<3> Path to the RRDtool binary file.
+
+NOTE: {page-component-title} finds `librrd` automatically in the standard library locations.
+If it is installed elsewhere, add `opennms.library.rrd=/path/to/librrd.so.8` to the same file.
 
 TIP: If your RRDtool binary is not in `/usr/bin/rrdtool`, adjust the path in the following files: +
      `response-adhoc-graph.properties`, +

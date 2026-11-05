@@ -81,7 +81,7 @@ commands:
             # move these out of the way so they're not stored in the maven pre-cache
             cd ~/.m2/repository/org/opennms
             mkdir /tmp/maven-keep
-            mv $(ls -1 | grep -v -E '^(jicmp-api|jicmp6-api|jrrd-api|jrrd2-api|lib|maven)$') /tmp/maven-keep
+            mv $(ls -1 | grep -v -E '^(jicmp-api|jicmp6-api|lib|maven)$') /tmp/maven-keep
       - persist-project-changes
       - save-maven-cache
       - run:

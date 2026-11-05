@@ -103,6 +103,12 @@
   </build>
   <dependencies>
     <dependency>
+      <!-- LibRrd implementation used by MultithreadedJniRrdStrategy -->
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-ffm</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jaxb-dependencies</artifactId>
       <type>pom</type>
@@ -199,12 +205,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jrrd2-dependencies</artifactId>
-      <scope>test</scope>
-      <type>pom</type>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
       <scope>test</scope>
@@ -218,12 +218,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-tcp</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jrrd-dependencies</artifactId>
-      <scope>test</scope>
-      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>

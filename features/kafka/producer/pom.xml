@@ -284,12 +284,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jrrd2-dependencies</artifactId>
-      <scope>test</scope>
-      <type>pom</type>
-    </dependency>
-    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
@@ -323,6 +317,11 @@
       <groupId>org.opennms.core.mate</groupId>
       <artifactId>org.opennms.core.mate.model</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-ffm</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

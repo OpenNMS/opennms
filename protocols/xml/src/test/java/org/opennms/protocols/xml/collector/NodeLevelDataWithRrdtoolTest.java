@@ -29,7 +29,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 
 /**
  * The Test class for XML Collector for Node Level Statistics using RRDtool
@@ -60,8 +60,7 @@ public class NodeLevelDataWithRrdtoolTest extends XmlCollectorITCase {
     @Override
     protected RrdStrategy<?, ?> getRrdStrategy() throws Exception {
         setRrdBinary();
-        setJniRrdLibrary();
-        return new JniRrdStrategy();
+        return new MultithreadedJniRrdStrategy();
     }
 
     /**
@@ -87,35 +86,12 @@ public class NodeLevelDataWithRrdtoolTest extends XmlCollectorITCase {
     }
 
     /**
-     * Sets the JNI RRD library.
-     */
-    protected void setJniRrdLibrary() {
-        String[] rrdLocations = {
-                "/opt/jrrd/lib/libjrrd.jnilib",
-                "/opt/local/lib/libjrrd.jnilib",
-                "/usr/lib/libjrrd.so",
-                "/usr/lib64/libjrrd.so",
-                "/usr/local/lib/libjrrd.so"
-        };
-        for(String location : rrdLocations) {
-            File file = new File(location);
-            if (file.exists()) {
-                System.setProperty("opennms.library.jrrd", file.getAbsolutePath());
-                System.setProperty("org.opennms.rrd.usejni", "true");
-                System.err.printf("setJniRrdLibrary: found jrrd binary at %s\n", file.getAbsolutePath());
-                return;
-            }
-        }
-        throw new RuntimeException("Can't find JNI RRD or JRRD Jar Library file)");
-    }
-
-    /**
      * Test XML collector with Standard handler.
      *
      * @throws Exception the exception
      */
     @Test
-    @Ignore("manual test relies on the RRDtool binary and JRRD")
+    @Ignore("manual test relies on the RRDtool binary and librrd")
     public void testDefaultXmlCollector() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("collection", "NodeLevel");

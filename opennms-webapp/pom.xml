@@ -489,12 +489,6 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jrrd2-dependencies</artifactId>
-      <scope>${onmsLibScope}</scope>
-      <type>pom</type>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
       <scope>${onmsLibScope}</scope>
@@ -1028,6 +1022,11 @@
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-ffm</artifactId>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 

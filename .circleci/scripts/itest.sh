@@ -102,7 +102,6 @@ retry sudo apt update && \
         openjdk-25-jdk-headless \
         r-base \
         "rrdtool=$RRDTOOL_VERSION" \
-        jrrd2 \
         jicmp \
         jicmp6 \
       || exit 1

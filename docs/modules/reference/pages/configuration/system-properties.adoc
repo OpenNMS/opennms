@@ -143,6 +143,10 @@ Many of the properties here are documented with much greater detail in their rel
 | true
 | Enables or disables display of the Product Update Enrollment popup in the Web UI; `false` will disable the popup and prevent any data being sent
 
+| `opennms.library.rrd`
+| `null`
+| Absolute path to the RRDtool `librrd` shared library. When unset, `librrd.so.8` is located in the standard library paths.
+
 | `opennms.report.dir`
 | "${install.share.dir}/reports"
 | The directory used for Database Reports
@@ -576,10 +580,6 @@ Setting it also enables the HSTS header for `https://` requests.
 | `null`
 | Define a custom file extension to use for timeseries (rrd) data files
 
-| `org.opennms.rrd.interfaceJar`
-| `null`
-| This path is added to the `opennms.classpath` at startup
-
 | `org.opennms.rrd.storeByForeignSource`
 | false
 | Store RRDs by foreignSource/ForeignId rather than database nodeId
@@ -711,7 +711,7 @@ Setting it also enables the HSTS header for `https://` requests.
 
 | `rrd.binary`
 | "/usr/bin/rrdtool"
-| RRD binary path (only used if the JniRrdStrategy is used)
+| RRD binary path (used by the RRDtool strategy to render graphs)
 
 | `rscript.binary`
 | "Rscript"

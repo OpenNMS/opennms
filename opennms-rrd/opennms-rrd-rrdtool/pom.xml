@@ -11,5 +11,6 @@
   <name>OpenNMS :: RRD :: RRDTool</name>
   <modules>
     <module>opennms-rrdtool-api</module>
+    <module>opennms-rrdtool-ffm</module>
   </modules>
 </project>

@@ -5,6 +5,5 @@ keys = [
     "opennms/timeseries/strategy",
     "opennms/rrd/storebyforeignsource",
     "opennms/rrd/strategyclass",
-    "opennms/rrd/interfacejar",
-    "opennms/library/jrrd2"
+    "opennms/library/rrd"
 ]

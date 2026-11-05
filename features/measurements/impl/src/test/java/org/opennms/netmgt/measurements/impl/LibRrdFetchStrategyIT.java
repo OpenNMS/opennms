@@ -30,12 +30,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RrdtoolXportFetchStrategyIT {
+public class LibRrdFetchStrategyIT {
     @Test
     public void checkLongDataSourceName() throws RrdException {
-	System.setProperty("rrd.binary", "rrdtool");
-
-        final RrdtoolXportFetchStrategy fetch = new RrdtoolXportFetchStrategy();
+        final LibRrdFetchStrategy fetch = new LibRrdFetchStrategy();
         final Map<Source, String> rrdsBySource = new HashMap<>();
 
         String rrdFile = new File("src/test/resources/TlmRecordEnrichmentErrors.rrd").getAbsolutePath();

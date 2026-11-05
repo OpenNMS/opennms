@@ -61,6 +61,12 @@
       <artifactId>opennms-rrdtool-api</artifactId>
     </dependency>
     <dependency>
+      <!-- LibRrd implementation, loaded reflectively -->
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-ffm</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-util</artifactId>
     </dependency>

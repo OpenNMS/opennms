@@ -29,16 +29,14 @@ import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.model.QueryMetadata;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.jrrd2.api.JRrd2;
-import org.opennms.netmgt.rrd.jrrd2.api.JRrd2Exception;
-import org.opennms.netmgt.rrd.jrrd2.impl.JRrd2Jni;
+import org.opennms.netmgt.rrd.rrdtool.librrd.LibRrdException;
+import org.opennms.netmgt.rrd.rrdtool.librrd.LibRrdProvider;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class JRrd2FetchStrategy extends AbstractRrdBasedFetchStrategy {
+public class LibRrdFetchStrategy extends AbstractRrdBasedFetchStrategy {
 
-    private JRrd2 jrrd2 = new JRrd2Jni();
 
     @Override
     protected FetchResults fetchMeasurements(long start, long end, long step,
@@ -78,10 +76,10 @@ public class JRrd2FetchStrategy extends AbstractRrdBasedFetchStrategy {
             		tempLabel));
         }
 
-        org.opennms.netmgt.rrd.jrrd2.api.FetchResults xportResults;
+        org.opennms.netmgt.rrd.rrdtool.librrd.FetchResults xportResults;
         try {
-            xportResults = jrrd2.xport(startInSeconds, endInSeconds, stepInSeconds, maxrows, argv.toArray(new String[argv.size()]));
-        } catch (JRrd2Exception e) {
+            xportResults = LibRrdProvider.get().xport(startInSeconds, endInSeconds, stepInSeconds, maxrows, argv.toArray(new String[argv.size()]));
+        } catch (LibRrdException e) {
             throw new RrdException("Xport failed.", e);
         }
 

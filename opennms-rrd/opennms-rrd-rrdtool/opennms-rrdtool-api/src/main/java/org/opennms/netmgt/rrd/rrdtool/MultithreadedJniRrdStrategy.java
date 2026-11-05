@@ -30,22 +30,28 @@ import java.util.Properties;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.jrrd2.api.FetchResults;
-import org.opennms.netmgt.rrd.jrrd2.api.JRrd2;
-import org.opennms.netmgt.rrd.jrrd2.api.JRrd2Exception;
-import org.opennms.netmgt.rrd.jrrd2.impl.JRrd2Jni;
+import org.opennms.netmgt.rrd.rrdtool.librrd.FetchResults;
+import org.opennms.netmgt.rrd.rrdtool.librrd.LibRrd;
+import org.opennms.netmgt.rrd.rrdtool.librrd.LibRrdException;
+import org.opennms.netmgt.rrd.rrdtool.librrd.LibRrdProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A multi-threaded JNI-based RRD strategy using jrrd2.
+ * A multi-threaded RRD strategy that calls the system librrd directly (see {@link LibRrdProvider}).
  *
  * @author jwhite <jesse@opennms.com>
  */
 public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<MultithreadedJniRrdStrategy.CreateCommand, MultithreadedJniRrdStrategy.UpdateCommand> {
     private static final Logger LOG = LoggerFactory.getLogger(MultithreadedJniRrdStrategy.class);
 
-	private final JRrd2 jrrd2 = new JRrd2Jni();
+    /**
+     * Resolved on first use so that constructing the strategy does not
+     * require librrd to be present.
+     */
+    private static LibRrd librrd() {
+        return LibRrdProvider.get();
+    }
 	
     private Properties m_configurationProperties;
 
@@ -66,8 +72,8 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
 		    return m_filename;
 		}
 
-		public void execute(JRrd2 jrrd2) throws JRrd2Exception {
-		    jrrd2.create(m_filename, m_step, m_start, m_argv);
+		public void execute(LibRrd librrd) throws LibRrdException {
+		    librrd.create(m_filename, m_step, m_start, m_argv);
 		}
 
 		public String toString() {
@@ -84,8 +90,8 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
             m_filename = filename;
         }
 
-        public void execute(JRrd2 jrrd2) throws JRrd2Exception {
-            jrrd2.update(m_filename, null, m_arguments.toArray(new String[m_arguments.size()]));
+        public void execute(LibRrd librrd) throws LibRrdException {
+            librrd.update(m_filename, null, m_arguments.toArray(new String[m_arguments.size()]));
         }
 
         public String toString() {
@@ -122,7 +128,7 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
      */
     @Override
     public void closeFile(UpdateCommand update) throws Exception {
-            update.execute(jrrd2);
+            update.execute(librrd());
     }
 
     /** {@inheritDoc} */
@@ -175,7 +181,7 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
         }
         
         LOG.debug("Executing: rrdtool {}", createCommand);
-        createCommand.execute(jrrd2);
+        createCommand.execute(librrd());
     }
 
     /**
@@ -223,7 +229,7 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
             final long now = new Date().getTime();
             final long start = now - interval / 1000;
             final long end = now + interval / 1000;
-            FetchResults results = jrrd2.fetch(rrdFile, consolidationFunction, start, end, 1);
+            FetchResults results = librrd().fetch(rrdFile, consolidationFunction, start, end, 1);
 
             // Determine the index of the requested data-source
             final String[] dsNames = results.getColumns();
@@ -239,7 +245,7 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
             final int numRows = dsValues[dsIndex].length;
 
             return dsValues[dsIndex][numRows-1];
-        } catch (JRrd2Exception e) {
+        } catch (LibRrdException e) {
             LOG.error("Fetch failed", e);
             return null;
         }
@@ -252,7 +258,7 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
             final long now = System.currentTimeMillis();
             final long latestUpdateTime = (now - (now % interval)) / 1000L;
             final long earliestUpdateTime = ((now - (now % interval)) - range) / 1000L;
-            FetchResults results = jrrd2.fetch(rrdFile, "AVERAGE", earliestUpdateTime, latestUpdateTime, 1);
+            FetchResults results = librrd().fetch(rrdFile, "AVERAGE", earliestUpdateTime, latestUpdateTime, 1);
 
             // Determine the index of the requested data-source
             final String[] dsNames = results.getColumns();
@@ -276,7 +282,7 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
                 }
             }
             return dsValues[dsIndex][numRows-1];
-        } catch (JRrd2Exception e) {
+        } catch (LibRrdException e) {
             LOG.error("Fetch failed", e);
         }
 

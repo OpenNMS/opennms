@@ -100,7 +100,6 @@ public class Starter {
         } catch (Throwable e) {
             LOG.warn("Could not resolve library path for jicmp6: " + e.getMessage(), e);
         }
-        setupFileResourceProperty("opennms.library.jrrd", System.mapLibraryName("jrrd"), "Initialization of RRD code will likely fail if the JniRrdStrategy is used.");
         setupFileResourceProperty("jcifs.properties", "jcifs.properties", "Initialization of JCIFS will likely fail or may be improperly configured.");
     }
 

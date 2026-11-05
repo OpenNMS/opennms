@@ -26,13 +26,13 @@ import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategyProvider;
 import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 
-public class JRrd2FetchStrategyProvider implements MeasurementFetchStrategyProvider {
+public class LibRrdFetchStrategyProvider implements MeasurementFetchStrategyProvider {
     @Override
     public Class<? extends MeasurementFetchStrategy> getStrategyClass(String timeSeriesStrategyName, String rrdStrategyClass) {
         if(!TimeSeries.RRD_TIME_SERIES_STRATEGY_NAME.equalsIgnoreCase(timeSeriesStrategyName) ||
                 !MultithreadedJniRrdStrategy.class.getCanonicalName().equals(rrdStrategyClass)) {
             return null;
         }
-        return JRrd2FetchStrategy.class;
+        return LibRrdFetchStrategy.class;
     }
 }

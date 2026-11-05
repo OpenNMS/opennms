@@ -38,6 +38,12 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <!-- LibRrd implementation used by MultithreadedJniRrdStrategy -->
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-ffm</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
@@ -134,12 +140,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jrrd2-dependencies</artifactId>
-      <scope>test</scope>
-      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.collection</groupId>

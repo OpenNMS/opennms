@@ -19,20 +19,17 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.measurements.impl;
+package org.opennms.netmgt.rrd.rrdtool.librrd;
 
-import org.opennms.core.utils.TimeSeries;
-import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
-import org.opennms.netmgt.measurements.api.MeasurementFetchStrategyProvider;
-import org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy;
+/** An error reported by librrd, or a failure calling into it. */
+public class LibRrdException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-public class RrdtoolXportFetchStrategyProvider implements MeasurementFetchStrategyProvider {
-    @Override
-    public Class<? extends MeasurementFetchStrategy> getStrategyClass(String timeSeriesStrategyName, String rrdStrategyClass) {
-        if(!TimeSeries.RRD_TIME_SERIES_STRATEGY_NAME.equalsIgnoreCase(timeSeriesStrategyName) ||
-                !JniRrdStrategy.class.getCanonicalName().equals(rrdStrategyClass)) {
-            return null;
-        }
-        return RrdtoolXportFetchStrategy.class;
+    public LibRrdException(final String message) {
+        super(message);
+    }
+
+    public LibRrdException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }
