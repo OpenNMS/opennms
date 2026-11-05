@@ -92,7 +92,7 @@ This can be helpful for devices that cannot be directly polled to check service 
 
 | Reportd
 | Generates and schedules reports.
-| `CORE_SERVICE_REPORTD_ENABLED=true`
+| -
 
 | Rtcd
 | Handles uptime percentage calculations.
@@ -125,7 +125,7 @@ It is separate from pollerd's SnmpMonitor.
 
 | Tl1d
 | Enables reception of TL1 autonomous messages.
-| `CORE_SERVICE_TL1D_ENABLED=false`
+| -
 
 | Trapd
 | Provides an SNMP server that accepts SNMP traps that can be converted to events.
