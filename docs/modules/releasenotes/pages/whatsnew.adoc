@@ -260,6 +260,11 @@ The raw SQL `query` parameter of the v1 REST API now requires `ROLE_ADMIN`.
 Requisition and foreign-source XML that contains a `DOCTYPE` is now rejected on import.
 Remove the `DOCTYPE` from requisitions that external tools write, or set the system property `org.opennms.provision.requisition.allowDoctype=true` to accept it.
 
+=== ROLE_MINION no longer reads /rest/config and /rest/info
+`ROLE_MINION` no longer gives read access to `/rest/config/**` or `/rest/info`.
+Minion does not use these endpoints.
+`ROLE_MINION` still gives access to the embedded ActiveMQ broker.
+
 === Ops Board and Wallboard removed
 
 The Vaadin-based Ops Board (operator board) and Wallboard, their dashlets, and the *Wallboard Configuration* admin page have been removed.
