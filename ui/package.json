@@ -44,7 +44,7 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "dompurify": "^3.4.17",
-    "fast-xml-parser": "^5.10.1",
+    "fast-xml-parser": "^5.11.2",
     "graphology": "^0.26.0",
     "graphology-layout-forceatlas2": "^0.10.1",
     "ip-regex": "^5.0.0",
