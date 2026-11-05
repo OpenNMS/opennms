@@ -299,7 +299,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
         return seriesFuture.thenApply(ignored -> builder.build());
     }
 
-    /** use the convert the results of the proportional_sum aggregation (provided by our ES plugin) to a table */
+    /** Converts the per-key proportional sum aggregation results to a table */
     private static <T> CompletableFuture<Void> toTableFromBuckets(ImmutableTable.Builder<Directional<T>, Long, Double> builder, Function<String, CompletableFuture<T>> keyToEntity, SearchResponse res) {
         final JsonObject aggs = res.getAggregations();
         if (aggs == null) {
@@ -335,7 +335,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
                 });
     }
 
-    /** use the convert the results of the proportional_sum aggregation (provided by our ES plugin) to a table */
+    /** Converts the totals proportional sum aggregation results to a table */
     private static <T> void toTableFromTotals(ImmutableTable.Builder<Directional<T>, Long, Double> builder, T otherEntity, SearchResponse res) {
         final JsonObject aggs = res.getAggregations();
         if (aggs == null) {

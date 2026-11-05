@@ -29,7 +29,8 @@ import com.google.gson.JsonObject;
 
 /**
  * Renders the aggregation used to distribute a flow's bytes proportionally over the
- * time buckets its [start,end] range overlaps, clipped to the query window.
+ * time buckets its [start,end] range overlaps. Buckets start at the query start; the last
+ * bucket covers a full step and may extend past the query end.
  *
  * Two strategies are supported:
  * <ul>
@@ -38,7 +39,8 @@ import com.google.gson.JsonObject;
  *       requires inline scripting to be enabled (it is by default).</li>
  *   <li>{@link Strategy#PLUGIN}: the {@code proportional_sum} aggregation provided by the
  *       elasticsearch-drift-plugin. Retained as a fallback for clusters that already run
- *       the plugin and disallow inline scripts. Note that the plugin produces incorrect
+ *       the plugin. The surrounding flow queries use inline scripts either way, so this
+ *       strategy does not remove the need for inline scripting. The plugin produces incorrect
  *       results when the window start is not a multiple of the step (mixed bucket grids,
  *       totals cut off at the first epoch-grid boundary).</li>
  * </ul>

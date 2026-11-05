@@ -55,6 +55,8 @@ public class ProportionalSumAggregation extends Aggregation {
                 && PartialSumAggregation.get(String.valueOf(AggregationField.VALUE)).isJsonObject()) {
             // Shape produced by the scripted_metric replacement: a map of bucket start time -> sum
             parseValueMap(PartialSumAggregation.get(String.valueOf(AggregationField.VALUE)).getAsJsonObject());
+        } else {
+            throw new IllegalStateException("Unrecognized proportional sum aggregation result: " + PartialSumAggregation);
         }
     }
 

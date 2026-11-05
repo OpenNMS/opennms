@@ -27,6 +27,7 @@ Inline Painless scripting must be enabled on the cluster; it is enabled by defau
 Clusters that already run the Drift plugin can keep using it by setting `proportionalSumStrategy=plugin` in `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
 
 Note that flow totals and series values may increase after upgrading: the plugin undercounts traffic when a query window does not align with the graph resolution (which is the common case), and the script-based implementation corrects this.
+Bucket timestamps also change: buckets now start at the beginning of the query window, where the plugin returned a mix of window-aligned and epoch-aligned timestamps.
 
 === Trends removed
 The Trends page has been removed from the Dashboards menu and from the product. `etc/trend-configuration.xml` is no longer read and can be deleted.

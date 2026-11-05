@@ -221,4 +221,16 @@ public class ProportionalSumQueryTest {
         assertThat(parsed.getBuckets().get(0).getValue(), closeTo(42.5, 1e-9));
         assertThat(parsed.getBuckets().get(1).getValue(), closeTo(7.25, 1e-9));
     }
+
+    @Test
+    public void shouldParseEmptyScriptedMetricValueAsNoBuckets() {
+        // What the script returns when it skipped every document
+        final JsonObject agg = JsonParser.parseString("{\"value\": {}}").getAsJsonObject();
+        assertThat(new ProportionalSumAggregation("bytes", agg).getBuckets(), hasSize(0));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldRejectUnrecognizedShape() {
+        new ProportionalSumAggregation("bytes", JsonParser.parseString("{\"value\": null}").getAsJsonObject());
+    }
 }

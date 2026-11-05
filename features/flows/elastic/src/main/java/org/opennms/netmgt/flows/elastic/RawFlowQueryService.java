@@ -486,7 +486,8 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                     final boolean isIngress = isIngress(directionBucket);
                     final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
                     final List<ProportionalSumAggregation.DateHistogram> sumBuckets = sumAgg.getBuckets();
-                    // A single bucket, or none when every document in it was skipped (missing fields)
+                    // A single bucket, or none when the script skipped every document (missing
+                    // fields); unrecognized result shapes already failed in ProportionalSumAggregation
                     if (sumBuckets.size() > 1) {
                         throw new IllegalStateException("Expected at most 1 bucket, but got: " + sumBuckets);
                     }
@@ -635,7 +636,8 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 final boolean isIngress = isIngress(directionBucket);
                 final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
                 final List<ProportionalSumAggregation.DateHistogram> sumBuckets = sumAgg.getBuckets();
-                // A single bucket, or none when every document in it was skipped (missing fields)
+                // A single bucket, or none when the script skipped every document (missing
+                // fields); unrecognized result shapes already failed in ProportionalSumAggregation
                 if (sumBuckets.size() > 1) {
                     throw new IllegalStateException("Expected at most 1 bucket, but got: " + sumBuckets);
                 }
