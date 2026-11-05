@@ -804,6 +804,11 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // NOT_EQUALS: the node does NOT have this MAC, so it appears in results
         sendRequest(GET, url, parseParamData("_s=maclike!=112233445566"), 200);
+
+        // As in the legacy search, '%' and '_' are SQL LIKE wildcards (double-encoded '%')
+        sendRequest(GET, url, parseParamData("_s=maclike==aabb%2525eeff"), 200);
+        sendRequest(GET, url, parseParamData("_s=maclike==aabb_cddeeff"), 200);
+        sendRequest(GET, url, parseParamData("_s=maclike==aabb%2525eeee"), 204);
     }
 
     @Test

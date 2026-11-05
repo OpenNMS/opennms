@@ -290,4 +290,27 @@ public class SnmpInterfaceRestServiceIT extends AbstractSpringJerseyRestTestCase
         sendRequest(GET, "/snmpinterfaces", parseParamData("_s=ifName==Gi0/1"), 200);
         sendRequest(GET, "/snmpinterfaces", parseParamData("_s=ifName==gi0/1"), 204);
     }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testWildcardStringSearchLikeCharactersAreLiteral() throws Exception {
+        // The Vue node list sends '%' and '_' in its "(ids);(attr==*value*)" narrowing. They must
+        // be literals, the same as in the /nodes search and in the client-side match.
+        sendPost("/monitoringLocations", "<location location-name=\"location1\" monitoring-area=\"location1\" priority=\"1\"/>", 201);
+        String node = "<node type=\"A\" label=\"TestMachine1\" foreignSource=\"JUnit\" foreignId=\"TestMachine1\">" +
+                "<location>location1</location>" +
+                "<labelSource>H</labelSource>" +
+                "</node>";
+        sendPost("/nodes", node, 201);
+        sendPost("/nodes/1/snmpinterfaces", "<snmpInterface ifIndex=\"1\"><ifAlias>50% load</ifAlias><ifName>Gi0_1</ifName><ifType>6</ifType></snmpInterface>", 201, "/nodes/1/snmpinterfaces/1");
+        sendPost("/nodes/1/snmpinterfaces", "<snmpInterface ifIndex=\"2\"><ifAlias>50 load</ifAlias><ifName>Gi0X1</ifName><ifType>6</ifType></snmpInterface>", 201, "/nodes/1/snmpinterfaces/2");
+
+        // '%' is double-encoded, as the UI sends it
+        for (final String query : new String[] { "ifName==*gi0_1*", "ifAlias==*50%2525*", "(node.id==1);(ifName==*Gi0_*)" }) {
+            final String json = sendRequest(GET, "/snmpinterfaces", parseParamData("_s=" + query), 200);
+            final JSONObject result = new JSONObject(json);
+            assertEquals(query, 1, result.getInt("count"));
+            assertEquals(query, 1, result.getJSONArray("snmpInterface").getJSONObject(0).getInt("ifIndex"));
+        }
+    }
 }

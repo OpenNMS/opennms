@@ -109,11 +109,15 @@ describe('Nodes utils test', () => {
         .toBe('ifAlias==*core*')
     })
 
-    // The narrowing sent to the server has to stay a superset of the client-side match, so a
-    // value carrying LIKE wildcards drops the attribute term entirely.
-    test.each(['up%', 'up_link'])('omits narrowing for %s', (value) => {
+    // '%' and '_' are literal on the server and in the client-side match, so they no longer drop
+    // the narrowing. '*' stays a wildcard on both sides.
+    test.each([
+      ['up%', 'ifName==*up%2525*'],
+      ['up_link', 'ifName==*up_link*'],
+      ['Gi*1', 'ifName==*Gi*1*']
+    ])('narrows for %s', (value, expected) => {
       expect(buildSnmpNarrowing({ mode: 'snmpParm', attr: 'ifName', value, matchType: 'contains' }))
-        .toBeUndefined()
+        .toBe(expected)
     })
 
     // FIQL operators and URL-structural characters are double-encoded, so they reach the server

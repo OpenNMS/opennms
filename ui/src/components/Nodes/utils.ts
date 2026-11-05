@@ -109,32 +109,21 @@ export const getNodeStatusString = (node: Node) => {
   }
 }
 
-// The snmpParm value is encoded with encodeFiqlPattern, so FIQL-structural (',' ';' '(' ')') and
-// URL-structural ('&' '#' '+' space) characters reach the server as literals. Only '%' and '_'
-// still make the narrowing unsafe: the server's '==*value*' LIKE match escapes them (literal),
-// while useInterfaceListing.ts's client-side matchesSnmpParm() treats them as SQL-LIKE wildcards,
-// so the server narrowing would no longer be a superset of the client match.
-// If the value contains either one, omit the attribute narrowing entirely; the node.id scoping
-// alone still limits the fetch to the current page, and exact contains/equals semantics are
-// re-applied client-side anyway (see buildSnmpNarrowing below).
-const UNSAFE_NARROWING_CHARS = /[%_]/
-
 // Build the FIQL narrowing expression passed to nodeStore.getSnmpInterfacesForNodes so we only
 // fetch the SNMP interfaces relevant to the active maclike/snmpParm mode (see
-// getNodeSnmpInterfaceQuery). The server matches these wildcard terms case-insensitively (ilike,
-// see SnmpInterfaceRestService), the same as the client-side match.
+// getNodeSnmpInterfaceQuery). The narrowing must return every interface that the client-side match
+// (useInterfaceListing.ts's matchesSnmpParm) accepts. It does: both treat '*' as a wildcard and
+// every other character as literal, and both ignore case (ilike, see SnmpInterfaceRestService).
+// encodeFiqlPattern keeps '*' and encodes the FIQL characters (',' ';' '(' ')') and the URL
+// characters ('&' '#' '+' space). The node.id scoping limits the fetch to the current page, and
+// the client-side match then applies the exact contains/equals rule.
 export const buildSnmpNarrowing = (mode: InterfaceListMode): string | undefined => {
   if (mode.mode === 'maclike') {
-    // normalizeMacSearch strips every non-hex character, so the result can never contain any of
-    // UNSAFE_NARROWING_CHARS above — no further guard needed here.
+    // normalizeMacSearch strips every non-hex character, so the value needs no encoding.
     return `physAddr==*${normalizeMacSearch(mode.mac)}*`
   }
 
   if (mode.mode === 'snmpParm') {
-    if (UNSAFE_NARROWING_CHARS.test(mode.value)) {
-      return undefined
-    }
-
     return `${mode.attr}==*${encodeFiqlPattern(mode.value)}*`
   }
 

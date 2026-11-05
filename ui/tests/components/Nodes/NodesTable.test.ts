@@ -978,28 +978,8 @@ describe('NodesTable.vue', () => {
       expect(wrapper.exists()).toBe(true)
     })
 
-    it('omits the attribute narrowing when the snmpParm value contains SQL wildcards (% or _)', async () => {
-      const wrapper = mountTable()
-      const ns = useNodeStore()
-      const structure = useNodeListStore()
-      ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
-      ns.getNodes = vi.fn().mockResolvedValue(undefined)
-
-      ns.nodes = [{ id: '1' }] as any
-      structure.setFilterWithSnmpParams('snmpIfAlias', 'up%link')
-      await nextTick()
-
-      structure.setShowInterfaces(true)
-      await nextTick()
-
-      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledTimes(1)
-      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledWith(['1'], undefined)
-      expect(wrapper.exists()).toBe(true)
-    })
-
-    // ',' ';' '(' ')' and URL-structural characters no longer drop the narrowing: the value is
-    // double-encoded (encodeFiqlPattern), so the server gets the literal, and the FIQL expression
-    // and the URL stay intact.
+    // No character drops the narrowing: the value is double-encoded (encodeFiqlPattern), so the
+    // server gets the literal, and the FIQL expression and the URL stay intact.
     it.each([
       ['a comma', 'up,link', 'ifAlias==*up%252Clink*'],
       ['a semicolon', 'up;link', 'ifAlias==*up%253Blink*'],
@@ -1007,7 +987,9 @@ describe('NodesTable.vue', () => {
       ['an unbalanced close paren', 'up)link', 'ifAlias==*up%2529link*'],
       ['an ampersand', 'R&D', 'ifAlias==*R%2526D*'],
       ['a hash', 'a#b', 'ifAlias==*a%2523b*'],
-      ['a plus and a space', 'a+b c', 'ifAlias==*a%252Bb%2520c*']
+      ['a plus and a space', 'a+b c', 'ifAlias==*a%252Bb%2520c*'],
+      ['a percent', 'up%link', 'ifAlias==*up%2525link*'],
+      ['an underscore', 'up_link', 'ifAlias==*up_link*']
     ])('encodes the attribute narrowing when the snmpParm value contains %s', async (_title, value, narrowing) => {
       const wrapper = mountTable()
       const ns = useNodeStore()

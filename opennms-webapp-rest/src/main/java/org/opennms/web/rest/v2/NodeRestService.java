@@ -363,11 +363,13 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         // Mirrors the legacy node-list MAC-like search — colons and dashes are stripped,
         // then an ANYWHERE ilike is applied. Uses a SQL subquery because snmpinterface is a child
         // association and cannot be aliased against the root criteria here.
+        // As in the legacy search, a value without a FIQL '*' is not escaped: '%' and '_' are SQL
+        // LIKE wildcards. (With a '*', CXF escapes '%' and '_' and they are literals.)
         CriteriaBehavior<?> maclikeBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
             if (v == null) {
                 return;
             }
-            final String pattern = "%" + toIlikeParameter(((String)v).replaceAll("[:-]", ""), w) + "%";
+            final String pattern = "%" + ((String)v).replaceAll("[:-]", "") + "%";
             switch (c) {
             case EQUALS:
                 b.sql("{alias}.nodeid in (select nodeid from snmpinterface where snmpphysaddr ilike ?)", pattern, Type.STRING);

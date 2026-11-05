@@ -685,7 +685,7 @@ const buildAssetQuery = (assetFilters?: AssetFilter[]) => {
   }
 
   // Exact match against each asset record column (mirrors the legacy site-status-view asset filter).
-  // A '*' in the value is a wildcard: the server has no escape for '*' (see encodeFiqlValue).
+  // A '*' in the value is a wildcard: the server has no escape for '*' (see @/lib/fiql).
   // Multiple filters are intersected (a node must match every one).
   return assetFilters
     .filter(f => f.column && f.value && ALLOWED_ASSET_COLUMNS.has(f.column))
