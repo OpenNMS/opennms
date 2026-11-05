@@ -281,7 +281,6 @@ public class LegacyPriorityExecutorTest {
 
         executor.setThreads(3);
         assertEquals(3, executor.getThreads());
-        assertEquals(3, executor.getMaxThreads());
 
         executor.setThreads(0);
         assertEquals(1, executor.getThreads());
@@ -307,7 +306,6 @@ public class LegacyPriorityExecutorTest {
             await().atMost(10, TimeUnit.SECONDS).until(() -> executor.getActiveThreads() == 1 && executor.getReadyQueueSize() == 2);
             assertEquals(1, executor.getDelayedQueueSize());
             assertEquals(1, executor.getPoolThreads());
-            assertEquals(1, executor.getLargestPoolThreads());
             assertEquals(3, executor.getTaskCount());
             assertEquals(0, executor.getCompletedTaskCount());
 

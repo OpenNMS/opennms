@@ -50,68 +50,37 @@ public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.ope
     /** {@inheritDoc} */
     @Override
     public long getActiveThreads() {
-        final LegacyPriorityExecutor executor = getPriorityExecutor();
-        return executor == null ? 0L : executor.getActiveThreads();
+        return getPriorityExecutor().getActiveThreads();
     }
 
     @Override
     public long getTasksTotal() {
-        final LegacyPriorityExecutor executor = getPriorityExecutor();
-        return executor == null ? 0L : executor.getTaskCount();
+        return getPriorityExecutor().getTaskCount();
     }
 
     @Override
     public long getTasksCompleted() {
-        final LegacyPriorityExecutor executor = getPriorityExecutor();
-        return executor == null ? 0L : executor.getCompletedTaskCount();
-    }
-
-    @Override
-    public double getTaskCompletionRatio() {
-        final LegacyPriorityExecutor executor = getPriorityExecutor();
-        if (executor == null) {
-            return 0d;
-        }
-        // Read completed first: both counts only grow, so the ratio cannot exceed 1.
-        final long completed = executor.getCompletedTaskCount();
-        final long total = executor.getTaskCount();
-        return total > 0 ? (double) completed / (double) total : 0d;
+        return getPriorityExecutor().getCompletedTaskCount();
     }
 
     @Override
     public long getNumPoolThreads() {
-        final LegacyPriorityExecutor executor = getPriorityExecutor();
-        return executor == null ? 0L : executor.getPoolThreads();
-    }
-
-    @Override
-    public long getPeakPoolThreads() {
-        final LegacyPriorityExecutor executor = getPriorityExecutor();
-        return executor == null ? 0L : executor.getLargestPoolThreads();
+        return getPriorityExecutor().getPoolThreads();
     }
 
     @Override
     public long getCorePoolThreads() {
-        final LegacyPriorityExecutor executor = getPriorityExecutor();
-        return executor == null ? 0L : executor.getThreads();
-    }
-
-    @Override
-    public long getMaxPoolThreads() {
-        final LegacyPriorityExecutor executor = getPriorityExecutor();
-        return executor == null ? 0L : executor.getMaxThreads();
+        return getPriorityExecutor().getThreads();
     }
 
     @Override
     public long getTaskQueuePendingCount() {
-        final LegacyPriorityExecutor executor = getPriorityExecutor();
-        return executor == null ? 0L : executor.getReadyQueueSize();
+        return getPriorityExecutor().getReadyQueueSize();
     }
 
     @Override
     public long getTaskQueueDelayedCount() {
-        final LegacyPriorityExecutor executor = getPriorityExecutor();
-        return executor == null ? 0L : executor.getDelayedQueueSize();
+        return getPriorityExecutor().getDelayedQueueSize();
     }
 
     /**

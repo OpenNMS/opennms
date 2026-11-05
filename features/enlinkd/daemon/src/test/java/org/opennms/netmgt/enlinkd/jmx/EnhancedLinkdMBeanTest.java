@@ -38,33 +38,15 @@ public class EnhancedLinkdMBeanTest {
     }
 
     @Test
-    public void reportsZeroWithoutAnExecutor() {
-        final EnhancedLinkd mbean = mbeanFor(null);
-        assertEquals(0L, mbean.getActiveThreads());
-        assertEquals(0L, mbean.getTasksTotal());
-        assertEquals(0L, mbean.getTasksCompleted());
-        assertEquals(0d, mbean.getTaskCompletionRatio(), 0d);
-        assertEquals(0L, mbean.getNumPoolThreads());
-        assertEquals(0L, mbean.getPeakPoolThreads());
-        assertEquals(0L, mbean.getCorePoolThreads());
-        assertEquals(0L, mbean.getMaxPoolThreads());
-        assertEquals(0L, mbean.getTaskQueuePendingCount());
-        assertEquals(0L, mbean.getTaskQueueDelayedCount());
-    }
-
-    @Test
     public void reportsTheExecutorsCurrentPoolSize() {
         final LegacyPriorityExecutor executor = new LegacyPriorityExecutor("EnhancedLinkd", 2, 5);
         try {
             final EnhancedLinkd mbean = mbeanFor(executor);
             assertEquals(2L, mbean.getCorePoolThreads());
-            assertEquals(2L, mbean.getMaxPoolThreads());
-            assertEquals(0d, mbean.getTaskCompletionRatio(), 0d);
 
             // A reload resizes the same executor in place; the MBean must follow it.
             executor.setThreads(4);
             assertEquals(4L, mbean.getCorePoolThreads());
-            assertEquals(4L, mbean.getMaxPoolThreads());
         } finally {
             executor.stop();
         }

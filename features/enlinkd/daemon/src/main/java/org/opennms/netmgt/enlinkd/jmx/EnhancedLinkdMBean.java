@@ -47,29 +47,14 @@ public interface EnhancedLinkdMBean extends BaseOnmsMBean {
     long getTasksCompleted();
 
     /**
-     * @return the ratio of completed to submitted discovery tasks since startup
-     */
-    double getTaskCompletionRatio();
-
-    /**
      * @return the current number of threads in the pool
      */
     long getNumPoolThreads();
 
     /**
-     * @return the largest size of the thread pool since startup
-     */
-    long getPeakPoolThreads();
-
-    /**
      * @return the configured core size of the thread pool
      */
     long getCorePoolThreads();
-
-    /**
-     * @return the configured maximum size of the thread pool
-     */
-    long getMaxPoolThreads();
 
     /**
      * @return discovery tasks that are ready to run and waiting for a free thread

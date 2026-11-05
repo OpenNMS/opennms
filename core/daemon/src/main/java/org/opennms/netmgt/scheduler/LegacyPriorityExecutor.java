@@ -207,14 +207,6 @@ public class LegacyPriorityExecutor implements PausableFiber {
         return priorityJobPoolExecutor.getPoolSize();
     }
 
-    public int getLargestPoolThreads() {
-        return priorityJobPoolExecutor.getLargestPoolSize();
-    }
-
-    public int getMaxThreads() {
-        return priorityJobPoolExecutor.getMaximumPoolSize();
-    }
-
     public long getTaskCount() {
         return priorityJobPoolExecutor.getTaskCount();
     }
