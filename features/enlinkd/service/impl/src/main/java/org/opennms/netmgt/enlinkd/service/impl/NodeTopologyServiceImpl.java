@@ -238,6 +238,10 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
             LOG.info("getSnmpNode: not nodeId");
         }
         String[] values = nodeCriteria.split(":");
+        if (values.length != 2) {
+            LOG.warn("getSnmpNode: not a foreignSource:foreignId criteria: {}", nodeCriteria);
+            return null;
+        }
         LOG.info("getSnmpNode: foreignSource: {}, foreignId: {} ", values[0], values[1]);
         final Criteria criteria = new Criteria(OnmsNode.class);
         criteria.setAliases(List.of(new Alias(
