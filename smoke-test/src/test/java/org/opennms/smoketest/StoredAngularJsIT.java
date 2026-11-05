@@ -29,7 +29,6 @@
 package org.opennms.smoketest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -41,6 +40,8 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testcontainers.containers.Container;
 
@@ -93,9 +94,8 @@ public class StoredAngularJsIT extends OpenNMSSeleniumIT {
                     + "<ifAlias>" + LABEL + "</ifAlias><ifDescr>" + ifName + "</ifDescr><ifName>" + ifName + "</ifName>"
                     + "<ifType>6</ifType><physAddr>" + physAddr + "</physAddr></snmpInterface>", 201);
 
-            // The smoke-test container stores RRD files by node ID.
-            final Integer nodeId = stack.opennms().getRestClient().getNode("smoketests:xssAliasNode").getId();
-            rrdDir = "/opt/opennms/share/rrd/snmp/" + nodeId + "/" + ifName + "-" + physAddr;
+            // The OpenNMS container stores RRD files by foreign source.
+            rrdDir = "/opt/opennms/share/rrd/snmp/fs/smoketests/xssAliasNode/" + ifName + "-" + physAddr;
             final Container.ExecResult result = stack.opennms().execInContainer("sh", "-c",
                     "mkdir -p " + rrdDir
                     + " && rrdtool create " + rrdDir + "/ifInOctets.rrd --step 300 DS:ifInOctets:COUNTER:600:U:U RRA:AVERAGE:0.5:1:12"
@@ -103,14 +103,17 @@ public class StoredAngularJsIT extends OpenNMSSeleniumIT {
             assertEquals(result.getStderr(), 0, result.getExitCode());
 
             getDriver().get(getBaseUrlInternal() + "opennms/element/node.jsp?node=smoketests:xssAliasNode");
-            // The interface widget must start and show its rows. Otherwise, the test can pass because AngularJS does not run.
+            // The interface widget must start and show the ifAlias. Otherwise, the test can pass because AngularJS does not run.
             new WebDriverWait(getDriver(), Duration.ofSeconds(20))
-                    .until(d -> !d.findElements(By.cssSelector("#onms-interfaces td.ng-binding")).isEmpty());
+                    .until(ExpectedConditions.elementToBeClickable(By.linkText("SNMP Interfaces"))).click();
+            new WebDriverWait(getDriver(), Duration.ofSeconds(20))
+                    .until(d -> d.findElements(By.cssSelector("#onms-interfaces div.tab-pane.active td")).stream()
+                            .anyMatch(td -> LABEL.equals(td.getText())));
             assertLabelNotEvaluated("element/node.jsp?node=smoketests:xssAliasNode");
 
             assertLabelShownAsText("graph/results.htm?reports=all&resourceId="
                     + URLEncoder.encode("node[smoketests:xssAliasNode].interfaceSnmp[" + ifName + "-" + physAddr + "]", StandardCharsets.UTF_8));
-            assertGraphControlsShown();
+            assertAddToKscShowsLabel();
         } finally {
             if (rrdDir != null) {
                 stack.opennms().execInContainer("rm", "-rf", rrdDir);
@@ -127,9 +130,8 @@ public class StoredAngularJsIT extends OpenNMSSeleniumIT {
         try {
             sendPost("rest/nodes", "<node type=\"A\" label=\"xssResourceNode\" foreignSource=\"smoketests\" foreignId=\"xssResourceNode\"/>", 201);
 
-            // The smoke-test container stores RRD files by node ID.
-            final Integer nodeId = stack.opennms().getRestClient().getNode("smoketests:xssResourceNode").getId();
-            rrdDir = "/opt/opennms/share/rrd/snmp/" + nodeId + "/hrStorageIndex/" + LABEL;
+            // The OpenNMS container stores RRD files by foreign source.
+            rrdDir = "/opt/opennms/share/rrd/snmp/fs/smoketests/xssResourceNode/hrStorageIndex/" + LABEL;
             // Pass the directory as an argument, so that the shell does not read the quotes and parentheses in it.
             final Container.ExecResult result = stack.opennms().execInContainer("sh", "-c",
                     "mkdir -p \"$1\" && cd \"$1\" && printf 'hrStorageDescr=%s\\n' \"$2\" > strings.properties"
@@ -140,7 +142,7 @@ public class StoredAngularJsIT extends OpenNMSSeleniumIT {
 
             assertLabelShownAsText("graph/results.htm?reports=all&resourceId="
                     + URLEncoder.encode("node[smoketests:xssResourceNode].hrStorageIndex[" + LABEL + "]", StandardCharsets.UTF_8));
-            assertGraphControlsShown();
+            assertAddToKscShowsLabel();
         } finally {
             if (rrdDir != null) {
                 stack.opennms().execInContainer("rm", "-rf", rrdDir);
@@ -150,12 +152,19 @@ public class StoredAngularJsIT extends OpenNMSSeleniumIT {
     }
 
     /**
-     * Fails if the graph page shows no graph controls. Without the controls, the test does not examine
-     * the AngularJS expressions in them.
+     * Clicks the Add to KSC control on the graph page. AngularJS runs the ng-click expression, which contains
+     * the encoded label. The modal must show the label as text, and the label must not run.
      */
-    private void assertGraphControlsShown() {
-        assertFalse("The graph page shows no graph controls",
-                getDriver().findElements(By.cssSelector(".graph-aux-controls button")).isEmpty());
+    private void assertAddToKscShowsLabel() {
+        new WebDriverWait(getDriver(), Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.cssSelector(".graph-aux-controls button[ng-click^='open(']")))
+                .click();
+        final WebElement resourceLabel = new WebDriverWait(getDriver(), Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.id("resourceLabel")));
+        final String value = resourceLabel.getAttribute("value");
+        assertTrue("The Add to KSC dialog does not show the label: " + value, value != null && value.contains(LABEL));
+        assertLabelNotEvaluated("the Add to KSC dialog");
+        getDriver().findElement(By.cssSelector(".modal-footer .btn-warning")).click();
     }
 
     /**
@@ -171,20 +180,19 @@ public class StoredAngularJsIT extends OpenNMSSeleniumIT {
         }
     }
 
+    /**
+     * Opens the page, waits until it shows the label as text, and fails if AngularJS evaluated the label.
+     * If the page does not show the label, the marker check proves nothing. Thus, the label check is first.
+     */
     private void assertLabelShownAsText(final String path) {
         getDriver().get(getBaseUrlInternal() + "opennms/" + path);
-        new WebDriverWait(getDriver(), Duration.ofSeconds(10))
-                .until(d -> "complete".equals(((JavascriptExecutor) d).executeScript("return document.readyState")));
         try {
-            // Give AngularJS time to run.
-            new WebDriverWait(getDriver(), Duration.ofSeconds(3))
-                    .until(d -> Boolean.TRUE.equals(((JavascriptExecutor) d).executeScript("return window.__xss === true")));
-            fail("AngularJS evaluated the node label on " + path);
+            new WebDriverWait(getDriver(), Duration.ofSeconds(10))
+                    .until(d -> Boolean.TRUE.equals(((JavascriptExecutor) d).executeScript(
+                            "return document.readyState === 'complete' && document.body.textContent.indexOf(arguments[0]) >= 0", LABEL)));
         } catch (final TimeoutException e) {
-            // Expected: the page did not run the expression.
+            fail("The page does not show the label: " + path);
         }
-        // The page must show the label as text. Otherwise, the test can pass because the page does not show it.
-        assertTrue("The page does not show the node label: " + path,
-                Boolean.TRUE.equals(((JavascriptExecutor) getDriver()).executeScript("return document.body.textContent.indexOf(arguments[0]) >= 0", LABEL)));
+        assertLabelNotEvaluated(path);
     }
 }

@@ -72,7 +72,7 @@
         <form role="form" class="form top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get" ng-non-bindable>
             <c:if test="${empty results.generatedId && empty results.nodeCriteria}">
                 <c:forEach var="resultSet" items="${results.graphResultSets}">
-                    <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
+                    <input type="hidden" name="resourceId" value="${fn:escapeXml(resultSet.resource.id)}"/>
                 </c:forEach>
             </c:if>
             <c:if test="${not empty results.generatedId}">
