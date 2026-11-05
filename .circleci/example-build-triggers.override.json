@@ -8,6 +8,7 @@
     "rpms": false,
     "debs": false,
     "oci": false,
+    "publish-docker": false,
     "build-publish": false,
     "trivy-scan": false,
     "trivy-analyze": false,

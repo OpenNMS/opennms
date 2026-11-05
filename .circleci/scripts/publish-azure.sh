@@ -34,7 +34,8 @@ for TYPE in minion; do
   export DOCKER_REPO="${DOCKER_SERVER}/opennms/${TYPE}"
 
   # in Azure, only push the "branchname-arch" version of the individual ones
-  find /tmp/artifacts/oci -name "${TYPE}-linux-*.oci" | sort -u | while read -r _file; do
+  _arch_tags=()
+  while read -r _file; do
     echo "* processing ${TYPE} image: ${_file}"
     _file_tag="$(basename "${_file}" | sed -e 's,\.oci$,,')"
     _internal_tag="opennms/${_file_tag}"
@@ -47,10 +48,17 @@ for TYPE in minion; do
 
     _sha256="$(get_sha256 "${_internal_tag}")"
     cosign_sign "${DOCKER_REPO}@${_sha256}" "/tmp/artifacts/xml/${_file_tag}-sbom.xml"
-  done
+
+    _arch_tags+=("${_arch_tag}")
+  done < <(find /tmp/artifacts/oci -name "${TYPE}-linux-*.oci" | sort -u)
+
+  if [ "${#_arch_tags[@]}" -eq 0 ]; then
+    echo "no ${TYPE} images found to publish, skipping manifest creation"
+    continue
+  fi
 
   for _publish_tag in "${DOCKER_TAGS[@]}"; do
-    create_and_push_manifest "${DOCKER_REPO}" "${DOCKER_BRANCH_TAG}" "${_publish_tag}"
+    create_and_push_manifest "${DOCKER_REPO}" "${DOCKER_BRANCH_TAG}" "${_publish_tag}" "${_arch_tags[@]}"
 
     if [ "${DOCKER_CONTENT_TRUST}" -eq 1 ]; then
       export NOTARY_TARGETS_PASSPHRASE="${AZURE_DCT_REPO_MINION_KEY_PASSPHRASE}"
