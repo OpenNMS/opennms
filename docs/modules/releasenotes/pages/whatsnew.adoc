@@ -21,12 +21,14 @@ See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upg
 
 === Faster IP address filtering (IPLIKE)
 
-Filter expressions that use IPLIKE are now translated to native PostgreSQL `inet` comparisons where possible, and new expression indexes on the `ipinterface` and `events` tables let the database answer them without scanning every row.
+Filter expressions that use IPLIKE are now translated to native PostgreSQL `inet` comparisons where possible, and new expression indexes on the `ipinterface`, `events`, `alarms`, and `notifications` tables let the database answer them without scanning every row.
 This primarily benefits large environments: filter evaluation and event searches by IP address that previously took seconds to minutes generally complete in milliseconds.
 
-Expressions that cannot be translated (for example, patterns that contain an IPv6 zone identifier) continue to use the `iplike` stored procedure.
+Expressions that cannot be translated (for example, patterns that contain an IPv6 zone identifier, or that expand to many separate address ranges, such as `*.*.*.1`) continue to use the `iplike` stored procedure.
 The bundled PL/pgSQL implementation of `iplike` has been reworked for speed and is installed automatically during the upgrade; installs that use the optional compiled iplike extension keep it, but it is no longer needed.
 On installs that use the compiled extension, translated expressions follow the PL/pgSQL implementation's semantics; the one visible difference is the match-all patterns (`*.*.*.*` and `*:*:*:*:*:*:*:*`), which now match every non-null address regardless of address family, as they always have under the PL/pgSQL implementation.
+Hexadecimal digits in IPv6 addresses and patterns now match regardless of case; previously, addresses stored with uppercase digits never matched.
+The upgrade builds the new indexes, which can take several minutes on an `events` table with tens of millions of rows that have an IP address.
 If necessary, set the system property `org.opennms.iplike.native=false` to restore the previous query behavior.
 
 === Trap audit log

@@ -24,6 +24,7 @@ package org.opennms.core.utils;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Translates iplike match expressions into native-inet SQL predicates that
@@ -54,12 +55,11 @@ public abstract class IplikeSqlTranslator {
 
     /**
      * Expansion cap. Patterns exceeding this many address ranges fall back to
-     * iplike(): with the expression index present even thousands of ranges
-     * answer quickly, but an OR-chain this size evaluated per row (index
-     * missing or dropped) degrades far below iplike, so the cap bounds the
-     * worst case.
+     * iplike(). Each range adds two opennms_safe_inet() calls to the predicate;
+     * at 1024 ranges, JIT compilation of the expression and planning take
+     * longer than iplike() does.
      */
-    public static final int MAX_RANGES = 1024;
+    public static final int MAX_RANGES = 512;
 
     /** Escape hatch: set to "false" to disable translation globally. */
     public static final String ENABLED_PROPERTY = "org.opennms.iplike.native";
@@ -137,7 +137,7 @@ public abstract class IplikeSqlTranslator {
      * Evaluates a pattern against an address value using the same range
      * translation the SQL predicate is built from, mirroring
      * opennms_safe_inet()'s treatment of the value (zone id stripped on IPv6
-     * only, strict dotted-quad or 8-group format). Exists so tests can verify corpus parity
+     * only, dotted-quad or 8-group format). Exists so tests can verify corpus parity
      * without a database; returns null when the pattern is untranslatable.
      */
     static Boolean matches(final String value, final String pattern) {
@@ -181,7 +181,8 @@ public abstract class IplikeSqlTranslator {
             }
             long n = 0;
             for (final String t : toks) {
-                if (!t.matches("0|[1-9][0-9]{0,2}")) {
+                // leading zeros are accepted, as by the ::inet cast iplike uses
+                if (!t.matches("0*[0-9]{1,3}")) {
                     return null;
                 }
                 final int octet = Integer.parseInt(t);
@@ -224,7 +225,7 @@ public abstract class IplikeSqlTranslator {
             throw new Untranslatable(); // zone ids have no inet representation
         }
         if (pattern.indexOf(':') >= 0) {
-            final String[] toks = pattern.toLowerCase().split(":", -1);
+            final String[] toks = pattern.toLowerCase(Locale.ROOT).split(":", -1);
             if (toks.length != 8) {
                 throw new Untranslatable();
             }

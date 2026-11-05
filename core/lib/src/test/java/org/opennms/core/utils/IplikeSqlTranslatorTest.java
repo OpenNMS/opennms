@@ -178,6 +178,22 @@ public class IplikeSqlTranslatorTest {
     }
 
     @Test
+    public void testExpansionCapBoundary() {
+        // 512 disjoint addresses translate, 768 fall back
+        assertNotNull(IplikeSqlTranslator.toSqlPredicate("10.*.1.1,3", "ipaddr"));
+        assertNull(IplikeSqlTranslator.toSqlPredicate("10.*.1.1,3,5", "ipaddr"));
+    }
+
+    @Test
+    public void testCaseAndLeadingZeroValues() {
+        assertEquals(Boolean.TRUE, IplikeSqlTranslator.matches("FE80:0:0:0:0:0:0:1", "fe80:*:*:*:*:*:*:*"));
+        assertEquals(Boolean.TRUE, IplikeSqlTranslator.matches("fe80:0:0:0:0:0:0:1", "FE80:*:*:*:*:*:*:*"));
+        assertEquals(Boolean.TRUE, IplikeSqlTranslator.matches("010.1.1.1", "10.1.1.1"));
+        assertEquals(Boolean.TRUE, IplikeSqlTranslator.matches("0010.1.1.1", "10.1.1.1"));
+        assertEquals(Boolean.FALSE, IplikeSqlTranslator.matches("10.1.1.0256", "10.1.1.*"));
+    }
+
+    @Test
     public void testZoneIdPatternFallsBack() {
         assertNull(IplikeSqlTranslator.toSqlPredicate("fe80:*:*:*:*:*:*:*%45", "ipaddr"));
     }

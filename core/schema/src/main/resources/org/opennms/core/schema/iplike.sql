@@ -23,8 +23,8 @@
 -- PL/pgSQL implementation of iplike, revision 2 (see the COMMENT ON at the
 -- end; the Migrator uses it to upgrade older PL/pgSQL revisions in place).
 --
--- Profiling-driven changes relative to revision 1, semantics unchanged
--- (verified against the iplike reference corpus by IPLikeCoverageIT):
+-- Profiling-driven changes relative to revision 1 (verified against the
+-- iplike reference corpus by IPLikeCoverageIT):
 --   * value classification via family(::inet) instead of regex matching
 --     (the zone id is stripped with split_part first: ::inet cannot parse
 --     it; an 8-field LIKE guard plus a strpos '::' rejection keep
@@ -32,10 +32,18 @@
 --     exactly 8 groups)
 --   * to_number(x, '999') replaced by ::integer casts
 --   * regex operators in check_rule replaced by strpos()
---   * parsing wrapped in a nested block whose EXCEPTION handler turns any
---     cast/parse error into 'f' (this is what tolerates garbage input); the
---     null check and the match-all fast paths stay OUTSIDE that block so the
---     most common calls never pay the handler's subtransaction setup
+--   * parsing wrapped in a nested block whose EXCEPTION handler turns
+--     cast/parse errors (data_exception) into 'f' (this is what tolerates
+--     garbage input); the null check and the match-all fast paths stay
+--     OUTSIDE that block so the most common calls never pay the handler's
+--     subtransaction setup
+--
+-- Behavior changes relative to revision 1, matching the translated
+-- native-inet predicates:
+--   * hex digits match regardless of case in the value and the rule (zone
+--     ids still compare case-sensitively)
+--   * a field with extra leading zeros is read by value (0010 is 10)
+--     instead of being truncated
 
 create or replace function iplike(i_ipaddress text, i_rule text) returns boolean as $$
   declare
@@ -97,7 +105,7 @@ create or replace function iplike(i_ipaddress text, i_rule text) returns boolean
         elsif i_ipaddress like '%:%:%:%:%:%:%:%'
               and strpos(split_part(i_ipaddress, '%', 1), '::') = 0
               and family(split_part(i_ipaddress, '%', 1)::inet) = 6
-              and i_rule ~ E'^[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+(%.+)?$' then
+              and i_rule ~ E'^[0-9a-fA-F*,-]+:[0-9a-fA-F*,-]+:[0-9a-fA-F*,-]+:[0-9a-fA-F*,-]+:[0-9a-fA-F*,-]+:[0-9a-fA-F*,-]+:[0-9a-fA-F*,-]+:[0-9a-fA-F*,-]+(%.+)?$' then
             c_addrwork := i_ipaddress;
             c_rulework := i_rule;
 
@@ -118,7 +126,7 @@ create or replace function iplike(i_ipaddress text, i_rule text) returns boolean
                 end loop;
                 c_i := cast(cast('x' || cast(c_addrtemp as text) as bit(16)) as integer);
 
-                c_addrwork := ltrim(ltrim(c_addrwork, '0123456789abcdef'), ':');
+                c_addrwork := ltrim(ltrim(c_addrwork, '0123456789abcdefABCDEF'), ':');
 
                 if (strpos(c_rulework, ':') > 0) then
                     c_r := substr(c_rulework, 0, strpos(c_rulework, ':'));
@@ -136,7 +144,7 @@ create or replace function iplike(i_ipaddress text, i_rule text) returns boolean
                     return 'f';
                 end if;
 
-                c_rulework := ltrim(ltrim(c_rulework, '0123456789abcdef,-*'), ':');
+                c_rulework := ltrim(ltrim(c_rulework, '0123456789abcdefABCDEF,-*'), ':');
 
                 i := i + 1;
             end loop;
@@ -145,7 +153,7 @@ create or replace function iplike(i_ipaddress text, i_rule text) returns boolean
         end if;
 
         return 't';
-    exception when others then
+    exception when data_exception then
         return 'f';
     end;
 end;

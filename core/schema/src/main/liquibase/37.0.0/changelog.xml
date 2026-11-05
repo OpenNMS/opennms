@@ -16,15 +16,15 @@
 
     <!-- Not runOnChange: the indexes below are built from this function, and
          replacing it does not rebuild them. A change to its body needs a new
-         changeset that also reindexes ipinterface_safe_inet_idx and
-         events_safe_inet_idx. -->
+         changeset that also reindexes every *_safe_inet_idx below. -->
     <changeSet author="mmassengill" id="37.0.0-opennms-safe-inet-function">
         <createProcedure>
 CREATE OR REPLACE FUNCTION opennms_safe_inet(i_ipaddress text) RETURNS inet AS $safeinet$
 -- the zone id is stripped for IPv6 only: zone ids are IPv6-only, and
--- iplike() rejects IPv4 values that carry one
+-- iplike() rejects IPv4 values that carry one. Leading zeros in IPv4
+-- octets are accepted (010 is 10), as iplike() does.
 SELECT CASE
-  WHEN i_ipaddress ~ '^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}$'
+  WHEN i_ipaddress ~ '^0*(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.0*(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}$'
   THEN i_ipaddress::inet
   WHEN split_part(i_ipaddress, '%', 1) ~ '^[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7}$'
   THEN split_part(i_ipaddress, '%', 1)::inet
@@ -44,6 +44,23 @@ $safeinet$ LANGUAGE sql IMMUTABLE PARALLEL SAFE RETURNS NULL ON NULL INPUT;
         </rollback>
     </changeSet>
 
+    <!-- Plain rather than partial, so ANALYZE collects statistics on the
+         expression and the planner estimates multi-range filters well.
+         Both tables are small and see few inserts. -->
+    <changeSet author="mmassengill" id="37.0.0-alarms-safe-inet-index">
+        <sql>CREATE INDEX IF NOT EXISTS alarms_safe_inet_idx ON alarms (opennms_safe_inet(ipaddr));</sql>
+        <rollback>
+            <sql>DROP INDEX IF EXISTS alarms_safe_inet_idx;</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="mmassengill" id="37.0.0-notifications-safe-inet-index">
+        <sql>CREATE INDEX IF NOT EXISTS notifications_safe_inet_idx ON notifications (opennms_safe_inet(interfaceid));</sql>
+        <rollback>
+            <sql>DROP INDEX IF EXISTS notifications_safe_inet_idx;</sql>
+        </rollback>
+    </changeSet>
+
     <!-- Partial: most events carry no ipaddr, and skipping them keeps the
          per-insert index-maintenance cost on this high-churn table low.
          Translated predicates always include "ipaddr IS NOT NULL" so the
@@ -56,6 +73,17 @@ $safeinet$ LANGUAGE sql IMMUTABLE PARALLEL SAFE RETURNS NULL ON NULL INPUT;
         <sql>CREATE INDEX IF NOT EXISTS events_safe_inet_idx ON events (opennms_safe_inet(ipaddr)) WHERE ipaddr IS NOT NULL;</sql>
         <rollback>
             <sql>DROP INDEX IF EXISTS events_safe_inet_idx;</sql>
+        </rollback>
+    </changeSet>
+
+    <!-- ANALYZE collects no statistics for a partial index's expression.
+         Without them the planner assumes each translated range matches 0.5%
+         of events, abandons the index for filters with many ranges, and
+         JIT-compiles the predicate. -->
+    <changeSet author="mmassengill" id="37.0.0-events-safe-inet-statistics">
+        <sql>CREATE STATISTICS IF NOT EXISTS events_safe_inet_stats ON (opennms_safe_inet(ipaddr)) FROM events;</sql>
+        <rollback>
+            <sql>DROP STATISTICS IF EXISTS events_safe_inet_stats;</sql>
         </rollback>
     </changeSet>
 

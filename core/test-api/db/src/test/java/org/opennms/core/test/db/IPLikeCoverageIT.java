@@ -283,6 +283,26 @@ public class IPLikeCoverageIT {
     }
 
     /**
+     * Hex digits match case-insensitively (zone ids do not), and IPv4 octets
+     * are read by value, so iplike() and the native predicate agree.
+     */
+    @Test
+    public void testCaseAndLeadingZeros() throws Exception {
+        checkIplikeRule("FE80:0:0:0:0:0:0:1", "fe80:0:0:0:0:0:0:1", true);
+        checkIplikeRule("FE80:0:0:0:0:0:0:1", "fe80:fe80:fe80:fe80:fe80:fe80:fe80:fe80", false);
+        checkIplikeRule("fe80:0:0:0:0:0:0:1", "FE80:*:*:*:*:*:*:*", true);
+        checkIplikeRule("Fe80:0:0:0:0:0:0:1%eth0", "FE80:*:*:*:*:*:*:*%eth0", true);
+        checkIplikeRule("fe80:0:0:0:0:0:0:1%eth0", "fe80:*:*:*:*:*:*:*%ETH0", false);
+        checkIplikeRule("00fe80:0:0:0:0:0:0:1", "fe80:*:*:*:*:*:*:*", false);
+
+        checkIplikeRule("010.1.1.1", "10.1.1.1", true);
+        checkIplikeRule("0010.1.1.1", "10.1.1.1", true);
+        checkIplikeRule("0010.1.1.1", "1.*.*.*", false);
+        checkIplikeRule("10.001.1.1", "10.1.1.*", true);
+        checkIplikeRule("10.1.1.0256", "10.1.1.*", false);
+    }
+
+    /**
      * A middle one-group compression (seven colons, valid inet) must not
      * enter the 8-group parsing loop: ltrim would swallow the '::' and
      * shift every later field, so the shifted rule matched and the correct
