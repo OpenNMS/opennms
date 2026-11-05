@@ -45,6 +45,14 @@ import {
   listMonitoringLocations,
   updateMonitoringLocation
 } from './monitoringLocationAdminService'
+import {
+  createApplication,
+  deleteApplication,
+  getApplicationMembers,
+  listApplicationSummaries,
+  searchServiceCandidates,
+  updateApplicationMembers
+} from './applicationAdminService'
 import { getServiceTypes } from './serviceTypes'
 import { getProvisionDService, putProvisionDService } from './configurationService'
 import {
@@ -196,6 +204,12 @@ export default {
   getNodeCountByLocation,
   getPerspectiveOutageCount,
   listMonitoringLocations,
+  listApplicationSummaries,
+  createApplication,
+  deleteApplication,
+  getApplicationMembers,
+  updateApplicationMembers,
+  searchServiceCandidates,
   updateMonitoringLocation,
   getLog,
   getLogs,
