@@ -270,8 +270,9 @@
                         <c:param name="resourceId" value="${resultSet.resource.id}"/>
                     </c:url>
                     <!-- graph-search div should be immediate parent to graph-container as search depends on this. -->
-                    <div class="graph-search" ng-show="enableGraph" ng-controller="graphSearchCtrl" resourceid ="${fn:escapeXml(resultSet.resource.id)}" graphname="${fn:escapeXml(graph.name)}" graphtitle = "${fn:escapeXml(graph.title)}">
-	                    <div class="graph-aux-controls" style="padding-bottom: 5px" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
+                    <%-- Resource IDs can contain device data. Do not put them in attributes that AngularJS compiles. --%>
+                    <div class="graph-search" ng-show="enableGraph" ng-controller="graphSearchCtrl" graphname="${fn:escapeXml(graph.name)}" graphtitle = "${fn:escapeXml(graph.title)}">
+	                    <div class="graph-aux-controls" style="padding-bottom: 5px">
                             <a style="padding-right: 3px" title="Add ${graph.title} to KSC Report">
                                 <button type="button" class="btn btn-secondary btn-sm" ng-click="open('${AngularJsUtils.escapeString(resultSet.resource.id)}','${AngularJsUtils.escapeString(resultSet.resource.label)}','${AngularJsUtils.escapeString(graph.name)}','${AngularJsUtils.escapeString(graph.title)}')">
                                     <i class="fa fa-plus" aria-hidden="true"></i>
@@ -295,7 +296,8 @@
                               </a>
                             </div>
 	                    </div> <!-- graph-aux-controls -->
-                        <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom}"></div>
+                        <%-- onms-graph reads data-resource-id. ng-non-bindable stops AngularJS from evaluating it. --%>
+                        <div class="graph-container" ng-non-bindable data-graph-zoomable="true" data-resource-id="${fn:escapeXml(resultSet.resource.id)}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom}"></div>
                         <br/><br/>
                     </div>
                 </c:forEach>

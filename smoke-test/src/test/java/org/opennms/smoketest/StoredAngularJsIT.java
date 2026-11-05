@@ -29,6 +29,7 @@
 package org.opennms.smoketest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -96,7 +97,9 @@ public class StoredAngularJsIT extends OpenNMSSeleniumIT {
             final Integer nodeId = stack.opennms().getRestClient().getNode("smoketests:xssAliasNode").getId();
             rrdDir = "/opt/opennms/share/rrd/snmp/" + nodeId + "/" + ifName + "-" + physAddr;
             final Container.ExecResult result = stack.opennms().execInContainer("sh", "-c",
-                    "mkdir -p " + rrdDir + " && rrdtool create " + rrdDir + "/ifInOctets.rrd --step 300 DS:ifInOctets:COUNTER:600:U:U RRA:AVERAGE:0.5:1:12");
+                    "mkdir -p " + rrdDir
+                    + " && rrdtool create " + rrdDir + "/ifInOctets.rrd --step 300 DS:ifInOctets:COUNTER:600:U:U RRA:AVERAGE:0.5:1:12"
+                    + " && rrdtool create " + rrdDir + "/ifOutOctets.rrd --step 300 DS:ifOutOctets:COUNTER:600:U:U RRA:AVERAGE:0.5:1:12");
             assertEquals(result.getStderr(), 0, result.getExitCode());
 
             getDriver().get(getBaseUrlInternal() + "opennms/element/node.jsp?node=smoketests:xssAliasNode");
@@ -107,12 +110,52 @@ public class StoredAngularJsIT extends OpenNMSSeleniumIT {
 
             assertLabelShownAsText("graph/results.htm?reports=all&resourceId="
                     + URLEncoder.encode("node[smoketests:xssAliasNode].interfaceSnmp[" + ifName + "-" + physAddr + "]", StandardCharsets.UTF_8));
+            assertGraphControlsShown();
         } finally {
             if (rrdDir != null) {
                 stack.opennms().execInContainer("rm", "-rf", rrdDir);
             }
             sendDelete("rest/nodes/smoketests:xssAliasNode", 202);
         }
+    }
+
+    @Test
+    public void testResourceIdIsNotEvaluated() throws Exception {
+        // The hrStorageIndex resource type gets the resource name from hrStorageDescr, which a device sets.
+        // Thus, the resource ID on the graph page can contain the expression.
+        String rrdDir = null;
+        try {
+            sendPost("rest/nodes", "<node type=\"A\" label=\"xssResourceNode\" foreignSource=\"smoketests\" foreignId=\"xssResourceNode\"/>", 201);
+
+            // The smoke-test container stores RRD files by node ID.
+            final Integer nodeId = stack.opennms().getRestClient().getNode("smoketests:xssResourceNode").getId();
+            rrdDir = "/opt/opennms/share/rrd/snmp/" + nodeId + "/hrStorageIndex/" + LABEL;
+            // Pass the directory as an argument, so that the shell does not read the quotes and parentheses in it.
+            final Container.ExecResult result = stack.opennms().execInContainer("sh", "-c",
+                    "mkdir -p \"$1\" && cd \"$1\" && printf 'hrStorageDescr=%s\\n' \"$2\" > strings.properties"
+                    + " && for ds in hrStorageSize hrStorageUsed hrStorageAllocUnits; do"
+                    + " rrdtool create $ds.rrd --step 300 DS:$ds:GAUGE:600:U:U RRA:AVERAGE:0.5:1:12 || exit 1; done",
+                    "sh", rrdDir, LABEL);
+            assertEquals(result.getStderr(), 0, result.getExitCode());
+
+            assertLabelShownAsText("graph/results.htm?reports=all&resourceId="
+                    + URLEncoder.encode("node[smoketests:xssResourceNode].hrStorageIndex[" + LABEL + "]", StandardCharsets.UTF_8));
+            assertGraphControlsShown();
+        } finally {
+            if (rrdDir != null) {
+                stack.opennms().execInContainer("rm", "-rf", rrdDir);
+            }
+            sendDelete("rest/nodes/smoketests:xssResourceNode", 202);
+        }
+    }
+
+    /**
+     * Fails if the graph page shows no graph controls. Without the controls, the test does not examine
+     * the AngularJS expressions in them.
+     */
+    private void assertGraphControlsShown() {
+        assertFalse("The graph page shows no graph controls",
+                getDriver().findElements(By.cssSelector(".graph-aux-controls button")).isEmpty());
     }
 
     /**
