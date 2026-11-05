@@ -298,8 +298,11 @@
          even its plugin/formatter metadata to admins rather than the GET catch-all below;
          generation (POST) is likewise admin-only -->
     <intercept-url pattern="/api/v2/system-report/**" method="GET" access="hasRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/system-report.*" method="GET" access="hasRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/system-report/**" method="POST" access="hasRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/system-report.*" method="POST" access="hasRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/system-report/**" method="HEAD" access="hasRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/system-report.*" method="HEAD" access="hasRole('ROLE_ADMIN')" />
 
     <!-- The About page's server details were only ever shown to web UI users, not to REST- or mobile-only accounts.
          CXF serves the same resource at "/about", "/about/" (both matched by "/about/**") and "/about.json" (extension mapping). -->
