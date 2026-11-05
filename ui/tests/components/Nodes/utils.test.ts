@@ -110,10 +110,25 @@ describe('Nodes utils test', () => {
     })
 
     // The narrowing sent to the server has to stay a superset of the client-side match, so a
-    // value carrying LIKE wildcards or FIQL operators drops the attribute term entirely.
-    test.each(['up%', 'up_link', 'a,b', 'a;b', 'a(b', 'a)b'])('omits narrowing for %s', (value) => {
+    // value carrying LIKE wildcards drops the attribute term entirely.
+    test.each(['up%', 'up_link'])('omits narrowing for %s', (value) => {
       expect(buildSnmpNarrowing({ mode: 'snmpParm', attr: 'ifName', value, matchType: 'contains' }))
         .toBeUndefined()
+    })
+
+    // FIQL operators and URL-structural characters are double-encoded, so they reach the server
+    // as literals.
+    test.each([
+      ['a,b', 'ifName==*a%252Cb*'],
+      ['a;b', 'ifName==*a%253Bb*'],
+      ['a(b', 'ifName==*a%2528b*'],
+      ['a)b', 'ifName==*a%2529b*'],
+      ['R&D', 'ifName==*R%2526D*'],
+      ['a#b', 'ifName==*a%2523b*'],
+      ['a+b c', 'ifName==*a%252Bb%2520c*']
+    ])('encodes the narrowing value %s', (value, expected) => {
+      expect(buildSnmpNarrowing({ mode: 'snmpParm', attr: 'ifName', value, matchType: 'contains' }))
+        .toBe(expected)
     })
 
     test('narrows nothing in the default mode', () => {

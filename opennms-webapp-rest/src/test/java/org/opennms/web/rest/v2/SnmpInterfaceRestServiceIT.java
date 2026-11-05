@@ -252,4 +252,42 @@ public class SnmpInterfaceRestServiceIT extends AbstractSpringJerseyRestTestCase
         JSONObject response = new JSONObject(jsonResponse);
         assertEquals(1, response.getInt("count"));
     }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testWildcardStringSearchIsCaseInsensitive() throws Exception {
+        // The Vue node list fetches the interfaces that its case-insensitive SNMP and MAC searches
+        // found with an "(ids);(attr==*value*)" query (see buildSnmpNarrowing). The /nodes search
+        // uses ilike, so these wildcard searches must also be case-insensitive. Otherwise a node
+        // that the /nodes search found shows "No interfaces".
+        sendPost("/monitoringLocations", "<location location-name=\"location1\" monitoring-area=\"location1\" priority=\"1\"/>", 201);
+        String node = "<node type=\"A\" label=\"TestMachine1\" foreignSource=\"JUnit\" foreignId=\"TestMachine1\">" +
+                "<location>location1</location>" +
+                "<labelSource>H</labelSource>" +
+                "</node>";
+        sendPost("/nodes", node, 201);
+        String snmpInterface = "<snmpInterface ifIndex=\"6\">" +
+                "<ifAlias>Uplink to Core</ifAlias>" +
+                "<ifDescr>GigabitEthernet0/1</ifDescr>" +
+                "<ifName>Gi0/1</ifName>" +
+                "<ifType>6</ifType>" +
+                "<physAddr>001E5271136D</physAddr>" +
+                "</snmpInterface>";
+        sendPost("/nodes/1/snmpinterfaces", snmpInterface, 201, "/nodes/1/snmpinterfaces/6");
+
+        // Wildcard searches match in any case
+        for (final String query : new String[] {
+                "ifAlias==*uplink*", "ifAlias==*UPLINK TO*", "ifDescr==*gigabitethernet*",
+                "ifName==*gi0/1*", "physAddr==*001e52*", "(node.id==1);(ifAlias==*uplink*)" }) {
+            final String json = sendRequest(GET, "/snmpinterfaces", parseParamData("_s=" + query), 200);
+            assertEquals(query, 1, new JSONObject(json).getInt("count"));
+        }
+
+        // A NOT_EQUALS wildcard is case-insensitive too
+        sendRequest(GET, "/snmpinterfaces", parseParamData("_s=ifAlias!=*UPLINK*"), 204);
+
+        // A search without a wildcard stays an exact, case-sensitive match
+        sendRequest(GET, "/snmpinterfaces", parseParamData("_s=ifName==Gi0/1"), 200);
+        sendRequest(GET, "/snmpinterfaces", parseParamData("_s=ifName==gi0/1"), 204);
+    }
 }

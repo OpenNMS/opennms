@@ -51,9 +51,10 @@ vi.mock('@/components/Nodes/hooks/useNodeExport', () => ({
 }))
 
 vi.mock('@/components/Nodes/hooks/useNodeQuery', async () => {
-  // Real (unmocked) module — delegated to below for buildUpdatedNodeListQueryParameters, so tests that write a searchTerm directly into the
-  // store can assert on the ACTUAL request shape (e.g. that a term with FIQL-special characters
-  // really does get double-encoded end-to-end), rather than a naive passthrough stub.
+  // Real (unmocked) module — delegated to below for buildUpdatedNodeListQueryParameters, so
+  // tests that write a searchTerm directly into the store can assert on the ACTUAL request shape
+  // (e.g. that a term with FIQL-special characters really does get double-encoded end-to-end),
+  // rather than a naive passthrough stub.
   const actual = await vi.importActual<typeof import('@/components/Nodes/hooks/useNodeQuery')>(
     '@/components/Nodes/hooks/useNodeQuery'
   )
@@ -996,16 +997,18 @@ describe('NodesTable.vue', () => {
       expect(wrapper.exists()).toBe(true)
     })
 
-    // The under-fetch guard must also cover ',' ';' '(' ')': ',' / ';' are FIQL set operators
-    // (OR / AND) that, passed through raw, change what the server narrowing selects; '(' / ')'
-    // are FIQL grouping delimiters that, passed through raw, unbalance the expression and cause a
-    // server-side FIQL parse error (surfacing client-side as "No interfaces").
+    // ',' ';' '(' ')' and URL-structural characters no longer drop the narrowing: the value is
+    // double-encoded (encodeFiqlPattern), so the server gets the literal, and the FIQL expression
+    // and the URL stay intact.
     it.each([
-      ['a comma', 'up,link'],
-      ['a semicolon', 'up;link'],
-      ['an unbalanced open paren', 'up(link'],
-      ['an unbalanced close paren', 'up)link']
-    ])('omits the attribute narrowing when the snmpParm value contains %s', async (_title, value) => {
+      ['a comma', 'up,link', 'ifAlias==*up%252Clink*'],
+      ['a semicolon', 'up;link', 'ifAlias==*up%253Blink*'],
+      ['an unbalanced open paren', 'up(link', 'ifAlias==*up%2528link*'],
+      ['an unbalanced close paren', 'up)link', 'ifAlias==*up%2529link*'],
+      ['an ampersand', 'R&D', 'ifAlias==*R%2526D*'],
+      ['a hash', 'a#b', 'ifAlias==*a%2523b*'],
+      ['a plus and a space', 'a+b c', 'ifAlias==*a%252Bb%2520c*']
+    ])('encodes the attribute narrowing when the snmpParm value contains %s', async (_title, value, narrowing) => {
       const wrapper = mountTable()
       const ns = useNodeStore()
       const structure = useNodeListStore()
@@ -1020,7 +1023,7 @@ describe('NodesTable.vue', () => {
       await nextTick()
 
       expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledTimes(1)
-      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledWith(['1'], undefined)
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledWith(['1'], narrowing)
       expect(wrapper.exists()).toBe(true)
     })
 

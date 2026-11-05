@@ -20,6 +20,7 @@
 /// License.
 ///
 
+import { encodeFiqlPattern } from '@/lib/fiql'
 import { parsePositiveIntegerId } from '@/lib/ids'
 import { isConvertibleToInteger } from '@/lib/utils'
 import { LocationQuery } from 'vue-router'
@@ -371,7 +372,8 @@ export const useNodeQuery = () => {
  */
 const buildNodeListQuery = (filter: NodeQueryFilter) => {
   // Not sanitized: buildSearchQuery encodes every FIQL-reserved character, ',' and ';' included,
-  // so a label such as "ABC Systems, Inc." is matched as typed (NMS-18294).
+  // except '*' (the wildcard), so a label such as "ABC Systems, Inc." is matched as typed
+  // (NMS-18294).
   const searchTerm = filter.searchTerm || ''
   // don't sanitize IP address — allow users to enter commas and other FIQL characters, since buildIpAddressQuery will handle them appropriately
   // (commas are valid in iplike patterns, and users may naturally enter comma-separated lists of IPs or CIDRs)
@@ -613,7 +615,7 @@ const buildSnmpQuery = (snmpParams?: NodeQuerySnmpParams) => {
     }
 
     if (isValidParam(snmpParams.physAddr)) {
-      arr.push(`snmpInterface.physAddr==*${encodeFiqlPattern(snmpParams.physAddr!)}*`)
+      arr.push(`snmpInterface.physAddr==${makeWildcard(snmpParams.physAddr!)}`)
     }
 
     if (arr.length > 0) {
@@ -677,45 +679,17 @@ const buildWithOutagesQuery = (nodesWithOutages?: boolean) => {
   return nodesWithOutages ? 'nodesWithOutages==true' : ''
 }
 
-/**
- * Encode a FIQL value so it survives intact to the backend CriteriaBehavior as an exact literal.
- *
- * Asset values are free text and may contain FIQL-structural characters (',' ';' '(' ')') or
- * URL-structural characters ('&' '#' '%' space). We can neither sanitize them away (the match must
- * be exact) nor pass them raw (they corrupt the FIQL expression or the URL).
- *
- * The value is URL-decoded twice on the way in — once by the servlet container, once by CXF
- * (search.decode.values=true on the v2 endpoints) — so we double-encode it here. This generalizes
- * the comma double-encoding in buildIpAddressQuery to every reserved character. A strict encoder is
- * used because encodeURIComponent leaves ! ' ( ) * unescaped, and ( ) * are meaningful to FIQL.
- *
- * After two decodes the backend receives the exact original string (and '*' is matched literally,
- * preserving exact-match rather than being treated as a wildcard).
- */
-const encodeFiqlValue = (value: string): string => {
-  const strictEncode = (s: string): string =>
-    encodeURIComponent(s).replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase())
-  return strictEncode(strictEncode(value))
-}
-
-/**
- * Encode a FIQL value in which '*' is the wildcard. '*' stays raw and each segment between stars
- * is encoded with encodeFiqlValue, so ',' ';' '(' ')' and URL-structural characters arrive at the
- * backend as literals. Leading, trailing and consecutive stars become empty segments, which
- * encode to '' and so stay unchanged.
- */
-const encodeFiqlPattern = (value: string): string => value.split('*').map(encodeFiqlValue).join('*')
-
 const buildAssetQuery = (assetFilters?: AssetFilter[]) => {
   if (!assetFilters || assetFilters.length === 0) {
     return ''
   }
 
   // Exact match against each asset record column (mirrors the legacy site-status-view asset filter).
+  // A '*' in the value is a wildcard: the server has no escape for '*' (see encodeFiqlValue).
   // Multiple filters are intersected (a node must match every one).
   return assetFilters
     .filter(f => f.column && f.value && ALLOWED_ASSET_COLUMNS.has(f.column))
-    .map(f => `assetRecord.${getAssetColumnFiqlProperty(f.column)}==${encodeFiqlValue(f.value)}`)
+    .map(f => `assetRecord.${getAssetColumnFiqlProperty(f.column)}==${encodeFiqlPattern(f.value)}`)
     .join(getFiqlSetOperator(SetOperator.Intersection))
 }
 

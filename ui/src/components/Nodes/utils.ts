@@ -27,6 +27,7 @@ import {
   SnmpInterface
 } from '@/types'
 import type { OnmsTagSeverity } from '@opennms/onms-ui'
+import { encodeFiqlPattern } from '@/lib/fiql'
 import { isNumber } from '@/lib/utils'
 import { normalizeMacSearch, type InterfaceListMode } from './hooks/useInterfaceListing'
 
@@ -108,22 +109,20 @@ export const getNodeStatusString = (node: Node) => {
   }
 }
 
-// Characters that make a value unsafe to splice raw into the FIQL attribute-narrowing term below:
-// - '%' / '_' are SQL-LIKE wildcards to the server's FIQL '==*value*' match (literal), while
-//   useInterfaceListing.ts's client-side matchesSnmpParm() treats them as SQL-LIKE wildcards — the
-//   server narrowing would no longer be a superset of the client match.
-// - ',' / ';' are FIQL set operators (OR / AND). Left in raw, they split the narrowing into an
-//   OR / AND of other values, so it could exclude rows the client-side match still considers a hit.
-// - '(' / ')' are FIQL grouping delimiters. Left in raw, they can produce an unbalanced FIQL
-//   expression that fails to parse server-side — surfacing client-side as "No interfaces".
-// If the value contains any of these, omit the attribute narrowing entirely; the node.id scoping
+// The snmpParm value is encoded with encodeFiqlPattern, so FIQL-structural (',' ';' '(' ')') and
+// URL-structural ('&' '#' '+' space) characters reach the server as literals. Only '%' and '_'
+// still make the narrowing unsafe: the server's '==*value*' LIKE match escapes them (literal),
+// while useInterfaceListing.ts's client-side matchesSnmpParm() treats them as SQL-LIKE wildcards,
+// so the server narrowing would no longer be a superset of the client match.
+// If the value contains either one, omit the attribute narrowing entirely; the node.id scoping
 // alone still limits the fetch to the current page, and exact contains/equals semantics are
 // re-applied client-side anyway (see buildSnmpNarrowing below).
-const UNSAFE_NARROWING_CHARS = /[%_,;()]/
+const UNSAFE_NARROWING_CHARS = /[%_]/
 
 // Build the FIQL narrowing expression passed to nodeStore.getSnmpInterfacesForNodes so we only
 // fetch the SNMP interfaces relevant to the active maclike/snmpParm mode (see
-// getNodeSnmpInterfaceQuery).
+// getNodeSnmpInterfaceQuery). The server matches these wildcard terms case-insensitively (ilike,
+// see SnmpInterfaceRestService), the same as the client-side match.
 export const buildSnmpNarrowing = (mode: InterfaceListMode): string | undefined => {
   if (mode.mode === 'maclike') {
     // normalizeMacSearch strips every non-hex character, so the result can never contain any of
@@ -136,7 +135,7 @@ export const buildSnmpNarrowing = (mode: InterfaceListMode): string | undefined 
       return undefined
     }
 
-    return `${mode.attr}==*${mode.value}*`
+    return `${mode.attr}==*${encodeFiqlPattern(mode.value)}*`
   }
 
   return undefined

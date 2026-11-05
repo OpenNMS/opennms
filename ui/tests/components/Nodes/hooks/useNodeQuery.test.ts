@@ -879,14 +879,15 @@ describe('Nodes useNodeQuery test', () => {
 
     // Asset values are free text; FIQL/URL-structural characters are double-encoded so they survive
     // the two URL-decodes (servlet container + CXF search.decode.values) and reach the backend as the
-    // exact literal, without corrupting the FIQL expression. See encodeFiqlValue.
+    // exact literal, without corrupting the FIQL expression. The exception is '*': the server has no
+    // escape for it, so it stays raw and is a wildcard. See encodeFiqlValue / encodeFiqlPattern.
     test.each([
       ['comma', 'A,B', '(assetRecord.building==A%252CB);node.type!=D'],
       ['semicolon', 'A;B', '(assetRecord.building==A%253BB);node.type!=D'],
       ['parentheses', '(A)', '(assetRecord.building==%2528A%2529);node.type!=D'],
       ['ampersand', 'A&B', '(assetRecord.building==A%2526B);node.type!=D'],
       ['percent', '50%', '(assetRecord.building==50%2525);node.type!=D'],
-      ['asterisk (literal, not wildcard)', 'A*', '(assetRecord.building==A%252A);node.type!=D'],
+      ['asterisk (raw: a wildcard on the server)', 'A*', '(assetRecord.building==A*);node.type!=D'],
       ['space', 'Data Center', '(assetRecord.building==Data%2520Center);node.type!=D'],
       ['mixed', 'Bldg 1, Floor (2)', '(assetRecord.building==Bldg%25201%252C%2520Floor%2520%25282%2529);node.type!=D']
     ])('double-encodes a value with %s', (title, value, expected) => {

@@ -703,6 +703,54 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // The value is a literal: a comma value that is in no label matches nothing
         sendRequest(GET, url, parseParamData("_s=(label==*ABC%2520Systems%252C%2520Holdings*);node.type!=D"), 204);
+
+        // Exact match (Criteria eq, no wildcard): a comma in foreignId is a literal, not
+        // foreignId 'a' OR foreignId 'b'
+        saveNode("Comma FID", "a,b", null);
+        saveNode("FID A", "a", null);
+        saveNode("FID B", "b", null);
+        json = sendRequest(GET, url, parseParamData("_s=(node.foreignId==a%252Cb);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"Comma FID\""));
+        assertFalse(json, json.contains("\"label\":\"FID A\""));
+        assertFalse(json, json.contains("\"label\":\"FID B\""));
+    }
+
+    /**
+     * The snmpInterface.* string searches use an "ilike ?" SQL subquery. A double-encoded ',' must
+     * arrive as a literal. Without a '*', '%' and '_' must also be literals: CXF escapes them
+     * only for a wildcard value, so NodeRestService escapes them for an exact value.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testSnmpInterfaceSearchValueWithFiqlAndLikeCharacters() throws Exception {
+        final NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode("SnmpMatchNode").setForeignSource("JUnit").setForeignId("snmp-match").setType(OnmsNode.NodeType.ACTIVE);
+        builder.addSnmpInterface(1).setIfName("Gi0_1").setIfAlias("uplink,core").setIfDescr("50%").setCollectionEnabled(true);
+        commitNode(builder.getCurrentNode());
+        builder.addNode("SnmpDecoyNode").setForeignSource("JUnit").setForeignId("snmp-decoy").setType(OnmsNode.NodeType.ACTIVE);
+        builder.addSnmpInterface(1).setIfName("Gi0X1").setIfAlias("uplink").setIfDescr("50 percent").setCollectionEnabled(true);
+        commitNode(builder.getCurrentNode());
+
+        final String url = "/nodes";
+
+        // Wildcard with a comma: not ifAlias *uplink* OR core*
+        String json = sendRequest(GET, url, parseParamData("_s=(snmpInterface.ifAlias==*uplink%252Ccore*);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"SnmpMatchNode\""));
+        assertFalse(json, json.contains("\"label\":\"SnmpDecoyNode\""));
+
+        // Exact with '_': must not match any one character ("Gi0X1")
+        json = sendRequest(GET, url, parseParamData("_s=(snmpInterface.ifName==Gi0_1);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"SnmpMatchNode\""));
+        assertFalse(json, json.contains("\"label\":\"SnmpDecoyNode\""));
+
+        // Exact matching stays case-insensitive
+        json = sendRequest(GET, url, parseParamData("_s=(snmpInterface.ifName==gi0_1);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"SnmpMatchNode\""));
+
+        // Exact with '%': must not match any text ("50 percent")
+        json = sendRequest(GET, url, parseParamData("_s=(snmpInterface.ifDescr==50%2525);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"SnmpMatchNode\""));
+        assertFalse(json, json.contains("\"label\":\"SnmpDecoyNode\""));
     }
 
     private void saveNode(final String label, final String foreignId, final String sysDescription) {
@@ -710,6 +758,10 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         builder.addNode(label).setForeignSource("JUnit").setForeignId(foreignId).setType(OnmsNode.NodeType.ACTIVE);
         final OnmsNode node = builder.getCurrentNode();
         node.setSysDescription(sysDescription);
+        commitNode(node);
+    }
+
+    private void commitNode(final OnmsNode node) {
         // Commit the fixture so the separate-session REST reads can see it (see
         // testAssetFilterValueWithFiqlCharacters).
         m_databasePopulator.getTransactionTemplate().execute(status -> {
