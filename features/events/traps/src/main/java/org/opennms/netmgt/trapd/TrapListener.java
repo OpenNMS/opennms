@@ -133,7 +133,7 @@ public class TrapListener implements TrapNotificationListener {
                         }
                     });
         } catch (final RuntimeException ex) {
-            // Dispatcher not yet bound, or closed by a concurrent configuration reload
+            // Dispatcher could not be created or used, for example because it is not yet bound
             LOG.error("An error occurred while forwarding trap {} for further processing. The trap will be dropped.", trapInformation, ex);
             audit("FORWARD_FAILED", trapInformation, ex);
             // This trap will never reach the sink consumer

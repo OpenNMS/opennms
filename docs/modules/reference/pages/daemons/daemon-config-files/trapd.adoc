@@ -152,7 +152,7 @@ Edit `$\{OPENNMS_HOME}/etc/log4j2.xml` and change the level of the `trap-audit` 
 [source, xml]
 ----
 <logger name="trap-audit" additivity="false" level="INFO">
-  <appender-ref ref="TrapAuditFile"/>
+  <appender-ref ref="TrapAuditAsync"/>
 </logger>
 ----
 
@@ -174,11 +174,13 @@ To disable it, run `log:set OFF trap-audit` or set the level back to `OFF` in th
 
 === Log rotation
 
-The core log rolls at 100 MB and keeps 4 compressed files; the Minion log rolls at 16 MB.
+Both logs keep 4 compressed rotated files. The core log rolls at 100 MB, the Minion log at 16 MB, matching the size of the other Minion logs.
 Adjust the `TrapAuditFile` appender in `log4j2.xml` or the `log4j2.appender.trapAudit` entries in `org.ops4j.pax.logging.cfg` to change this.
+Timestamps use the same `yyyy-MM-dd HH:mm:ss,SSS` format on both.
 
 Audit entries are queued to a background writer thread (the `TrapAuditAsync` appender), so the SNMP receive thread does not wait on the file.
-If the disk cannot keep up and the queue of 4096 entries fills, the receive thread blocks until there is room rather than losing audit lines.
+The queue holds 4096 entries and is non-blocking: if the disk cannot keep up and the queue fills, further audit entries are discarded until it drains, and the trap itself is still forwarded.
+Trap reception is never stalled by the audit log, so a gap in the audit log during a burst means the writer fell behind, not that traps were lost.
 
 NOTE: On a busy trap receiver, the audit log writes one line per trap.
 Disable it again when you are done investigating.

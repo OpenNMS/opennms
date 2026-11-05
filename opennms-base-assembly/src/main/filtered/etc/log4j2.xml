@@ -135,8 +135,9 @@
 
     <!-- SNMP trap audit log: one line per trap handed to the trap listener.
          The file is only created once the trap-audit logger is enabled.
-         Entries are written through the Async appender so the SNMP receive thread
-         never waits on the file. -->
+         Entries are written through the non-blocking Async appender so the SNMP receive
+         thread never waits on the file; if its queue fills, audit entries are dropped
+         rather than stalling trap reception. -->
     <RollingFile name="TrapAuditFile" fileName="\${logdir}/trap-audit.log"
                  filePattern="\${logdir}/trap-audit.%i.log.gz" createOnDemand="true">
       <PatternLayout>
@@ -145,7 +146,7 @@
       <SizeBasedTriggeringPolicy size="100MB" />
       <DefaultRolloverStrategy max="4" fileIndex="min" />
     </RollingFile>
-    <Async name="TrapAuditAsync" bufferSize="4096">
+    <Async name="TrapAuditAsync" bufferSize="4096" blocking="false">
       <AppenderRef ref="TrapAuditFile"/>
     </Async>
   </appenders>
