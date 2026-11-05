@@ -247,6 +247,46 @@ Details:
 admin@opennms>
 ----
 
+=== Metadata caching
+
+To improve performance, a metadata cache has been introduced. This caches metadata objects for various OpenNMS components, e.g. Collectd, Threshd and Pollerd. The following system properties can be set for the cache on the Core:
+
+[options="autowidth"]
+|===
+| Property               | Default
+
+| org.opennms.core.mate.cache.expireAfterWrite
+| 900 seconds
+
+|org.opennms.core.mate.cache.expireAfterAccess
+| -1 (not set)
+
+|org.opennms.core.mate.cache.refreshAfterWrite
+| -1 (not set)
+
+|org.opennms.core.mate.cache.maximumSize
+| -1 (unlimited)
+|===
+
+On the Sentinel, the following properties can be set in the Karaf shell:
+
+[options="autowidth"]
+|===
+| Property                | Default
+
+| org.opennms.core.mate.cache.expireAfterWrite
+| 900 seconds
+
+| org.opennms.core.mate.cache.expireAfterAccess
+| -1 (not set)
+
+| org.opennms.core.mate.cache.refreshAfterWrite
+| -1 (not set)
+
+| org.opennms.core.mate.cache.maximumSize
+| -1 (unlimited)
+|===
+
 === Uses
 
 The following {page-component-title} components allow the use of the Metadata DSL:
