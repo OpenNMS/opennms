@@ -558,6 +558,10 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
             if (Strings.isNullOrEmpty(attribute)) {
                 attribute = "ipAddr";
             }
+            // The attribute goes into the SQL text, thus reject all values that are not a plain column name.
+            if (!IplikeRestriction.isValidAttribute(attribute)) {
+                throw new IllegalArgumentException("Invalid attribute name for an iplike restriction");
+            }
             final String sql = String.format("ipLike({alias}.%s, ?)", attribute);
             m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(sql, restriction.getValue(), STRING_TYPE));
         }

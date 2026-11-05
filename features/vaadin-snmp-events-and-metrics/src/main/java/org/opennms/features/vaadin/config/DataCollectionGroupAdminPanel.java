@@ -27,6 +27,7 @@ import java.util.Iterator;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.vaadin.api.ConfigFileNames;
 import org.opennms.features.vaadin.datacollection.DataCollectionGroupPanel;
 import org.opennms.features.vaadin.utils.FileValidationUtils;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
@@ -119,7 +120,13 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                             return;
                         }
 
-                        File file = new File(datacollectionDir, fieldValue.replaceAll(" ", "_") + ".xml");
+                        final File file;
+                        try {
+                            file = ConfigFileNames.resolve(datacollectionDir, fieldValue.replaceAll(" ", "_") + ".xml");
+                        } catch (IllegalArgumentException e) {
+                            Notification.show("Invalid group name. " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                            return;
+                        }
                         LOG.info("Adding new data collection file {}", file);
                         DatacollectionGroup dcGroup = new DatacollectionGroup();
                         dcGroup.setName(fieldValue);

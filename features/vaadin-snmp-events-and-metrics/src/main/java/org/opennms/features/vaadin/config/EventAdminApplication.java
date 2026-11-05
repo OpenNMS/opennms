@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.vaadin.api.ConfigFileNames;
 import org.opennms.features.vaadin.events.EventPanel;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -149,9 +150,15 @@ public class EventAdminApplication extends UI {
                             return;
                         }
                         String normalizedName = normalizeFilename(fieldValue);
-                        final File file = new File(eventsDir, normalizedName);
                         if (FileValidationUtils.isFileNameTooLong(normalizedName)) {
                             Notification.show("Filename too long after normalization", Notification.Type.ERROR_MESSAGE);
+                            return;
+                        }
+                        final File file;
+                        try {
+                            file = ConfigFileNames.resolve(eventsDir, normalizedName);
+                        } catch (IllegalArgumentException e) {
+                            Notification.show("Invalid file name. " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
                             return;
                         }
                         LOG.info("Adding new events file {}", file);

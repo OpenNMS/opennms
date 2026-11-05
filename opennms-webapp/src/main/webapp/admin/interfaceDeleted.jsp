@@ -80,7 +80,7 @@
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
-          .headTitle(WebSecurityUtils.sanitizeString(ipAddr))
+          .headTitleText(ipAddr)
           .breadcrumb("Search", "element/index.jsp")
           .breadcrumb("Node", "${nodeLink}")
           .breadcrumb("Interface", "${interfaceLink}")
