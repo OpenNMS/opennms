@@ -41,6 +41,7 @@ import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.snmp.SnmpException;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapListenerConfig;
@@ -191,14 +192,26 @@ public class TrapListener implements TrapNotificationListener {
         }
     }
 
+    /**
+     * The trap OID as sent: the snmpTrapOID.0 value for v2c/v3, and for v1 the OID derived
+     * from enterprise, generic and specific. {@link TrapIdentity#getTrapOID()} is deliberately
+     * not used for v2c/v3 because it replaces the OID of standard traps with the
+     * snmpTrapEnterprise.0 value when that varbind is present.
+     */
     private static String auditTrapOid(final TrapInformation trapInformation) {
         try {
-            final String oid = trapInformation.getTrapIdentity().getTrapOID();
-            return oid == null ? "unknown" : oid;
+            final SnmpObjId received = trapInformation.getSnmpTrapOid();
+            if (received != null) {
+                return received.toString();
+            }
+            if ("v1".equals(trapInformation.getVersion())) {
+                final String derived = trapInformation.getTrapIdentity().getTrapOID();
+                return derived == null ? "unknown" : derived;
+            }
         } catch (final RuntimeException e) {
             // Malformed PDUs (for example fewer than two varbinds) cannot yield an identity
-            return "unknown";
         }
+        return "unknown";
     }
 
     private static String auditAddress(final InetAddress address) {

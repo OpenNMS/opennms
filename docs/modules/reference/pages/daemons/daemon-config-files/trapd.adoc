@@ -124,7 +124,7 @@ A trap that fails forwarding therefore produces two lines, `RECEIVED` followed b
 | The SNMPv3 security name. Only present for `v3` traps. Community strings of v1 and v2c traps are never logged.
 
 | `oid`
-| The trap OID. For SNMPv1 traps this is the OID derived from the enterprise, generic, and specific fields, matching the `id` used in event definition masks. `unknown` when the PDU is malformed.
+| The trap OID. For SNMPv2c and SNMPv3 traps this is the value of the `snmpTrapOID.0` varbind exactly as the agent sent it, even for standard traps that also carry `snmpTrapEnterprise.0`. For SNMPv1 traps it is the OID derived from the enterprise, generic, and specific fields. `unknown` when the PDU is malformed.
 
 | `varbinds`
 | The number of varbinds in the PDU.

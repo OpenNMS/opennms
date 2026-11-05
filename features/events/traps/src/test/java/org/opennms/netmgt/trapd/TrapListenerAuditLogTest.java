@@ -107,6 +107,30 @@ public class TrapListenerAuditLogTest {
     }
 
     @Test
+    public void logsReceivedOidNotEnterpriseForStandardV2TrapWithEnterpriseVarbind() throws Exception {
+        when(dispatcher.send(any())).thenReturn(CompletableFuture.completedFuture(null));
+
+        // linkDown with a trailing snmpTrapEnterprise.0, as many agents send it. TrapIdentity reports the
+        // enterprise OID for this shape, but the audit log must show the OID the agent actually sent.
+        final String linkDown = ".1.3.6.1.6.3.1.1.5.3";
+        final String enterprise = ".1.3.6.1.4.1.9";
+        final PDU pdu = new PDU();
+        pdu.setType(PDU.TRAP);
+        pdu.add(new VariableBinding(SnmpConstants.sysUpTime, new TimeTicks(5000)));
+        pdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(linkDown)));
+        pdu.add(new VariableBinding(new OID("1.3.6.1.2.1.2.2.1.1.3"), new org.snmp4j.smi.Integer32(3)));
+        pdu.add(new VariableBinding(SnmpConstants.snmpTrapEnterprise, new OID(enterprise)));
+        final TrapInformation trap = new Snmp4JTrapNotifier.Snmp4JV2V3TrapInformation(InetAddressUtils.ONE_TWENTY_SEVEN, "public", pdu, 2);
+        assertThat("precondition: TrapIdentity substitutes the enterprise", trap.getTrapIdentity().getTrapOID(), org.hamcrest.Matchers.is(enterprise));
+
+        listener.trapReceived(trap);
+
+        final List<String> lines = auditLines();
+        assertThat(lines, hasSize(1));
+        assertThat(lines.get(0), containsString("version=v2 oid=" + linkDown + " varbinds=4"));
+    }
+
+    @Test
     public void logsDerivedOidForV1Trap() throws Exception {
         when(dispatcher.send(any())).thenReturn(CompletableFuture.completedFuture(null));
 
