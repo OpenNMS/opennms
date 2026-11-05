@@ -202,7 +202,7 @@ def ask_model(system, user):
     if resp.stop_reason != "end_turn":
         raise RuntimeError(f"stop_reason={resp.stop_reason}")
     text = next(b.text for b in resp.content if b.type == "text")
-    return json.loads(text), resp.usage.model_dump()
+    return json.loads(text), resp.usage.model_dump(), resp.model
 
 
 def select(ref, base):
@@ -241,17 +241,20 @@ def select(ref, base):
             + " or ITs that load a changed Spring XML file):\n"
             + ("\n".join(always) or "(none)") + f"\n\nDiff:\n{diff}")
     system = RULES + "\n\nCatalog:\n" + "\n".join(lines)
-    sel, usage = ask_model(system, user)
+    sel, usage, model = ask_model(system, user)
 
     # The model sometimes names a test in its reasons but leaves it out of the lists; include those.
     by_simple = {}
     for c in known:
         by_simple.setdefault(c.rsplit(".", 1)[1], []).append(c)
     named = set(re.findall(r"\b(\w+IT\w*)\b", sel["reasons"]))
-    listed = {c.rsplit(".", 1)[1] for c in sel["its"] + sel["smoke"]}
+    listed = {c.rsplit(".", 1)[-1] for c in sel["its"] + sel["smoke"]}
     added_from_reasons = sorted(c for name in named - listed for c in by_simple.get(name, []))
 
-    picked = set(sel["its"]) | set(sel["smoke"]) | set(added_from_reasons) | set(always)
+    # An answer can use a simple class name; use the class when the name is unique.
+    returned = {c if c in known or len(by_simple.get(c, [])) != 1 else by_simple[c][0]
+                for c in sel["its"] + sel["smoke"]}
+    picked = returned | set(added_from_reasons) | set(always)
     its = sorted(c for c in picked if known.get(c) == "it")
     smoke_all = {c for c, s in known.items() if s.startswith("smoke")}
     smoke = sorted(smoke_all if full_smoke else picked & smoke_all)
@@ -260,7 +263,7 @@ def select(ref, base):
             "full_smoke_paths": full_smoke, "added_from_reasons": added_from_reasons,
             "unknown_dropped": sorted(picked - set(known)),
             "change_summary": sel["change_summary"], "reasons": sel["reasons"], "confidence": sel["confidence"],
-            "suites": {c: known[c] for c in smoke}, "model": MODEL, "usage": usage}
+            "suites": {c: known[c] for c in smoke}, "model": model, "usage": usage}
 
 
 def write_outputs(out_dir, result):

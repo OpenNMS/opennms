@@ -6,6 +6,8 @@ jobs:
       - cached-checkout
       - run:
           name: Select tests for this pull request (shadow mode)
+          # The model call can take up to 10 minutes for each of 3 attempts and prints nothing while it waits.
+          no_output_timeout: 35m
           command: |
             # Shadow mode: the selection is only stored as an artifact, and the full suites still run.
             # This step never fails the job.
