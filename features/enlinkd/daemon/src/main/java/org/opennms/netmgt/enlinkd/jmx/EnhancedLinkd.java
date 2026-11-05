@@ -31,6 +31,7 @@
 package org.opennms.netmgt.enlinkd.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
+import org.opennms.netmgt.scheduler.LegacyPriorityExecutor;
 
 public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.enlinkd.EnhancedLinkd> implements EnhancedLinkdMBean {
 
@@ -46,4 +47,47 @@ public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.ope
         return "enhancedLinkdContext";
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public long getActiveThreads() {
+        return getPriorityExecutor().getActiveThreads();
+    }
+
+    @Override
+    public long getTasksTotal() {
+        return getPriorityExecutor().getTaskCount();
+    }
+
+    @Override
+    public long getTasksCompleted() {
+        return getPriorityExecutor().getCompletedTaskCount();
+    }
+
+    @Override
+    public long getNumPoolThreads() {
+        return getPriorityExecutor().getPoolThreads();
+    }
+
+    @Override
+    public long getCorePoolThreads() {
+        return getPriorityExecutor().getThreads();
+    }
+
+    @Override
+    public long getTaskQueuePendingCount() {
+        return getPriorityExecutor().getReadyQueueSize();
+    }
+
+    @Override
+    public long getTaskQueueDelayedCount() {
+        return getPriorityExecutor().getDelayedQueueSize();
+    }
+
+    /**
+     * Package-private so tests can supply an executor without a Spring context. When the
+     * context is not running, getDaemon() throws and the JMX collector skips the attribute.
+     */
+    LegacyPriorityExecutor getPriorityExecutor() {
+        return getDaemon().getExecutor();
+    }
 }
