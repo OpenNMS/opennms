@@ -45,6 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Sets;
 
 
@@ -60,6 +62,8 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
 
     // Actual adapters implementing the logic
     private final Set<Adapter> adapters = Sets.newHashSet();
+
+    private Meter messagesReceived;
 
     public TelemetryMessageConsumer(QueueConfig queueConfig, TelemetrySinkModule sinkModule) throws Exception {
         this(queueConfig,
@@ -77,6 +81,11 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
 
     @PostConstruct
     public void init() throws Exception {
+        final MetricRegistry metricRegistry = telemetryRegistry.getMetricRegistry();
+        if (metricRegistry != null) {
+            messagesReceived = metricRegistry.meter(MetricRegistry.name("consumers", queueDef.getName(), "messagesReceived"));
+        }
+
         // Pre-emptively instantiate the adapters
         for (AdapterDefinition adapterDef : adapterDefs) {
             final Adapter adapter;
@@ -97,6 +106,9 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     public void handleMessage(TelemetryProtos.TelemetryMessageLog messageLog) {
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Telemetryd.LOG_PREFIX)) {
             LOG.trace("Received message log: {}", messageLog);
+            if (messagesReceived != null) {
+                messagesReceived.mark(messageLog.getMessageCount());
+            }
             // Handle the message with all of the adapters
             for (Adapter adapter : adapters) {
                 try {
