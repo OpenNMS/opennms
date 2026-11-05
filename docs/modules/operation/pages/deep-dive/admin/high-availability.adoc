@@ -160,7 +160,8 @@ A file excluded on either node is neither overwritten nor deleted by sync.
 == Client access
 
 A non-ACTIVE node does not listen on its web port at all, because HA holds startup before the web server starts.
-An unauthenticated HTTP health check against the web port, such as `GET /opennms/login.jsp` (200 on the active node), therefore tells a load balancer or reverse proxy which node is serving.
+An unauthenticated HTTP health check against the web port, such as `GET /opennms/rest/health/probe`, therefore tells a load balancer or reverse proxy which node is serving.
+The probe returns 200 only when all health checks pass (599 otherwise), so a failing check also takes the active node out of rotation; `GET /opennms/login.jsp` checks only that the web server is up.
 
 == Supervision modes
 
