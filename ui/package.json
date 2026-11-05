@@ -65,7 +65,7 @@
     "splitpanes": "^3.1.5",
     "vite-svg-loader": "^4.0.0",
     "vkbeautify": "^0.99.3",
-    "vue": "^3.5.33",
+    "vue": "^3.5.44",
     "vue-diff": "^1.2.4",
     "vue-router": "^4.2.4",
     "vue3-ace-editor": "^2.2.4",
