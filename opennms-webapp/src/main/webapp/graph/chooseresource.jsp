@@ -29,7 +29,23 @@
 --%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" prefix="e"%>
+<%!
+  // Encodes a value for a single-quoted string in an AngularJS expression.
+  // Letters, digits and some URL characters stay. Other characters become backslash-u escapes,
+  // which the AngularJS parser reads. The output has no quotes, no "&", no "<" and no "{".
+  // Thus it is safe in an HTML attribute, and AngularJS does not interpolate it.
+  private static String ngString(final String value) {
+    final StringBuilder buffer = new StringBuilder();
+    for (final char c : value.toCharArray()) {
+      if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || " _-.:/,=?".indexOf(c) >= 0) {
+        buffer.append(c);
+      } else {
+        buffer.append(String.format("\\u%04x", (int) c));
+      }
+    }
+    return buffer.toString();
+  }
+%>
 <%
   String node = request.getParameter("node");
   if (node == null) {
@@ -43,9 +59,9 @@
   }
   String reports = request.getParameter("reports");
   String endUrl = request.getParameter("endUrl");
-  pageContext.setAttribute("node", node == null ? "null" : node);
-  pageContext.setAttribute("reports", reports == null ? "" : reports);
-  pageContext.setAttribute("endUrl", endUrl == null ? "" : endUrl);
+  pageContext.setAttribute("node", ngString(node == null ? "null" : node));
+  pageContext.setAttribute("reports", ngString(reports == null ? "" : reports));
+  pageContext.setAttribute("endUrl", ngString(endUrl == null ? "" : endUrl));
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
@@ -61,7 +77,7 @@
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
-<div class="" ng-controller="NodeResourcesCtrl" ng-init="init('${e:forJavaScript(node)}','${e:forJavaScript(reports)}','${e:forJavaScript(endUrl)}')">
+<div class="" ng-controller="NodeResourcesCtrl" ng-init="init('${node}','${reports}','${endUrl}')">
 
   <div growl></div>
 

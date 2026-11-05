@@ -585,7 +585,7 @@
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="actionCode" value="<%=action%>" />
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
+                <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString("detail.htm" + "?" + request.getQueryString()) %>" />
                 <button class="form-control btn btn-secondary" type="submit">
                     <i class="<%=ackButtonIcon%>"></i> <%=ackButtonName%>
                 </button>
@@ -595,7 +595,7 @@
                 <form class="form-inline mr-1" method="post" action="alarm/changeSeverity?actionCode=<%=escalateAction%>">
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                    <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
+                    <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString("detail.htm" + "?" + request.getQueryString()) %>" />
                     <button class="form-control btn btn-secondary" type="submit">
                         <i class="fa fa-arrow-up"></i> Escalate
                     </button>
@@ -606,7 +606,7 @@
                 <form class="form-inline" method="post" action="alarm/changeSeverity?actionCode=<%=clearAction%>">
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                    <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
+                    <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString("detail.htm" + "?" + request.getQueryString()) %>" />
                     <button class="form-control btn btn-secondary" type="submit" value="Clear">
                         <i class="fa fa-thumbs-up"></i> Clear
                     </button>
@@ -620,7 +620,7 @@
             <form class="form-inline mr-1" method="post" action="alarm/ticket/create.htm">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
+                <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString("/alarm/detail.htm" + "?" + request.getQueryString()) %>" />
                 <form:input class="form-control btn btn-secondary" type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
                 <%-- Remedy Specific TroubleTicket - Start --%>
                 <% if ("org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin".equalsIgnoreCase(Vault.getProperty("opennms.ticketer.plugin")) && (alarm.getTTicketState() == null || alarm.getTTicketState().toString().equals("CREATE_FAILED") )) { %>
@@ -649,14 +649,14 @@
             <form class="form-inline mr-1" method="post" action="alarm/ticket/update.htm">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
+                <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString("/alarm/detail.htm" + "?" + request.getQueryString()) %>" />
                 <form:input class="form-control btn btn-secondary" type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null || alarm.getTTicketId() == null) %>"/>
             </form>
 
             <form class="form-inline" method="post" action="alarm/ticket/close.htm">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
+                <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString("/alarm/detail.htm" + "?" + request.getQueryString()) %>" />
                 <form:input class="form-control btn btn-secondary" type="submit" value="Close Ticket" disabled="<%=((alarm.getTTicketState() == null) || ((alarm.getTTicketState() != TroubleTicketState.OPEN) && (alarm.getTTicketState() != TroubleTicketState.CLOSE_FAILED))) ? true : false %>" />
             </form>
             </div>

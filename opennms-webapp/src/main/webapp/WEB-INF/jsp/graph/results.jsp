@@ -68,7 +68,8 @@
         <c:set var="showCustom">style="display: none;"</c:set>
     </c:if>
     <div id="customTimeForm" class="mb-3" name="customTimeForm" ${showCustom}>
-        <form role="form" class="form top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get">
+        <%-- The hidden fields contain request values. ng-non-bindable stops AngularJS from evaluating {{...}} in these values. --%>
+        <form role="form" class="form top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get" ng-non-bindable>
             <c:if test="${empty results.generatedId && empty results.nodeCriteria}">
                 <c:forEach var="resultSet" items="${results.graphResultSets}">
                     <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
@@ -84,7 +85,7 @@
                 <input type="hidden" name="reports" value="<c:out value="${report}"/>"/>
             </c:forEach>
             <input type="hidden" name="relativetime" value="custom"/>
-            <input type="hidden" name="zoom" value="<c:out value="${param.zoom}"/>"/>
+            <input type="hidden" name="zoom" value="${param.zoom == 'true'}"/>
 
             <div class="form-row form-group mb-1">
                 <label class="col-form-label col-lg-1 col-md-2 col-4">Start Time</label>
@@ -297,7 +298,7 @@
                             </div>
 	                    </div> <!-- graph-aux-controls -->
                         <%-- onms-graph reads data-resource-id. ng-non-bindable stops AngularJS from evaluating it. --%>
-                        <div class="graph-container" ng-non-bindable data-graph-zoomable="true" data-resource-id="${fn:escapeXml(resultSet.resource.id)}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom}"></div>
+                        <div class="graph-container" ng-non-bindable data-graph-zoomable="true" data-resource-id="${fn:escapeXml(resultSet.resource.id)}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom == 'true'}"></div>
                         <br/><br/>
                     </div>
                 </c:forEach>

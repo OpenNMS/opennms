@@ -88,7 +88,7 @@
           <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             <c:if test="${param.action == 'redo'}">
               <p class="text-danger">
-                  The IP address ${param.ipAddress} already exists.
+                  The IP address <c:out value="${param.ipAddress}"/> already exists.
                   Please enter a different IP address.
               </p>
             </c:if>

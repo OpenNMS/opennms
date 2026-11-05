@@ -331,7 +331,9 @@ public class EventController extends MultiActionController implements Initializi
     }
 
     private String getDisplay(HttpServletRequest request) {
-    	return getQueryParameter(request, "display");
+        // The display value is written into links on the list page. Accept only the known values.
+        final String display = getQueryParameter(request, "display");
+        return "long".equals(display) || "short".equals(display) ? display : null;
     }
 
     private int getLimit(HttpServletRequest request) {

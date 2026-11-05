@@ -57,12 +57,12 @@
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
-          .headTitle(entity.getServiceName())
+          .headTitleText(entity.getServiceName())
           .headTitle("Meta-Data")
           .breadcrumb("Search", "element/index.jsp")
           .breadcrumb("Node", "element/node.jsp?node=" + nodeId)
-          .breadcrumb("Interface", "element/interface.jsp?node=" + nodeId  + "&intf=" + ipAddr)
-          .breadcrumb("Service", "element/service.jsp?node=" + nodeId  + "&intf=" + ipAddr + "&service=" + entity.getServiceId())
+          .breadcrumbText("Interface", "element/interface.jsp?node=" + nodeId  + "&intf=" + org.opennms.web.api.Util.encode(ipAddr))
+          .breadcrumbText("Service", "element/service.jsp?node=" + nodeId  + "&intf=" + org.opennms.web.api.Util.encode(ipAddr) + "&service=" + entity.getServiceId())
           .breadcrumb("Meta-Data")
           .build(request);
 %>

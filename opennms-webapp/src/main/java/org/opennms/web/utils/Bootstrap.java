@@ -73,8 +73,21 @@ public class Bootstrap {
         request.setAttribute("__bs_flags", this.flags);
     }
 
+    /**
+     * Adds a head title. The title is evaluated as an EL expression. Use it only for literals
+     * such as {@code "${model.label}"}. For runtime values, use {@link #headTitleText(String)}.
+     */
     public Bootstrap headTitle(final String headTitle) {
         this.headTitles.add(eval(this.pageContext, "headTitle", Objects.requireNonNull(headTitle)));
+        return this;
+    }
+
+    /**
+     * Adds a head title as plain text. The value is not evaluated as an EL expression.
+     * Use this method for request data and stored data.
+     */
+    public Bootstrap headTitleText(final String headTitle) {
+        this.headTitles.add(Objects.requireNonNull(headTitle));
         return this;
     }
 
@@ -83,16 +96,38 @@ public class Bootstrap {
         return this;
     }
 
+    /**
+     * Adds a breadcrumb. The title is evaluated as an EL expression. Use it only for literals.
+     * For runtime values, use {@link #breadcrumbText(String)}.
+     */
     public Bootstrap breadcrumb(final String title) {
         final var breadcrumb = new Breadcrumb(eval(this.pageContext, "breadcrumb.title", title));
         return this.breadcrumb(breadcrumb);
     }
 
+    /**
+     * Adds a breadcrumb with a link. The title and the link are evaluated as EL expressions.
+     * Use it only for literals. For runtime values, use {@link #breadcrumbText(String, String)}.
+     */
     public Bootstrap breadcrumb(final String title, final String link) {
         final var breadcrumb = new Breadcrumb(eval(this.pageContext, "breadcrumb.title", title))
                 .withLink(eval(this.pageContext, "breadcrumb.link", link));
 
         return this.breadcrumb(breadcrumb);
+    }
+
+    /**
+     * Adds a breadcrumb as plain text. The title is not evaluated as an EL expression.
+     */
+    public Bootstrap breadcrumbText(final String title) {
+        return this.breadcrumb(new Breadcrumb(title));
+    }
+
+    /**
+     * Adds a breadcrumb with a link as plain text. The title and the link are not evaluated as EL expressions.
+     */
+    public Bootstrap breadcrumbText(final String title, final String link) {
+        return this.breadcrumb(new Breadcrumb(title, link));
     }
 
     public Bootstrap scrollSpy(final String scrollSpy) {
