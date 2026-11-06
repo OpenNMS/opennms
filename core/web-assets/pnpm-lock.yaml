@@ -243,8 +243,8 @@ importers:
         specifier: ^7.27.1
         version: 7.28.5(@babel/core@7.29.7)
       '@babel/runtime-corejs3':
-        specifier: ^7.28.4
-        version: 7.29.2
+        specifier: ^8.0.10
+        version: 8.0.10
       '@rangerrick/moment-javaformat':
         specifier: ^2.0.1
         version: 2.0.12(moment-timezone@0.5.48)
@@ -1081,9 +1081,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.0.0-0
 
-  '@babel/runtime-corejs3@7.29.2':
-    resolution: {integrity: sha512-Lc94FOD5+0aXhdb0Tdg3RUtqT6yWbI/BbFWvlaSJ3gAb9Ks+99nHRDKADVqC37er4eCB0fHyWT+y+K3QOvJKbw==}
-    engines: {node: '>=6.9.0'}
+  '@babel/runtime-corejs3@8.0.10':
+    resolution: {integrity: sha512-cLseP2U5jgGblzEO1cdfhyrnEsuwE5m3xryCc+JRvRui7o+zSMJsWkYoZVJC1TJt/P0BOiiyBsuxD9gQ1bqyfw==}
 
   '@babel/template@7.28.6':
     resolution: {integrity: sha512-YA6Ma2KsCdGb+WC6UpBVFJGXL58MDA6oyONbjyF/+5sBgxY/dwkhLogbMT2GXXyU84/IhRw/2D1Os1B/giz+BQ==}
@@ -6285,7 +6284,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/runtime-corejs3@7.29.2':
+  '@babel/runtime-corejs3@8.0.10':
     dependencies:
       core-js-pure: 3.49.0
 
