@@ -106,6 +106,16 @@ public abstract class AbstractCollectionAdapter extends AbstractAdapter {
     }
 
     /**
+     * Returns the protocol of the telemetry data this adapter handles, for example {@code GNMI}.
+     * It is passed to the persisters as the {@code AGENT_PROTOCOL} service parameter.
+     *
+     * @return the protocol, or {@code null} if the adapter declares none
+     */
+    public String getAgentProtocol() {
+        return null;
+    }
+
+    /**
      * Build a collection set from the given message.
      *
      * The message log is also provided in case the log contains additional
@@ -143,7 +153,7 @@ public abstract class AbstractCollectionAdapter extends AbstractAdapter {
             // Persist!
             final CollectionSet collectionSet = result.getCollectionSet();
             LOG.trace("Persisting collection set: {} for message: {}", collectionSet, message);
-            final Persister persister = persisterFactory.createPersister(EMPTY_SERVICE_PARAMETERS, repository);
+            final Persister persister = persisterFactory.createPersister(ServiceParameters.forAgentProtocol(getAgentProtocol()), repository);
             collectionSet.visit(persister);
 
             // Thresholding

@@ -58,6 +58,14 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 public class NxosGpbAdapter extends AbstractScriptedCollectionAdapter {
 
+    /** Agent protocol of this adapter, published as {@code agent_protocol} on Kafka. */
+    public static final String AGENT_PROTOCOL = "NXOS";
+
+    @Override
+    public String getAgentProtocol() {
+        return AGENT_PROTOCOL;
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(NxosGpbAdapter.class);
 
     private static final ExtensionRegistry s_registry = ExtensionRegistry.newInstance();
