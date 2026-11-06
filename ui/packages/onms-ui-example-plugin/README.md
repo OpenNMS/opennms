@@ -148,7 +148,7 @@ this package's contract-test role.
 VITE_EXAMPLE_PLUGIN=true pnpm dev
 ```
 
-Then open `/#/example-plugin` in the running dev server (the router uses
+Then open `http://localhost:3001/opennms/ui/#/example-plugin` in the running dev server (the router uses
 hash history). The flag both registers the route (`ui/src/main/main.ts`)
 and mounts the dev middleware that serves this package's `dist/` output
 (`ui/vite.config.ts`).

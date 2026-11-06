@@ -29,7 +29,7 @@ Type checking (`vue-tsc --noEmit`) runs as part of every build script; there is 
 
 ### Deploying to a local OpenNMS instance
 
-There is no usable dev server (OpenNMS URLs point at port 8980). Build, then copy assets into the running instance (paths below are relative to the repo root; `XX.X.X` is the current snapshot version under `target/`):
+`pnpm dev` serves the main SPA with hot reload at `http://localhost:3001/opennms/ui/` and proxies the rest of `/opennms` to a running instance (`VITE_DEV_PROXY_TARGET`, default `http://localhost:8980`); log in at `http://localhost:3001/opennms/`. The menu app has no dev server. To change it, or to test a production build, build, then copy assets into the running instance (paths below are relative to the repo root; `XX.X.X` is the current snapshot version under `target/`):
 
 ```bash
 # Main SPA
