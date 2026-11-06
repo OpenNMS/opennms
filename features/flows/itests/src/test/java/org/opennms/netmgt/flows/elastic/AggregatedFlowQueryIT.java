@@ -52,9 +52,9 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -124,7 +124,6 @@ public class AggregatedFlowQueryIT {
     protected AggregatedFlowQueryService aggFlowQueryService;
     protected DocumentEnricherImpl documentEnricher;
 
-    @ClassRule
     public static ElasticTestContainerWithPlugins elasticsearchContainer;
 
     static {
@@ -141,6 +140,7 @@ public class AggregatedFlowQueryIT {
 
     @BeforeClass
     public static void setUpClass() {
+        elasticsearchContainer.start();
 
         // Verify plugins were correctly installed
         boolean pluginsInstalled = elasticsearchContainer.verifyPluginsInstalled();
@@ -151,6 +151,11 @@ public class AggregatedFlowQueryIT {
         }
     }
 
+
+    @AfterClass
+    public static void tearDownClass() {
+        elasticsearchContainer.stop();
+    }
 
     @Before
     public void setUp() throws IOException, ExecutionException, InterruptedException {
