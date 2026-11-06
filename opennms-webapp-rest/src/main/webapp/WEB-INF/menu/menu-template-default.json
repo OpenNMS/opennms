@@ -204,7 +204,7 @@
         {
           "id": "configureThresholds",
           "name": "Configure Thresholds",
-          "url": "admin/thresholds/index.htm",
+          "url": "ui/index.html#/threshold-config",
           "roles": ["ROLE_ADMIN"]
         },
         {
@@ -285,7 +285,7 @@
         {
           "id": "manageApplications",
           "name": "Manage Applications",
-          "url": "admin/applications.htm",
+          "url": "ui/index.html#/admin/applications",
           "roles": ["ROLE_ADMIN"]
         }
       ]

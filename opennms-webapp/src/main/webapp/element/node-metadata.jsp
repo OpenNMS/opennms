@@ -42,7 +42,7 @@
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
-          .headTitle(entity.getLabel())
+          .headTitleText(entity.getLabel())
           .headTitle("Meta-Data")
           .breadcrumb("Search", "element/index.jsp")
           .breadcrumb("Node", ElementConstants.NODE_DETAILS_URI + entity.getId())

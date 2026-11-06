@@ -44,8 +44,7 @@ chmod 600 users.properties
 [source, docker-compose.yml]
 ----
 volumes:
-  - ./minion-config.yaml:/opt/minion/minion-config.yaml
-  - ./scv.jce:/opt/minion/scv.jce
+  - ./keystore/scv.jce:/opt/minion/etc/scv.jce
   - ./users.properties:/opt/minion/etc/users.properties
   - ./org.apache.karaf.jaas.cfg:/opt/minion/etc/org.apache.karaf.jaas.cfg
 ----

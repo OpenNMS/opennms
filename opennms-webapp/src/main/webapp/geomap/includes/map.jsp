@@ -22,7 +22,6 @@
 
 --%>
 <%@page import="org.opennms.web.api.Util" %>
-<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@ page import="org.opennms.web.geomap.GeomapPageHelper" %>
 <%@ page import="org.opennms.web.api.ElementConstants" %>
 <%@page language="java" contentType="text/html" session="true" %>
@@ -45,7 +44,16 @@
 %>
 <%
   final String baseHref = Util.calculateUrlBase( request );
-  final String mapId = getParameter(request, "mapId", "map");
+  // The map ID goes into an HTML ID, a jQuery selector and a script. Accept only safe characters.
+  String mapId = getParameter(request, "mapId", "map");
+  if (!mapId.matches("[A-Za-z0-9_-]+")) {
+    mapId = "map";
+  }
+  // The height goes into a style attribute. Accept only "auto" or a CSS length.
+  String height = getParameter(request, "height", "400px");
+  if (!height.matches("auto|[0-9]+(\\.[0-9]+)?(px|%|em|rem|vh|vw|pt)")) {
+    height = "400px";
+  }
 %>
 
 <%--
@@ -63,7 +71,7 @@
   <jsp:param name="asset" value="geomap-js" />
 </jsp:include>
 
-<div class="geomap" style="height: <%= WebSecurityUtils.sanitizeString(getParameter(request, "height", "400px"))%>">
+<div class="geomap" style="height: <%= height %>">
   <div style="width: 100%; height:100%" id="<%= mapId %>"></div>
 
   <!-- Template to build the popup for each single marker -->

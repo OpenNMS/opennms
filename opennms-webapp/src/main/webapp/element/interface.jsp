@@ -103,7 +103,7 @@
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
-          .headTitle(ipAddr)
+          .headTitleText(ipAddr)
           .headTitle("Interface")
           .breadcrumb("Search", "element/index.jsp")
           .breadcrumb("Node", ElementConstants.NODE_DETAILS_URI + nodeId)

@@ -37,6 +37,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Grouping of related threshold definitions
  */
@@ -50,6 +52,7 @@ public class Group implements Serializable {
      * Group name
      */
     @XmlAttribute(name = "name", required = true)
+    @JsonProperty("name")
     private String m_name;
 
     /**
@@ -57,18 +60,21 @@ public class Group implements Serializable {
      *  
      */
     @XmlAttribute(name = "rrdRepository", required = true)
+    @JsonProperty("rrdRepository")
     private String m_rrdRepository;
 
     /**
      * Threshold definition
      */
     @XmlElement(name = "threshold")
+    @JsonProperty("threshold")
     private List<Threshold> m_thresholds = new ArrayList<>();
 
     /**
      * Expression definition
      */
     @XmlElement(name = "expression")
+    @JsonProperty("expression")
     private List<Expression> m_expressions = new ArrayList<>();
 
     public Group() { }

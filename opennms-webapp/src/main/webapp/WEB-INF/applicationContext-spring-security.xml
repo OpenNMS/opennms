@@ -101,6 +101,15 @@
       <intercept-url pattern="/rest/cm/provisiond/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
       <intercept-url pattern="/rest/cm/provisiond/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
 
+    <!-- The snmp-config and trapd-config CM configurations contain SNMP communities and SNMPv3 passphrases.
+         Only the provision and admin roles can read or change them, the same as /api/v2/snmp-config and /api/v2/trapd.
+         The v1 REST API maps the .xml, .json and .atom suffixes to the same resource, so each "<root>.*" pattern
+         applies the rule of its "<root>/**" pattern to these paths. These rules must come before the general /rest/** rules. -->
+    <intercept-url pattern="/rest/cm/snmp-config/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/cm/snmp-config.*" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/cm/trapd-config/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/cm/trapd-config.*" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+
 
     <!-- Calls to health/overview are always accepted -->
     <intercept-url pattern="/rest/health/probe" method="GET" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_REST','ROLE_ADMIN','ROLE_USER','ROLE_MOBILE')"/>
@@ -135,8 +144,7 @@
     <!-- Allow users to POST to the Measurements API, which is read-only -->
     <intercept-url pattern="/rest/measurements" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER')"/>
 
-    <!-- Allow Minions to access the configuration endpoints -->
-    <intercept-url pattern="/rest/config/**" method="GET" access="hasAnyRole('ROLE_MINION','ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/config/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
     <!-- NMS-20382: configuration writes are administrative. Writing NBI/config files can persist
          expressions that are later evaluated and run on the server, so require ROLE_ADMIN. Must
          precede the generic /rest/** write rules below (first-match-wins). -->
@@ -144,8 +152,7 @@
     <intercept-url pattern="/rest/config/**" method="PUT"    access="hasAnyRole('ROLE_ADMIN')"/>
     <intercept-url pattern="/rest/config/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')"/>
     <intercept-url pattern="/rest/config/**" method="PATCH"  access="hasAnyRole('ROLE_ADMIN')"/>
-    <!-- Allow Minions to access the server info -->
-    <intercept-url pattern="/rest/info" method="GET" access="hasAnyRole('ROLE_MINION','ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/rest/info" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
 
     <!-- Allow certain actions for the REPORT_DESIGNER role -->
     <intercept-url pattern="/rest/reports/scheduled/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_REPORT_DESIGNER')"/>
@@ -282,6 +289,10 @@
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
+    <!-- The v2 REST API maps the .xml, .json and .atom suffixes to the same resource, so "/api/v2/snmp-config.json"
+         is the snmp-config root. Each "<root>.*" rule below applies the rule of its "<root>/**" rule to these paths.
+         Each restricted "<root>/**" rule must have a "<root>.*" rule with the same method and access. -->
+
     <!-- Allow users to POST to the Geolocation API, which is read-only -->
     <intercept-url pattern="/api/v2/geolocation" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER')"/>
     <!-- Allow users to POST to the Graph API, which is read-only -->
@@ -291,91 +302,166 @@
 
     <!-- Only allow privileged users to access geocoding API -->
     <intercept-url pattern="/api/v2/geocoding/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/geocoding.*" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/geocoding/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/geocoding.*" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/geocoding/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/geocoding.*" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/geocoding/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/geocoding.*" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
 
     <!-- SNMP Config should be provision or admin-only -->
     <intercept-url pattern="/api/v2/snmp-config/**" method="GET" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/snmp-config.*" method="GET" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/snmp-config/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/snmp-config.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/snmp-config/**" method="POST" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/snmp-config.*" method="POST" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/snmp-config/**" method="PUT" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/snmp-config.*" method="PUT" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/snmp-config/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/snmp-config.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
 
     <!-- wsman-config.xml carries agent credentials: admin-only for every method -->
     <intercept-url pattern="/api/v2/wsman-config/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/wsman-config.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/wsman-config/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/wsman-config.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/wsman-config/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/wsman-config.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/wsman-config/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/wsman-config.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/wsman-config/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/wsman-config.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- Trapd Config exposes SNMPv3 credentials; restrict to admin or provision -->
     <intercept-url pattern="/api/v2/trapd/**" method="GET" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/trapd.*" method="GET" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/trapd/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/trapd.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/trapd/**" method="POST" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/trapd.*" method="POST" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/trapd/**" method="PUT" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/trapd.*" method="PUT" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/trapd/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/trapd.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
 
     <!-- Event configuration mutates event/alarm generation; mutation is admin-only.
          Reads are not secret-bearing, so GET/HEAD fall through to the generic read rule below. -->
     <intercept-url pattern="/api/v2/eventconf/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/eventconf.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/eventconf/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/eventconf.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/eventconf/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/eventconf.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/eventconf/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/eventconf.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- Data-collection configuration controls metric collection/thresholding; mutation is admin-only.
          Reads are not secret-bearing, so GET/HEAD fall through to the generic read rule below. -->
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/datacollectionconf.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/datacollectionconf.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/datacollectionconf.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/datacollectionconf.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- MIB compiler manages files on the server filesystem; admin-only like the Vaadin MIB compiler UI -->
     <intercept-url pattern="/api/v2/mibs/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/mibs.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/mibs/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/mibs.*" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/mibs/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/mibs.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/mibs/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/mibs.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/mibs/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/mibs.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/mibs/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/mibs.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- Dashboard layout is system-wide: reads fall through to the /api/v2/** GET
          catch-all (every reader role); only admins may save it, so override just
          the write. Order matters — this must precede the /api/v2/** PUT rule. -->
     <intercept-url pattern="/api/v2/dashboard/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/dashboard.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+
+    <!-- Threshold configuration drives alarm generation and can create event definitions; mutation is
+         admin-only. Reads are not secret-bearing, so GET/HEAD fall through to the generic read rule below. -->
+    <intercept-url pattern="/api/v2/thresholding/**" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/thresholding.*" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/thresholding/**" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/thresholding.*" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/thresholding/**" method="PUT" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/thresholding.*" method="PUT" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/thresholding/**" method="PATCH" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/thresholding.*" method="PATCH" access="ROLE_ADMIN" />
+
+    <!-- Threshd daemon configuration selects what gets thresholded; mutation is admin-only.
+         Reads are not secret-bearing, so GET/HEAD fall through to the generic read rule below. -->
+    <intercept-url pattern="/api/v2/threshd/**" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/threshd.*" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/threshd/**" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/threshd.*" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/threshd/**" method="PUT" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/threshd.*" method="PUT" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/threshd/**" method="PATCH" access="ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/threshd.*" method="PATCH" access="ROLE_ADMIN" />
 
     <!-- Discovery is a provisioning operation (its include/exclude URLs can read local files or fetch URLs);
          restrict it to provisioning/admin roles rather than the generic ROLE_REST catch-all below -->
     <intercept-url pattern="/api/v2/discovery" method="POST" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
     <intercept-url pattern="/api/v2/discovery/**" method="POST" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/api/v2/discovery.*" method="POST" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
 
     <!-- User management exposes contact details and account controls; admin-only in every method -->
     <intercept-url pattern="/api/v2/users/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/users.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/users/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/users.*" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/users/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/users.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/users/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/users.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/users/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/users.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- The system report drives an admin-only page and bundles logs/config, so keep
          even its plugin/formatter metadata to admins rather than the GET catch-all below;
          generation (POST) is likewise admin-only -->
     <intercept-url pattern="/api/v2/system-report/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/system-report.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/system-report/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/system-report.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/system-report/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/system-report.*" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- Group membership drives notification routing; admin-only in every method -->
     <intercept-url pattern="/api/v2/groups/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/groups.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/groups/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/groups.*" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/groups/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/groups.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/groups/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/groups.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/groups/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/groups.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- Notification config (event notifications, destination paths, path outages)
          is admin surface; pin every method rather than relying on the in-code check -->
     <intercept-url pattern="/api/v2/notification-config/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/notification-config.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/notification-config/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/notification-config.*" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/notification-config/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/notification-config.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/notification-config/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/notification-config.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/notification-config/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/notification-config.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- The About page's server details were only ever shown to web UI users, not to REST- or mobile-only accounts.
          CXF serves the same resource at "/about", "/about/" (both matched by "/about/**") and "/about.json" (extension mapping). -->
@@ -594,6 +680,8 @@
     <intercept-url pattern="/admin/ng-requisitions/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
     <intercept-url pattern="/admin/classification/index.jsp" access="hasAnyRole('ROLE_FLOW_MANAGER','ROLE_ADMIN')" />
     <intercept-url pattern="/admin/**" access="hasAnyRole('ROLE_ADMIN')" />
+    <!-- the MIB compiler Vaadin servlet serves every path below /mib-compiler, such as UIDL and HEARTBEAT -->
+    <intercept-url pattern="/mib-compiler/**" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/**/mib-compiler" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/**/admin-*" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/rtc/post/**" access="hasAnyRole('ROLE_RTC')" />

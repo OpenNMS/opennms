@@ -1,0 +1,187 @@
+<template>
+  <TableCard class="threshold-definition-card">
+    <div class="table-header">
+      <h3>{{ title }}</h3>
+      <OnmsButton
+        :data-test="`threshold-create-${kind}`"
+        :disabled="readOnly"
+        @click="onCreate"
+      >
+        {{ createLabel }}
+      </OnmsButton>
+    </div>
+
+    <OnmsTable :value="definitions" :data-test="`threshold-table-${kind}`">
+      <OnmsColumn header="Type" field="type" />
+      <OnmsColumn header="Description">
+        <template #body="{ data }">{{ data.description || '--' }}</template>
+      </OnmsColumn>
+      <OnmsColumn v-if="!isThresholdKind" header="Expression" field="expression" />
+      <OnmsColumn v-if="!isThresholdKind" header="Expression label">
+        <template #body="{ data }">{{ data.exprLabel || '--' }}</template>
+      </OnmsColumn>
+      <OnmsColumn header="Value" field="value" />
+      <OnmsColumn header="Re-arm" field="rearm" />
+      <OnmsColumn header="Trigger" field="trigger" />
+      <OnmsColumn header="Triggered UEI">
+        <template #body="{ data }">
+          <ThresholdUeiCell :uei="data.triggeredUEI" />
+        </template>
+      </OnmsColumn>
+      <OnmsColumn header="Re-armed UEI">
+        <template #body="{ data }">
+          <ThresholdUeiCell :uei="data.rearmedUEI" />
+        </template>
+      </OnmsColumn>
+      <OnmsColumn header="Filters">
+        <template #body="{ data }">{{ data.resourceFilters?.length || 0 }}</template>
+      </OnmsColumn>
+      <OnmsColumn header="Actions">
+        <template #body="{ index }">
+          <div class="actions">
+            <OnmsIconButton
+              :icon="EditIcon"
+              tooltip="Edit"
+              aria-label="Edit"
+              :data-test="`threshold-edit-${kind}`"
+              :disabled="readOnly"
+              @click="onEdit(index)"
+            />
+            <OnmsIconButton
+              :icon="DeleteIcon"
+              severity="danger"
+              tooltip="Delete"
+              aria-label="Delete"
+              :data-test="`threshold-delete-${kind}`"
+              :disabled="readOnly"
+              @click="pendingDeleteIndex = index"
+            />
+          </div>
+        </template>
+      </OnmsColumn>
+    </OnmsTable>
+
+    <p v-if="!definitions.length" class="empty" :data-test="`threshold-empty-${kind}`">{{ emptyMessage }}</p>
+
+    <OnmsConfirmationDialog
+      v-if="pendingDeleteIndex >= 0"
+      :visible="true"
+      title="Delete this definition?"
+      actionButtonText="Delete"
+      data-test="threshold-delete-confirm"
+      @ok="onConfirmDelete"
+      @cancel="pendingDeleteIndex = -1"
+    >
+      <template #content>
+        <p>{{ deleteMessage }}</p>
+      </template>
+    </OnmsConfirmationDialog>
+  </TableCard>
+</template>
+
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import TableCard from '@/components/Common/TableCard.vue'
+import ThresholdUeiCell from '@/components/ThresholdConfiguration/Group/ThresholdUeiCell.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
+import { definitionCreatePath, definitionEditPath } from '@/lib/thresholdRoutes'
+import { ThresholdDefinitionKind } from '@/lib/thresholdValidator'
+import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
+import type { Expression, Threshold } from '@/types/thresholdConfig'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIconButton, OnmsTable } from '@opennms/onms-ui'
+import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
+import EditIcon from '@opennms/onms-ui/icons/action/Edit.vue'
+
+const props = defineProps<{
+  kind: ThresholdDefinitionKind
+  readOnly?: boolean
+}>()
+
+const store = useThresholdGroupStore()
+const router = useRouter()
+const { report } = useActionFeedback()
+
+const pendingDeleteIndex = ref(-1)
+
+const isThresholdKind = computed(() => props.kind === ThresholdDefinitionKind.Threshold)
+
+// One table for both kinds: they share every column but one, and two near-identical components were the
+// main source of drift in the page this replaces.
+const definitions = computed<(Threshold | Expression)[]>(() =>
+  isThresholdKind.value ? store.currentThresholds : store.currentExpressions
+)
+
+const title = computed(() => (isThresholdKind.value ? 'Basic thresholds' : 'Expression-based thresholds'))
+
+const createLabel = computed(() =>
+  isThresholdKind.value ? 'Create new threshold' : 'Create new expression-based threshold'
+)
+
+const emptyMessage = computed(() =>
+  isThresholdKind.value ? 'This group has no basic thresholds.' : 'This group has no expression-based thresholds.'
+)
+
+const deleteMessage = computed(() => {
+  const definition = definitions.value[pendingDeleteIndex.value]
+
+  if (!definition) {
+    return ''
+  }
+
+  const subject = isThresholdKind.value
+    ? (definition as Threshold).dsName
+    : (definition as Expression).expression
+
+  return `The ${definition.type} threshold on '${subject}' will be removed from this group.`
+})
+
+const groupName = computed(() => store.currentGroup?.name ?? '')
+
+const onCreate = () => {
+  router.push(definitionCreatePath(groupName.value, props.kind))
+}
+
+const onEdit = (index: number) => {
+  router.push(definitionEditPath(groupName.value, props.kind, index))
+}
+
+const onConfirmDelete = async () => {
+  const index = pendingDeleteIndex.value
+  pendingDeleteIndex.value = -1
+
+  const result = await store.deleteDefinition(props.kind, index)
+
+  report(result, 'Threshold deleted.')
+}
+</script>
+
+<style lang="scss" scoped>
+// Padded like the event configuration table and framed like the SNMP configuration tabs.
+.threshold-definition-card {
+  padding: 25px;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 5px;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 0.75em 0;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+}
+
+.empty {
+  color: var(--p-text-muted-color);
+}
+</style>

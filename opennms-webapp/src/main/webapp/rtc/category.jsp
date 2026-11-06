@@ -94,11 +94,11 @@
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
-          .headTitle(category.getName())
+          .headTitleText(category.getName())
           .headTitle("Category")
           .headTitle("SLM")
           .breadcrumb("SLM", "rtc/index.jsp")
-          .breadcrumb(category.getName())
+          .breadcrumbText(category.getName())
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />

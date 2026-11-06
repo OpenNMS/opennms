@@ -131,8 +131,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage Minions and Locations']")));
 
         clickMenuItem("Distributed Monitoring", "Manage Applications");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Applications')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Applications']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage Applications']")));
 
         // Manage Inventory Menu
         clickMenuItem("Manage Inventory", "Provisioning Requisitions");
@@ -200,7 +199,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Surveillance Categories']")));
 
         clickMenuItem("Administration", "Configure Thresholds");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Threshold Configuration']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[text()='Threshold Configuration']")));
 
         clickMenuItem("Administration", "Flow Classification");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Flow Classification')]")));

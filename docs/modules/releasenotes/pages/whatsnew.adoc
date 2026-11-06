@@ -19,6 +19,11 @@ Most installations require no action, but there are behavior and compatibility c
 custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
 See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
 
+=== Trap audit log
+Trapd on core and Minion can now write one line per received SNMP trap, with the sender address and trap OID, to a dedicated `trap-audit.log`.
+It is disabled by default and is enabled by setting the `trap-audit` logger to `INFO` in `etc/log4j2.xml` (core) or `etc/org.ops4j.pax.logging.cfg` (Minion).
+See xref:reference:daemons/daemon-config-files/trapd.adoc#trap-audit-log[Trap audit log].
+
 === Legacy navigation bar removed
 The legacy FreeMarker navigation bar and the `?oldmenu=true` switch that selected it have been removed.
 
@@ -42,6 +47,12 @@ The Charts page, its JFreeChart rendering and the `features/charts` module have 
 The Heatmap page has been removed from the Dashboards menu and from the product, together with the `/rest/heatmap` endpoint and the `org.opennms.heatmap.*` system properties, which are no longer read.
 The `getHeatMapItemsForEntity` methods are gone from the internal `AlarmDao` and `OutageDao` interfaces; they were not part of the Integration API.
 A `org.opennms.web.console.centerUrl` that still names the heatmap or trend box is skipped when the legacy home page renders.
+
+=== AMQP integration removed
+The AMQP event forwarder, event receiver and alarm northbounder (`opennms-amqp-*` Karaf features) have been removed, together with their `org.opennms.features.amqp.*` configuration PIDs, the `opennms-camel-amqp` feature and the Qpid JMS client.
+Before upgrading, remove `opennms-amqp-event-forwarder`, `opennms-amqp-event-receiver` and `opennms-amqp-alarm-northbounder` from `featuresBoot` in `etc/org.apache.karaf.features.cfg` and from any file under `etc/featuresBoot.d/`.
+A stale entry in `featuresBoot` is skipped at startup, but a stale entry in a `featuresBoot.d` file stops every feature listed in that directory from being installed.
+The `etc/org.opennms.features.amqp.eventforwarder.cfg`, `etc/org.opennms.features.amqp.eventreceiver.cfg` and `etc/org.opennms.features.amqp.alarmnorthbounder.cfg` files are no longer used and can be deleted.
 
 === Statsd removed
 The Metrics Statistics (statsd) page and the Statsd daemon have been removed, together with `etc/statsd-configuration.xml` and the `CORE_SERVICE_STATSD_ENABLED` variable.
@@ -86,6 +97,22 @@ After upgrade, manage trapd configuration through the *Integrations -> Trap Conf
 (or the REST v2 API under `/api/v2/trapd`). Direct edits to the archived XML file no longer take effect.
 
 See xref:development:rest/trapd-rest-api.adoc[Trapd REST API (v2)] for details.
+
+=== Threshold configuration moved to DB with new UI
+The contents of `thresholds.xml` and `threshd-configuration.xml` are migrated into the database during the
+upgrade process, and the original files are moved to `etc_archive/`.
+
+After upgrade, manage thresholds through the *Administration -> Configure Thresholds* page (or the REST v2
+API under `/api/v2/thresholding` and `/api/v2/threshd`). Direct edits to the archived XML files no longer
+take effect.
+
+The page also covers threshd packages and services, which previously had no UI at all, and adds creating,
+renaming and deleting threshold groups, which previously required editing the XML by hand.
+
+The legacy JSP threshold editor at `admin/thresholds/index.htm` has been removed. Update any bookmarks or
+external links to `ui/index.html#/threshold-config`.
+
+See xref:development:rest/thresholds-rest-api.adoc[Thresholds REST API (v2)] for details.
 
 === Environment variable support in service configuration
 Individual services in `service-configuration.xml` can now be enabled or disabled at runtime via environment variables,
@@ -223,6 +250,28 @@ The MSExchangeDetector has been removed.
 Remove any detector that uses the class `org.opennms.netmgt.provision.detector.msexchange.MSExchangeDetector` from your foreign source definitions before upgrading.
 Use the xref:reference:provisioning/detectors/WsmanWqlDetector.adoc[WsmanWqlDetector] or the xref:reference:provisioning/detectors/Win32ServiceDetector.adoc[Win32ServiceDetector] to detect Microsoft Exchange services instead.
 
+=== Core, Minion, and Sentinel container images no longer use confd
+The Core, Minion, and Sentinel container images render their configuration directly from environment variables and etc overlay files at startup instead of through confd.
+
+For Core, most variable names and defaults are unchanged, but a few things behave differently:
+
+* Five Trapd variables were renamed; the old names still work as a fallback. As before, the Trapd variables are imported into the database only once, when the database is first initialized or upgraded.
+* `OPENNMS_NOTIFD_SLACK_CHANNEL` and `OPENNMS_NOTIFD_MATTERMOST_CHANNEL` are no longer supported.
+* Boolean and numeric variables are validated, and an invalid value stops the container at startup. `CORE_SERVICE_*_ENABLED` is the exception: {page-component-title} reads it directly, and any value other than `true` disables the service.
+* The JMX exporter `config.yaml` is generated only when the exporter is enabled, and a file mounted at the default path is no longer overwritten.
+
+For Minion and Sentinel:
+
+* The `minion-config.yaml` and `sentinel-config.yaml` files are no longer supported, and the container refuses to start if one is present.
+* The separate Kafka RPC, Sink, and Twin settings for Minion were dropped; use the `KAFKA_IPC_*` variables for all Kafka communication.
+* The `minion-config-schema.yml` file is no longer published.
+
+For details, see:
+
+* xref:reference:configuration/core-docker.adoc#core-oci-confd-migration[Core: Migrating from confd]
+* xref:reference:configuration/minion-docker.adoc#minion-legacy-config-migration[Minion: Migrating from `minion-config.yaml`]
+* xref:reference:configuration/sentinel-features.adoc#sentinel-confd-migration[Sentinel: Migrating from confd-based images]
+
 === WMI integration removed
 The WMI monitor, detector and collector had been removed, as the WS-Man integration offers better support for newer versions of the Windows operating system.
 
@@ -339,6 +388,11 @@ The built-in "View in Topology" link is replaced by the "Topology Map" item in t
 === DOCTYPE rejected in requisition and foreign-source XML
 Requisition and foreign-source XML that contains a `DOCTYPE` is now rejected on import.
 Remove the `DOCTYPE` from requisitions that external tools write, or set the system property `org.opennms.provision.requisition.allowDoctype=true` to accept it.
+
+=== ROLE_MINION no longer reads /rest/config and /rest/info
+`ROLE_MINION` no longer gives read access to `/rest/config/**` or `/rest/info`.
+Minion does not use these endpoints.
+`ROLE_MINION` still gives access to the embedded ActiveMQ broker.
 
 === Ops Board and Wallboard removed
 
