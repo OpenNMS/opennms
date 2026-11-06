@@ -19,6 +19,11 @@ Most installations require no action, but there are behavior and compatibility c
 custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
 See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
 
+=== Trap audit log
+Trapd on core and Minion can now write one line per received SNMP trap, with the sender address and trap OID, to a dedicated `trap-audit.log`.
+It is disabled by default and is enabled by setting the `trap-audit` logger to `INFO` in `etc/log4j2.xml` (core) or `etc/org.ops4j.pax.logging.cfg` (Minion).
+See xref:reference:daemons/daemon-config-files/trapd.adoc#trap-audit-log[Trap audit log].
+
 === Legacy navigation bar removed
 The legacy FreeMarker navigation bar and the `?oldmenu=true` switch that selected it have been removed.
 
