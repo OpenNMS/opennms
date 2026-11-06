@@ -18,5 +18,26 @@
 package org.hawkular.agent.prometheus.types;
 
 public enum MetricType {
-    COUNTER, GAUGE, SUMMARY, HISTOGRAM, UNTYPED
+    COUNTER, GAUGE, SUMMARY, HISTOGRAM, UNKNOWN;
+
+    /**
+     * Try to parse the given type string into a MetricType enum value. If the type is not recognized, it will return null.
+     * @param value the type string to parse. 
+     * @return the MetricType enum value or null if not recognized
+     */
+    public static MetricType tryParse(String value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return MetricType.valueOf(value.toUpperCase());
+        }
+        catch (IllegalArgumentException e) {
+            // legacy Prometheus v0.0.4 keyword, renamed to "unknown" in OpenMetrics
+            if ("untyped".equalsIgnoreCase(value)) {
+                return MetricType.UNKNOWN;
+            }
+            return null;
+        }
+    }
 }

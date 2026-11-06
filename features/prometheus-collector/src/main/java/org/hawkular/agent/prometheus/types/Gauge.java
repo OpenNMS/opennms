@@ -44,7 +44,18 @@ public class Gauge extends Metric {
     }
 
     @Override
+    public String toString() {
+
+        return "Gauge [name=" + getName() + ", labels" + getLabels() + ", timestamp=" + getTimestamp() + ", created=" + getCreated()
+                + ", value=" + value + "]";
+    }
+
+    @Override
     public void visit(MetricVisitor visitor) {
         visitor.visitGauge(this);
+    }
+    
+    public static Builder builder() {
+        return new Builder();
     }
 }
