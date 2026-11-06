@@ -34,7 +34,7 @@ select_jdk(){
                      "$(/usr/libexec/java_home -v "$REQUIRED_VERSION" 2>/dev/null)" \
                      "$(brew --prefix 2>/dev/null)/opt/openjdk@$REQUIRED_VERSION/libexec/openjdk.jdk/Contents/Home" \
                      /usr/lib/jvm/java-"$REQUIRED_VERSION"-* /usr/lib/jvm/jdk-"$REQUIRED_VERSION"* /usr/lib/jvm/temurin-"$REQUIRED_VERSION"*; do
-        if [[ -x "$candidate/bin/java" && "$(java_major_version "$candidate")" == "$REQUIRED_VERSION" ]]; then
+        if [[ -n "$candidate" && -x "$candidate/bin/java" && "$(java_major_version "$candidate")" == "$REQUIRED_VERSION" ]]; then
             export JAVA_HOME="$candidate"
             export PATH="$JAVA_HOME/bin:$PATH"
             echo "Using JDK $REQUIRED_VERSION: $JAVA_HOME"

@@ -126,28 +126,27 @@ if [[ "$SKIP_CLEANUP" == "yes" ]]; then
     echo "Skipping cleanup of previous build artifacts."
 else
     echo "Cleaning previous build artifacts..."
-    # Faster than clean.pl, which starts Maven on every module. node_modules stays, so pnpm does not install all packages again.
-    find . -name node_modules -prune -o -name target -type d -prune -exec rm -rf {} +
-    rm -rf ./ui/src/main/dist ./ui/src/menu/dist-menu
+    ./clean.pl
 fi
 
 # "-p dir" writes the assembly to target/opennms-$RELEASE, so there is no tarball to unpack.
 # Local builds do not use the source tarball or the core and optional tarballs.
+# Packaging problems in the tarballs (permissions, symlinks) show only in CI, which builds the tarballs.
 ASSEMBLE_ARGS=(-p dir -Dbuild.skip.tarball=true -Dbuild.skip.coretar=true)
 if [[ "$ENABLE_TESTS" == "yes" ]]; then
     echo "Compiling & assembling (with tests)..."
     ./compile.pl -Dbuild.skip.tarball=true && ./assemble.pl "${ASSEMBLE_ARGS[@]}"
 else
     echo "Compiling & assembling (skip tests)..."
-    # Parallel threads need a larger heap. CI runs checkstyle and the enforcer rules.
+    # Parallel threads need a larger heap. CI runs checkstyle.
+    # The default is one thread for each CPU, at most 8. Set MAVEN_THREADS to use a different number.
     CPUS=$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
+    MAVEN_THREADS=${MAVEN_THREADS:-$(( CPUS < 8 ? CPUS : 8 ))}
     export MAVEN_OPTS=${MAVEN_OPTS:-"-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"}
-    COMPILE_ARGS=(-DskipTests=true -Dbuild.skip.tarball=true -Ddisable.checkstyle=true -Denforcer.skip=true \
-        --threads "$(( CPUS < 8 ? CPUS : 8 ))" install)
-    # The Karaf assemblies package bundles from features files, and Maven does not use features files
-    # to order the build. In a parallel build, an assembly can start before its bundles exist.
-    # Build the assemblies in a second run, when all bundles are in the local repository.
-    KARAF_ASSEMBLIES="container/karaf,container/shared,features/container/minion,features/container/sentinel,features/minion/core/repository,features/minion/repository"
+    COMPILE_ARGS=(-DskipTests=true -Dbuild.skip.tarball=true -Ddisable.checkstyle=true \
+        --threads "$MAVEN_THREADS" install)
+    # Build the Karaf assemblies in a second run. tools/karaf-assemblies.txt gives the reason.
+    KARAF_ASSEMBLIES=$(grep -v '^#' "$ROOT/tools/karaf-assemblies.txt" | paste -sd, -)
     ./compile.pl "${COMPILE_ARGS[@]}" --projects "!${KARAF_ASSEMBLIES//,/,!}" \
         && ./compile.pl "${COMPILE_ARGS[@]}" --projects "$KARAF_ASSEMBLIES" \
         && ./assemble.pl -DskipTests=true "${ASSEMBLE_ARGS[@]}"
