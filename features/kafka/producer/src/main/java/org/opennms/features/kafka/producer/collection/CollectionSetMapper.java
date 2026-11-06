@@ -114,6 +114,8 @@ public class CollectionSetMapper {
         // Resources in one collection set almost always belong to a single node; resolve each
         // distinct node criteria once per set rather than once per resource.
         final Map<String, CollectionSetProtos.NodeLevelResource.Builder> nodesInThisSet = new HashMap<>();
+        // Declared by the collector or telemetry adapter that produced this collection set.
+        final String agentProtocol = params != null ? params.getAgentProtocol() : null;
 
         collectionSet.visit(new CollectionSetVisitor() {
             CollectionSetProtos.CollectionSetResource.Builder collectionSetResourceBuilder;
@@ -224,17 +226,21 @@ public class CollectionSetMapper {
 
             @Override
             public void visitAttribute(CollectionAttribute attribute) {
+                final Optional<String> metricId = MetricIdentifier.metricId(agentProtocol,
+                        attribute.getMetricIdentifier(), attribute.getName());
                 if (attribute.getType().equals(AttributeType.STRING)) {
                     CollectionSetProtos.StringAttribute.Builder attributeBuilder = CollectionSetProtos.StringAttribute
                             .newBuilder();
                     attributeBuilder.setValue(attribute.getStringValue());
                     attributeBuilder.setName(attribute.getName());
+                    metricId.ifPresent(attributeBuilder::setMetricId);
                     collectionSetResourceBuilder.addString(attributeBuilder);
                 } else {
                     CollectionSetProtos.NumericAttribute.Builder attributeBuilder = CollectionSetProtos.NumericAttribute
                             .newBuilder();
                     attributeBuilder.setGroup(lastGroupName);
                     attributeBuilder.setName(attribute.getName());
+                    metricId.ifPresent(attributeBuilder::setMetricId);
                     final Number number = attribute.getNumericValue();
 
                     if (number != null) {
@@ -275,6 +281,7 @@ public class CollectionSetMapper {
                 // group, because a resource whose node cannot be resolved falls back to the
                 // default topic, and must not drag the rest of the collection along with it.
                 if (hasResource(collectionSetResourceBuilder)) {
+                    addAgentProtocol(collectionSetResourceBuilder, agentProtocol);
                     final String topic = router != null
                             ? router.resolveTopic(resource, currentNodeId, params) : defaultTopic;
                     buildersByTopic
@@ -302,6 +309,20 @@ public class CollectionSetMapper {
         final Map<String, CollectionSetProtos.CollectionSet> result = new LinkedHashMap<>();
         buildersByTopic.forEach((topic, b) -> result.put(topic, b.build()));
         return result;
+    }
+
+    /**
+     * Adds the agent protocol as a resource string attribute, unless there is none or the
+     * collector already set one on the resource.
+     */
+    private static void addAgentProtocol(CollectionSetProtos.CollectionSetResource.Builder resourceBuilder, String agentProtocol) {
+        if (agentProtocol == null || resourceBuilder.getStringList().stream()
+                .anyMatch(a -> MetricIdentifier.AGENT_PROTOCOL.equals(a.getName()))) {
+            return;
+        }
+        resourceBuilder.addString(CollectionSetProtos.StringAttribute.newBuilder()
+                .setName(MetricIdentifier.AGENT_PROTOCOL)
+                .setValue(agentProtocol));
     }
 
     private boolean hasResource(CollectionSetProtos.CollectionSetResource.Builder collectionSetResourceBuilder) {
