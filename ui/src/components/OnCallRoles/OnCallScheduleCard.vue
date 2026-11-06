@@ -237,6 +237,8 @@ const props = defineProps<{
   card: ScheduleCard
   members: string[]
   groupChanged: boolean
+  // the server's month abbreviations, which specific times are written with
+  shortMonths: string[]
   highlighted: boolean
 }>()
 
@@ -257,7 +259,7 @@ const weekdayOptions = WEEKDAYS.map(d => ({ label: d.charAt(0).toUpperCase() + d
 const pendingType = ref<OnCallScheduleType | null>(null)
 
 const isSpecific = computed(() => props.card.type === 'specific')
-const memberProblem = computed(() => membershipProblem(props.card, props.members, props.groupChanged))
+const memberProblem = computed(() => membershipProblem(props.card, props.members, props.groupChanged, props.shortMonths))
 const problems = computed(() => [...cardProblems(props.card), ...(memberProblem.value ? [memberProblem.value] : [])])
 // a stored user who left the group stays selected
 const notMember = computed(() => !!props.card.user && !props.members.includes(props.card.user))

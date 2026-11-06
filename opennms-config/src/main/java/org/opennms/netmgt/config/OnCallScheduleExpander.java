@@ -21,6 +21,9 @@
  */
 package org.opennms.netmgt.config;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -29,6 +32,7 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
@@ -81,15 +85,16 @@ public final class OnCallScheduleExpander {
             return result;
         }
 
-        final Calendar day = new GregorianCalendar();
-        day.setTimeInMillis(windowStart);
-        startOfDay(day);
-        while (day.getTimeInMillis() < windowEnd) {
-            final long dayStart = day.getTimeInMillis();
-            final Calendar next = (Calendar) day.clone();
-            next.add(Calendar.DAY_OF_MONTH, 1);
-            startOfDay(next); // re-floor: a DST change at midnight makes the add land on 01:00
-            final long dayEnd = next.getTimeInMillis();
+        // A local day runs from the first instant of its date to the first instant of the next. Where the clocks go
+        // back at midnight, 00:00 happens twice and the day starts at the first one, as the instant's date says it
+        // does; Calendar would read 00:00 as the second one. Where they go forward at midnight, it starts at 01:00.
+        final ZoneId zone = TimeZone.getDefault().toZoneId();
+        LocalDate date = Instant.ofEpochMilli(windowStart).atZone(zone).toLocalDate();
+        while (startOf(date, zone) < windowEnd) {
+            final long dayStart = startOf(date, zone);
+            final long dayEnd = startOf(date.plusDays(1), zone);
+            final Calendar day = new GregorianCalendar();
+            day.setTimeInMillis(dayStart);
             final long from = Math.max(dayStart, windowStart);
             final long to = Math.min(dayEnd, windowEnd);
 
@@ -125,7 +130,7 @@ public final class OnCallScheduleExpander {
                 result.add(new Entry(new Date(cursor), new Date(to), role.getSupervisor(), null));
             }
 
-            day.setTimeInMillis(dayEnd);
+            date = date.plusDays(1);
         }
 
         result.sort(Comparator.comparing(Entry::start)
@@ -153,11 +158,8 @@ public final class OnCallScheduleExpander {
         return new OnCallNow(fallback, true);
     }
 
-    private static void startOfDay(final Calendar cal) {
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
+    private static long startOf(final LocalDate date, final ZoneId zone) {
+        return date.atStartOfDay(zone).toInstant().toEpochMilli();
     }
 
     /** Whether the day restriction of {@code time}, if any, matches the local day {@code day}. */

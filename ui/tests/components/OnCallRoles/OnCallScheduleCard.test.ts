@@ -38,7 +38,7 @@ const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'S
 
 const mountCard = (card: ScheduleCard, members = ['bob', 'carol'], groupChanged = false) =>
   mount(OnCallScheduleCard, {
-    props: { card, members, groupChanged, highlighted: false },
+    props: { card, members, groupChanged, shortMonths: SHORT_MONTHS, highlighted: false },
     global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
   })
 
@@ -85,6 +85,23 @@ describe('OnCallScheduleCard', () => {
     const options = select(w, 'time-day-0').props('options') as unknown[]
     expect(options).toHaveLength(31)
     expect(pickerModes(w)).toEqual([[false, true, '12'], [false, true, '12']])
+  })
+
+  it('selects a stored monthly day that has a leading zero', () => {
+    const w = mountCard(stored('monthly', '05', '08:00:00', '17:00:00'))
+    expect(select(w, 'time-day-0').props('modelValue')).toBe('5')
+  })
+
+  it('accepts a non-member schedule again once an edit is undone', async () => {
+    const w = mountCard(stored('daily', null, '08:00:00', '17:00:00'), ['carol'])
+    const endPicker = () => w.findAllComponents(OnmsDatePicker)[1]
+    endPicker().vm.$emit('update:modelValue', new Date(2000, 0, 10, 18, 0))
+    await w.setProps({ card: lastCard(w) })
+    expect(w.text()).toContain('bob is not a member')
+    endPicker().vm.$emit('update:modelValue', new Date(2000, 0, 10, 17, 0))
+    await w.setProps({ card: lastCard(w) })
+    expect(lastCard(w).dirty).toBe(true)
+    expect(w.text()).not.toContain('bob is not a member')
   })
 
   it('emits a card that serializes to the edited weekly time', async () => {

@@ -130,7 +130,10 @@ function toRange(t: OnCallTime, type: OnCallScheduleType, shortMonths: string[])
     begin = t.begins.slice(0, 5)
     end = t.ends.slice(0, 5)
   }
-  return { id: t.id ?? null, day: hasDay ? t.day as string : null, begin, end, endOfDay, original: t }
+  // a monthly day stored with a leading zero ('05', which notifd reads as 5) is shown as the picker's '5'; an untouched
+  // time is still sent back as stored
+  const day = !hasDay ? null : type === 'monthly' ? String(Number(t.day)) : t.day as string
+  return { id: t.id ?? null, day, begin, end, endOfDay, original: t }
 }
 
 function isMonthDay(day: string | null | undefined): boolean {
@@ -265,10 +268,28 @@ export function cardProblems(c: ScheduleCard): string[] {
   return problems
 }
 
+const blankToNull = (v: string | null | undefined) => (v ?? '').trim() || null
+
+// Whether the card sends its stored schedule back unchanged, compared the way the server compares it (user, type, and
+// every time's id, day, begins and ends; a blank id or day is no id or day), so an edit that was undone counts too.
+export function isUnchanged(c: ScheduleCard, shortMonths: string[]): boolean {
+  if (!c.original) {
+    return false
+  }
+  const sent = toSchedule(c, shortMonths)
+  const stored = c.original
+  return sent.user === stored.user && sent.type === stored.type && sent.times.length === stored.times.length &&
+    sent.times.every((t, i) => {
+      const o = stored.times[i]
+      return blankToNull(t.id) === blankToNull(o.id) && blankToNull(t.day) === blankToNull(o.day) &&
+        t.begins === o.begins && t.ends === o.ends
+    })
+}
+
 // The server takes a schedule whose user is not in the membership group only as stored and sent back unchanged, and
 // only while the role keeps its group: a change of group checks every schedule against the new one.
-export function membershipProblem(c: ScheduleCard, members: string[], groupChanged: boolean): string | null {
-  if (!c.user || members.includes(c.user) || (c.original !== null && !c.dirty && !groupChanged)) {
+export function membershipProblem(c: ScheduleCard, members: string[], groupChanged: boolean, shortMonths: string[]): string | null {
+  if (!c.user || members.includes(c.user) || (!groupChanged && isUnchanged(c, shortMonths))) {
     return null
   }
   return `${c.user} is not a member of the membership group. Choose a member or remove this schedule.`

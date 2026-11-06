@@ -837,6 +837,26 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testCalendarPreviewRefusesYearsBefore1900() throws Exception {
+        final MockHttpServletResponse early = exec(POST, "/oncall-roles/calendar?month=1899-12", role("draft-y", DAILY_CAROL), null, 400);
+        assertEquals("month must be in 1900 or later.", early.getContentAsString());
+        exec(POST, "/oncall-roles/calendar?month=1582-10", role("draft-y", DAILY_CAROL), null, 400);
+        exec(POST, "/oncall-roles/calendar?month=1900-01", role("draft-y", DAILY_CAROL), null, 200);
+    }
+
+    /** A role being created can be previewed before it has a name. */
+    @Test
+    public void testCalendarPreviewWithoutNameIs200() throws Exception {
+        for (final String name : new String[] { "", " ", null }) {
+            final String draft = "{" + (name == null ? "" : "\"name\":\"" + name + "\",")
+                    + "\"membershipGroup\":\"Ops\",\"supervisor\":\"alice\",\"schedules\":[" + DAILY_CAROL + "]}";
+            final JSONArray entries = new JSONObject(exec(POST, "/oncall-roles/calendar?month=2026-11", draft, null, 200)
+                    .getContentAsString()).getJSONArray("entries");
+            assertTrue("name " + name, entries.length() > 0);
+        }
+    }
+
+    @Test
     public void testCalendarPreviewBlankUserIs400() throws Exception {
         final String blank = "{\"user\":\" \",\"type\":\"daily\",\"times\":[{\"begins\":\"08:00:00\",\"ends\":\"17:00:00\"}]}";
         final MockHttpServletResponse response = exec(POST, "/oncall-roles/calendar?month=2026-11", role("draft-z", blank), null, 400);

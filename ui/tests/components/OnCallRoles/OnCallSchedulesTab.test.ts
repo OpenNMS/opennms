@@ -37,7 +37,7 @@ const noop = { mounted: () => undefined }
 describe('OnCallSchedulesTab', () => {
   const mountTab = (cards = [newCard('bob', 'daily')], extra: Record<string, unknown> = {}) =>
     mount(OnCallSchedulesTab, {
-      props: { ...extra, cards, members: ['bob'], groupChanged: false, highlightKey: null },
+      props: { ...extra, cards, members: ['bob'], groupChanged: false, shortMonths: [], highlightKey: null },
       global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
     })
 
@@ -64,7 +64,7 @@ describe('OnCallSchedulesTab', () => {
   it('highlights and scrolls to the card named by highlightKey', async () => {
     const cards = [newCard('bob', 'daily'), newCard('bob', 'weekly')]
     const w = mountTab(cards)
-    await w.setProps({ groupChanged: false, highlightKey: cards[1].key })
+    await w.setProps({ groupChanged: false, shortMonths: [], highlightKey: cards[1].key })
     await nextTick()
     await nextTick()
     const els = w.findAll('[data-test="oncall-schedule-card"]')
@@ -79,7 +79,7 @@ describe('OnCallSchedulesTab', () => {
       Element.prototype.scrollIntoView = scroll
       const cards = [newCard('bob', 'daily'), newCard('bob', 'weekly')]
       const w = mount(OnCallSchedulesTab, {
-        props: { cards, members: ['bob'], groupChanged: false, highlightKey: cards[1].key },
+        props: { cards, members: ['bob'], groupChanged: false, shortMonths: [], highlightKey: cards[1].key },
         global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
       })
       await nextTick()
@@ -106,7 +106,7 @@ describe('OnCallSchedulesTab', () => {
             cards.value = c
           },
           members: ['bob'],
-          groupChanged: false, highlightKey: null
+          groupChanged: false, shortMonths: [], highlightKey: null
         })
       }
     })

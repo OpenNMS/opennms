@@ -54,6 +54,17 @@ describe('round trip', () => {
     expect(toSchedule(card, en)).toEqual(s)
   })
 
+  it('shows a stored monthly day with a leading zero without it, and sends it back as stored', () => {
+    const s: OnCallSchedule = { user: 'a', type: 'monthly', times: [{ id: '3', day: '05', begins: '08:00:00', ends: '17:00:00' }] }
+    const card = toCard(s, en)
+    expect(card.legacy).toBe(false)
+    expect(card.times[0].day).toBe('5')
+    expect(toSchedule({ ...card, dirty: true }, en)).toEqual(s)
+    card.dirty = true
+    card.times[0].end = '18:00'
+    expect(toSchedule(card, en).times[0]).toEqual({ id: '3', day: '5', begins: '08:00:00', ends: '18:00:00' })
+  })
+
   it('reserializes an untouched time of a dirty card unchanged', () => {
     const s = daily('08:00:00', '17:00:00')
     const card = toCard(s, en)
@@ -321,17 +332,31 @@ describe('membershipProblem', () => {
   const MESSAGE = 'bob is not a member of the membership group. Choose a member or remove this schedule.'
 
   it('accepts a member, and a schedule with no user yet (cardProblems reports that)', () => {
-    expect(membershipProblem(stored, ['bob'], true)).toBeNull()
-    expect(membershipProblem(newCard('', 'daily'), [], true)).toBeNull()
+    expect(membershipProblem(stored, ['bob'], true, en)).toBeNull()
+    expect(membershipProblem(newCard('', 'daily'), [], true, en)).toBeNull()
   })
 
   it('accepts a stored schedule of a non-member only unchanged and while the group is unchanged', () => {
-    expect(membershipProblem(stored, ['carol'], false)).toBeNull()
-    expect(membershipProblem(stored, ['carol'], true)).toBe(MESSAGE)
-    expect(membershipProblem({ ...stored, dirty: true }, ['carol'], false)).toBe(MESSAGE)
+    expect(membershipProblem(stored, ['carol'], false, en)).toBeNull()
+    expect(membershipProblem(stored, ['carol'], true, en)).toBe(MESSAGE)
+    const edited = { ...stored, dirty: true, times: [{ ...stored.times[0], end: '18:00' }] }
+    expect(membershipProblem(edited, ['carol'], false, en)).toBe(MESSAGE)
+  })
+
+  it('accepts a stored schedule of a non-member again once an edit is undone', () => {
+    // dirty stays set, but the card sends the stored schedule, which the server accepts
+    const undone = { ...stored, dirty: true, times: [{ ...stored.times[0] }] }
+    expect(membershipProblem(undone, ['carol'], false, en)).toBeNull()
+    const otherUser = { ...undone, user: 'dave' }
+    expect(membershipProblem(otherUser, ['carol'], false, en)).toBe(MESSAGE.replace('bob', 'dave'))
+  })
+
+  it('compares a specific schedule with the month names it is written with', () => {
+    const specific = toCard({ user: 'bob', type: 'specific', times: [{ id: null, day: null, begins: '14-Mar-2026 18:00:00', ends: '15-Mar-2026 06:30:00' }] }, en)
+    expect(membershipProblem({ ...specific, dirty: true }, ['carol'], false, en)).toBeNull()
   })
 
   it('refuses a new schedule of a non-member', () => {
-    expect(membershipProblem(newCard('bob', 'daily'), ['carol'], false)).toBe(MESSAGE)
+    expect(membershipProblem(newCard('bob', 'daily'), ['carol'], false, en)).toBe(MESSAGE)
   })
 })

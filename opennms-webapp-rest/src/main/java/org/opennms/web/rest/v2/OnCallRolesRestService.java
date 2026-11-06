@@ -93,6 +93,8 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     private static final Logger LOG = LoggerFactory.getLogger(OnCallRolesRestService.class);
 
     private static final String WHAT = "On-call role management";
+    /** The earliest year the calendar preview shows; on-call schedules are not kept for earlier ones. */
+    static final int MIN_CALENDAR_YEAR = 1900;
 
     @Autowired
     private UserMgmtRestSupport m_support;
@@ -325,6 +327,11 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         } catch (final DateTimeParseException e) {
             throw m_support.badRequest("month must be YYYY-MM.");
         }
+        // java.util.Calendar, which notifd's rule runs on, is Julian before October 1582; no schedule needs a year
+        // that early, so the floor is a round one
+        if (yearMonth.getYear() < MIN_CALENDAR_YEAR) {
+            throw m_support.badRequest("month must be in " + MIN_CALENDAR_YEAR + " or later.");
+        }
         if (draft == null) {
             throw m_support.badRequest("An on-call role body is required.");
         }
@@ -378,7 +385,10 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     /** The JAXB role notifd evaluates, straight from a draft; users and groups are not looked up. */
     private static Role toJaxbRole(final OnCallRoleDto dto) {
         final Role role = new Role();
-        role.setName(dto.getName());
+        // a role being created may have no name yet; Role refuses an empty one, and nothing here reads it
+        if (StringUtils.isNotBlank(dto.getName())) {
+            role.setName(dto.getName());
+        }
         if (StringUtils.isNotBlank(dto.getSupervisor())) {
             role.setSupervisor(dto.getSupervisor().trim());
         }

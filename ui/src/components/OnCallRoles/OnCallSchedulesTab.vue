@@ -18,6 +18,7 @@
       :card="card"
       :members="members"
       :groupChanged="groupChanged"
+      :shortMonths="shortMonths"
       :highlighted="highlighted === card.key"
       @update:card="c => replaceCard(index, c)"
       @remove="removeCard(index)"
@@ -48,6 +49,8 @@ const props = defineProps<{
   members: string[]
   // the role's membership group was changed in this editor
   groupChanged: boolean
+  // the server's month abbreviations, which specific times are written with
+  shortMonths: string[]
   // the schedule settings failed to load, so the cards are not the role's schedules
   settingsMissing?: boolean
   highlightKey: string | null

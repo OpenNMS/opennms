@@ -109,6 +109,7 @@
               v-model:cards="cards"
               :members="members"
               :groupChanged="groupChanged"
+              :shortMonths="shortMonths"
               :settingsMissing="!store.scheduleSettings"
               :highlightKey="highlightKey"
               @highlighted="highlightKey = null"
@@ -259,7 +260,7 @@ const groupChanged = computed(() => isEditing.value && membershipGroup.value !==
 const scheduleValueProblem = computed(() => cards.value.some(c => cardProblems(c).length > 0))
 // everything that keeps the schedules from saving
 const schedulesProblem = computed(() =>
-  scheduleValueProblem.value || cards.value.some(c => membershipProblem(c, members.value, groupChanged.value) !== null))
+  scheduleValueProblem.value || cards.value.some(c => membershipProblem(c, members.value, groupChanged.value, shortMonths.value) !== null))
 
 const isValid = computed(() =>
   cardsReady.value && !detailsTabProblem.value && !schedulesProblem.value && (isEditing.value || !!name.value))

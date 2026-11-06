@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -149,19 +150,51 @@ public class OnCallScheduleExpanderTest {
         assertAgrees(new int[][] { { 2026, 3 }, { 2026, 4 }, { 2026, 11 } });
     }
 
-    /** DST starts at local midnight in Havana, so 00:00 does not exist on the transition day. */
+    /**
+     * DST starts at local midnight in Havana, so 00:00 does not exist on that day (8 March 2026), and ends at 01:00, so
+     * 00:00 to 01:00 happens twice on that day (1 November 2026, the first day of a month).
+     */
     @Test
-    public void testAgreesWithIsTimeInScheduleWhenDstStartsAtMidnight() {
+    public void testAgreesWithIsTimeInScheduleWhenDstChangesAtMidnight() {
         TimeZone.setDefault(TimeZone.getTimeZone("America/Havana"));
-        assertAgrees(new int[][] { { 2026, 3 }, { 2026, 11 } });
+        assertAgrees(new int[][] { { 2026, 3 }, { 2026, 10 }, { 2026, 11 } });
+    }
+
+    /**
+     * The first 00:00 to 01:00 of 1 November 2026 in Havana is on 1 November, whose times notifd reads onto the second
+     * 00:00, so even an all-day schedule does not cover it and the supervisor is on call; the November month starts
+     * with it.
+     */
+    @Test
+    public void testFirstOfTwoMidnightHoursIsInTheMonthAndFallsBackToTheSupervisor() {
+        TimeZone.setDefault(TimeZone.getTimeZone("America/Havana"));
+        final Role role = new Role();
+        role.setName("test");
+        role.setSupervisor("sup");
+        role.addSchedule(JaxbUtils.unmarshal(Schedule.class, SCHEDULES[ALL_DAY_INDEX]));
+        final Date start = monthStart(2026, 11);
+        final Date firstHour = new Date(start.getTime() + 30 * 60 * 1000L);
+        assertEquals(Set.of("sup"), expected(role, firstHour));
+
+        final List<Entry> entries = OnCallScheduleExpander.entries(role, start, monthStart(2026, 12));
+        assertEquals(new Entry(start, new Date(start.getTime() + 60 * 60 * 1000L), "sup", null), entries.get(0));
+        check(role, entries, firstHour, start, monthStart(2026, 12));
+        // October ends where November starts
+        final List<Entry> october = OnCallScheduleExpander.entries(role, monthStart(2026, 10), start);
+        assertEquals(start, october.get(october.size() - 1).end());
+    }
+
+    /** The first instant of a month (13 is January of the next year), as the calendar endpoint takes it. */
+    private static Date monthStart(final int year, final int month) {
+        return Date.from(YearMonth.of(year, 1).plusMonths(month - 1).atDay(1).atStartOfDay(TimeZone.getDefault().toZoneId()).toInstant());
     }
 
     private static void assertAgrees(final int[][] months) {
         for (boolean withAllDay : new boolean[] { true, false }) {
             final Role role = role(withAllDay);
             for (int[] ym : months) {
-                final Date start = at(ym[0], ym[1], 1, 0, 0, 0);
-                final Date end = new GregorianCalendar(ym[0], ym[1], 1).getTime();
+                final Date start = monthStart(ym[0], ym[1]);
+                final Date end = monthStart(ym[0], ym[1] + 1);
                 final List<Entry> entries = OnCallScheduleExpander.entries(role, start, end);
 
                 final Set<Long> samples = new LinkedHashSet<>();
