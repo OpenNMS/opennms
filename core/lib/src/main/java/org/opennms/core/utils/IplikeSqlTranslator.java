@@ -279,7 +279,9 @@ public abstract class IplikeSqlTranslator {
     }
 
     private static long parseValue(final String s, final boolean hex) throws Untranslatable {
-        if (s.isEmpty() || s.length() > 8 || !s.matches(hex ? "[0-9a-f]+" : "[0-9]+")) {
+        // iplike() reads hex fields as bit(16), truncating anything longer
+        // than four digits; leave those to it rather than read them by value
+        if (s.isEmpty() || s.length() > (hex ? 4 : 8) || !s.matches(hex ? "[0-9a-f]+" : "[0-9]+")) {
             throw new Untranslatable();
         }
         return Long.parseLong(s, hex ? 16 : 10);

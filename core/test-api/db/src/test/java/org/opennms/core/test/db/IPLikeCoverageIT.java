@@ -303,6 +303,22 @@ public class IPLikeCoverageIT {
     }
 
     /**
+     * A * element inside an IPv6 list matches anything, as in IPv4 lists,
+     * with or without a zone constraint (which forces the iplike() path).
+     * Hex components longer than four digits are not translated: iplike()
+     * reads them as bit(16), truncating the excess digits.
+     */
+    @Test
+    public void testHexListWildcardAndOverlongComponents() throws Exception {
+        checkIplikeRule("fe80:0:0:0:0:0:0:2", "fe80:0:0:0:0:0:0:1,*", true);
+        checkIplikeRule("fe80:0:0:0:0:0:0:2%eth0", "fe80:0:0:0:0:0:0:1,*%eth0", true);
+        checkIplikeRule("fe81:0:0:0:0:0:0:2", "fe80:0:0:0:0:0:0:1,*", false);
+
+        checkIplikeRule("0:0:0:0:0:0:0:1", "0:0:0:0:0:0:0:00001", false);
+        checkIplikeRule("0:0:0:0:0:0:0:1", "0:0:0:0:0:0:0:0001", true);
+    }
+
+    /**
      * A middle one-group compression (seven colons, valid inet) must not
      * enter the 8-group parsing loop: ltrim would swallow the '::' and
      * shift every later field, so the shifted rule matched and the correct

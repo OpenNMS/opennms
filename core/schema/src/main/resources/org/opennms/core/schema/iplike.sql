@@ -44,6 +44,8 @@
 --     ids still compare case-sensitively)
 --   * a field with extra leading zeros is read by value (0010 is 10)
 --     instead of being truncated
+--   * a * element in an IPv6 list (1,*) matches anything, as it already
+--     did in IPv4 lists
 
 create or replace function iplike(i_ipaddress text, i_rule text) returns boolean as $$
   declare
@@ -255,6 +257,8 @@ begin
             if check_hex_range(i_octet, c_element) then
                 return 't';
             end if;
+        elsif c_element = '*' then
+            return 't';
         else
             while length(c_element) < 4 loop
                 c_element := '0' || c_element;

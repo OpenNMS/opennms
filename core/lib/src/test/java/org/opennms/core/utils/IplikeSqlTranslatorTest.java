@@ -194,6 +194,19 @@ public class IplikeSqlTranslatorTest {
     }
 
     @Test
+    public void testWildcardListElementMatchesAnything() {
+        assertEquals(Boolean.TRUE, IplikeSqlTranslator.matches("fe80:0:0:0:0:0:0:2", "fe80:0:0:0:0:0:0:1,*"));
+        assertEquals(Boolean.TRUE, IplikeSqlTranslator.matches("10.0.0.2", "10.0.0.1,*"));
+    }
+
+    @Test
+    public void testOverlongHexComponentFallsBack() {
+        assertNull(IplikeSqlTranslator.toSqlPredicate("0:0:0:0:0:0:0:00001", "ipaddr"));
+        assertNull(IplikeSqlTranslator.toSqlPredicate("0:0:0:0:0:0:0:0-10000", "ipaddr"));
+        assertNotNull(IplikeSqlTranslator.toSqlPredicate("0:0:0:0:0:0:0:0001", "ipaddr"));
+    }
+
+    @Test
     public void testZoneIdPatternFallsBack() {
         assertNull(IplikeSqlTranslator.toSqlPredicate("fe80:*:*:*:*:*:*:*%45", "ipaddr"));
     }

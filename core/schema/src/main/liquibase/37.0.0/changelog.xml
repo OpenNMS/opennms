@@ -87,4 +87,11 @@ $safeinet$ LANGUAGE sql IMMUTABLE PARALLEL SAFE RETURNS NULL ON NULL INPUT;
         </rollback>
     </changeSet>
 
+    <!-- The new expression statistics and index statistics stay empty until
+         the next ANALYZE, which install -dis only runs with the vacuum flag. -->
+    <changeSet author="mmassengill" id="37.0.0-safe-inet-analyze">
+        <sql>ANALYZE ipinterface; ANALYZE alarms; ANALYZE notifications; ANALYZE events;</sql>
+        <rollback/>
+    </changeSet>
+
 </databaseChangeLog>
