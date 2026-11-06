@@ -26,7 +26,7 @@ import { defineStore } from 'pinia'
 import { THRESHOLDING_GROUP_PARAMETER, ThreshdServiceStatus } from '@/lib/thresholdValidator'
 import API from '@/services'
 import type { ValidationResult } from '@/types/validation'
-import { createFailureResult } from '@/types/validation'
+import { createFailureResult, isConflict } from '@/types/validation'
 import type {
   ThreshdAddressRange,
   ThreshdConfiguration,
@@ -63,8 +63,6 @@ export const getDefaultThreshdService = (): ThreshdService => ({
 export const getDefaultAddressRange = (): ThreshdAddressRange => ({ begin: '', end: '' })
 
 export const getDefaultParameter = (): ThreshdParameter => ({ key: '', value: '' })
-
-const PRECONDITION_FAILED = 412
 
 /**
  * State for the threshd daemon configuration (formerly threshd-configuration.xml).
@@ -157,7 +155,7 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
       await fetchPackage(pkg.name.trim())
       await fetchConfiguration()
       await fetchPackages()
-    } else if (result.status === PRECONDITION_FAILED) {
+    } else if (isConflict(result)) {
       // The loaded copy is stale, and its version would make every later save fail the same way. Reloading
       // also drops pending edits in the form, which were made against what someone has since changed.
       await fetchPackage(name)

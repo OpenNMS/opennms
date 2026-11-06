@@ -46,7 +46,10 @@ export const createFailureResult = (message: string): ValidationResult => {
   } as ValidationResult
 }
 
-export const createResultWithPayload = <T>(success: boolean, message: string, payload?: T): ValidationResultWithPayload<T> => {
+/** True when a write was refused with a 412 because the copy it was made on is stale. */
+export const isConflict = (result: ValidationResult): boolean => result.status === 412
+
+export const createResultWithPayload =<T>(success: boolean, message: string, payload?: T): ValidationResultWithPayload<T> => {
   return {
     success,
     message,
