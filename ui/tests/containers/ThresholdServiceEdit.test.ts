@@ -143,6 +143,32 @@ describe('ThresholdServiceEdit.vue', () => {
     expect(pushMock).not.toHaveBeenCalled()
   })
 
+  it('returns to the package when an edit is rejected with a 412', async () => {
+    // The reloaded package may have shifted, so the index may now address another service.
+    store.saveService = vi.fn().mockResolvedValue({ success: false, message: 'changed', status: 412 })
+
+    await mountComponent()
+    await wrapper.find('[data-test="threshold-edit-save"]').trigger('click')
+    await flushPromises()
+
+    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'changed', error: true })
+    expect(pushMock).toHaveBeenCalledWith('/threshold-config/package/example1')
+  })
+
+  it('keeps a new service open when its save is rejected with a 412', async () => {
+    route.params = { name: 'example1' }
+    store.saveService = vi.fn().mockResolvedValue({ success: false, message: 'changed', status: 412 })
+
+    await mountComponent()
+    await wrapper.find('[data-test="package-service-name"]').setValue('ICMP')
+    await selectGroup('mib2')
+    await wrapper.find('[data-test="threshold-edit-save"]').trigger('click')
+    await flushPromises()
+
+    expect(store.saveService).toHaveBeenCalled()
+    expect(pushMock).not.toHaveBeenCalled()
+  })
+
   it('shows a not-found state for an index the package does not have', async () => {
     route.params = { name: 'example1', index: '4' }
 

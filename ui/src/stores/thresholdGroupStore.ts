@@ -26,7 +26,7 @@ import { cloneDeep } from 'lodash'
 import { ThresholdDefinitionKind, FilterOperator, ThresholdType } from '@/lib/thresholdValidator'
 import API from '@/services'
 import type { ValidationResult } from '@/types/validation'
-import { createFailureResult } from '@/types/validation'
+import { createFailureResult, isConflict } from '@/types/validation'
 import type {
   BaseThresholdDef,
   Expression,
@@ -67,8 +67,6 @@ export const getDefaultThresholdGroup = (): ThresholdGroup => ({
   thresholds: [],
   expressions: []
 })
-
-const PRECONDITION_FAILED = 412
 
 /**
  * State for the thresholding configuration (formerly thresholds.xml).
@@ -142,7 +140,7 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
    * Load the stored group instead, so the user sees what changed and the next save carries its version.
    */
   const reloadAfterConflict = async (name: string, result: ValidationResult): Promise<ValidationResult> => {
-    if (result.status !== PRECONDITION_FAILED) {
+    if (!isConflict(result)) {
       return result
     }
 
