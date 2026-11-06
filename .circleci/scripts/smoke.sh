@@ -52,7 +52,11 @@ find_tests()
         ;;
     esac
 
-    circleci tests split --split-by=timings --timings-type=classname < failsafe_classnames > /tmp/this_node_it_tests
+    # Split by count, not by timings: the JUnit testcase times CircleCI records leave out
+    # @ClassRule setup (starting the OpenNMS/Minion/Sentinel stack), which is most of the
+    # cost of a smoke test class. Timing-based splits therefore treat several 3-4 minute
+    # classes as nearly free and pile them onto one node.
+    circleci tests split < failsafe_classnames > /tmp/this_node_it_tests
 }
 
 # Prime Docker with the images this suite needs, in parallel, since testcontainers
@@ -60,19 +64,29 @@ find_tests()
 # pulled on demand by testcontainers, so only list images that most tests in the suite
 # use. Tags must match what the tests request, or the pull is wasted:
 #   - ryuk: bundled with testcontainers (testcontainers.version in the root pom)
-#   - selenium/standalone-firefox: BrowserWebDriverContainer uses selenium.version (smoke-test/pom.xml)
+#   - firefox: OpenNMSImageNameSubstitutor rewrites selenium/standalone-firefox:4.x to
+#     seleniarm/standalone-firefox:${seleniarm.version} on every arch, so read that tag
+#     from smoke-test/pom.xml rather than pulling the selenium/* image nobody uses
+#   - vnc-recorder: started next to every BrowserWebDriverContainer (testcontainers.version)
 #   - the rest: hard-coded in smoke-test/src/main/java/org/opennms/smoketest/containers/
+SMOKE_POM="$(cd "$(dirname "$0")/../.." && pwd)/smoke-test/pom.xml"
+SELENIARM_VERSION="$(sed -n 's:.*<seleniarm.version>\(.*\)</seleniarm.version>.*:\1:p' "$SMOKE_POM" | head -n 1)"
 IMAGE_RYUK="testcontainers/ryuk:0.6.0"
 IMAGE_POSTGRES="postgres:14.22-alpine"
-IMAGE_FIREFOX="selenium/standalone-firefox:4.6.0"
+IMAGE_FIREFOX="${SELENIARM_VERSION:+seleniarm/standalone-firefox:${SELENIARM_VERSION}}"
+IMAGE_VNC_RECORDER="testcontainers/vnc-recorder:1.3.0"
 IMAGE_KAFKA="confluentinc/cp-kafka:7.2.0"
 IMAGE_CASSANDRA="cassandra:3"
 IMAGE_ELASTICSEARCH="docker.elastic.co/elasticsearch/elasticsearch:7.17.9"
 
+if [ -z "$IMAGE_FIREFOX" ]; then
+  echo "WARNING: could not read seleniarm.version from $SMOKE_POM; not pre-pulling the browser image"
+fi
+
 PRIME_IMAGES=("$IMAGE_RYUK" "$IMAGE_POSTGRES")
 case "$SUITE" in
   core)
-    PRIME_IMAGES+=("$IMAGE_FIREFOX")
+    PRIME_IMAGES+=(${IMAGE_FIREFOX:+"$IMAGE_FIREFOX"} "$IMAGE_VNC_RECORDER")
     ;;
   minion)
     PRIME_IMAGES+=("$IMAGE_KAFKA")
@@ -82,7 +96,7 @@ case "$SUITE" in
     ;;
   *)
     # minimal, flaky, and anything else: mixed suites, prime everything
-    PRIME_IMAGES+=("$IMAGE_FIREFOX" "$IMAGE_KAFKA" "$IMAGE_CASSANDRA" "$IMAGE_ELASTICSEARCH")
+    PRIME_IMAGES+=(${IMAGE_FIREFOX:+"$IMAGE_FIREFOX"} "$IMAGE_VNC_RECORDER" "$IMAGE_KAFKA" "$IMAGE_CASSANDRA" "$IMAGE_ELASTICSEARCH")
     ;;
 esac
 
