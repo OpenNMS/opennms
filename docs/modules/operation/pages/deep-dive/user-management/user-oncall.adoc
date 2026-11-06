@@ -45,13 +45,14 @@ The page shows which time zone that is.
 
 == Assign a group to an on-call role (legacy pages)
 
-The steps below describe the earlier on-call role pages, which remain available under menu:Administration[Configure OpenNMS].
+The steps below describe the earlier on-call role pages.
+The menus and links now open the new page, but the earlier pages remain available at `/opennms/admin/userGroupView/roles` until they are removed in a later release.
 
 Before you can assign a group to an on-call role, you must <<deep-dive/user-management/user-groups.adoc#ga-user-group-create, create a group>>.
 After you have created the group, follow these steps to assign it to an on-call role:
 
 . Log in as a user with admin permissions.
-. Click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure On-Call Roles].
+. Open `/opennms/admin/userGroupView/roles` in your browser.
 . Click *Add New On-Call Role* and specify a name, the associated group, a user to be designated as the supervisor, and a description.
 The description should be meaningful (for example, describe the team that the on-call role has been created for).
 . Click *Save*.

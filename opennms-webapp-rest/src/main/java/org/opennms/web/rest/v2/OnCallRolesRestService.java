@@ -332,22 +332,27 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
             // a schedule stored on the role the draft names is grandfathered, as in a PUT
             final OnCallRole stored = StringUtils.isBlank(draft.getName()) ? null : m_onCallRoleDao.findByName(draft.getName());
             final List<Object> storedKeys = stored == null ? List.of() : key(stored.getSchedules());
-            final List<OnCallScheduleDto> schedules = Objects.requireNonNullElse(draft.getSchedules(), List.<OnCallScheduleDto>of());
-            for (final OnCallScheduleDto schedule : schedules) {
+            // checked and expanded in the form a save stores (day and id trimmed), so the preview matches the save
+            final List<OnCallScheduleDto> schedules = new ArrayList<>();
+            for (final OnCallScheduleDto schedule : Objects.requireNonNullElse(draft.getSchedules(), List.<OnCallScheduleDto>of())) {
                 if (schedule == null) {
                     throw new UserMgmtValidationException("A schedule must not be null.");
                 }
                 if (StringUtils.isBlank(schedule.getUser())) {
                     throw new UserMgmtValidationException("A schedule needs a user.");
                 }
-                if (!storedKeys.contains(key(normalized(schedule)))) {
-                    OnCallScheduleValidator.validate(schedule);
+                final OnCallScheduleDto normalized = normalized(schedule);
+                if (!storedKeys.contains(key(normalized))) {
+                    OnCallScheduleValidator.validate(normalized);
                 }
+                schedules.add(normalized);
             }
+            draft.setSchedules(schedules);
             final ZoneId zone = TimeZone.getDefault().toZoneId();
             final Date start = Date.from(yearMonth.atDay(1).atStartOfDay(zone).toInstant());
             final Date end = Date.from(yearMonth.plusMonths(1).atDay(1).atStartOfDay(zone).toInstant());
-            final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            // ISO digits whatever the server locale: the page reads these strings by position
+            final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ROOT);
             final List<OnCallCalendarEntryDto> entries = new ArrayList<>();
             for (final OnCallScheduleExpander.Entry entry : OnCallScheduleExpander.entries(toJaxbRole(draft), start, end)) {
                 if (entry.scheduleIndex() == null && entry.user() == null) {

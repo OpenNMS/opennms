@@ -441,11 +441,12 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
             // Select last element from the now loaded elements
             contextSearchResult.getItem("Configure Users").click();
-            getDriver().getCurrentUrl().endsWith("/opennms/ui/index.html#/admin/users");
+            wait.until(ExpectedConditions.urlMatches(".*" + java.util.regex.Pattern.quote("/opennms/ui/index.html#/admin/users") + "$"));
 
             // Go back to start page
             new CentralSearch(getDriver()).search("Home").getSingleItem().click();
-            getDriver().getCurrentUrl().endsWith("/opennms/index.jsp");
+            // the start page action opens "/", which the webapp serves as /opennms/ or /opennms/index.jsp
+            wait.until(ExpectedConditions.urlMatches(".*/opennms/(index\\.jsp)?$"));
         }
     }
 

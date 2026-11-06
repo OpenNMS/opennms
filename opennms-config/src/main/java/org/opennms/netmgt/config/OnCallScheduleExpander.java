@@ -43,7 +43,8 @@ import org.opennms.netmgt.config.groups.Time;
  * therefore covered by a time iff {@code t} is in {@code [b(D), e(D))} where {@code D} is {@code t}'s local day.
  * This class evaluates that per local day, so every entry lies within one local day.</p>
  *
- * <p>The default time zone and locale are used, as they are by notifd.</p>
+ * <p>The default time zone is used, as it is by notifd; month names are read with {@link java.util.Locale#ROOT} (English),
+ * as {@link BasicScheduleUtils#setOutCalTime} reads them.</p>
  */
 public final class OnCallScheduleExpander {
 

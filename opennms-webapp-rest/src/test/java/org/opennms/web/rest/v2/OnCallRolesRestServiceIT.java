@@ -758,6 +758,37 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testCalendarPreviewWritesIsoDigitsWhateverTheLocale() throws Exception {
+        // an Arabic locale formats numbers with Arabic-Indic digits; the page reads the entry times by position
+        Locale.setDefault(Locale.forLanguageTag("ar-EG"));
+        final MockHttpServletResponse response = exec(POST, "/oncall-roles/calendar?month=2026-11", role("draft-ar", DAILY_CAROL), null, 200);
+        final JSONArray entries = new JSONObject(response.getContentAsString()).getJSONArray("entries");
+        boolean found = false;
+        for (int i = 0; i < entries.length(); i++) {
+            final JSONObject entry = entries.getJSONObject(i);
+            assertTrue(entry.getString("start"), entry.getString("start").matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"));
+            found |= "2026-11-03T08:00:00".equals(entry.getString("start")) && "carol".equals(entry.getString("user"));
+        }
+        assertTrue(found);
+    }
+
+    @Test
+    public void testCalendarPreviewTrimsDayLikeASave() throws Exception {
+        // a save trims the day and id before checking them, so the preview must accept what the save accepts
+        final String padded = "{\"user\":\"bob\",\"type\":\"weekly\",\"times\":[{\"id\":\" \",\"day\":\" monday \",\"begins\":\"08:00:00\",\"ends\":\"17:00:00\"}]}";
+        exec(POST, "/oncall-roles", role("rota-padded", padded), null, 201);
+        final MockHttpServletResponse response = exec(POST, "/oncall-roles/calendar?month=2026-11", role("draft-padded", padded), null, 200);
+        final JSONArray entries = new JSONObject(response.getContentAsString()).getJSONArray("entries");
+        boolean found = false;
+        for (int i = 0; i < entries.length(); i++) {
+            final JSONObject entry = entries.getJSONObject(i);
+            // 2026-11-02 is a Monday
+            found |= "2026-11-02T08:00:00".equals(entry.getString("start")) && "bob".equals(entry.getString("user"));
+        }
+        assertTrue(found);
+    }
+
+    @Test
     public void testCalendarPreview() throws Exception {
         final MockHttpServletResponse response = exec(POST, "/oncall-roles/calendar?month=2026-11", role("draft-x", DAILY_CAROL), null, 200);
         final JSONObject calendar = new JSONObject(response.getContentAsString());
