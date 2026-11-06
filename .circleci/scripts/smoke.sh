@@ -55,25 +55,44 @@ find_tests()
     circleci tests split --split-by=timings --timings-type=classname < failsafe_classnames > /tmp/this_node_it_tests
 }
 
-# Prime Docker to already contain the images we need in parallel, since
-# testcontainers downloads them serially
-echo "#### Priming Docker container cache"
-for CONTAINER in \
-  "alpine:3.5" \
-  "testcontainersofficial/ryuk:0.11.0" \
-  "selenium/standalone-firefox-debug:latest" \
-  "cassandra:3.11.2" \
-  "confluentinc/cp-kafka:5.2.1" \
-  "confluentinc/cp-kafka:latest" \
-  "docker.elastic.co/elasticsearch/elasticsearch:7.17.9" \
-  "opennms/dummy-http-endpoint:0.0.2" \
-  "postgres:14.22-alpine" \
-  "postgres:latest" \
-; do
-  (docker pull "$CONTAINER" || true) &
+# Prime Docker with the images this suite needs, in parallel, since testcontainers
+# downloads them serially. This is only a warm-up: any image not listed here is still
+# pulled on demand by testcontainers, so only list images that most tests in the suite
+# use. Tags must match what the tests request, or the pull is wasted:
+#   - ryuk: bundled with testcontainers (testcontainers.version in the root pom)
+#   - selenium/standalone-firefox: BrowserWebDriverContainer uses selenium.version (smoke-test/pom.xml)
+#   - the rest: hard-coded in smoke-test/src/main/java/org/opennms/smoketest/containers/
+IMAGE_RYUK="testcontainers/ryuk:0.6.0"
+IMAGE_POSTGRES="postgres:14.22-alpine"
+IMAGE_FIREFOX="selenium/standalone-firefox:4.6.0"
+IMAGE_KAFKA="confluentinc/cp-kafka:7.2.0"
+IMAGE_CASSANDRA="cassandra:3"
+IMAGE_ELASTICSEARCH="docker.elastic.co/elasticsearch/elasticsearch:7.17.9"
+
+PRIME_IMAGES=("$IMAGE_RYUK" "$IMAGE_POSTGRES")
+case "$SUITE" in
+  core)
+    PRIME_IMAGES+=("$IMAGE_FIREFOX")
+    ;;
+  minion)
+    PRIME_IMAGES+=("$IMAGE_KAFKA")
+    ;;
+  sentinel)
+    PRIME_IMAGES+=("$IMAGE_KAFKA" "$IMAGE_CASSANDRA" "$IMAGE_ELASTICSEARCH")
+    ;;
+  *)
+    # minimal, flaky, and anything else: mixed suites, prime everything
+    PRIME_IMAGES+=("$IMAGE_FIREFOX" "$IMAGE_KAFKA" "$IMAGE_CASSANDRA" "$IMAGE_ELASTICSEARCH")
+    ;;
+esac
+
+# Start the pulls in the background so they overlap with the JDK install below
+echo "#### Priming Docker container cache for suite '$SUITE': ${PRIME_IMAGES[*]}"
+PULL_PIDS=()
+for CONTAINER in "${PRIME_IMAGES[@]}"; do
+  (docker pull --quiet "$CONTAINER" || echo "WARNING: failed to pre-pull $CONTAINER; testcontainers will retry on demand") &
+  PULL_PIDS+=($!)
 done
-wait
-echo "#### All docker containers have now been pulled to the local cache"
 
 # Configure the heap for the Maven JVM - the tests themselves are forked out in separate JVMs
 # The heap size should be sufficient to buffer the output (stdout/stderr) from the test
@@ -100,6 +119,9 @@ retry timeout --foreground -k 30s 5m sudo apt-get -y update </dev/null \
   && retry timeout --foreground -k 30s 5m sudo env DEBIAN_FRONTEND=noninteractive \
        apt-get -y install openjdk-25-jdk-headless </dev/null \
   || exit 1
+
+wait "${PULL_PIDS[@]}"
+echo "#### All docker containers have now been pulled to the local cache"
 
 # When retries are enabled, use --fail-at-end so all tests run before retrying
 FAILURE_MODE="--fail-fast"

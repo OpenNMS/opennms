@@ -17,8 +17,14 @@ find_tests()
 {
     mkdir -p "${FIND_TESTS_DIR}"
 
-    echo "#### Generate project structure .json"
-    ./compile.pl -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
+    # The build job generates this with the same command and persists it to the
+    # workspace; only regenerate it if it is missing (e.g. no attached workspace).
+    if [ -s target/structure-graph.json ]; then
+        echo "#### Reusing project structure .json from the build job"
+    else
+        echo "#### Generate project structure .json"
+        ./compile.pl -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
+    fi
 
     # Generate surefire & failsafe test list based on current
     # branch and the list of files changed
@@ -48,7 +54,9 @@ git remote prune origin || :
 git fetch origin "${REFERENCE_BRANCH}"
 
 echo "#### Determining tests to run"
-perl -pi -e "s,/home/circleci,${HOME},g" target/structure-graph.json
+if [ -s target/structure-graph.json ]; then
+  perl -pi -e "s,/home/circleci,${HOME},g" target/structure-graph.json
+fi
 find_tests
 if [ ! -s /tmp/this_node_projects ]; then
   echo "#### Node $NODE_INDEX/$NODE_TOTAL: No tests assigned, skipping"
