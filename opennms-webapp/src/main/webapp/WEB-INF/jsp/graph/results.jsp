@@ -38,6 +38,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.utils.AngularJsUtils" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Results")
           .headTitle("Resource Graphs")
@@ -71,7 +72,7 @@
         <form role="form" class="form top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get" ng-non-bindable>
             <c:if test="${empty results.generatedId && empty results.nodeCriteria}">
                 <c:forEach var="resultSet" items="${results.graphResultSets}">
-                    <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
+                    <input type="hidden" name="resourceId" value="${fn:escapeXml(resultSet.resource.id)}"/>
                 </c:forEach>
             </c:if>
             <c:if test="${not empty results.generatedId}">
@@ -200,14 +201,15 @@
 	<c:forEach var="resultSet" items="${results.graphResultSets}">
     <div class="card text-center" id="panel-resource${resultSet.index}">
       <div class="card-header">
-        <span>
-            ${resultSet.resource.parent.resourceType.label}:
+        <%-- Resource labels can come from device data. ng-non-bindable stops AngularJS from evaluating them. --%>
+        <span ng-non-bindable>
+            <c:out value="${resultSet.resource.parent.resourceType.label}"/>:
             <c:choose>
                 <c:when test="${(!empty resultSet.resource.parent.link) && loggedIn}">
                     <a href="<c:url value='${resultSet.resource.parent.link}'/>"><c:out value="${resultSet.resource.parent.label}"/></a>
                 </c:when>
                 <c:otherwise>
-                    ${resultSet.resource.parent.label}
+                    <c:out value="${resultSet.resource.parent.label}"/>
                 </c:otherwise>
             </c:choose>
 
@@ -219,7 +221,7 @@
                         Resource:
                     </c:when>
                     <c:otherwise>
-                        ${resultSet.resource.resourceType.label}:
+                        <c:out value="${resultSet.resource.resourceType.label}"/>:
                     </c:otherwise>
                 </c:choose>
                 <c:choose>
@@ -227,7 +229,7 @@
                         <a href="<c:url value='${resultSet.resource.link}'/>"><c:out value="${resultSet.resource.label}"/></a>
                     </c:when>
                     <c:otherwise>
-                        ${resultSet.resource.label}
+                        <c:out value="${resultSet.resource.label}"/>
                     </c:otherwise>
                 </c:choose>
             </c:if>
@@ -269,10 +271,11 @@
                         <c:param name="resourceId" value="${resultSet.resource.id}"/>
                     </c:url>
                     <!-- graph-search div should be immediate parent to graph-container as search depends on this. -->
-                    <div class="graph-search" ng-show="enableGraph" ng-controller="graphSearchCtrl" resourceid ="${resultSet.resource.id}" graphname="${graph.name}" graphtitle = "${graph.title}">
-	                    <div class="graph-aux-controls" style="padding-bottom: 5px" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
+                    <%-- Resource IDs can contain device data. Do not put them in attributes that AngularJS compiles. --%>
+                    <div class="graph-search" ng-show="enableGraph" ng-controller="graphSearchCtrl" graphname="${fn:escapeXml(graph.name)}" graphtitle = "${fn:escapeXml(graph.title)}">
+	                    <div class="graph-aux-controls" style="padding-bottom: 5px">
                             <a style="padding-right: 3px" title="Add ${graph.title} to KSC Report">
-                                <button type="button" class="btn btn-secondary btn-sm" ng-click="open('${resultSet.resource.id}','${resultSet.resource.label}','${graph.name}','${graph.title}')">
+                                <button type="button" class="btn btn-secondary btn-sm" ng-click="open('${AngularJsUtils.escapeString(resultSet.resource.id)}','${AngularJsUtils.escapeString(resultSet.resource.label)}','${AngularJsUtils.escapeString(graph.name)}','${AngularJsUtils.escapeString(graph.title)}')">
                                     <i class="fa fa-plus" aria-hidden="true"></i>
                                 </button>
                             </a>
@@ -294,7 +297,8 @@
                               </a>
                             </div>
 	                    </div> <!-- graph-aux-controls -->
-                        <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom == 'true'}"></div>
+                        <%-- onms-graph reads data-resource-id. ng-non-bindable stops AngularJS from evaluating it. --%>
+                        <div class="graph-container" ng-non-bindable data-graph-zoomable="true" data-resource-id="${fn:escapeXml(resultSet.resource.id)}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom == 'true'}"></div>
                         <br/><br/>
                     </div>
                 </c:forEach>
