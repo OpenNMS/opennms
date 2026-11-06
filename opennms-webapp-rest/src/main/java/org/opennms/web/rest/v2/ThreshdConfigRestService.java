@@ -22,7 +22,6 @@
 package org.opennms.web.rest.v2;
 
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,6 +35,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -228,7 +228,7 @@ public class ThreshdConfigRestService implements ThreshdConfigRestApi {
         }
 
         sendConfigChanged();
-        return Response.created(URI.create("threshd/packages/" + packageName)).build();
+        return Response.created(UriBuilder.fromPath("threshd/packages/{name}").build(packageName)).build();
     }
 
     @Override
