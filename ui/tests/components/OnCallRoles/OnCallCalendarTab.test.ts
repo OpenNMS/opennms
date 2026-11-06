@@ -17,8 +17,11 @@
 /// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 /// either express or implied.  See the License for the specific
 /// language governing permissions and limitations under the
+/// License.
+///
 
 import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
+import { OnmsSelect } from '@opennms/onms-ui'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -105,6 +108,22 @@ describe('OnCallCalendarTab', () => {
     vi.setSystemTime(new Date('2026-11-30T23:30:00Z'))
     await mountTab({ timeZone: 'Pacific/Auckland' })
     expect(api.previewOnCallCalendar).toHaveBeenCalledWith(draft(), '2026-12')
+  })
+
+  it('does not call an entry whose schedule card is gone a supervisor entry', async () => {
+    api.previewOnCallCalendar.mockResolvedValue(ok({
+      timeZone: 'UTC',
+      month: '2026-11',
+      entries: [{ start: '2026-11-03T08:00:00', end: '2026-11-03T17:00:00', user: 'bob', scheduleIndex: 5 }]
+    }))
+    const wrapper = await mountTab()
+    const orphan = wrapper.find('[data-date="2026-11-03"] [data-test="calendar-entry-fallback"]')
+    expect(orphan.text()).toBe('8:00 am bob')
+  })
+
+  it('names the server time zone, and says nothing when it is not known', async () => {
+    expect((await mountTab()).find('[data-test="calendar-zone"]').text()).toBe('Times are in the server time zone: UTC')
+    expect((await mountTab({ timeZone: '' })).find('[data-test="calendar-zone"]').exists()).toBe(false)
   })
 
   it('lists entries under their day; the supervisor entry is muted and not a button', async () => {
@@ -194,7 +213,7 @@ describe('OnCallCalendarTab', () => {
     await flushPromises()
     const dialog = document.body.querySelector('[data-test="oncall-day-entry-dialog"]')
     expect(dialog).not.toBeNull()
-    ;(wrapper.findComponent({ name: 'OnCallDayEntryDialog' }).vm as unknown as { user: string }).user = 'carol'
+    wrapper.findComponent({ name: 'OnCallDayEntryDialog' }).findComponent(OnmsSelect).vm.$emit('update:modelValue', 'carol')
     await flushPromises()
     ;(document.body.querySelector('[data-test="ok-button"]') as HTMLElement).click()
     await flushPromises()

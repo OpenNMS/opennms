@@ -17,6 +17,8 @@
 /// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 /// either express or implied.  See the License for the specific
 /// language governing permissions and limitations under the
+/// License.
+///
 ///
 
 import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
@@ -37,7 +39,6 @@ const store = vi.hoisted(() => ({
   scheduleSettings: null as unknown,
   createRole: vi.fn(),
   updateRole: vi.fn(),
-  fullName: vi.fn((id: string) => id === 'alice' ? 'Alice Liddell' : undefined),
   groupMembers: vi.fn(() => [] as string[])
 }))
 

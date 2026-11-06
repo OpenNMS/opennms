@@ -140,7 +140,8 @@ const problem = computed(() => {
   if (!begin.value || !effectiveEnd.value || effectiveEnd.value.startsWith('T')) {
     return 'Enter a begin and an end.'
   }
-  if (begin.value >= effectiveEnd.value) {
+  // end of day runs through 23:59:59, so a begin at 23:59 still comes before it
+  if (begin.value >= (endOfDay.value ? `${endDate.value}T23:59:59` : effectiveEnd.value)) {
     return 'The time must begin before it ends.'
   }
   return null

@@ -113,7 +113,7 @@ function toRange(t: OnCallTime, type: OnCallScheduleType, shortMonths: string[])
     begin = b.slice(0, 16)
     end = endOfDay ? `${e.slice(0, 10)}T23:59` : e.slice(0, 16)
   } else {
-    if (type === 'weekly' ? !WEEKDAYS.includes(t.day as typeof WEEKDAYS[number]) : type === 'monthly' ? !isMonthDay(t.day) : hasDay) {
+    if (!dayFits(type, t.day)) {
       return null
     }
     const b = CLOCK.exec(t.begins)
@@ -136,7 +136,19 @@ function isMonthDay(day: string | null | undefined): boolean {
   return day !== null && day !== undefined && /^[0-9]{1,2}$/.test(day) && Number(day) >= 1 && Number(day) <= 31
 }
 
-// What a stored time looks like as a card entry, for comparing against the user's edits.
+// Whether a time's day suits its schedule type: a weekday for weekly, a day of the month for monthly, none otherwise.
+function dayFits(type: string, day: string | null | undefined): boolean {
+  if (type === 'weekly') {
+    return WEEKDAYS.includes(day as typeof WEEKDAYS[number])
+  }
+  if (type === 'monthly') {
+    return isMonthDay(day)
+  }
+  return day === null || day === undefined
+}
+
+// Whether a time is still exactly as stored: re-derives the card entry from the stored strings and compares it with
+// the current one, so an edit that was undone counts as untouched too.
 function sameAsOriginal(r: TimeRange, type: OnCallScheduleType, shortMonths: string[]): boolean {
   if (!r.original) {
     return false
@@ -194,6 +206,21 @@ export function toSchedule(c: ScheduleCard, shortMonths: string[]): OnCallSchedu
   return { user: c.user, type: c.type, times }
 }
 
+// an editor value that is a real clock time ('HH:mm') or a real day and time ('yyyy-MM-ddTHH:mm'), not just the shape
+const isClock = (v: string): boolean => {
+  const m = /^(\d{2}):(\d{2})$/.exec(v)
+  return !!m && Number(m[1]) <= 23 && Number(m[2]) <= 59
+}
+
+const isDayTime = (v: string): boolean => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}:\d{2})$/.exec(v)
+  if (!m || !isClock(m[4])) {
+    return false
+  }
+  const date = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])))
+  return date.getUTCMonth() === Number(m[2]) - 1 && date.getUTCDate() === Number(m[3])
+}
+
 export function cardProblems(c: ScheduleCard): string[] {
   if (c.legacy) {
     return []
@@ -213,15 +240,15 @@ export function cardProblems(c: ScheduleCard): string[] {
     }
   }
   for (const r of c.times) {
-    if (c.type === 'weekly' && !WEEKDAYS.includes(r.day as typeof WEEKDAYS[number])) {
+    if (c.type === 'weekly' && !dayFits(c.type, r.day)) {
       add('Choose a weekday for each time range.')
     }
-    if (c.type === 'monthly' && !isMonthDay(r.day)) {
+    if (c.type === 'monthly' && !dayFits(c.type, r.day)) {
       add('The day of the month must be between 1 and 31.')
     }
-    const valueFormat = c.type === 'specific' ? /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/ : /^\d{2}:\d{2}$/
-    const endOk = valueFormat.test(r.end) || (r.endOfDay && c.type !== 'specific')
-    if (!valueFormat.test(r.begin) || !endOk) {
+    const valid = c.type === 'specific' ? isDayTime : isClock
+    const endOk = valid(r.end) || (r.endOfDay && c.type !== 'specific')
+    if (!valid(r.begin) || !endOk) {
       add('Enter a begin and an end for each time range.')
       continue
     }

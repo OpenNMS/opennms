@@ -61,6 +61,7 @@ const HIGHLIGHT_MS = 2000
 const highlighted = ref<string | null>(null)
 const refs = new Map<string, unknown>()
 let timer: ReturnType<typeof setTimeout> | undefined
+let unmounted = false
 
 const setRef = (key: string, el: unknown) => {
   if (el) {
@@ -87,6 +88,10 @@ watch(() => props.highlightKey, async (key) => {
   }
   // let the card render first
   await nextTick()
+  // the tab may have been closed while waiting
+  if (unmounted) {
+    return
+  }
   const el = (refs.get(key) as { $el?: HTMLElement } | undefined)?.$el
   // scrollIntoView is missing in jsdom/happy-dom
   if (el && typeof el.scrollIntoView === 'function') {
@@ -100,7 +105,10 @@ watch(() => props.highlightKey, async (key) => {
   }, HIGHLIGHT_MS)
 }, { immediate: true })
 
-onBeforeUnmount(() => clearTimeout(timer))
+onBeforeUnmount(() => {
+  unmounted = true
+  clearTimeout(timer)
+})
 </script>
 
 <style lang="scss" scoped>

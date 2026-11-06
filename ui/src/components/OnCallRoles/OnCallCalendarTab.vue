@@ -1,6 +1,10 @@
 <template>
   <div class="calendar-tab">
-    <p class="zone" data-test="calendar-zone">Times are in the server time zone: {{ timeZone }}</p>
+    <p
+      v-if="timeZone"
+      class="zone"
+      data-test="calendar-zone"
+    >Times are in the server time zone: {{ timeZone }}</p>
     <div class="month-nav">
       <OnmsIconButton
         :icon="ChevronLeft"
@@ -64,7 +68,7 @@
               v-else
               class="entry fallback"
               data-test="calendar-entry-fallback"
-            >{{ clockTo12Hour(e.start.slice(11, 16)) }} {{ e.user }} <small>supervisor</small></div>
+            >{{ clockTo12Hour(e.start.slice(11, 16)) }} {{ e.user }} <small v-if="e.scheduleIndex === null">supervisor</small></div>
           </template>
         </template>
       </div>

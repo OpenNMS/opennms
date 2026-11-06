@@ -17,6 +17,8 @@
 /// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 /// either express or implied.  See the License for the specific
 /// language governing permissions and limitations under the
+/// License.
+///
 ///
 
 import { enableAutoUnmount, mount } from '@vue/test-utils'
@@ -157,6 +159,17 @@ describe('OnCallScheduleCard', () => {
     const badge = w.find('[data-test="time-pending-1"]')
     expect(badge.exists()).toBe(true)
     expect(badge.element.nextElementSibling?.getAttribute('data-test')).toBe('remove-time-1')
+  })
+
+  it('keeps the stored end date when End of day is checked on a specific time', async () => {
+    const w = mountCard(stored('specific', null, '05-Mar-2026 08:00:00', '06-Mar-2026 17:00:00'))
+    await w.find('[data-test="time-end-of-day-0"] input').setValue(true)
+    expect(toSchedule(lastCard(w), SHORT_MONTHS).times[0].ends).toBe('06-Mar-2026 23:59:59')
+  })
+
+  it('has no type-change dialog on a legacy card', () => {
+    const w = mountCard(toCard({ user: 'bob', type: 'fortnightly', times: [{ id: null, day: 'x', begins: 'whenever', ends: 'later' }] }, SHORT_MONTHS))
+    expect(w.findComponent({ name: 'OnmsConfirmationDialog' }).exists()).toBe(false)
   })
 
   it('shows no inputs on a legacy card and Remove works', async () => {

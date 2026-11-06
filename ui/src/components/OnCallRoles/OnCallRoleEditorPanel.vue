@@ -400,8 +400,7 @@ const save = async () => {
   padding-top: 0.5rem;
 
   :deep(input),
-  :deep(textarea),
-  :deep(.p-multiselect) {
+  :deep(textarea) {
     width: 100%;
   }
 }

@@ -291,6 +291,20 @@ describe('cardProblems', () => {
     expect(cardProblems(c)).toEqual(['Enter a begin and an end for each time range.'])
   })
 
+  it('rejects impossible dates and times, not only malformed ones', () => {
+    const withTime = (type: 'specific' | 'daily', begin: string, end: string) => {
+      const c = newCard('admin', type)
+      c.times.push({ id: null, day: null, begin, end, endOfDay: false, original: null })
+      return cardProblems(c)
+    }
+    const MESSAGE = 'Enter a begin and an end for each time range.'
+    expect(withTime('specific', '2026-13-01T10:00', '2026-13-01T11:00')).toEqual([MESSAGE])
+    expect(withTime('specific', '2026-02-30T10:00', '2026-03-01T11:00')).toEqual([MESSAGE])
+    expect(withTime('specific', '2026-03-01T24:00', '2026-03-02T11:00')).toEqual([MESSAGE])
+    expect(withTime('daily', '08:00', '25:99')).toEqual([MESSAGE])
+    expect(withTime('daily', '08:00', '23:59')).toEqual([])
+  })
+
   it('rejects values in the wrong format for the type', () => {
     const c = newCard('admin', 'specific')
     c.times.push({ id: null, day: null, begin: '08:00', end: '17:00', endOfDay: false, original: null })

@@ -181,18 +181,19 @@
       >
         <small v-for="p in problems" :key="p">{{ p }}</small>
       </div>
+      <!-- only an editable card can change its type -->
+      <OnmsConfirmationDialog
+        :visible="pendingType !== null"
+        title="Change Schedule Type"
+        actionButtonText="Change"
+        @ok="confirmType"
+        @cancel="pendingType = null"
+      >
+        <template #content>
+          <p>Changing the type clears this schedule's time ranges. Continue?</p>
+        </template>
+      </OnmsConfirmationDialog>
     </template>
-    <OnmsConfirmationDialog
-      :visible="pendingType !== null"
-      title="Change Schedule Type"
-      actionButtonText="Change"
-      @ok="confirmType"
-      @cancel="pendingType = null"
-    >
-      <template #content>
-        <p>Changing the type clears this schedule's time ranges. Continue?</p>
-      </template>
-    </OnmsConfirmationDialog>
   </div>
 </template>
 

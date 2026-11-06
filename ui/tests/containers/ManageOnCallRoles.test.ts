@@ -17,6 +17,8 @@
 /// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 /// either express or implied.  See the License for the specific
 /// language governing permissions and limitations under the
+/// License.
+///
 import { flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -81,12 +83,15 @@ describe('ManageOnCallRoles.vue (container)', () => {
       attachTo: document.body,
       global: { plugins: [PrimeVue], directives: { 'onms-tooltip': {}}, stubs: { BreadCrumbs: true, OnCallRoleEditorPanel: true }}
     })
-    await flushPromises()
+    try {
+      await flushPromises()
 
-    expect(wrapper.find('[data-test="oncall-roles-table-wrapper"]').isVisible()).toBe(false)
-    expect(warn.mock.calls.filter(c => String(c[0]).includes('non-element root node'))).toEqual([])
-    wrapper.unmount()
-    warn.mockRestore()
+      expect(wrapper.find('[data-test="oncall-roles-table-wrapper"]').isVisible()).toBe(false)
+      expect(warn.mock.calls.filter(c => String(c[0]).includes('non-element root node'))).toEqual([])
+    } finally {
+      wrapper.unmount()
+      warn.mockRestore()
+    }
   })
 
   it('shows only the table outside the editor', async () => {

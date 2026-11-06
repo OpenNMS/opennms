@@ -17,8 +17,11 @@
 /// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 /// either express or implied.  See the License for the specific
 /// language governing permissions and limitations under the
+/// License.
+///
 
 import { enableAutoUnmount, mount } from '@vue/test-utils'
+import { OnmsSelect } from '@opennms/onms-ui'
 import PrimeVue from 'primevue/config'
 import { nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -36,14 +39,16 @@ describe('OnCallDayEntryDialog', () => {
   })
   const find = (selector: string) => document.body.querySelector(selector) as HTMLInputElement
   const pickUser = async (wrapper: ReturnType<typeof mountDialog>, user: string) => {
-    ;(wrapper.vm as unknown as { user: string }).user = user
+    // the dialog renders its content a tick after it opens
+    await nextTick()
+    wrapper.findComponent(OnmsSelect).vm.$emit('update:modelValue', user)
     await nextTick()
   }
 
   it('starts with no user and the whole day, and disables OK until a user is chosen', async () => {
     const wrapper = mountDialog()
     await nextTick()
-    expect((wrapper.vm as unknown as { user: string }).user).toBe('')
+    expect(wrapper.findComponent(OnmsSelect).props('modelValue')).toBe('')
     expect(datePicker(wrapper, 'entry-begin').props('modelValue')).toEqual(new Date(2026, 10, 5, 0, 0))
     expect(datePicker(wrapper, 'entry-begin').props()).toMatchObject({ showTime: true, timeOnly: false, hourFormat: '12' })
     expect(datePicker(wrapper, 'entry-end-date').props('modelValue')).toEqual(new Date(2026, 10, 5))
@@ -73,6 +78,15 @@ describe('OnCallDayEntryDialog', () => {
     await pickDate(wrapper, 'entry-end', new Date(2026, 10, 5, 9, 30))
     find('[data-test="ok-button"]').click()
     expect(wrapper.emitted('ok')).toEqual([[{ user: 'carol', start: '2026-11-05T00:00', end: '2026-11-05T09:30', endOfDay: false }]])
+  })
+
+  it('accepts a begin at 23:59 with end of day, which runs through 23:59:59', async () => {
+    const wrapper = mountDialog()
+    await pickUser(wrapper, 'bob')
+    await pickDate(wrapper, 'entry-begin', new Date(2026, 10, 5, 23, 59))
+    expect(document.body.textContent).not.toContain('The time must begin before it ends.')
+    find('[data-test="ok-button"]').click()
+    expect(wrapper.emitted('ok')).toEqual([[{ user: 'bob', start: '2026-11-05T23:59', end: '2026-11-05T23:59', endOfDay: true }]])
   })
 
   it('does not emit on Cancel', async () => {
