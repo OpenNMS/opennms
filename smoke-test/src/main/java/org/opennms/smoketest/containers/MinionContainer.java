@@ -117,6 +117,8 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                 .withCreateContainerCmdModifier(createCmd -> {
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     TestContainerUtils.exposePortsAsUdp(createCmd, udpPorts);
+                    // Telemetry listeners and the Karaf RMI server
+                    TestContainerUtils.reserveEphemeralPorts(createCmd, "45444,50000-50002");
                 })
                 .withEnv("OPENNMS_HTTP_USER", "admin")
                 .withEnv("OPENNMS_HTTP_PASS", "admin")
