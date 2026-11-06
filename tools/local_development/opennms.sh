@@ -146,7 +146,7 @@ else
     COMPILE_ARGS=(-DskipTests=true -Dbuild.skip.tarball=true -Ddisable.checkstyle=true \
         --threads "$MAVEN_THREADS" install)
     # Build the Karaf assemblies in a second run. tools/karaf-assemblies.txt gives the reason.
-    KARAF_ASSEMBLIES=$(grep -v '^#' "$ROOT/tools/karaf-assemblies.txt" | paste -sd, -)
+    KARAF_ASSEMBLIES=$(grep -Ev '^[[:space:]]*(#|$)' "$ROOT/tools/karaf-assemblies.txt" | paste -sd, -)
     ./compile.pl "${COMPILE_ARGS[@]}" --projects "!${KARAF_ASSEMBLIES//,/,!}" \
         && ./compile.pl "${COMPILE_ARGS[@]}" --projects "$KARAF_ASSEMBLIES" \
         && ./assemble.pl -DskipTests=true "${ASSEMBLE_ARGS[@]}"

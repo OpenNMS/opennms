@@ -63,7 +63,7 @@ commands:
               --threads << parameters.number-vcpu >> \
               $MAVEN_ARGS)
             # Build the Karaf assemblies in a second run. tools/karaf-assemblies.txt gives the reason.
-            KARAF_ASSEMBLIES=$(grep -v '^#' tools/karaf-assemblies.txt | paste -sd, -)
+            KARAF_ASSEMBLIES=$(grep -Ev '^[[:space:]]*(#|$)' tools/karaf-assemblies.txt | paste -sd, -)
             ./compile.pl "${COMPILE_ARGS[@]}" --projects "!${KARAF_ASSEMBLIES//,/,!}" || exit 1
             ./compile.pl "${COMPILE_ARGS[@]}" --projects "$KARAF_ASSEMBLIES" || exit 1
             ./compile.pl -s .circleci/scripts/structure-settings.xml \
