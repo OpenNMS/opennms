@@ -28,6 +28,7 @@
 	import="org.opennms.web.element.*"
 %>
 <%@page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@page import="org.opennms.web.api.ElementConstants" %>
 
 <%!
     public ElementNotFoundException findElementNotFoundException(Throwable throwable) {
@@ -62,7 +63,10 @@
   <p>
   To search again by <%=enfe.getElemType()%> ID, enter the ID here:
   </p>
-  <form role="form" method="get" action="<%=enfe.getDetailUri()%>" class="form">
+  <% final boolean nodeDetails = ElementConstants.NODE_DETAILS_URI.equals(enfe.getDetailUri()); %>
+  <form role="form" method="get" class="form"
+        action="<%= nodeDetails ? "#" : enfe.getDetailUri() %>"
+        <% if (nodeDetails) { %>onsubmit="return onmsGoToNodeDetails(this.elements['<%=enfe.getDetailParam()%>'])"<% } %>>
     <div class="row">
       <div class="form-group col-md-2">
         <label for="input_text">Get&nbsp;details&nbsp;for&nbsp;<%=enfe.getElemType()%></label>

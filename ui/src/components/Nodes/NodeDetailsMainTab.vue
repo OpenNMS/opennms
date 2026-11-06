@@ -25,7 +25,6 @@
       <NodeNotificationsPanel
         v-if="nodeLoaded"
         :node="node"
-        :base-href="baseHref"
       />
       <AlarmsTable />
       <NodeCriticalPathPanel v-if="nodeLoaded" />

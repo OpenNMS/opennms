@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.openqa.selenium.Alert;
+import org.opennms.smoketest.ui.NodeDetailsPage;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +70,7 @@ public class AssetsPageForNodeIT extends OpenNMSSeleniumIT {
         sendPut("rest/nodes/SmokeTests:TestMachine1/assetRecord", "description=Right here, Right now", 204);
         LOG.debug("asset updated!");
 
-        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestMachine1");
+        new NodeDetailsPage(this).open("SmokeTests:TestMachine1");
     }
 
     /**
@@ -90,9 +90,10 @@ public class AssetsPageForNodeIT extends OpenNMSSeleniumIT {
      */
     @Test
     public void testAssetPage() {
-        findElementByLink("Asset Info").click();
-        Alert alert = driver.switchTo().alert();
-        alert.accept();
+        final NodeDetailsPage nodePage = new NodeDetailsPage(this);
+        nodePage.clickLink("Inventory", "Assets");
+        // The node is from a requisition, so the page asks before it opens the asset editor.
+        nodePage.confirmAssetEdit();
 
         final String descriptionXpath = "(//input[@ng-model='asset[field.model]'])[1]";
         waitForValue(By.xpath(descriptionXpath), "Right here, Right now");

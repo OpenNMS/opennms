@@ -146,7 +146,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   notifications: {
     type: 'notifications',
     title: 'Notifications',
-    titleHref: '/opennms/notification/index.jsp',
+    titleHref: '/opennms/ui/index.html#/notifications',
     category: 'info',
     component: defineAsyncComponent(() => import('./panels/NotificationsPanel.vue')),
     defaultSize: { w: 4, h: 3 },
