@@ -24,6 +24,7 @@ import { describe, expect, it } from 'vitest'
 import {
   cardProblems,
   formatSpecific,
+  membershipProblem,
   newCard,
   parseSpecific,
   toCard,
@@ -49,7 +50,7 @@ describe('round trip', () => {
     const card = toCard(s, en)
     expect(card.legacy).toBe(false)
     expect(card.dirty).toBe(false)
-    expect(card.addedThisSession).toBe(false)
+    expect(card.fromCalendar).toBe(false)
     expect(toSchedule(card, en)).toEqual(s)
   })
 
@@ -199,7 +200,7 @@ describe('specific dates', () => {
 describe('newCard', () => {
   it('starts dirty with no times', () => {
     const card = newCard('admin', 'weekly')
-    expect(card).toMatchObject({ user: 'admin', type: 'weekly', times: [], legacy: false, original: null, dirty: true, addedThisSession: false })
+    expect(card).toMatchObject({ user: 'admin', type: 'weekly', times: [], legacy: false, original: null, dirty: true, fromCalendar: false })
     expect(newCard('admin', 'weekly').key).not.toBe(card.key)
   })
 })
@@ -312,5 +313,25 @@ describe('cardProblems', () => {
     const d = valid()
     d.times[0].begin = '2026-03-14T10:00'
     expect(cardProblems(d)).toEqual(['Enter a begin and an end for each time range.'])
+  })
+})
+
+describe('membershipProblem', () => {
+  const stored = toCard({ user: 'bob', type: 'daily', times: [{ id: null, day: null, begins: '08:00:00', ends: '17:00:00' }] }, en)
+  const MESSAGE = 'bob is not a member of the membership group. Choose a member or remove this schedule.'
+
+  it('accepts a member, and a schedule with no user yet (cardProblems reports that)', () => {
+    expect(membershipProblem(stored, ['bob'], true)).toBeNull()
+    expect(membershipProblem(newCard('', 'daily'), [], true)).toBeNull()
+  })
+
+  it('accepts a stored schedule of a non-member only unchanged and while the group is unchanged', () => {
+    expect(membershipProblem(stored, ['carol'], false)).toBeNull()
+    expect(membershipProblem(stored, ['carol'], true)).toBe(MESSAGE)
+    expect(membershipProblem({ ...stored, dirty: true }, ['carol'], false)).toBe(MESSAGE)
+  })
+
+  it('refuses a new schedule of a non-member', () => {
+    expect(membershipProblem(newCard('bob', 'daily'), ['carol'], false)).toBe(MESSAGE)
   })
 })

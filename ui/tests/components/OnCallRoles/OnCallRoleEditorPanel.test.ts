@@ -39,7 +39,8 @@ const store = vi.hoisted(() => ({
   scheduleSettings: null as unknown,
   createRole: vi.fn(),
   updateRole: vi.fn(),
-  groupMembers: vi.fn(() => [] as string[])
+  // the members of a group in `groups`, as the store answers
+  groupMembers: vi.fn((name: string): string[] => (store.groups as { name: string, users: string[] }[]).find(g => g.name === name)?.users ?? [])
 }))
 
 vi.mock('@/stores/onCallRoleAdminStore', async () => {
@@ -231,6 +232,21 @@ describe('OnCallRoleEditorPanel', () => {
     await save(wrapper)
     expect(wrapper.find('[data-test="save-error"]').text()).toContain('Supervisor does not exist.')
     expect(wrapper.emitted('close')).toBeUndefined()
+  })
+
+  it('disables Save when a new membership group leaves a schedule user out, as the server would refuse it', async () => {
+    const wrapper = await mountPanel(storedRole())
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeUndefined()
+    const group = wrapper.findAllComponents(OnmsSelect).find(c => c.props('inputId') === 'oncall-role-group')!
+
+    group.vm.$emit('update:modelValue', 'Day')
+    await flushPromises()
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.find('[data-test="tab-schedules"]').find('[data-test="tab-problem-marker"]').exists()).toBe(true)
+
+    group.vm.$emit('update:modelValue', 'Night')
+    await flushPromises()
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeUndefined()
   })
 
   it('marks the Schedules tab and disables Save while a card has a problem', async () => {

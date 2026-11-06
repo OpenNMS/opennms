@@ -147,7 +147,8 @@
     <template #content>
       <p>
         Are you sure you want to delete the on-call role <strong>{{ roleToDelete?.name }}</strong>?
-        A destination path that targets the role will no longer find it. This action cannot be undone.
+        A role that a notification destination path names can't be deleted until the path no longer names it.
+        This action cannot be undone.
       </p>
     </template>
   </OnmsConfirmationDialog>

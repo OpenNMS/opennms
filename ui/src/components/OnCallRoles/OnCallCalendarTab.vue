@@ -62,6 +62,7 @@
               type="button"
               class="entry"
               data-test="calendar-entry"
+              :disabled="stale"
               @click="emit('show-schedule', e.scheduleIndex)"
             >{{ clockTo12Hour(e.start.slice(11, 16)) }} {{ e.user }}</button>
             <div
@@ -140,6 +141,8 @@ watch(month, m => emit('update:month', m), { immediate: true })
 const entries = ref<OnCallCalendarEntry[]>([])
 const errorText = ref('')
 const loading = ref(false)
+// the draft changed since the shown entries were computed: their schedule positions may no longer match the cards
+const stale = ref(false)
 const dialogVisible = ref(false)
 const dialogDay = ref('')
 
@@ -157,6 +160,7 @@ const load = async () => {
   clearTimer()
   const seq = ++sequence
   if (!props.draft) {
+    stale.value = false
     entries.value = []
     loading.value = false
     errorText.value = NOT_READY_MESSAGE
@@ -168,6 +172,7 @@ const load = async () => {
     return
   }
   loading.value = false
+  stale.value = false
   if (result.success && result.payload) {
     entries.value = result.payload.entries
     errorText.value = ''
@@ -180,6 +185,7 @@ const load = async () => {
 load()
 
 watch(() => JSON.stringify(props.draft), () => {
+  stale.value = true
   clearTimer()
   timer = setTimeout(load, DEBOUNCE_MS)
 })

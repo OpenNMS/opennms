@@ -17,6 +17,7 @@
       :ref="el => setRef(card.key, el)"
       :card="card"
       :members="members"
+      :groupChanged="groupChanged"
       :highlighted="highlighted === card.key"
       @update:card="c => replaceCard(index, c)"
       @remove="removeCard(index)"
@@ -45,6 +46,8 @@ import { newCard, ScheduleCard } from '@/lib/onCallSchedule'
 const props = defineProps<{
   cards: ScheduleCard[]
   members: string[]
+  // the role's membership group was changed in this editor
+  groupChanged: boolean
   // the schedule settings failed to load, so the cards are not the role's schedules
   settingsMissing?: boolean
   highlightKey: string | null

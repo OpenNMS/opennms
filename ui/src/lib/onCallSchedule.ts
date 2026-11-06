@@ -57,7 +57,8 @@ export interface ScheduleCard {
   legacy: boolean
   original: OnCallSchedule | null
   dirty: boolean
-  addedThisSession: boolean
+  // created by clicking a day on the calendar in this editor; later day clicks for the same user add to it
+  fromCalendar: boolean
 }
 
 let keyCounter = 0
@@ -158,7 +159,7 @@ function sameAsOriginal(r: TimeRange, type: OnCallScheduleType, shortMonths: str
 }
 
 export function toCard(s: OnCallSchedule, shortMonths: string[]): ScheduleCard {
-  const base = { key: nextKey(), user: s.user, original: s, dirty: false, addedThisSession: false }
+  const base = { key: nextKey(), user: s.user, original: s, dirty: false, fromCalendar: false }
   if (!isType(s.type)) {
     return {
       ...base,
@@ -180,7 +181,7 @@ function rawRange(t: OnCallTime): TimeRange {
 }
 
 export function newCard(user: string, type: OnCallScheduleType): ScheduleCard {
-  return { key: nextKey(), user, type, times: [], legacy: false, original: null, dirty: true, addedThisSession: false }
+  return { key: nextKey(), user, type, times: [], legacy: false, original: null, dirty: true, fromCalendar: false }
 }
 
 export function toSchedule(c: ScheduleCard, shortMonths: string[]): OnCallSchedule {
@@ -262,4 +263,13 @@ export function cardProblems(c: ScheduleCard): string[] {
     }
   }
   return problems
+}
+
+// The server takes a schedule whose user is not in the membership group only as stored and sent back unchanged, and
+// only while the role keeps its group: a change of group checks every schedule against the new one.
+export function membershipProblem(c: ScheduleCard, members: string[], groupChanged: boolean): string | null {
+  if (!c.user || members.includes(c.user) || (c.original !== null && !c.dirty && !groupChanged)) {
+    return null
+  }
+  return `${c.user} is not a member of the membership group. Choose a member or remove this schedule.`
 }

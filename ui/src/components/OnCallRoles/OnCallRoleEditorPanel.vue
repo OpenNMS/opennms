@@ -108,6 +108,7 @@
             <OnCallSchedulesTab
               v-model:cards="cards"
               :members="members"
+              :groupChanged="groupChanged"
               :settingsMissing="!store.scheduleSettings"
               :highlightKey="highlightKey"
               @highlighted="highlightKey = null"
@@ -172,7 +173,7 @@ import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
 import { FREE_TEXT_LENGTH, validateOnCallRoleName } from '@/lib/adminValidation'
-import { cardProblems, newCard, ScheduleCard, TimeRange, toCard, toSchedule } from '@/lib/onCallSchedule'
+import { cardProblems, membershipProblem, newCard, ScheduleCard, TimeRange, toCard, toSchedule } from '@/lib/onCallSchedule'
 import { useOnCallRoleAdminStore } from '@/stores/onCallRoleAdminStore'
 import { ManagedOnCallRole, ManagedOnCallRoleCreate } from '@/types/onCallRoleAdmin'
 
@@ -252,7 +253,13 @@ const supervisorMissing = computed(() => !supervisor.value)
 const groupMissing = computed(() => !membershipGroup.value)
 const detailsTabProblem = computed(() =>
   !!(nameProblem.value || descriptionProblem.value || supervisorMissing.value || groupMissing.value))
-const schedulesProblem = computed(() => cards.value.some(c => cardProblems(c).length > 0))
+// a role that changes its membership group has every schedule checked against the new group
+const groupChanged = computed(() => isEditing.value && membershipGroup.value !== props.role?.membershipGroup)
+// values the schedules can't be written with; the calendar can't be previewed while there are any
+const scheduleValueProblem = computed(() => cards.value.some(c => cardProblems(c).length > 0))
+// everything that keeps the schedules from saving
+const schedulesProblem = computed(() =>
+  scheduleValueProblem.value || cards.value.some(c => membershipProblem(c, members.value, groupChanged.value) !== null))
 
 const isValid = computed(() =>
   cardsReady.value && !detailsTabProblem.value && !schedulesProblem.value && (isEditing.value || !!name.value))
@@ -306,16 +313,16 @@ const draftRole = (): ManagedOnCallRoleCreate => {
 }
 
 // the draft for the calendar preview; null while a schedule has problems, as it cannot be serialized then
-const calendarDraft = computed(() => cardsReady.value && !schedulesProblem.value ? draftRole() : null)
+const calendarDraft = computed(() => cardsReady.value && !scheduleValueProblem.value ? draftRole() : null)
 
 // A time added from the calendar goes to a card added in this session for that user, never to a stored one.
 const addEntry = (entry: { user: string, start: string, end: string, endOfDay: boolean }) => {
   const range: TimeRange = { id: null, day: null, begin: entry.start, end: entry.end, endOfDay: entry.endOfDay, original: null }
-  const existing = cards.value.findIndex(c => c.addedThisSession && c.type === 'specific' && c.user === entry.user)
+  const existing = cards.value.findIndex(c => c.fromCalendar && c.type === 'specific' && c.user === entry.user)
   if (existing >= 0) {
     cards.value = cards.value.map((c, i) => i === existing ? { ...c, times: [...c.times, range], dirty: true } : c)
   } else {
-    cards.value = [...cards.value, { ...newCard(entry.user, 'specific'), addedThisSession: true, times: [range] }]
+    cards.value = [...cards.value, { ...newCard(entry.user, 'specific'), fromCalendar: true, times: [range] }]
   }
 }
 

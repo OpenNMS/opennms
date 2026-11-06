@@ -19,7 +19,7 @@
 /// language governing permissions and limitations under the
 /// License.
 ///
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { clockTo12Hour, clockToDate, dateToClock, dateToDay, dateToDayTime, dayTimeToDate, dayToDate } from '@/lib/pickerTime'
 
@@ -58,5 +58,26 @@ describe('pickerTime', () => {
     expect(clockTo12Hour('12:30')).toBe('12:30 pm')
     expect(clockTo12Hour('23:59')).toBe('11:59 pm')
     expect(clockTo12Hour('8:00')).toBe('')
+  })
+
+  describe('on the browser\'s daylight-saving day', () => {
+    const zone = process.env.TZ
+    afterEach(() => {
+      process.env.TZ = zone
+      vi.useRealTimers()
+    })
+
+    it('keeps every clock time, including the hour the clocks skip today', () => {
+      process.env.TZ = 'America/New_York'
+      vi.useFakeTimers({ toFake: ['Date'] })
+      // 2026-03-08 is the spring-forward day in New York: 02:00-02:59 does not exist on it
+      vi.setSystemTime(new Date('2026-03-08T12:00:00Z'))
+      for (let h = 0; h < 24; h++) {
+        for (const m of [0, 30, 59]) {
+          const hhmm = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+          expect(dateToClock(clockToDate(hhmm))).toBe(hhmm)
+        }
+      }
+    })
   })
 })

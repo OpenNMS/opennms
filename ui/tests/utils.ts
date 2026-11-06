@@ -1,7 +1,3 @@
-import { OnmsDatePicker } from '@opennms/onms-ui'
-import { VueWrapper } from '@vue/test-utils'
-import { nextTick } from 'vue'
-
 ///
 /// Licensed to The OpenNMS Group, Inc (TOG) under one or more
 /// contributor license agreements.  See the LICENSE.md file
@@ -23,6 +19,9 @@ import { nextTick } from 'vue'
 /// language governing permissions and limitations under the
 /// License.
 ///
+import { OnmsDatePicker } from '@opennms/onms-ui'
+import { VueWrapper } from '@vue/test-utils'
+import { nextTick } from 'vue'
 
 export const findByText = (wrap: any, selector: string, text: string) => {
   return wrap.findAll(selector).filter((n: any) => n.text().match(text))[0]

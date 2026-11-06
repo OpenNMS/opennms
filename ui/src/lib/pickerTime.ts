@@ -30,15 +30,25 @@ const CLOCK = /^(\d{2}):(\d{2})$/
 const DAY = /^(\d{4})-(\d{2})-(\d{2})$/
 const DAY_TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/
 
-/** 'HH:mm' → a Date (today) at that time; null for an empty or malformed value */
+/**
+ * 'HH:mm' → a Date at that time; null for an empty or malformed value. Only the clock part matters, so the date is a
+ * fixed day in January, not today: on a day when the browser's clocks skip an hour for daylight saving, 02:30 does not
+ * exist and a Date would turn it into 03:30. If the browser's zone skips that time on the first day too, a later day is
+ * used.
+ */
 export const clockToDate = (hhmm: string): Date | null => {
   const m = CLOCK.exec(hhmm)
   if (!m) {
     return null
   }
-  const date = new Date()
-  date.setHours(Number(m[1]), Number(m[2]), 0, 0)
-  return date
+  const [hours, minutes] = [Number(m[1]), Number(m[2])]
+  for (let day = 10; day < 20; day++) {
+    const date = new Date(2000, 0, day, hours, minutes)
+    if (date.getHours() === hours && date.getMinutes() === minutes) {
+      return date
+    }
+  }
+  return new Date(2000, 0, 10, hours, minutes)
 }
 
 /** a Date → its 'HH:mm'; '' for null */

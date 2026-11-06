@@ -30,6 +30,14 @@
         :key="i"
         class="raw-line"
       >{{ t.day ? `${t.day} ` : '' }}{{ t.begin }} &rarr; {{ t.end }}</div>
+      <div
+        v-if="memberProblem"
+        class="problems"
+        role="alert"
+        data-test="schedule-problems"
+      >
+        <small>{{ memberProblem }}</small>
+      </div>
     </template>
     <template v-else>
       <div class="card-head">
@@ -205,13 +213,14 @@ import { OnmsButton, OnmsCheckbox, OnmsConfirmationDialog, OnmsDatePicker, OnmsI
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import PendingBadge from '@/components/Common/PendingBadge.vue'
-import { cardProblems, ScheduleCard, TimeRange, WEEKDAYS } from '@/lib/onCallSchedule'
+import { cardProblems, membershipProblem, ScheduleCard, TimeRange, WEEKDAYS } from '@/lib/onCallSchedule'
 import { clockToDate, dateToClock, dateToDay, dateToDayTime, dayTimeToDate, dayToDate } from '@/lib/pickerTime'
 import { OnCallScheduleType } from '@/types/onCallRoleAdmin'
 
 const props = defineProps<{
   card: ScheduleCard
   members: string[]
+  groupChanged: boolean
   highlighted: boolean
 }>()
 
@@ -232,7 +241,8 @@ const weekdayOptions = WEEKDAYS.map(d => ({ label: d.charAt(0).toUpperCase() + d
 const pendingType = ref<OnCallScheduleType | null>(null)
 
 const isSpecific = computed(() => props.card.type === 'specific')
-const problems = computed(() => cardProblems(props.card))
+const memberProblem = computed(() => membershipProblem(props.card, props.members, props.groupChanged))
+const problems = computed(() => [...cardProblems(props.card), ...(memberProblem.value ? [memberProblem.value] : [])])
 // a stored user who left the group stays selected
 const notMember = computed(() => !!props.card.user && !props.members.includes(props.card.user))
 const userOptions = computed(() => {

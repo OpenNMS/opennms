@@ -36,9 +36,9 @@ enableAutoUnmount(afterEach)
 const noop = { mounted: () => undefined }
 const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-const mountCard = (card: ScheduleCard, members = ['bob', 'carol']) =>
+const mountCard = (card: ScheduleCard, members = ['bob', 'carol'], groupChanged = false) =>
   mount(OnCallScheduleCard, {
-    props: { card, members, highlighted: false },
+    props: { card, members, groupChanged, highlighted: false },
     global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
   })
 
@@ -133,6 +133,14 @@ describe('OnCallScheduleCard', () => {
       expect(remove.props('severity')).toBe('danger')
       expect(remove.props('icon')).toStrictEqual(Delete)
     }
+  })
+
+  it('says why a non-member schedule can not be saved once the group changed, legacy cards too', () => {
+    const daily = mountCard(stored('daily', null, '08:00:00', '17:00:00'), ['carol'], true)
+    expect(daily.find('[data-test="schedule-problems"]').text()).toContain('bob is not a member of the membership group')
+    const legacy = mountCard(toCard({ user: 'bob', type: 'fortnightly', times: [{ id: null, day: 'x', begins: 'a', ends: 'b' }] }, SHORT_MONTHS), ['carol'], true)
+    expect(legacy.find('[data-test="schedule-problems"]').text()).toContain('bob is not a member of the membership group')
+    expect(mountCard(stored('daily', null, '08:00:00', '17:00:00'), ['carol'], false).find('[data-test="schedule-problems"]').exists()).toBe(false)
   })
 
   it('marks a schedule added in this editor as pending, left of its remove button, and not a stored one', () => {

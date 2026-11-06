@@ -110,6 +110,19 @@ describe('OnCallCalendarTab', () => {
     expect(api.previewOnCallCalendar).toHaveBeenCalledWith(draft(), '2026-12')
   })
 
+  it('does not open a schedule from entries computed for an earlier draft', async () => {
+    const wrapper = await mountTab()
+    const entry = () => wrapper.find('[data-date="2026-11-03"] [data-test="calendar-entry"]')
+    expect(entry().attributes('disabled')).toBeUndefined()
+
+    await wrapper.setProps({ draft: { ...draft(), description: 'changed' }})
+    expect(entry().attributes('disabled')).toBeDefined()
+
+    await vi.advanceTimersByTimeAsync(400)
+    await flushPromises()
+    expect(entry().attributes('disabled')).toBeUndefined()
+  })
+
   it('does not call an entry whose schedule card is gone a supervisor entry', async () => {
     api.previewOnCallCalendar.mockResolvedValue(ok({
       timeZone: 'UTC',
