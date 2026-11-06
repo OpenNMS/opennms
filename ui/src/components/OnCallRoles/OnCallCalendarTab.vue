@@ -59,12 +59,12 @@
               class="entry"
               data-test="calendar-entry"
               @click="emit('show-schedule', e.scheduleIndex)"
-            >{{ e.start.slice(11, 16) }} {{ e.user }}</button>
+            >{{ clockTo12Hour(e.start.slice(11, 16)) }} {{ e.user }}</button>
             <div
               v-else
               class="entry fallback"
               data-test="calendar-entry-fallback"
-            >{{ e.start.slice(11, 16) }} {{ e.user }} <small>supervisor</small></div>
+            >{{ clockTo12Hour(e.start.slice(11, 16)) }} {{ e.user }} <small>supervisor</small></div>
           </template>
         </template>
       </div>
@@ -73,7 +73,6 @@
       v-model:visible="dialogVisible"
       :day="dialogDay"
       :members="members"
-      :shortMonths="shortMonths"
       @ok="entry => emit('add-entry', entry)"
     />
   </div>
@@ -88,6 +87,7 @@ import ChevronLeft from '@opennms/onms-ui/icons/navigation/ChevronLeft.vue'
 import ChevronRight from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
 import OnCallDayEntryDialog from '@/components/OnCallRoles/OnCallDayEntryDialog.vue'
 import { ScheduleCard } from '@/lib/onCallSchedule'
+import { clockTo12Hour } from '@/lib/pickerTime'
 import API from '@/services'
 import { ManagedOnCallRoleCreate, OnCallCalendarEntry } from '@/types/onCallRoleAdmin'
 
@@ -96,7 +96,6 @@ const props = defineProps<{
   draft: ManagedOnCallRoleCreate | null
   cards: ScheduleCard[]
   members: string[]
-  shortMonths: string[]
   timeZone: string
   settingsMissing?: boolean
   // the shown month (yyyy-MM), kept by the parent so that it survives the tab being unmounted

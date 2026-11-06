@@ -31,12 +31,11 @@ import { pickDate } from '../../utils'
 enableAutoUnmount(afterEach)
 
 const noop = { mounted: () => undefined }
-const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 describe('OnCallSchedulesTab', () => {
   const mountTab = (cards = [newCard('bob', 'daily')], extra: Record<string, unknown> = {}) =>
     mount(OnCallSchedulesTab, {
-      props: { ...extra, cards, members: ['bob'], shortMonths: SHORT_MONTHS, highlightKey: null },
+      props: { ...extra, cards, members: ['bob'], highlightKey: null },
       global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
     })
 
@@ -51,7 +50,7 @@ describe('OnCallSchedulesTab', () => {
     await w.find('[data-test="add-schedule"]').trigger('click')
     const cards = w.emitted('update:cards')!.at(-1)![0] as ReturnType<typeof newCard>[]
     expect(cards).toHaveLength(1)
-    expect(cardProblems(cards[0], SHORT_MONTHS).length).toBeGreaterThan(0)
+    expect(cardProblems(cards[0]).length).toBeGreaterThan(0)
   })
 
   it('removes a card', async () => {
@@ -78,7 +77,7 @@ describe('OnCallSchedulesTab', () => {
       Element.prototype.scrollIntoView = scroll
       const cards = [newCard('bob', 'daily'), newCard('bob', 'weekly')]
       const w = mount(OnCallSchedulesTab, {
-        props: { cards, members: ['bob'], shortMonths: SHORT_MONTHS, highlightKey: cards[1].key },
+        props: { cards, members: ['bob'], highlightKey: cards[1].key },
         global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
       })
       await nextTick()
@@ -105,7 +104,6 @@ describe('OnCallSchedulesTab', () => {
             cards.value = c
           },
           members: ['bob'],
-          shortMonths: SHORT_MONTHS,
           highlightKey: null
         })
       }

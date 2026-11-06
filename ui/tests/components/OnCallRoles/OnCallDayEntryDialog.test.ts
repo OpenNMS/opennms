@@ -30,10 +30,8 @@ import { datePicker, pickDate } from '../../utils'
 enableAutoUnmount(afterEach)
 
 describe('OnCallDayEntryDialog', () => {
-  const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  const GERMAN = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sept.', 'Okt.', 'Nov.', 'Dez.']
-  const mountDialog = (shortMonths = SHORT_MONTHS) => mount(OnCallDayEntryDialog, {
-    props: { visible: true, day: '2026-11-05', members: ['bob', 'carol'], shortMonths },
+  const mountDialog = () => mount(OnCallDayEntryDialog, {
+    props: { visible: true, day: '2026-11-05', members: ['bob', 'carol'] },
     global: { plugins: [PrimeVue] }
   })
   const find = (selector: string) => document.body.querySelector(selector) as HTMLInputElement
@@ -50,13 +48,6 @@ describe('OnCallDayEntryDialog', () => {
     expect(datePicker(wrapper, 'entry-begin').props()).toMatchObject({ showTime: true, timeOnly: false, hourFormat: '12' })
     expect(datePicker(wrapper, 'entry-end-date').props('modelValue')).toEqual(new Date(2026, 10, 5))
     expect(datePicker(wrapper, 'entry-end-date').props()).toMatchObject({ showTime: false, timeOnly: false })
-    expect(find('[data-test="ok-button"]').hasAttribute('disabled')).toBe(true)
-  })
-
-  it('disables OK for a month the server locale abbreviates to other than 3 characters', async () => {
-    const wrapper = mountDialog(GERMAN)
-    await pickUser(wrapper, 'bob')
-    expect(document.body.textContent).toContain('This server\'s locale writes November as \'Nov.\', which notifd cannot read')
     expect(find('[data-test="ok-button"]').hasAttribute('disabled')).toBe(true)
   })
 

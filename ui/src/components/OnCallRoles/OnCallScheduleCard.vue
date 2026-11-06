@@ -211,7 +211,6 @@ import { OnCallScheduleType } from '@/types/onCallRoleAdmin'
 const props = defineProps<{
   card: ScheduleCard
   members: string[]
-  shortMonths: string[]
   highlighted: boolean
 }>()
 
@@ -232,7 +231,7 @@ const weekdayOptions = WEEKDAYS.map(d => ({ label: d.charAt(0).toUpperCase() + d
 const pendingType = ref<OnCallScheduleType | null>(null)
 
 const isSpecific = computed(() => props.card.type === 'specific')
-const problems = computed(() => cardProblems(props.card, props.shortMonths))
+const problems = computed(() => cardProblems(props.card))
 // a stored user who left the group stays selected
 const notMember = computed(() => !!props.card.user && !props.members.includes(props.card.user))
 const userOptions = computed(() => {

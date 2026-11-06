@@ -21,7 +21,7 @@
 ///
 import { describe, expect, it } from 'vitest'
 
-import { clockToDate, dateToClock, dateToDay, dateToDayTime, dayTimeToDate, dayToDate } from '@/lib/pickerTime'
+import { clockTo12Hour, clockToDate, dateToClock, dateToDay, dateToDayTime, dayTimeToDate, dayToDate } from '@/lib/pickerTime'
 
 describe('pickerTime', () => {
   it('round-trips a clock time through a Date', () => {
@@ -50,5 +50,13 @@ describe('pickerTime', () => {
     expect(dateToClock(null)).toBe('')
     expect(dateToDay(null)).toBe('')
     expect(dateToDayTime(null)).toBe('')
+  })
+
+  it('shows a clock time in 12-hour form', () => {
+    expect(clockTo12Hour('00:00')).toBe('12:00 am')
+    expect(clockTo12Hour('08:05')).toBe('8:05 am')
+    expect(clockTo12Hour('12:30')).toBe('12:30 pm')
+    expect(clockTo12Hour('23:59')).toBe('11:59 pm')
+    expect(clockTo12Hour('8:00')).toBe('')
   })
 })

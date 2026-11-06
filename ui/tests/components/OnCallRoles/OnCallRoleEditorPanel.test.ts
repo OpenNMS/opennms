@@ -204,19 +204,6 @@ describe('OnCallRoleEditorPanel', () => {
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
   })
 
-  it('flags an edited specific time in a month the server locale abbreviates to other than 3 characters', async () => {
-    store.scheduleSettings = { timeZone: 'UTC', shortMonths: ['Jan.', 'Feb.', 'März', ...SHORT_MONTHS.slice(3)] }
-    const role = storedRole()
-    role.schedules = [{ user: 'bob', type: 'specific', times: [{ id: null, day: null, begins: '05-Apr-2026 08:00:00', ends: '05-Apr-2026 17:00:00' }] }]
-    const wrapper = await mountPanel(role)
-    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeUndefined()
-    await wrapper.find('[data-test="tab-schedules"]').trigger('click')
-    await pickDate(wrapper, 'time-begin-0', new Date(2026, 2, 5, 8, 0))
-    await flushPromises()
-    expect(wrapper.text()).toContain('This server\'s locale writes March as \'März\'')
-    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
-  })
-
   it('rejects a description over 4096 characters unless it is the untouched stored one', async () => {
     const long = 'x'.repeat(4100)
     const wrapper = await mountPanel({ ...storedRole(), description: long })

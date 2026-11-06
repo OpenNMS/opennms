@@ -90,7 +90,6 @@ import { computed, ref, watch } from 'vue'
 import { OnmsButton, OnmsCheckbox, OnmsDatePicker, OnmsDialog, OnmsSelect } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
-import { monthProblem } from '@/lib/onCallSchedule'
 import { dateToDay, dateToDayTime, dayTimeToDate, dayToDate } from '@/lib/pickerTime'
 
 const props = defineProps<{
@@ -98,7 +97,6 @@ const props = defineProps<{
   // yyyy-MM-dd
   day: string
   members: string[]
-  shortMonths: string[]
 }>()
 
 const emit = defineEmits<{
@@ -145,7 +143,7 @@ const problem = computed(() => {
   if (begin.value >= effectiveEnd.value) {
     return 'The time must begin before it ends.'
   }
-  return monthProblem([begin.value, effectiveEnd.value], props.shortMonths)
+  return null
 })
 
 const ok = () => {

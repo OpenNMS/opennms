@@ -64,3 +64,13 @@ export const dayTimeToDate = (value: string): Date | null => {
 /** a Date → its 'yyyy-MM-ddTHH:mm'; '' for null */
 export const dateToDayTime = (date: Date | null): string =>
   date ? `${dateToDay(date)}T${dateToClock(date)}` : ''
+
+/** 'HH:mm' → the 12-hour form the pickers show, e.g. '8:00 am', '12:30 pm'; '' for a malformed value */
+export const clockTo12Hour = (hhmm: string): string => {
+  const m = CLOCK.exec(hhmm)
+  if (!m) {
+    return ''
+  }
+  const hours = Number(m[1])
+  return `${hours % 12 || 12}:${m[2]} ${hours < 12 ? 'am' : 'pm'}`
+}

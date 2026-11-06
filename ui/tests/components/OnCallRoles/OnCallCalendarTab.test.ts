@@ -46,13 +46,12 @@ const calendar = (month = '2026-11'): OnCallCalendar => ({
   ]
 })
 
-const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 const ok = (payload: OnCallCalendar) => ({ success: true, message: '', payload })
 
 const mountTab = async (props: Record<string, unknown> = {}) => {
   const wrapper = mount(OnCallCalendarTab, {
-    props: { draft: draft(), cards: [newCard('bob', 'daily')], members: ['bob', 'carol'], shortMonths: SHORT_MONTHS, timeZone: 'UTC', ...props },
+    props: { draft: draft(), cards: [newCard('bob', 'daily')], members: ['bob', 'carol'], timeZone: 'UTC', ...props },
     global: { plugins: [PrimeVue], directives: { 'onms-tooltip': { mounted: () => undefined }}}
   })
   await flushPromises()
@@ -113,10 +112,10 @@ describe('OnCallCalendarTab', () => {
     const cell = wrapper.find('[data-date="2026-11-03"]')
     const entries = cell.findAll('[data-test="calendar-entry"]')
     expect(entries).toHaveLength(1)
-    expect(entries[0].text()).toBe('08:00 bob')
+    expect(entries[0].text()).toBe('8:00 am bob')
     expect(entries[0].element.tagName).toBe('BUTTON')
     const fallback = cell.find('[data-test="calendar-entry-fallback"]')
-    expect(fallback.text()).toContain('17:00 alice')
+    expect(fallback.text()).toContain('5:00 pm alice')
     expect(fallback.text()).toContain('supervisor')
     expect(fallback.element.tagName).not.toBe('BUTTON')
     expect(wrapper.find('[data-date="2026-11-04"]').findAll('[data-test^="calendar-entry"]')).toHaveLength(0)
@@ -171,7 +170,7 @@ describe('OnCallCalendarTab', () => {
       slow.resolve = resolve
     }))
     const wrapper = mount(OnCallCalendarTab, {
-      props: { draft: draft(), cards: [newCard('bob', 'daily')], members: [], shortMonths: SHORT_MONTHS, timeZone: 'UTC' },
+      props: { draft: draft(), cards: [newCard('bob', 'daily')], members: [], timeZone: 'UTC' },
       global: { plugins: [PrimeVue], directives: { 'onms-tooltip': { mounted: () => undefined }}}
     })
     await wrapper.find('[data-test="calendar-next"]').trigger('click')

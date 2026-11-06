@@ -108,7 +108,6 @@
             <OnCallSchedulesTab
               v-model:cards="cards"
               :members="members"
-              :shortMonths="shortMonths"
               :settingsMissing="!store.scheduleSettings"
               :highlightKey="highlightKey"
               @highlighted="highlightKey = null"
@@ -122,7 +121,6 @@
               :cards="cards"
               v-model:month="calendarMonth"
               :members="members"
-              :shortMonths="shortMonths"
               :settingsMissing="!store.scheduleSettings"
               :timeZone="store.scheduleSettings?.timeZone ?? ''"
               @add-entry="addEntry"
@@ -254,7 +252,7 @@ const supervisorMissing = computed(() => !supervisor.value)
 const groupMissing = computed(() => !membershipGroup.value)
 const detailsTabProblem = computed(() =>
   !!(nameProblem.value || descriptionProblem.value || supervisorMissing.value || groupMissing.value))
-const schedulesProblem = computed(() => cards.value.some(c => cardProblems(c, shortMonths.value).length > 0))
+const schedulesProblem = computed(() => cards.value.some(c => cardProblems(c).length > 0))
 
 const isValid = computed(() =>
   cardsReady.value && !detailsTabProblem.value && !schedulesProblem.value && (isEditing.value || !!name.value))
