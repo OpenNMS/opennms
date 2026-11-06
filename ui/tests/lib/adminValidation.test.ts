@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import {
+  validateOnCallRoleName,
   isPathAddressable,
   RESERVED_GROUP_NAMES,
+  RESERVED_ONCALL_ROLE_NAMES,
   RESERVED_USER_IDS,
   validateAdminComments,
   validateAdminName,
@@ -12,6 +14,13 @@ import {
 import { PROTECTED_USER_IDS } from '@/types/userAdmin'
 
 describe('validateAdminName', () => {
+  it('reserves the endpoints under /oncall-roles', () => {
+    for (const reserved of ['.', '..', 'item', 'calendar', 'schedule-settings']) {
+      expect(validateAdminName(reserved, 'on-call role name', RESERVED_ONCALL_ROLE_NAMES), reserved).toContain('is reserved')
+    }
+    expect(validateAdminName('Night', 'on-call role name', RESERVED_ONCALL_ROLE_NAMES)).toBeNull()
+  })
+
   it('accepts ordinary names and empty values', () => {
     expect(validateAdminName('NOC-Duty_1', 'group name', RESERVED_GROUP_NAMES)).toBeNull()
     expect(validateAdminName('', 'group name', RESERVED_GROUP_NAMES)).toBeNull()
@@ -133,5 +142,30 @@ describe('validateReservedName', () => {
     expect(validateReservedName('administrator', PROTECTED_USER_IDS, 'user-id')).toBeNull()
     expect(validateReservedName('Admin', ['Admin'], 'group name')).toBeNull()
     expect(validateReservedName('', PROTECTED_USER_IDS, 'user-id')).toBeNull()
+  })
+})
+
+describe('validateOnCallRoleName', () => {
+  it.each(['Ops Rota', 'Müller (Nacht)', 'a', '1st-line_v2.0'])('accepts %s', (name) => {
+    expect(validateOnCallRoleName(name)).toBeNull()
+  })
+
+  it('requires a name', () => {
+    expect(validateOnCallRoleName('')).toBe('An on-call role name is required.')
+  })
+
+  it.each([' Ops', 'Ops ', 'Ops  Rota', 'a/b', '-lead', 'a&b'])('rejects the shape of "%s"', (name) => {
+    expect(validateOnCallRoleName(name)).toBe('The on-call role name must start with a letter or digit and contain only letters, digits, the characters _ - . ( ) and single spaces between words.')
+  })
+
+  it('rejects more than 256 characters, counting code points', () => {
+    expect(validateOnCallRoleName('a'.repeat(256))).toBeNull()
+    expect(validateOnCallRoleName('a'.repeat(257))).toBe('The on-call role name must not be longer than 256 characters.')
+    expect(validateOnCallRoleName('\u{1D4D0}'.repeat(256))).toBeNull()
+  })
+
+  it('rejects the reserved names', () => {
+    expect(validateOnCallRoleName('calendar')).toBe('The on-call role name "calendar" is reserved.')
+    expect(validateOnCallRoleName('item')).toBe('The on-call role name "item" is reserved.')
   })
 })

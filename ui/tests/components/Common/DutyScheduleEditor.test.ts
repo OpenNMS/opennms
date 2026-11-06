@@ -1,17 +1,19 @@
 import DutyScheduleEditor from '@/components/Common/DutyScheduleEditor.vue'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { describe, it, expect } from 'vitest'
+import { dutyTime, setDutyTime } from '../../utils'
 
 describe('DutyScheduleEditor.vue', () => {
   const mountEditor = (modelValue: string[]) =>
-    mount(DutyScheduleEditor, { props: { modelValue }, global: { plugins: [PrimeVue] }})
+    mount(DutyScheduleEditor, { props: { modelValue }, global: { plugins: [PrimeVue], directives: { 'onms-tooltip': {}}}})
 
   it('parses a schedule string into day toggles and times', () => {
     const wrapper = mountEditor(['MoWeFr800-1700'])
 
-    expect((wrapper.find('[data-test="duty-0-begin"]').element as HTMLInputElement).value).toBe('08:00')
-    expect((wrapper.find('[data-test="duty-0-end"]').element as HTMLInputElement).value).toBe('17:00')
+    expect(dutyTime(wrapper, 'duty-0-begin')).toBe('08:00 am')
+    expect(dutyTime(wrapper, 'duty-0-end')).toBe('05:00 pm')
     expect(wrapper.find('[data-test="duty-0-day-Mo"]').attributes('aria-pressed')).toBe('true')
     expect(wrapper.find('[data-test="duty-0-day-We"]').attributes('aria-pressed')).toBe('true')
     expect(wrapper.find('[data-test="duty-0-day-Tu"]').attributes('aria-pressed')).toBe('false')
@@ -27,9 +29,9 @@ describe('DutyScheduleEditor.vue', () => {
 
   it('parses half-hour times and re-serializes an edited end time', async () => {
     const wrapper = mountEditor(['Mo930-1030'])
-    expect((wrapper.find('[data-test="duty-0-begin"]').element as HTMLInputElement).value).toBe('09:30')
+    expect(dutyTime(wrapper, 'duty-0-begin')).toBe('09:30 am')
 
-    await wrapper.find('[data-test="duty-0-end"]').setValue('11:00')
+    await setDutyTime(wrapper, 'duty-0-end', '11:00')
 
     expect(wrapper.emitted('update:modelValue')?.at(-1)?.[0]).toEqual(['Mo930-1100'])
   })
@@ -62,6 +64,67 @@ describe('DutyScheduleEditor.vue', () => {
     expect(wrapper.emitted('update:modelValue')?.at(-1)?.[0]).toEqual([])
   })
 
+  it('puts the remove button right after the day and time pickers, or the raw text', async () => {
+    const wrapper = mountEditor(['Mo800-1700', 'weird-legacy-entry'])
+    await wrapper.find('[data-test="add-duty-button"]').trigger('click')
+
+    const before = (index: number) =>
+      wrapper.find(`[data-test="remove-duty-${index}"]`).element.previousElementSibling?.getAttribute('data-test')
+    expect(before(0)).toBe('duty-0-end')
+    expect(before(1)).toBe('duty-1-raw')
+    expect(before(2)).toBe('duty-2-end')
+  })
+
+  it('edits the times with time-only pickers, each labelled', () => {
+    const wrapper = mountEditor(['Mo800-1700'])
+
+    expect(dutyTime(wrapper, 'duty-0-begin')).toBe('08:00 am')
+    expect(dutyTime(wrapper, 'duty-0-end')).toBe('05:00 pm')
+    for (const which of ['begin', 'end']) {
+      const input = wrapper.find(`[data-test="duty-0-${which}"] input`)
+      const label = wrapper.find(`label[for="${input.attributes('id')}"]`)
+      expect(label.text()).toBe(which === 'begin' ? 'Begin time' : 'End time')
+    }
+  })
+
+  it('gives every remove button the tooltip Remove duty schedule', async () => {
+    const wrapper = mountEditor(['Mo800-1700', 'weird-legacy-entry'])
+    await wrapper.find('[data-test="add-duty-button"]').trigger('click')
+
+    const removes = wrapper.findAllComponents(OnmsIconButton).filter(b => b.attributes('data-test')?.startsWith('remove-duty-'))
+    expect(removes).toHaveLength(3)
+    for (const remove of removes) {
+      expect(remove.props('tooltip')).toBe('Remove duty schedule')
+    }
+  })
+
+  it('marks only the rows added with Add Schedule as pending', async () => {
+    const wrapper = mountEditor(['Mo800-1700', 'weird-legacy-entry'])
+    expect(wrapper.find('[data-test="duty-0-pending"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="duty-1-pending"]').exists()).toBe(false)
+
+    await wrapper.find('[data-test="add-duty-button"]').trigger('click')
+
+    const badge = wrapper.find('[data-test="duty-2-pending"]')
+    expect(badge.exists()).toBe(true)
+    expect(badge.text()).toBe('Pending')
+    // the badge sits right after the row's remove button
+    expect(badge.element.previousElementSibling?.getAttribute('data-test')).toBe('remove-duty-2')
+
+    // editing a stored row does not make it pending
+    await wrapper.find('[data-test="duty-0-day-We"]').trigger('click')
+    expect(wrapper.find('[data-test="duty-0-pending"]').exists()).toBe(false)
+  })
+
+  it('keeps the pending badge on the right row when an earlier row is removed', async () => {
+    const wrapper = mountEditor(['Mo800-1700'])
+    await wrapper.find('[data-test="add-duty-button"]').trigger('click')
+
+    await wrapper.find('[data-test="remove-duty-0"]').trigger('click')
+
+    expect(wrapper.find('[data-test="duty-0-pending"]').exists()).toBe(true)
+  })
+
   it('shows the empty hint when there are no schedules', () => {
     const wrapper = mountEditor([])
     // generic: the editor serves users and groups alike
@@ -83,7 +146,7 @@ describe('DutyScheduleEditor.vue', () => {
   it('preserves untouched non-canonical rows when another row is edited', async () => {
     const wrapper = mountEditor(['TuMo2000-0800', 'We900-1700'])
 
-    await wrapper.find('[data-test="duty-1-end"]').setValue('18:00')
+    await setDutyTime(wrapper, 'duty-1-end', '18:00')
 
     // row 0 stays byte-identical; only the edited row re-serializes
     expect(wrapper.emitted('update:modelValue')?.at(-1)?.[0]).toEqual(['TuMo2000-0800', 'We900-1800'])
@@ -126,13 +189,13 @@ describe('DutyScheduleEditor.vue', () => {
       await wrapper.vm.$nextTick()
       expect(validEmits(wrapper)?.at(-1)).toBe(true)
 
-      await wrapper.find('[data-test="duty-0-begin"]').setValue('')
+      await setDutyTime(wrapper, 'duty-0-begin', '')
 
       expect(wrapper.find('[data-test="duty-row-0"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="duty-0-time-error"]').text()).toBe('Pick a begin and an end time')
       expect(validEmits(wrapper)?.at(-1)).toBe(false)
 
-      await wrapper.find('[data-test="duty-0-begin"]').setValue('09:00')
+      await setDutyTime(wrapper, 'duty-0-begin', '09:00')
       expect(wrapper.find('[data-test="duty-0-time-error"]').exists()).toBe(false)
       expect(validEmits(wrapper)?.at(-1)).toBe(true)
       expect(wrapper.emitted('update:modelValue')?.at(-1)?.[0]).toEqual(['Mo900-1700'])
@@ -144,7 +207,7 @@ describe('DutyScheduleEditor.vue', () => {
       await wrapper.find('[data-test="duty-0-day-Mo"]').trigger('click')
       expect(validEmits(wrapper)?.at(-1)).toBe(true)
 
-      await wrapper.find('[data-test="duty-0-end"]').setValue('')
+      await setDutyTime(wrapper, 'duty-0-end', '')
 
       expect(wrapper.find('[data-test="duty-0-time-error"]').text()).toBe('Pick a begin and an end time')
       expect(validEmits(wrapper)?.at(-1)).toBe(false)
@@ -220,8 +283,8 @@ describe('DutyScheduleEditor.vue', () => {
       const wrapper = mountEditor([])
       await wrapper.find('[data-test="add-duty-button"]').trigger('click')
       await wrapper.find('[data-test="duty-0-day-Mo"]').trigger('click')
-      await wrapper.find('[data-test="duty-0-begin"]').setValue('20:00')
-      await wrapper.find('[data-test="duty-0-end"]').setValue('08:00')
+      await setDutyTime(wrapper, 'duty-0-begin', '20:00')
+      await setDutyTime(wrapper, 'duty-0-end', '08:00')
       expect(wrapper.find('[data-test="duty-0-overnight"]').text()).toBe(OVERNIGHT)
       expect(validEmits(wrapper)?.at(-1)).toBe(false)
     })
@@ -236,7 +299,7 @@ describe('DutyScheduleEditor.vue', () => {
 
     it('rejects a stored overnight row edited to another overnight time', async () => {
       const wrapper = mountEditor(['Mo2000-800'])
-      await wrapper.find('[data-test="duty-0-begin"]').setValue('21:00')
+      await setDutyTime(wrapper, 'duty-0-begin', '21:00')
       expect(validEmits(wrapper)?.at(-1)).toBe(false)
     })
 
@@ -253,14 +316,14 @@ describe('DutyScheduleEditor.vue', () => {
       const wrapper = mountEditor([])
       await wrapper.find('[data-test="add-duty-button"]').trigger('click')
       await wrapper.find('[data-test="duty-0-day-Mo"]').trigger('click')
-      await wrapper.find('[data-test="duty-0-end"]').setValue('09:00')
+      await setDutyTime(wrapper, 'duty-0-end', '09:00')
 
       expect(wrapper.find('[data-test="duty-0-empty-window"]').text()).toBe(EMPTY_WINDOW)
       expect(wrapper.find('[data-test="duty-0-warning"]').exists()).toBe(false)
       expect(wrapper.text()).not.toContain('0 minutes long')
       expect(validEmits(wrapper)?.at(-1)).toBe(false)
 
-      await wrapper.find('[data-test="duty-0-end"]').setValue('09:01')
+      await setDutyTime(wrapper, 'duty-0-end', '09:01')
       expect(wrapper.find('[data-test="duty-0-empty-window"]').exists()).toBe(false)
       expect(wrapper.find('[data-test="duty-0-warning"]').text()).toBe('This window is only 1 minute long.')
       expect(validEmits(wrapper)?.at(-1)).toBe(true)

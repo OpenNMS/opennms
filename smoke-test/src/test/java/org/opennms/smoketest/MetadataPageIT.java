@@ -156,9 +156,7 @@ public class MetadataPageIT extends OpenNMSSeleniumIT {
         logout();
         login();
         LOG.debug("Deleting unpriviledged user...");
-        adminPage();
-        findElementByLink("Configure Users, Groups and On-Call Roles").click();
-        findElementByLink("Configure Users").click();
+        jspUserListPage();
         findElementById("users("+ UNPRIVILEDGED_USERNAME +").doDelete").click();
         acceptAlert("Are you sure you want to delete the user "+ UNPRIVILEDGED_USERNAME +"?");
         assertElementDoesNotExist(By.id(UNPRIVILEDGED_USERNAME));
@@ -168,12 +166,8 @@ public class MetadataPageIT extends OpenNMSSeleniumIT {
     private void createUnpriviledgedUser() {
         LOG.debug("Creating unpriviledged user...");
 
-        // opening the admin page
-        adminPage();
-
-        // navigate to the new user page
-        findElementByLink("Configure Users, Groups and On-Call Roles").click();
-        findElementByLink("Configure Users").click();
+        // navigate to the new user page of the JSP user list
+        jspUserListPage();
         findElementByLink("Add new user").click();
 
         // enter user credentials

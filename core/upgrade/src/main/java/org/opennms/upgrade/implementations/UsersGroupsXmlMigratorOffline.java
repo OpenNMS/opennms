@@ -245,10 +245,13 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
         if (groupinfo != null) {
             groupinfo.getGroups().stream().map(Group::getName).filter(ReservedNames.GROUP_NAMES::contains).distinct()
                     .forEach(name -> found.add("the group '" + name + "'"));
+            groupinfo.getRoles().stream().map(Role::getName).filter(ReservedNames.ONCALL_ROLE_NAMES::contains).distinct()
+                    .forEach(name -> found.add("the on-call role '" + name + "'"));
         }
         if (!found.isEmpty()) {
             throw new OnmsUpgradeException("Nothing was copied: users must not be named " + String.join(", ", ReservedNames.USER_IDS)
                     + ", and groups must not be named " + String.join(", ", ReservedNames.GROUP_NAMES)
+                    + ", and on-call roles must not be named " + String.join(", ", ReservedNames.ONCALL_ROLE_NAMES)
                     + ", but the files have " + String.join(", ", found)
                     + ". Rename them in users.xml and groups.xml, and where the files refer to them (group members, on-call roles, "
                     + "destination paths in notifications.xml), then run the installer again.");

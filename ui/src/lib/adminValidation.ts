@@ -33,6 +33,7 @@ const EMAIL_SHAPE = /[^\s@]+@[^\s@]+/
 // away in a URL path, and the others are endpoints of their own under /users or /groups
 export const RESERVED_USER_IDS = ['.', '..', 'item', 'available-roles']
 export const RESERVED_GROUP_NAMES = ['.', '..', 'item', 'available-categories']
+export const RESERVED_ONCALL_ROLE_NAMES = ['.', '..', 'item', 'calendar', 'schedule-settings']
 
 /**
  * Validates a new user-id or group name, as UserMgmtValidation.validateName does.
@@ -140,4 +141,29 @@ export const isValidNotifdDuration = (value: string | undefined | null): boolean
     return true
   }
   return /^\d+(\.\d+)?(us|ms|s|m|h|d)?$/i.test(trimmed)
+}
+
+// OnCallScheduleValidator.validateName: letters or digits first, then letters, marks, digits and _ . ( ) -,
+// with single spaces between words. The server does not trim, so neither does this.
+const ONCALL_ROLE_NAME = /^[\p{L}\p{Nd}][\p{L}\p{M}\p{Nd}_.()-]*(?: [\p{L}\p{M}\p{Nd}_.()-]+)*$/u
+const ONCALL_ROLE_NAME_LENGTH = 256
+
+/**
+ * Validates an on-call role name as OnCallScheduleValidator.validateName does.
+ * Returns a problem description, or null when the name is acceptable.
+ */
+export const validateOnCallRoleName = (value: string): string | null => {
+  if (!value) {
+    return 'An on-call role name is required.'
+  }
+  if (!ONCALL_ROLE_NAME.test(value)) {
+    return 'The on-call role name must start with a letter or digit and contain only letters, digits, the characters _ - . ( ) and single spaces between words.'
+  }
+  if (Array.from(value).length > ONCALL_ROLE_NAME_LENGTH) {
+    return `The on-call role name must not be longer than ${ONCALL_ROLE_NAME_LENGTH} characters.`
+  }
+  if (RESERVED_ONCALL_ROLE_NAMES.includes(value)) {
+    return `The on-call role name "${value}" is reserved.`
+  }
+  return null
 }

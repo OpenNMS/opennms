@@ -5,6 +5,7 @@ import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { adminWriteSuccess } from '@/types/adminWrite'
+import { dutyTime } from '../../utils'
 
 vi.mock('@/stores/userAdminStore')
 
@@ -102,8 +103,8 @@ describe('UserEditorPanel.vue', () => {
     expect((wrapper.find('[data-test="numeric-pin-input"]').element as HTMLInputElement).value).toBe('12345')
     expect((wrapper.find('[data-test="tui-pin-input"]').element as HTMLInputElement).value).toBe('9999')
     // the duty schedule is parsed into the day/time widget
-    expect((wrapper.find('[data-test="duty-0-begin"]').element as HTMLInputElement).value).toBe('08:00')
-    expect((wrapper.find('[data-test="duty-0-end"]').element as HTMLInputElement).value).toBe('17:00')
+    expect(dutyTime(wrapper, 'duty-0-begin')).toBe('08:00 am')
+    expect(dutyTime(wrapper, 'duty-0-end')).toBe('05:00 pm')
 
     await wrapper.find('[data-test="mobile-phone-input"]').setValue('555-9999')
     await wrapper.find('[data-test="save-button"]').trigger('click')

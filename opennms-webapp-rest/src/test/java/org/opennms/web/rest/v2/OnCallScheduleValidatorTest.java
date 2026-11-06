@@ -21,6 +21,8 @@
  */
 package org.opennms.web.rest.v2;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -34,6 +36,7 @@ import java.util.TimeZone;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.web.rest.v2.model.OnCallScheduleDto;
 import org.opennms.web.rest.v2.model.OnCallTimeDto;
 
@@ -89,6 +92,21 @@ public class OnCallScheduleValidatorTest {
             assertRejected(schedule("specific", null, "08-Mar-2026 2:30", "08-Mar-2026 04:00:00"), "must be a time like");
         } finally {
             TimeZone.setDefault(zone);
+        }
+    }
+
+    @Test
+    public void testOvernightHintByType() {
+        final String hint = "For a shift past midnight, add two times: one until 23:59:59 and one from 00:00:00";
+        assertRejected(schedule("daily", null, "22:00:00", "06:00:00"), hint + ".");
+        assertRejected(schedule("weekly", "monday", "22:00:00", "06:00:00"), hint + " on the next weekday.");
+        assertRejected(schedule("monthly", "5", "22:00:00", "06:00:00"), hint + " on the next day of the month.");
+        try {
+            OnCallScheduleValidator.validate(schedule("specific", null, "22-Oct-2026 08:00:00", "21-Oct-2026 17:00:00"));
+            fail("expected a rejection");
+        } catch (final UserMgmtValidationException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("must be before ends"));
+            assertFalse(e.getMessage(), e.getMessage().contains("past midnight"));
         }
     }
 
@@ -161,5 +179,18 @@ public class OnCallScheduleValidatorTest {
         }
         assertNull(OnCallScheduleValidator.validateName("x".repeat(256)));
         assertNotNull(OnCallScheduleValidator.validateName("x".repeat(257)));
+    }
+
+    @Test
+    public void testReservedNamesRejected() {
+        for (final String reserved : ReservedNames.ONCALL_ROLE_NAMES) {
+            if (".".equals(reserved) || "..".equals(reserved)) {
+                // the name pattern already refuses them
+                assertNotNull(OnCallScheduleValidator.validateName(reserved));
+            } else {
+                assertEquals("The on-call role name \"" + reserved + "\" is reserved.", OnCallScheduleValidator.validateName(reserved));
+            }
+        }
+        assertNull(OnCallScheduleValidator.validateName("calendar 2"));
     }
 }

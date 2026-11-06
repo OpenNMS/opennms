@@ -6,8 +6,14 @@
   </div>
   <div class="manage-users-container">
     <h1 class="page-title">Manage Users</h1>
-    <!-- hidden, not removed, while the editor is open: the table keeps its filter, page and sort -->
-    <UsersTable v-show="store.editMode === AdminEditMode.Table" />
+    <!-- hidden, not removed, while the editor is open: the table keeps its filter, page and sort.
+         The wrapper carries the v-show: the table has several root nodes, and v-show does nothing on those -->
+    <div
+      v-show="store.editMode === AdminEditMode.Table"
+      data-test="users-table-wrapper"
+    >
+      <UsersTable />
+    </div>
     <UserEditorPanel
       v-if="store.editMode !== AdminEditMode.Table"
       :user="store.currentUser"

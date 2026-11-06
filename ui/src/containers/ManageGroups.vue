@@ -6,8 +6,14 @@
   </div>
   <div class="manage-groups-container">
     <h1 class="page-title">Manage Groups</h1>
-    <!-- hidden, not removed, while the editor is open: the table keeps its filter, page and sort -->
-    <GroupsTable v-show="store.editMode === AdminEditMode.Table" />
+    <!-- hidden, not removed, while the editor is open: the table keeps its filter, page and sort.
+         The wrapper carries the v-show: the table has several root nodes, and v-show does nothing on those -->
+    <div
+      v-show="store.editMode === AdminEditMode.Table"
+      data-test="groups-table-wrapper"
+    >
+      <GroupsTable />
+    </div>
     <GroupEditorPanel
       v-if="store.editMode !== AdminEditMode.Table"
       :group="store.currentGroup"

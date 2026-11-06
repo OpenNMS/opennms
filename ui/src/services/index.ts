@@ -159,6 +159,15 @@ import {
   renameManagedGroup,
   updateManagedGroup
 } from './groupAdminService'
+import {
+  createManagedOnCallRole,
+  deleteManagedOnCallRole,
+  getManagedOnCallRoles,
+  getOnCallScheduleSettings,
+  previewOnCallCalendar,
+  renameManagedOnCallRole,
+  updateManagedOnCallRole
+} from './onCallRoleAdminService'
 
 export default {
   getMinionNodeIds,
@@ -294,6 +303,13 @@ export default {
   getManagedGroups,
   renameManagedGroup,
   updateManagedGroup,
+  createManagedOnCallRole,
+  deleteManagedOnCallRole,
+  getManagedOnCallRoles,
+  getOnCallScheduleSettings,
+  previewOnCallCalendar,
+  renameManagedOnCallRole,
+  updateManagedOnCallRole,
   getWsmanConfig,
   getWsmanDataCollection,
   getWsmanStatus,

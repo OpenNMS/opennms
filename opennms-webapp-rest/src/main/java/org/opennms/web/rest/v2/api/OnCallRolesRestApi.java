@@ -29,6 +29,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -59,6 +60,21 @@ public interface OnCallRolesRestApi {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "List all on-call roles, with their schedules, by name", operationId = "listOnCallRoles")
     Response listOnCallRoles(@Context SecurityContext securityContext);
+
+    @GET
+    @Path("schedule-settings")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "The server's time zone and the fixed English (Locale.ROOT) month abbreviations notifd reads, for writing dd-MMM-yyyy HH:mm:ss times", operationId = "getOnCallScheduleSettings")
+    Response getScheduleSettings(@Context SecurityContext securityContext);
+
+    @POST
+    @Path("calendar")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Preview one month of an unsaved on-call role draft: who is on call when, in server-local time", operationId = "previewOnCallCalendar")
+    Response previewCalendar(@Context SecurityContext securityContext,
+                             @Parameter(description = "The month, YYYY-MM", example = "2026-11") @QueryParam("month") String month,
+                             OnCallRoleDto draft);
 
     @GET
     @Path("{name}")
@@ -99,4 +115,38 @@ public interface OnCallRolesRestApi {
             @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
     })
     Response deleteOnCallRole(@Context SecurityContext securityContext, @Context HttpHeaders headers, @PathParam("name") String name);
+
+    @GET
+    @Path("item")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get one on-call role by query parameter (for names a path cannot carry)", operationId = "getOnCallRoleByQuery")
+    Response getOnCallRoleByQuery(@Context SecurityContext securityContext, @QueryParam("name") String name);
+
+    @PUT
+    @Path("item")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Update an on-call role by query parameter (for names a path cannot carry)", operationId = "updateOnCallRoleByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response updateOnCallRoleByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("name") String name, OnCallRoleDto role);
+
+    @POST
+    @Path("item/rename")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Rename an on-call role by query parameter (for names a path cannot carry)", operationId = "renameOnCallRoleByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response renameOnCallRoleByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("name") String name, OnCallRoleRenameRequest body);
+
+    @DELETE
+    @Path("item")
+    @Operation(summary = "Delete an on-call role by query parameter (for names a path cannot carry)", operationId = "deleteOnCallRoleByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response deleteOnCallRoleByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("name") String name);
 }

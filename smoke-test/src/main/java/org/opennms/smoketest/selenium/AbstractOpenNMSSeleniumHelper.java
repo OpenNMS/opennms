@@ -764,6 +764,18 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         getDriver().get(getBaseUrlInternal() + "opennms/admin/index.jsp");
     }
 
+    /** The JSP user list. The user-management index page now links to the Vue pages, so JSP tests open it directly. */
+    public void jspUserListPage() {
+        LOG.debug("navigating to the JSP user list");
+        getDriver().get(getBaseUrlInternal() + "opennms/admin/userGroupView/users/list.jsp");
+    }
+
+    /** The JSP group list. The user-management index page now links to the Vue pages, so JSP tests open it directly. */
+    public void jspGroupListPage() {
+        LOG.debug("navigating to the JSP group list");
+        getDriver().get(getBaseUrlInternal() + "opennms/admin/userGroupView/groups/list.htm");
+    }
+
     protected void notificationsPage() {
         LOG.debug("navigating to the notifications page");
         getDriver().get(getBaseUrlInternal() + "opennms/notification/index.jsp");

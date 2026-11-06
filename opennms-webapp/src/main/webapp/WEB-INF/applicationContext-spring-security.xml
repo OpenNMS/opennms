@@ -355,6 +355,18 @@
     <intercept-url pattern="/api/v2/users/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/users/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
 
+    <!-- On-call roles and security roles are admin-only in every method (the services also assert it in code) -->
+    <intercept-url pattern="/api/v2/oncall-roles/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/oncall-roles/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/oncall-roles/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/oncall-roles/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/oncall-roles/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/security-roles/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/security-roles/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/security-roles/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/security-roles/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/security-roles/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+
     <!-- The system report drives an admin-only page and bundles logs/config, so keep
          even its plugin/formatter metadata to admins rather than the GET catch-all below;
          generation (POST) is likewise admin-only -->

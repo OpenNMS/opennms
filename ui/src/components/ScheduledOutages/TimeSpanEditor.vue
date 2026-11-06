@@ -35,7 +35,7 @@
           inputId="span-start"
           :showTime="type === 'specific'"
           :timeOnly="type !== 'specific'"
-          hourFormat="24"
+          :hourFormat="type === 'specific' ? '24' : '12'"
           showSeconds
           data-test="span-start"
         />
@@ -47,7 +47,7 @@
           inputId="span-end"
           :showTime="type === 'specific'"
           :timeOnly="type !== 'specific'"
-          hourFormat="24"
+          :hourFormat="type === 'specific' ? '24' : '12'"
           showSeconds
           data-test="span-end"
         />
@@ -71,6 +71,8 @@ import {
   buildOutageTime,
   defaultTimeSpanFields,
   describeOutageTime,
+  onDay,
+  onTimeOnlyDay,
   timeSpanProblem
 } from '@/components/ScheduledOutages/outageTime'
 
@@ -86,9 +88,18 @@ const emit = defineEmits<{
 
 const fields = reactive<TimeSpanFields>(defaultTimeSpanFields(new Date()))
 
-// the day field is shared between weekly (names) and monthly (numbers), so a
-// type switch must reset it to a value that exists in the new option list
-watch(() => props.type, (type) => {
+// The fields are shared between the types. A recurring span's start and end sit on the time-only pickers' fixed day;
+// a change to specific moves them to today, keeping their times. The day field is shared between weekly (names) and
+// monthly (numbers), so a type switch must reset it to a value that exists in the new option list.
+watch(() => props.type, (type, previous) => {
+  if (type !== 'specific') {
+    fields.start = onTimeOnlyDay(fields.start)
+    fields.end = onTimeOnlyDay(fields.end)
+  } else if (previous) {
+    const today = new Date()
+    fields.start = onDay(fields.start, today)
+    fields.end = onDay(fields.end, today)
+  }
   if (type === 'monthly' && !DAYS_OF_MONTH.some(d => d.value === fields.day)) {
     fields.day = '1'
   } else if (type === 'weekly' && !DAYS_OF_WEEK.some(d => d.value === fields.day)) {

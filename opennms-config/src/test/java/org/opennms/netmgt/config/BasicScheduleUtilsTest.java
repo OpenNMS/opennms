@@ -147,6 +147,22 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
     }
     
     @Test
+    public void testSpecificTimesAreEnglishWhateverTheDefaultLocale() {
+        Locale.setDefault(Locale.GERMANY);
+        // seeded with another date, so that a parse that does nothing is detected
+        final Calendar cal = new GregorianCalendar(2000, Calendar.JANUARY, 1, 1, 2, 3);
+        BasicScheduleUtils.setOutCalTime(cal, "15-Mar-2093 09:30:00");
+        assertEquals(2093, cal.get(Calendar.YEAR));
+        assertEquals(Calendar.MARCH, cal.get(Calendar.MONTH));
+        assertEquals(15, cal.get(Calendar.DAY_OF_MONTH));
+        assertEquals(9, cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(30, cal.get(Calendar.MINUTE));
+        assertEquals(0, cal.get(Calendar.SECOND));
+        assertTrue(BasicScheduleUtils.isValidTime("15-Mar-2093 09:30:00", BasicScheduleUtils.FORMAT1));
+        assertFalse(BasicScheduleUtils.isValidTime("15-M\u00e4r-2093 09:30:00", BasicScheduleUtils.FORMAT1));
+    }
+
+    @Test
     public void testSpecificInterval() throws Exception {
         String schedSpec = 
             "           <schedule name=\"simple\" type=\"specific\">" +

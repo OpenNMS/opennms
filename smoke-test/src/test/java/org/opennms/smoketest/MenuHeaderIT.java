@@ -168,7 +168,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage Groups']")));
 
         clickMenuItem("User Management", "Manage On-call Roles");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Role List')]")));
+        // now the Vue page (ui/index.html)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage On-Call Roles']")));
 
         // Integrations Menu
         clickMenuItem("Integrations", "Geocoding Services");
@@ -440,11 +441,12 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
             // Select last element from the now loaded elements
             contextSearchResult.getItem("Configure Users").click();
-            getDriver().getCurrentUrl().endsWith("/opennms/admin/userGroupView/users/list.jsp");
+            wait.until(ExpectedConditions.urlMatches(".*" + java.util.regex.Pattern.quote("/opennms/ui/index.html#/admin/users") + "$"));
 
             // Go back to start page
             new CentralSearch(getDriver()).search("Home").getSingleItem().click();
-            getDriver().getCurrentUrl().endsWith("/opennms/index.jsp");
+            // the start page action opens "/", which the webapp serves as /opennms/ or /opennms/index.jsp
+            wait.until(ExpectedConditions.urlMatches(".*/opennms/(index\\.jsp)?$"));
         }
     }
 

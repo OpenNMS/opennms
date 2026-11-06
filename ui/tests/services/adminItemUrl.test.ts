@@ -65,16 +65,29 @@ describe('adminItemUrl', () => {
     ['users', 'item'],
     ['users', 'available-roles'],
     ['groups', 'item'],
-    ['groups', 'available-categories']
+    ['groups', 'available-categories'],
+    ['oncall-roles', 'item'],
+    ['oncall-roles', 'calendar'],
+    ['oncall-roles', 'schedule-settings']
   ] as const)('addresses the %s name %s, a reserved segment, by query', (collection, name) => {
     const key = collection === 'users' ? 'userId' : 'name'
     expect(adminItemUrl(collection, name)).toEqual({ url: `/${collection}/item`, params: { [key]: name }})
     expect(adminItemUrl(collection, name, 'rename')).toEqual({ url: `/${collection}/item/rename`, params: { [key]: name }})
   })
 
+  it('addresses an on-call role by path or by the name query', () => {
+    expect(adminItemUrl('oncall-roles', 'Ops Rota')).toEqual({ url: '/oncall-roles/Ops%20Rota' })
+    expect(adminItemUrl('oncall-roles', 'Ops Rota', 'rename')).toEqual({ url: '/oncall-roles/Ops%20Rota/rename' })
+    expect(adminItemUrl('oncall-roles', 'calendar')).toEqual({ url: '/oncall-roles/item', params: { name: 'calendar' }})
+    expect(adminItemUrl('oncall-roles', 'a/b')).toEqual({ url: '/oncall-roles/item', params: { name: 'a/b' }})
+    expect(adminItemUrl('oncall-roles', 'a/b', 'rename')).toEqual({ url: '/oncall-roles/item/rename', params: { name: 'a/b' }})
+  })
+
   it('reserves each segment only for its own collection', () => {
     expect(adminItemUrl('groups', 'available-roles')).toEqual({ url: '/groups/available-roles' })
     expect(adminItemUrl('users', 'available-categories')).toEqual({ url: '/users/available-categories' })
+    expect(adminItemUrl('groups', 'calendar')).toEqual({ url: '/groups/calendar' })
+    expect(adminItemUrl('oncall-roles', 'available-roles')).toEqual({ url: '/oncall-roles/available-roles' })
   })
 })
 

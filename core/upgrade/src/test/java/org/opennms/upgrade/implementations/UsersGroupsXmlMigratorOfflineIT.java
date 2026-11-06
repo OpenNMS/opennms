@@ -363,6 +363,20 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
     }
 
     @Test
+    public void testAReservedOnCallRoleNameFailsTheTaskAndCopiesNothing() throws Exception {
+        copyFixtures();
+        write("groups.xml", "<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\"><groups>"
+                + "<group><name>Ops</name></group></groups>"
+                + "<roles><role name=\"calendar\" supervisor=\"admin\" membership-group=\"Ops\"/></roles></groupinfo>");
+
+        final OnmsUpgradeException e = assertThrows(OnmsUpgradeException.class, this::migrate);
+
+        assertTrue(e.getMessage(), e.getMessage().contains("the on-call role 'calendar'"));
+        assertEquals(0, count("groups"));
+        assertEquals(0, count("oncall_roles"));
+    }
+
+    @Test
     public void testTheEndpointNamesOfTheOtherCollectionAreCopied() throws Exception {
         copyFixtures();
         // /users has no available-categories endpoint, and /groups no available-roles one

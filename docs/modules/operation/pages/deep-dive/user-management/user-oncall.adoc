@@ -9,14 +9,50 @@ For each on-call role, a user is designated as a supervisor.
 They are responsible for the group of users assigned to the on-call role, and receive {page-component-title} notifications when no one else is on duty.
 The supervisor's account must have admin privileges.
 
-== Assign a group to an on-call role
+== Manage on-call roles
+
+Click menu:User Management[Manage On-call Roles] in the side menu.
+Only users with admin permissions can open this page.
+
+The list shows each role's name, supervisor, who is on call now (the supervisor when nobody is scheduled), membership group and description.
+To rename a role, use the row menu.
+You cannot delete a role while a notification destination path names it.
+
+Select a role, or click *Add New On-Call Role* to create one.
+The editor has three tabs:
+
+Details::
+The name (set when you create the role), description, supervisor and membership group.
+
+Schedules::
+One card per schedule.
+Each card sets a user, who must be a member of the membership group, a type and the time ranges.
+The type is Specific, Daily, Weekly or Monthly.
+"End of day" stores 23:59:59 and covers the whole rest of the day.
+To enter a shift that runs past midnight, add two time ranges: one ending at the end of the day and one starting at 00:00:00 on the next day.
+For a Weekly or Monthly schedule, give the second range the next weekday or the next day of the month.
+Schedules imported from an older `groups.xml` that the editor cannot represent are shown read-only and marked as legacy.
+You can keep or remove them.
+
+Calendar::
+A month view of who is on call.
+The server computes it with the same rules that notifd uses, and it includes changes you have not saved yet.
+Click a day to add a one-time entry.
+Click an entry to jump to its schedule.
+
+All times are in the {page-component-title} server's time zone.
+The page shows which time zone that is.
+
+== Assign a group to an on-call role (legacy pages)
+
+The steps below describe the earlier on-call role pages.
+The menus and links now open the new page, but the earlier pages remain available at `/opennms/admin/userGroupView/roles` until they are removed in a later release.
 
 Before you can assign a group to an on-call role, you must <<deep-dive/user-management/user-groups.adoc#ga-user-group-create, create a group>>.
 After you have created the group, follow these steps to assign it to an on-call role:
 
 . Log in as a user with admin permissions.
-. Click menu:User Management[Manage On-call Roles] in the side menu.
-. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure On-Call Roles].
+. Open `/opennms/admin/userGroupView/roles` in your browser.
 . Click *Add New On-Call Role* and specify a name, the associated group, a user to be designated as the supervisor, and a description.
 The description should be meaningful (for example, describe the team that the on-call role has been created for).
 . Click *Save*.

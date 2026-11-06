@@ -77,9 +77,7 @@ public class UserIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testUsersAndGroups() throws Exception {
-        adminPage();
-        findElementByLink("Configure Users, Groups and On-Call Roles").click();
-        findElementByLink("Configure Users").click();
+        jspUserListPage();
         findElementByLink("Add new user").click();
 
         enterText(By.id("userID"), USER_NAME);
@@ -91,9 +89,7 @@ public class UserIT extends OpenNMSSeleniumIT {
         clickElementUsingScript(saveUserButton);
         findElementById("users(" + USER_NAME + ").doDetails");
 
-        adminPage();
-        findElementByLink("Configure Users, Groups and On-Call Roles").click();
-        findElementByLink("Configure Groups").click();
+        jspGroupListPage();
         findElementByLink("Add new group").click();
 
         enterText(By.id("groupName"), GROUP_NAME);
@@ -114,8 +110,7 @@ public class UserIT extends OpenNMSSeleniumIT {
         handleAlert("Are you sure you want to delete the group " + GROUP_NAME + "?", true);
         assertElementDoesNotExist(By.id(GROUP_NAME));
 
-        findElementByLink("Users and Groups").click();
-        findElementByLink("Configure Users").click();
+        jspUserListPage();
         findElementById("user-" + USER_NAME);
         findElementById("users(" + USER_NAME + ").doDelete").click();
         handleAlert("Are you sure you want to delete the user " + USER_NAME + "?", true);
@@ -188,9 +183,7 @@ public class UserIT extends OpenNMSSeleniumIT {
     }
 
     public void checkInvalidUserId(final String userId, final boolean mustFail) {
-        adminPage();
-        findElementByLink("Configure Users, Groups and On-Call Roles").click();
-        findElementByLink("Configure Users").click();
+        jspUserListPage();
         findElementByLink("Add new user").click();
 
         enterText(By.id("userID"), userId);
@@ -212,9 +205,7 @@ public class UserIT extends OpenNMSSeleniumIT {
     }
 
     public void checkInvalidGroupId(final String groupId, final boolean mustFail) {
-        adminPage();
-        findElementByLink("Configure Users, Groups and On-Call Roles").click();
-        findElementByLink("Configure Groups").click();
+        jspGroupListPage();
         findElementByLink("Add new group").click();
 
         enterText(By.id("groupName"), groupId);
@@ -240,9 +231,7 @@ public class UserIT extends OpenNMSSeleniumIT {
     @Test
     public void testCsrfPrivilegeEscalation() {
         // visit the admin's user page
-        adminPage();
-        findElementByLink("Configure Users, Groups and On-Call Roles").click();
-        findElementByLink("Configure Users").click();
+        jspUserListPage();
         findElementByLink("Add new user").click();
 
         // add a new user 'user'
@@ -258,9 +247,7 @@ public class UserIT extends OpenNMSSeleniumIT {
         findElementById("saveUserButton").click();
 
         // assert that this is correctly set
-        adminPage();
-        findElementByLink("Configure Users, Groups and On-Call Roles").click();
-        findElementByLink("Configure Users").click();
+        jspUserListPage();
         findElementById("users(user).doDetails").click();
 
         assertTrue(wait.until(pageContainsText("ROLE_USER")));
@@ -301,16 +288,12 @@ public class UserIT extends OpenNMSSeleniumIT {
         assertTrue(wait.until(pageContainsText("Access denied")));
 
         // assure that the user's role is still ROLE_USER
-        adminPage();
-        findElementByLink("Configure Users, Groups and On-Call Roles").click();
-        findElementByLink("Configure Users").click();
+        jspUserListPage();
         findElementById("users(user).doDetails").click();
         assertTrue(wait.until(pageContainsText("ROLE_USER")));
 
         // delete the user
-        adminPage();
-        findElementByLink("Configure Users, Groups and On-Call Roles").click();
-        findElementByLink("Configure Users").click();
+        jspUserListPage();
 
         WebElement deleteGroupLink = findElementById("users(user).doDelete");
         clickElementUsingScript(deleteGroupLink);

@@ -457,6 +457,16 @@ public class UserMgmtXssIT extends AbstractRestIT {
         pageToRow("[data-test='groups-table']", CLASSIC_GROUP);
         assertBodyContains(CLASSIC_COMMENTS);
         assertNothingRan();
+
+        // Manage On-Call Roles. The name and description render as literal text.
+        open(base() + "ui/index.html#/admin/oncall-roles");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage On-Call Roles']")));
+        pageToRow("[data-test='oncall-roles-table']", ROLE);
+        assertBodyContains(DESCRIPTION);
+        assertNothingRan();
+        // the classic role's name carries markup and %27; the table renders it as text
+        pageToRow("[data-test='oncall-roles-table']", CLASSIC_ROLE);
+        assertNothingRan();
     }
 
     /**

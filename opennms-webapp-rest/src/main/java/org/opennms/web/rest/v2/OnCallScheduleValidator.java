@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.UserMgmtJaxbMapper;
 import org.opennms.netmgt.model.usermgmt.OnCallSchedule;
+import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.web.rest.v2.model.OnCallScheduleDto;
 import org.opennms.web.rest.v2.model.OnCallTimeDto;
 
@@ -77,7 +78,7 @@ public final class OnCallScheduleValidator {
             checkTime(owner, "begins", time.getBegins(), format);
             checkTime(owner, "ends", time.getEnds(), format);
             if (!parse(time.getBegins(), format).before(parse(time.getEnds(), format))) {
-                throw new UserMgmtValidationException(owner + "begins '" + time.getBegins() + "' must be before ends '" + time.getEnds() + "'.");
+                throw new UserMgmtValidationException(owner + "begins '" + time.getBegins() + "' must be before ends '" + time.getEnds() + "'." + overnightHint(type));
             }
         }
     }
@@ -93,6 +94,9 @@ public final class OnCallScheduleValidator {
         }
         if (name.codePointCount(0, name.length()) > UserMgmtJaxbMapper.ONCALL_ROLE_NAME_LENGTH) {
             return "The on-call role name must not be longer than " + UserMgmtJaxbMapper.ONCALL_ROLE_NAME_LENGTH + " characters.";
+        }
+        if (ReservedNames.ONCALL_ROLE_NAMES.contains(name)) {
+            return "The on-call role name \"" + name + "\" is reserved.";
         }
         return null;
     }
@@ -147,10 +151,25 @@ public final class OnCallScheduleValidator {
     private static boolean isSkippedLocalTime(final String value) {
         try {
             final LocalDateTime local = LocalDateTime.parse(value,
-                    DateTimeFormatter.ofPattern("dd-MMM-uuuu HH:mm:ss", Locale.getDefault()).withResolverStyle(ResolverStyle.STRICT));
+                    DateTimeFormatter.ofPattern("dd-MMM-uuuu HH:mm:ss", Locale.ROOT).withResolverStyle(ResolverStyle.STRICT));
             return ZoneId.systemDefault().getRules().getValidOffsets(local).isEmpty();
         } catch (final DateTimeParseException e) {
             return false;
+        }
+    }
+
+    /** How to write a shift that runs past midnight: as two times, since a daily, weekly or monthly time cannot span days. */
+    private static String overnightHint(final OnCallSchedule.Type type) {
+        final String hint = " For a shift past midnight, add two times: one until 23:59:59 and one from 00:00:00";
+        switch (type) {
+            case daily:
+                return hint + ".";
+            case weekly:
+                return hint + " on the next weekday.";
+            case monthly:
+                return hint + " on the next day of the month.";
+            default:
+                return "";
         }
     }
 
@@ -160,7 +179,7 @@ public final class OnCallScheduleValidator {
 
     /** Only called on a value that {@link BasicScheduleUtils#isValidTime} has accepted. */
     private static Date parse(final String value, final String format) {
-        final SimpleDateFormat parser = new SimpleDateFormat(format);
+        final SimpleDateFormat parser = new SimpleDateFormat(format, Locale.ROOT);
         parser.setLenient(false);
         return parser.parse(value, new ParsePosition(0));
     }

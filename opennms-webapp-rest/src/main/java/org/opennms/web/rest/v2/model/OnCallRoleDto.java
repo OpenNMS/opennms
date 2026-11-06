@@ -27,7 +27,8 @@ import java.util.List;
  * An on-call role as exposed by the v2 user management API: one document with the membership group, the
  * supervisor and all schedules. Fields left out of a PUT body arrive as null and are preserved; the
  * schedules, when present, replace the stored ones. The version is also sent as the ETag and ignored in a
- * request body (the If-Match header is the contract).
+ * request body (the If-Match header is the contract). onCallNow and onCallNowIsSupervisor are computed on
+ * read and ignored in a request body.
  */
 public class OnCallRoleDto {
 
@@ -42,6 +43,10 @@ public class OnCallRoleDto {
     private Integer version;
 
     private List<OnCallScheduleDto> schedules;
+
+    private List<String> onCallNow;
+
+    private boolean onCallNowIsSupervisor;
 
     public String getName() {
         return name;
@@ -89,5 +94,21 @@ public class OnCallRoleDto {
 
     public void setSchedules(final List<OnCallScheduleDto> schedules) {
         this.schedules = schedules;
+    }
+
+    public List<String> getOnCallNow() {
+        return onCallNow;
+    }
+
+    public void setOnCallNow(final List<String> onCallNow) {
+        this.onCallNow = onCallNow;
+    }
+
+    public boolean isOnCallNowIsSupervisor() {
+        return onCallNowIsSupervisor;
+    }
+
+    public void setOnCallNowIsSupervisor(final boolean onCallNowIsSupervisor) {
+        this.onCallNowIsSupervisor = onCallNowIsSupervisor;
     }
 }
