@@ -21,7 +21,7 @@
 ///
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { clockTo12Hour, clockToDate, dateToClock, dateToDay, dateToDayTime, dayTimeToDate, dayToDate } from '@/lib/pickerTime'
+import { clockTo12Hour, clockToDate, dateToClock, dateToDay, dayToDate } from '@/lib/pickerTime'
 
 describe('pickerTime', () => {
   it('round-trips a clock time through a Date', () => {
@@ -31,13 +31,12 @@ describe('pickerTime', () => {
     expect(dateToClock(date)).toBe('08:05')
   })
 
-  it('round-trips a day and a day with time', () => {
+  it('round-trips a day', () => {
     expect(dateToDay(dayToDate('2026-03-08'))).toBe('2026-03-08')
-    expect(dateToDayTime(dayTimeToDate('2026-12-31T23:59'))).toBe('2026-12-31T23:59')
+    expect(dateToDay(dayToDate('2026-12-31'))).toBe('2026-12-31')
   })
 
   it('takes the picked wall-clock fields as they are', () => {
-    expect(dateToDayTime(new Date(2026, 2, 8, 2, 30))).toMatch(/^2026-03-08T0[23]:30$/)
     expect(dateToClock(new Date(2026, 0, 1, 13, 7))).toBe('13:07')
   })
 
@@ -46,10 +45,8 @@ describe('pickerTime', () => {
       expect(clockToDate(value)).toBeNull()
     }
     expect(dayToDate('2026-3-8')).toBeNull()
-    expect(dayTimeToDate('2026-03-08 08:00')).toBeNull()
     expect(dateToClock(null)).toBe('')
     expect(dateToDay(null)).toBe('')
-    expect(dateToDayTime(null)).toBe('')
   })
 
   it('shows a clock time in 12-hour form', () => {

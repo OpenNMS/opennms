@@ -98,21 +98,30 @@
           :data-test="`time-day-${i}`"
           @update:modelValue="v => setTime(i, { day: v as string })"
         />
-        <label
-          class="visually-hidden"
-          :for="`${card.key}-${rowKey(r)}-begin`"
-        >Begin</label>
-        <OnmsDatePicker
-          :modelValue="isSpecific ? dayTimeToDate(r.begin) : clockToDate(r.begin)"
-          :inputId="`${card.key}-${rowKey(r)}-begin`"
-          :showTime="isSpecific"
-          :timeOnly="!isSpecific"
-          hourFormat="12"
-          class="time-input"
-          :class="{ specific: isSpecific }"
-          :data-test="`time-begin-${i}`"
-          @update:modelValue="v => setTime(i, { begin: isSpecific ? dateToDayTime(v) : dateToClock(v) })"
+        <!-- a specific time is picked as a date and a separate time, so a time the browser's clocks skip still works -->
+        <SplitDateTimePicker
+          v-if="isSpecific"
+          :modelValue="r.begin"
+          :idPrefix="`${card.key}-${rowKey(r)}-begin`"
+          label="Begin"
+          :dataTest="`time-begin-${i}`"
+          @update:modelValue="v => setTime(i, { begin: v })"
         />
+        <template v-else>
+          <label
+            class="visually-hidden"
+            :for="`${card.key}-${rowKey(r)}-begin`"
+          >Begin</label>
+          <OnmsDatePicker
+            :modelValue="clockToDate(r.begin)"
+            :inputId="`${card.key}-${rowKey(r)}-begin`"
+            timeOnly
+            hourFormat="12"
+            class="time-input"
+            :data-test="`time-begin-${i}`"
+            @update:modelValue="v => setTime(i, { begin: dateToClock(v) })"
+          />
+        </template>
         <span class="to">to</span>
         <!-- a specific time still needs its end date when it runs to the end of the day -->
         <template v-if="isSpecific && r.endOfDay">
@@ -123,11 +132,19 @@
           <OnmsDatePicker
             :modelValue="dayToDate(r.end.slice(0, 10))"
             :inputId="`${card.key}-${rowKey(r)}-end-date`"
-            class="time-input"
+            class="date-input"
             :data-test="`time-end-date-${i}`"
             @update:modelValue="v => setEndDate(i, dateToDay(v))"
           />
         </template>
+        <SplitDateTimePicker
+          v-else-if="isSpecific"
+          :modelValue="r.end"
+          :idPrefix="`${card.key}-${rowKey(r)}-end`"
+          label="End"
+          :dataTest="`time-end-${i}`"
+          @update:modelValue="v => setTime(i, { end: v })"
+        />
         <!-- a clock-time range that runs to the end of the day has no end time to pick -->
         <span
           v-else-if="r.endOfDay"
@@ -140,15 +157,13 @@
             :for="`${card.key}-${rowKey(r)}-end`"
           >End</label>
           <OnmsDatePicker
-            :modelValue="isSpecific ? dayTimeToDate(r.end) : clockToDate(r.end)"
+            :modelValue="clockToDate(r.end)"
             :inputId="`${card.key}-${rowKey(r)}-end`"
-            :showTime="isSpecific"
-            :timeOnly="!isSpecific"
+            timeOnly
             hourFormat="12"
             class="time-input"
-            :class="{ specific: isSpecific }"
             :data-test="`time-end-${i}`"
-            @update:modelValue="v => setTime(i, { end: isSpecific ? dateToDayTime(v) : dateToClock(v) })"
+            @update:modelValue="v => setTime(i, { end: dateToClock(v) })"
           />
         </template>
         <span class="end-of-day">
@@ -213,8 +228,9 @@ import { OnmsButton, OnmsCheckbox, OnmsConfirmationDialog, OnmsDatePicker, OnmsI
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import PendingBadge from '@/components/Common/PendingBadge.vue'
+import SplitDateTimePicker from '@/components/Common/SplitDateTimePicker.vue'
 import { cardProblems, membershipProblem, ScheduleCard, TimeRange, WEEKDAYS } from '@/lib/onCallSchedule'
-import { clockToDate, dateToClock, dateToDay, dateToDayTime, dayTimeToDate, dayToDate } from '@/lib/pickerTime'
+import { clockToDate, dateToClock, dateToDay, dayToDate } from '@/lib/pickerTime'
 import { OnCallScheduleType } from '@/types/onCallRoleAdmin'
 
 const props = defineProps<{
@@ -354,10 +370,10 @@ const confirmType = () => {
 
 .time-input {
   width: 7.5rem;
+}
 
-  &.specific {
-    width: 13rem;
-  }
+.date-input {
+  width: 9rem;
 }
 
 .end-of-day-placeholder {

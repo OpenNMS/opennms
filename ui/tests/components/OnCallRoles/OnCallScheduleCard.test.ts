@@ -29,7 +29,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import OnCallScheduleCard from '@/components/OnCallRoles/OnCallScheduleCard.vue'
 import { newCard, ScheduleCard, toCard, toSchedule } from '@/lib/onCallSchedule'
-import { pickDate } from '../../utils'
+import { datePicker, pickDate } from '../../utils'
 
 enableAutoUnmount(afterEach)
 
@@ -58,10 +58,13 @@ const stored = (type: string, day: string | null, begins: string, ends: string) 
   toCard({ user: 'bob', type, times: [{ id: null, day, begins, ends }] }, SHORT_MONTHS)
 
 describe('OnCallScheduleCard', () => {
-  it('picks a specific range with two date-and-time pickers in 12-hour format', () => {
+  it('picks each end of a specific range as a date and a separate 12-hour time', () => {
     const w = mountCard(stored('specific', null, '05-Mar-2026 08:00:00', '05-Mar-2026 17:00:00'))
-    expect(pickerModes(w)).toEqual([[true, false, '12'], [true, false, '12']])
-    expect((w.find('[data-test="time-begin-0"] input').element as HTMLInputElement).value).toContain('08:00 am')
+    const date = [false, false, '24']
+    const time = [false, true, '12']
+    expect(pickerModes(w)).toEqual([date, time, date, time])
+    expect((w.find('[data-test="time-begin-0-time"] input').element as HTMLInputElement).value).toBe('08:00 am')
+    expect((w.find('[data-test="time-end-0-time"] input').element as HTMLInputElement).value).toBe('05:00 pm')
   })
 
   it('renders two time inputs for a daily card', () => {
@@ -116,12 +119,14 @@ describe('OnCallScheduleCard', () => {
     const w = mountCard(newCard('bob', 'specific'))
     await w.find('[data-test="add-time"]').trigger('click')
     await w.setProps({ card: lastCard(w) })
-    await pickDate(w, 'time-begin-0', new Date(2026, 2, 5, 8, 0))
+    await pickDate(w, 'time-begin-0-date', new Date(2026, 2, 5))
+    await w.setProps({ card: lastCard(w) })
+    await pickDate(w, 'time-begin-0-time', new Date(2000, 0, 10, 8, 0))
     await w.setProps({ card: lastCard(w) })
     await w.find('[data-test="time-end-of-day-0"] input').setValue(true)
     await w.setProps({ card: lastCard(w) })
     // the end-date picker picks a day only
-    expect(pickerModes(w)[1]).toEqual([false, false, '24'])
+    expect(datePicker(w, 'time-end-date-0').props()).toMatchObject({ showTime: false, timeOnly: false })
     await pickDate(w, 'time-end-date-0', new Date(2026, 2, 6))
     const card = lastCard(w)
     expect(toSchedule(card, SHORT_MONTHS).times[0]).toEqual({ id: null, day: null, begins: '05-Mar-2026 08:00:00', ends: '06-Mar-2026 23:59:59' })

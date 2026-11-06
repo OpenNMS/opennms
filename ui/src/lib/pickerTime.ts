@@ -20,15 +20,14 @@
 /// License.
 ///
 
-// OnmsDatePicker works on Dates; the editors keep server-local wall-clock strings
-// ('HH:mm', 'yyyy-MM-dd', 'yyyy-MM-ddTHH:mm'). These convert between the two using only
-// the Date's local fields, so no time zone shift ever applies: a picked 08:00 stays 08:00.
+// OnmsDatePicker works on Dates; the editors keep server-local wall-clock strings ('HH:mm' and 'yyyy-MM-dd'; a date
+// and time is picked as one of each, see SplitDateTimePicker). These convert between the two using only the Date's
+// local fields, so no time zone shift ever applies: a picked 08:00 stays 08:00.
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
 const CLOCK = /^(\d{2}):(\d{2})$/
 const DAY = /^(\d{4})-(\d{2})-(\d{2})$/
-const DAY_TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/
 
 /**
  * 'HH:mm' → a Date at that time; null for an empty or malformed value. Only the clock part matters, so the date is a
@@ -64,16 +63,6 @@ export const dayToDate = (day: string): Date | null => {
 /** a Date → its 'yyyy-MM-dd'; '' for null */
 export const dateToDay = (date: Date | null): string =>
   date ? `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` : ''
-
-/** 'yyyy-MM-ddTHH:mm' → a Date; null for an empty or malformed value */
-export const dayTimeToDate = (value: string): Date | null => {
-  const m = DAY_TIME.exec(value)
-  return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4]), Number(m[5])) : null
-}
-
-/** a Date → its 'yyyy-MM-ddTHH:mm'; '' for null */
-export const dateToDayTime = (date: Date | null): string =>
-  date ? `${dateToDay(date)}T${dateToClock(date)}` : ''
 
 /** 'HH:mm' → the 12-hour form the pickers show, e.g. '8:00 am', '12:30 pm'; '' for a malformed value */
 export const clockTo12Hour = (hhmm: string): string => {

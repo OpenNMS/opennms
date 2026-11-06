@@ -20,36 +20,36 @@
         />
       </FormField>
       <div class="time-row">
-        <label for="oncall-day-entry-begin">Begin</label>
-        <OnmsDatePicker
-          :modelValue="dayTimeToDate(begin)"
-          inputId="oncall-day-entry-begin"
-          showTime
-          hourFormat="12"
-          class="time-input"
-          data-test="entry-begin"
-          @update:modelValue="v => begin = dateToDayTime(v)"
+        <span class="row-label">Begin</span>
+        <!-- a date and a separate time, so a time the browser's clocks skip still works -->
+        <SplitDateTimePicker
+          v-model="begin"
+          idPrefix="oncall-day-entry-begin"
+          label="Begin"
+          dataTest="entry-begin"
         />
       </div>
       <div class="time-row">
-        <label for="oncall-day-entry-end">End</label>
-        <OnmsDatePicker
-          v-if="endOfDay"
-          :modelValue="dayToDate(endDate)"
-          inputId="oncall-day-entry-end"
-          class="time-input"
-          data-test="entry-end-date"
-          @update:modelValue="v => endDate = dateToDay(v)"
-        />
-        <OnmsDatePicker
+        <span class="row-label">End</span>
+        <template v-if="endOfDay">
+          <label
+            class="visually-hidden"
+            for="oncall-day-entry-end-date"
+          >End date</label>
+          <OnmsDatePicker
+            :modelValue="dayToDate(endDate)"
+            inputId="oncall-day-entry-end-date"
+            class="date-input"
+            data-test="entry-end-date"
+            @update:modelValue="v => endDate = dateToDay(v)"
+          />
+        </template>
+        <SplitDateTimePicker
           v-else
-          :modelValue="dayTimeToDate(end)"
-          inputId="oncall-day-entry-end"
-          showTime
-          hourFormat="12"
-          class="time-input"
-          data-test="entry-end"
-          @update:modelValue="v => end = dateToDayTime(v)"
+          v-model="end"
+          idPrefix="oncall-day-entry-end"
+          label="End"
+          dataTest="entry-end"
         />
         <span class="end-of-day">
           <OnmsCheckbox
@@ -90,7 +90,8 @@ import { computed, ref, watch } from 'vue'
 import { OnmsButton, OnmsCheckbox, OnmsDatePicker, OnmsDialog, OnmsSelect } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
-import { dateToDay, dateToDayTime, dayTimeToDate, dayToDate } from '@/lib/pickerTime'
+import SplitDateTimePicker from '@/components/Common/SplitDateTimePicker.vue'
+import { dateToDay, dayToDate } from '@/lib/pickerTime'
 
 const props = defineProps<{
   visible: boolean
@@ -136,8 +137,11 @@ watch(endOfDay, (on) => {
 
 const effectiveEnd = computed(() => endOfDay.value ? `${endDate.value}T23:59` : end.value)
 
+const COMPLETE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/
+
 const problem = computed(() => {
-  if (!begin.value || !effectiveEnd.value || effectiveEnd.value.startsWith('T')) {
+  // either part of a split date and time may still be empty
+  if (!COMPLETE.test(begin.value) || !COMPLETE.test(effectiveEnd.value)) {
     return 'Enter a begin and an end.'
   }
   // end of day runs through 23:59:59, so a begin at 23:59 still comes before it
@@ -167,13 +171,22 @@ const ok = () => {
   gap: 0.5rem;
   flex-wrap: wrap;
 
-  label:first-child {
+  .row-label {
     min-width: 3.5rem;
   }
 }
 
-.time-input {
-  width: 13rem;
+.date-input {
+  width: 9rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .end-of-day {
