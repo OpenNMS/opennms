@@ -22,6 +22,7 @@
 package org.opennms.netmgt.collection.api;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -78,6 +79,7 @@ public class ServiceParameters {
         // Service level parameters set by collectd
         SERVICE("SERVICE"),
         SERVICE_INTERVAL("SERVICE_INTERVAL"),
+        AGENT_PROTOCOL("AGENT_PROTOCOL"),
         TTL("ttl");
 
         private final String m_value;
@@ -296,6 +298,29 @@ public class ServiceParameters {
             ttl = getServiceInterval();
         }
         return ttl;
+    }
+
+    /**
+     * Returns the protocol of the collector or telemetry adapter that produced the
+     * collection set, for example {@code SNMP}.
+     *
+     * @return the agent protocol, or {@code null} if none was declared
+     */
+    public String getAgentProtocol() {
+        return ParameterMap.getKeyedString(getParameters(), ParameterName.AGENT_PROTOCOL.toString(), null);
+    }
+
+    /**
+     * Creates service parameters that carry only the given agent protocol.
+     * Used where no other service parameters exist, such as telemetry adapters.
+     *
+     * @param agentProtocol the agent protocol, may be {@code null}
+     * @return parameters holding the agent protocol, or no parameters if it is {@code null}
+     */
+    public static ServiceParameters forAgentProtocol(String agentProtocol) {
+        return new ServiceParameters(agentProtocol == null
+                ? Collections.emptyMap()
+                : Collections.singletonMap(ParameterName.AGENT_PROTOCOL.toString(), agentProtocol));
     }
 
     public Long getServiceInterval() {

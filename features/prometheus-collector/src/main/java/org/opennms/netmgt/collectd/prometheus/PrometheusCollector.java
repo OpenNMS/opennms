@@ -88,6 +88,14 @@ import com.google.common.collect.ImmutableMap;
  */
 public class PrometheusCollector extends AbstractRemoteServiceCollector {
 
+    /** Agent protocol of this collector, published as {@code agent_protocol} on Kafka. */
+    public static final String AGENT_PROTOCOL = "PROMETHEUS";
+
+    @Override
+    public String getAgentProtocol() {
+        return AGENT_PROTOCOL;
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(PrometheusCollector.class);
 
     // Restricted context: a configured expression cannot reference types, call constructors, or use reflection.
