@@ -201,8 +201,11 @@ def ask_model(system, user):
         resp = stream.get_final_message()
     if resp.stop_reason != "end_turn":
         raise RuntimeError(f"stop_reason={resp.stop_reason}")
-    text = next(b.text for b in resp.content if b.type == "text")
-    return json.loads(text), resp.usage.model_dump(), resp.model
+    # After a fallback, only the blocks after the last fallback block come from the model that answered.
+    hops = [i for i, b in enumerate(resp.content) if b.type == "fallback"]
+    model = resp.content[hops[-1]].to.model if hops else resp.model
+    text = "".join(b.text for b in resp.content[hops[-1] + 1 if hops else 0:] if b.type == "text")
+    return json.loads(text), resp.usage.model_dump(), model
 
 
 def select(ref, base):
@@ -216,8 +219,8 @@ def select(ref, base):
         full_run.append(f"{len(code_changes)} changed files > {MAX_CHANGED_FILES}")
     if full_run:
         return {**result, "mode": "full_run", "reason": "rule", "paths": full_run}
-    if not code_changes:
-        return {**result, "mode": "full_run", "reason": "no code changes"}
+    if not changed:
+        return {**result, "mode": "full_run", "reason": "no changes"}
 
     entries, lines = build_catalog(ref)
     known = {e["cls"]: e["suite"] for e in entries}
