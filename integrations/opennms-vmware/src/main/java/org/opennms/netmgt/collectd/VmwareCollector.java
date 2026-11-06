@@ -80,6 +80,15 @@ import com.vmware.vim25.mo.ManagedEntity;
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
 public class VmwareCollector extends AbstractRemoteServiceCollector {
+
+    /** Agent protocol of this collector, published as {@code agent_protocol} on Kafka. */
+    public static final String AGENT_PROTOCOL = "VMWARE";
+
+    @Override
+    public String getAgentProtocol() {
+        return AGENT_PROTOCOL;
+    }
+
     /**
      * logging for VMware data collection
      */

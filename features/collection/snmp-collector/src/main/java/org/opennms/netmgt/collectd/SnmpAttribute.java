@@ -107,7 +107,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
         if (instance == null) {
             instance = type.getInstance();
         }
-        return "SNMP_"+SnmpObjId.get(type.getSnmpObjId(), instance);
+        return AbstractSnmpCollector.AGENT_PROTOCOL + "_" + SnmpObjId.get(type.getSnmpObjId(), instance);
     }
     
     /**
