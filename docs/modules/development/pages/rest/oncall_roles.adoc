@@ -68,7 +68,7 @@ To use `If-Match`, send the version in quotes, or the `ETag` of a GET of the sin
 | Get one role. The response carries an `ETag` header.
 
 | /oncall-roles/schedule-settings
-| Get `{"timeZone": "Europe/Berlin", "shortMonths": ["Jan", ...]}`: the server's time zone and its 12 short month names.
+| Get `{"timeZone": "Europe/Berlin", "shortMonths": ["Jan", ...]}`: the server's time zone and the 12 month abbreviations notifd reads: always the fixed English (`Locale.ROOT`) `Jan` to `Dec`, whatever the server locale is.
 Use them to write the `begins` and `ends` of a `specific` schedule (`dd-MMM-yyyy HH:mm:ss`) the way the server reads them.
 |===
 

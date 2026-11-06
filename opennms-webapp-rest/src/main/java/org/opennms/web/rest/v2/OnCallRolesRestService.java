@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -298,7 +299,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         m_support.requireDatabaseStore();
         final OnCallScheduleSettingsDto settings = new OnCallScheduleSettingsDto();
         settings.setTimeZone(TimeZone.getDefault().getID());
-        settings.setShortMonths(Arrays.asList(DateFormatSymbols.getInstance().getShortMonths()).subList(0, 12));
+        settings.setShortMonths(Arrays.asList(DateFormatSymbols.getInstance(Locale.ROOT).getShortMonths()).subList(0, 12));
         return Response.ok(settings).build();
     }
 

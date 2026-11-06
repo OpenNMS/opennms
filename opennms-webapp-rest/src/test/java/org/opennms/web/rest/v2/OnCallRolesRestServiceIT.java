@@ -733,6 +733,13 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
             sendRequest(DELETE, "/oncall-roles/x", 403);
             exec(POST, "/oncall-roles/calendar?month=2026-11", role("x", null), null, 403);
             sendRequest(GET, "/oncall-roles/schedule-settings", 403);
+            sendRequest(GET, "/oncall-roles/x", 403);
+            exec(PUT, "/oncall-roles/x", "{}", null, 403);
+            exec(POST, "/oncall-roles/x/rename", "{\"newName\":\"y\"}", null, 403);
+            sendRequest(GET, "/oncall-roles/item?name=x", 403);
+            exec(PUT, "/oncall-roles/item?name=x", "{}", null, 403);
+            sendRequest(DELETE, "/oncall-roles/item?name=x", 403);
+            exec(POST, "/oncall-roles/item/rename?name=x", "{\"newName\":\"y\"}", null, 403);
         } finally {
             setUser("admin", new String[]{ "ROLE_ADMIN" });
         }
@@ -806,12 +813,44 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testScheduleSettings() throws Exception {
+        // the months are the fixed English ones notifd reads, not the server locale's
         Locale.setDefault(Locale.GERMAN);
         final JSONObject settings = new JSONObject(sendRequest(GET, "/oncall-roles/schedule-settings", 200));
         assertEquals(TimeZone.getDefault().getID(), settings.getString("timeZone"));
         final JSONArray months = settings.getJSONArray("shortMonths");
         assertEquals(12, months.length());
-        assertEquals(DateFormatSymbols.getInstance(Locale.GERMAN).getShortMonths()[2], months.getString(2));
+        assertEquals("Jan", months.getString(0));
+        assertEquals("Mar", months.getString(2));
+        assertEquals("Dec", months.getString(11));
+    }
+
+    @Test
+    public void testSpecificMarchScheduleUnderAGermanLocale() throws Exception {
+        // restored by restoreLocale()
+        Locale.setDefault(Locale.GERMANY);
+        final String specific = "{\"user\":\"bob\",\"type\":\"specific\",\"times\":["
+                + "{\"id\":\"m1\",\"begins\":\"15-Mar-2093 08:00:00\",\"ends\":\"15-Mar-2093 17:00:00\"}]}";
+        exec(POST, "/oncall-roles", role("rota-march", specific), null, 201);
+
+        final JSONObject json = new JSONObject(getJson("/oncall-roles/rota-march", 200));
+        final JSONObject time = json.getJSONArray("schedules").getJSONObject(0).getJSONArray("times").getJSONObject(0);
+        assertEquals("15-Mar-2093 08:00:00", time.getString("begins"));
+        assertEquals("15-Mar-2093 17:00:00", time.getString("ends"));
+
+        final MockHttpServletResponse response = exec(POST, "/oncall-roles/calendar?month=2093-03", role("rota-march", specific), null, 200);
+        final JSONArray entries = new JSONObject(response.getContentAsString()).getJSONArray("entries");
+        boolean found = false;
+        for (int i = 0; i < entries.length(); i++) {
+            final JSONObject entry = entries.getJSONObject(i);
+            if ("bob".equals(entry.getString("user")) && "2093-03-15T08:00:00".equals(entry.getString("start"))
+                    && !entry.isNull("scheduleIndex")) {
+                found = true;
+            }
+        }
+        assertTrue(response.getContentAsString(), found);
+
+        final JSONObject settings = new JSONObject(sendRequest(GET, "/oncall-roles/schedule-settings", 200));
+        assertEquals("Mar", settings.getJSONArray("shortMonths").getString(2));
     }
 
     @Test

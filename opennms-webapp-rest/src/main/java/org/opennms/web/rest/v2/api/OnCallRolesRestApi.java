@@ -65,7 +65,7 @@ public interface OnCallRolesRestApi {
     @GET
     @Path("schedule-settings")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "The server's time zone and short month names, for writing dd-MMM-yyyy HH:mm:ss times", operationId = "getOnCallScheduleSettings")
+    @Operation(summary = "The server's time zone and the fixed English (Locale.ROOT) month abbreviations notifd reads, for writing dd-MMM-yyyy HH:mm:ss times", operationId = "getOnCallScheduleSettings")
     Response getScheduleSettings(@Context SecurityContext securityContext);
 
     @POST

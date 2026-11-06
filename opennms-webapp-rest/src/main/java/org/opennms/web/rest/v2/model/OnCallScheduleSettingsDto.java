@@ -23,7 +23,10 @@ package org.opennms.web.rest.v2.model;
 
 import java.util.List;
 
-/** What the schedule editor needs to write specific-schedule times (dd-MMM-yyyy HH:mm:ss) the way the server reads them. */
+/**
+ * What the schedule editor needs to write specific-schedule times (dd-MMM-yyyy HH:mm:ss) the way the server reads them.
+ * The {@code shortMonths} are always the fixed English (Locale.ROOT) abbreviations Jan to Dec that notifd reads, not the server locale's.
+ */
 public class OnCallScheduleSettingsDto {
 
     private String timeZone;
