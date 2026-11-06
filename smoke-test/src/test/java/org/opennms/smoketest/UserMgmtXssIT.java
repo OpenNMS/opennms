@@ -464,7 +464,7 @@ public class UserMgmtXssIT extends AbstractRestIT {
         pageToRow("[data-test='oncall-roles-table']", ROLE);
         assertBodyContains(DESCRIPTION);
         assertNothingRan();
-        // the classic role's name carries markup and %27, which also goes through the /item path
+        // the classic role's name carries markup and %27; the table renders it as text
         pageToRow("[data-test='oncall-roles-table']", CLASSIC_ROLE);
         assertNothingRan();
     }

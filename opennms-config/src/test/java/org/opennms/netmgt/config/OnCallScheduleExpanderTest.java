@@ -46,11 +46,11 @@ import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
 
 public class OnCallScheduleExpanderTest {
-    private static final String ALL_DAY = "<schedule name=\"carol\" type=\"daily\"><time begins=\"00:00:00\" ends=\"23:59:59\"/></schedule>";
+    private static final int ALL_DAY_INDEX = 1;
 
     private static final String[] SCHEDULES = {
         "<schedule name=\"alice\" type=\"daily\"><time begins=\"08:00:00\" ends=\"17:00:00\"/></schedule>",
-        ALL_DAY,
+        "<schedule name=\"carol\" type=\"daily\"><time begins=\"00:00:00\" ends=\"23:59:59\"/></schedule>",
         "<schedule name=\"bob\" type=\"weekly\">"
             + "<time day=\"monday\" begins=\"22:00:00\" ends=\"23:59:59\"/>"
             + "<time day=\"tuesday\" begins=\"00:00:00\" ends=\"06:00:00\"/></schedule>",
@@ -90,11 +90,11 @@ public class OnCallScheduleExpanderTest {
         final Role role = new Role();
         role.setName("test");
         role.setSupervisor("sup");
-        for (String xml : SCHEDULES) {
-            if (!withAllDay && xml == ALL_DAY) {
+        for (int i = 0; i < SCHEDULES.length; i++) {
+            if (!withAllDay && i == ALL_DAY_INDEX) {
                 continue;
             }
-            final Schedule schedule = JaxbUtils.unmarshal(Schedule.class, xml);
+            final Schedule schedule = JaxbUtils.unmarshal(Schedule.class, SCHEDULES[i]);
             if ("lee".equals(schedule.getName())) {
                 // the schema only allows 3-letter months, so a 21-character time cannot be unmarshalled
                 schedule.getTimes().get(0).setBegins("14-M\u00e4rz-2026 18:00:00");
@@ -196,6 +196,20 @@ public class OnCallScheduleExpanderTest {
         // alice (schedule 0) and gina (schedule 5) at noon on a day nobody else covers
         now = OnCallScheduleExpander.onCallAt(role, at(2026, 4, 2, 12, 30, 0));
         assertEquals(List.of("alice", "gina"), now.users());
+        assertFalse(now.supervisorFallback());
+    }
+
+    @Test
+    public void testOnCallAtListsAUserOnceWhenTwoSchedulesCoverTheInstant() {
+        final Role role = new Role();
+        role.setName("test");
+        role.setSupervisor("sup");
+        role.addSchedule(JaxbUtils.unmarshal(Schedule.class, SCHEDULES[0]));
+        role.addSchedule(JaxbUtils.unmarshal(Schedule.class,
+                "<schedule name=\"alice\" type=\"daily\"><time begins=\"10:00:00\" ends=\"14:00:00\"/></schedule>"));
+
+        final OnCallNow now = OnCallScheduleExpander.onCallAt(role, at(2026, 4, 2, 12, 30, 0));
+        assertEquals(List.of("alice"), now.users());
         assertFalse(now.supervisorFallback());
     }
 

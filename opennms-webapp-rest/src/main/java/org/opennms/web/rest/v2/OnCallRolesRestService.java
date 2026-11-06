@@ -127,8 +127,17 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     @Override
     @Transactional(readOnly = true)
     public Response getOnCallRole(final SecurityContext securityContext, final String name) {
-        m_support.assertAdmin(securityContext, WHAT);
-        m_support.requireDatabaseStore();
+        return doGetOnCallRole(securityContext, name);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Response getOnCallRoleByQuery(final SecurityContext securityContext, final String name) {
+        return doGetOnCallRole(securityContext, name);
+    }
+
+    private Response doGetOnCallRole(final SecurityContext securityContext, final String name) {
+        m_support.checkTarget(securityContext, WHAT, "name", name);
         try {
             final OnCallRole role = load(name);
             final int version = role.getVersion();
@@ -177,8 +186,17 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     @Override
     @Transactional
     public Response updateOnCallRole(final SecurityContext securityContext, final HttpHeaders headers, final String name, final OnCallRoleDto dto) {
-        m_support.assertAdmin(securityContext, WHAT);
-        m_support.requireDatabaseStore();
+        return doUpdateOnCallRole(securityContext, headers, name, dto);
+    }
+
+    @Override
+    @Transactional
+    public Response updateOnCallRoleByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name, final OnCallRoleDto dto) {
+        return doUpdateOnCallRole(securityContext, headers, name, dto);
+    }
+
+    private Response doUpdateOnCallRole(final SecurityContext securityContext, final HttpHeaders headers, final String name, final OnCallRoleDto dto) {
+        m_support.checkTarget(securityContext, WHAT, "name", name);
         if (dto == null) {
             throw m_support.badRequest("An on-call role body is required.");
         }
@@ -210,8 +228,17 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     @Override
     @Transactional
     public Response renameOnCallRole(final SecurityContext securityContext, final HttpHeaders headers, final String name, final OnCallRoleRenameRequest body) {
-        m_support.assertAdmin(securityContext, WHAT);
-        m_support.requireDatabaseStore();
+        return doRenameOnCallRole(securityContext, headers, name, body);
+    }
+
+    @Override
+    @Transactional
+    public Response renameOnCallRoleByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name, final OnCallRoleRenameRequest body) {
+        return doRenameOnCallRole(securityContext, headers, name, body);
+    }
+
+    private Response doRenameOnCallRole(final SecurityContext securityContext, final HttpHeaders headers, final String name, final OnCallRoleRenameRequest body) {
+        m_support.checkTarget(securityContext, WHAT, "name", name);
         if (body == null || StringUtils.isBlank(body.getNewName())) {
             throw m_support.badRequest("A newName is required.");
         }
@@ -245,8 +272,17 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     @Override
     @Transactional
     public Response deleteOnCallRole(final SecurityContext securityContext, final HttpHeaders headers, final String name) {
-        m_support.assertAdmin(securityContext, WHAT);
-        m_support.requireDatabaseStore();
+        return doDeleteOnCallRole(securityContext, headers, name);
+    }
+
+    @Override
+    @Transactional
+    public Response deleteOnCallRoleByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name) {
+        return doDeleteOnCallRole(securityContext, headers, name);
+    }
+
+    private Response doDeleteOnCallRole(final SecurityContext securityContext, final HttpHeaders headers, final String name) {
+        m_support.checkTarget(securityContext, WHAT, "name", name);
         try {
             m_support.lockForWrite();
             final OnCallRole role = load(name, headers);
@@ -266,34 +302,6 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
 
     @Override
     @Transactional(readOnly = true)
-    public Response getOnCallRoleByQuery(final SecurityContext securityContext, final String name) {
-        m_support.checkTarget(securityContext, WHAT, "name", name);
-        return getOnCallRole(securityContext, name);
-    }
-
-    @Override
-    @Transactional
-    public Response updateOnCallRoleByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name, final OnCallRoleDto dto) {
-        m_support.checkTarget(securityContext, WHAT, "name", name);
-        return updateOnCallRole(securityContext, headers, name, dto);
-    }
-
-    @Override
-    @Transactional
-    public Response renameOnCallRoleByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name, final OnCallRoleRenameRequest body) {
-        m_support.checkTarget(securityContext, WHAT, "name", name);
-        return renameOnCallRole(securityContext, headers, name, body);
-    }
-
-    @Override
-    @Transactional
-    public Response deleteOnCallRoleByQuery(final SecurityContext securityContext, final HttpHeaders headers, final String name) {
-        m_support.checkTarget(securityContext, WHAT, "name", name);
-        return deleteOnCallRole(securityContext, headers, name);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Response getScheduleSettings(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, WHAT);
         m_support.requireDatabaseStore();
@@ -309,10 +317,10 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         m_support.assertAdmin(securityContext, WHAT);
         m_support.requireDatabaseStore();
         final YearMonth yearMonth;
+        if (month == null || !month.matches("\\d{4}-\\d{2}")) {
+            throw m_support.badRequest("month must be YYYY-MM.");
+        }
         try {
-            if (month == null || !month.matches("\\d{4}-\\d{2}")) {
-                throw new DateTimeParseException("bad month", String.valueOf(month), 0);
-            }
             yearMonth = YearMonth.parse(month);
         } catch (final DateTimeParseException e) {
             throw m_support.badRequest("month must be YYYY-MM.");
@@ -329,6 +337,9 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
                 if (schedule == null) {
                     throw new UserMgmtValidationException("A schedule must not be null.");
                 }
+                if (StringUtils.isBlank(schedule.getUser())) {
+                    throw new UserMgmtValidationException("A schedule needs a user.");
+                }
                 if (!storedKeys.contains(key(normalized(schedule)))) {
                     OnCallScheduleValidator.validate(schedule);
                 }
@@ -339,7 +350,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
             final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             final List<OnCallCalendarEntryDto> entries = new ArrayList<>();
             for (final OnCallScheduleExpander.Entry entry : OnCallScheduleExpander.entries(toJaxbRole(draft), start, end)) {
-                if (entry.user() == null) {
+                if (entry.scheduleIndex() == null && entry.user() == null) {
                     continue; // the supervisor fallback of a draft without a supervisor
                 }
                 final OnCallCalendarEntryDto entryDto = new OnCallCalendarEntryDto();
@@ -363,7 +374,9 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     private static Role toJaxbRole(final OnCallRoleDto dto) {
         final Role role = new Role();
         role.setName(dto.getName());
-        role.setSupervisor(StringUtils.trimToNull(dto.getSupervisor()));
+        if (StringUtils.isNotBlank(dto.getSupervisor())) {
+            role.setSupervisor(dto.getSupervisor().trim());
+        }
         for (final OnCallScheduleDto scheduleDto : Objects.requireNonNullElse(dto.getSchedules(), List.<OnCallScheduleDto>of())) {
             final Schedule schedule = new Schedule();
             schedule.setName(scheduleDto.getUser());

@@ -22,6 +22,7 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -352,9 +353,11 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testReservedNameIs400OnCreateAndRename() throws Exception {
-        exec(POST, "/oncall-roles", role("calendar", null), null, 400);
+        final MockHttpServletResponse created = exec(POST, "/oncall-roles", role("calendar", null), null, 400);
+        assertTrue(created.getContentAsString(), created.getContentAsString().contains("is reserved"));
         exec(POST, "/oncall-roles", role("rota9", null), null, 201);
-        exec(POST, "/oncall-roles/rota9/rename", "{\"newName\":\"item\"}", null, 400);
+        final MockHttpServletResponse renamed = exec(POST, "/oncall-roles/rota9/rename", "{\"newName\":\"item\"}", null, 400);
+        assertTrue(renamed.getContentAsString(), renamed.getContentAsString().contains("is reserved"));
     }
 
     @Test
@@ -716,6 +719,15 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testItemFormStaleIfMatchIs412AndMissingIs404() throws Exception {
+        exec(POST, "/oncall-roles", role("rota-item", null), null, 201);
+        final String stale = exec(GET, "/oncall-roles/item?name=rota-item", null, null, 200).getHeader("ETag");
+        exec(PUT, "/oncall-roles/item?name=rota-item", "{\"description\":\"second\"}", null, 200);
+        exec(PUT, "/oncall-roles/item?name=rota-item", "{\"description\":\"third\"}", stale, 412);
+        sendRequest(GET, "/oncall-roles/item?name=missing", 404);
+    }
+
+    @Test
     public void testItemFormWithoutNameIs400() throws Exception {
         sendRequest(GET, "/oncall-roles/item", 400);
         sendRequest(GET, "/oncall-roles/item?name=", 400);
@@ -791,6 +803,37 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         exec(POST, "/oncall-roles/calendar?month=2026-13", role("draft-y", DAILY_CAROL), null, 400);
         final MockHttpServletResponse missing = exec(POST, "/oncall-roles/calendar", role("draft-y", DAILY_CAROL), null, 400);
         assertEquals("month must be YYYY-MM.", missing.getContentAsString());
+    }
+
+    @Test
+    public void testCalendarPreviewBlankUserIs400() throws Exception {
+        final String blank = "{\"user\":\" \",\"type\":\"daily\",\"times\":[{\"begins\":\"08:00:00\",\"ends\":\"17:00:00\"}]}";
+        final MockHttpServletResponse response = exec(POST, "/oncall-roles/calendar?month=2026-11", role("draft-z", blank), null, 400);
+        assertTrue(response.getContentAsString(), response.getContentAsString().contains("needs a user"));
+        exec(POST, "/oncall-roles/calendar?month=2026-11", role("draft-z", blank.replace("\" \"", "null")), null, 400);
+    }
+
+    @Test
+    public void testCalendarPreviewWithoutSupervisorHasNoFallbackEntries() throws Exception {
+        final String draft = "{\"name\":\"draft-n\",\"membershipGroup\":\"Ops\",\"schedules\":[" + DAILY_CAROL + "]}";
+        final JSONArray entries = new JSONObject(exec(POST, "/oncall-roles/calendar?month=2026-11", draft, null, 200)
+                .getContentAsString()).getJSONArray("entries");
+        assertTrue(entries.length() > 0);
+        for (int i = 0; i < entries.length(); i++) {
+            assertEquals("carol", entries.getJSONObject(i).getString("user"));
+            assertFalse(entries.getJSONObject(i).isNull("scheduleIndex"));
+        }
+    }
+
+    @Test
+    public void testCalendarPreviewWithoutSchedulesHasOnlyFallbackEntries() throws Exception {
+        final JSONArray entries = new JSONObject(exec(POST, "/oncall-roles/calendar?month=2026-11", role("draft-f", null), null, 200)
+                .getContentAsString()).getJSONArray("entries");
+        assertTrue(entries.length() > 0);
+        for (int i = 0; i < entries.length(); i++) {
+            assertEquals("alice", entries.getJSONObject(i).getString("user"));
+            assertTrue(entries.getJSONObject(i).isNull("scheduleIndex"));
+        }
     }
 
     @Test
