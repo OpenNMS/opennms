@@ -36,13 +36,13 @@
         <OnmsMessage v-if="applications === null" severity="info" data-test="perspective-callout">
           <strong>Applications could not be checked</strong> — any application that polls from this monitoring
           location as a perspective stops doing so, and nothing asks you to replace it.
-          <a :href="applicationsUrl" target="_self" data-test="applications-link">Open Manage Applications</a>
+          <router-link to="/admin/applications" data-test="applications-link">Open Manage Applications</router-link>
         </OnmsMessage>
         <OnmsMessage v-else-if="applications.length" severity="warn" data-test="perspective-callout">
           <strong>Removed from {{ count(applications.length, 'application') }} as a perspective</strong> —
           {{ applicationNames }} {{ applications.length === 1 ? 'stops' : 'stop' }} being polled from this
           monitoring location, and nothing asks you to replace it.
-          <a :href="applicationsUrl" target="_self" data-test="applications-link">Open Manage Applications</a>
+          <router-link to="/admin/applications" data-test="applications-link">Open Manage Applications</router-link>
         </OnmsMessage>
 
         <OnmsMessage v-if="outageCount === null" severity="info" data-test="outages-callout">
@@ -81,7 +81,6 @@ import { computed, nextTick, ref, watch } from 'vue'
 
 import { OnmsButton, OnmsDialog, OnmsMessage, OnmsSpinner } from '@opennms/onms-ui'
 
-import { legacyUrl } from '@/lib/legacyUrl'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
 import { useMonitoringLocationAdminStore } from '@/stores/monitoringLocationAdminStore'
 import { MonitoringLocation } from '@/types'
@@ -104,8 +103,6 @@ const emit = defineEmits<{
 
 const store = useMonitoringLocationAdminStore()
 const minionStore = useMinionAdminStore()
-
-const applicationsUrl = legacyUrl('admin/applications.htm')
 
 const name = computed(() => props.location?.['location-name'] ?? '')
 

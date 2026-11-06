@@ -35,3 +35,30 @@ The VmwareCimCollector collects ESXi host and sensor metrics from vCenter.
 | Connection timeout in milliseconds
 | 3000
 |===
+
+== Service configuration example
+
+The VmwareCimCollector collects only from host systems imported with the xref:provisioning/handlers/vmware.adoc[VMware requisition handler].
+It takes the vCenter server from the node's metadata, the managed object ID from the node's foreign ID, and the vCenter credentials from `$\{OPENNMS_HOME}/etc/vmware-config.xml`.
+By default, the handler assigns the `VMwareCim-HostSystem` service to the primary interface of a host system, but only if it finds an interface on which the host's CIM service is reachable; the `hostSystemServices` parameter of the requisition URL overrides the service list.
+
+The default `collectd-configuration.xml` contains this service only in the `vmware6` and `vmware7` packages, which are filtered on the `VMware6` and `VMware7` categories that the handler assigns for API versions 6 and 7.
+To collect from a newer version, copy one of these packages and filter it on that version's category (for example `VMware8`).
+
+This is the service in the `vmware7` package, simplified from the default configuration:
+
+[source, xml]
+----
+<package name="vmware7" remote="false">
+  <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware7')</filter>
+  <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
+    <parameter key="collection" value="default-ESX-HostSystem"/>
+    <parameter key="thresholding-enabled" value="true"/>
+  </service>
+</package>
+
+<collector service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCimCollector"/>
+----
+
+The default configuration sets the `collection` value with a xref:operation:deep-dive/meta-data.adoc[metadata] expression, `${requisition:collection|detector:collection|default-ESX-HostSystem}`, so you can override it per node.
+The `default-ESX-HostSystem` collection is defined in `$\{OPENNMS_HOME}/etc/vmware-cim-datacollection-config.xml`.

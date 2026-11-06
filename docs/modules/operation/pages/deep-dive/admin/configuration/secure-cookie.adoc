@@ -5,13 +5,30 @@
 The Secure Cookie attribute controls whether browsers should enforce the encrypted transmission of cookies.
 This prevents some types of attacks, as the enforced encrypted transmission prevents the session cookie from being read and modified.
 
-{page-component-title} ships with a default HTTP configuration and therefore the Secure Cookie Attribute for the session cookie is set to `false`.
-For production environments in which HTTPS is used, it is highly recommended to activate this flag.
+{page-component-title} sets the `HttpOnly` and `SameSite=Strict` attributes on its session cookie (`JSESSIONID`) by default (see xref:deep-dive/admin/configuration/same-site-cookie.adoc[]).
+Whether the session cookie also carries the `Secure` attribute depends on how HTTPS is set up.
 
-== Enforce encrypted transmission of the session cookie
+== HTTPS on the built-in Jetty server
 
-To change the Secure Cookie Attribute for the session cookie, you must edit `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/web.xml`:
-+
+When you xref:deep-dive/admin/configuration/https/https-server.adoc[configure Jetty for HTTPS], Jetty marks the session cookie `Secure` for every request that arrives over HTTPS.
+No change to `web.xml` is needed.
+
+Requests that still use the plain HTTP connector, such as port 8980 if you leave it enabled, receive the session cookie without the `Secure` attribute.
+
+== HTTPS on a reverse proxy
+
+When a reverse proxy such as NGINX or Apache terminates HTTPS and forwards plain HTTP to {page-component-title}, Jetty cannot tell that the browser used HTTPS and does not mark the session cookie `Secure`.
+In that case, use one of the following options:
+
+* Configure the proxy to add the `Secure` attribute to the `JSESSIONID` cookie.
+For example, NGINX 1.19.3 and later support `proxy_cookie_flags JSESSIONID secure;` in the `location` block that proxies {page-component-title}.
+* Set the attribute in {page-component-title}, as described in <<force-secure,Always mark the session cookie Secure>>.
+
+[[force-secure]]
+== Always mark the session cookie Secure
+
+To send the session cookie with the `Secure` attribute on every response, edit `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/web.xml`:
+
 [source, xml]
 ----
 <session-config>
@@ -25,3 +42,8 @@ To change the Secure Cookie Attribute for the session cookie, you must edit `$OP
 ----
 <1> Replace `false` with `true` to secure the session cookie.
 
+Restart {page-component-title} to apply the change.
+
+IMPORTANT: Browsers do not send a `Secure` cookie over plain HTTP, so after this change you cannot log in to the web UI through an HTTP URL.
+
+Upgrades can replace the files under `$OPENNMS_HOME/jetty-webapps`, so check this setting after each upgrade.

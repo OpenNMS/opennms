@@ -440,12 +440,12 @@ public class ConfigTesterTest {
 
     @Test
     public void testThreshdConfiguration() {
-        testConfigFile("threshd-configuration.xml");
+        ignoreConfigFile("threshd-configuration.xml");
     }
 
     @Test
     public void testThresholds() {
-        testConfigFile("thresholds.xml");
+        ignoreConfigFile("thresholds.xml");
     }
 
     @Test

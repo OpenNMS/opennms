@@ -65,7 +65,7 @@ The user and password parameters are ignored when the basic-authentication param
 | 80,8080,8888
 
 | retry
-| Number of attempts to get a valid HTTP response/response-text.
+| Number of retries after the first failed attempt to get a valid HTTP response/response-text.
 | 0
 
 | resolve-ip

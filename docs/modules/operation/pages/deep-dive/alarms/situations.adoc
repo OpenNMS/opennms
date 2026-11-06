@@ -1,0 +1,43 @@
+[[ga-alarm-correlation]]
+= Alarm Correlation and Situations
+:description: Learn what a situation is in {page-component-title}, how situations relate to alarms, and how ALEC creates them through alarm correlation.
+
+Alarm correlation groups alarms that likely share a common cause, so operators can work on one problem instead of many individual alarms.
+In {page-component-title}, the result of this grouping is a _situation_.
+
+== What is a situation?
+
+A situation is an alarm that represents a group of related alarms.
+It appears in the alarm list alongside regular alarms, and you can acknowledge, escalate, clear, and add memos to it like any other alarm.
+The alarms that it groups are its _related alarms_.
+
+For example, when a switch fails, {page-component-title} may raise alarms for the switch itself, for the interfaces on its neighbors, and for services on hosts behind it.
+A situation can group these alarms into one problem that you investigate and resolve together.
+
+{page-component-title} manages the lifecycle of a situation with the default Drools rules in `$\{OPENNMS_HOME}/etc/alarmd/drools-rules.d/situations.drl` (see xref:deep-dive/alarms/advanced-alarm-handling.adoc[]):
+
+* The situation's severity follows its related alarms.
+When the most severe related alarm is above Normal, the situation is set one severity level higher (up to Critical).
+* Acknowledging a situation acknowledges its related alarms.
+* When all related alarms are acknowledged, the situation is acknowledged too.
+* When a related alarm is unacknowledged after the situation was acknowledged, the situation is unacknowledged.
+
+To show only situations, only alarms, or both in the alarm list, use the alarm search options (see xref:deep-dive/alarms/alarm-advanced-search.adoc[]).
+
+== ALEC is required for alarm correlation
+
+{page-component-title} does not correlate alarms by itself.
+To have situations created automatically, install https://docs.opennms.com/alec/latest/[Architecture for Learning Enabled Correlation (ALEC)].
+ALEC is a separate OpenNMS plugin that analyzes alarms and the network topology, groups related alarms, and creates situations in {page-component-title}.
+Refer to the https://docs.opennms.com/alec/latest/[ALEC documentation] for installation, configuration, and the available correlation engines.
+
+Without ALEC, you can still create situations and associate alarms with them manually by using the xref:development:rest/situations.adoc[Situations REST API].
+
+[[ga-situation-feedback]]
+== Situation feedback
+
+Operators can submit feedback on how a situation grouped its alarms (for example, that an alarm does not belong to a situation).
+ALEC can use this feedback to improve future correlation.
+The `opennms-situation-feedback` feature stores the feedback in Elasticsearch and provides the xref:development:rest/situation-feedback.adoc[Situation Feedback REST API].
+It is not installed by default.
+For its Elasticsearch connection settings, see xref:reference:configuration/tuning-elasticsearch.adoc[].

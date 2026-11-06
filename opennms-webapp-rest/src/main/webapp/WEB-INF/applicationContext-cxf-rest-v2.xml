@@ -19,6 +19,11 @@
     <!-- Automatically scan for @Component beans -->
     <context:component-scan base-package="org.opennms.web.rest.v2, org.opennms.web.rest.mapper.v2" />
     <onmsgi:reference id="trapdConfigDao" interface="org.opennms.netmgt.dao.api.TrapdConfigDao" />
+    <!-- Exported by applicationContext-thresholdingConfigDaos.xml. The ids match the exporting beans so
+         that a context which already provides them shadows this reference by name rather than competing
+         with it by type. -->
+    <onmsgi:reference id="thresholdingDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao" />
+    <onmsgi:reference id="threshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao" />
 
     <!-- Backs SystemReportRestService. serviceRegistry is a root-context bean from
          applicationContext-soa.xml (the CXF servlet context has the root as parent),
@@ -37,13 +42,8 @@
     -->
     <bean id="springResourceContextProvider" class="org.opennms.web.rest.support.SpringResourceContextProvider"/>
 
-    <!-- Used by MenuRestService -->
-    <bean id="menuTemplatePath" class="java.lang.String">
-        <constructor-arg value="${opennms.home}/jetty-webapps/opennms/WEB-INF/menu/menu-template.json" />
-    </bean>
-    <bean id="menuProvider" class="org.opennms.web.rest.support.menu.MenuProvider">
-        <constructor-arg ref="menuTemplatePath" />
-    </bean>
+    <!-- Used by MenuRestService; the template location comes from MenuTemplatePaths -->
+    <bean id="menuProvider" class="org.opennms.web.rest.support.menu.MenuProvider" />
 
     <!--
       openapi.json is served by org.opennms.web.rest.v2.OpenApiResource from the

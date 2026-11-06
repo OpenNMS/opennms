@@ -634,7 +634,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>32.0.0-jre</version>
+      <version>33.7.1-jre</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.jest</groupId>
@@ -825,7 +825,7 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.23.1</version>
+      <version>1.23.2</version>
     </dependency>
     <dependency>
       <groupId>com.github.mwiede</groupId>

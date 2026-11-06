@@ -8,6 +8,8 @@ Once you have set up device configuration backups, you can do the following in t
 * Download and compare device configuration backups
 * Manually perform a device configuration backup
 
+To delete backups, use the REST API (see <<dcb-delete>>).
+
 To manage device configuration backups, follow these steps:
 
 . Click menu:Inventory[Device Configs] in the side menu to view a list of devices.
@@ -19,3 +21,38 @@ NOTE: Backups appear according to their schedule.
 . To perform actions such as compare, download, and view history, place a check beside the device(s) and click the menu option.
 
 You can search by node label or IP address and sort the list of backups by typing in the search bar and clicking on the headers in the table respectively.
+
+[[dcb-delete]]
+== Delete device configuration backups
+
+The *Device Configs* page does not include a delete action.
+To delete backups, use the xref:development:rest/device_config.adoc[Device Config REST API].
+The request requires the `ROLE_ADMIN`, `ROLE_REST`, or `ROLE_DEVICE_CONFIG_BACKUP` role.
+
+Each backup that {page-component-title} stores has its own database ID.
+To list the backups for an IP interface with their IDs, send a `GET` request to `/rest/device-config/interface/\{id}`, where `\{id}` is the database ID of the IP interface:
+
+[source, console]
+curl -u admin:admin "http://localhost:8980/opennms/rest/device-config/interface/42"
+
+The `id` field of each entry in the response is the backup ID.
+To delete one backup, send a `DELETE` request with its ID:
+
+[source, console]
+curl -u admin:admin -X DELETE "http://localhost:8980/opennms/rest/device-config/123"
+
+To delete several backups in one request, repeat the `id` query parameter in a `DELETE` request to `/rest/device-config`, for example `/rest/device-config?id=123&id=124`.
+
+Note the following when you delete backups:
+
+* A deletion is permanent.
+Download any backup that you want to keep before you delete it.
+* If one of the IDs in a multiple delete does not exist, the request returns `404 Not Found` and deletes nothing.
+* The *Device Configs* page shows the most recently updated backup of each IP interface and configuration type.
+If you delete that backup, the page shows the next most recent one.
+If you delete all backups of an IP interface, the interface no longer appears on the page until the next backup attempt for it.
+
+{page-component-title} also deletes backups automatically in the following cases:
+
+* After a successful backup, it deletes the backups of that IP interface and service that are older than the `dcb:retention-period` metadata value (default `P1Y`, one year), except the most recent one (see xref:deep-dive/device-config-backup/dcb-requisition.adoc[]).
+* When an IP interface is deleted, it deletes all backups of that interface.

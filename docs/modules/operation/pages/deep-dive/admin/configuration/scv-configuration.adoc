@@ -150,3 +150,100 @@ DESCRIPTION
 SYNTAX
         opennms:scv-get-all
 ----
+
+[[scvcli]]
+=== Command-line utility
+
+The `scvcli` utility reads and writes the secure credentials vault keystore file without a running {page-component-title} instance.
+{page-component-title} Core, Minion, and Sentinel each include it as `bin/scvcli` in their home directory.
+It works on the `etc/scv.jce` file of the same installation.
+
+Run `scvcli` as the user that owns the installation (for example, `opennms` on {page-component-title} Core), so that a new keystore file gets the correct owner.
+
+.Syntax
+[source, console]
+----
+scvcli [--keystore KEYSTORE] [--password PASSWORD] COMMAND [ARGUMENTS]
+----
+
+The global options come before the command:
+
+[options="header", cols="1,3,1"]
+|===
+| Option
+| Description
+| Default
+
+| `--keystore`, `-k`
+| Keystore file to use.
+A relative path is resolved against the `etc` directory of the installation.
+| `scv.jce`
+
+| `--password`, `-p`
+| Password of the keystore.
+On {page-component-title} Core, the default is the value of `org.opennms.features.scv.jceks.key` from `opennms.properties` or `opennms.properties.d`, if set.
+Otherwise, the built-in default password is used.
+| Built-in default
+|===
+
+On {page-component-title} Core, `scvcli` also reads the keystore type from `org.opennms.features.scv.keystore.type`.
+If you changed the vault password on a Minion or Sentinel (the `key` property of the `org.opennms.features.scv` PID), pass the same value with `--password`.
+
+The following commands are available:
+
+[options="header", cols="2,3"]
+|===
+| Command
+| Description
+
+| `set ALIAS USERNAME [PASSWORD]`
+| Creates or replaces the entry for `ALIAS`.
+If you omit `PASSWORD`, `scvcli` prompts for it twice, or reads one line from standard input with `--from-stdin` (`-S`).
+Add attributes with `--attribute key=value` (`-a`), once per attribute.
+
+| `get ALIAS`
+| Prints the username and attributes of an entry.
+The password is masked.
+
+| `get-all`
+| Prints the username and attributes of every entry.
+
+| `list`
+| Prints the aliases of all entries.
+
+| `delete ALIAS`
+| Deletes an entry.
+|===
+
+The examples below assume `scvcli` is on your `PATH`.
+On {page-component-title} Core installed from RPM packages, `/etc/profile.d/opennms.sh` adds `$OPENNMS_HOME/bin` to the `PATH` of login shells.
+Otherwise, use the full path, for example `/opt/opennms/bin/scvcli` or `/opt/minion/bin/scvcli`.
+Run it as the user that runs the service, so the keystore stays readable by that service.
+
+.Store database credentials on {page-component-title} Core and prompt for the password
+[source, console]
+----
+scvcli set postgres opennms
+----
+
+.Store credentials with an attribute and read the password from a file
+[source, console]
+----
+scvcli set corp-directory svc-monitor --from-stdin --attribute domain=CORP < /path/to/password.txt
+----
+
+.Show an entry on a Minion
+[source, console]
+----
+scvcli get opennms.broker
+----
+
+[source, output]
+----
+Credentials for opennms.broker:
+	Username: my-minion-user
+	Password: *********
+----
+
+NOTE: Passing the password as an argument stores it in your shell history and exposes it in the process list.
+Use the prompt or `--from-stdin` instead where possible.

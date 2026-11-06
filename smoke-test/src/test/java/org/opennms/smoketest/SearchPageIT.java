@@ -53,7 +53,8 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testAllFormsArePresent() throws Exception {
-        await().atMost(20, SECONDS).pollInterval(5, SECONDS).until(() -> countElementsMatchingCss("form") == 12);
+        // bootstrap.jsp adds #headerLogoutForm to every logged-in page; count only the search page's own forms
+        await().atMost(20, SECONDS).pollInterval(5, SECONDS).until(() -> countElementsMatchingCss("form:not(#headerLogoutForm)") == 12);
 
         for (final String matchingElement : new String[] {
                 "input[@id='byname_nodename']",

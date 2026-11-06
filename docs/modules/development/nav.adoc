@@ -52,7 +52,6 @@
 *** xref:rest/info.adoc[]
 *** xref:rest/ifservices.adoc[]
 *** xref:rest/ipinterfaces.adoc[]
-*** xref:rest/ksc_reports.adoc[]
 *** xref:rest/logs.adoc[]
 *** xref:rest/measurements.adoc[]
 *** xref:rest/menu.adoc[]
@@ -93,17 +92,12 @@
 *** xref:rest/javamail-config.adoc[]
 *** xref:rest/syslognbi-config.adoc[]
 *** xref:rest/trapd-rest-api.adoc[]
+*** xref:rest/thresholds-rest-api.adoc[]
 *** xref:bsm/bsm-development.adoc[]
 *** xref:rest/situation-feedback.adoc[]
 
 * xref:oia/introduction.adoc[]
 ** xref:oia/mcp-server.adoc[]
-
-* xref:amqp/introduction.adoc[]
-** xref:amqp/event_forwarder.adoc[]
-** xref:amqp/event_receiver.adoc[]
-** xref:amqp/alarm_northbounder.adoc[]
-** xref:amqp/custom_processors.adoc[]
 
 * xref:ticketing/inmemory-plugin.adoc[]
 

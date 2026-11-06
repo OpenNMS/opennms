@@ -46,7 +46,7 @@ QUIT
 | 25
 
 | retry
-| Number of attempts to find the service available.
+| Number of retries after the first failed attempt to find the service available.
 | 0
 |===
 

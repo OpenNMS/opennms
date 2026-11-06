@@ -70,6 +70,7 @@ const mainMenuLoaded = () => useMenuStore().mainMenuLoaded
 const zenithConnectEnabled = () => useMenuStore().mainMenu?.zenithConnectEnabled ?? false
 
 const snmpRoleMsg = 'Must have the proper SNMP role(s) to access SNMP Config.'
+const thresholdRoleMsg = 'Must have the admin role to access Threshold Configuration.'
 
 // SNMP Config auto-lookup mode. This sets the store to ensure the lookup tab is active and in lookup mode.
 // Then SnmpConfigLookupTab will get the 'ipAddress' and 'location' query params and perform the lookup.
@@ -113,7 +114,13 @@ const router = createRouter({
       component: () => import('@/containers/DistributedMonitoring.vue'),
       beforeEnter: requireRole('adminRole', 'Must be admin to manage distributed monitoring.')
     },
-    // the former Manage Minions / Manage Monitoring Locations pages (NMS-20364)
+    {
+      path: '/admin/applications',
+      name: 'Manage Applications',
+      component: () => import('@/containers/ManageApplications.vue'),
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage applications.')
+    },
+    // redirects from the old page routes
     {
       path: '/admin/minions',
       redirect: { path: '/distributed-monitoring', query: { tab: 'minions' }}
@@ -321,6 +328,26 @@ const router = createRouter({
       beforeEnter: requireRole('adminRole', 'Must be admin to generate a system report.')
     },
     {
+      path: '/about',
+      name: 'About',
+      component: () => import('@/containers/About.vue')
+    },
+    {
+      path: '/documentation',
+      name: 'Documentation',
+      component: () => import('@/containers/Documentation.vue')
+    },
+    {
+      path: '/commercial-support',
+      name: 'Commercial Support',
+      component: () => import('@/containers/CommercialSupport.vue')
+    },
+    {
+      path: '/community-resources',
+      name: 'Community Resources',
+      component: () => import('@/containers/CommunityResources.vue')
+    },
+    {
       path: '/snmp-config',
       name: 'SNMP Config',
       component: () => import('@/containers/SnmpConfiguration.vue'),
@@ -396,6 +423,68 @@ const router = createRouter({
       path: '/trapd-config',
       name: 'Trapd Configuration',
       component: () => import('@/containers/TrapdConfiguration.vue')
+    },
+    {
+      path: '/threshold-config',
+      name: 'Threshold Configuration',
+      component: () => import('@/containers/ThresholdConfiguration.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      // Successor of the legacy '?groupName=X&editGroup' deep link, so runbooks can keep linking a group.
+      path: '/threshold-config/group/:name',
+      name: 'Threshold Group Detail',
+      component: () => import('@/containers/ThresholdGroupDetail.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/package/:name',
+      name: 'Threshold Package Detail',
+      component: () => import('@/containers/ThresholdPackageDetail.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      // Not '/threshold-config/group/create', so a group named 'create' stays reachable.
+      path: '/threshold-config/create-group',
+      name: 'Threshold Group Create',
+      component: () => import('@/containers/ThresholdGroupEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/group/:name/edit',
+      name: 'Threshold Group Edit',
+      component: () => import('@/containers/ThresholdGroupEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/group/:name/:kind(threshold|expression)/create',
+      name: 'Threshold Definition Create',
+      component: () => import('@/containers/ThresholdDefinitionEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/group/:name/:kind(threshold|expression)/:index(\\d+)/edit',
+      name: 'Threshold Definition Edit',
+      component: () => import('@/containers/ThresholdDefinitionEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/create-package',
+      name: 'Threshold Package Create',
+      component: () => import('@/containers/ThresholdPackageCreate.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/package/:name/service/create',
+      name: 'Threshold Service Create',
+      component: () => import('@/containers/ThresholdServiceEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/package/:name/service/:index(\\d+)/edit',
+      name: 'Threshold Service Edit',
+      component: () => import('@/containers/ThresholdServiceEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
     },
     {
       path: '/mib-compiler',

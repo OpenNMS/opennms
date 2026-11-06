@@ -11,9 +11,6 @@
   <artifactId>org.opennms.core.ipc.sink.camel.itests</artifactId>
   <name>OpenNMS :: Core :: IPC :: Sink :: Camel :: Integration Tests</name>
   <packaging>bundle</packaging>
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
   <build>
     <plugins>
       <plugin>

@@ -38,14 +38,14 @@
           .breadcrumb("Resource Graphs", "graph/index.jsp")
           .breadcrumb("Results")
           .scrollSpy("#results-sidebar")
-          .ngApp("onms-ksc")
+          .ngApp("onms-graph-results")
           .flags("renderGraphs")
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
-    <jsp:param name="asset" value="add-to-ksc" />
+    <jsp:param name="asset" value="graph-results" />
 </jsp:include>
 
 <div id="graph-results">
@@ -59,7 +59,8 @@
         <c:set var="showCustom">style="display: none;"</c:set>
     </c:if>
     <div id="customTimeForm" class="mb-3" name="customTimeForm" ${showCustom}>
-        <form role="form" class="form top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get">
+        <%-- The hidden fields contain request values. ng-non-bindable stops AngularJS from evaluating {{...}} in these values. --%>
+        <form role="form" class="form top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get" ng-non-bindable>
             <c:if test="${empty results.generatedId && empty results.nodeCriteria}">
                 <c:forEach var="resultSet" items="${results.graphResultSets}">
                     <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
@@ -75,7 +76,7 @@
                 <input type="hidden" name="reports" value="<c:out value="${report}"/>"/>
             </c:forEach>
             <input type="hidden" name="relativetime" value="custom"/>
-            <input type="hidden" name="zoom" value="<c:out value="${param.zoom}"/>"/>
+            <input type="hidden" name="zoom" value="${param.zoom == 'true'}"/>
 
             <div class="form-row form-group mb-1">
                 <label class="col-form-label col-lg-1 col-md-2 col-4">Start Time</label>
@@ -165,7 +166,7 @@
 <c:set var="showFootnote1" value="false"/>
 
 
-<div class="row" ng-controller="AddToKscCtrl">
+<div class="row" ng-controller="AddToGraphCollectionCtrl">
 
     <div class="col-md-10" ng-controller="graphSearchBoxCtrl" id="search-graphs">
         <form class="form-inline pull-right mb-4">
@@ -285,7 +286,7 @@
                               </a>
                             </div>
 	                    </div> <!-- graph-aux-controls -->
-                        <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom}"></div>
+                        <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom == 'true'}"></div>
                         <br/><br/>
                     </div>
                 </c:forEach>
@@ -310,14 +311,14 @@
 	</div> <!-- col-md-10 -->
 
 	<div class="col-md-2">
-	<div id="results-sidebar" class="resource-graphs-sidebar d-print-none d-none d-sm-block d-md-block sidebar-fixed">
+	<div id="results-sidebar" class="resource-graphs-sidebar d-print-none d-none d-sm-block d-md-block sidebar-fixed" ng-non-bindable>
         <ul class="nav flex-column">
             <c:forEach var="resourceType" items="${results.resourceTypes}">
             <li class="nav-item">
-                <a class="nav-link" target="_self" href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${results.graphResultMap[resourceType][0].index}" data-target="#panel-resource${results.graphResultMap[resourceType][0].index}">${resourceType}</a>
+                <a class="nav-link" target="_self" href="${fn:escapeXml(requestScope['javax.servlet.forward.request_uri'])}?${fn:escapeXml(pageContext.request.queryString)}#panel-resource${results.graphResultMap[resourceType][0].index}" data-target="#panel-resource${results.graphResultMap[resourceType][0].index}"><c:out value="${resourceType}"/></a>
                 <ul class="nav">
                     <c:forEach var="resultSet" items="${results.graphResultMap[resourceType]}">
-                    <li class="nav-item"><a class="nav-link" target="_self" href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}">${resultSet.resource.label}</a></li>
+                    <li class="nav-item"><a class="nav-link" target="_self" href="${fn:escapeXml(requestScope['javax.servlet.forward.request_uri'])}?${fn:escapeXml(pageContext.request.queryString)}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}"><c:out value="${resultSet.resource.label}"/></a></li>
                     </c:forEach>
                 </ul>
             </li>

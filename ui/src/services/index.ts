@@ -45,6 +45,14 @@ import {
   listMonitoringLocations,
   updateMonitoringLocation
 } from './monitoringLocationAdminService'
+import {
+  createApplication,
+  deleteApplication,
+  getApplicationMembers,
+  listApplicationSummaries,
+  searchServiceCandidates,
+  updateApplicationMembers
+} from './applicationAdminService'
 import { getServiceTypes } from './serviceTypes'
 import { getProvisionDService, putProvisionDService } from './configurationService'
 import {
@@ -91,8 +99,28 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import {
+  createThresholdGroup,
+  createThreshdPackage,
+  deleteThresholdGroup,
+  deleteThreshdPackage,
+  downloadThresholdingConfiguration,
+  downloadThreshdConfiguration,
+  getThresholdGroup,
+  getThresholdGroups,
+  getThresholdingMetadata,
+  getThreshdConfiguration,
+  getThreshdPackage,
+  getThreshdPackages,
+  updateThresholdGroup,
+  updateThreshdConfiguration,
+  updateThreshdPackage,
+  uploadThresholdingConfiguration,
+  uploadThreshdConfiguration
+} from './thresholdConfigurationService'
 import { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
+import { getAbout } from './aboutService'
 import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from './wsmanAdminService'
 import {
   createManagedUser,
@@ -151,12 +179,30 @@ import {
 } from './groupAdminService'
 
 export default {
+  createThresholdGroup,
+  createThreshdPackage,
+  deleteThresholdGroup,
+  deleteThreshdPackage,
+  downloadThresholdingConfiguration,
+  downloadThreshdConfiguration,
+  getThresholdGroup,
+  getThresholdGroups,
+  getThresholdingMetadata,
+  getThreshdConfiguration,
+  getThreshdPackage,
+  getThreshdPackages,
+  updateThresholdGroup,
+  updateThreshdConfiguration,
+  updateThreshdPackage,
+  uploadThresholdingConfiguration,
+  uploadThreshdConfiguration,
   getMinionNodeIds,
   getCoreVersion,
   listMinions,
   deleteMinion,
   getMinion,
   search,
+  getAbout,
   getSystemReportPlugins,
   getSystemReportFormatters,
   generateSystemReport,
@@ -193,6 +239,12 @@ export default {
   getNodeCountByLocation,
   getPerspectiveOutageCount,
   listMonitoringLocations,
+  listApplicationSummaries,
+  createApplication,
+  deleteApplication,
+  getApplicationMembers,
+  updateApplicationMembers,
+  searchServiceCandidates,
   updateMonitoringLocation,
   getLog,
   getLogs,

@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
 
 import java.time.Duration;
@@ -130,8 +131,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage Minions and Locations']")));
 
         clickMenuItem("Distributed Monitoring", "Manage Applications");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Applications')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Applications']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage Applications']")));
 
         // Manage Inventory Menu
         clickMenuItem("Manage Inventory", "Provisioning Requisitions");
@@ -199,7 +199,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Surveillance Categories']")));
 
         clickMenuItem("Administration", "Configure Thresholds");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Threshold Configuration']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[text()='Threshold Configuration']")));
 
         clickMenuItem("Administration", "Flow Classification");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Flow Classification')]")));
@@ -252,37 +252,25 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         assertNotNull("apiDocumentationMenu / Source Code", foundElement);
 
         // Help Documentation menu
-        clickMenuItem("Help", "Help");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Help')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Documentation']")));
-
         clickMenuItem("Help", "About");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'About')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Version Details']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'breadcrumbs')]//a[contains(text()[normalize-space()], 'About')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h2[text()='System details']")));
 
-        clickMenuItem("Help", "Support");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Support')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Commercial Support']")));
+        foundElement = findMenuItemLink("Help", "Commercial Support");
+        assertNotNull("helpDocumentationMenu / Commercial Support", foundElement);
 
-        // Support Menu
-        foundElement = findMenuItemLink("Support", "Professional Support");
-        assertNotNull("supportMenu / Professional Support", foundElement);
+        foundElement = findMenuItemLink("Help", "Community Resources");
+        assertNotNull("helpDocumentationMenu / Community Resources", foundElement);
 
-        foundElement = findMenuItemLink("Support", "Chat");
-        assertNotNull("supportMenu / Chat", foundElement);
+        foundElement = findMenuItemLink("Help", "Documentation");
+        assertNotNull("helpDocumentationMenu / Documentation", foundElement);
 
-        foundElement = findMenuItemLink("Support", "Community Support (Discourse)");
-        assertNotNull("supportMenu / Community Support (Discourse)", foundElement);
-
-        foundElement = findMenuItemLink("Support", "Public Issue Tracker");
-        assertNotNull("supportMenu / Public Issue Tracker", foundElement);
-
-        clickMenuItem("Support", "Generate System Report");
-        // NMS-20154 repointed this entry to the new PrimeVue page (ui/index.html#/system-report),
-        // which renders the /ui breadcrumb (div.breadcrumbs) and an OnmsButton rather than the
-        // legacy ol.breadcrumb list and a Bootstrap submit input.
+        clickMenuItem("Help", "System Report");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'breadcrumbs')]//a[contains(text()[normalize-space()], 'Generate System Report')]")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[contains(normalize-space(.), 'Generate System Report')]")));
+        // the options come from /api/v2/system-report; a failed load would still render the button
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("sr-plugin-Java")));
+        assertTrue("system report options failed to load", driver.findElements(By.cssSelector("[data-test=load-error]")).isEmpty());
 
         // Omitting for now - need to fix!
         // Vaadin Topology page
@@ -375,7 +363,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // testAllFormsArePresent()
         reportsPage();
         findElementByName("resourceGraphs");
-        findElementByName("kscReports");
+        findElementByName("graphCollections");
 
         // testAllLinks
         reportsPage();
@@ -385,8 +373,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         reportsPage();
         findElementByLink("Graph Collections (Performance, Nodes, Domains)").click();
-        findElementByXpath("//div[@class='card-header']/span[text()='Customized Reports']");
-        findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
+        // the Vue Graph Collections page (ui/index.html#/graph-collections)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[contains(@class, 'card-title') and normalize-space(text())='Graph Collections']")));
 
         reportsPage();
         findElementByLink("Database Reports").click();
@@ -490,5 +478,17 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         } finally {
             setImplicitWait();
         }
+    }
+
+    @Test
+    public void verifyHeaderLogoutFormPresent() {
+        LOG.debug("In verifyHeaderLogoutFormPresent");
+
+        // AngularJS pages submit this form on a 401, so every logged-in JSP page must have it.
+        frontPage();
+        assertEquals(1, findElementsByXpath("//form[@name='headerLogoutForm']").size());
+
+        driver.get(getBaseUrlInternal() + "opennms/alarm/list.htm");
+        assertEquals(1, findElementsByXpath("//form[@name='headerLogoutForm']").size());
     }
 }
