@@ -61,6 +61,14 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 public class BmpTelemetryAdapter extends AbstractCollectionAdapter {
 
+    /** Agent protocol of this adapter, published as {@code agent_protocol} on Kafka. */
+    public static final String AGENT_PROTOCOL = "BMP";
+
+    @Override
+    public String getAgentProtocol() {
+        return AGENT_PROTOCOL;
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(BmpTelemetryAdapter.class);
 
     private CollectionAgentFactory collectionAgentFactory;
