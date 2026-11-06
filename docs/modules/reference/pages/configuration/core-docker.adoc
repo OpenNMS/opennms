@@ -126,7 +126,6 @@ The `Manager` and `Eventd` services are always enabled.
 | `CORE_SERVICE_TICKETER_ENABLED`              | Enable the Ticketer service.              | `true`
 | `CORE_SERVICE_CORRELATOR_ENABLED`            | Enable the event correlator.              | `false`
 | `CORE_SERVICE_QUEUED_ENABLED`                | Enable the Queued service.                | `true`
-| `CORE_SERVICE_ACTIOND_ENABLED`               | Enable the Action daemon.                 | `true`
 | `CORE_SERVICE_NOTIFD_ENABLED`                | Enable the Notification daemon.           | `true`
 | `CORE_SERVICE_SCRIPTD_ENABLED`               | Enable the Script daemon.                 | `true`
 | `CORE_SERVICE_RTCD_ENABLED`                  | Enable the Real-Time Console daemon.      | `true`
@@ -138,9 +137,9 @@ The `Manager` and `Eventd` services are always enabled.
 | `CORE_SERVICE_VACUUMD_ENABLED`               | Enable the Vacuum daemon.                 | `true`
 | `CORE_SERVICE_EVENTTRANSLATOR_ENABLED`       | Enable the Event Translator.              | `true`
 | `CORE_SERVICE_PASSIVESTATUSD_ENABLED`        | Enable the Passive Status daemon.         | `true`
-| `CORE_SERVICE_STATSD_ENABLED`                | Enable the Statistics daemon.             | `true`
 | `CORE_SERVICE_PROVISIOND_ENABLED`            | Enable the Provisioning daemon.           | `true`
 | `CORE_SERVICE_ACKD_ENABLED`                  | Enable the Acknowledgment daemon.         | `true`
+| `CORE_SERVICE_KARAF_ENABLED`                 | Enable the embedded Karaf container.      | `true`
 | `CORE_SERVICE_JETTYSERVER_ENABLED`           | Enable the embedded Jetty web server.     | `true`
 | `CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED`   | Enable the Karaf startup monitor.         | `true`
 | `CORE_SERVICE_SYSLOGD_ENABLED`               | Enable the Syslog daemon.                 | `false`
