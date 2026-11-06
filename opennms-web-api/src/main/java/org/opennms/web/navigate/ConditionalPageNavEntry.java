@@ -23,6 +23,14 @@ package org.opennms.web.navigate;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * A page link that decides, per request and target, whether it shows.
+ *
+ * @deprecated Nothing reads these links any more. The legacy node page was the only page that
+ *     showed them (services registered with {@code Page=node}). The Vue node details page that
+ *     replaces it does not show them, so a registered entry has no effect.
+ */
+@Deprecated(since = "37.0.0")
 public interface ConditionalPageNavEntry extends PageNavEntry {
     /**
      * <p>evaluate</p>

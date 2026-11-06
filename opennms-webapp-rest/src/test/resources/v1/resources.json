@@ -35,7 +35,7 @@
             "externalValueAttributes": {}, 
             "id": "node[imported::1]",
             "label": "node1", 
-            "link": "element/node.jsp?node=imported::1",
+            "link": "ui/index.html#/node/imported::1",
             "name": "imported::1",
             "parentId": null, 
             "rrdGraphAttributes": {}, 

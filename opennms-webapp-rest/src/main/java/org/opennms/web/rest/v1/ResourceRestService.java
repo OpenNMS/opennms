@@ -152,7 +152,7 @@ public class ResourceRestService extends OnmsRestService {
                           "id": "node[loopback-lab:lb-001]",
                           "label": "loopback-001",
                           "name": "loopback-lab:lb-001",
-                          "link": "element/node.jsp?node=loopback-lab:lb-001",
+                          "link": "ui/index.html#/node/loopback-lab:lb-001",
                           "typeLabel": "Node",
                           "parentId": null,
                           "stringPropertyAttributes": {},
@@ -203,7 +203,7 @@ public class ResourceRestService extends OnmsRestService {
                       "id": "node[loopback-lab:lb-001]",
                       "label": "loopback-001",
                       "name": "loopback-lab:lb-001",
-                      "link": "element/node.jsp?node=loopback-lab:lb-001",
+                      "link": "ui/index.html#/node/loopback-lab:lb-001",
                       "typeLabel": "Node",
                       "parentId": null,
                       "children": {
@@ -317,7 +317,7 @@ public class ResourceRestService extends OnmsRestService {
                       "id": "node[loopback-lab:lb-001]",
                       "label": "loopback-001",
                       "name": "loopback-lab:lb-001",
-                      "link": "element/node.jsp?node=loopback-lab:lb-001",
+                      "link": "ui/index.html#/node/loopback-lab:lb-001",
                       "typeLabel": "Node",
                       "parentId": null,
                       "children": {
@@ -425,7 +425,7 @@ public class ResourceRestService extends OnmsRestService {
                         "id": "node[loopback-lab:lb-004]",
                         "label": "loopback-004",
                         "name": "loopback-lab:lb-004",
-                        "link": "element/node.jsp?node=loopback-lab:lb-004",
+                        "link": "ui/index.html#/node/loopback-lab:lb-004",
                         "typeLabel": "Node",
                         "parentId": null,
                         "children": {

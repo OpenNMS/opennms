@@ -48,11 +48,12 @@
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitleText(entity.getServiceName())
           .headTitle("Meta-Data")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", "element/node.jsp?node=" + nodeId)
+          .breadcrumb("Node", ElementConstants.NODE_DETAILS_URI + nodeId)
           .breadcrumbText("Interface", "element/interface.jsp?node=" + nodeId  + "&intf=" + org.opennms.web.api.Util.encode(ipAddr))
           .breadcrumbText("Service", "element/service.jsp?node=" + nodeId  + "&intf=" + org.opennms.web.api.Util.encode(ipAddr) + "&service=" + entity.getServiceId())
           .breadcrumb("Meta-Data")

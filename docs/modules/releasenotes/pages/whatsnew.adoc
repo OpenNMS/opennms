@@ -393,6 +393,35 @@ The asset fields `password`, `enable` and `snmpcommunity` are now write-only in 
 === Raw SQL query parameter requires ROLE_ADMIN
 The raw SQL `query` parameter of the v1 REST API now requires `ROLE_ADMIN`.
 
+=== v2 REST API SNMP interface and topology searches
+* `/api/v2/snmpinterfaces`: a search with a `*` wildcard on `ifAlias`, `ifDescr`, `ifName` or `physAddr` now ignores case, the same as the `snmpInterface.*` searches of `/api/v2/nodes`.
+A search without `*` is still an exact, case-sensitive match.
+* `/api/v2/nodes`: a search without `*` on `snmpInterface.ifAlias`, `snmpInterface.ifDescr`, `snmpInterface.ifName`, `snmpInterface.physAddr` or `topology` now treats `%`, `_` and `\` as literal characters, not as SQL `LIKE` wildcards.
+For example, `snmpInterface.ifName==Gi0_1` no longer matches `Gi0X1`.
+Use `*` as the wildcard.
+`maclike` is not changed: `%` and `_` are still wildcards.
+
+=== Node links point to the new node details page
+The `link` field of node resources in the `/rest/resources` and `/rest/graphs` REST APIs now holds the URL of the new node details page, `ui/index.html#/node/<node>`, instead of `element/node.jsp?node=<node>`.
+The node part is escaped as one URL path segment, so a `/` in a foreign ID becomes `%2F`.
+The link is still relative to the web application context root.
+Update integrations that read this field.
+
+The `baseNodeUrl` field of the menu REST API (`/api/v2/menu`) is now `ui/index.html#/node/`.
+Plugins append a node ID or `foreignSource:foreignId` to it to link to a node's details page.
+Escape the appended part as one URL path segment, for example with `encodeURIComponent`, so that a `/`, `#` or space in a foreign ID does not break the link.
+It is a hash route, so do not append query parameters such as `&quiet=true`.
+
+=== Legacy node page removed
+The legacy node page, `element/node.jsp`, is removed.
+Its URL, `element/node.jsp?node=<node>`, stays available as a redirect to the new node details page, `ui/index.html#/node/<node>`, so existing links, bookmarks and stored event text continue to work.
+The redirect ignores all query parameters other than `node`, for example `quiet=true`.
+Without a `node` parameter, it goes to the node list.
+
+The new node details page does not show links that plugins add with `ConditionalPageNavEntry` services registered with `Page=node`.
+The legacy node page was the only page that showed them.
+The built-in "View in Topology" link is replaced by the "Topology Map" item in the "Graphs" menu of the new page.
+
 === DOCTYPE rejected in requisition and foreign-source XML
 Requisition and foreign-source XML that contains a `DOCTYPE` is now rejected on import.
 Remove the `DOCTYPE` from requisitions that external tools write, or set the system property `org.opennms.provision.requisition.allowDoctype=true` to accept it.
