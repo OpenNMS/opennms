@@ -34,6 +34,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.smoketest.junit.ContainerRule;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.SelfSignedTlsHelper;
@@ -76,7 +77,7 @@ public class NginxHttpsProxyIT {
             .waitingFor(Wait.forListeningPort());
 
     @ClassRule
-    public static final RuleChain chain = RuleChain.outerRule(stack).around(nginx);
+    public static final RuleChain chain = RuleChain.outerRule(stack).around(ContainerRule.of(nginx));
 
     private static String baseUrl() {
         return String.format("https://%s:%d/opennms", nginx.getContainerIpAddress(), nginx.getMappedPort(443));

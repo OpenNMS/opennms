@@ -57,9 +57,9 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.features.elastic.client.ElasticRestClient;
@@ -117,7 +117,6 @@ public class FlowQueryIT {
     private static final String ES_VERSION = "8.18.2";
     private static final String DRIFT_PLUGIN_VERSION = "2.0.7";
 
-    @ClassRule
     public static ElasticTestContainerWithPlugins elasticsearchContainer;
 
     static {
@@ -134,6 +133,7 @@ public class FlowQueryIT {
 
     @BeforeClass
     public static void setUpClass() {
+        elasticsearchContainer.start();
 
         // Verify plugins were correctly installed
         boolean pluginsInstalled = elasticsearchContainer.verifyPluginsInstalled();
@@ -144,6 +144,11 @@ public class FlowQueryIT {
         }
     }
 
+
+    @AfterClass
+    public static void tearDownClass() {
+        elasticsearchContainer.stop();
+    }
 
     @Before
     public void setUp() throws IOException, ExecutionException, InterruptedException {
