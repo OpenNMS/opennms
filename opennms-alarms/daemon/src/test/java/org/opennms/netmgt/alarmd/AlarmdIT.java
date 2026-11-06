@@ -145,6 +145,8 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
 
     }
 
+    private static final String NODE_DOWN_REDUCTION_KEY = "uei.opennms.org/nodes/nodeDown:1";
+
     private MockNetwork m_mockNetwork = new MockNetwork();
 
     @Autowired
@@ -736,6 +738,186 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
 
     }
     
+    /**
+     * The sequence seen in the field: the alarm is still open from an earlier problem when a new problem
+     * and its clear arrive milliseconds apart, and the clear is processed first. The clear resolves the
+     * open alarm; the late problem must not reopen it.
+     */
+    @Test
+    public void testClearProcessedBeforeProblemOnOpenAlarmStaysResolved() throws Exception {
+        ((AlarmPersisterImpl) m_alarmd.getPersister()).setLegacyAlarmState(false);
+
+        final MockNode node = m_mockNetwork.getNode(1);
+        assertEmptyAlarmTable();
+
+        // Earlier problem, never cleared
+        final Date firstProblemTime = new Date();
+        sendNodeDownEvent(node, firstProblemTime);
+        await().atMost(10, SECONDS).until(() -> getSeverity(NODE_DOWN_REDUCTION_KEY), equalTo(OnmsSeverity.MAJOR));
+
+        // 21 seconds later the problem repeats and clears within a few ms; the clear gets processed first
+        final Date problemTime = new Date(firstProblemTime.getTime() + 21000);
+        final Date clearTime = new Date(problemTime.getTime() + 5);
+        sendNodeUpEvent(node, clearTime);
+        await().atMost(10, SECONDS).until(() -> getSeverity(NODE_DOWN_REDUCTION_KEY), equalTo(OnmsSeverity.CLEARED));
+        sendNodeDownEvent(node, problemTime);
+        await().atMost(10, SECONDS).until(() -> m_alarmDao.findByReductionKey(NODE_DOWN_REDUCTION_KEY).getCounter(), equalTo(2));
+
+        assertEquals(1, m_alarmDao.countAll());
+        final OnmsAlarm alarm = m_alarmDao.findByReductionKey(NODE_DOWN_REDUCTION_KEY);
+        assertEquals(OnmsSeverity.CLEARED, alarm.getSeverity());
+        assertEquals(OnmsAlarm.RESOLUTION_TYPE, alarm.getAlarmType().intValue());
+        assertEquals(clearTime.getTime(), alarm.getLastEventTime().getTime());
+        assertEquals(firstProblemTime.getTime(), alarm.getFirstEventTime().getTime());
+
+        // A genuinely new problem still reopens it
+        sendNodeDownEvent(node, new Date(clearTime.getTime() + 1));
+        await().atMost(10, SECONDS).until(() -> getSeverity(NODE_DOWN_REDUCTION_KEY), equalTo(OnmsSeverity.MAJOR));
+        assertEquals(1, m_alarmDao.countAll());
+    }
+
+    /**
+     * Equal timestamps count as the clear being newer, so the late problem still does not reopen the alarm.
+     */
+    @Test
+    public void testClearProcessedBeforeProblemWithSameTimestampStaysResolved() throws Exception {
+        ((AlarmPersisterImpl) m_alarmd.getPersister()).setLegacyAlarmState(false);
+
+        final MockNode node = m_mockNetwork.getNode(1);
+        assertEmptyAlarmTable();
+
+        final Date firstProblemTime = new Date();
+        sendNodeDownEvent(node, firstProblemTime);
+        await().atMost(10, SECONDS).until(() -> getSeverity(NODE_DOWN_REDUCTION_KEY), equalTo(OnmsSeverity.MAJOR));
+
+        final Date eventTime = new Date(firstProblemTime.getTime() + 21000);
+        sendNodeUpEvent(node, eventTime);
+        await().atMost(10, SECONDS).until(() -> getSeverity(NODE_DOWN_REDUCTION_KEY), equalTo(OnmsSeverity.CLEARED));
+        sendNodeDownEvent(node, eventTime);
+        await().atMost(10, SECONDS).until(() -> m_alarmDao.findByReductionKey(NODE_DOWN_REDUCTION_KEY).getCounter(), equalTo(2));
+
+        assertEquals(OnmsSeverity.CLEARED, getSeverity(NODE_DOWN_REDUCTION_KEY));
+    }
+
+    /**
+     * The problem has happened before and its alarm is already resolved. The inverted clear reduces onto
+     * that alarm, and the late problem must not reopen it.
+     */
+    @Test
+    public void testClearProcessedBeforeProblemOnResolvedAlarmStaysResolved() throws Exception {
+        ((AlarmPersisterImpl) m_alarmd.getPersister()).setLegacyAlarmState(false);
+
+        final MockNode node = m_mockNetwork.getNode(1);
+        assertEmptyAlarmTable();
+
+        // First occurrence, in the right order
+        final Date firstProblemTime = new Date();
+        final Date firstClearTime = new Date(firstProblemTime.getTime() + 1);
+        sendNodeDownEvent(node, firstProblemTime);
+        sendNodeUpEvent(node, firstClearTime);
+        await().atMost(10, SECONDS).until(() -> getSeverity(NODE_DOWN_REDUCTION_KEY), equalTo(OnmsSeverity.CLEARED));
+        assertEquals(1, m_alarmDao.countAll());
+
+        // Second occurrence, clear first
+        final Date problemTime = new Date(firstClearTime.getTime() + 1000);
+        final Date clearTime = new Date(problemTime.getTime() + 1);
+        sendNodeUpEvent(node, clearTime);
+        await().atMost(10, SECONDS).until(() -> m_alarmDao.findByReductionKey(NODE_DOWN_REDUCTION_KEY).getLastEventTime().getTime(), equalTo(clearTime.getTime()));
+        sendNodeDownEvent(node, problemTime);
+        // 3, not 2: a clear landing on an already resolved alarm has always bumped the counter, and the
+        // late problem is counted like any other problem event
+        await().atMost(10, SECONDS).until(() -> m_alarmDao.findByReductionKey(NODE_DOWN_REDUCTION_KEY).getCounter(), equalTo(3));
+
+        assertEquals(1, m_alarmDao.countAll());
+        final OnmsAlarm alarm = m_alarmDao.findByReductionKey(NODE_DOWN_REDUCTION_KEY);
+        assertEquals(OnmsSeverity.CLEARED, alarm.getSeverity());
+        assertEquals(OnmsAlarm.RESOLUTION_TYPE, alarm.getAlarmType().intValue());
+        assertEquals(clearTime.getTime(), alarm.getLastEventTime().getTime());
+        assertEquals(firstProblemTime.getTime(), alarm.getFirstEventTime().getTime());
+
+        // A third, genuinely new problem still reopens it
+        sendNodeDownEvent(node, new Date(clearTime.getTime() + 1000));
+        await().atMost(10, SECONDS).until(() -> getSeverity(NODE_DOWN_REDUCTION_KEY), equalTo(OnmsSeverity.MAJOR));
+        assertEquals(1, m_alarmDao.countAll());
+    }
+
+    /**
+     * Event definitions where the clear reuses the problem's reduction key: the inverted clear creates
+     * the alarm itself, and the late problem must not turn it into an open problem.
+     */
+    @Test
+    public void testClearProcessedBeforeProblemWithSharedReductionKeyStaysResolved() throws Exception {
+        ((AlarmPersisterImpl) m_alarmd.getPersister()).setLegacyAlarmState(false);
+
+        final MockNode node = m_mockNetwork.getNode(1);
+        assertEmptyAlarmTable();
+
+        final Date problemTime = new Date();
+        final Date clearTime = new Date(problemTime.getTime() + 1);
+
+        sendNodeUpEventWithSharedReductionKey(node, clearTime);
+        await().atMost(10, SECONDS).until(getNumAlarmsCallable(), equalTo(1));
+
+        sendNodeDownEvent(node, problemTime);
+        await().atMost(10, SECONDS).until(() -> m_alarmDao.findByReductionKey(NODE_DOWN_REDUCTION_KEY).getCounter(), equalTo(2));
+
+        assertEquals(1, m_alarmDao.countAll());
+        final OnmsAlarm alarm = m_alarmDao.findByReductionKey(NODE_DOWN_REDUCTION_KEY);
+        assertEquals(OnmsSeverity.CLEARED, alarm.getSeverity());
+        assertEquals(OnmsAlarm.RESOLUTION_TYPE, alarm.getAlarmType().intValue());
+        assertEquals(clearTime.getTime(), alarm.getLastEventTime().getTime());
+        assertEquals(problemTime.getTime(), alarm.getFirstEventTime().getTime());
+
+        // A newer problem still reopens it as usual
+        sendNodeDownEvent(node, new Date(clearTime.getTime() + 1));
+        await().atMost(10, SECONDS).until(() -> getSeverity(NODE_DOWN_REDUCTION_KEY), equalTo(OnmsSeverity.MAJOR));
+        assertEquals(1, m_alarmDao.countAll());
+    }
+
+    @Test
+    public void testClearProcessedBeforeProblemWithNewIfClearedAlarmExistsStaysResolved() throws Exception {
+        final AlarmPersisterImpl persister = (AlarmPersisterImpl) m_alarmd.getPersister();
+        persister.setLegacyAlarmState(false);
+        persister.setCreateNewAlarmIfClearedAlarmExists(true);
+        try {
+            final MockNode node = m_mockNetwork.getNode(1);
+            assertEmptyAlarmTable();
+
+            final Date firstProblemTime = new Date();
+            sendNodeDownEvent(node, firstProblemTime);
+            await().atMost(10, SECONDS).until(() -> getSeverity(NODE_DOWN_REDUCTION_KEY), equalTo(OnmsSeverity.MAJOR));
+
+            // The clear is processed before the problem it followed
+            final Date problemTime = new Date(firstProblemTime.getTime() + 21000);
+            final Date clearTime = new Date(problemTime.getTime() + 5);
+            sendNodeUpEvent(node, clearTime);
+            await().atMost(10, SECONDS).until(() -> getSeverity(NODE_DOWN_REDUCTION_KEY), equalTo(OnmsSeverity.CLEARED));
+            sendNodeDownEvent(node, problemTime);
+            await().atMost(10, SECONDS).until(() -> m_alarmDao.findByReductionKey(NODE_DOWN_REDUCTION_KEY).getCounter(), equalTo(2));
+
+            // The cleared alarm was neither archived nor replaced by a new open alarm
+            assertEquals(1, m_alarmDao.countAll());
+            final OnmsAlarm alarm = m_alarmDao.findByReductionKey(NODE_DOWN_REDUCTION_KEY);
+            assertFalse(alarm.isArchived());
+            assertEquals(OnmsSeverity.CLEARED, alarm.getSeverity());
+            assertEquals(OnmsAlarm.RESOLUTION_TYPE, alarm.getAlarmType().intValue());
+            assertEquals(clearTime.getTime(), alarm.getLastEventTime().getTime());
+
+            // A genuinely new problem archives the cleared alarm and opens a new one, as this mode intends
+            sendNodeDownEvent(node, new Date(clearTime.getTime() + 1));
+            await().atMost(10, SECONDS).until(() -> getSeverity(NODE_DOWN_REDUCTION_KEY), equalTo(OnmsSeverity.MAJOR));
+            assertEquals(2, m_alarmDao.countAll());
+            assertEquals(1, m_alarmDao.findAll().stream().filter(OnmsAlarm::isArchived).count());
+        } finally {
+            persister.setCreateNewAlarmIfClearedAlarmExists(false);
+        }
+    }
+
+    private OnmsSeverity getSeverity(String reductionKey) {
+        final OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
+        return alarm == null ? null : alarm.getSeverity();
+    }
+
     private Callable<Integer> getNumAlarmsCallable() {
         return () -> m_alarmDao.countAll();
     }
@@ -858,7 +1040,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
 
         AlarmData data = new AlarmData();
         data.setAlarmType(1);
-        data.setReductionKey("uei.opennms.org/nodes/nodeDown:1");
+        data.setReductionKey(NODE_DOWN_REDUCTION_KEY);
         event.setAlarmData(data);
         
         event.setLogDest("logndisplay");
@@ -878,9 +1060,25 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         AlarmData data = new AlarmData();
         data.setAlarmType(2);
         data.setReductionKey("uei.opennms.org/nodes/nodeUp:1");
-        data.setClearKey("uei.opennms.org/nodes/nodeDown:1");
+        data.setClearKey(NODE_DOWN_REDUCTION_KEY);
         event.setAlarmData(data);
         
+        event.setLogDest("logndisplay");
+        event.setLogMessage("testing");
+
+        m_eventMgr.sendNow(event.getEvent());
+    }
+
+    /** A clear defined the "old" way: same reduction key as the problem, no clear key. */
+    private void sendNodeUpEventWithSharedReductionKey(MockNode node, Date eventTime) {
+        EventBuilder event = MockEventUtil.createNodeUpEventBuilder("Test", node);
+        event.setTime(eventTime);
+
+        AlarmData data = new AlarmData();
+        data.setAlarmType(2);
+        data.setReductionKey(NODE_DOWN_REDUCTION_KEY);
+        event.setAlarmData(data);
+
         event.setLogDest("logndisplay");
         event.setLogMessage("testing");
 

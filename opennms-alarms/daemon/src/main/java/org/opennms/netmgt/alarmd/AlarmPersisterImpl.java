@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -105,9 +106,10 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 event.getUei(), event.getNodeid(), event.getInterface(), event.getService(),
                 SystemInfoUtils.getInstanceId(), event.getDbid());
 
-        // Lock both the reduction and clear keys (if set) using a fair striped lock
-        // We do this to ensure that clears and triggers are processed in the same order
-        // as the calls are made
+        // Lock both the reduction and clear keys (if set) using a fair striped lock.
+        // This serializes clears and triggers for the same problem, but it cannot guarantee
+        // that they are processed in the order they were received: the thread carrying the
+        // clear may reach the lock first. See isStaleProblemEvent() for how that is handled.
         final Iterable<Lock> locks = lockStripes.bulkGet(getLockKeys(event));
         final OnmsAlarm alarm;
         try {
@@ -151,7 +153,10 @@ public class AlarmPersisterImpl implements AlarmPersister {
             alarm = m_alarmDao.findByReductionKey(reductionKey);
         }
 
-        if (alarm == null || (m_createNewAlarmIfClearedAlarmExists && OnmsSeverity.CLEARED.equals(alarm.getSeverity()))) {
+        // Decide this before the archive check below: a stale problem must not archive the alarm its clear just resolved
+        final boolean staleProblem = alarm != null && isStaleProblemEvent(alarm, event, persistedEvent);
+
+        if (alarm == null || (m_createNewAlarmIfClearedAlarmExists && OnmsSeverity.CLEARED.equals(alarm.getSeverity()) && !staleProblem)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
             }
@@ -182,11 +187,18 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
             m_alarmEntityNotifier.didCreateAlarm(alarm);
         } else {
-            LOG.info("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}, instanceId={}, alarmId={}",
-                reductionKey, alarm.getId(), SystemInfoUtils.getInstanceId(), alarm.getId());
-            reduceEvent(persistedEvent, alarm, event);
+            if (staleProblem) {
+                LOG.info("addOrReduceEventAsAlarm: reductionKey:{} found, but the alarm was resolved by a clear received after this problem event; leaving it resolved, instanceId={}, alarmId={}, eventId={}",
+                    reductionKey, SystemInfoUtils.getInstanceId(), alarm.getId(), event.getDbid());
+                attachStaleProblemEvent(persistedEvent, alarm);
+            } else {
+                LOG.info("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}, instanceId={}, alarmId={}",
+                    reductionKey, alarm.getId(), SystemInfoUtils.getInstanceId(), alarm.getId());
+                reduceEvent(persistedEvent, alarm, event);
+            }
 
-            // Trigger extensions, allowing them to mangle the alarm
+            // Trigger extensions, allowing them to mangle the alarm. For a stale problem the event passed
+            // here is older than the alarm's last event, which stays the clear.
             try {
                 final OnmsAlarm alarmUpdated = alarm;
                 extensions.forEach(ext -> ext.afterAlarmUpdated(alarmUpdated, event, persistedEvent));
@@ -205,6 +217,43 @@ public class AlarmPersisterImpl implements AlarmPersister {
             m_alarmEntityNotifier.didUpdateAlarmWithReducedEvent(alarm);
         }
         return alarm;
+    }
+
+    /**
+     * True when a problem event would reopen an alarm whose clear was received after the problem but
+     * processed before it. This happens when a device sends a problem and its clear milliseconds apart:
+     * the two events can be handed to alarmd on different threads and the clear can win the lock. A
+     * resolved alarm's last event is the clear that resolved it, so the problem is stale when its event
+     * time is at or before that clear's time. Equal timestamps count as the clear being newer: both
+     * events were stamped on a single receiving thread, and an inversion is far more likely than a device
+     * sending a genuine clear followed by a fresh problem inside one millisecond.
+     */
+    private boolean isStaleProblemEvent(OnmsAlarm alarm, Event event, OnmsEvent persistedEvent) {
+        if (isResolutionEvent(event) || !isResolvedAlarm(alarm)) {
+            return false;
+        }
+        final Date problemTime = persistedEvent.getEventTime();
+        final Date clearTime = alarm.getLastEventTime();
+        return problemTime != null && clearTime != null && !problemTime.after(clearTime);
+    }
+
+    /**
+     * Attach a stale problem event to the alarm its clear already resolved, without reopening it. The
+     * alarm keeps the clear as its last event and ends up the way a clear reduced in the normal order
+     * would leave it: resolved, cleared, counted, and starting when the problem started. The log
+     * message, update fields and related alarms are deliberately not taken from the problem event: had
+     * the two events been reduced in order, the clear would have overwritten them anyway. Auto-clean
+     * runs for the stale event in the caller, as it does for any other reduced event.
+     */
+    private void attachStaleProblemEvent(OnmsEvent persistedEvent, OnmsAlarm alarm) {
+        final Date problemTime = persistedEvent.getEventTime();
+        if (alarm.getFirstEventTime() == null || problemTime.before(alarm.getFirstEventTime())) {
+            alarm.setFirstEventTime(problemTime);
+        }
+        // A clear that found nothing to clear is persisted with its own event severity; now it has cleared something
+        alarm.setSeverity(OnmsSeverity.CLEARED);
+        incrementCounter(alarm);
+        persistedEvent.setAlarm(alarm);
     }
 
     private void reduceEvent(OnmsEvent persistedEvent, OnmsAlarm alarm, Event event) {

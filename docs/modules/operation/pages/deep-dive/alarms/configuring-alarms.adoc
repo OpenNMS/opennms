@@ -198,3 +198,14 @@ org.opennms.alarmd.legacyAlarmState = true
 ----
 
 IMPORTANT: Setting `org.opennms.alarmd.legacyAlarmState` overwrites `org.opennms.alarmd.newIfClearedAlarmExists`.
+
+== Problems that arrive after their clear
+
+A device can send a problem trap and its clearing trap within a few milliseconds of each other.
+Because events are handed to Alarmd on several threads, the clear can occasionally be processed before the problem.
+A problem event does not reopen an alarm that is already resolved when the problem's event time is not later than the time of the clear that resolved it.
+The problem event is still attached to the alarm and counted; the alarm simply stays cleared, as it would have had the two events been processed in order.
+With `org.opennms.alarmd.newIfClearedAlarmExists` enabled, such a problem does not archive the cleared alarm or create a new one either.
+A problem whose event time is later than the clear is a genuine new problem and reopens the alarm as usual.
+
+This protection relies on the clear resolving the problem alarm itself, so it does not apply when `org.opennms.alarmd.legacyAlarmState` is enabled.
