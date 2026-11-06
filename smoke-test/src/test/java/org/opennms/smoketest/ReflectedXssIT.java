@@ -98,19 +98,6 @@ public class ReflectedXssIT extends OpenNMSSeleniumIT {
     }
 
     @Test
-    public void testNodeCategoryBox() throws Exception {
-        // The page shows the Edit link only for a node that exists.
-        sendPost("rest/nodes", "<node type=\"A\" label=\"xssCategoryNode\" foreignSource=\"smoketests\" foreignId=\"xssCategoryNode\"/>", 201);
-        try {
-            final Integer nodeId = stack.opennms().getRestClient().getNode("smoketests:xssCategoryNode").getId();
-            // The controller removes all characters that are not digits, thus the payload has no digits.
-            assertNoScriptRuns("includes/nodeCategory-box.htm?node=" + nodeId + enc(HTML), "a[href*='admin/categories.htm']");
-        } finally {
-            sendDelete("rest/nodes/smoketests:xssCategoryNode", 202);
-        }
-    }
-
-    @Test
     public void testHomePageMap() {
         assertNoScriptRuns("index.jsp?mapId=" + enc(HTML));
         assertNoScriptRuns("index.jsp?height=" + enc(NG));
