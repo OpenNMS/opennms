@@ -254,8 +254,8 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11(@types/node@25.6.0)(happy-dom@20.11.2)(vite@6.4.5(@types/node@25.6.0)(sass@1.99.0))
       vitest-mock-extended:
-        specifier: ^1.3.1
-        version: 1.3.2(typescript@5.9.3)(vitest@4.1.11(@types/node@25.6.0)(happy-dom@20.11.2)(vite@6.4.5(@types/node@25.6.0)(sass@1.99.0)))
+        specifier: ^5.1.1
+        version: 5.1.1(typescript@5.9.3)(vitest@4.1.11(@types/node@25.6.0)(happy-dom@20.11.2)(vite@6.4.5(@types/node@25.6.0)(sass@1.99.0)))
       vue-eslint-parser:
         specifier: ^10.4.1
         version: 10.4.1(eslint@10.4.1)
@@ -2842,8 +2842,8 @@ packages:
     peerDependencies:
       typescript: '>=4.8.4'
 
-  ts-essentials@10.1.1:
-    resolution: {integrity: sha512-4aTB7KLHKmUvkjNj8V+EdnmuVTiECzn3K+zIbRthumvHu+j44x3w63xpfs0JL3NGIzGXqoQ7AV591xHO+XrOTw==}
+  ts-essentials@10.2.1:
+    resolution: {integrity: sha512-+Id1fRkuir+CsgK2x04/icS2b4V1hQmq7ObzIrDjhN0ozfRYivnP7aaKMVJfLApQm0trjR39A6NIMVchiB9Erw==}
     peerDependencies:
       typescript: '>=4.5.0'
     peerDependenciesMeta:
@@ -2958,11 +2958,11 @@ packages:
       yaml:
         optional: true
 
-  vitest-mock-extended@1.3.2:
-    resolution: {integrity: sha512-wnpym69MFYBUbUT6vrM/E4sF0bylow+N/RBBTZWn4rO/UFLusvuCrb3CMe3K4663+iBzplrhk0hQ2O246rFrqQ==}
+  vitest-mock-extended@5.1.1:
+    resolution: {integrity: sha512-k5Ji2+t4+nsdepXeakCkilyKydtgaULtP0HsjwQGIZsYr5hDTqrwCtC0+Sh0YBKUS7cY/Wxplf7SVjcZstTIMQ==}
     peerDependencies:
-      typescript: 3.x || 4.x || 5.x
-      vitest: '>=2.0.0'
+      typescript: 3.x || 4.x || 5.x || 6.x || 7.x
+      vitest: '>=4.0.0'
 
   vitest@4.1.11:
     resolution: {integrity: sha512-fhACrNXUidIbGSBr5FlbuBkO7VWC1ZyLl0DO4CU2DrQoAPxX84Ysxs+HeGQpii5lZWV1Q4gBZTTu49mF+A6Edw==}
@@ -5993,7 +5993,7 @@ snapshots:
     dependencies:
       typescript: 5.9.3
 
-  ts-essentials@10.1.1(typescript@5.9.3):
+  ts-essentials@10.2.1(typescript@5.9.3):
     optionalDependencies:
       typescript: 5.9.3
 
@@ -6083,9 +6083,9 @@ snapshots:
       fsevents: 2.3.3
       sass: 1.99.0
 
-  vitest-mock-extended@1.3.2(typescript@5.9.3)(vitest@4.1.11(@types/node@25.6.0)(happy-dom@20.11.2)(vite@6.4.5(@types/node@25.6.0)(sass@1.99.0))):
+  vitest-mock-extended@5.1.1(typescript@5.9.3)(vitest@4.1.11(@types/node@25.6.0)(happy-dom@20.11.2)(vite@6.4.5(@types/node@25.6.0)(sass@1.99.0))):
     dependencies:
-      ts-essentials: 10.1.1(typescript@5.9.3)
+      ts-essentials: 10.2.1(typescript@5.9.3)
       typescript: 5.9.3
       vitest: 4.1.11(@types/node@25.6.0)(happy-dom@20.11.2)(vite@6.4.5(@types/node@25.6.0)(sass@1.99.0))
 
