@@ -22,7 +22,6 @@
 
 --%>
 <%@page language="java" contentType="text/html" session="true" %>
-<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
@@ -71,7 +70,7 @@
 <div class="card">
   <div class="card-header">
     <%if ("redo".equals(request.getParameter("action"))) { %>
-      <span>The group <%=WebSecurityUtils.sanitizeString(request.getParameter("groupName"))%> already exists.
+      <span>The group <%=org.opennms.core.utils.WebSecurityUtils.sanitizeString(request.getParameter("groupName"))%> already exists.
         Please type in a different group ID.</span>
     <%} else { %>
       <span>Please enter a group ID below.</span>

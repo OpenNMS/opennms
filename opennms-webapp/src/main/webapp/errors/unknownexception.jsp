@@ -27,10 +27,10 @@
 	isErrorPage="true"
 	import="org.opennms.core.resource.Vault,
                 java.lang.StackTraceElement,
-                java.lang.StringBuilder,
-                org.owasp.encoder.Encode"
+                java.lang.StringBuilder"
  %>
 <%@ page import="org.opennms.web.utils.ExceptionUtils" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <%@ page import="org.slf4j.LoggerFactory" %>
 <%@ page import="org.slf4j.Logger" %>
@@ -173,23 +173,23 @@ userSession.setAttribute("errorReportDetails", errorDetails);
     </tr>
     <tr>
       <th>Method</th>
-      <td><%=Encode.forHtml(request.getMethod())%></td>
+      <td><%=Encode.forHtml(String.valueOf(request.getMethod()))%></td>
     </tr>
     <tr>
       <th>Path Info</th>
-      <td><%=Encode.forHtml(request.getPathInfo())%></td>
+      <td><%=Encode.forHtml(String.valueOf(request.getPathInfo()))%></td>
     </tr>
     <tr>
       <th>Path Info (translated)</th>
-      <td><%=Encode.forHtml(request.getPathTranslated())%></td>
+      <td><%=Encode.forHtml(String.valueOf(request.getPathTranslated()))%></td>
     </tr>
     <tr>
       <th>Protocol</th>
-      <td><%=Encode.forHtml(request.getProtocol())%></td>
+      <td><%=Encode.forHtml(String.valueOf(request.getProtocol()))%></td>
     </tr>
     <tr>
       <th>URI</th>
-      <td><%=Encode.forHtml(request.getRequestURI())%></td>
+      <td><%=Encode.forHtml(String.valueOf(request.getRequestURI()))%></td>
     </tr>
     <tr>
       <th>URL</th>
@@ -197,15 +197,15 @@ userSession.setAttribute("errorReportDetails", errorDetails);
     </tr>
     <tr>
       <th>Scheme</th>
-      <td><%=Encode.forHtml(request.getScheme())%></td>
+      <td><%=Encode.forHtml(String.valueOf(request.getScheme()))%></td>
     </tr>
     <tr>
       <th>Server Name</th>
-      <td><%=Encode.forHtml(request.getServerName())%></td>
+      <td><%=Encode.forHtml(String.valueOf(request.getServerName()))%></td>
     </tr>
     <tr>
       <th>Server Port</th>
-      <td><%=request.getServerPort()%></td>
+      <td><%=Encode.forHtml(String.valueOf(request.getServerPort()))%></td>
     </tr>
   </table>
 </div> <!-- panel -->
@@ -241,7 +241,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
     </tr>
     <tr>
       <th>User Agent:</th>
-      <td><%=Encode.forHtml(request.getHeader( "User-Agent" ))%></td>
+      <td><%=Encode.forHtml(String.valueOf(request.getHeader( "User-Agent" )))%></td>
     </tr>
   </table>
 </div> <!-- panel -->
@@ -295,7 +295,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   <div class="card-body">
     <textarea id="plainTextArea" style="width: 100%; height: 300px;">Please take a few moments to include a description of what you were doing when you encountered this problem. Without knowing the context of the error, it's often difficult for the person looking at the problem to narrow the range of possible causes. Bug reports that do not include any information on the context in which the problem occurred will receive a lower priority and may even be closed as invalid. 
 
-<%= Encode.forHtml(errorDetails) %>
+<%=Encode.forHtml(errorDetails)%>
     </textarea>
   </div> <!-- card-body -->
 </div> <!-- panel -->
