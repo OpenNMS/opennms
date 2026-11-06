@@ -26,6 +26,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import OnCallSchedulesTab from '@/components/OnCallRoles/OnCallSchedulesTab.vue'
 import { cardProblems, newCard } from '@/lib/onCallSchedule'
+import { pickDate } from '../../utils'
 
 enableAutoUnmount(afterEach)
 
@@ -113,8 +114,8 @@ describe('OnCallSchedulesTab', () => {
     await w.find('[data-test="add-time"]').trigger('click')
     await nextTick()
     const before = w.find('[data-test="time-begin-0"]').element
-    await w.find('[data-test="time-begin-0"]').setValue('08:00')
-    await w.find('[data-test="time-begin-0"]').setValue('08:30')
+    await pickDate(w, 'time-begin-0', new Date(2026, 0, 1, 8, 0))
+    await pickDate(w, 'time-begin-0', new Date(2026, 0, 1, 8, 30))
     expect(w.find('[data-test="time-begin-0"]').element).toBe(before)
   })
 })

@@ -29,6 +29,7 @@ import OnCallRoleEditorPanel from '@/components/OnCallRoles/OnCallRoleEditorPane
 import { useOnCallRoleAdminStore } from '@/stores/onCallRoleAdminStore'
 import { adminWriteSuccess } from '@/types/adminWrite'
 import { ManagedOnCallRole, STALE_ONCALL_ROLE_MESSAGE } from '@/types/onCallRoleAdmin'
+import { pickDate } from '../../utils'
 
 const store = vi.hoisted(() => ({
   users: [] as unknown[],
@@ -210,7 +211,7 @@ describe('OnCallRoleEditorPanel', () => {
     const wrapper = await mountPanel(role)
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeUndefined()
     await wrapper.find('[data-test="tab-schedules"]').trigger('click')
-    await wrapper.find('[data-test="time-begin-0"]').setValue('2026-03-05T08:00')
+    await pickDate(wrapper, 'time-begin-0', new Date(2026, 2, 5, 8, 0))
     await flushPromises()
     expect(wrapper.text()).toContain('This server\'s locale writes March as \'März\'')
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
@@ -263,7 +264,9 @@ describe('OnCallRoleEditorPanel', () => {
     await wrapper.find('[data-test="tab-schedules"]').trigger('click')
     await flushPromises()
     const cards = wrapper.findAll('[data-test="oncall-schedule-card"]')
-    await cards[0].find('[data-test="time-end-0"]').setValue('17:30')
+    // the first card's end picker comes first in the page
+    expect(cards[0].find('[data-test="time-end-0"]').exists()).toBe(true)
+    await pickDate(wrapper, 'time-end-0', new Date(2026, 0, 1, 17, 30))
     await save(wrapper)
 
     const schedules = store.updateRole.mock.calls[0][0].schedules

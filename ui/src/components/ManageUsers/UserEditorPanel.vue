@@ -211,16 +211,16 @@
     </div>
     <div class="panel-footer">
       <OnmsButton
-        variant="text"
-        label="Cancel"
-        data-test="cancel-button"
-        @click="emit('close')"
-      />
-      <OnmsButton
         :label="isEditing ? 'Save User' : 'Add User'"
         :disabled="!isValid || saving"
         data-test="save-button"
         @click="save"
+      />
+      <OnmsButton
+        variant="ghost"
+        label="Cancel"
+        data-test="cancel-button"
+        @click="emit('close')"
       />
     </div>
   </TableCard>
@@ -460,7 +460,7 @@ const save = async () => {
 
 .panel-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 0.5rem;
   margin-top: 1.5rem;
 }

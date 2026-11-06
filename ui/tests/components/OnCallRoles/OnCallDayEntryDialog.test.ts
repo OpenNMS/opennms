@@ -24,6 +24,7 @@ import { nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 
 import OnCallDayEntryDialog from '@/components/OnCallRoles/OnCallDayEntryDialog.vue'
+import { datePicker, pickDate } from '../../utils'
 
 // the dialog is teleported to the body
 enableAutoUnmount(afterEach)
@@ -45,8 +46,10 @@ describe('OnCallDayEntryDialog', () => {
     const wrapper = mountDialog()
     await nextTick()
     expect((wrapper.vm as unknown as { user: string }).user).toBe('')
-    expect(find('[data-test="entry-begin"]').value).toBe('2026-11-05T00:00')
-    expect(find('[data-test="entry-end-date"]').value).toBe('2026-11-05')
+    expect(datePicker(wrapper, 'entry-begin').props('modelValue')).toEqual(new Date(2026, 10, 5, 0, 0))
+    expect(datePicker(wrapper, 'entry-begin').props()).toMatchObject({ showTime: true, timeOnly: false, hourFormat: '12' })
+    expect(datePicker(wrapper, 'entry-end-date').props('modelValue')).toEqual(new Date(2026, 10, 5))
+    expect(datePicker(wrapper, 'entry-end-date').props()).toMatchObject({ showTime: false, timeOnly: false })
     expect(find('[data-test="ok-button"]').hasAttribute('disabled')).toBe(true)
   })
 
@@ -71,16 +74,12 @@ describe('OnCallDayEntryDialog', () => {
     await pickUser(wrapper, 'carol')
     find('#oncall-day-entry-eod').click()
     await nextTick()
-    const end = find('[data-test="entry-end"]')
-    end.value = '2026-11-05T00:00'
-    end.dispatchEvent(new Event('input'))
-    await nextTick()
+    expect(datePicker(wrapper, 'entry-end').props()).toMatchObject({ showTime: true, hourFormat: '12' })
+    await pickDate(wrapper, 'entry-end', new Date(2026, 10, 5, 0, 0))
     expect(document.body.textContent).toContain('The time must begin before it ends.')
     expect(find('[data-test="ok-button"]').hasAttribute('disabled')).toBe(true)
 
-    end.value = '2026-11-05T09:30'
-    end.dispatchEvent(new Event('input'))
-    await nextTick()
+    await pickDate(wrapper, 'entry-end', new Date(2026, 10, 5, 9, 30))
     find('[data-test="ok-button"]').click()
     expect(wrapper.emitted('ok')).toEqual([[{ user: 'carol', start: '2026-11-05T00:00', end: '2026-11-05T09:30', endOfDay: false }]])
   })

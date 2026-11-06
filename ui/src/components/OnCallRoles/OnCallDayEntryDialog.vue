@@ -21,32 +21,36 @@
       </FormField>
       <div class="time-row">
         <label for="oncall-day-entry-begin">Begin</label>
-        <input
-          id="oncall-day-entry-begin"
-          v-model="begin"
-          type="datetime-local"
+        <OnmsDatePicker
+          :modelValue="dayTimeToDate(begin)"
+          inputId="oncall-day-entry-begin"
+          showTime
+          hourFormat="12"
           class="time-input"
           data-test="entry-begin"
-        >
+          @update:modelValue="v => begin = dateToDayTime(v)"
+        />
       </div>
       <div class="time-row">
         <label for="oncall-day-entry-end">End</label>
-        <input
+        <OnmsDatePicker
           v-if="endOfDay"
-          id="oncall-day-entry-end"
-          v-model="endDate"
-          type="date"
+          :modelValue="dayToDate(endDate)"
+          inputId="oncall-day-entry-end"
           class="time-input"
           data-test="entry-end-date"
-        >
-        <input
+          @update:modelValue="v => endDate = dateToDay(v)"
+        />
+        <OnmsDatePicker
           v-else
-          id="oncall-day-entry-end"
-          v-model="end"
-          type="datetime-local"
+          :modelValue="dayTimeToDate(end)"
+          inputId="oncall-day-entry-end"
+          showTime
+          hourFormat="12"
           class="time-input"
           data-test="entry-end"
-        >
+          @update:modelValue="v => end = dateToDayTime(v)"
+        />
         <span class="end-of-day">
           <OnmsCheckbox
             v-model="endOfDay"
@@ -83,10 +87,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-import { OnmsButton, OnmsCheckbox, OnmsDialog, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCheckbox, OnmsDatePicker, OnmsDialog, OnmsSelect } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
 import { monthProblem } from '@/lib/onCallSchedule'
+import { dateToDay, dateToDayTime, dayTimeToDate, dayToDate } from '@/lib/pickerTime'
 
 const props = defineProps<{
   visible: boolean
@@ -169,12 +174,7 @@ const ok = () => {
 }
 
 .time-input {
-  padding: 0.35rem 0.5rem;
-  border: 1px solid var(--p-inputtext-border-color, var(--p-content-border-color));
-  border-radius: var(--p-inputtext-border-radius, 4px);
-  background: var(--p-inputtext-background, transparent);
-  color: var(--p-inputtext-color, inherit);
-  color-scheme: light dark;
+  width: 13rem;
 }
 
 .end-of-day {

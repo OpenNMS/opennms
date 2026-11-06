@@ -28,23 +28,45 @@
             @click="toggleDay(row, day)"
           />
         </div>
-        <input
-          v-model="row.begin"
-          type="time"
+        <label
+          class="visually-hidden"
+          :for="`${uid}-${row.id}-begin`"
+        >Begin time</label>
+        <OnmsDatePicker
+          :modelValue="clockToDate(row.begin)"
+          :inputId="`${uid}-${row.id}-begin`"
+          timeOnly
+          hourFormat="12"
           class="time-input"
-          aria-label="Begin time"
           :data-test="`duty-${index}-begin`"
-          @input="markEdited(row)"
-        >
+          @update:modelValue="setTime(row, 'begin', $event)"
+        />
         <span class="to">to</span>
-        <input
-          v-model="row.end"
-          type="time"
+        <label
+          class="visually-hidden"
+          :for="`${uid}-${row.id}-end`"
+        >End time</label>
+        <OnmsDatePicker
+          :modelValue="clockToDate(row.end)"
+          :inputId="`${uid}-${row.id}-end`"
+          timeOnly
+          hourFormat="12"
           class="time-input"
-          aria-label="End time"
           :data-test="`duty-${index}-end`"
-          @input="markEdited(row)"
-        >
+          @update:modelValue="setTime(row, 'end', $event)"
+        />
+        <OnmsIconButton
+          severity="danger"
+          :icon="Cancel"
+          tooltip="Remove duty schedule"
+          :aria-label="`Remove duty schedule ${index + 1}`"
+          :data-test="`remove-duty-${index}`"
+          @click="removeRow(index)"
+        />
+        <PendingBadge
+          v-if="row.pending"
+          :data-test="`duty-${index}-pending`"
+        />
         <small
           v-if="!hasDay(row)"
           class="row-error"
@@ -83,6 +105,14 @@
           :invalid="!!rawProblem(row)"
           :data-test="`duty-${index}-raw`"
         />
+        <OnmsIconButton
+          severity="danger"
+          :icon="Cancel"
+          tooltip="Remove duty schedule"
+          :aria-label="`Remove duty schedule ${index + 1}`"
+          :data-test="`remove-duty-${index}`"
+          @click="removeRow(index)"
+        />
         <small
           v-if="rawProblem(row)"
           class="row-error"
@@ -90,13 +120,6 @@
           :data-test="`duty-${index}-raw-error`"
         >{{ rawProblem(row) }}</small>
       </template>
-      <OnmsIconButton
-        severity="danger"
-        :icon="Cancel"
-        :aria-label="`Remove duty schedule ${index + 1}`"
-        :data-test="`remove-duty-${index}`"
-        @click="removeRow(index)"
-      />
     </div>
     <OnmsButton
       variant="outlined"
@@ -110,9 +133,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, useId, watch } from 'vue'
 
-import { OnmsButton, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDatePicker, OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+
+import PendingBadge from '@/components/Common/PendingBadge.vue'
+import { clockToDate, dateToClock } from '@/lib/pickerTime'
 
 import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 
@@ -140,7 +166,12 @@ interface Row {
   // user edits the row, so merely opening the dialog can never rewrite a
   // schedule the server only grandfathers in its original form
   original: string | null
+  // added with Add Schedule in this editor and not saved yet
+  pending: boolean
 }
+
+// prefixes the time inputs' ids, which must be unique on the page
+const uid = useId()
 
 let nextId = 0
 const rows = ref<Row[]>([])
@@ -162,7 +193,7 @@ const toMilitary = (hhmm: string): string => {
 const parse = (value: string): Row => {
   const match = SCHEDULE.exec(value.trim())
   if (!match) {
-    return { id: nextId++, days: [], begin: '', end: '', raw: value, original: null }
+    return { id: nextId++, days: [], begin: '', end: '', raw: value, original: null, pending: false }
   }
   return {
     id: nextId++,
@@ -170,7 +201,16 @@ const parse = (value: string): Row => {
     begin: toHHMM(match[2]),
     end: toHHMM(match[3]),
     raw: null,
-    original: value.trim()
+    original: value.trim(),
+    pending: false
+  }
+}
+
+const setTime = (row: Row, field: 'begin' | 'end', date: Date | null) => {
+  const next = dateToClock(date)
+  if (next !== row[field]) {
+    row[field] = next
+    markEdited(row)
   }
 }
 
@@ -312,7 +352,7 @@ const toggleDay = (row: Row, day: string) => {
 }
 
 const addRow = () => {
-  rows.value.push({ id: nextId++, days: [], begin: '09:00', end: '17:00', raw: null, original: null })
+  rows.value.push({ id: nextId++, days: [], begin: '09:00', end: '17:00', raw: null, original: null, pending: true })
 }
 
 const removeRow = (index: number) => {
@@ -344,12 +384,7 @@ const removeRow = (index: number) => {
   }
 
   .time-input {
-    padding: 0.35rem 0.5rem;
-    border: 1px solid var(--p-inputtext-border-color, var(--p-content-border-color));
-    border-radius: var(--p-inputtext-border-radius, 4px);
-    background: var(--p-inputtext-background, transparent);
-    color: var(--p-inputtext-color, inherit);
-    color-scheme: light dark;
+    width: 7.5rem;
   }
 
   .row-error {
@@ -368,5 +403,14 @@ const removeRow = (index: number) => {
     flex: 1;
     min-width: 12rem;
   }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 </style>

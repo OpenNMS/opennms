@@ -11,13 +11,16 @@
       >
         <strong>{{ card.user }}</strong>
         <OnmsTag :value="card.type" severity="secondary" />
-        <OnmsButton
-          variant="text"
-          severity="danger"
-          label="Remove"
-          data-test="remove-schedule"
-          @click="emit('remove')"
-        />
+        <span class="card-actions">
+          <OnmsIconButton
+            severity="danger"
+            :icon="Delete"
+            tooltip="Remove schedule"
+            aria-label="Remove schedule"
+            data-test="remove-schedule"
+            @click="emit('remove')"
+          />
+        </span>
       </div>
       <p class="note">
         This schedule uses a form the editor can't change. It is kept as stored; remove it to replace it.
@@ -56,13 +59,20 @@
           data-test="schedule-type"
           @update:modelValue="askType"
         />
-        <OnmsButton
-          variant="text"
-          severity="danger"
-          label="Remove"
-          data-test="remove-schedule"
-          @click="emit('remove')"
-        />
+        <span class="card-actions">
+          <PendingBadge
+            v-if="card.original === null"
+            data-test="schedule-pending"
+          />
+          <OnmsIconButton
+            severity="danger"
+            :icon="Delete"
+            tooltip="Remove schedule"
+            aria-label="Remove schedule"
+            data-test="remove-schedule"
+            @click="emit('remove')"
+          />
+        </span>
       </div>
       <div
         v-for="(r, i) in card.times"
@@ -80,35 +90,59 @@
           :data-test="`time-day-${i}`"
           @update:modelValue="v => setTime(i, { day: v as string })"
         />
-        <input
-          :value="r.begin"
-          :type="inputType"
+        <label
+          class="visually-hidden"
+          :for="`${card.key}-${rowKey(r)}-begin`"
+        >Begin</label>
+        <OnmsDatePicker
+          :modelValue="isSpecific ? dayTimeToDate(r.begin) : clockToDate(r.begin)"
+          :inputId="`${card.key}-${rowKey(r)}-begin`"
+          :showTime="isSpecific"
+          :timeOnly="!isSpecific"
+          hourFormat="12"
           class="time-input"
-          aria-label="Begin"
+          :class="{ specific: isSpecific }"
           :data-test="`time-begin-${i}`"
-          @input="setTime(i, { begin: ($event.target as HTMLInputElement).value })"
-        >
+          @update:modelValue="v => setTime(i, { begin: isSpecific ? dateToDayTime(v) : dateToClock(v) })"
+        />
         <span class="to">to</span>
         <!-- a specific time still needs its end date when it runs to the end of the day -->
-        <input
-          v-if="card.type === 'specific' && r.endOfDay"
-          :value="r.end.slice(0, 10)"
-          type="date"
-          class="time-input"
-          aria-label="End date"
-          :data-test="`time-end-date-${i}`"
-          @input="setEndDate(i, ($event.target as HTMLInputElement).value)"
-        >
-        <input
-          v-else
-          :value="r.end"
-          :type="inputType"
-          class="time-input"
-          aria-label="End"
-          :disabled="r.endOfDay"
+        <template v-if="isSpecific && r.endOfDay">
+          <label
+            class="visually-hidden"
+            :for="`${card.key}-${rowKey(r)}-end-date`"
+          >End date</label>
+          <OnmsDatePicker
+            :modelValue="dayToDate(r.end.slice(0, 10))"
+            :inputId="`${card.key}-${rowKey(r)}-end-date`"
+            class="time-input"
+            :data-test="`time-end-date-${i}`"
+            @update:modelValue="v => setEndDate(i, dateToDay(v))"
+          />
+        </template>
+        <!-- a clock-time range that runs to the end of the day has no end time to pick -->
+        <span
+          v-else-if="r.endOfDay"
+          class="time-input end-of-day-placeholder"
           :data-test="`time-end-${i}`"
-          @input="setTime(i, { end: ($event.target as HTMLInputElement).value })"
-        >
+        >end of day</span>
+        <template v-else>
+          <label
+            class="visually-hidden"
+            :for="`${card.key}-${rowKey(r)}-end`"
+          >End</label>
+          <OnmsDatePicker
+            :modelValue="isSpecific ? dayTimeToDate(r.end) : clockToDate(r.end)"
+            :inputId="`${card.key}-${rowKey(r)}-end`"
+            :showTime="isSpecific"
+            :timeOnly="!isSpecific"
+            hourFormat="12"
+            class="time-input"
+            :class="{ specific: isSpecific }"
+            :data-test="`time-end-${i}`"
+            @update:modelValue="v => setTime(i, { end: isSpecific ? dateToDayTime(v) : dateToClock(v) })"
+          />
+        </template>
         <span class="end-of-day">
           <OnmsCheckbox
             :modelValue="r.endOfDay"
@@ -118,9 +152,14 @@
           />
           <label :for="`${card.key}-eod-${i}`">End of day</label>
         </span>
+        <PendingBadge
+          v-if="r.original === null"
+          :data-test="`time-pending-${i}`"
+        />
         <OnmsIconButton
           severity="danger"
           :icon="Cancel"
+          tooltip="Remove time range"
           aria-label="Remove time range"
           :data-test="`remove-time-${i}`"
           @click="removeTime(i)"
@@ -160,10 +199,13 @@
 <script setup lang="ts">
 import { computed, ref, toRaw } from 'vue'
 
-import { OnmsButton, OnmsCheckbox, OnmsConfirmationDialog, OnmsIconButton, OnmsSelect, OnmsTag } from '@opennms/onms-ui'
+import { OnmsButton, OnmsCheckbox, OnmsConfirmationDialog, OnmsDatePicker, OnmsIconButton, OnmsSelect, OnmsTag } from '@opennms/onms-ui'
 
+import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Cancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
+import PendingBadge from '@/components/Common/PendingBadge.vue'
 import { cardProblems, ScheduleCard, TimeRange, WEEKDAYS } from '@/lib/onCallSchedule'
+import { clockToDate, dateToClock, dateToDay, dateToDayTime, dayTimeToDate, dayToDate } from '@/lib/pickerTime'
 import { OnCallScheduleType } from '@/types/onCallRoleAdmin'
 
 const props = defineProps<{
@@ -189,7 +231,7 @@ const weekdayOptions = WEEKDAYS.map(d => ({ label: d.charAt(0).toUpperCase() + d
 
 const pendingType = ref<OnCallScheduleType | null>(null)
 
-const inputType = computed(() => props.card.type === 'specific' ? 'datetime-local' : 'time')
+const isSpecific = computed(() => props.card.type === 'specific')
 const problems = computed(() => cardProblems(props.card, props.shortMonths))
 // a stored user who left the group stays selected
 const notMember = computed(() => !!props.card.user && !props.members.includes(props.card.user))
@@ -293,17 +335,33 @@ const confirmType = () => {
   flex-wrap: wrap;
 }
 
-.card-head :last-child:is(button) {
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin-left: auto;
 }
 
 .time-input {
-  padding: 0.35rem 0.5rem;
-  border: 1px solid var(--p-inputtext-border-color, var(--p-content-border-color));
-  border-radius: var(--p-inputtext-border-radius, 4px);
-  background: var(--p-inputtext-background, transparent);
-  color: var(--p-inputtext-color, inherit);
-  color-scheme: light dark;
+  width: 7.5rem;
+
+  &.specific {
+    width: 13rem;
+  }
+}
+
+.end-of-day-placeholder {
+  color: var(--p-text-muted-color);
+  font-style: italic;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .to,

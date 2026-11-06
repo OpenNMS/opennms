@@ -35,7 +35,7 @@
           inputId="span-start"
           :showTime="type === 'specific'"
           :timeOnly="type !== 'specific'"
-          hourFormat="24"
+          :hourFormat="type === 'specific' ? '24' : '12'"
           showSeconds
           data-test="span-start"
         />
@@ -47,7 +47,7 @@
           inputId="span-end"
           :showTime="type === 'specific'"
           :timeOnly="type !== 'specific'"
-          hourFormat="24"
+          :hourFormat="type === 'specific' ? '24' : '12'"
           showSeconds
           data-test="span-end"
         />

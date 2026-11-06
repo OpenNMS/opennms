@@ -20,6 +20,7 @@
 /// License.
 ///
 import { flushPromises, mount } from '@vue/test-utils'
+import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import ManageGroups from '@/containers/ManageGroups.vue'
@@ -30,7 +31,8 @@ const UNAVAILABLE = 'User management through this API needs org.opennms.usermgmt
 const store = vi.hoisted(() => ({
   editMode: 'table',
   populate: vi.fn(),
-  closeGroupEditor: vi.fn()
+  closeGroupEditor: vi.fn(),
+  groups: []
 }))
 vi.mock('@/stores/groupAdminStore', () => ({ useGroupAdminStore: () => store }))
 vi.mock('@/stores/menuStore', () => ({ useMenuStore: () => ({ mainMenu: { homeUrl: '/' }}) }))
@@ -69,15 +71,34 @@ describe('ManageGroups.vue (container)', () => {
     const wrapper = await mountPage()
 
     expect(wrapper.findComponent({ name: 'GroupsTable' }).exists()).toBe(true)
-    expect(wrapper.findComponent({ name: 'GroupsTable' }).attributes('style')).toContain('display: none')
+    expect(wrapper.find('[data-test="groups-table-wrapper"]').attributes('style')).toContain('display: none')
     expect(wrapper.findComponent({ name: 'GroupEditorPanel' }).exists()).toBe(true)
+  })
+
+  it('really hides the real table, which has several root nodes, without a Vue warning', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    store.populate.mockResolvedValue({ success: true, message: '' })
+    store.editMode = AdminEditMode.Edit
+    const wrapper = mount(ManageGroups, {
+      attachTo: document.body,
+      global: { plugins: [PrimeVue], directives: { 'onms-tooltip': {}}, stubs: { BreadCrumbs: true, GroupEditorPanel: true }}
+    })
+    try {
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="groups-table-wrapper"]').isVisible()).toBe(false)
+      expect(warn.mock.calls.filter(c => String(c[0]).includes('non-element root node'))).toEqual([])
+    } finally {
+      wrapper.unmount()
+      warn.mockRestore()
+    }
   })
 
   it('shows only the table outside the editor', async () => {
     store.populate.mockResolvedValue({ success: true, message: '' })
     const wrapper = await mountPage()
 
-    expect(wrapper.findComponent({ name: 'GroupsTable' }).attributes('style') ?? '').not.toContain('display: none')
+    expect(wrapper.find('[data-test="groups-table-wrapper"]').attributes('style') ?? '').not.toContain('display: none')
     expect(wrapper.findComponent({ name: 'GroupEditorPanel' }).exists()).toBe(false)
   })
 

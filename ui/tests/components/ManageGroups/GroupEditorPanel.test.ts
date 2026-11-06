@@ -4,6 +4,7 @@ import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { adminWriteSuccess } from '@/types/adminWrite'
+import { dutyTime } from '../../utils'
 
 vi.mock('@/stores/groupAdminStore')
 
@@ -178,7 +179,7 @@ describe('GroupEditorPanel.vue', () => {
     it('loads the duty schedules and categories of the group and saves them back', async () => {
       await mountPanel({ name: 'Ops', users: [], dutySchedules: ['MoWeFr800-1700'], categories: ['Servers', 'Routers'], version: 3 })
 
-      expect((wrapper.find('[data-test="duty-0-begin"]').element as HTMLInputElement).value).toBe('08:00')
+      expect(dutyTime(wrapper, 'duty-0-begin')).toBe('08:00 am')
       expect(categorySelect().props('modelValue')).toEqual(['Servers', 'Routers'])
 
       await wrapper.find('[data-test="save-button"]').trigger('click')
