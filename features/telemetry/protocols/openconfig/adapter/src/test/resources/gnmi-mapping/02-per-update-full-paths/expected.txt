@@ -1,0 +1,2 @@
+if|Ethernet1|oc-if-counters|in-octets|counter|10
+if|Ethernet2|oc-if-counters|in-octets|counter|20

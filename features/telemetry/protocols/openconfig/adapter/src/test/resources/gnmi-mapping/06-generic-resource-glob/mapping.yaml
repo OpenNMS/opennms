@@ -1,0 +1,8 @@
+version: 1
+groups:
+  - name: oc-cpu
+    match: /components/component[name=CPU*]/cpu/utilization/state
+    resource-type: ocComponent
+    instance: "{component.name}"
+    attributes:
+      avg: { type: gauge }

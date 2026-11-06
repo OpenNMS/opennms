@@ -1,0 +1,8 @@
+version: 1
+groups:
+  - name: oc-if-all
+    match: /interfaces/interface/state/counters
+    resource-type: interface
+    instance: "{interface.name}"
+    attributes: all
+    default-type: counter

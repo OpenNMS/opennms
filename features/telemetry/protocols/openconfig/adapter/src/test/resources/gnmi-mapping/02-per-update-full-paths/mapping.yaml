@@ -1,0 +1,10 @@
+version: 1
+aliases:
+  if-counters: /interfaces/interface/state/counters
+groups:
+  - name: oc-if-counters
+    match: if-counters
+    resource-type: interface
+    instance: "{interface.name}"
+    attributes:
+      in-octets: { type: counter }

@@ -1,0 +1,53 @@
+# Disclaimer: This configuration is a proof of concept. It evaluates how usable it is
+# to configure gNMI streaming telemetry metric processing. These files are not covered
+# by commercial service agreements.
+#
+# Read by etc/telemetryd-adapters/openconfig-gnmi-mapping.groovy together with every
+# other *.yaml, *.yml and *.json file in this directory. Files are split by YANG
+# model: openconfig-* files are vendor neutral, vendor files such as junos-* map
+# native models. A group only sees the paths the connector subscribes to.
+# Reference: OpenConfig telemetry docs, section "Declarative mapping".
+#
+# Model: openconfig-system.
+# Connector paths: /system/cpus, /system/memory (origin openconfig).
+# Checked against a Juniper MX10004. Resource type ocCpu is defined in
+# etc/resource-types.d/openconfig-gnmi-resource.xml.
+version: 1
+aliases:
+  system-cpu: /system/cpus/cpu/state
+  system-memory: /system/memory/state
+groups:
+  - name: oc-system-cpu
+    match: system-cpu
+    resource-type: ocCpu
+    instance: "{cpu.index}"
+    attributes:
+      total/instant: { type: gauge, name: cpuTotal }
+      user/instant: { type: gauge, name: cpuUser }
+      kernel/instant: { type: gauge, name: cpuKernel }
+      software-interrupt/instant: { type: gauge, name: cpuSoftIrq }
+      idle/instant: { type: gauge, name: cpuIdle }
+  # Node-level attributes need no instance
+  - name: oc-system-memory
+    match: system-memory
+    resource-type: node
+    attributes:
+      physical: { type: gauge, name: memPhysical }
+      used: { type: gauge, name: memUsed }
+      free: { type: gauge, name: memFree }
+
+# Catch-all alternative: every numeric leaf under the state containers as a gauge,
+# named after the relative leaf path, e.g. total-instant or physical. Uncomment
+# only after removing the groups above, otherwise shared leaves are stored twice.
+# See openconfig-interfaces.yaml.
+#  - name: oc-system-cpu-all
+#    match: system-cpu
+#    resource-type: ocCpu
+#    instance: "{cpu.index}"
+#    attributes: all
+#    default-type: gauge
+#  - name: oc-system-memory-all
+#    match: system-memory
+#    resource-type: node
+#    attributes: all
+#    default-type: gauge
