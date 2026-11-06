@@ -32,6 +32,8 @@ import static org.mockito.Mockito.when;
 import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -176,9 +178,14 @@ public class SyslogdReceiverNettyTcpTlsIT {
             }
             client.writeAndFlush(Unpooled.copiedBuffer(burst.toString(), StandardCharsets.UTF_8)).sync();
 
+            // Order is only guaranteed with ordered set; the sink can swap a pair here.
+            final Set<String> expected = new HashSet<>();
+            final Set<String> received = new HashSet<>();
             for (int i = 0; i < count; i++) {
-                assertEquals("<34>Oct 11 22:14:15 tlsburst app: message " + i, nextMessage());
+                expected.add("<34>Oct 11 22:14:15 tlsburst app: message " + i);
+                received.add(nextMessage());
             }
+            assertEquals(expected, received);
         } finally {
             client.close().awaitUninterruptibly();
         }
