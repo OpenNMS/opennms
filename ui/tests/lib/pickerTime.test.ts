@@ -21,6 +21,7 @@
 ///
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { toTimeOnlyDate } from '@opennms/onms-ui'
 import { clockTo12Hour, clockToDate, dateToClock, dateToDay, dayToDate } from '@/lib/pickerTime'
 
 describe('pickerTime', () => {
@@ -29,6 +30,10 @@ describe('pickerTime', () => {
     expect(date?.getHours()).toBe(8)
     expect(date?.getMinutes()).toBe(5)
     expect(dateToClock(date)).toBe('08:05')
+  })
+
+  it('puts a clock time on the time-only pickers\' fixed day, as OnmsDatePicker does', () => {
+    expect(clockToDate('08:05')).toEqual(toTimeOnlyDate(8, 5))
   })
 
   it('round-trips a day', () => {

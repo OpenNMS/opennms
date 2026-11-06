@@ -20,6 +20,8 @@
 /// License.
 ///
 
+import { toTimeOnlyDate } from '@opennms/onms-ui'
+
 // OnmsDatePicker works on Dates; the editors keep server-local wall-clock strings ('HH:mm' and 'yyyy-MM-dd'; a date
 // and time is picked as one of each, see SplitDateTimePicker). These convert between the two using only the Date's
 // local fields, so no time zone shift ever applies: a picked 08:00 stays 08:00.
@@ -30,24 +32,13 @@ const CLOCK = /^(\d{2}):(\d{2})$/
 const DAY = /^(\d{4})-(\d{2})-(\d{2})$/
 
 /**
- * 'HH:mm' → a Date at that time; null for an empty or malformed value. Only the clock part matters, so the date is a
- * fixed day in January, not today: on a day when the browser's clocks skip an hour for daylight saving, 02:30 does not
- * exist and a Date would turn it into 03:30. If the browser's zone skips that time on the first day too, a later day is
- * used.
+ * 'HH:mm' → a Date at that time, for a time-only OnmsDatePicker; null for an empty or malformed value. Only the clock
+ * part matters, so the date is the picker's fixed day (toTimeOnlyDate), not today: on a day when the browser's clocks
+ * skip an hour for daylight saving, 02:30 does not exist and a Date would turn it into 03:30.
  */
 export const clockToDate = (hhmm: string): Date | null => {
   const m = CLOCK.exec(hhmm)
-  if (!m) {
-    return null
-  }
-  const [hours, minutes] = [Number(m[1]), Number(m[2])]
-  for (let day = 10; day < 20; day++) {
-    const date = new Date(2000, 0, day, hours, minutes)
-    if (date.getHours() === hours && date.getMinutes() === minutes) {
-      return date
-    }
-  }
-  return new Date(2000, 0, 10, hours, minutes)
+  return m ? toTimeOnlyDate(Number(m[1]), Number(m[2])) : null
 }
 
 /** a Date → its 'HH:mm'; '' for null */

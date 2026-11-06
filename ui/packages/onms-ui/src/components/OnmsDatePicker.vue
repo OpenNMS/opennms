@@ -23,6 +23,7 @@
 import { type ComponentOptions, defineComponent } from 'vue'
 import DatePicker from 'primevue/datepicker'
 import type { OnmsHourFormat } from '../types'
+import { toTimeOnlyDate } from '../utils/timeOnlyDate'
 
 // Seam wrapper (NMS-20081) around PrimeVue DatePicker.
 //
@@ -50,11 +51,10 @@ import type { OnmsHourFormat } from '../types'
 // Time-only and daylight saving (NMS-20534): a time-only value is a Date whose date part means nothing, but PrimeVue
 // builds it on today's date: a typed time with `new Date()` (parseDateTime), and a spinner step on an empty picker
 // from today too (viewDate). On the day the browser's clocks go forward, 02:30 does not exist, and the Date becomes
-// 03:30. In time-only mode this subclass puts both on a fixed day instead (10 January 2000, on which no zone changes
-// its clocks), so every clock time can be picked. A spinner step on a picker that has a value already keeps that
-// value's date, which the consumer chose. PrimeVue-reality: these are internals of primevue@4.5.5's DatePicker, pinned
-// by the daylight-saving tests in tests/onms-ui/OnmsDatePicker.test.ts.
-const TIME_ONLY_DAY: [number, number, number] = [2000, 0, 10]
+// 03:30. In time-only mode this subclass puts both on the fixed day of toTimeOnlyDate instead, so every clock time can
+// be picked. A spinner step on a picker that has a value already keeps that value's date, so consumers start their
+// values on that day too (toTimeOnlyDate). PrimeVue-reality: these are internals of primevue@4.5.5's DatePicker,
+// pinned by the daylight-saving tests in tests/onms-ui/OnmsDatePicker.test.ts.
 
 type DatePickerInternals = {
   timeOnly: boolean
@@ -77,13 +77,14 @@ const TimeSafeDatePicker = defineComponent({
       if (!this.timeOnly || this.rawValue instanceof Date) {
         return date
       }
-      return new Date(...TIME_ONLY_DAY, date.getHours(), date.getMinutes(), date.getSeconds())
+      return toTimeOnlyDate(date.getHours(), date.getMinutes(), date.getSeconds())
     }
   },
   methods: {
     populateTime(this: DatePickerInternals, value: Date, timeString: string, ampm?: string): void {
       if (this.timeOnly) {
-        value.setFullYear(...TIME_ONLY_DAY)
+        const day = toTimeOnlyDate(0, 0)
+        value.setFullYear(day.getFullYear(), day.getMonth(), day.getDate())
       }
       base.methods.populateTime.call(this, value, timeString, ampm)
     }

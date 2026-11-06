@@ -1,4 +1,4 @@
-import { OnmsDatePicker } from '@opennms/onms-ui'
+import { OnmsDatePicker, toTimeOnlyDate } from '@opennms/onms-ui'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -197,8 +197,7 @@ describe('OnmsDatePicker', () => {
     it('keeps a typed time that the clocks skip today', async () => {
       const wrapper = mount(OnmsDatePicker, { props: { timeOnly: true, hourFormat: '12' }, global: globalPlugins })
       await wrapper.get('input').setValue('02:30 am')
-      const value = lastEmitted(wrapper)
-      expect([value.getHours(), value.getMinutes()]).toEqual([2, 30])
+      expect(lastEmitted(wrapper)).toEqual(toTimeOnlyDate(2, 30))
     })
 
     it('keeps a typed time when the picker already has a value', async () => {
@@ -220,8 +219,7 @@ describe('OnmsDatePicker', () => {
       inner.currentMinute = 30
       inner.pm = false
       inner.updateModelTime()
-      const value = lastEmitted(wrapper)
-      expect([value.getHours(), value.getMinutes()]).toEqual([2, 30])
+      expect(lastEmitted(wrapper)).toEqual(toTimeOnlyDate(2, 30))
     })
 
     it('leaves a date-and-time picker on the date it shows', async () => {
