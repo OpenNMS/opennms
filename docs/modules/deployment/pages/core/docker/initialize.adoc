@@ -82,3 +82,8 @@ The container copies files from the following overlay directories into the {page
 |===
 
 NOTE: Files in an overlay replace files with the same name in the configuration volume on every start.
+
+NOTE: The database installer moves `etc/users.xml`, `etc/groups.xml` and `etc/security-roles.properties` to `etc_archive/` after it has copied them into the database.
+`etc_archive` is not a volume, so the archived copies do not survive when the container is replaced.
+The original files stay in the configuration volume or the `etc` overlay: copy them out, or mount `etc_archive`, if you need them.
+If an overlay copies one of these files into `etc` again, the installer recognizes it as already archived and removes it.

@@ -168,7 +168,11 @@ systemd[1]: opennms.service: Failed with result 'exit-code'.
 systemd[1]: Failed to start OpenNMS server.
 ----
 
-NOTE: You should evaluate the `.rpmnew` or `.rpmsave` file against the original file with the same name to determine which to keep.
+NOTE: Do not delete `users.xml.rpmsave` or `groups.xml.rpmsave`: they hold your users and groups.
+Run `/opt/opennms/bin/install -dis`, which copies them into the database and moves them to `etc_archive/`.
+{page-component-title} refuses to start while they remain in `etc`, which only happens when the installer has not run.
+
+NOTE: For other files, you should evaluate the `.rpmnew` or `.rpmsave` file against the original file with the same name to determine which to keep.
 Delete the appropriate file, remove the `.rpmnew` or `.rpmsave` file extension (if applicable), and start {page-component-title}.
 
 You can run this command to identify any `.rpmnew` or `.rpmsave` files in your environment:

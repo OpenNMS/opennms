@@ -1,12 +1,8 @@
 = Groups (v2)
 
 This is the database-backed REST API for managing OpenNMS groups.
-It is served at `/api/v2/groups` and replaces the XML-based xref:development:rest/groups.adoc[Groups] API for installations that store groups in the database.
-
-== Store mode
-
-This API works only when users and groups are stored in the database (`org.opennms.usermgmt.store=db`).
-When the store is `xml`, every operation returns `503 Service Unavailable` with the text `User management through this API needs org.opennms.usermgmt.store=db.`
+It is served at `/api/v2/groups` and replaces the deprecated v1 xref:development:rest/groups.adoc[Groups] API.
+Groups are stored in the database.
 
 == Permissions
 
@@ -28,7 +24,6 @@ Error responses carry a plain-text message.
 | 404 | The named object does not exist.
 | 409 | The object already exists, another object still refers to it, or the data was changed at the same time by another request (try again).
 | 412 | `If-Match` was sent and no longer matches the object.
-| 503 | The user-management store is `xml`.
 |===
 
 == GETs (reading data)
@@ -176,7 +171,7 @@ A violation returns `400`.
 == Names that a path cannot carry
 
 A group name stored before the rules above existed (for example `ops/east` from a migrated `groups.xml`) can contain `/`, `\` or `%`, which a URL path cannot carry reliably.
-A group with one of the reserved names, which v1 and the JSP pages still accept, is also out of reach of the path form: a client resolves `.` and `..` away, and `/groups/available-categories` is the list of categories, not that group.
+A group with one of the reserved names, which the deprecated v1 API still accepts, is also out of reach of the path form: a client resolves `.` and `..` away, and `/groups/available-categories` is the list of categories, not that group.
 Every per-group endpoint therefore has a query form, `item`, that takes the name in the `name` query parameter.
 URL-encode the value (`ops%2Feast`).
 The query form behaves exactly like the path form, with the same `If-Match` and `ETag` rules, bodies and status codes.

@@ -24,16 +24,14 @@ The example uses the name _my-minion-user_ with password _my-minion-password_.
 Make sure to use an alternate, more secure password. 
 
 . Log in to the web UI as an administrative user.
-. Click menu:Administration[Configure OpenNMS] in the side menu, then click btn:[Configure Users, Groups and On-Call Roles] -> btn:[Configure Users].
-. Click *Add new user*.
-. Type a login name (my-minion-user) and password (my-minion-password) and click btn:[OK].
+. Click menu:Administration[Configure OpenNMS] in the side menu, then click btn:[Configure Users].
+. Click *Add New User*.
+. Type a login name (my-minion-user) and password (my-minion-password) and confirm the password.
+. In the *Security Roles* field, assign the ROLE_MINION security role.
+.. Optional: fill in a comment for the Minion user's location and purpose.
+. Click btn:[Add User].
 +
 The new Minion user appears in the user list.
-
-. Click the edit icon beside the new user. 
-. In the *Security Roles* area, assign the ROLE_MINION security role.
-.. Optional: fill in a comment for the Minion user's location and purpose.
-. Click btn:[Finish].
 
 == Configure message broker
 

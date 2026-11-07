@@ -87,25 +87,31 @@ Allows users to escalate and acknowledge alarms and notifications.
 Follow the steps below to assign security roles to user accounts:
 
 . Click menu:User Management[Manage Users] in the side menu.
-. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users].
-. Find the user to whom you want to assign a security role and click *Modify* beside their name.
-. Select the role to add to the user account from the *Available Roles* list, and click *Add*.
-** Follow this step to add as many roles as necessary to the account.
-. Click *Finish* to apply the changes.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click *Configure Users*.
+. Click the edit icon beside the user to whom you want to assign a security role.
+. In the *Security Roles* field of the *Details* tab, select the roles to add to the user account.
+** Select as many roles as necessary.
+. Click *Save User* to apply the changes.
 . Log out of {page-component-title} and log back in to apply the new security role settings.
 
 == Create custom security roles
 
-To create a custom security role, you need to define its name and specify the permissions it will provide.
-Follow the steps below to create a custom role:
+Custom security roles are stored in the database.
+You manage them with the xref:development:rest/security_roles.adoc[Security Roles REST API] (`/api/v2/security-roles`).
+A custom role then appears in the *Security Roles* field of the Users page, where you can assign it to users.
 
-. Create `$\{OPENNMS_HOME}/etc/security-roles.properties` in your OpenNMS directory.
-. Add a `roles` property, and enter a comma-separated list of the custom security roles for its value:
-+
-.Example of a `roles` property
-[source, properties]
-roles=operator,stage
+A role name is upper-cased and gets the `ROLE_` prefix when it lacks one, so a role created as `auditor` is `ROLE_AUDITOR`.
+A name can contain only `A-Z`, `0-9` and `_`.
 
-. Save the file.
+.Example: create a custom role
+[source, bash]
+----
+curl -u admin:admin -X POST -H 'Content-Type: application/json' \
+  -d '{"name": "auditor", "description": "Read-only auditing"}' \
+  http://localhost:8980/opennms/api/v2/security-roles
+----
 
-NOTE: To define permissions associated with a custom security role, you must manually update the Spiring security application context in `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml`.
+NOTE: To define permissions associated with a custom security role, you must manually update the Spring security application context in `$\{OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml`.
+
+The file `etc/security-roles.properties` is no longer read.
+The installer reads it once, during the upgrade to the database, and then moves it to `etc_archive/`.

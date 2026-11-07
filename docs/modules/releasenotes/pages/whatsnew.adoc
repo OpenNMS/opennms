@@ -153,8 +153,30 @@ See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-fil
 
 === Users, groups and roles moved to the DB
 {page-component-title} now stores users, groups, on-call roles and custom security roles in the database.
-The upgrade copies `users.xml`, `groups.xml` and `security-roles.properties` into the database and copies the original files to `etc_archive/`.
+The upgrade copies `users.xml`, `groups.xml` and `security-roles.properties` into the database and then moves the original files to `etc_archive/`.
+The files are not read again, and editing them has no effect.
+{page-component-title} no longer ships `users.xml` and `groups.xml`.
+A database that later has no user data gets the default `admin` user with the password `admin`, the `rtc` user and the `Admin` group, not the archived data.
 The data now lives in the database: manage it through the pages and the REST APIs.
+The `org.opennms.usermgmt.store` property no longer exists: the database is the only store.
+
+The JSP pages for users, groups and on-call roles are removed, and their addresses are not redirected.
+Click *Configure Users*, *Configure Groups* or *Configure On-Call Roles* on the Admin page, or use the User Management menu, to open the new pages.
+The on-call schedule page for users who are not admins (`/opennms/roles`), the page where a user changes their own password, and the page that asks for a new password when `admin` still has the password `admin` stay as they are.
+
+*RPM upgrades:* the package no longer contains `users.xml` and `groups.xml`.
+If you changed one of them, the upgrade renames it to `users.xml.rpmsave` or `groups.xml.rpmsave`.
+Do not delete these files: `install -dis` copies them into the database and moves them to `etc_archive/`.
+{page-component-title} does not start while `.rpmsave` files remain in `etc`, which only happens when the installer has not run.
+If you did not change a file, the upgrade deletes it, and the installer uses the former default for it: the `admin` and `rtc` users, and the `Admin` group with `admin` as its member.
+
+*Containers:* `etc_archive` is not a volume, so the archived copies are lost when the container is replaced.
+The original files stay in the configuration volume or `etc` overlay.
+Copy the files out of the container, or mount `etc_archive`, if you need them.
+If an overlay copies `users.xml` or `groups.xml` into `etc` again, the installer recognizes it as already archived and removes it.
+
+If you run `install -R` on a new installation or an upgrade, it sets the password of `admin` after the upgrade tasks, in the same run.
+See xref:deployment:core/admin-password-reset.adoc[Reset the admin password].
 
 Users must not be named `.`, `..`, `item` or `available-roles`, and groups must not be named `.`, `..`, `item` or `available-categories`.
 If `users.xml` or `groups.xml` has one of these names, the upgrade copies none of the users and groups, and the install log names the entries.
