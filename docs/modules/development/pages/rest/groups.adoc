@@ -1,7 +1,23 @@
 
 = Groups
 
-Like users, groups have a simplified interface.
+WARNING: This API is deprecated in {page-component-title} 37 and will be removed in {page-component-title} 38.
+Use the xref:development:rest/groups_v2.adoc[Groups (v2)] API at `/api/v2/groups` instead.
+
+Groups are stored in the database.
+The write operations use the same checks as the v2 API:
+
+* A new group name must not be reserved or look like `Admin`, and must not contain markup, whitespace or any of `: / \ % ? #`.
+  The response is `400`.
+* Every member of a group must be an existing user.
+  The response is `400`.
+* A group cannot be renamed with a form `PUT` that contains `name`.
+  The response is `400`, which points to `PUT /api/v2/groups/\{name}/rename`.
+* A group that is the membership group of an on-call role or a target of a notification destination path cannot be deleted.
+  The response is `409`.
+* A save that races with another change, or is based on stale data, answers `409`.
+* A save through this API keeps the duty schedules and the default map of the stored group.
+* A caller without `ROLE_ADMIN` sees `xxxxxxxx` in place of the password hash of every user but their own in `/groups/\{groupname}/users`.
 
 == GETs (reading data)
 

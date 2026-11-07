@@ -1,10 +1,28 @@
 
 = Users
 
-Since users are not currently stored in the database, the REST interface for them is not as full-fledged as that of nodes, etc.
+WARNING: This API is deprecated in {page-component-title} 37 and will be removed in {page-component-title} 38.
+Use the xref:development:rest/users_v2.adoc[Users (v2)] API at `/api/v2/users` instead.
 
-IMPORTANT: You cannot use hibernate criteria for filtering.
-You may need to touch the `$\{OPENNMS_HOME}/etc/users.xml` file on the filesystem for any addition or modification actions to take effect (see link:http://jira.opennms.org/browse/NMS-6469[NMS-6469] for details).
+Users are stored in the database.
+You cannot use hibernate criteria for filtering.
+The write operations need the `ROLE_ADMIN` role and use the same checks as the v2 API:
+
+* A new user ID must not be reserved or look like `admin` or `rtc`, and must not contain markup, whitespace, control characters or any of `: / \ % ? #`.
+  The response is `400`.
+* Duty schedules are validated (values that are already stored are accepted unchanged) and every role must be a known security role.
+  The response is `400`.
+* A user cannot be renamed with a form `PUT` that contains `username`.
+  The response is `400`, which points to `PUT /api/v2/users/\{userId}/rename`.
+* The `admin` and `rtc` users cannot be deleted, and `admin` keeps `ROLE_ADMIN`.
+  The response is `400`.
+* The last holder of `ROLE_ADMIN` cannot be deleted or lose the role, and a user who supervises an on-call role or is the target of a notification destination path cannot be deleted.
+  The response is `409`.
+* A save that races with another change, or is based on stale data, answers `409`.
+* A caller without `ROLE_ADMIN` sees `xxxxxxxx` in place of the password hash of every user but their own.
+
+`GET /users/whoami` is deprecated too.
+Use `GET /rest/whoami`, which returns a different shape.
 
 == GETs (reading data)
 
@@ -19,6 +37,10 @@ You may need to touch the `$\{OPENNMS_HOME}/etc/users.xml` file on the filesyste
 
 | /users/\{username}
 | Get a specific user, by username.
+
+| /users/whoami
+| Get the authenticated user, without the password fields.
+Use `GET /rest/whoami` instead.
 |===
 
 == POST (adding data)

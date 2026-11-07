@@ -80,13 +80,25 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Basic Web Service using REST for OnmsUser entity
  *
+ * @deprecated Deprecated in Horizon 37 and removed in Horizon 38. Use the v2 users API ({@code /api/v2/users}).
+ *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @since 1.9.93
  */
 @Component("userRestService")
 @Path("users")
-@Tag(name = "Users", description = "Users API")
+@Tag(name = "Users", description = """
+        **Deprecated** in Horizon 37 and removed in Horizon 38. Use `/api/v2/users`.
+
+        Users are stored in the database. The write operations need `ROLE_ADMIN` and apply the same
+        checks as the v2 API. A new user ID is validated and must not be reserved, and duty schedules are
+        validated (values already stored are accepted unchanged). Security roles have to be known roles.
+        These checks answer 400, as does renaming a user (use `PUT /api/v2/users/{userId}/rename`).
+        The `admin` user always keeps `ROLE_ADMIN`.
+        A change that would leave the system without a `ROLE_ADMIN` holder, or that removes a user that an
+        on-call role or a notification destination path depends on, answers 409, as does a stale save.""")
 @Transactional
+@Deprecated(since = "37.0.0", forRemoval = true)
 public class UserRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(UserRestService.class);
     private static final Comparator<OnmsUser> USER_COMPARATOR = new Comparator<OnmsUser>() {
@@ -113,9 +125,10 @@ public class UserRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Operation(
+            deprecated = true,
             summary = "List users",
             description = """
-                    Return every user defined in `users.xml`, sorted by user name. The list is not paged and
+                    Return every user, sorted by user name. The list is not paged and
                     ignores query parameters.
                     A caller without `ROLE_ADMIN` sees the literal `xxxxxxxx` in place of every password hash
                     except their own.""",
@@ -153,10 +166,10 @@ public class UserRestService extends OnmsRestService {
                         }
                       ]
                     }"""))),
-            @ApiResponse(responseCode = "500", description = "The user configuration could not be read.",
+            @ApiResponse(responseCode = "500", description = "The users could not be read.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "java.io.FileNotFoundException: users.xml")))
+                            examples = @ExampleObject(value = "java.lang.IllegalStateException: The user data could not be read.")))
     })
     public OnmsUserList getUsers(@Context final SecurityContext securityContext) {
         try {
@@ -170,12 +183,14 @@ public class UserRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("whoami")
     @Operation(
+            deprecated = true,
             summary = "Get the authenticated user",
             description = """
-                    Return the `users.xml` entry for the authenticated principal. `password` and `passwordSalt`
+                    Return the user record of the authenticated principal. `password` and `passwordSalt`
                     are stripped from the response, so they are absent rather than masked.
-                    An authenticated principal that has no `users.xml` entry is answered with 404
-                    `User <name> does not exist.` before the handler's own null check runs.""",
+                    An authenticated principal that has no user record is answered with 404
+                    `User <name> does not exist.`.
+                    Use `GET /rest/whoami` instead. It is not deprecated and returns a different shape.""",
             operationId = "getAuthenticatedUserV1"
     )
     @ApiResponses(value = {
@@ -191,7 +206,7 @@ public class UserRestService extends OnmsRestService {
                       "duty-schedule": [],
                       "role": [ "ROLE_ADMIN" ]
                     }"""))),
-            @ApiResponse(responseCode = "404", description = "The authenticated principal has no `users.xml` entry.",
+            @ApiResponse(responseCode = "404", description = "The authenticated principal has no user record.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User admin does not exist.")))
@@ -211,6 +226,7 @@ public class UserRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{username}")
     @Operation(
+            deprecated = true,
             summary = "Get a user",
             description = """
                     Return one user by name. A caller without `ROLE_ADMIN` asking for somebody else sees the
@@ -238,7 +254,7 @@ public class UserRestService extends OnmsRestService {
                             examples = @ExampleObject(value = "User jroe does not exist.")))
     })
     public OnmsUser getUser(@Context final SecurityContext securityContext,
-            @Parameter(description = "User name as it appears in `users.xml`.", example = "admin", required = true)
+            @Parameter(description = "User name.", example = "admin", required = true)
             @PathParam("username") final String username) {
         final OnmsUser user = getOnmsUser(username);
         return filterUserPassword(securityContext, user);
@@ -247,12 +263,18 @@ public class UserRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Operation(
+            deprecated = true,
             summary = "Add or replace a user",
             description = """
                     Create a user from an XML `<user>` document. Only `application/xml` is consumed; a JSON body is
                     rejected with 415.
-                    Posting a `user-id` that already exists overwrites that entry rather than failing. `password`
+                    Posting a `user-id` that already exists overwrites that user rather than failing. `password`
                     has to be present: a body without one fails with 500.
+                    A new `user-id` is validated: it must not be reserved, look like `admin` or `rtc`, or contain
+                    markup, whitespace, control characters or `: / \\ % ? #`. Duty schedules are validated (stored
+                    values are grandfathered) and every role must be a known security role. Any of these answers 400.
+                    Overwriting a user so that it loses `ROLE_ADMIN` answers 400 for `admin` and 409 for the last
+                    holder of the role. A stale save answers 409.
                     The response carries no entity; the new user's URI is in the `Location` header.""",
             operationId = "addUserV1"
     )
@@ -271,11 +293,14 @@ public class UserRestService extends OnmsRestService {
                     </user>""")))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User stored. `Location` points at the new user."),
-            @ApiResponse(responseCode = "400", description = "The caller does not hold `ROLE_ADMIN`.",
+            @ApiResponse(responseCode = "400", description = "The caller does not hold `ROLE_ADMIN`, or the request is invalid (see the operation description).",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User jroe does not have write access to users!"))),
             @ApiResponse(responseCode = "415", description = "The body was not `application/xml`."),
+            @ApiResponse(responseCode = "409", description = "The change would leave no `ROLE_ADMIN` holder, or the user data was changed by another process since it was loaded.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "The body could not be unmarshalled, or the user could not be saved.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -311,13 +336,18 @@ public class UserRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{userCriteria}")
     @Operation(
+            deprecated = true,
             summary = "Update a user",
             description = """
                     Apply form-encoded fields to an existing user. Keys are matched against the writable
                     `OnmsUser` bean properties, so they are `fullName` and `comments` rather than the `full-name`
                     and `user-comments` spellings the read endpoints emit. A key that matches no writable property
                     is skipped, and a request that wrote nothing comes back as 304.
-                    `password` is stored verbatim unless `hashPassword=true` is sent in the same request.""",
+                    `password` is stored verbatim unless `hashPassword=true` is sent in the same request.
+                    Sending `username` answers 400, because renaming is not supported here; use
+                    `PUT /api/v2/users/{userId}/rename`. Duty schedules are validated (stored values are
+                    grandfathered) and roles have to be known; both answer 400. Removing `ROLE_ADMIN` answers
+                    400 for `admin` and 409 for the last holder of the role. A stale save answers 409.""",
             operationId = "updateUserV1"
     )
     @RequestBody(required = true, description = "Fields to apply.",
@@ -327,7 +357,7 @@ public class UserRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The user was updated."),
             @ApiResponse(responseCode = "304", description = "No supplied key matched a writable property, so nothing was written."),
-            @ApiResponse(responseCode = "400", description = "The caller does not hold `ROLE_ADMIN`.",
+            @ApiResponse(responseCode = "400", description = "The caller does not hold `ROLE_ADMIN`, or the request is invalid (see the operation description).",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User jroe does not have write access to users!"))),
@@ -335,13 +365,16 @@ public class UserRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User jroe does not exist."))),
+            @ApiResponse(responseCode = "409", description = "The change would leave no `ROLE_ADMIN` holder, or the user data was changed by another process since it was loaded.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "The user could not be saved.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "java.io.IOException: users.xml is not writable")))
+                            examples = @ExampleObject(value = "java.lang.IllegalStateException: The user could not be saved.")))
     })
     public Response updateUser(@Context final SecurityContext securityContext,
-            @Parameter(description = "User name as it appears in `users.xml`.", example = "jroe", required = true)
+            @Parameter(description = "User name.", example = "jroe", required = true)
             @PathParam("userCriteria") final String userCriteria, final MultivaluedMapImpl params) {
         writeLock();
         try {
@@ -392,17 +425,18 @@ public class UserRestService extends OnmsRestService {
     @PUT
     @Path("{userCriteria}/roles/{roleName}")
     @Operation(
+            deprecated = true,
             summary = "Grant a role to a user",
             description = """
                     Add one security role to a user. The role has to be a known role name, either one of the
                     built-in `ROLE_*` constants or one declared in `etc/security-roles.properties`.
-                    The request takes no body.""",
+                    The request takes no body. A stale save answers 409.""",
             operationId = "addUserRoleV1"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The role was added."),
             @ApiResponse(responseCode = "304", description = "The user already held the role."),
-            @ApiResponse(responseCode = "400", description = "Unknown role name, or the caller does not hold `ROLE_ADMIN`.",
+            @ApiResponse(responseCode = "400", description = "Unknown role name, the caller does not hold `ROLE_ADMIN`, or `admin` would lose `ROLE_ADMIN`.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Invalid role ROLE_BOGUS!"))),
@@ -410,13 +444,16 @@ public class UserRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User jroe does not exist."))),
+            @ApiResponse(responseCode = "409", description = "The user data was changed by another process since it was loaded.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "The user could not be saved.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "java.io.IOException: users.xml is not writable")))
+                            examples = @ExampleObject(value = "java.lang.IllegalStateException: The user could not be saved.")))
     })
     public Response addRole(@Context final SecurityContext securityContext,
-            @Parameter(description = "User name as it appears in `users.xml`.", example = "jroe", required = true)
+            @Parameter(description = "User name.", example = "jroe", required = true)
             @PathParam("userCriteria") final String userCriteria,
             @Parameter(description = "Security role to grant.", example = "ROLE_PROVISION", required = true,
                     schema = @Schema(type = "string"))
@@ -454,14 +491,16 @@ public class UserRestService extends OnmsRestService {
     @DELETE
     @Path("{userCriteria}")
     @Operation(
+            deprecated = true,
             summary = "Delete a user",
-            description = "Remove a user from `users.xml`. Group memberships and acknowledgements that name the "
-                    + "user are left alone.",
+            description = "Delete a user. Group memberships and acknowledgements that name the user are left alone. "
+                    + "Deleting `admin` or `rtc` answers 400. Deleting the last `ROLE_ADMIN` holder, the supervisor of an "
+                    + "on-call role, or the target of a notification destination path answers 409.",
             operationId = "deleteUserV1"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The user was deleted."),
-            @ApiResponse(responseCode = "400", description = "The caller does not hold `ROLE_ADMIN`.",
+            @ApiResponse(responseCode = "400", description = "The caller does not hold `ROLE_ADMIN`, or the request is invalid (see the operation description).",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User jroe does not have write access to users!"))),
@@ -469,13 +508,16 @@ public class UserRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User jroe does not exist."))),
+            @ApiResponse(responseCode = "409", description = "The user is the last `ROLE_ADMIN` holder, an on-call supervisor or a notification destination path target, or the user data was changed by another process.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "The user could not be removed.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "java.io.IOException: users.xml is not writable")))
+                            examples = @ExampleObject(value = "java.lang.IllegalStateException: The user could not be saved.")))
     })
     public Response deleteUser(@Context final SecurityContext securityContext,
-            @Parameter(description = "User name as it appears in `users.xml`.", example = "jroe", required = true)
+            @Parameter(description = "User name.", example = "jroe", required = true)
             @PathParam("userCriteria") final String userCriteria) {
         writeLock();
         try {
@@ -500,15 +542,17 @@ public class UserRestService extends OnmsRestService {
     @DELETE
     @Path("{userCriteria}/roles/{roleName}")
     @Operation(
+            deprecated = true,
             summary = "Revoke a role from a user",
             description = "Remove one security role from a user. The role has to be a known role name even when "
-                    + "the user does not hold it.",
+                    + "the user does not hold it. Removing `ROLE_ADMIN` answers 400 for `admin` and 409 for the last holder "
+                    + "of the role.",
             operationId = "deleteUserRoleV1"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The role was removed."),
             @ApiResponse(responseCode = "304", description = "The user did not hold the role."),
-            @ApiResponse(responseCode = "400", description = "Unknown role name, or the caller does not hold `ROLE_ADMIN`.",
+            @ApiResponse(responseCode = "400", description = "Unknown role name, the caller does not hold `ROLE_ADMIN`, or `admin` would lose `ROLE_ADMIN`.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Invalid role ROLE_BOGUS!"))),
@@ -516,13 +560,16 @@ public class UserRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User jroe does not exist."))),
+            @ApiResponse(responseCode = "409", description = "The change would leave no `ROLE_ADMIN` holder, or the user data was changed by another process since it was loaded.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "The user could not be saved.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "java.io.IOException: users.xml is not writable")))
+                            examples = @ExampleObject(value = "java.lang.IllegalStateException: The user could not be saved.")))
     })
     public Response deleteRole(@Context final SecurityContext securityContext,
-            @Parameter(description = "User name as it appears in `users.xml`.", example = "jroe", required = true)
+            @Parameter(description = "User name.", example = "jroe", required = true)
             @PathParam("userCriteria") final String userCriteria,
             @Parameter(description = "Security role to revoke.", example = "ROLE_PROVISION", required = true,
                     schema = @Schema(type = "string"))

@@ -81,13 +81,24 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Basic Web Service using REST for OnmsGroup entity
  *
+ * @deprecated Deprecated in Horizon 37 and removed in Horizon 38. Use the v2 groups API ({@code /api/v2/groups}).
+ *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @since 1.9.93
  */
 @Component("groupRestService")
 @Path("groups")
-@Tag(name = "Groups", description = "Groups API")
+@Tag(name = "Groups", description = """
+        **Deprecated** in Horizon 37 and removed in Horizon 38. Use `/api/v2/groups`.
+
+        Groups are stored in the database. A new group name is validated and must not be reserved, and every
+        member must be an existing user. Both answer 400, as does renaming a group
+        (use `PUT /api/v2/groups/{name}/rename`). A save through this API keeps the duty schedules and the
+        default map of the stored group. Deleting a group that is the membership group of an on-call role or
+        a target of a notification destination path answers 409, as does a stale save.
+        Password hashes of other users are shown as `xxxxxxxx` to callers without `ROLE_ADMIN`.""")
 @Transactional
+@Deprecated(since = "37.0.0", forRemoval = true)
 public class GroupRestService extends OnmsRestService {
 	
     private static final Logger LOG = LoggerFactory.getLogger(GroupRestService.class);
@@ -107,8 +118,9 @@ public class GroupRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Operation(
+            deprecated = true,
             summary = "List groups",
-            description = "Return every group defined in `groups.xml`, sorted by name. The list is not paged and "
+            description = "Return every group, sorted by name. The list is not paged and "
                     + "ignores query parameters.",
             operationId = "getGroupsV1"
     )
@@ -153,6 +165,7 @@ public class GroupRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{groupName}")
     @Operation(
+            deprecated = true,
             summary = "Get a group",
             description = "Return one group by name, including its member user names.",
             operationId = "getGroupByNameV1"
@@ -173,7 +186,7 @@ public class GroupRestService extends OnmsRestService {
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
     public OnmsGroup getGroup(
-            @Parameter(description = "Group name as it appears in `groups.xml`.", example = "Admin", required = true)
+            @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName) {
         readLock();
         
@@ -187,13 +200,15 @@ public class GroupRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Operation(
+            deprecated = true,
             summary = "Add or replace a group",
             description = """
                     Create a group from an XML `<group>` document. Only `application/xml` is consumed; a JSON body
                     is rejected with 415.
                     Posting a name that already exists overwrites that group rather than failing. A new group's name
                     must not be reserved or contain markup, whitespace or the characters `: / \\ % ? #`, and every
-                    member must be an existing user.
+                    member must be an existing user. Both answer 400. The stored group's duty schedules and default
+                    map are kept when it is overwritten.
                     The response carries no entity; the new group's URI is in the `Location` header.""",
             operationId = "addGroupV1"
     )
@@ -242,11 +257,14 @@ public class GroupRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{groupName}")
     @Operation(
+            deprecated = true,
             summary = "Update a group",
             description = """
                     Apply form-encoded fields to an existing group. Keys are matched against the writable
                     `OnmsGroup` bean properties; a key that matches none is skipped, and a request that wrote
-                    nothing comes back as 304.
+                    nothing comes back as 304. Sending `name` answers 400, because renaming is not supported
+                    here; use `PUT /api/v2/groups/{name}/rename`. Members have to be existing users (400).
+                    The stored duty schedules and default map are kept. A stale save answers 409.
                     `users` is a list property that the conversion fills with a single element, so a
                     comma-separated value becomes one element containing the commas.""",
             operationId = "updateGroupV1"
@@ -271,7 +289,7 @@ public class GroupRestService extends OnmsRestService {
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
     public Response updateGroup(
-            @Parameter(description = "Group name as it appears in `groups.xml`.", example = "Admin", required = true)
+            @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName, final MultivaluedMapImpl params) {
         writeLock();
         
@@ -310,9 +328,11 @@ public class GroupRestService extends OnmsRestService {
     @DELETE
     @Path("{groupName}")
     @Operation(
+            deprecated = true,
             summary = "Delete a group",
-            description = "Remove a group from `groups.xml`. Its category authorizations go with it; the member "
-                    + "users are left alone.",
+            description = "Delete a group. Its category authorizations go with it; the member users are left alone. "
+                    + "Deleting the membership group of an on-call role or a target of a notification destination path "
+                    + "answers 409.",
             operationId = "deleteGroupV1"
     )
     @ApiResponses(value = {
@@ -327,7 +347,7 @@ public class GroupRestService extends OnmsRestService {
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
     public Response deleteGroup(
-            @Parameter(description = "Group name as it appears in `groups.xml`.", example = "Admin", required = true)
+            @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName) {
         writeLock();
         try {
@@ -350,10 +370,11 @@ public class GroupRestService extends OnmsRestService {
     @PUT
     @Path("{groupName}/users/{userName}")
     @Operation(
+            deprecated = true,
             summary = "Add a user to a group",
             description = """
                     Add one user to a group. The request takes no body.
-                    A user name that is already a member and a user name that does not exist in `users.xml` share
+                    A user name that is already a member and a user name that does not exist share
                     the same 400 response.""",
             operationId = "addGroupUserV1"
     )
@@ -369,9 +390,9 @@ public class GroupRestService extends OnmsRestService {
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
     public Response addUser(
-            @Parameter(description = "Group name as it appears in `groups.xml`.", example = "Admin", required = true)
+            @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName,
-            @Parameter(description = "User name as it appears in `users.xml`.", example = "admin", required = true)
+            @Parameter(description = "User name.", example = "admin", required = true)
             @PathParam("userName") final String userName) {
         writeLock();
         try {
@@ -394,6 +415,7 @@ public class GroupRestService extends OnmsRestService {
     @DELETE
     @Path("{groupName}/users/{userName}")
     @Operation(
+            deprecated = true,
             summary = "Remove a user from a group",
             description = "Drop one user from a group's member list. The user itself is not deleted.",
             operationId = "removeGroupUserV1"
@@ -410,9 +432,9 @@ public class GroupRestService extends OnmsRestService {
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
     public Response removeUser(
-            @Parameter(description = "Group name as it appears in `groups.xml`.", example = "Admin", required = true)
+            @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName,
-            @Parameter(description = "User name as it appears in `users.xml`.", example = "admin", required = true)
+            @Parameter(description = "User name.", example = "admin", required = true)
             @PathParam("userName") final String userName) {
         writeLock();
         try {
@@ -436,11 +458,13 @@ public class GroupRestService extends OnmsRestService {
     @GET
     @Path("{groupName}/users/")
     @Operation(
+            deprecated = true,
             summary = "List the users in a group",
             description = """
                     Return the full user records for the group's members. Names in the group that have no
-                    `users.xml` entry are skipped rather than reported.
-                    Password hashes are masked for non-admin callers, except their own.""",
+                    user record are skipped rather than reported.
+                    A caller without `ROLE_ADMIN` sees the literal `xxxxxxxx` in place of every password hash
+                    except their own.""",
             operationId = "listGroupUsersV1"
     )
     @ApiResponses(value = {
@@ -472,7 +496,7 @@ public class GroupRestService extends OnmsRestService {
     })
     public OnmsUserList listUsersOfGroup(
             @Context final SecurityContext securityContext,
-            @Parameter(description = "Group name as it appears in `groups.xml`.", example = "Admin", required = true)
+            @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName) {
         getOnmsGroup(groupName); // check if group exists.
         final OnmsUserList users = m_groupService.getUsersOfGroup(groupName);
@@ -485,6 +509,7 @@ public class GroupRestService extends OnmsRestService {
     @GET
     @Path("{groupName}/users/{userName}")
     @Operation(
+            deprecated = true,
             summary = "Get one user of a group",
             description = "Return the full user record for one member of the group. The password hash is masked "
                     + "for non-admin callers, except their own.",
@@ -512,9 +537,9 @@ public class GroupRestService extends OnmsRestService {
     })
     public OnmsUser getUser(
             @Context final SecurityContext securityContext,
-            @Parameter(description = "Group name as it appears in `groups.xml`.", example = "Admin", required = true)
+            @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName,
-            @Parameter(description = "User name as it appears in `users.xml`.", example = "admin", required = true)
+            @Parameter(description = "User name.", example = "admin", required = true)
             @PathParam("userName") final String userName) {
         getOnmsGroup(groupName); // check if group exists.
         OnmsUser user = m_groupService.getUserForGroup(groupName,  userName);
@@ -525,6 +550,7 @@ public class GroupRestService extends OnmsRestService {
     @PUT
     @Path("{groupName}/categories/{categoryName}")
     @Operation(
+            deprecated = true,
             summary = "Authorize a group for a category",
             description = """
                     Add the group to a surveillance category's authorized-groups list. The request takes no body.
@@ -544,7 +570,7 @@ public class GroupRestService extends OnmsRestService {
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
     public Response addCategory(
-            @Parameter(description = "Group name as it appears in `groups.xml`.", example = "Admin", required = true)
+            @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName,
             @Parameter(description = "Surveillance category name.", example = "Routers", required = true)
             @PathParam("categoryName") final String categoryName) {
@@ -569,6 +595,7 @@ public class GroupRestService extends OnmsRestService {
     @DELETE
     @Path("{groupName}/categories/{categoryName}")
     @Operation(
+            deprecated = true,
             summary = "Revoke a group's authorization for a category",
             description = "Remove the group from a surveillance category's authorized-groups list.",
             operationId = "removeGroupCategoryV1"
@@ -585,7 +612,7 @@ public class GroupRestService extends OnmsRestService {
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
     public Response removeCategory(
-            @Parameter(description = "Group name as it appears in `groups.xml`.", example = "Admin", required = true)
+            @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName,
             @Parameter(description = "Surveillance category name.", example = "Routers", required = true)
             @PathParam("categoryName") final String categoryName) {
@@ -610,6 +637,7 @@ public class GroupRestService extends OnmsRestService {
     @GET
     @Path("{groupName}/categories/{categoryName}")
     @Operation(
+            deprecated = true,
             summary = "Get one category a group is authorized for",
             description = "Return the category record, provided the group is authorized for it.",
             operationId = "getGroupCategoryV1"
@@ -630,7 +658,7 @@ public class GroupRestService extends OnmsRestService {
                             examples = @ExampleObject(value = "Category with name 'Switches' does not exist for group 'NOC'.")))
     })
     public OnmsCategory getCategoryForGroup(
-            @Parameter(description = "Group name as it appears in `groups.xml`.", example = "Admin", required = true)
+            @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName,
             @Parameter(description = "Surveillance category name.", example = "Routers", required = true)
             @PathParam("categoryName") final String categoryName) {
@@ -645,6 +673,7 @@ public class GroupRestService extends OnmsRestService {
     @GET
     @Path("{groupName}/categories")
     @Operation(
+            deprecated = true,
             summary = "List the categories a group is authorized for",
             description = "Return every surveillance category whose authorized-groups list names this group. "
                     + "`totalCount` and `count` are `null` when the list is empty.",
@@ -673,7 +702,7 @@ public class GroupRestService extends OnmsRestService {
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
     public OnmsCategoryCollection listCategories(
-            @Parameter(description = "Group name as it appears in `groups.xml`.", example = "Admin", required = true)
+            @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName) {
         writeLock();
         try {

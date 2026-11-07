@@ -168,6 +168,19 @@ This way {page-component-title} never starts without users, where no one could l
 
 New REST v2 APIs manage them: xref:development:rest/users_v2.adoc[Users (v2)], xref:development:rest/groups_v2.adoc[Groups (v2)], xref:development:rest/security_roles.adoc[Security Roles] and xref:development:rest/oncall_roles.adoc[On-Call Roles].
 
+The v1 REST APIs `/rest/users` and `/rest/groups` are deprecated in Horizon 37 and will be removed in Horizon 38.
+Use `/api/v2/users` and `/api/v2/groups` instead, and `GET /rest/whoami` instead of `GET /rest/users/whoami`.
+Until they are removed, the v1 APIs apply the same checks as the v2 APIs:
+
+* They refuse to rename a user or group (`400`; use the v2 rename endpoints).
+* They validate new user IDs and group names, duty schedules, security roles and group members (`400`).
+* They refuse to delete `admin` and `rtc` (`400`).
+* They refuse to delete the last `ROLE_ADMIN` holder, to remove its `ROLE_ADMIN` role, and to delete a user or group that an on-call role or a notification destination path depends on (`409`).
+  The `admin` user must keep `ROLE_ADMIN` (`400`).
+* A stale save answers `409`.
+* A caller without `ROLE_ADMIN` sees `xxxxxxxx` in place of other users' password hashes, also in `/rest/groups/\{groupname}/users`.
+* A v1 group save keeps the duty schedules and default map of the stored group.
+
 {page-component-title} stores text as entered and HTML-encodes it only when it shows the text.
 
 The upgrade decodes HTML entities in full names and contact values once.
