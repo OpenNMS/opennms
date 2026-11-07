@@ -130,6 +130,20 @@ describe('onCallRoleAdminService writes', () => {
     expect(v2.delete).toHaveBeenCalledWith('/oncall-roles/Ops%20Rota', IF_MATCH_7)
   })
 
+  it('never sends the computed on-call fields on update, whatever the caller passes', async () => {
+    vi.mocked(v2.put).mockResolvedValue({ data: {}})
+    const role = { ...draft, onCallNow: ['bob'], onCallNowIsSupervisor: true, version: 7 } as ManagedOnCallRole
+
+    await svc.updateManagedOnCallRole(role)
+
+    const body = vi.mocked(v2.put).mock.lastCall![1] as Record<string, unknown>
+    expect(body).not.toHaveProperty('onCallNow')
+    expect(body).not.toHaveProperty('onCallNowIsSupervisor')
+    expect(body).toEqual({ ...draft, version: 7 })
+    // the caller's object is left alone
+    expect(role.onCallNow).toEqual(['bob'])
+  })
+
   it('on 412 returns the stale flag, whatever the body says', async () => {
     vi.mocked(v2.delete).mockRejectedValue({ response: { status: 412, data: 'Precondition failed.' }})
     expect((await svc.deleteManagedOnCallRole('x', 3))?.stale).toBe(true)

@@ -118,6 +118,31 @@ describe('userAdminService item URLs', () => {
   })
 })
 
+describe('userAdminService summaries', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('reads the summaries from the users endpoint with view=summary', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ data: [{ userId: 'admin', fullName: 'Administrator' }, { userId: 'jdoe', fullName: null }] })
+
+    expect(await svc.getManagedUserSummaries()).toEqual({
+      success: true,
+      message: '',
+      payload: [{ userId: 'admin', fullName: 'Administrator' }, { userId: 'jdoe', fullName: null }]
+    })
+    expect(requestedUri(vi.mocked(v2.get).mock.lastCall!, 1)).toBe('/users?view=summary')
+  })
+
+  it('fails with the server text, or a default without one', async () => {
+    vi.mocked(v2.get).mockRejectedValue({ response: { status: 503, data: UNAVAILABLE }})
+    expect(await svc.getManagedUserSummaries()).toEqual(expect.objectContaining({ success: false, message: UNAVAILABLE }))
+
+    vi.mocked(v2.get).mockRejectedValue(new Error('Network Error'))
+    expect(await svc.getManagedUserSummaries()).toEqual(expect.objectContaining({ success: false, message: 'Failed to load users.' }))
+  })
+})
+
 describe('userAdminService reads', () => {
   beforeEach(() => {
     vi.clearAllMocks()

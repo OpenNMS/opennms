@@ -77,7 +77,9 @@ const createManagedOnCallRole = async (role: ManagedOnCallRoleCreate): Promise<A
 const updateManagedOnCallRole = async (role: ManagedOnCallRole): Promise<AdminWriteResult> => {
   try {
     const target = adminItemUrl('oncall-roles', role.name)
-    await v2.put(target.url, role, adminItemConfig(target, role.version))
+    // the computed fields are the server's to fill in: never sent back, whatever the caller passes
+    const { onCallNow: _now, onCallNowIsSupervisor: _isSupervisor, ...body } = role
+    await v2.put(target.url, body, adminItemConfig(target, role.version))
     return adminWriteSuccess()
   } catch (err: any) {
     return adminWriteError(err, `Failed to update on-call role '${role.name}'.`)

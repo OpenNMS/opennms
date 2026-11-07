@@ -21,7 +21,7 @@
 ///
 
 import { adminWriteSuccess, AdminWriteResult } from '@/types/adminWrite'
-import { ManagedUser, ManagedUserCreate } from '@/types/userAdmin'
+import { ManagedUser, ManagedUserCreate, UserSummary } from '@/types/userAdmin'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
 import { adminItemConfig, adminItemUrl } from './adminItemUrl'
 import { v2 } from './axiosInstances'
@@ -38,6 +38,16 @@ const getManagedUsers = async (): Promise<ValidationResultWithPayload<ManagedUse
     return createResultWithPayload(true, '', Array.isArray(resp.data) ? resp.data : [])
   } catch (err: any) {
     return createResultWithPayload<ManagedUser[]>(false, serverMessage(err, 'Failed to load users.'))
+  }
+}
+
+// the user ids and full names only, in the order of the full list, for pickers that need no more
+const getManagedUserSummaries = async (): Promise<ValidationResultWithPayload<UserSummary[]>> => {
+  try {
+    const resp = await v2.get(endpoint, { params: { view: 'summary' }})
+    return createResultWithPayload(true, '', Array.isArray(resp.data) ? resp.data : [])
+  } catch (err: any) {
+    return createResultWithPayload<UserSummary[]>(false, serverMessage(err, 'Failed to load users.'))
   }
 }
 
@@ -103,6 +113,7 @@ export {
   createManagedUser,
   deleteManagedUser,
   getAvailableUserRoles,
+  getManagedUserSummaries,
   getManagedUsers,
   renameManagedUser,
   setManagedUserPassword,

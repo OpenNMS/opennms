@@ -37,6 +37,7 @@ const store = vi.hoisted(() => ({
   users: [] as unknown[],
   groups: [] as unknown[],
   scheduleSettings: null as unknown,
+  scheduleSettingsLoad: 'loaded' as 'pending' | 'loaded' | 'failed',
   createRole: vi.fn(),
   updateRole: vi.fn(),
   // the members of a group in `groups`, as the store answers
@@ -99,6 +100,7 @@ describe('OnCallRoleEditorPanel', () => {
     store.users = [{ userId: 'alice', fullName: 'Alice Liddell' }, { userId: 'bob', fullName: '' }]
     store.groups = [{ name: 'Night', users: ['bob'] }, { name: 'Day', users: [] }]
     store.scheduleSettings = { timeZone: 'UTC', shortMonths: SHORT_MONTHS }
+    store.scheduleSettingsLoad = 'loaded'
     store.createRole.mockResolvedValue(adminWriteSuccess())
     store.updateRole.mockResolvedValue(adminWriteSuccess())
     api.previewOnCallCalendar.mockResolvedValue({ success: true, message: '', payload: { timeZone: 'UTC', month: '2026-11', entries: [] }})
@@ -192,8 +194,56 @@ describe('OnCallRoleEditorPanel', () => {
     expect(store.updateRole.mock.calls[0][0].schedules).toEqual(role.schedules)
   })
 
+  it('does not say the settings could not be loaded while their load is pending', async () => {
+    store.scheduleSettings = null
+    store.scheduleSettingsLoad = 'pending'
+    const wrapper = await mountPanel(storedRole())
+    await wrapper.find('[data-test="tab-schedules"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-test="settings-missing"]').exists()).toBe(false)
+    await wrapper.find('[data-test="tab-calendar"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-test="calendar-settings-missing"]').exists()).toBe(false)
+
+    // the reactive store the panel sees, not the plain object behind it
+    const live = useOnCallRoleAdminStore() as unknown as typeof store
+    live.scheduleSettingsLoad = 'failed'
+    await flushPromises()
+    expect(wrapper.find('[data-test="calendar-settings-missing"]').exists()).toBe(true)
+  })
+
+  it('keeps the draft when the parent passes a new object for the same role, and resets for another one', async () => {
+    const wrapper = await mountPanel(storedRole())
+    await wrapper.find('[data-test="role-description-input"]').setValue('Typed but not saved')
+
+    await wrapper.setProps({ role: { ...storedRole(), description: 'Reloaded', version: 5 }})
+    await flushPromises()
+    expect((wrapper.find('[data-test="role-description-input"]').element as HTMLTextAreaElement).value).toBe('Typed but not saved')
+    await save(wrapper)
+    expect(store.updateRole.mock.calls[0][0]).toEqual(expect.objectContaining({ description: 'Typed but not saved', version: 5 }))
+
+    await wrapper.setProps({ role: { ...storedRole(), name: 'Other', description: 'Other rota' }})
+    await flushPromises()
+    expect((wrapper.find('[data-test="role-description-input"]').element as HTMLTextAreaElement).value).toBe('Other rota')
+  })
+
+  it('keeps a new role draft when the parent passes null again, and resets when switching to or from a role', async () => {
+    const wrapper = await mountPanel(null)
+    await wrapper.find('[data-test="role-name-input"]').setValue('Draft')
+    await wrapper.setProps({ role: null })
+    await flushPromises()
+    expect((wrapper.find('[data-test="role-name-input"]').element as HTMLInputElement).value).toBe('Draft')
+
+    await wrapper.setProps({ role: storedRole() })
+    await flushPromises()
+    await wrapper.setProps({ role: null })
+    await flushPromises()
+    expect((wrapper.find('[data-test="role-name-input"]').element as HTMLInputElement).value).toBe('')
+  })
+
   it('says the settings could not be loaded on the Schedules and Calendar tabs while they are missing', async () => {
     store.scheduleSettings = null
+    store.scheduleSettingsLoad = 'failed'
     const wrapper = await mountPanel(storedRole())
     await wrapper.find('[data-test="tab-schedules"]').trigger('click')
     await flushPromises()

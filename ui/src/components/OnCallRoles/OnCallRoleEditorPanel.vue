@@ -110,7 +110,7 @@
               :members="members"
               :groupChanged="groupChanged"
               :shortMonths="shortMonths"
-              :settingsMissing="!store.scheduleSettings"
+              :settingsMissing="settingsFailed"
               :highlightKey="highlightKey"
               @highlighted="highlightKey = null"
             />
@@ -123,7 +123,7 @@
               :cards="cards"
               v-model:month="calendarMonth"
               :members="members"
-              :settingsMissing="!store.scheduleSettings"
+              :settingsMissing="settingsFailed"
               :timeZone="store.scheduleSettings?.timeZone ?? ''"
               @add-entry="addEntry"
               @show-schedule="showSchedule"
@@ -247,6 +247,8 @@ const onCallNowText = computed(() => {
   return props.role?.onCallNowIsSupervisor ? `${text} (supervisor, nobody scheduled)` : text
 })
 
+// the settings are only reported missing once their load has failed, not while it is pending
+const settingsFailed = computed(() => store.scheduleSettingsLoad === 'failed')
 const shortMonths = computed(() => store.scheduleSettings?.shortMonths ?? [])
 const members = computed(() => store.groupMembers(membershipGroup.value))
 
@@ -275,8 +277,10 @@ const buildCards = () => {
   cardsReady.value = true
 }
 
+// The draft is reset when another role (or a new one) is opened. The parent passing a new object for the
+// same role, as a list reload does, keeps what has been typed: only the name identifies the role.
 watch(
-  () => props.role,
+  () => props.role?.name ?? null,
   () => {
     errorText.value = ''
     activeTab.value = 'details'

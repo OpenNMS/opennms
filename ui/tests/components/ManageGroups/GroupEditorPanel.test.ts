@@ -255,6 +255,28 @@ describe('GroupEditorPanel.vue', () => {
       expect(wrapper.find('[data-test="add-member-button"]').attributes('disabled')).toBeDefined()
     })
 
+    it('saves the users picked in Add users without a click on Add, after the existing members in pick order', async () => {
+      await mountPanel({ name: 'Ops', users: ['jose'], version: 1 })
+      await memberSelect().vm.$emit('update:modelValue', ['zed', 'admin'])
+      await save().trigger('click')
+      await flushPromises()
+
+      expect(store.updateGroup.mock.calls[0][0].users).toEqual(['jose', 'zed', 'admin'])
+      expect(memberSelect().props('modelValue')).toEqual([])
+    })
+
+    it('does not add a pick twice when the save fails and is tried again', async () => {
+      store.updateGroup.mockResolvedValueOnce({ success: false, message: 'Nope.', stale: false })
+      await mountPanel({ name: 'Ops', users: ['jose'], version: 1 })
+      await memberSelect().vm.$emit('update:modelValue', ['zed'])
+      await save().trigger('click')
+      await flushPromises()
+      await save().trigger('click')
+      await flushPromises()
+
+      expect(store.updateGroup.mock.calls.map((c: any[]) => c[0].users)).toEqual([['jose', 'zed'], ['jose', 'zed']])
+    })
+
     it('still reorders and removes members', async () => {
       await mountPanel({ name: 'Ops', users: ['admin', 'jose', 'ana'], version: 1 })
       await wrapper.findAll('[data-test="move-up-button"]')[2].trigger('click')

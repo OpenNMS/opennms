@@ -51,11 +51,12 @@ describe('groupAdminService member candidates', () => {
     vi.clearAllMocks()
   })
 
-  it('reads the user ids from the v2 users list', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ data: [{ userId: 'admin', version: 1 }, { userId: 'DOMAIN\\jdoe', version: 2 }] })
+  it('reads the user ids from the v2 user summaries, not the full users', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ data: [{ userId: 'admin', fullName: 'Administrator' }, { userId: 'DOMAIN\\jdoe', fullName: null }] })
 
     expect(await svc.getGroupMemberCandidates()).toEqual({ success: true, message: '', payload: ['admin', 'DOMAIN\\jdoe'] })
-    expect(v2.get).toHaveBeenCalledWith('/users')
+    expect(v2.get).toHaveBeenCalledWith('/users', { params: { view: 'summary' }})
+    expect(requestedUri(vi.mocked(v2.get).mock.lastCall!, 1)).toBe('/users?view=summary')
     expect(rest.get).not.toHaveBeenCalled()
   })
 

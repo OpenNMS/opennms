@@ -19,7 +19,7 @@
 /// language governing permissions and limitations under the
 /// License.
 ///
-import { enableAutoUnmount, mount } from '@vue/test-utils'
+import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -147,32 +147,47 @@ describe('OnCallRolesTable', () => {
   })
 
   describe('delete', () => {
+    // the confirmation dialog is teleported to the body
+    const dialogButton = (label: string) => Array.from(document.body.querySelectorAll('.p-dialog button'))
+      .find(e => e.textContent?.trim() === label) as HTMLElement | undefined
+
     const askDelete = async (wrapper: ReturnType<typeof mountTable>) => {
-      const vm = wrapper.vm as unknown as { askDelete: (r: unknown) => void, confirmDelete: () => Promise<void>, showDeleteConfirmation: boolean }
-      vm.askDelete(roles[0])
+      await rowOf(wrapper, 'Ops').find('[data-test="delete-oncall-role-button"]').trigger('click')
       await nextTick()
-      return vm
     }
 
     it('asks first and only then deletes with the name and version', async () => {
       store.deleteRole.mockResolvedValue(adminWriteSuccess())
       const wrapper = mountTable()
-      const vm = await askDelete(wrapper)
-      expect(vm.showDeleteConfirmation).toBe(true)
+      await askDelete(wrapper)
+      expect(document.body.textContent).toContain('Are you sure you want to delete the on-call role')
       expect(store.deleteRole).not.toHaveBeenCalled()
 
-      await vm.confirmDelete()
+      dialogButton('Delete')!.click()
+      await flushPromises()
       expect(store.deleteRole).toHaveBeenCalledWith('Ops', 1)
       expect(showSnackBar.mock.calls).toEqual([[{ msg: 'On-call role \'Ops\' deleted.' }]])
-      expect(vm.showDeleteConfirmation).toBe(false)
+      expect(document.body.querySelector('.p-dialog')).toBeNull()
+    })
+
+    it('does not delete when the confirmation is cancelled', async () => {
+      const wrapper = mountTable()
+      await askDelete(wrapper)
+
+      dialogButton('Cancel')!.click()
+      await flushPromises()
+      expect(store.deleteRole).not.toHaveBeenCalled()
+      expect(document.body.querySelector('.p-dialog')).toBeNull()
     })
 
     it('shows a conflict message and closes the confirmation', async () => {
       store.deleteRole.mockResolvedValue({ success: false, message: STALE_ONCALL_ROLE_MESSAGE, stale: true })
-      const vm = await askDelete(mountTable())
-      await vm.confirmDelete()
+      await askDelete(mountTable())
+
+      dialogButton('Delete')!.click()
+      await flushPromises()
       expect(showSnackBar.mock.calls).toEqual([[{ msg: STALE_ONCALL_ROLE_MESSAGE, error: true }]])
-      expect(vm.showDeleteConfirmation).toBe(false)
+      expect(document.body.querySelector('.p-dialog')).toBeNull()
     })
   })
 })
