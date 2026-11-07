@@ -317,9 +317,16 @@ public abstract class GroupManager implements GroupConfig {
             if (curGroup.getDutySchedules().size() > 0) {
                 final List<DutySchedule> dutyList = new ArrayList<DutySchedule>();
                 for (final String duty : curGroup.getDutySchedules()) {
-                    dutyList.add(new DutySchedule(duty));
+                    try {
+                        dutyList.add(new DutySchedule(duty));
+                    } catch (final RuntimeException e) {
+                        LOG.warn("Ignoring the duty schedule \"{}\" of group {}: it can't be read", duty, key, e);
+                    }
                 }
-                m_dutySchedules.put(key, dutyList);
+                // a group with no readable schedule has none, which means always on duty
+                if (!dutyList.isEmpty()) {
+                    m_dutySchedules.put(key, dutyList);
+                }
             }
         }
     }

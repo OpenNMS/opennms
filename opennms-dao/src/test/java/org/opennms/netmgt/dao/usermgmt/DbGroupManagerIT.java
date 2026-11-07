@@ -505,4 +505,21 @@ public class DbGroupManagerIT {
         }
         assertFalse(users.hasUser("joe"));
     }
+
+    @Test
+    public void testUnparseableGroupDutyScheduleInTheDatabaseIsSkipped() throws Exception {
+        m_tx.execute(s -> m_groupDao.save(new UserGroup("Other")));
+        m_tx.execute(s -> {
+            final UserGroup group = new UserGroup("Sched");
+            group.setDutySchedules(new java.util.ArrayList<>(Arrays.asList("MoTu800-17x0")));
+            m_groupDao.save(group);
+            return null;
+        });
+
+        m_manager.reload();
+
+        assertNotNull(m_manager.getGroup("Sched"));
+        assertTrue(m_manager.hasGroup("Other"));
+        assertTrue(m_manager.isGroupOnDuty("Sched", java.util.Calendar.getInstance()));
+    }
 }

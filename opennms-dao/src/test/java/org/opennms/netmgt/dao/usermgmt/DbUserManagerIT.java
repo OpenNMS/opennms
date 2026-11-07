@@ -23,6 +23,7 @@ package org.opennms.netmgt.dao.usermgmt;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -343,5 +344,24 @@ public class DbUserManagerIT {
         m_users.setContactInfo("anna", ContactType.email, "new@example.org");
         assertTrue(m_versionDao.getRowVersion(VersionedTable.users, id) > before);
         assertEquals("new@example.org", newUserManager().getEmail("anna"));
+    }
+
+    @Test
+    public void testUnparseableDutyScheduleInTheDatabaseIsSkipped() throws Exception {
+        createFullUser("other");
+        m_tx.execute(status -> {
+            final UserAccount user = new UserAccount("sched");
+            user.setPasswordHash("hash-sched");
+            user.setPasswordSalted(true);
+            user.setDutySchedules(new java.util.ArrayList<>(Arrays.asList("MoTu800-17x0")));
+            m_userDao.save(user);
+            return null;
+        });
+
+        m_users.reload();
+
+        assertNotNull(m_users.getUser("sched"));
+        assertNotNull(m_users.getUser("other"));
+        assertTrue(m_users.isUserOnDuty("sched", java.util.Calendar.getInstance()));
     }
 }

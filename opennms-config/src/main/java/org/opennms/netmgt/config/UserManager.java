@@ -285,10 +285,17 @@ public abstract class UserManager implements UserConfig {
             if (curUser.getDutySchedules().size() > 0) {
                 final List<DutySchedule> dutyList = new ArrayList<DutySchedule>();
                 for (final String duty : curUser.getDutySchedules()) {
-                	dutyList.add(new DutySchedule(duty));
+                    try {
+                        dutyList.add(new DutySchedule(duty));
+                    } catch (final RuntimeException e) {
+                        LOG.warn("Ignoring the duty schedule \"{}\" of user {}: it can't be read", duty, key, e);
+                    }
                 }
-    
-                m_dutySchedules.put(key, dutyList);
+
+                // a user with no readable schedule has none, which means always on duty
+                if (!dutyList.isEmpty()) {
+                    m_dutySchedules.put(key, dutyList);
+                }
             }
         }
     }
