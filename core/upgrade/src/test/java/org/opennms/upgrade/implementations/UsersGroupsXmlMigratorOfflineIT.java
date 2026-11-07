@@ -49,6 +49,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.TemporaryDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.dao.api.SecurityRoleDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -87,6 +88,9 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
             "security_roles", "users", "user_contacts", "user_duty_schedules", "user_security_roles",
             "groups", "group_members", "group_duty_schedules",
             "oncall_roles", "oncall_schedules", "oncall_schedule_times");
+
+    private static final List<String> ARCHIVED = List.of(
+            "users.xml", "groups.xml", "security-roles.properties", "users.xml.rpmsave", "groups.xml.rpmsave");
 
     private static final File FIXTURES = new File("src/test/resources/usersgroups/etc");
 
@@ -303,7 +307,9 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
             assertEquals("seed", admin.getPasswordHash());
             assertTrue(admin.getContacts().isEmpty());
         });
-        assertFalse(new File(m_home.getRoot(), "etc_archive").exists());
+        // the files are not read, but archived, so that nothing reads them later
+        assertNoneInEtc();
+        assertTrue(new File(archive(), "users.xml").exists());
     }
 
     @Test
@@ -337,7 +343,7 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
         migrator.postExecute();
 
         assertEquals(0, count("users"));
-        assertFalse("the files are only archived after a successful copy", new File(m_home.getRoot(), "etc_archive").exists());
+        assertFalse("the files are only archived after a successful copy", archive().exists());
     }
 
     @Test
@@ -359,7 +365,7 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
         assertEquals(0, count("users"));
         assertEquals(0, count("groups"));
         assertEquals(0, count("usermgmt_initialized"));
-        assertFalse("the files are only archived after a successful copy", new File(m_home.getRoot(), "etc_archive").exists());
+        assertFalse("the files are only archived after a successful copy", archive().exists());
     }
 
     @Test
@@ -437,22 +443,24 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
     }
 
     @Test
-    public void testAFailedArchiveCopyIsRetried() throws Exception {
+    public void testAFailedMoveIsRetriedByTheNextRun() throws Exception {
         copyFixtures();
         // a file where the folder must be
-        final File archive = new File(m_home.getRoot(), "etc_archive");
+        final File archive = archive();
         write(archive, "");
 
-        final UsersGroupsXmlMigratorOffline migrator = new UsersGroupsXmlMigratorOffline();
-        migrator.preExecute();
-        // the task fails before it writes data, so Upgrade does not mark it as done and runs it again next time
-        assertThrows(OnmsUpgradeException.class, migrator::execute);
-        assertEquals(0, count("users"));
+        final OnmsUpgradeException e = assertThrows(OnmsUpgradeException.class, this::migrate);
+        assertTrue(e.getMessage(), e.getMessage().startsWith("Can't move '"));
+        // the data is committed and the marker set: the next run takes the skip branch, which retries the move
+        assertEquals(5, count("users"));
+        assertEquals(1, count("usermgmt_initialized"));
+        assertTrue(new File(m_etc, "users.xml").exists());
 
         assertTrue(archive.delete());
         migrate();
         assertEquals(5, count("users"));
         assertTrue(new File(archive, "users.xml").exists());
+        assertNoneInEtc();
     }
 
     @Test
@@ -468,16 +476,16 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
     }
 
     @Test
-    public void testCopiesTheFilesToTheArchiveAndKeepsThem() throws Exception {
+    public void testMovesTheFilesToTheArchive() throws Exception {
         copyFixtures();
         migrate();
 
         for (final String name : List.of("users.xml", "groups.xml", "security-roles.properties")) {
-            final File archived = new File(m_home.getRoot(), "etc_archive/" + name);
+            final File archived = new File(archive(), name);
             assertTrue(name + " is archived", archived.exists());
-            assertTrue(name + " is still in etc", new File(m_etc, name).exists());
             assertTrue(FileUtils.contentEquals(new File(FIXTURES, name), archived));
         }
+        assertNoneInEtc();
     }
 
     @Test
@@ -529,6 +537,16 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
         migrator.preExecute();
         migrator.execute();
         migrator.postExecute();
+    }
+
+    private File archive() {
+        return new File(m_home.getRoot(), "etc_archive");
+    }
+
+    private void assertNoneInEtc() {
+        for (final String name : ARCHIVED) {
+            assertFalse(name + " is still in etc", new File(m_etc, name).exists());
+        }
     }
 
     private void copyFixtures() throws Exception {
@@ -604,5 +622,241 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
         // the default-users seed adds admin/admin to such a database (a new installation once the files are gone)
         migrate();
         assertEquals(0, count("usermgmt_initialized"));
+    }
+
+    @Test
+    public void testRpmSavedUsersAndDeletedGroupsGetTheDefaultAdminGroup() throws Exception {
+        // RPM renamed the changed users.xml and deleted the unchanged groups.xml
+        write("users.xml.rpmsave", USERS_ADMIN_ALICE);
+        migrate();
+
+        m_sessionUtils.withReadOnlyTransaction(() -> {
+            assertEquals(List.of("admin", "alice"),
+                    m_userDao.findAllOrderByUsername().stream().map(UserAccount::getUsername).collect(Collectors.toList()));
+            final UserGroup admin = m_groupDao.findByName("Admin");
+            assertEquals("The administrators", admin.getComments());
+            assertEquals(List.of("admin"), usernames(admin.getMembers()));
+        });
+        assertEquals(1, count("groups"));
+        assertEquals(1, count("usermgmt_initialized"));
+        assertNoneInEtc();
+        assertArchived("users.xml.rpmsave");
+    }
+
+    @Test
+    public void testPlainUsersAndDeletedGroupsGetTheDefaultAdminGroup() throws Exception {
+        write("users.xml", USERS_ADMIN_ALICE);
+        migrate();
+
+        assertEquals(2, count("users"));
+        m_sessionUtils.withReadOnlyTransaction(() ->
+                assertEquals(List.of("admin"), usernames(m_groupDao.findByName("Admin").getMembers())));
+        assertEquals(1, count("usermgmt_initialized"));
+        assertArchived("users.xml");
+    }
+
+    @Test
+    public void testRpmSavedGroupsAndDeletedUsersGetTheDefaultUsers() throws Exception {
+        write("groups.xml.rpmsave", GROUPS_ADMIN_OPS);
+        migrate();
+        seed();
+
+        final Map<String, String> defaultHashes = UserMgmtDefaults.users().getUsers().stream()
+                .collect(Collectors.toMap(User::getUserId, u -> u.getPassword().getEncryptedPassword()));
+        m_sessionUtils.withReadOnlyTransaction(() -> {
+            assertEquals(List.of("admin", "rtc"),
+                    m_userDao.findAllOrderByUsername().stream().map(UserAccount::getUsername).collect(Collectors.toList()));
+            assertEquals(defaultHashes.get("admin"), m_userDao.findByUsername("admin").getPasswordHash());
+            assertEquals(defaultHashes.get("rtc"), m_userDao.findByUsername("rtc").getPasswordHash());
+            assertEquals(List.of(SecurityRoles.ROLE_ADMIN), roleNames(m_userDao.findByUsername("admin")));
+            assertEquals(List.of("admin"), usernames(m_groupDao.findByName("Admin").getMembers()));
+            assertEquals(List.of("admin"), usernames(m_groupDao.findByName("ops").getMembers()));
+        });
+        // the seed added nothing
+        assertEquals(2, count("users"));
+        assertEquals(2, count("groups"));
+        assertEquals(1, count("usermgmt_initialized"));
+        assertNoneInEtc();
+        assertArchived("groups.xml.rpmsave");
+    }
+
+    @Test
+    public void testPlainGroupsAndDeletedUsersGetTheDefaultUsers() throws Exception {
+        write("groups.xml", GROUPS_ADMIN_OPS);
+        migrate();
+
+        assertEquals(2, count("users"));
+        assertEquals(2, count("groups"));
+        assertEquals(1, count("usermgmt_initialized"));
+        assertArchived("groups.xml");
+    }
+
+    @Test
+    public void testBothFilesRpmSaved() throws Exception {
+        write("users.xml.rpmsave", USERS_ADMIN_ALICE);
+        write("groups.xml.rpmsave", GROUPS_ADMIN_OPS);
+        migrate();
+
+        m_sessionUtils.withReadOnlyTransaction(() -> {
+            assertEquals(List.of("admin", "alice"),
+                    m_userDao.findAllOrderByUsername().stream().map(UserAccount::getUsername).collect(Collectors.toList()));
+            assertEquals(List.of("admin"), usernames(m_groupDao.findByName("ops").getMembers()));
+        });
+        assertEquals(2, count("groups"));
+        assertNoneInEtc();
+        assertArchived("users.xml.rpmsave");
+        assertArchived("groups.xml.rpmsave");
+    }
+
+    @Test
+    public void testPlainFileWinsOverRpmsave() throws Exception {
+        write("users.xml", USERS_ADMIN_ALICE);
+        write("users.xml.rpmsave", "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><users>"
+                + "<user><user-id>mallory</user-id><password>x</password></user></users></userinfo>");
+        write("groups.xml.rpmsave", GROUPS_ADMIN_OPS);
+        migrate();
+
+        m_sessionUtils.withReadOnlyTransaction(() -> assertEquals(List.of("admin", "alice"),
+                m_userDao.findAllOrderByUsername().stream().map(UserAccount::getUsername).collect(Collectors.toList())));
+        // the groups come from the .rpmsave file, as there is no plain one
+        assertEquals(2, count("groups"));
+        // the .rpmsave file is archived unread
+        assertNoneInEtc();
+        assertArchived("users.xml");
+        assertArchived("users.xml.rpmsave");
+        assertArchived("groups.xml.rpmsave");
+    }
+
+    @Test
+    public void testFailedCopyLeavesTheFilesInEtc() throws Exception {
+        copyFixtures();
+        write("users.xml.rpmsave", USERS_ADMIN_ALICE);
+        // a failure inside the transaction, after the security roles are written
+        m_jdbc.execute("CREATE FUNCTION fail_users() RETURNS trigger AS $$ BEGIN RAISE EXCEPTION 'test failure'; END $$ LANGUAGE plpgsql");
+        m_jdbc.execute("CREATE TRIGGER fail_users BEFORE INSERT ON users FOR EACH ROW EXECUTE PROCEDURE fail_users()");
+        try {
+            final OnmsUpgradeException e = assertThrows(OnmsUpgradeException.class, this::migrate);
+            assertTrue(e.getMessage(), e.getMessage().contains("test failure"));
+        } finally {
+            m_jdbc.execute("DROP TRIGGER fail_users ON users");
+            m_jdbc.execute("DROP FUNCTION fail_users()");
+        }
+
+        assertAllInEtc("users.xml", "groups.xml", "security-roles.properties", "users.xml.rpmsave");
+        assertFalse(archive().exists());
+        assertEquals(0, count("usermgmt_initialized"));
+        assertEquals(SecurityRoles.BUILTIN_ROLES.size(), count("security_roles"));
+
+        // the next run copies them
+        migrate();
+        assertEquals(5, count("users"));
+        assertNoneInEtc();
+    }
+
+    @Test
+    public void testAReservedNameLeavesTheFilesInEtc() throws Exception {
+        // fails before anything is written
+        write("users.xml.rpmsave", "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><users>"
+                + "<user><user-id>item</user-id><password>x</password></user></users></userinfo>");
+        write("groups.xml.rpmsave", GROUPS_ADMIN_OPS);
+        write("security-roles.properties", "roles=operator");
+
+        assertThrows(OnmsUpgradeException.class, this::migrate);
+
+        assertAllInEtc("users.xml.rpmsave", "groups.xml.rpmsave", "security-roles.properties");
+        assertFalse(archive().exists());
+        assertEquals(0, count("usermgmt_initialized"));
+    }
+
+    @Test
+    public void testSkipBranchMovesLeftoverFiles() throws Exception {
+        // for example, files left in etc by an earlier version, or a users.xml that a container copies on every start
+        m_jdbc.update("INSERT INTO usermgmt_initialized (initialized_by) VALUES ('DefaultUsersSeedOffline')");
+        write("users.xml", USERS_ADMIN_ALICE);
+        write("groups.xml.rpmsave", GROUPS_ADMIN_OPS);
+        migrate();
+
+        assertEquals(0, count("users"));
+        assertNoneInEtc();
+        assertArchived("users.xml");
+        assertArchived("groups.xml.rpmsave");
+    }
+
+    @Test
+    public void testIdenticalArchivedFileIsNotDuplicated() throws Exception {
+        m_jdbc.update("INSERT INTO usermgmt_initialized (initialized_by) VALUES ('DefaultUsersSeedOffline')");
+        assertTrue(archive().mkdir());
+        write(new File(archive(), "users.xml"), USERS_ADMIN_ALICE);
+        write("users.xml", USERS_ADMIN_ALICE);
+        migrate();
+
+        assertNoneInEtc();
+        assertEquals(List.of("users.xml"), List.of(archive().list()));
+    }
+
+    @Test
+    public void testDifferentArchivedFileGetsATimestampSuffix() throws Exception {
+        m_jdbc.update("INSERT INTO usermgmt_initialized (initialized_by) VALUES ('DefaultUsersSeedOffline')");
+        assertTrue(archive().mkdir());
+        write(new File(archive(), "users.xml"), "older");
+        write("users.xml", USERS_ADMIN_ALICE);
+        migrate();
+
+        assertNoneInEtc();
+        assertEquals("older", read(new File(archive(), "users.xml")));
+        final List<String> suffixed = Arrays.stream(archive().list()).filter(name -> !name.equals("users.xml")).collect(Collectors.toList());
+        assertEquals(1, suffixed.size());
+        assertTrue(suffixed.get(0), suffixed.get(0).matches("users\\.xml\\.\\d{14}"));
+        assertEquals(USERS_ADMIN_ALICE, read(new File(archive(), suffixed.get(0))));
+
+        // the same file again, as a container copies it on every start: it matches the suffixed copy
+        write("users.xml", USERS_ADMIN_ALICE);
+        migrate();
+        assertNoneInEtc();
+        assertEquals(2, archive().list().length);
+    }
+
+    @Test
+    public void testNeitherFileLetsTheSeedRun() throws Exception {
+        // a new installation, perhaps with custom security roles
+        write("security-roles.properties", "roles=operator");
+        migrate();
+
+        assertEquals(0, count("users"));
+        assertEquals(1, count("security_roles WHERE NOT builtin"));
+        assertEquals(0, count("usermgmt_initialized"));
+
+        seed();
+        assertEquals(2, count("users"));
+        assertEquals(1, count("groups"));
+    }
+
+    private static final String USERS_ADMIN_ALICE = "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><users>"
+            + "<user><user-id>admin</user-id><password salt=\"true\">changed</password><role>ROLE_ADMIN</role></user>"
+            + "<user><user-id>alice</user-id><password>x</password></user></users></userinfo>";
+
+    private static final String GROUPS_ADMIN_OPS = "<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\"><groups>"
+            + "<group><name>Admin</name><user>admin</user></group>"
+            + "<group><name>ops</name><user>admin</user></group></groups></groupinfo>";
+
+    private void assertArchived(final String name) {
+        assertTrue(name + " is archived", new File(archive(), name).exists());
+    }
+
+    private void assertAllInEtc(final String... names) {
+        for (final String name : names) {
+            assertTrue(name + " is in etc", new File(m_etc, name).exists());
+        }
+    }
+
+    private static String read(final File file) throws Exception {
+        return Files.readString(file.toPath(), StandardCharsets.UTF_8);
+    }
+
+    private static void seed() throws OnmsUpgradeException {
+        final DefaultUsersSeedOffline seed = new DefaultUsersSeedOffline();
+        seed.preExecute();
+        seed.execute();
+        seed.postExecute();
     }
 }

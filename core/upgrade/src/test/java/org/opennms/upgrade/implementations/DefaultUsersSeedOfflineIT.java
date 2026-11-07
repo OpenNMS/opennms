@@ -182,6 +182,16 @@ public class DefaultUsersSeedOfflineIT implements TemporaryDatabaseAware<Tempora
     }
 
     @Test
+    public void testRpmsaveUsersFileHoldsTheSeedBack() throws Exception {
+        // RPM renamed a changed users.xml; the migrator copies it, so here it failed
+        write("users.xml.rpmsave", EMPTY_USERS_XML);
+        seed();
+        assertEquals(0, count("users"));
+        assertEquals(0, count("groups"));
+        assertTrue(new DefaultUsersSeedOffline().isPending());
+    }
+
+    @Test
     public void testIsPendingUntilTheDatabaseIsSeeded() throws Exception {
         assertTrue(new DefaultUsersSeedOffline().isPending());
 

@@ -21,20 +21,22 @@
  */
 package org.opennms.upgrade.implementations;
 
-import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.BundleLists;
@@ -68,14 +71,26 @@ import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 
 /**
- * Copies users.xml, groups.xml and security-roles.properties into the user management tables (37.0.0).
+ * Copies users.xml, groups.xml and security-roles.properties into the user management tables (37.0.0), then moves
+ * them to {@code etc_archive}.
  *
  * <p>The task copies only into a database without user data: if there is a user, a group, an on-call
  * role or a custom security role, it copies nothing and logs why. It runs on every install, but once per
- * database: it sets the usermgmt_initialized marker when it copied a users.xml (also one without users) or
- * found data already there, and it skips a database with the marker. A run-once marker in etc would skip a
- * restored or new database on an upgraded host, and the default-users seed would then add admin/admin
- * instead of the users of users.xml. Thus, the copy never changes existing data.</p>
+ * database: it sets the usermgmt_initialized marker when it copied users (also from a users.xml without users, or
+ * the default users, see below) or found data already there, and it skips a database with the marker. Thus, the copy
+ * never changes existing data.</p>
+ *
+ * <p>OpenNMS no longer ships users.xml and groups.xml. When a package upgrade removes them, RPM renames a changed
+ * file to {@code <name>.rpmsave} and deletes an unchanged one. So each of the two files is read from
+ * {@code etc/<name>}, or else from {@code etc/<name>.rpmsave}; when both exist, the plain one is read and the
+ * {@code .rpmsave} one is archived unread. security-roles.properties was never shipped, so it is read from
+ * {@code etc} only.</p>
+ *
+ * <p>When only one of users.xml and groups.xml is found, the other one was deleted unchanged, so the task copies
+ * what OpenNMS shipped in its place ({@link UserMgmtDefaults}): the users admin and rtc, or the group Admin with
+ * admin. Without the Admin group, the default destination path would name a missing group; without the users, nobody
+ * could log in. When neither is found (a new installation), the task copies only the custom security roles and
+ * leaves the marker unset, and {@link DefaultUsersSeedOffline} adds the default users.</p>
  *
  * <p>Everything is written in one transaction. Entries that the tables cannot hold are skipped with a message: unknown security roles (which login drops today as
  * well), group members and schedule users that do not exist, on-call roles whose membership group or
@@ -90,14 +105,29 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * <p>The task is critical: when it fails, the upgrade fails, so OpenNMS does not start without users. The admin
  * fixes the cause and runs the installer again, which copies the files.</p>
  *
- * <p>The files stay in {@code etc}, because OpenNMS still reads them; copies go to {@code etc_archive}
- * before the data is written.</p>
+ * <p>After the commit, the task moves users.xml, groups.xml, security-roles.properties and the two {@code .rpmsave}
+ * files from {@code etc} to {@code etc_archive}: nothing reads them any more, and {@code opennms start} refuses to
+ * start while {@code etc} holds {@code .rpmsave} files. It moves them also when it skips a database that has the
+ * marker or already has user data. That covers files that an earlier version or a failed move left in {@code etc},
+ * and a container that copies users.xml from its overlay on every start. A file is never overwritten: a file whose
+ * content {@code etc_archive} already holds under its name is just removed from {@code etc}, and a file whose name
+ * is taken gets the suffix {@code .yyyyMMddHHmmss}. On a failure before the commit, nothing is moved, so the next
+ * install reads the files again. A file that cannot be moved fails the task; its data is committed and the marker
+ * set, so the next install skips the copy and moves the file.</p>
  */
 public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
 
     private static final String USERS_FILE_NAME = "users.xml";
     private static final String GROUPS_FILE_NAME = "groups.xml";
     private static final String SECURITY_ROLES_FILE_NAME = "security-roles.properties";
+    private static final String RPMSAVE = ".rpmsave";
+    private static final String ARCHIVE_DIR_NAME = "etc_archive";
+
+    /** The files that are moved to etc_archive, in this order. */
+    private static final List<String> ARCHIVED_FILE_NAMES = Arrays.asList(USERS_FILE_NAME, GROUPS_FILE_NAME,
+            SECURITY_ROLES_FILE_NAME, USERS_FILE_NAME + RPMSAVE, GROUPS_FILE_NAME + RPMSAVE);
+
+    private static final DateTimeFormatter ARCHIVE_SUFFIX = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     private static final List<String> TABLES = Arrays.asList(
             "security_roles", "users", "user_contacts", "user_duty_schedules", "user_security_roles",
@@ -184,22 +214,32 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
         try (final Connection connection = DataSourceFactory.getInstance().getConnection()) {
             if (UserMgmtInitialized.isSet(connection)) {
                 log("The user data of this database was initialized before (see the table usermgmt_initialized), so nothing is copied from the files\n");
+                archive();
                 return;
             }
             final String existingData = existingData(connection);
             if (existingData != null) {
                 log("The database already contains user data (%s), so nothing is copied from the files\n", existingData);
                 UserMgmtInitialized.set(connection, getId());
+                archive();
                 return;
             }
 
             final List<String> customRoles = readSecurityRoles(etcFile(SECURITY_ROLES_FILE_NAME));
-            final Userinfo userinfo = read(Userinfo.class, etcFile(USERS_FILE_NAME));
-            final Groupinfo groupinfo = read(Groupinfo.class, etcFile(GROUPS_FILE_NAME));
+            final File usersFile = source(USERS_FILE_NAME);
+            final File groupsFile = source(GROUPS_FILE_NAME);
+            Userinfo userinfo = read(Userinfo.class, usersFile);
+            Groupinfo groupinfo = read(Groupinfo.class, groupsFile);
+            if (usersFile == null && groupsFile == null) {
+                log("Neither %s nor %s was found, so no users or groups are copied\n", USERS_FILE_NAME, GROUPS_FILE_NAME);
+            } else if (groupsFile == null) {
+                log("%s not found; the default Admin group is used, as the package removed the unmodified file\n", GROUPS_FILE_NAME);
+                groupinfo = UserMgmtDefaults.groups();
+            } else if (usersFile == null) {
+                log("%s not found; the default users admin and rtc are used, as the package removed the unmodified file\n", USERS_FILE_NAME);
+                userinfo = UserMgmtDefaults.users();
+            }
             checkNoReservedNames(userinfo, groupinfo);
-            // before the data, not in postExecute(): Upgrade marks the task as done before postExecute(),
-            // so a failure there would never be retried, and after the data the next run copies nothing
-            archive();
 
             connection.setAutoCommit(false);
             final Import migration = new Import(connection, this::log);
@@ -210,7 +250,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                 migration.onCallRoles(groupinfo == null ? Collections.emptyList() : groupinfo.getRoles());
                 if (userinfo != null) {
                     // also with no users: the default-users seed must not add admin/admin to this database later.
-                    // Without a users.xml (a new installation once the files are gone), the seed adds them.
+                    // Without users.xml and groups.xml (a new installation), the seed adds them.
                     UserMgmtInitialized.set(connection, getId());
                 }
                 connection.commit();
@@ -226,6 +266,8 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
             // not in a finally block, where a failure on a lost connection would hide the real error
             connection.setAutoCommit(true);
             migration.logSummary();
+            // only after the commit: on a failure before it, the next install reads the files again
+            archive();
         } catch (final SQLException | RuntimeException e) {
             throw new OnmsUpgradeException("Can't copy users and groups to the database: " + e.getMessage(), e);
         }
@@ -233,8 +275,8 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
 
     /**
      * Fails the task on a user or group with one of the {@link ReservedNames}: the admin renames it in the files, so
-     * nothing is dropped silently. The default-users seed adds no users while users.xml exists, so the next install
-     * copies the files.
+     * nothing is dropped silently. The default-users seed adds no users while users.xml or users.xml.rpmsave exists,
+     * and the files stay in etc, so the next install copies them.
      */
     private static void checkNoReservedNames(final Userinfo userinfo, final Groupinfo groupinfo) throws OnmsUpgradeException {
         final List<String> found = new ArrayList<>();
@@ -253,7 +295,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                     + ", and groups must not be named " + String.join(", ", ReservedNames.GROUP_NAMES)
                     + ", and on-call roles must not be named " + String.join(", ", ReservedNames.ONCALL_ROLE_NAMES)
                     + ", but the files have " + String.join(", ", found)
-                    + ". Rename them in users.xml and groups.xml, and where the files refer to them (group members, on-call roles, "
+                    + ". Rename them in users.xml and groups.xml (or their .rpmsave copies), and where the files refer to them (group members, on-call roles, "
                     + "destination paths in notifications.xml), then run the installer again.");
         }
     }
@@ -281,23 +323,50 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
     public void postExecute() throws OnmsUpgradeException {
     }
 
-    /** Copies the files to {@code etc_archive}. */
+    /**
+     * Moves the files that exist in {@code etc} to {@code etc_archive}, without overwriting a file there. A file whose
+     * content is already archived under its name ({@code <name>} or {@code <name>.<yyyyMMddHHmmss>}) is just removed:
+     * a container copies its overlay users.xml to {@code etc} on every start.
+     */
     private void archive() throws OnmsUpgradeException {
-        final File archive = new File(getHomeDirectory(), "etc_archive");
-        if (!archive.isDirectory() && !archive.mkdirs()) {
-            throw new OnmsUpgradeException("Can't create the folder '" + archive + "'");
+        final Path archive = new File(getHomeDirectory(), ARCHIVE_DIR_NAME).toPath();
+        for (final String name : ARCHIVED_FILE_NAMES) {
+            final Path source = etcFile(name).toPath();
+            if (!Files.exists(source)) {
+                continue;
+            }
+            try {
+                Files.createDirectories(archive);
+                final Path copy = archivedCopy(archive, name, source);
+                if (copy != null) {
+                    Files.delete(source);
+                    log("Removed %s, as %s has the same content\n", source, copy);
+                    continue;
+                }
+                Path target = archive.resolve(name);
+                if (Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
+                    target = archive.resolve(name + "." + ARCHIVE_SUFFIX.format(LocalDateTime.now()));
+                }
+                // without REPLACE_EXISTING: fails rather than overwrites
+                Files.move(source, target);
+                log("Moved %s to %s\n", source, target);
+            } catch (final IOException | RuntimeException e) {
+                throw new OnmsUpgradeException("Can't move '" + source + "' to '" + archive + "': " + e.getMessage(), e);
+            }
         }
-        for (final String name : Arrays.asList(USERS_FILE_NAME, GROUPS_FILE_NAME, SECURITY_ROLES_FILE_NAME)) {
-            final File source = etcFile(name);
-            if (source.exists()) {
-                try {
-                    Files.copy(source.toPath(), new File(archive, name).toPath(), REPLACE_EXISTING, COPY_ATTRIBUTES);
-                    log("Copied %s to %s\n", source, archive);
-                } catch (final IOException e) {
-                    throw new OnmsUpgradeException("Can't copy '" + source + "' to '" + archive + "': " + e.getMessage(), e);
+    }
+
+    /** @return the archived copy of the file with the same content, or null if there is none */
+    private static Path archivedCopy(final Path archive, final String name, final Path source) throws IOException {
+        final Pattern copyName = Pattern.compile(Pattern.quote(name) + "(\\.\\d{14})?");
+        try (final DirectoryStream<Path> copies = Files.newDirectoryStream(archive, p -> copyName.matcher(p.getFileName().toString()).matches())) {
+            for (final Path copy : copies) {
+                if (Files.isRegularFile(copy) && Files.mismatch(source, copy) == -1L) {
+                    return copy;
                 }
             }
         }
+        return null;
     }
 
     /** Nothing to undo: {@link #execute()} rolls its transaction back. */
@@ -309,9 +378,28 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
         return new File(getHomeDirectory(), "etc" + File.separator + name);
     }
 
-    private <T> T read(final Class<T> type, final File file) throws OnmsUpgradeException {
-        if (!file.exists()) {
-            log("%s not found, nothing to copy from it\n", file);
+    /**
+     * @return {@code etc/<name>}, or else {@code etc/<name>.rpmsave}, or null if neither exists
+     */
+    private File source(final String name) {
+        final File plain = etcFile(name);
+        final File rpmsave = etcFile(name + RPMSAVE);
+        if (plain.exists()) {
+            if (rpmsave.exists()) {
+                log("Both %s and %s exist: %s is copied, and %s is archived unread\n", plain, rpmsave, plain, rpmsave);
+            }
+            return plain;
+        }
+        if (rpmsave.exists()) {
+            log("%s not found; %s is copied\n", plain, rpmsave);
+            return rpmsave;
+        }
+        return null;
+    }
+
+    /** @return the file read, or null if the file is null */
+    private static <T> T read(final Class<T> type, final File file) throws OnmsUpgradeException {
+        if (file == null) {
             return null;
         }
         try {
