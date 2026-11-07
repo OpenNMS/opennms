@@ -537,7 +537,6 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'wsman-asset-adapter-configuration.xml' | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
-	grep -v '/users.xml' | \
 	sort > %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/etc ! -type d -name \*.cfg | \
 	grep -v 'etc/org.opennms' | \
@@ -640,7 +639,6 @@ rm -rf %{buildroot}
 %attr(644,opennms,opennms)    %{_unitdir}/opennms.service
 %attr(644,root,root)	%config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
                         %config %{instprefix}/etc/custom.properties
-%attr(640,opennms,opennms)	%config(noreplace) %{instprefix}/etc/users.xml
 			%{instprefix}/data
 			%{instprefix}/deploy
 %attr(755,root,root)	%{instprefix}/lib/*snmp-metadata-provisioning-adapter*.jar

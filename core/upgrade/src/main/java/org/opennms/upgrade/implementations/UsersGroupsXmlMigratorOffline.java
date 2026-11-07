@@ -202,7 +202,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
             archive();
 
             connection.setAutoCommit(false);
-            final Import migration = new Import(connection);
+            final Import migration = new Import(connection, this::log);
             try {
                 migration.securityRoles(customRoles);
                 migration.users(userinfo == null ? Collections.emptyList() : userinfo.getUsers());
@@ -351,9 +351,19 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
         return names;
     }
 
-    /** One run of the copy, on one connection in one transaction. */
-    private class Import {
+    /** Where {@link Import} writes its messages: the log of the task that runs it. */
+    @FunctionalInterface
+    interface Log {
+        void log(String format, Object... args);
+    }
+
+    /**
+     * One run of the copy, on one connection in one transaction. Also used by {@link DefaultUsersSeedOffline}, to
+     * insert the default users and groups.
+     */
+    static class Import {
         private final Connection m_connection;
+        private final Log m_log;
 
         // name -> id, to resolve references; the database has no user data yet, only the built-in roles
         private final Map<String, Integer> m_securityRoleIds;
@@ -364,8 +374,9 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
         private int m_skipped;
         private int m_warnings;
 
-        Import(final Connection connection) throws SQLException {
+        Import(final Connection connection, final Log log) throws SQLException {
             m_connection = connection;
+            m_log = log;
             m_securityRoleIds = loadIds("SELECT name, id FROM security_roles");
         }
 
@@ -576,10 +587,10 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
 
         void logSummary() {
             for (final Map.Entry<String, Integer> entry : m_counts.entrySet()) {
-                log("%s: %d copied\n", entry.getKey(), entry.getValue());
+                m_log.log("%s: %d copied\n", entry.getKey(), entry.getValue());
             }
             if (m_skipped > 0 || m_warnings > 0) {
-                log("Entries skipped: %d, warnings: %d; see the messages above\n", m_skipped, m_warnings);
+                m_log.log("Entries skipped: %d, warnings: %d; see the messages above\n", m_skipped, m_warnings);
             }
         }
 
@@ -608,12 +619,12 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
 
         private void skip(final String format, final Object... args) {
             m_skipped++;
-            log("Skipped " + format + "\n", args);
+            m_log.log("Skipped " + format + "\n", args);
         }
 
         private void warn(final String format, final Object... args) {
             m_warnings++;
-            log("Warning: " + format + "\n", args);
+            m_log.log("Warning: " + format + "\n", args);
         }
 
         private Map<String, Integer> loadIds(final String sql) throws SQLException {

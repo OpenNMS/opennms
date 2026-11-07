@@ -23,7 +23,6 @@ package org.opennms.upgrade.implementations;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -33,8 +32,8 @@ import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 
 /**
- * Adds the default users (admin, rtc) and the Admin group to a database without users, with the values of the
- * shipped users.xml and groups.xml. Runs after UsersGroupsXmlMigratorOffline, on every install.
+ * Adds the default users (admin, rtc) and the Admin group to a database without users, with the values of
+ * UserMgmtDefaults. Runs after UsersGroupsXmlMigratorOffline, on every install.
  *
  * It seeds a database at most once: not when the table usermgmt_initialized has its row, which the migrator also
  * sets (even when it copies no users). Thus a site without local users (LDAP, RADIUS or SSO only), or one that
@@ -47,10 +46,6 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * The task is critical, like the migrator: a database it fails to seed has no users, so no one could log in.
  */
 public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
-
-    // the hashes of the shipped users.xml: admin/admin and rtc/rtc
-    private static final String ADMIN_HASH = "gU2wmSW7k9v1xg4/MrAsaI+VyddBAhJJt4zPX5SGG0BK+qiASGnJsqM8JOug/aEL";
-    private static final String RTC_HASH = "sHMy+HycWKGJC/uUMF0IGlXUXP1KhcqD0GEchFlvYTw40jT9r+zMxOb3F+phWNzX";
 
     public DefaultUsersSeedOffline() throws OnmsUpgradeException {
         super();
@@ -111,15 +106,12 @@ public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
             }
             connection.setAutoCommit(false);
             try {
-                final int admin = insertUser(connection, "admin", "Administrator", "Default administrator, do not delete", ADMIN_HASH, "ROLE_ADMIN");
-                insertUser(connection, "rtc", "RTC", "RTC user, do not delete", RTC_HASH, "ROLE_RTC");
-                final int group = insertReturningId(connection,
-                        "INSERT INTO groups (id, name, comments, created_time, last_modified) VALUES (nextval('groups_id_seq'), ?, ?, NOW(), NOW()) RETURNING id",
-                        "Admin", "The administrators");
-                update(connection, "INSERT INTO group_members (group_id, position, user_id) VALUES (?, 0, ?)", group, admin);
+                final UsersGroupsXmlMigratorOffline.Import defaults = new UsersGroupsXmlMigratorOffline.Import(connection, this::log);
+                defaults.users(UserMgmtDefaults.users().getUsers());
+                defaults.groups(UserMgmtDefaults.groups().getGroups());
                 UserMgmtInitialized.set(connection, getId());
                 connection.commit();
-            } catch (final SQLException e) {
+            } catch (final SQLException | RuntimeException e) {
                 try {
                     connection.rollback();
                 } catch (final SQLException rollbackFailure) {
@@ -129,48 +121,17 @@ public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
             }
             connection.setAutoCommit(true);
             log("Added the default users admin and rtc, and the group Admin\n");
-        } catch (final SQLException e) {
+        } catch (final SQLException | RuntimeException e) {
             throw new OnmsUpgradeException("Cannot add the default users: " + e.getMessage(), e);
         }
     }
 
-
-    private static int insertUser(final Connection connection, final String username, final String fullName,
-                                  final String comments, final String hash, final String role) throws SQLException {
-        final int id = insertReturningId(connection,
-                "INSERT INTO users (id, username, full_name, comments, password_hash, password_salted, created_time, last_modified) "
-                        + "VALUES (nextval('users_id_seq'), ?, ?, ?, ?, true, NOW(), NOW()) RETURNING id",
-                username, fullName, comments, hash);
-        update(connection, "INSERT INTO user_security_roles (user_id, role_id) SELECT ?, id FROM security_roles WHERE name = ?", id, role);
-        return id;
-    }
 
     private static int count(final Connection connection, final String sql) throws SQLException {
         try (final Statement statement = connection.createStatement(); final ResultSet rs = statement.executeQuery(sql)) {
             rs.next();
             return rs.getInt(1);
         }
-    }
-
-    private static int insertReturningId(final Connection connection, final String sql, final Object... args) throws SQLException {
-        try (final PreparedStatement statement = prepare(connection, sql, args); final ResultSet rs = statement.executeQuery()) {
-            rs.next();
-            return rs.getInt(1);
-        }
-    }
-
-    private static void update(final Connection connection, final String sql, final Object... args) throws SQLException {
-        try (final PreparedStatement statement = prepare(connection, sql, args)) {
-            statement.executeUpdate();
-        }
-    }
-
-    private static PreparedStatement prepare(final Connection connection, final String sql, final Object... args) throws SQLException {
-        final PreparedStatement statement = connection.prepareStatement(sql);
-        for (int i = 0; i < args.length; i++) {
-            statement.setObject(i + 1, args[i]);
-        }
-        return statement;
     }
 
     @Override

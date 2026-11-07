@@ -509,10 +509,10 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
     }
 
     @Test
-    public void testCopiesTheShippedDefaults() throws Exception {
-        final File shipped = new File("../../opennms-base-assembly/src/main/filtered/etc");
-        FileUtils.copyFileToDirectory(new File(shipped, "users.xml"), m_etc);
-        FileUtils.copyFileToDirectory(new File(shipped, "groups.xml"), m_etc);
+    public void testCopiesTheDefaultFiles() throws Exception {
+        final File shipped = new File("src/main/resources/org/opennms/upgrade/implementations");
+        FileUtils.copyFile(new File(shipped, "default-users.xml"), new File(m_etc, "users.xml"));
+        FileUtils.copyFile(new File(shipped, "default-groups.xml"), new File(m_etc, "groups.xml"));
         migrate();
 
         m_sessionUtils.withReadOnlyTransaction(() -> {
