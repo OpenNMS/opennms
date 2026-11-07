@@ -24,6 +24,7 @@ package org.opennms.upgrade.implementations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -44,6 +45,7 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.password.DatabasePasswords;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -150,10 +152,32 @@ public class AdminPasswordResetOfflineIT implements TemporaryDatabaseAware<Tempo
     }
 
     @Test
-    public void testRunsAfterTheSeedAndIsNotCritical() throws Exception {
+    public void testRunsAfterTheSeedAndIsCriticalOnlyWithAPassword() throws Exception {
         final AdminPasswordResetOffline reset = new AdminPasswordResetOffline();
         assertTrue(reset.getOrder() > new DefaultUsersSeedOffline().getOrder());
-        assertFalse(reset.isCritical());
         assertFalse(reset.runOnlyOnce());
+        assertFalse(reset.isCritical());
+
+        System.setProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY, "secret");
+        assertTrue(reset.isCritical());
+        // skipped while OpenNMS runs, the password would not be set: that fails the upgrade
+        assertTrue(reset.isPending());
+    }
+
+    @Test
+    public void testAFailedUpdateFailsTheUpgrade() throws Exception {
+        seed();
+        final String before = adminHash();
+        // checked on every update from now on, but not on the rows that exist
+        m_jdbc.execute("ALTER TABLE users ADD CONSTRAINT test_no_update CHECK (password_hash IS NULL) NOT VALID");
+        System.setProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY, "secret");
+
+        final AdminPasswordResetOffline reset = new AdminPasswordResetOffline();
+        reset.preExecute();
+        assertThrows(OnmsUpgradeException.class, reset::execute);
+        // the upgrade asks after execute(), which cleared the property
+        assertTrue(reset.isCritical());
+        assertNull(System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY));
+        assertEquals(before, adminHash());
     }
 }

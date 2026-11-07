@@ -31,8 +31,14 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY, because Bootstrap starts the upgrade in the same JVM and returns, so
  * the installer cannot run code after the upgrade tasks. Runs after DefaultUsersSeedOffline (19), which creates admin.
  * The password is never logged.
+ *
+ * The task is critical only while a password is given: install -R must not report success when the password could not
+ * be set. A missing admin user is no failure; the task only logs it.
  */
 public class AdminPasswordResetOffline extends AbstractOnmsUpgrade {
+
+    /** execute() clears the property, but the upgrade asks isCritical() after execute(). */
+    private boolean m_passwordGiven;
 
     public AdminPasswordResetOffline() throws OnmsUpgradeException {
         super();
@@ -61,7 +67,18 @@ public class AdminPasswordResetOffline extends AbstractOnmsUpgrade {
 
     @Override
     public boolean isCritical() {
-        return false;
+        return m_passwordGiven || passwordGiven();
+    }
+
+    /** Skipped while OpenNMS runs, the task would not set the password that was given. */
+    @Override
+    public boolean isPending() {
+        return passwordGiven();
+    }
+
+    private static boolean passwordGiven() {
+        final String password = System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY);
+        return password != null && !password.isBlank();
     }
 
     @Override
@@ -70,10 +87,11 @@ public class AdminPasswordResetOffline extends AbstractOnmsUpgrade {
 
     @Override
     public void execute() throws OnmsUpgradeException {
-        final String password = System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY);
-        if (password == null || password.isBlank()) {
+        if (!passwordGiven()) {
             return;
         }
+        m_passwordGiven = true;
+        final String password = System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY);
         try {
             DatabasePasswords.setPassword(DataSourceFactory.getInstance(), "admin", password);
             log("Password for the web application admin user was set.\n");
