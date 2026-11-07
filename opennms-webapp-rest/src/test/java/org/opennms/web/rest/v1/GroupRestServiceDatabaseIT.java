@@ -24,6 +24,7 @@ package org.opennms.web.rest.v1;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
@@ -39,6 +40,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.DbGroupManager;
+import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
 import org.opennms.netmgt.dao.api.OnCallRoleDao;
@@ -99,6 +102,9 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
 
     @Autowired
     private OnCallRoleDao m_onCallRoleDao;
+
+    @Autowired
+    private GroupManager m_groupManager;
 
     @Override
     protected void beforeServletStart() {
@@ -309,6 +315,20 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
     }
 
     @Test
+    public void testIndexedAndNestedFormKeysAre400() throws Exception {
+        createUser("jroe");
+        sendPost("/groups", "<group><name>dbindexed</name><user>jroe</user></group>", 201, "/groups/dbindexed");
+        final int version = version("dbindexed");
+
+        assertEquals("The form field users[0] is not supported: indexed and nested fields cannot be set.",
+                sendData(PUT, "application/x-www-form-urlencoded", "/groups/dbindexed", "users%5B0%5D=admin", 400).getContentAsString());
+        sendPut("/groups/dbindexed", "comments=changed&comments.bytes=x", 400);
+        assertEquals(version, version("dbindexed"));
+        assertEquals(List.of("jroe"), members("dbindexed"));
+        assertEquals(0, count("select count(*) from groups where comments = 'changed'"));
+    }
+
+    @Test
     public void testDestinationPathTargetCannotBeDeleted() throws Exception {
         createGroup("dbtarget");
         final Path path = new Path("night");
@@ -346,6 +366,7 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
                 + " select id, 0, 'MoTuWeThFr800-1700' from groups where name = 'dbkeep'");
 
         // the SQL change is one the group manager's cache has not seen: the save is a 409, and the retry is fine
+        skipTheNextVersionChecks();
         assertEquals("User data was changed by another process. Try again.",
                 sendData(PUT, "application/x-www-form-urlencoded", "/groups/dbkeep", "comments=edited", 409).getContentAsString());
         sendPut("/groups/dbkeep", "comments=edited", 204);
@@ -353,6 +374,16 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
 
         sendPost("/groups", "<group><name>dbkeep</name><comments>overwritten</comments></group>", 201, "/groups/dbkeep");
         assertKept("dbkeep", "overwritten");
+    }
+
+    /**
+     * The group manager checks the versions at most once a second, so it might see the SQL change before the save
+     * does. Make it skip the check, as if it had just checked; the reload after the failed save checks again.
+     */
+    private void skipTheNextVersionChecks() throws Exception {
+        final Field lastCheck = DbGroupManager.class.getDeclaredField("m_lastCheck");
+        lastCheck.setAccessible(true);
+        lastCheck.setLong(m_groupManager, Long.MAX_VALUE / 2);
     }
 
     private void assertKept(final String group, final String comments) {

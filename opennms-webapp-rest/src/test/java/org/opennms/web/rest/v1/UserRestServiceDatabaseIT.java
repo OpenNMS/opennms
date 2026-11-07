@@ -274,6 +274,28 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
     }
 
     @Test
+    public void testIndexedAndNestedFormKeysAre400() throws Exception {
+        // the bean wrapper would set roles[0] and dutySchedule[0], past the checks for the roles and duty schedules
+        assertEquals("The form field roles[0] is not supported: indexed and nested fields cannot be set.",
+                sendData(PUT, "application/x-www-form-urlencoded", "/users/admin", "roles%5B0%5D=ROLE_USER", 400).getContentAsString());
+        assertEquals(List.of("ROLE_ADMIN"), roles("admin"));
+
+        sendPost("/users", userXml("indexed", "MoTuWeThFr800-1700", null), 201, "/users/indexed");
+        sendPut("/users/indexed", "dutySchedule%5B0%5D=garbage", 400);
+        sendPut("/users/indexed", "fullName=x&password.bytes=y", 400);
+        assertEquals(List.of("MoTuWeThFr800-1700"), new JdbcTemplate(m_dataSource).queryForList("select schedule from user_duty_schedules"
+                + " where user_id = (select id from users where username = 'indexed')", String.class));
+        assertEquals("indexed Full Name", new JdbcTemplate(m_dataSource).queryForObject("select full_name from users where username = 'indexed'", String.class));
+    }
+
+    @Test
+    public void testUserWithoutIdIs400() throws Exception {
+        assertEquals("user-id is required.", sendData(POST, "application/xml", "/users",
+                "<user><full-name>Nobody</full-name><password>" + PASSWORD + "</password></user>", 400).getContentAsString());
+        assertEquals(1, count("select count(*) from users"));
+    }
+
+    @Test
     public void testTooLongValueIs400() throws Exception {
         createUser("long");
         // 257 code points, two chars each

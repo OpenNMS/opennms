@@ -96,6 +96,7 @@ import org.springframework.transaction.annotation.Transactional;
         (use `PUT /api/v2/groups/{name}/rename`). A save through this API keeps the duty schedules and the
         default map of the stored group. Deleting a group that is the membership group of an on-call role or
         a target of a notification destination path answers 409, as does a stale save.
+        Unlike the v2 API, which needs `ROLE_ADMIN`, the write operations are also allowed for `ROLE_REST`.
         Password hashes of other users are shown as `xxxxxxxx` to callers without `ROLE_ADMIN`.""")
 @Transactional
 @Deprecated(since = "37.0.0", forRemoval = true)
@@ -263,7 +264,8 @@ public class GroupRestService extends OnmsRestService {
                     Apply form-encoded fields to an existing group. Keys are matched against the writable
                     `OnmsGroup` bean properties; a key that matches none is skipped, and a request that wrote
                     nothing comes back as 304. Sending `name` answers 400, because renaming is not supported
-                    here; use `PUT /api/v2/groups/{name}/rename`. Members have to be existing users (400).
+                    here; use `PUT /api/v2/groups/{name}/rename`. A key with an index or a nested path, such as
+                    `users[0]`, answers 400. Members have to be existing users (400).
                     The stored duty schedules and default map are kept. A stale save answers 409.
                     `users` is a list property that the conversion fills with a single element, so a
                     comma-separated value becomes one element containing the commas.""",
@@ -276,17 +278,17 @@ public class GroupRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The group was updated."),
             @ApiResponse(responseCode = "304", description = "No supplied key matched a writable property, so nothing was written."),
-            @ApiResponse(responseCode = "400", description = "The form carries `name` (renaming is not supported here), or a member is not a user.",
+            @ApiResponse(responseCode = "400", description = "The form carries `name` (renaming is not supported here) or an indexed or nested key, or a member is not a user.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Renaming is not supported by the deprecated v1 API; use PUT /api/v2/groups/{name}/rename."))),
-            @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
-                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
-                            schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
+                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist."))),
+            @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string")))
     })
     public Response updateGroup(
             @Parameter(description = "Group name.", example = "Admin", required = true)
@@ -299,6 +301,7 @@ public class GroupRestService extends OnmsRestService {
             if (params.containsKey("name")) {
                 throw getException(Status.BAD_REQUEST, "Renaming is not supported by the deprecated v1 API; use PUT /api/v2/groups/{name}/rename.");
             }
+            UserRestService.checkFormKeys(params);
             boolean modified = false;
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(group);
             for(final String key : params.keySet()) {
@@ -337,14 +340,14 @@ public class GroupRestService extends OnmsRestService {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The group was deleted."),
-            @ApiResponse(responseCode = "409", description = "The group is the membership group of an on-call role, or a target of a destination path.",
-                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Group \"NOC\" is the membership group of the on-call role \"Weekend\". Change the membership group first."))),
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
+                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist."))),
+            @ApiResponse(responseCode = "409", description = "The group is the membership group of an on-call role or a target of a destination path, or the group data was changed by another process since it was loaded.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Group \"NOC\" is the membership group of the on-call role \"Weekend\". Change the membership group first.")))
     })
     public Response deleteGroup(
             @Parameter(description = "Group name.", example = "Admin", required = true)
@@ -387,7 +390,10 @@ public class GroupRestService extends OnmsRestService {
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
+                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist."))),
+            @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string")))
     })
     public Response addUser(
             @Parameter(description = "Group name.", example = "Admin", required = true)
@@ -429,7 +435,10 @@ public class GroupRestService extends OnmsRestService {
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
+                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist."))),
+            @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string")))
     })
     public Response removeUser(
             @Parameter(description = "Group name.", example = "Admin", required = true)
@@ -567,7 +576,10 @@ public class GroupRestService extends OnmsRestService {
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
+                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist."))),
+            @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string")))
     })
     public Response addCategory(
             @Parameter(description = "Group name.", example = "Admin", required = true)
@@ -609,7 +621,10 @@ public class GroupRestService extends OnmsRestService {
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
+                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist."))),
+            @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string")))
     })
     public Response removeCategory(
             @Parameter(description = "Group name.", example = "Admin", required = true)

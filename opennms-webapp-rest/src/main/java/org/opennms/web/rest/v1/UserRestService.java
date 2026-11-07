@@ -269,12 +269,14 @@ public class UserRestService extends OnmsRestService {
                     Create a user from an XML `<user>` document. Only `application/xml` is consumed; a JSON body is
                     rejected with 415.
                     Posting a `user-id` that already exists overwrites that user rather than failing. `password`
-                    has to be present: a body without one fails with 500.
+                    has to be present: a body without one fails with 500. A body without `user-id` answers 400.
                     A new `user-id` is validated: it must not be reserved, look like `admin` or `rtc`, or contain
                     markup, whitespace, control characters or `: / \\ % ? #`. Duty schedules are validated (stored
                     values are grandfathered) and every role must be a known security role. Any of these answers 400.
                     Overwriting a user so that it loses `ROLE_ADMIN` answers 400 for `admin` and 409 for the last
-                    holder of the role. A stale save answers 409.
+                    holder of the role. An unsalted password answers 400 when the system property
+                    `org.opennms.users.allowUnsalted` is `false`; send `hashPassword=true` to store a salted hash.
+                    A stale save answers 409.
                     The response carries no entity; the new user's URI is in the `Location` header.""",
             operationId = "addUserV1"
     )
@@ -345,9 +347,10 @@ public class UserRestService extends OnmsRestService {
                     is skipped, and a request that wrote nothing comes back as 304.
                     `password` is stored verbatim unless `hashPassword=true` is sent in the same request.
                     Sending `username` answers 400, because renaming is not supported here; use
-                    `PUT /api/v2/users/{userId}/rename`. Duty schedules are validated (stored values are
-                    grandfathered) and roles have to be known; both answer 400. Removing `ROLE_ADMIN` answers
-                    400 for `admin` and 409 for the last holder of the role. A stale save answers 409.""",
+                    `PUT /api/v2/users/{userId}/rename`. A key with an index or a nested path, such as `roles[0]`,
+                    answers 400. Duty schedules are validated (stored values are grandfathered) and roles have to
+                    be known; both answer 400. A user without `ROLE_ADMIN` after the change answers 400 for
+                    `admin` and 409 for the last holder of the role. A stale save answers 409.""",
             operationId = "updateUserV1"
     )
     @RequestBody(required = true, description = "Fields to apply.",
@@ -383,6 +386,7 @@ public class UserRestService extends OnmsRestService {
             }
             final OnmsUser user = getOnmsUser(userCriteria);
             LOG.debug("updateUser: updating user {}", user);
+            checkFormKeys(params);
             boolean modified = false;
             boolean passwordModified = false;
             boolean hashPassword = false;
@@ -407,7 +411,7 @@ public class UserRestService extends OnmsRestService {
                 LOG.debug("updateUser: user {} updated", user);
                 try {
                     // not under m_support.lockForWrite(), see addUser: the last-administrator check is not race-free here
-                    checkUpdatedUser(user, params.containsKey("roles"), params.containsKey("dutySchedule"));
+                    checkUpdatedUser(user);
                     if (passwordModified && hashPassword) hashPassword(user);
                     checkSalted(user);
                     m_userManager.save(user);
@@ -436,7 +440,7 @@ public class UserRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The role was added."),
             @ApiResponse(responseCode = "304", description = "The user already held the role."),
-            @ApiResponse(responseCode = "400", description = "Unknown role name, the caller does not hold `ROLE_ADMIN`, or `admin` would lose `ROLE_ADMIN`.",
+            @ApiResponse(responseCode = "400", description = "Unknown role name, or the caller does not hold `ROLE_ADMIN`.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Invalid role ROLE_BOGUS!"))),
@@ -608,8 +612,11 @@ public class UserRestService extends OnmsRestService {
     /** Checks a user that a POST creates or overwrites. */
     private void checkNewUser(final OnmsUser user) throws Exception {
         final String id = user.getUsername();
-        final UserAccount stored = id == null ? null : m_userAccountDao.findByUsername(id);
-        if (stored == null && id != null) {
+        if (id == null || id.isEmpty()) {
+            throw m_support.badRequest("user-id is required.");
+        }
+        final UserAccount stored = m_userAccountDao.findByUsername(id);
+        if (stored == null) {
             final String problem = UserMgmtValidation.validateName(id, "user-id", ReservedNames.USER_IDS);
             if (problem != null) {
                 throw m_support.badRequest(problem);
@@ -621,14 +628,25 @@ public class UserRestService extends OnmsRestService {
         checkRolesKeepAdministrator(id, user.getRoles());
     }
 
-    /** Checks the user of a form PUT after the form's fields were applied to it. */
-    private void checkUpdatedUser(final OnmsUser user, final boolean rolesGiven, final boolean dutyGiven) {
-        if (dutyGiven) {
-            checkDutySchedules(user, m_userAccountDao.findByUsername(user.getUsername()));
-        }
-        if (rolesGiven) {
-            checkRolesKnown(user.getRoles());
-            checkRolesKeepAdministrator(user.getUsername(), user.getRoles());
+    /**
+     * Checks the user of a form PUT after the form's fields were applied to it, whatever the fields were: the stored
+     * duty schedules are grandfathered, and the stored roles are known.
+     */
+    private void checkUpdatedUser(final OnmsUser user) {
+        checkDutySchedules(user, m_userAccountDao.findByUsername(user.getUsername()));
+        checkRolesKnown(user.getRoles());
+        checkRolesKeepAdministrator(user.getUsername(), user.getRoles());
+    }
+
+    /**
+     * Refuses a form key with an index or a nested path, such as roles[0] or a.b: the bean wrapper would set it past
+     * the checks of the plain properties. Shared with {@link GroupRestService}.
+     */
+    static void checkFormKeys(final MultivaluedMapImpl params) {
+        for (final String key : params.keySet()) {
+            if (key.indexOf('[') >= 0 || key.indexOf('.') >= 0) {
+                throw getException(Status.BAD_REQUEST, "The form field {} is not supported: indexed and nested fields cannot be set.", key);
+            }
         }
     }
 
