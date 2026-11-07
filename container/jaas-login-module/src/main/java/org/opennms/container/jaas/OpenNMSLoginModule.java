@@ -136,7 +136,7 @@ public class OpenNMSLoginModule extends AbstractKarafLoginModule {
     private Set<Principal> createPrincipals(final User configUser) {
         final Set<Principal> principals = new HashSet<>();
         for (final String configuredRole : configUser.getRoles()) {
-            // Only roles known to OpenNMS grant privileges; anything else in users.xml is ignored.
+            // Only roles known to OpenNMS grant privileges; any other role stored for the user is ignored.
             if (!Authentication.isValidRole(configuredRole)) {
                 LOG.debug("Ignoring role {} of user {}: it is not a known OpenNMS role.", configuredRole, user);
                 continue;

@@ -258,10 +258,19 @@
       <div class="card-body">
         </p>
 
-        <p><b>Configure Users, Groups and On-Call Roles</b>: Add, modify or delete
-            existing users. Groups contain users. Roles are built from groups and provide
+        <p><b>Configure Users</b>: Add, modify or delete existing users, and assign
+            them security roles.
+            (User: A person)
+        </p>
+
+        <p><b>Configure Groups</b>: Groups contain users and are the recipients of
+            notifications.
+            (Group: Administrators)
+        </p>
+
+        <p><b>Configure On-Call Roles</b>: Roles are built from groups and provide
             a mechanism to implement calendar-based on-call staff rotations.
-            (User: A person, Group: Administrators, Role: On Duty Staff)
+            (Role: On Duty Staff)
         </p>
 
 

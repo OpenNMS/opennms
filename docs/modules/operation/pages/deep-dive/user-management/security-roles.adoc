@@ -89,7 +89,7 @@ Follow the steps below to assign security roles to user accounts:
 . Click menu:User Management[Manage Users] in the side menu.
 . Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click *Configure Users*.
 . Click the edit icon beside the user to whom you want to assign a security role.
-. In the *Security Roles* field of the *Details* tab, select the roles to add to the user account.
+. In the *Security Roles* field of the *User* tab, select the roles to add to the user account.
 ** Select as many roles as necessary.
 . Click *Save User* to apply the changes.
 . Log out of {page-component-title} and log back in to apply the new security role settings.

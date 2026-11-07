@@ -78,10 +78,10 @@ The host name in `partner-rest-url` must match a name in the partner's certifica
 
 . Create the config-sync service account on the active node: add a user (see xref:deep-dive/user-management/user-config.adoc[]) and assign it the `ROLE_ADMIN` xref:deep-dive/user-management/security-roles.adoc[security role].
 The standby authenticates to the active node with this account to pull configuration; any user name works.
-Creating it on one node is enough, because `users.xml` is itself synced.
+Creating it on one node is enough, because users are stored in the database, which both nodes share.
 +
 If you create the account through the REST API, add `hashPassword=true` to the request (`POST /rest/users?hashPassword=true`, or `PUT /rest/users/<id>` with `password=<password>&hashPassword=true`).
-Without it the `password` value is stored verbatim in `users.xml`, and that file is then replicated to the other node.
+Without it the `password` value is stored verbatim in the database, which both nodes read.
 The web UI always hashes the password.
 
 . Store that password in each node's vault so it never appears in a configuration file:
@@ -151,7 +151,7 @@ Both nodes need a database round-trip well inside the heartbeat interval; node c
 
 == Configuration sync
 
-While non-ACTIVE, a node replicates `etc/` from the active node every `sync-interval-seconds`: binary-safe (keystores, `users.xml`, `scv.jce`), hash-compared, applied atomically, with deletions propagated.
+While non-ACTIVE, a node replicates `etc/` from the active node every `sync-interval-seconds`: binary-safe (keystores, `scv.jce`), hash-compared, applied atomically, with deletions propagated.
 `ha-configuration.xml` and `examples/` are never synced.
 
 On identically installed nodes leave `<sync-excludes>` empty; list only files that genuinely differ per node (for example a host-specific certificate store).
@@ -173,5 +173,5 @@ Use this when a third-party tool manages failover.
 == Security notes
 
 The `/rest/ha/config`, `/rest/ha/failover`, and `/rest/ha/sync/*` endpoints require ROLE_ADMIN; the sync endpoints serve raw credential stores.
-Because sync replicates keystores and `users.xml`, the two nodes form a single secret domain: protect `etc/` and the sync account credential accordingly, and prefer HTTPS between the nodes.
+Because sync replicates keystores such as `scv.jce`, the two nodes form a single secret domain: protect `etc/` and the sync account credential accordingly, and prefer HTTPS between the nodes.
 endif::[]

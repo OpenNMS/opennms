@@ -26,7 +26,7 @@ To create a new user account, follow these steps:
 . Click menu:User Management[Manage Users] in the side menu.
 . Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click *Configure Users*.
 . Click *Add New User*.
-. On the *Details* tab, specify a user ID, a password, and the same password again under *Confirm Password*.
+. On the *User* tab, specify a user ID, a password, and the same password again under *Confirm Password*.
 +
 NOTE: A user ID cannot contain whitespace, control characters, angle brackets (`<>`), single (`'`) and double quotation marks (`"`), backticks, or any of the characters `& : / \ % ? #`.
 It cannot be `.`, `..`, `item` or `available-roles`, and it can be at most 256 characters long.

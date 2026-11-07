@@ -19,7 +19,7 @@ To create a group of users, follow these steps:
 . Click menu:User Management[Manage Groups] in the side menu.
 . Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click *Configure Groups*.
 . Click *Add New Group*.
-. On the *Details* tab, specify the group name and, optionally, comments.
+. On the *Group* tab, specify the group name and, optionally, comments.
 +
 NOTE: A group name cannot contain whitespace, control characters, angle brackets (`<>`), single (`'`) and double (`"`) quotation marks, backticks, or any of the characters `& : / \ % ? #`.
 It cannot be `.`, `..`, `item` or `available-categories`, and it can be at most 256 characters long.

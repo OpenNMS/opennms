@@ -104,7 +104,7 @@ public interface GroupDao {
     long groupNextOnDuty(String group, Calendar time);
     
     /**
-     * Adds a new user and overwrites the "groups.xml"
+     * Adds a new user and stores it in the database
      *
      * @param name a {@link java.lang.String} object.
      * @param details a {@link org.opennms.netmgt.config.groups.Group} object.
@@ -119,16 +119,16 @@ public interface GroupDao {
     void saveRole(Role role);
     
     /**
-     * Removes the user from the list of groups. Then overwrites to the
-     * "groups.xml"
+     * Removes the user from the list of groups. Then saves the change
+     * to the database
      *
      * @param name a {@link java.lang.String} object.
      */
     void deleteUser(String name);
     
     /**
-     * Removes the group from the list of groups. Then overwrites to the
-     * "groups.xml"
+     * Removes the group from the list of groups. Then saves the change
+     * to the database
      *
      * @param name a {@link java.lang.String} object.
      */
@@ -143,7 +143,7 @@ public interface GroupDao {
     
     /**
      * When this method is called group name is changed, so also is the
-     * groupname belonging to the view. Also overwrites the "groups.xml" file
+     * groupname belonging to the view. Also saves the change to the database
      *
      * @param oldName a {@link java.lang.String} object.
      * @param newName a {@link java.lang.String} object.

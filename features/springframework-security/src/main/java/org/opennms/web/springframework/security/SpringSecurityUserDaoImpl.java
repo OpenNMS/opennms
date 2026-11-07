@@ -41,7 +41,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.Assert;
 
 /**
- * Implements the interface to allow the servlet container to check our users.xml file to authenticate users.
+ * Implements the interface to allow the servlet container to check the users stored in the database to authenticate users.
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="mailto:eric@tuxbot.com">Eric Molitor</A>
@@ -55,7 +55,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     /** The user manager. */
     private UserManager m_userManager;
 
-    /** The set of valid users from users.xml, keyed by userId. */
+    /** The set of valid users from the database, keyed by userId. */
     private Map<String, OnmsUser> m_users = null;
 
     /** The m users last modified. */
@@ -76,9 +76,9 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
     /**
      * Parses the users.
      * 
-     * <p>Convenience method for parsing the users.xml file.</p>
+     * <p>Convenience method for loading the users from the database.</p>
      * <p>This method is synchronized so only one thread at a time
-     * can parse the users.xml file and create the <code>principal</code>
+     * can load the users and create the <code>principal</code>
      * instance variable.</p>
      *
      * @throws DataRetrievalFailureException the data retrieval failure exception
@@ -110,7 +110,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
             throw new DataRetrievalFailureException("Unable to get user list.", t);
         }
 
-        LOG.debug("Loaded the users.xml file with {} users", users.size());
+        LOG.debug("Loaded the users from the database: {} users", users.size());
 
         m_usersLastModified = lastModified;
         m_users = users;

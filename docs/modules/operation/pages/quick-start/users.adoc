@@ -22,7 +22,7 @@ Follow these steps to create your user account:
 . Click menu:Administration[Configure OpenNMS] in the side menu.
 . Under OpenNMS System, click *Configure Users*.
 . Click *Add New User*.
-. On the *Details* tab, specify a user ID and password, and confirm the password.
+. On the *User* tab, specify a user ID and password, and confirm the password.
 . Enter your information:
 ** Type your name in the *Full Name* field.
 ** In the *Security Roles* field, select `ROLE_ADMIN`.
