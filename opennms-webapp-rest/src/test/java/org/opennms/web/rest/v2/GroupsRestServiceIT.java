@@ -233,6 +233,21 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testQuotesAndAmpersandInGroupNameAre400() throws Exception {
+        exec(POST, "/groups", "{\"name\":\"John<b>Doe</b>\"}", null, 400);
+        exec(POST, "/groups", "{\"name\":\"Jane'Doe'\"}", null, 400);
+        exec(POST, "/groups", "{\"name\":\"John&Doe\"}", null, 400);
+        exec(POST, "/groups", "{\"name\":\"Jane\\\"\\\"Doe\"}", null, 400);
+    }
+
+    @Test
+    public void testPunctuationAndLettersInGroupNameAreAccepted() throws Exception {
+        for (final String name : new String[] { "John-Doe", "John.Doe", "John@D\u00f6e.com", "John\u00e9Doe" }) {
+            exec(POST, "/groups", "{\"name\":\"" + name + "\"}", null, 201);
+        }
+    }
+
+    @Test
     public void testUnknownNewMemberIs400() throws Exception {
         createUser("known");
         exec(POST, "/groups", "{\"name\":\"memgroup\",\"users\":[\"known\"]}", null, 201);

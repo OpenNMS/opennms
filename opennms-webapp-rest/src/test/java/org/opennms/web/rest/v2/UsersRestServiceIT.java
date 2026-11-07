@@ -247,6 +247,21 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testQuotesAndAmpersandInUserIdAre400() throws Exception {
+        exec(POST, "/users", "{\"userId\":\"John<b>Doe</b>\",\"password\":\"x\"}", null, 400);
+        exec(POST, "/users", "{\"userId\":\"Jane'Doe'\",\"password\":\"x\"}", null, 400);
+        exec(POST, "/users", "{\"userId\":\"John&Doe\",\"password\":\"x\"}", null, 400);
+        exec(POST, "/users", "{\"userId\":\"Jane\\\"\\\"Doe\",\"password\":\"x\"}", null, 400);
+    }
+
+    @Test
+    public void testPunctuationAndLettersInUserIdAreAccepted() throws Exception {
+        for (final String userId : new String[] { "John-Doe", "John.Doe", "John@D\u00f6e.com", "John\u00e9Doe" }) {
+            exec(POST, "/users", "{\"userId\":\"" + userId + "\",\"password\":\"x\"}", null, 201);
+        }
+    }
+
+    @Test
     public void testLengthLimitsAre400() throws Exception {
         final String tooLong = "x".repeat(257);
         exec(POST, "/users", "{\"userId\":\"longname\",\"password\":\"pw\",\"fullName\":\"" + tooLong + "\"}", null, 400);
