@@ -111,7 +111,7 @@ public class UserMgmtRestSupport {
     public static final Set<String> PROTECTED_USERS = Set.of("admin", "rtc");
 
     /** The destination paths that notifd sends to. */
-    static final Callable<Collection<Path>> NOTIFD_DESTINATION_PATHS = () -> {
+    public static final Callable<Collection<Path>> NOTIFD_DESTINATION_PATHS = () -> {
         DestinationPathFactory.init();
         return DestinationPathFactory.getInstance().getPaths().values();
     };

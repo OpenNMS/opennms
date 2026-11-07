@@ -22,8 +22,10 @@
 package org.opennms.web.rest.v1;
 
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -34,6 +36,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -50,7 +53,15 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.opennms.netmgt.config.UserDataChangedException;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.dao.api.SecurityRoleDao;
+import org.opennms.netmgt.dao.api.UserAccountDao;
+import org.opennms.netmgt.model.usermgmt.ReservedNames;
+import org.opennms.netmgt.model.usermgmt.UserAccount;
+import org.opennms.web.rest.v2.UserMgmtRestSupport;
+import org.opennms.web.rest.v2.UserMgmtValidation;
+import org.opennms.web.rest.v2.UserMgmtValidationException;
 import org.opennms.web.rest.v1.model.UserUpdateForm;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
@@ -84,6 +95,15 @@ public class UserRestService extends OnmsRestService {
 
     @Autowired
     private UserManager m_userManager;
+
+    @Autowired
+    private UserMgmtRestSupport m_support;
+
+    @Autowired
+    private UserAccountDao m_userAccountDao;
+
+    @Autowired
+    private SecurityRoleDao m_securityRoleDao;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
@@ -266,10 +286,14 @@ public class UserRestService extends OnmsRestService {
             }
             LOG.debug("addUser: Adding user {}", user);
             try {
+                // The checks run before the manager call and without m_support.lockForWrite(): the manager saves in its
+                // own REQUIRES_NEW transaction and takes the version locks itself, so holding them here would
+                // deadlock. So the last-administrator check is not race-free in this deprecated API (v2 is).
+                checkNewUser(user);
                 if (hashPassword) hashPassword(user);
                 m_userManager.save(user);
             } catch (final Throwable t) {
-                throw getException(Status.INTERNAL_SERVER_ERROR, t);
+                throw translate(t);
             }
             return Response.created(getRedirectUri(uriInfo, user.getUsername())).build();
         } finally {
@@ -325,6 +349,9 @@ public class UserRestService extends OnmsRestService {
             boolean hashPassword = false;
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(user);
             for(final String key : params.keySet()) {
+                if ("username".equals(key)) {
+                    throw getException(Status.BAD_REQUEST, "Renaming is not supported by the deprecated v1 API; use PUT /api/v2/users/{userId}/rename.");
+                }
                 if (wrapper.isWritableProperty(key)) {
                     final String stringValue = params.getFirst(key);
                     final Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
@@ -340,10 +367,12 @@ public class UserRestService extends OnmsRestService {
             if (modified) {
                 LOG.debug("updateUser: user {} updated", user);
                 try {
+                    // not under m_support.lockForWrite(), see addUser: the last-administrator check is not race-free here
+                    checkUpdatedUser(user, params.containsKey("roles"), params.containsKey("dutySchedule"));
                     if (passwordModified && hashPassword) hashPassword(user);
                     m_userManager.save(user);
                 } catch (final Throwable t) {
-                    throw getException(Status.INTERNAL_SERVER_ERROR, t);
+                    throw translate(t);
                 }
                 return Response.noContent().build();
             }
@@ -405,7 +434,7 @@ public class UserRestService extends OnmsRestService {
                 try {
                     m_userManager.save(user);
                 } catch (final Throwable t) {
-                    throw getException(Status.INTERNAL_SERVER_ERROR, t);
+                    throw translate(t);
                 }
                 return Response.noContent().build();
             }
@@ -449,9 +478,11 @@ public class UserRestService extends OnmsRestService {
             final OnmsUser user = getOnmsUser(userCriteria);
             LOG.debug("deleteUser: deleting user {}", user);
             try {
+                // not under m_support.lockForWrite(), see addUser: the last-administrator check is not race-free here
+                checkDeletable(user.getUsername());
                 m_userManager.deleteUser(user.getUsername());
             } catch (final Throwable t) {
-                throw getException(Status.INTERNAL_SERVER_ERROR, t);
+                throw translate(t);
             }
             return Response.noContent().build();
         } finally {
@@ -506,9 +537,11 @@ public class UserRestService extends OnmsRestService {
             if (modified) {
                 LOG.debug("deleteRole: user {} updated", user);
                 try {
+                    // not under m_support.lockForWrite(), see addUser: the last-administrator check is not race-free here
+                    checkRolesKeepAdministrator(user.getUsername(), user.getRoles());
                     m_userManager.save(user);
                 } catch (final Throwable t) {
-                    throw getException(Status.INTERNAL_SERVER_ERROR, t);
+                    throw translate(t);
                 }
                 return Response.noContent().build();
             }
@@ -516,6 +549,90 @@ public class UserRestService extends OnmsRestService {
         } finally {
             writeUnlock();
         }
+    }
+
+    /** Checks a user that a POST creates or overwrites. */
+    private void checkNewUser(final OnmsUser user) throws Exception {
+        final String id = user.getUsername();
+        final UserAccount stored = id == null ? null : m_userAccountDao.findByUsername(id);
+        if (stored == null && id != null) {
+            final String problem = UserMgmtValidation.validateName(id, "user-id", ReservedNames.USER_IDS);
+            if (problem != null) {
+                throw m_support.badRequest(problem);
+            }
+            m_support.checkNotLookAlike(id, UserMgmtRestSupport.PROTECTED_USERS, "user-id");
+        }
+        checkDutySchedules(user, stored);
+        checkRolesKnown(user.getRoles());
+        checkRolesKeepAdministrator(id, user.getRoles());
+    }
+
+    /** Checks the user of a form PUT after the form's fields were applied to it. */
+    private void checkUpdatedUser(final OnmsUser user, final boolean rolesGiven, final boolean dutyGiven) {
+        if (dutyGiven) {
+            checkDutySchedules(user, m_userAccountDao.findByUsername(user.getUsername()));
+        }
+        if (rolesGiven) {
+            checkRolesKnown(user.getRoles());
+            checkRolesKeepAdministrator(user.getUsername(), user.getRoles());
+        }
+    }
+
+    private void checkDutySchedules(final OnmsUser user, final UserAccount stored) {
+        if (user.getDutySchedule() != null) {
+            UserMgmtValidation.validateDutySchedules("User " + user.getUsername(), user.getDutySchedule(),
+                    stored == null ? null : stored.getDutySchedules());
+        }
+    }
+
+    private void checkRolesKnown(final Collection<String> roles) {
+        if (roles == null) {
+            return;
+        }
+        for (final String role : roles) {
+            if (role == null || m_securityRoleDao.findByName(role) == null) {
+                throw m_support.badRequest("Unknown security role " + role + ".");
+            }
+        }
+    }
+
+    /** The admin user keeps ROLE_ADMIN (400), and so does the last holder of it (409). */
+    private void checkRolesKeepAdministrator(final String id, final Collection<String> roles) {
+        if (roles != null && roles.contains(Authentication.ROLE_ADMIN)) {
+            return;
+        }
+        if ("admin".equals(id)) {
+            throw m_support.badRequest("The admin user must keep the " + Authentication.ROLE_ADMIN + " role.");
+        }
+        final UserAccount stored = id == null ? null : m_userAccountDao.findByUsername(id);
+        if (stored != null) {
+            m_support.checkNotLastAdministrator(stored, "lose the " + Authentication.ROLE_ADMIN + " role");
+        }
+    }
+
+    private void checkDeletable(final String id) throws Exception {
+        if (UserMgmtRestSupport.PROTECTED_USERS.contains(id)) {
+            throw m_support.badRequest("The system user " + id + " cannot be deleted.");
+        }
+        final UserAccount stored = m_userAccountDao.findByUsername(id);
+        if (stored != null) {
+            m_support.checkNotLastAdministrator(stored, "be deleted");
+        }
+        m_support.checkNotDestinationPathTarget("User " + id, id);
+    }
+
+    /** Answers what the checks and the manager refuse with 400 or 409; only a real failure is a 500. */
+    private static WebApplicationException translate(final Throwable t) {
+        if (t instanceof WebApplicationException) {
+            return (WebApplicationException) t;
+        }
+        if (t instanceof IllegalArgumentException || t instanceof UserMgmtValidationException) {
+            return getException(Status.BAD_REQUEST, t);
+        }
+        if (t instanceof IllegalStateException || t instanceof UserDataChangedException) {
+            return getException(Status.CONFLICT, t);
+        }
+        return getException(Status.INTERNAL_SERVER_ERROR, t);
     }
 
     private OnmsUser getOnmsUser(String username) {
