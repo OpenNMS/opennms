@@ -255,13 +255,13 @@ describe('GroupEditorPanel.vue', () => {
       expect(wrapper.find('[data-test="add-member-button"]').attributes('disabled')).toBeDefined()
     })
 
-    it('saves the users picked in Add users without a click on Add, after the existing members in pick order', async () => {
+    it('saves the users picked in Add users without a click on Add, after the existing members in the order Add uses', async () => {
       await mountPanel({ name: 'Ops', users: ['jose'], version: 1 })
       await memberSelect().vm.$emit('update:modelValue', ['zed', 'admin'])
       await save().trigger('click')
       await flushPromises()
 
-      expect(store.updateGroup.mock.calls[0][0].users).toEqual(['jose', 'zed', 'admin'])
+      expect(store.updateGroup.mock.calls[0][0].users).toEqual(['jose', 'admin', 'zed'])
       expect(memberSelect().props('modelValue')).toEqual([])
     })
 
