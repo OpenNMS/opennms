@@ -21,6 +21,7 @@
  */
 package org.opennms.web.rest.v1;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,10 +35,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,14 +52,22 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.opennms.netmgt.config.UserDataChangedException;
+import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsGroup;
 import org.opennms.netmgt.model.OnmsGroupList;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
+import org.opennms.netmgt.model.usermgmt.OnCallRole;
+import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.v1.model.GroupUpdateForm;
+import org.opennms.web.rest.v2.UserMgmtRestSupport;
+import org.opennms.web.rest.v2.UserMgmtValidation;
+import org.opennms.web.rest.v2.UserMgmtValidationException;
 import org.opennms.web.svclayer.api.GroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +93,15 @@ public class GroupRestService extends OnmsRestService {
 
     @Autowired
     private GroupService m_groupService;
+
+    @Autowired
+    private UserManager m_userManager;
+
+    @Autowired
+    private OnCallRoleDao m_onCallRoleDao;
+
+    @Autowired
+    private UserMgmtRestSupport m_support;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
@@ -170,8 +190,9 @@ public class GroupRestService extends OnmsRestService {
             description = """
                     Create a group from an XML `<group>` document. Only `application/xml` is consumed; a JSON body
                     is rejected with 415.
-                    Posting a name that already exists overwrites that group rather than failing. Member user names
-                    are stored as given and are not checked against `users.xml`.
+                    Posting a name that already exists overwrites that group rather than failing. A new group's name
+                    must not be reserved or contain markup, whitespace or the characters `: / \\ % ? #`, and every
+                    member must be an existing user.
                     The response carries no entity; the new group's URI is in the `Location` header.""",
             operationId = "addGroupV1"
     )
@@ -186,6 +207,13 @@ public class GroupRestService extends OnmsRestService {
                     </group>""")))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Group stored. `Location` points at the new group."),
+            @ApiResponse(responseCode = "400", description = "The name is reserved or invalid, or a member is not a user.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "jroe is not a user."))),
+            @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "415", description = "The body was not `application/xml`."),
             @ApiResponse(responseCode = "500", description = "The body could not be unmarshalled, or the group could not be saved.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
@@ -197,7 +225,12 @@ public class GroupRestService extends OnmsRestService {
         
         try {
             LOG.debug("addGroup: Adding group {}", group);
-            m_groupService.saveGroup(group);
+            try {
+                checkNewGroup(group);
+                m_groupService.saveGroup(group);
+            } catch (final Throwable t) {
+                throw translate(t);
+            }
             return Response.created(getRedirectUri(uriInfo, group.getName())).build();
         } finally {
             writeUnlock();
@@ -224,6 +257,13 @@ public class GroupRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The group was updated."),
             @ApiResponse(responseCode = "304", description = "No supplied key matched a writable property, so nothing was written."),
+            @ApiResponse(responseCode = "400", description = "The form carries `name` (renaming is not supported here), or a member is not a user.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Renaming is not supported by the deprecated v1 API; use PUT /api/v2/groups/{name}/rename."))),
+            @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -237,6 +277,9 @@ public class GroupRestService extends OnmsRestService {
         try {
             OnmsGroup group = getOnmsGroup(groupName);
             LOG.debug("updateGroup: updating group {}", group);
+            if (params.containsKey("name")) {
+                throw getException(Status.BAD_REQUEST, "Renaming is not supported by the deprecated v1 API; use PUT /api/v2/groups/{name}/rename.");
+            }
             boolean modified = false;
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(group);
             for(final String key : params.keySet()) {
@@ -249,7 +292,12 @@ public class GroupRestService extends OnmsRestService {
             }
             if (modified) {
                 LOG.debug("updateGroup: group {} updated", group);
-                m_groupService.saveGroup(group);
+                try {
+                    checkMembers(group);
+                    m_groupService.saveGroup(group);
+                } catch (final Throwable t) {
+                    throw translate(t);
+                }
                 return Response.noContent().build();
             }
             return Response.notModified().build();
@@ -268,6 +316,10 @@ public class GroupRestService extends OnmsRestService {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The group was deleted."),
+            @ApiResponse(responseCode = "409", description = "The group is the membership group of an on-call role, or a target of a destination path.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Group \"NOC\" is the membership group of the on-call role \"Weekend\". Change the membership group first."))),
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -280,7 +332,14 @@ public class GroupRestService extends OnmsRestService {
         try {
             final OnmsGroup group = getOnmsGroup(groupName);
             LOG.debug("deleteGroup: deleting group {}", group);
-            m_groupService.deleteGroup(groupName);
+            try {
+                // the checks run before the manager call and without m_support.lockForWrite(): the manager saves in
+                // its own REQUIRES_NEW transaction and takes the version locks itself, so holding them here would deadlock
+                checkDeletable(groupName);
+                m_groupService.deleteGroup(groupName);
+            } catch (final Throwable t) {
+                throw translate(t);
+            }
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -316,7 +375,12 @@ public class GroupRestService extends OnmsRestService {
         writeLock();
         try {
             getOnmsGroup(groupName); // just ensure that group exists
-            boolean success = m_groupService.addUser(groupName, userName);
+            final boolean success;
+            try {
+                success = m_groupService.addUser(groupName, userName);
+            } catch (final Throwable t) {
+                throw translate(t);
+            }
             if (success) {
                 return Response.noContent().build();
             }
@@ -354,7 +418,11 @@ public class GroupRestService extends OnmsRestService {
             final OnmsGroup group = getOnmsGroup(groupName);
             if (group.getUsers().contains(userName)) {
                 group.removeUser(userName);
-                m_groupService.saveGroup(group);
+                try {
+                    m_groupService.saveGroup(group);
+                } catch (final Throwable t) {
+                    throw translate(t);
+                }
                 return Response.noContent().build();
             } else {
                 throw getException(Status.BAD_REQUEST, "User with name '{}' does not exist in group '{}'", userName, groupName);
@@ -371,7 +439,7 @@ public class GroupRestService extends OnmsRestService {
             description = """
                     Return the full user records for the group's members. Names in the group that have no
                     `users.xml` entry are skipped rather than reported.
-                    Password hashes are not masked for non-admin callers.""",
+                    Password hashes are masked for non-admin callers, except their own.""",
             operationId = "listGroupUsersV1"
     )
     @ApiResponses(value = {
@@ -402,18 +470,23 @@ public class GroupRestService extends OnmsRestService {
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
     public OnmsUserList listUsersOfGroup(
+            @Context final SecurityContext securityContext,
             @Parameter(description = "Group name as it appears in `groups.xml`.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName) {
         getOnmsGroup(groupName); // check if group exists.
-        return m_groupService.getUsersOfGroup(groupName);
+        final OnmsUserList users = m_groupService.getUsersOfGroup(groupName);
+        for (final OnmsUser user : users) {
+            UserRestService.filterUserPassword(securityContext, user);
+        }
+        return users;
     }
     
     @GET
     @Path("{groupName}/users/{userName}")
     @Operation(
             summary = "Get one user of a group",
-            description = "Return the full user record for one member of the group. The password hash is not "
-                    + "masked for non-admin callers.",
+            description = "Return the full user record for one member of the group. The password hash is masked "
+                    + "for non-admin callers, except their own.",
             operationId = "getGroupUserV1"
     )
     @ApiResponses(value = {
@@ -437,13 +510,14 @@ public class GroupRestService extends OnmsRestService {
                             examples = @ExampleObject(value = "User with name 'jroe' does not exist in group 'NOC'")))
     })
     public OnmsUser getUser(
+            @Context final SecurityContext securityContext,
             @Parameter(description = "Group name as it appears in `groups.xml`.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName,
             @Parameter(description = "User name as it appears in `users.xml`.", example = "admin", required = true)
             @PathParam("userName") final String userName) {
         getOnmsGroup(groupName); // check if group exists.
         OnmsUser user = m_groupService.getUserForGroup(groupName,  userName);
-        if (user != null) return user;
+        if (user != null) return UserRestService.filterUserPassword(securityContext, user);
         throw getException(Status.NOT_FOUND, "User with name '{}' does not exist in group '{}'", userName, groupName);
     }
 
@@ -476,7 +550,12 @@ public class GroupRestService extends OnmsRestService {
         writeLock();
         try {
             getOnmsGroup(groupName); // check if group exists.
-            boolean success = m_groupService.addCategory(groupName, categoryName);
+            final boolean success;
+            try {
+                success = m_groupService.addCategory(groupName, categoryName);
+            } catch (final Throwable t) {
+                throw translate(t);
+            }
             if (success) {
                 return Response.noContent().build();
             }
@@ -512,7 +591,12 @@ public class GroupRestService extends OnmsRestService {
         writeLock();
         try {
             getOnmsGroup(groupName); // check if group exists.
-            boolean success = m_groupService.removeCategory(groupName, categoryName);
+            final boolean success;
+            try {
+                success = m_groupService.removeCategory(groupName, categoryName);
+            } catch (final Throwable t) {
+                throw translate(t);
+            }
             if (success) {
                 return Response.noContent().build();
             }
@@ -599,6 +683,59 @@ public class GroupRestService extends OnmsRestService {
         }
     }
     
+    /** Checks a group that a POST creates or overwrites. */
+    private void checkNewGroup(final OnmsGroup group) throws Exception {
+        final String name = group == null ? null : group.getName();
+        if (name == null || name.isBlank()) {
+            throw m_support.badRequest("A group name is required.");
+        }
+        // a stored name is grandfathered: a POST that overwrites it must not fail on today's rules
+        if (!m_groupService.existsGroup(name)) {
+            final String problem = UserMgmtValidation.validateName(name, "group name", ReservedNames.GROUP_NAMES);
+            if (problem != null) {
+                throw m_support.badRequest(problem);
+            }
+        }
+        // OnmsGroup carries no duty schedules, so there are none to validate here
+        checkMembers(group);
+    }
+
+    /** Every member must be a user, as the database store requires: a member that is not is a 400, not a 500. */
+    private void checkMembers(final OnmsGroup group) throws IOException {
+        if (group.getUsers() == null) {
+            return;
+        }
+        for (final String user : group.getUsers()) {
+            if (user == null || !m_userManager.hasUser(user)) {
+                throw m_support.badRequest(user + " is not a user.");
+            }
+        }
+    }
+
+    private void checkDeletable(final String name) throws Exception {
+        // the manager refuses this too, with this message, but as an IllegalStateException that is not told apart from a failure
+        final List<OnCallRole> roles = m_onCallRoleDao.findByMembershipGroup(name);
+        if (!roles.isEmpty()) {
+            throw m_support.conflict("Group \"" + name + "\" is the membership group of the on-call role \""
+                    + roles.get(0).getName() + "\". Change the membership group first.");
+        }
+        m_support.checkNotDestinationPathTarget("Group " + name, name);
+    }
+
+    /** Answers what the checks and the manager refuse with 400 or 409; only a real failure is a 500. */
+    private static WebApplicationException translate(final Throwable t) {
+        if (t instanceof WebApplicationException) {
+            return (WebApplicationException) t;
+        }
+        if (t instanceof IllegalArgumentException || t instanceof UserMgmtValidationException) {
+            return getException(Status.BAD_REQUEST, t);
+        }
+        if (t instanceof UserDataChangedException) {
+            return getException(Status.CONFLICT, t);
+        }
+        return getException(Status.INTERNAL_SERVER_ERROR, t);
+    }
+
     protected OnmsGroup getOnmsGroup(final String groupName) {
         OnmsGroup group = m_groupService.getOnmsGroup(groupName);
         if (group == null) throw getException(Status.NOT_FOUND, "Group with name '{}' does not exist.", groupName);

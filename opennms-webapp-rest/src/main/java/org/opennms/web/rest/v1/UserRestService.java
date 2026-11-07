@@ -690,7 +690,8 @@ public class UserRestService extends OnmsRestService {
         return users;
     }
 
-    private static OnmsUser filterUserPassword(final SecurityContext securityContext, final OnmsUser user) {
+    /** Masks the password hash of every user but the caller for a caller without edit rights; shared with {@link GroupRestService}. */
+    static OnmsUser filterUserPassword(final SecurityContext securityContext, final OnmsUser user) {
         if (!hasEditRights(securityContext)) {
             final Principal principal = securityContext.getUserPrincipal();
             // users may see their own password hash  :)
