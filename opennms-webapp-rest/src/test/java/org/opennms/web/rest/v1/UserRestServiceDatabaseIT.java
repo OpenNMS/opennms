@@ -165,7 +165,6 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
         assertFalse(exists("roley"));
 
         createUser("roley");
-        sendPut("/users/roley", "roles=ROLE_BOGUS", 400);
         assertEquals("Unknown security role ROLE_BOGUS.", sendData(PUT, "application/x-www-form-urlencoded", "/users/roley", "roles=ROLE_BOGUS", 400).getContentAsString());
     }
 
@@ -251,6 +250,18 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
         UserMgmtRestSupport.setDestinationPaths(() -> List.<Path>of());
         sendRequest(DELETE, "/users/target", 204);
         assertFalse(exists("target"));
+    }
+
+    @Test
+    public void testUnsaltedPasswordIs400WhenNotAllowed() throws Exception {
+        System.setProperty(UserManager.ALLOW_UNSALTED_PROPERTY, "false");
+        try {
+            sendPost("/users", userXml("plain", null, null), 400);
+            assertFalse(exists("plain"));
+            sendPost("/users?hashPassword=true", userXml("hashed", null, null), 201);
+        } finally {
+            System.clearProperty(UserManager.ALLOW_UNSALTED_PROPERTY);
+        }
     }
 
     @Test

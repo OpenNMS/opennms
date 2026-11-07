@@ -55,8 +55,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.config.UserDataChangedException;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.dao.api.SecurityRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
+import org.opennms.netmgt.model.usermgmt.OnCallRole;
 import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.web.rest.v2.UserMgmtRestSupport;
@@ -104,6 +106,9 @@ public class UserRestService extends OnmsRestService {
 
     @Autowired
     private SecurityRoleDao m_securityRoleDao;
+
+    @Autowired
+    private OnCallRoleDao m_onCallRoleDao;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
@@ -291,6 +296,7 @@ public class UserRestService extends OnmsRestService {
                 // deadlock. So the last-administrator check is not race-free in this deprecated API (v2 is).
                 checkNewUser(user);
                 if (hashPassword) hashPassword(user);
+                checkSalted(user);
                 m_userManager.save(user);
             } catch (final Throwable t) {
                 throw translate(t);
@@ -370,6 +376,7 @@ public class UserRestService extends OnmsRestService {
                     // not under m_support.lockForWrite(), see addUser: the last-administrator check is not race-free here
                     checkUpdatedUser(user, params.containsKey("roles"), params.containsKey("dutySchedule"));
                     if (passwordModified && hashPassword) hashPassword(user);
+                    checkSalted(user);
                     m_userManager.save(user);
                 } catch (final Throwable t) {
                     throw translate(t);
@@ -610,6 +617,14 @@ public class UserRestService extends OnmsRestService {
         }
     }
 
+    /** The manager refuses an unsalted password when org.opennms.users.allowUnsalted is false; that is a bad request. */
+    private static void checkSalted(final OnmsUser user) {
+        if (!Boolean.parseBoolean(System.getProperty(UserManager.ALLOW_UNSALTED_PROPERTY, "true")) && !user.getPasswordSalted()) {
+            throw getException(Status.BAD_REQUEST, UserManager.ALLOW_UNSALTED_PROPERTY + "=false, but " + user.getUsername()
+                    + " contains an unsalted password.");
+        }
+    }
+
     private void checkDeletable(final String id) throws Exception {
         if (UserMgmtRestSupport.PROTECTED_USERS.contains(id)) {
             throw m_support.badRequest("The system user " + id + " cannot be deleted.");
@@ -617,6 +632,12 @@ public class UserRestService extends OnmsRestService {
         final UserAccount stored = m_userAccountDao.findByUsername(id);
         if (stored != null) {
             m_support.checkNotLastAdministrator(stored, "be deleted");
+        }
+        // the manager refuses this too, with this message, but as an IllegalStateException that is not told apart from a failure
+        final List<OnCallRole> supervised = m_onCallRoleDao.findBySupervisor(id);
+        if (!supervised.isEmpty()) {
+            throw m_support.conflict("User \"" + id + "\" is the supervisor of the on-call role \""
+                    + supervised.get(0).getName() + "\". Change the supervisor first.");
         }
         m_support.checkNotDestinationPathTarget("User " + id, id);
     }
@@ -629,7 +650,7 @@ public class UserRestService extends OnmsRestService {
         if (t instanceof IllegalArgumentException || t instanceof UserMgmtValidationException) {
             return getException(Status.BAD_REQUEST, t);
         }
-        if (t instanceof IllegalStateException || t instanceof UserDataChangedException) {
+        if (t instanceof UserDataChangedException) {
             return getException(Status.CONFLICT, t);
         }
         return getException(Status.INTERNAL_SERVER_ERROR, t);
