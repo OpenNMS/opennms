@@ -1721,7 +1721,9 @@
     <rpm.database.name>opennms</rpm.database.name>
     <rpm.database.password>opennms</rpm.database.password>
 
-    <testcontainers.version>1.19.7</testcontainers.version>
+    <testcontainers.version>2.0.5</testcontainers.version>
+    <!-- commons-compress 1.28 (from Testcontainers) needs a newer commons-io than commonsIoVersion -->
+    <testcontainers.commons-io.version>2.20.0</testcontainers.commons-io.version>
     <test.keystore>${project.build.directory}/test-keystore.jks</test.keystore>
     <test.storepass>opennms</test.storepass>
     <test.keyalias>opennms-keystore-key</test.keyalias>
