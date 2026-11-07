@@ -228,16 +228,6 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
 
     /** {@inheritDoc} */
     @Override
-    public void renameGroup(String oldName, String newName) {
-        try {
-            m_groupManager.renameGroup(oldName, newName);
-        } catch (Throwable e) {
-            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("renaming group from '" + oldName + "' to '" + newName + "'", e);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void renameUser(String oldName, String newName) {
         try {
             m_groupManager.renameUser(oldName, newName);

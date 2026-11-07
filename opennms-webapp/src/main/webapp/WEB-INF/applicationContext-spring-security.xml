@@ -565,33 +565,9 @@
 
   <beans:bean id="noStoreUnauthorizedEntryPoint" class="org.opennms.web.springframework.security.NoStoreUnauthorizedEntryPoint" />
 
-  <http pattern="/admin/userGroupView/**" use-expressions="true" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
-    <!-- see NMS-13124 -->
-    <csrf request-matcher-ref="csrfMatcher"/>
-    <request-cache ref="requestCache"/>
-
-    <access-denied-handler error-page="/accessDenied.jsp" />
-    <intercept-url pattern="/admin/userGroupView/**" access="hasAnyRole('ROLE_ADMIN')" />
-
-    <http-basic entry-point-ref="xRequestedWithAwareLoginUrlAuthEntryPoint" />
-
-    <!-- should this have a custom logout? <logout logout-url="/j_spring_security_logout" success-handler-ref="openNMSlLogoutSuccessHandler" invalidate-session="true"/> -->
-
-    <custom-filter position="FORM_LOGIN_FILTER" ref="onmsUsernamePasswordAuthenticationFilter" />
-    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
-    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
-    <custom-filter position="LAST" ref="authFilterEnabler"/>
-  </http>
-
   <beans:bean id="csrfMatcher" class="org.springframework.security.web.util.matcher.OrRequestMatcher">
     <beans:constructor-arg>
       <util:list value-type="org.springframework.security.web.util.matcher.RequestMatcher">
-
-        <!-- see NMS-13124 -->
-        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
-          <beans:constructor-arg value="/admin/userGroupView/**"/>
-          <beans:constructor-arg name="httpMethod" value="POST"/>
-        </beans:bean>
 
         <!-- see NMS-14716 -->
         <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">

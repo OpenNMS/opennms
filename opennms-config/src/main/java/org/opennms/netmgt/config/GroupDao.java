@@ -142,15 +142,6 @@ public interface GroupDao {
     void deleteRole(String name);
     
     /**
-     * Renames the group from the list of groups. Then overwrites to the
-     * "groups.xml"
-     *
-     * @param oldName a {@link java.lang.String} object.
-     * @param newName a {@link java.lang.String} object.
-     */
-    void renameGroup(String oldName, String newName);
-    
-    /**
      * When this method is called group name is changed, so also is the
      * groupname belonging to the view. Also overwrites the "groups.xml" file
      *

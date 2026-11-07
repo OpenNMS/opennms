@@ -58,8 +58,6 @@ public interface GroupService {
 
     void deleteGroup(String groupName);
 
-    void renameGroup(String oldName, String newName);
-
     /**
      * Moves every category authorization from one group name to another. Touches only
      * categories (through the CategoryDao) and joins the caller's transaction.

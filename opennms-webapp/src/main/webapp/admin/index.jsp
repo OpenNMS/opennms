@@ -115,7 +115,9 @@
       <div class="card-body">
         <ul class="list-unstyled mb-0">
             <li><a href="admin/sysconfig.jsp">System Configuration</a></li>
-            <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and On-Call Roles</a></li>
+            <li><a href="ui/index.html#/admin/users">Configure Users</a></li>
+            <li><a href="ui/index.html#/admin/groups">Configure Groups</a></li>
+            <li><a href="ui/index.html#/admin/oncall-roles">Configure On-Call Roles</a></li>
 
             <% String showZenithConnectLink = System.getProperty("opennms.zenithConnect.enabled", "false");
                 if (Boolean.parseBoolean(showZenithConnectLink)) { %>

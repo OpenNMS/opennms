@@ -128,12 +128,6 @@ public class DefaultGroupService implements InitializingBean, GroupService {
     }
 
     @Override
-    public void renameGroup(String oldName, String newName) {
-        m_groupDao.renameGroup(oldName, newName);
-        moveCategoryAuthorizations(oldName, newName);
-    }
-
-    @Override
     public void moveCategoryAuthorizations(String oldName, String newName) {
         // the categories of the old name replace whatever the new name was authorized on before
         final List<OnmsCategory> oldCategories = new ArrayList<>(m_categoryDao.getCategoriesWithAuthorizedGroup(oldName));

@@ -300,7 +300,7 @@ public class DbGroupManagerIT {
 
     @Test
     public void testWebRoleRenameAndEdit() throws Exception {
-        // the on-call role admin page (AdminRoleServlet) renames and edits through WebRoleManagerImpl
+        // the legacy on-call role admin page renamed and edits through WebRoleManagerImpl
         m_manager.saveGroup("Ops", group("Ops", "jane"));
         m_manager.saveRole(role("Night", "Ops", "jane"));
         final WebRoleManagerImpl webRoles = webRoles();
