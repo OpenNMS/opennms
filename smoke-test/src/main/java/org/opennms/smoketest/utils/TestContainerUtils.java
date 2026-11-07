@@ -26,7 +26,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -71,6 +73,24 @@ public class TestContainerUtils {
         // say this is equal to the cpu-period set above, then the container can use 1 CPU at 100%
         // if this is 2x the cpu-period. then the container can use 2 CPUs at 100%, and so on...
         hostConfig.withCpuQuota(hostConfig.getCpuPeriod() * NUM_CPUS_PER_CONTAINER);
+    }
+
+    /**
+     * Keep the kernel from handing out the given ports as ephemeral source ports in the container.
+     * A listener on a port in the ephemeral range (32768-60999) fails to bind when another socket
+     * in the container was given that port first.
+     *
+     * @param cmd reference to the create container command, obtain with withCreateContainerCmdModifier
+     * @param ports port list in sysctl form, for example "45444,50000-50002"
+     */
+    public static void reserveEphemeralPorts(CreateContainerCmd cmd, String ports) {
+        final HostConfig hostConfig = cmd.getHostConfig();
+        final Map<String, String> sysctls = new HashMap<>();
+        if (hostConfig.getSysctls() != null) {
+            sysctls.putAll(hostConfig.getSysctls());
+        }
+        sysctls.put("net.ipv4.ip_local_reserved_ports", ports);
+        hostConfig.withSysctls(sysctls);
     }
 
     /**
