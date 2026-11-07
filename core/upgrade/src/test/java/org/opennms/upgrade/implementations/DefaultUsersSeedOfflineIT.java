@@ -69,6 +69,7 @@ public class DefaultUsersSeedOfflineIT implements TemporaryDatabaseAware<Tempora
 
     // users.xsd requires at least one user inside <users>, so a file without users has no <users> element
     private static final String EMPTY_USERS_XML = "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"/>";
+    private static final String EMPTY_GROUPS_XML = "<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\"/>";
 
     @Rule
     public TemporaryFolder m_home = new TemporaryFolder();
@@ -189,6 +190,32 @@ public class DefaultUsersSeedOfflineIT implements TemporaryDatabaseAware<Tempora
         assertEquals(0, count("users"));
         assertEquals(0, count("groups"));
         assertTrue(new DefaultUsersSeedOffline().isPending());
+    }
+
+    @Test
+    public void testRpmsaveGroupsFileHoldsTheSeedBack() throws Exception {
+        // the migrator copies it with the default users; here it failed, and a seeded Admin group would hide its groups
+        write("groups.xml.rpmsave", EMPTY_GROUPS_XML);
+        seed();
+        assertEquals(0, count("users"));
+        assertEquals(0, count("groups"));
+        assertTrue(new DefaultUsersSeedOffline().isPending());
+    }
+
+    @Test
+    public void testGroupsFileHoldsTheSeedBack() throws Exception {
+        write("groups.xml", EMPTY_GROUPS_XML);
+        seed();
+        assertEquals(0, count("users"));
+        assertEquals(0, count("groups"));
+    }
+
+    @Test
+    public void testSecurityRolesFileDoesNotHoldTheSeedBack() throws Exception {
+        // without users.xml and groups.xml, the migrator copies the roles and leaves the seeding to this task
+        write("security-roles.properties", "roles=operator");
+        seed();
+        assertEquals(2, count("users"));
     }
 
     @Test

@@ -769,6 +769,49 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
     }
 
     @Test
+    public void testAFailedGroupsOnlyMigrationKeepsTheGroups() throws Exception {
+        // the package deleted the unchanged users.xml; the groups file has a reserved name
+        write("groups.xml.rpmsave", "<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\"><groups>"
+                + "<group><name>Admin</name><user>admin</user></group>"
+                + "<group><name>..</name><user>admin</user></group></groups></groupinfo>");
+        assertThrows(OnmsUpgradeException.class, this::migrate);
+
+        // the same install runs the seed next: it must not seed, or the next run would archive the groups unread
+        seed();
+        assertEquals(0, count("users"));
+        assertEquals(0, count("groups"));
+        assertEquals(0, count("usermgmt_initialized"));
+        assertAllInEtc("groups.xml.rpmsave");
+
+        // the admin renames the group and runs the installer again
+        write("groups.xml.rpmsave", GROUPS_ADMIN_OPS);
+        migrate();
+        seed();
+        assertEquals(2, count("users"));
+        m_sessionUtils.withReadOnlyTransaction(() ->
+                assertEquals(List.of("admin"), usernames(m_groupDao.findByName("ops").getMembers())));
+        assertEquals(2, count("groups"));
+        assertNoneInEtc();
+        assertArchived("groups.xml.rpmsave");
+    }
+
+    @Test
+    public void testUsersWithoutAdminGetAnEmptyDefaultAdminGroup() throws Exception {
+        // a users.xml without admin, and the unchanged groups.xml deleted by the package
+        write("users.xml.rpmsave", "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><users>"
+                + "<user><user-id>alice</user-id><password>x</password><role>ROLE_ADMIN</role></user></users></userinfo>");
+        migrate();
+
+        m_sessionUtils.withReadOnlyTransaction(() -> {
+            assertEquals(List.of("alice"), m_userDao.findAll().stream().map(UserAccount::getUsername).collect(Collectors.toList()));
+            // the member admin is skipped, not a failure
+            assertTrue(m_groupDao.findByName("Admin").getMembers().isEmpty());
+        });
+        assertEquals(1, count("usermgmt_initialized"));
+        assertNoneInEtc();
+    }
+
+    @Test
     public void testSkipBranchMovesLeftoverFiles() throws Exception {
         // for example, files left in etc by an earlier version, or a users.xml that a container copies on every start
         m_jdbc.update("INSERT INTO usermgmt_initialized (initialized_by) VALUES ('DefaultUsersSeedOffline')");

@@ -41,16 +41,18 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * sets (even when it copies no users). Thus a site without local users (LDAP, RADIUS or SSO only), or one that
  * deleted them, does not get admin/admin back on its next upgrade.
  *
- * It does not seed while etc/users.xml or etc/users.xml.rpmsave exists: the migrator copies that file into a database
- * without the marker and then moves it to etc_archive, so here it failed. The upgrade runs the other tasks before it
- * fails, and a seeded admin would make the migrator's next run copy nothing, so the users of the file would be lost.
+ * It does not seed while etc holds users.xml, groups.xml or their .rpmsave copies: the migrator copies these files into
+ * a database without the marker (with the default users or group in place of a missing one) and then moves them to
+ * etc_archive, so here it failed. The upgrade runs the other tasks before it fails, and a seeded admin would make the
+ * migrator's next run copy nothing, so the users and groups of the files would be lost. security-roles.properties does
+ * not hold it back: without users.xml and groups.xml, the migrator copies its roles and leaves the seeding to this task.
  *
  * The task is critical, like the migrator: a database it fails to seed has no users, so no one could log in.
  */
 public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
 
-    /** The files that the migrator copies the users from. */
-    private static final List<String> USERS_FILE_NAMES = Arrays.asList("users.xml", "users.xml.rpmsave");
+    /** The files that the migrator copies users and groups from. */
+    private static final List<String> MIGRATED_FILE_NAMES = Arrays.asList("users.xml", "users.xml.rpmsave", "groups.xml", "groups.xml.rpmsave");
 
     public DefaultUsersSeedOffline() throws OnmsUpgradeException {
         super();
@@ -103,11 +105,11 @@ public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
                 log("No default users are added: the user data of this database was initialized before (see the table usermgmt_initialized), and its users were removed later\n");
                 return;
             }
-            for (final String name : USERS_FILE_NAMES) {
-                final File usersXml = new File(getHomeDirectory(), "etc" + File.separator + name);
-                if (usersXml.exists()) {
+            for (final String name : MIGRATED_FILE_NAMES) {
+                final File file = new File(getHomeDirectory(), "etc" + File.separator + name);
+                if (file.exists()) {
                     // the migrator runs before this task, sets the marker when it copies the file, and archives it: it failed
-                    log("No default users are added: %s exists, but its users were not copied. See the messages of UsersGroupsXmlMigratorOffline.\n", usersXml);
+                    log("No default users are added: %s exists, but its users and groups were not copied. See the messages of UsersGroupsXmlMigratorOffline.\n", file);
                     return;
                 }
             }
