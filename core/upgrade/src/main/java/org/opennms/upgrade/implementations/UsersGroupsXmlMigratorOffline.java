@@ -89,8 +89,11 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * <p>When only one of users.xml and groups.xml is found, the other one was deleted unchanged, so the task copies
  * what OpenNMS shipped in its place ({@link UserMgmtDefaults}): the users admin and rtc, or the group Admin with
  * admin. Without the Admin group, the default destination path would name a missing group; without the users, nobody
- * could log in. When neither is found (a new installation), the task copies only the custom security roles and
- * leaves the marker unset, and {@link DefaultUsersSeedOffline} adds the default users.</p>
+ * could log in. When neither is found but security-roles.properties has custom roles, the task copies them together
+ * with the default users and group, and sets the marker in the same transaction: the custom roles alone would make
+ * its next run skip the database as one with user data, so a failed or interrupted seed would leave it without
+ * users. When neither is found and there are no custom roles (a new installation), the task copies nothing and leaves
+ * the marker unset, and {@link DefaultUsersSeedOffline} adds the default users.</p>
  *
  * <p>Everything is written in one transaction. Entries that the tables cannot hold are skipped with a message: unknown security roles (which login drops today as
  * well), group members and schedule users that do not exist, on-call roles whose membership group or
@@ -230,8 +233,9 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
             final File groupsFile = source(GROUPS_FILE_NAME);
             Userinfo userinfo = read(Userinfo.class, usersFile);
             Groupinfo groupinfo = read(Groupinfo.class, groupsFile);
-            if (usersFile == null && groupsFile == null) {
-                log("Neither %s nor %s was found, so no users or groups are copied\n", USERS_FILE_NAME, GROUPS_FILE_NAME);
+            final boolean neitherFound = usersFile == null && groupsFile == null;
+            if (neitherFound) {
+                log("Neither %s nor %s was found, so no users or groups are copied from files\n", USERS_FILE_NAME, GROUPS_FILE_NAME);
             } else if (groupsFile == null) {
                 log("%s not found; the default Admin group is used, as the package removed the unmodified file\n", GROUPS_FILE_NAME);
                 groupinfo = UserMgmtDefaults.groups();
@@ -245,12 +249,19 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
             final Import migration = new Import(connection, this::log);
             try {
                 migration.securityRoles(customRoles);
+                if (neitherFound && migration.copiedCustomSecurityRoles()) {
+                    // the custom roles alone would make the next run skip this database as one with user data: if the
+                    // seed did not run (it failed, or the installer was stopped), nobody could log in
+                    log("Custom security roles were copied, so the default users admin and rtc and the group Admin are added with them\n");
+                    userinfo = UserMgmtDefaults.users();
+                    groupinfo = UserMgmtDefaults.groups();
+                }
                 migration.users(userinfo == null ? Collections.emptyList() : userinfo.getUsers());
                 migration.groups(groupinfo == null ? Collections.emptyList() : groupinfo.getGroups());
                 migration.onCallRoles(groupinfo == null ? Collections.emptyList() : groupinfo.getRoles());
                 if (userinfo != null) {
                     // also with no users: the default-users seed must not add admin/admin to this database later.
-                    // Without users.xml and groups.xml (a new installation), the seed adds them.
+                    // Without users.xml, groups.xml and custom security roles (a new installation), the seed adds them.
                     UserMgmtInitialized.set(connection, getId());
                 }
                 connection.commit();
@@ -458,6 +469,8 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
         private final Map<String, Integer> m_userIds = new HashMap<>();
         private final Map<String, Integer> m_groupIds = new HashMap<>();
 
+        private static final String CUSTOM_SECURITY_ROLES = "custom security roles";
+
         private final Map<String, Integer> m_counts = new LinkedHashMap<>();
         private int m_skipped;
         private int m_warnings;
@@ -474,7 +487,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                 if (!m_securityRoleIds.containsKey(name) && fits(name, SECURITY_ROLE_NAME_LENGTH, "security role", name, "security-roles.properties")) {
                     m_securityRoleIds.put(name, insert("INSERT INTO security_roles (id, name, builtin, created_time, last_modified) "
                             + "VALUES (nextval('security_roles_id_seq'), ?, false, NOW(), NOW()) RETURNING id", name));
-                    count("custom security roles");
+                    count(CUSTOM_SECURITY_ROLES);
                 }
             }
         }
@@ -671,6 +684,11 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                     update(sql, ownerId, position++, schedule);
                 }
             }
+        }
+
+        /** @return true if {@link #securityRoles} inserted a role */
+        boolean copiedCustomSecurityRoles() {
+            return m_counts.containsKey(CUSTOM_SECURITY_ROLES);
         }
 
         void logSummary() {

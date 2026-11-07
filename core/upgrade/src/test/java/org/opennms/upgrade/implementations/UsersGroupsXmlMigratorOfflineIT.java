@@ -861,13 +861,48 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
 
     @Test
     public void testNeitherFileLetsTheSeedRun() throws Exception {
-        // a new installation, perhaps with custom security roles
-        write("security-roles.properties", "roles=operator");
+        // a new installation: no users.xml, no groups.xml and no custom security roles
+        write("security-roles.properties", "roles=admin,rest");
         migrate();
 
         assertEquals(0, count("users"));
-        assertEquals(1, count("security_roles WHERE NOT builtin"));
+        assertEquals(0, count("groups"));
+        assertEquals(0, count("security_roles WHERE NOT builtin"));
         assertEquals(0, count("usermgmt_initialized"));
+
+        seed();
+        assertEquals(2, count("users"));
+        assertEquals(1, count("groups"));
+    }
+
+    @Test
+    public void testCustomRolesWithoutUsersAndGroupsGetTheDefaults() throws Exception {
+        // the custom roles, the default users and group and the marker are committed together, so the custom roles
+        // never make a database without users look initialized
+        write("security-roles.properties", "roles=operator");
+        migrate();
+
+        assertEquals(1, count("security_roles WHERE NOT builtin"));
+        assertEquals(1, count("usermgmt_initialized"));
+        m_sessionUtils.withReadOnlyTransaction(() -> {
+            assertEquals(List.of(SecurityRoles.ROLE_ADMIN), roleNames(m_userDao.findByUsername("admin")));
+            assertEquals(List.of(SecurityRoles.ROLE_RTC), roleNames(m_userDao.findByUsername("rtc")));
+            assertEquals(List.of("admin"), usernames(m_groupDao.findByName("Admin").getMembers()));
+        });
+        assertNoneInEtc();
+        assertArchived("security-roles.properties");
+    }
+
+    @Test
+    public void testCustomRolesWithoutUsersAndGroupsNeedNoSeed() throws Exception {
+        // the installer stops after the migrator, before the seed runs: the next install must still find the users
+        write("security-roles.properties", "roles=operator");
+        migrate();
+        migrate();
+
+        assertEquals(2, count("users"));
+        assertEquals(1, count("groups"));
+        assertEquals(1, count("security_roles WHERE NOT builtin"));
 
         seed();
         assertEquals(2, count("users"));

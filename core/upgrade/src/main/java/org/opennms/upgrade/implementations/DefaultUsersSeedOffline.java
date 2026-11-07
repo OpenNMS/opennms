@@ -45,7 +45,8 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * a database without the marker (with the default users or group in place of a missing one) and then moves them to
  * etc_archive, so here it failed. The upgrade runs the other tasks before it fails, and a seeded admin would make the
  * migrator's next run copy nothing, so the users and groups of the files would be lost. security-roles.properties does
- * not hold it back: without users.xml and groups.xml, the migrator copies its roles and leaves the seeding to this task.
+ * not hold it back: without users.xml and groups.xml, the migrator copies its custom roles together with the default
+ * users and sets the marker, so this task seeds only a database where the migrator found nothing to copy.
  *
  * The task is critical, like the migrator: a database it fails to seed has no users, so no one could log in.
  */

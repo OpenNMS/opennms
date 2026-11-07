@@ -212,7 +212,7 @@ public class DefaultUsersSeedOfflineIT implements TemporaryDatabaseAware<Tempora
 
     @Test
     public void testSecurityRolesFileDoesNotHoldTheSeedBack() throws Exception {
-        // without users.xml and groups.xml, the migrator copies the roles and leaves the seeding to this task
+        // unlike users.xml and groups.xml: the migrator copies custom roles together with the default users
         write("security-roles.properties", "roles=operator");
         seed();
         assertEquals(2, count("users"));
