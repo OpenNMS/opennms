@@ -27,7 +27,6 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -75,7 +74,6 @@ public class UsersRestService implements UsersRestApi {
     private static final Logger LOG = LoggerFactory.getLogger(UsersRestService.class);
 
     /** System accounts that must not be deleted or renamed. */
-    private static final Set<String> PROTECTED_USERS = Set.of("admin", "rtc");
 
     @Autowired
     private UserMgmtRestSupport m_support;
@@ -165,7 +163,7 @@ public class UsersRestService implements UsersRestApi {
         if (userIdProblem != null) {
             throw m_support.badRequest(userIdProblem);
         }
-        m_support.checkNotLookAlike(userId, PROTECTED_USERS, "user-id");
+        m_support.checkNotLookAlike(userId, UserMgmtRestSupport.PROTECTED_USERS, "user-id");
         if (StringUtils.isBlank(request.getPassword())) {
             throw m_support.badRequest("A password is required.");
         }
@@ -221,7 +219,7 @@ public class UsersRestService implements UsersRestApi {
             m_support.checkIfMatch(headers, VersionedTable.users, user.getId(), "User " + userId);
             final List<SecurityRole> roles = validateDtoFields(dto, user, userId);
             if (roles != null && roles.stream().noneMatch(r -> Authentication.ROLE_ADMIN.equals(r.getName()))) {
-                checkNotLastAdministrator(user, "lose the " + Authentication.ROLE_ADMIN + " role");
+                m_support.checkNotLastAdministrator(user, "lose the " + Authentication.ROLE_ADMIN + " role");
             }
             applyDto(user, dto, roles);
             m_userAccountDao.saveOrUpdate(user);
@@ -283,7 +281,7 @@ public class UsersRestService implements UsersRestApi {
         if (body == null || StringUtils.isBlank(body.getNewUserId())) {
             throw m_support.badRequest("A newUserId is required.");
         }
-        if (PROTECTED_USERS.contains(userId)) {
+        if (UserMgmtRestSupport.PROTECTED_USERS.contains(userId)) {
             throw m_support.badRequest("The system user " + userId + " cannot be renamed.");
         }
         final String newUserId = body.getNewUserId().trim();
@@ -291,7 +289,7 @@ public class UsersRestService implements UsersRestApi {
         if (userIdProblem != null) {
             throw m_support.badRequest(userIdProblem);
         }
-        m_support.checkNotLookAlike(newUserId, PROTECTED_USERS, "user-id");
+        m_support.checkNotLookAlike(newUserId, UserMgmtRestSupport.PROTECTED_USERS, "user-id");
         if (newUserId.equals(userId)) {
             throw m_support.badRequest("The newUserId is the same as the current userId.");
         }
@@ -329,7 +327,7 @@ public class UsersRestService implements UsersRestApi {
 
     private Response doDeleteUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId) {
         m_support.checkTarget(securityContext, "User management", "userId", userId);
-        if (PROTECTED_USERS.contains(userId)) {
+        if (UserMgmtRestSupport.PROTECTED_USERS.contains(userId)) {
             throw m_support.badRequest("The system user " + userId + " cannot be deleted.");
         }
         try {
@@ -346,7 +344,7 @@ public class UsersRestService implements UsersRestApi {
                         + " is the supervisor of on-call role(s) " + String.join(", ", supervisedRoles)
                         + "; assign a different supervisor first.");
             }
-            checkNotLastAdministrator(user, "be deleted");
+            m_support.checkNotLastAdministrator(user, "be deleted");
             // notifd resolves a target name as a group, then an on-call role, then a user: one of those takes the paths
             if (m_userGroupDao.findByName(userId) == null && m_onCallRoleDao.findByName(userId) == null) {
                 m_support.checkNotDestinationPathTarget("User " + userId, userId);
@@ -357,20 +355,6 @@ public class UsersRestService implements UsersRestApi {
             return Response.noContent().build();
         } catch (final Exception e) {
             throw m_support.translate("delete user", e);
-        }
-    }
-
-    /**
-     * Throws 409 if the user is the only one with ROLE_ADMIN. Without an administrator nobody can manage users in
-     * the web UI or log in to the Karaf console until the roles are repaired in the database. Must be called under
-     * the write lock, so that two requests cannot each remove a different last-but-one administrator.
-     */
-    private void checkNotLastAdministrator(final UserAccount user, final String change) {
-        final boolean isAdministrator = user.getSecurityRoles().stream().anyMatch(r -> Authentication.ROLE_ADMIN.equals(r.getName()));
-        if (isAdministrator && m_userAccountDao.findBySecurityRole(Authentication.ROLE_ADMIN).stream()
-                .allMatch(u -> u.getId().equals(user.getId()))) {
-            throw m_support.conflict("User " + user.getUsername() + " is the only user with the " + Authentication.ROLE_ADMIN
-                    + " role and cannot " + change + "; give the role to another user first.");
         }
     }
 

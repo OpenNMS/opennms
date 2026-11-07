@@ -49,8 +49,10 @@ import org.opennms.netmgt.config.UserDataChangedException;
 import org.opennms.netmgt.config.UserMgmtManagers;
 import org.opennms.netmgt.config.api.UserMgmtStore;
 import org.opennms.netmgt.config.destinationPaths.Path;
+import org.opennms.netmgt.dao.api.UserAccountDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
+import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,6 +96,9 @@ public class UserMgmtRestSupport {
     @Autowired
     private UserMgmtManagers m_managers;
 
+    @Autowired
+    private UserAccountDao m_userAccountDao;
+
     /** Translates Hibernate's exceptions, e.g. a unique violation to DataIntegrityViolationException. */
     private HibernateTemplate m_hibernateTemplate;
 
@@ -101,6 +106,9 @@ public class UserMgmtRestSupport {
     void setSessionFactory(final SessionFactory sessionFactory) {
         m_hibernateTemplate = new HibernateTemplate(sessionFactory);
     }
+
+    /** The users that the system relies on; they can be neither renamed nor deleted. */
+    public static final Set<String> PROTECTED_USERS = Set.of("admin", "rtc");
 
     /** The destination paths that notifd sends to. */
     static final Callable<Collection<Path>> NOTIFD_DESTINATION_PATHS = () -> {
@@ -112,8 +120,22 @@ public class UserMgmtRestSupport {
     private static volatile Callable<Collection<Path>> s_destinationPaths = NOTIFD_DESTINATION_PATHS;
 
     /** For tests; {@link #NOTIFD_DESTINATION_PATHS} restores the default. */
-    static void setDestinationPaths(final Callable<Collection<Path>> destinationPaths) {
+    public static void setDestinationPaths(final Callable<Collection<Path>> destinationPaths) {
         s_destinationPaths = destinationPaths;
+    }
+
+    /**
+     * Throws 409 if the user is the only one with ROLE_ADMIN. Without an administrator nobody can manage users in
+     * the web UI or log in to the Karaf console until the roles are repaired in the database. Must be called under
+     * the write lock, so that two requests cannot each remove a different last-but-one administrator.
+     */
+    public void checkNotLastAdministrator(final UserAccount user, final String change) {
+        final boolean isAdministrator = user.getSecurityRoles().stream().anyMatch(r -> Authentication.ROLE_ADMIN.equals(r.getName()));
+        if (isAdministrator && m_userAccountDao.findBySecurityRole(Authentication.ROLE_ADMIN).stream()
+                .allMatch(u -> u.getId().equals(user.getId()))) {
+            throw conflict("User " + user.getUsername() + " is the only user with the " + Authentication.ROLE_ADMIN
+                    + " role and cannot " + change + "; give the role to another user first.");
+        }
     }
 
     public void assertAdmin(final SecurityContext securityContext, final String what) {

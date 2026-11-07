@@ -41,7 +41,7 @@ import org.opennms.netmgt.model.usermgmt.ReservedNames;
  * descriptions), each with its grandfathering of stored values, the duty schedules (users and groups), and the column
  * length checks. The rules for on-call role names and schedules are in {@link OnCallScheduleValidator}.
  */
-final class UserMgmtValidation {
+public final class UserMgmtValidation {
 
     /**
      * The characters rejected in a user id or group name, and why:
@@ -77,7 +77,7 @@ final class UserMgmtValidation {
      * @param label what the value is called in the message, e.g. "userId" or "group name"
      * @param reserved the names of its collection, {@link ReservedNames#USER_IDS} or {@link ReservedNames#GROUP_NAMES}
      */
-    static String validateName(final String name, final String label, final Collection<String> reserved) {
+    public static String validateName(final String name, final String label, final Collection<String> reserved) {
         if (INVALID_NAME.matcher(name).find()) {
             return "The " + label + " must not contain markup, whitespace, control or invisible characters, or the characters : / \\ % ? #";
         }
@@ -150,7 +150,7 @@ final class UserMgmtValidation {
      * @param stored the schedules stored on the record, or null when the object is being created
      * @throws UserMgmtValidationException on a null or blank entry, an invalid new entry or one that is too long
      */
-    static void validateDutySchedules(final String owner, final List<String> requested, final Collection<String> stored) {
+    public static void validateDutySchedules(final String owner, final List<String> requested, final Collection<String> stored) {
         final Set<String> preExisting = stored == null ? Set.of() : new LinkedHashSet<>(stored);
         for (final String schedule : requested) {
             if (StringUtils.isBlank(schedule)) {
