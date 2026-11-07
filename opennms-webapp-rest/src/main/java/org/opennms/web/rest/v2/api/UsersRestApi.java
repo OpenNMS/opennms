@@ -61,7 +61,9 @@ public interface UsersRestApi {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "List all users", operationId = "listUsers")
-    Response listUsers(@Context SecurityContext securityContext);
+    Response listUsers(@Context SecurityContext securityContext,
+            @Parameter(description = "Optional. `summary` lists only the `userId` and `fullName` of each user, in the same order; any other value is a 400.")
+            @QueryParam("view") String view);
 
     @GET
     @Path("{userId}")

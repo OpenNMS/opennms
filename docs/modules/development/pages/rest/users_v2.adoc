@@ -40,6 +40,12 @@ The response has no `ETag` header.
 Each item carries its `version`.
 To use `If-Match`, send the version in quotes, or the `ETag` of a GET of the single user.
 
+| /users?view=summary
+| Get the `userId` and `fullName` of every user, for example to fill a picker: `[{"userId": "admin", "fullName": "Administrator"}]`.
+The order is the same as the full list's.
+`fullName` is `null` for a user without one.
+Any other value of `view` returns `400`.
+
 | /users/\{userId}
 | Get one user. The response carries an `ETag` header.
 

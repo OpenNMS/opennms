@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -168,6 +169,56 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // the v1 API leaks hashes to admins; the v2 contract is that no
         // response ever carries the password in any form
         assertFalse(json.contains("password"));
+    }
+
+    @Test
+    public void testListSummary() throws Exception {
+        createUser("Summary-b", u -> u.setFullName("Bee"));
+        createUser("summary-a", u -> {
+            u.setFullName("Ay");
+            u.getDutySchedules().add("MoTu900-1000");
+            u.getSecurityRoles().add(m_securityRoleDao.findByName("ROLE_USER"));
+        });
+        createUser("summary-c", u -> { });
+
+        final JSONArray full = new JSONArray(getJson("/users", 200));
+        final JSONArray summary = new JSONArray(exec(GET, "/users?view=summary", null, null, 200).getContentAsString());
+        // the same users in the same order, with nothing but the id and the full name
+        assertEquals(full.length(), summary.length());
+        for (int i = 0; i < summary.length(); i++) {
+            final JSONObject user = summary.getJSONObject(i);
+            final JSONObject fullUser = full.getJSONObject(i);
+            assertEquals(fullUser.getString("userId"), user.getString("userId"));
+            assertEquals(fullUser.isNull("fullName"), user.isNull("fullName"));
+            if (!user.isNull("fullName")) {
+                assertEquals(fullUser.getString("fullName"), user.getString("fullName"));
+            }
+            final Set<String> keys = new LinkedHashSet<>(user.keySet());
+            keys.removeAll(Arrays.asList("userId", "fullName"));
+            assertTrue(user.toString(), keys.isEmpty());
+        }
+        final List<String> ids = summaryIds(summary);
+        assertEquals(Arrays.asList("summary-a", "Summary-b", "summary-c"),
+                ids.stream().filter(id -> id.toLowerCase().startsWith("summary-")).collect(Collectors.toList()));
+        final JSONObject a = summary.getJSONObject(ids.indexOf("summary-a"));
+        assertEquals("Ay", a.getString("fullName"));
+        assertTrue(summary.getJSONObject(ids.indexOf("summary-c")).isNull("fullName"));
+    }
+
+    @Test
+    public void testListUnknownViewRejected() throws Exception {
+        for (final String view : new String[] { "full", "SUMMARY", "" }) {
+            final MockHttpServletResponse response = exec(GET, "/users?view=" + view, null, null, 400);
+            assertEquals("Unknown view \"" + view + "\"; the only view is summary.", response.getContentAsString());
+        }
+    }
+
+    private static List<String> summaryIds(final JSONArray users) {
+        final List<String> ids = new ArrayList<>();
+        for (int i = 0; i < users.length(); i++) {
+            ids.add(users.getJSONObject(i).getString("userId"));
+        }
+        return ids;
     }
 
     @Test
@@ -360,10 +411,13 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testListStatementCountDoesNotGrowWithTheUsers() throws Exception {
         createListedUsers(0, 2);
         final long few = statements(() -> getJson("/users", 200));
+        final long fewSummary = statements(() -> exec(GET, "/users?view=summary", null, null, 200));
         createListedUsers(2, 7);
         final long many = statements(() -> getJson("/users", 200));
+        final long manySummary = statements(() -> exec(GET, "/users?view=summary", null, null, 200));
         assertTrue("no statement counted", few > 0);
         assertEquals("statements for 3 users vs. 8 users", few, many);
+        assertEquals("summary statements for 3 users vs. 8 users", fewSummary, manySummary);
 
         // the lists keep their order
         final JSONArray users = new JSONArray(getJson("/users", 200));
@@ -847,6 +901,9 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         setUser("nobody", new String[]{ "ROLE_USER" });
         try {
             sendRequest(GET, "/users", 403);
+            // the role is checked before the view
+            exec(GET, "/users?view=summary", null, null, 403);
+            exec(GET, "/users?view=bogus", null, null, 403);
             exec(POST, "/users", "{\"userId\":\"x\",\"password\":\"x\"}", null, 403);
             sendRequest(DELETE, "/users/admin", 403);
             // the query form checks the role before the parameter

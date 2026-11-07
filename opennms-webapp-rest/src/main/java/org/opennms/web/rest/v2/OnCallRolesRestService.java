@@ -28,10 +28,12 @@ import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -95,6 +97,18 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     private static final String WHAT = "On-call role management";
     /** The earliest year the calendar preview shows; on-call schedules are not kept for earlier ones. */
     static final int MIN_CALENDAR_YEAR = 1900;
+    /** How many role and message pairs {@link #onCallNow} remembers as warned; the least recently seen is dropped. */
+    static final int MAX_WARNED_SCHEDULES = 1000;
+    /** The role and message pairs that {@link #onCallNow} has warned about; later reads log them at DEBUG. */
+    private static final Set<List<String>> WARNED_SCHEDULES = Collections.newSetFromMap(Collections.synchronizedMap(
+            new LinkedHashMap<List<String>, Boolean>(16, 0.75f, true) {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected boolean removeEldestEntry(final Map.Entry<List<String>, Boolean> eldest) {
+                    return size() > MAX_WARNED_SCHEDULES;
+                }
+            }));
 
     @Autowired
     private UserMgmtRestSupport m_support;
@@ -623,12 +637,20 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         return dto;
     }
 
-    /** Who is on call now; a stored schedule notifd cannot evaluate must not fail the read, so it reports nobody. */
-    private static OnCallNow onCallNow(final OnCallRole role) {
+    /**
+     * Who is on call now; a stored schedule notifd cannot evaluate must not fail the read, so it reports nobody.
+     * Every read of the role evaluates it, so the failure is a WARN once per role and message (which names the
+     * unreadable value, such as a monthly day), and a DEBUG after that.
+     */
+    static OnCallNow onCallNow(final OnCallRole role) {
         try {
             return OnCallScheduleExpander.onCallAt(UserMgmtJaxbMapper.toRole(role), new Date());
         } catch (final RuntimeException e) {
-            LOG.warn("Cannot evaluate the schedules of on-call role {}: {}", role.getName(), e.getMessage());
+            if (WARNED_SCHEDULES.add(Arrays.asList(role.getName(), e.getMessage()))) {
+                LOG.warn("Cannot evaluate the schedules of on-call role {}: {}", role.getName(), e.getMessage());
+            } else {
+                LOG.debug("Cannot evaluate the schedules of on-call role {}: {}", role.getName(), e.getMessage());
+            }
             return new OnCallNow(new ArrayList<>(), false);
         }
     }

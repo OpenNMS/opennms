@@ -53,6 +53,7 @@ import org.opennms.web.rest.v2.api.UsersRestApi;
 import org.opennms.web.rest.v2.model.UserDto;
 import org.opennms.web.rest.v2.model.UserPasswordRequest;
 import org.opennms.web.rest.v2.model.UserRenameRequest;
+import org.opennms.web.rest.v2.model.UserSummaryDto;
 import org.opennms.web.rest.v2.model.UserWriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +73,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class UsersRestService implements UsersRestApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(UsersRestService.class);
+
+    /** The value of the view parameter that lists only the id and the full name. */
+    private static final String SUMMARY_VIEW = "summary";
 
     /** System accounts that must not be deleted or renamed. */
 
@@ -94,9 +98,21 @@ public class UsersRestService implements UsersRestApi {
 
     @Override
     @Transactional(readOnly = true)
-    public Response listUsers(final SecurityContext securityContext) {
+    public Response listUsers(final SecurityContext securityContext, final String view) {
         m_support.assertAdmin(securityContext, "User management");
+        if (view != null && !SUMMARY_VIEW.equals(view)) {
+            throw m_support.badRequest("Unknown view \"" + view + "\"; the only view is " + SUMMARY_VIEW + ".");
+        }
         try {
+            if (SUMMARY_VIEW.equals(view)) {
+                // for pickers: no collection is loaded
+                final List<UserSummaryDto> users = new ArrayList<>();
+                for (final UserAccount user : m_userAccountDao.findAll()) {
+                    users.add(new UserSummaryDto(user.getUsername(), user.getFullName()));
+                }
+                users.sort(Comparator.comparing(UserSummaryDto::getUserId, String.CASE_INSENSITIVE_ORDER));
+                return Response.ok(users).build();
+            }
             final List<UserDto> users = new ArrayList<>();
             for (final UserAccount user : m_userAccountDao.findAll()) {
                 users.add(toDto(user, user.getVersion()));
