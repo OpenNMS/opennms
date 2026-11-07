@@ -429,7 +429,7 @@ public class UserRestService extends OnmsRestService {
             summary = "Grant a role to a user",
             description = """
                     Add one security role to a user. The role has to be a known role name, either one of the
-                    built-in `ROLE_*` constants or one declared in `etc/security-roles.properties`.
+                    built-in `ROLE_*` constants or a custom role from `/api/v2/security-roles`.
                     The request takes no body. A stale save answers 409.""",
             operationId = "addUserRoleV1"
     )

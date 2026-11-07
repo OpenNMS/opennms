@@ -157,8 +157,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private final TestDestinationPaths m_paths = new TestDestinationPaths();
 
     @After
-    public void clearStoreProperty() {
-        System.clearProperty("org.opennms.usermgmt.store");
+    public void restorePaths() {
         m_paths.restore();
     }
 
@@ -759,26 +758,6 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertNotEquals(current, updated.getHeader("ETag"));
         exec(POST, "/groups/stalegroup/rename", "{\"newName\":\"stalegroup2\"}", "*", 200);
         exec(DELETE, "/groups/stalegroup2", null, "*", 204);
-    }
-
-    @Test
-    public void testXmlStoreIs503() throws Exception {
-        System.setProperty("org.opennms.usermgmt.store", "xml");
-        try {
-            final String message = "User management through this API needs org.opennms.usermgmt.store=db.";
-            final List<MockHttpServletResponse> responses = Arrays.asList(
-                    exec(GET, "/groups", null, null, 503),
-                    exec(GET, "/groups/Admin", null, null, 503),
-                    exec(POST, "/groups", "{\"name\":\"x\"}", null, 503),
-                    exec(PUT, "/groups/Admin", "{\"name\":\"Admin\"}", null, 503),
-                    exec(POST, "/groups/Admin/rename", "{\"newName\":\"x\"}", null, 503),
-                    exec(DELETE, "/groups/Admin", null, null, 503));
-            for (final MockHttpServletResponse response : responses) {
-                assertEquals(message, response.getContentAsString());
-            }
-        } finally {
-            System.clearProperty("org.opennms.usermgmt.store");
-        }
     }
 
     @Test

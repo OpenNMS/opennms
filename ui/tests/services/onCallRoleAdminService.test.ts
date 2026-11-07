@@ -42,7 +42,7 @@ vi.mock('@/services/axiosInstances', async () => {
 })
 
 const IF_MATCH_7 = { headers: { 'If-Match': '"7"' }}
-const UNAVAILABLE = 'User management through this API needs org.opennms.usermgmt.store=db.'
+const UNAVAILABLE = 'User management is temporarily unavailable.'
 
 const requestedUri = (call: any[], configIndex: number) => axios.getUri({ url: call[0], params: call[configIndex]?.params })
 

@@ -96,7 +96,6 @@ public class UsersRestService implements UsersRestApi {
     @Transactional(readOnly = true)
     public Response listUsers(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
         try {
             final List<UserDto> users = new ArrayList<>();
             for (final UserAccount user : m_userAccountDao.findAll()) {
@@ -138,7 +137,6 @@ public class UsersRestService implements UsersRestApi {
     @Transactional(readOnly = true)
     public Response listAvailableRoles(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
         try {
             final List<String> roles = m_securityRoleDao.findAll().stream()
                     .map(SecurityRole::getName)
@@ -154,7 +152,6 @@ public class UsersRestService implements UsersRestApi {
     @Transactional
     public Response createUser(final SecurityContext securityContext, final UserWriteRequest request) {
         m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
         if (request == null || StringUtils.isBlank(request.getUserId())) {
             throw m_support.badRequest("A userId is required.");
         }

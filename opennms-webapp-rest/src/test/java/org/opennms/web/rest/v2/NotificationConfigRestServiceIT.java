@@ -44,16 +44,21 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
-import org.opennms.netmgt.config.GroupFactory;
-import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserMgmtManagers;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.dao.api.UserAccountDao;
+import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.usermgmt.OnCallRole;
+import org.opennms.netmgt.model.usermgmt.UserAccount;
+import org.opennms.netmgt.model.usermgmt.UserGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
@@ -97,6 +102,18 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
 
     @Autowired
     private SessionUtils m_sessionUtils;
+
+    @Autowired
+    private UserAccountDao m_userAccountDao;
+
+    @Autowired
+    private UserGroupDao m_userGroupDao;
+
+    @Autowired
+    private OnCallRoleDao m_onCallRoleDao;
+
+    @Autowired
+    private UserMgmtManagers m_userMgmtManagers;
 
     // the node the mocked filter matches; seeded via Hibernate so the service's
     // PathOutageDao/NodeDao (which read through Hibernate) can see it
@@ -155,21 +172,6 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
                 + "</command>"
                 + "</notification-commands>", Charset.defaultCharset());
 
-        FileUtils.writeStringToFile(new File(etc, "groups.xml"), "<?xml version=\"1.0\"?>"
-                + "<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\">"
-                + "<header><rev>1.3</rev><created>Wednesday, February 6, 2002 10:10:00 AM EST</created><mstation>localhost</mstation></header>"
-                + "<groups><group><name>Admin</name><user>admin</user></group></groups>"
-                + "<roles><role name=\"junit-oncall\" supervisor=\"admin\" membership-group=\"Admin\"/></roles>"
-                + "</groupinfo>", Charset.defaultCharset());
-
-        // target-reference validation resolves user names via UserFactory
-        FileUtils.writeStringToFile(new File(etc, "users.xml"), "<?xml version=\"1.0\"?>"
-                + "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\">"
-                + "<header><rev>.9</rev><created>Wednesday, February 6, 2002 10:10:00 AM EST</created><mstation>localhost</mstation></header>"
-                + "<users><user><user-id>admin</user-id><full-name>Administrator</full-name><password salt=\"true\">x</password></user></users>"
-                + "</userinfo>", Charset.defaultCharset());
-
-
         m_filterDao = mock(FilterDao.class);
         // the *.*.*.* -> node stub is added in afterServletStart, once the node
         // has been seeded through Hibernate and its generated id is known
@@ -194,13 +196,8 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
     public void afterServletStart() throws Exception {
         System.setProperty("opennms.home", m_onmsHome);
         ConfigurationTestUtils.setRelativeHomeDirectory(m_onmsHome);
-        // Webapp beans may have initialized GroupFactory while context startup
-        // had opennms.home pointed elsewhere; pin a factory built against the
-        // test home so the seeded roles are visible.
-        GroupFactory.setInstance(new GroupFactory());
-        // The same for the users: the DAO context installs the database manager, but this test's
-        // target validation works on the users.xml written above.
-        UserFactory.setInstance(new UserFactory());
+        // target-reference validation resolves user, group and role names through the database managers
+        createUsersGroupsAndRoles();
         // Seed the node the mocked filter matches through Hibernate (a committed
         // transaction), so the service's PathOutageDao/NodeDao — which read via
         // Hibernate, not DataSourceFactory — can see it for the foreign key.
@@ -212,6 +209,38 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
         final SortedMap<Integer, String> nodeMap = new TreeMap<>();
         nodeMap.put(m_pathNodeId, "node1");
         when(m_filterDao.getNodeMap("IPADDR IPLIKE *.*.*.*")).thenReturn(nodeMap);
+    }
+
+    /** The user admin, the group Admin with admin, and the on-call role junit-oncall; the database is reused. */
+    private void createUsersGroupsAndRoles() {
+        m_sessionUtils.withTransaction(() -> {
+            UserAccount admin = m_userAccountDao.findByUsername("admin");
+            if (admin == null) {
+                admin = new UserAccount("admin");
+                admin.setFullName("Administrator");
+                admin.setPasswordHash("");
+                m_userAccountDao.save(admin);
+            }
+            UserGroup group = m_userGroupDao.findByName("Admin");
+            if (group == null) {
+                group = new UserGroup("Admin");
+                group.getMembers().add(admin);
+                m_userGroupDao.save(group);
+            }
+            if (m_onCallRoleDao.findByName("junit-oncall") == null) {
+                m_onCallRoleDao.save(new OnCallRole("junit-oncall", group, admin));
+            }
+        });
+        m_userMgmtManagers.expireAll();
+    }
+
+    /**
+     * Changes the on-call roles behind the managers' backs, as the on-call roles API does: in its own transaction,
+     * which then expires the managers.
+     */
+    private void changeRoles(final Runnable change) {
+        m_sessionUtils.withTransaction(change);
+        m_userMgmtManagers.expireAll();
     }
 
     // Restore opennms.home for later suites sharing this JVM fork.
@@ -529,35 +558,26 @@ public class NotificationConfigRestServiceIT extends AbstractSpringJerseyRestTes
     }
 
     @Test
-    public void testOnCallRolesFollowFileChanges() throws Exception {
+    public void testOnCallRolesFollowDatabaseChanges() throws Exception {
         Assert.assertEquals(1, new JSONArray(getJson("/notification-config/on-call-roles")).length());
-        // removing the last role from groups.xml must not leave it cached
-        final File groupsFile = new File("target/test-work-dir/etc/groups.xml");
-        FileUtils.writeStringToFile(groupsFile, "<?xml version=\"1.0\"?>"
-                + "<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\">"
-                + "<header><rev>1.3</rev><created>Wednesday, February 6, 2002 10:10:00 AM EST</created><mstation>localhost</mstation></header>"
-                + "<groups><group><name>Admin</name><user>admin</user></group></groups>"
-                + "</groupinfo>", Charset.defaultCharset());
-        groupsFile.setLastModified(System.currentTimeMillis() + 1000);
+        // removing the last role must not leave it cached
+        changeRoles(() -> m_onCallRoleDao.delete(m_onCallRoleDao.findByName("junit-oncall")));
         Assert.assertEquals(0, new JSONArray(getJson("/notification-config/on-call-roles")).length());
     }
 
     @Test
-    public void testDestinationPathTargetsFollowRoleFileChanges() throws Exception {
-        // a role added behind the manager's back (hand edit, or the on-call
-        // roles API) must be a valid target without an unrelated read first
-        final File groupsFile = new File("target/test-work-dir/etc/groups.xml");
-        FileUtils.writeStringToFile(groupsFile, "<?xml version=\"1.0\"?>"
-                + "<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\">"
-                + "<header><rev>1.3</rev><created>Wednesday, February 6, 2002 10:10:00 AM EST</created><mstation>localhost</mstation></header>"
-                + "<groups><group><name>Admin</name><user>admin</user></group></groups>"
-                + "<roles><role name=\"junit-oncall\" supervisor=\"admin\" membership-group=\"Admin\"/>"
-                + "<role name=\"junit-fresh-role\" supervisor=\"admin\" membership-group=\"Admin\"/></roles>"
-                + "</groupinfo>", Charset.defaultCharset());
-        groupsFile.setLastModified(System.currentTimeMillis() + 1000);
-        sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths",
-                "{\"name\":\"junit-fresh-target\",\"target\":[{\"name\":\"junit-fresh-role\",\"command\":[\"javaEmail\"]}],\"escalate\":[]}", 204);
-        sendRequest(DELETE, "/notification-config/destination-paths/junit-fresh-target", 204);
+    public void testDestinationPathTargetsFollowRoleChanges() throws Exception {
+        // a role added behind the manager's back (the on-call roles API) must be a valid target without an
+        // unrelated read first
+        changeRoles(() -> m_onCallRoleDao.save(new OnCallRole("junit-fresh-role", m_userGroupDao.findByName("Admin"),
+                m_userAccountDao.findByUsername("admin"))));
+        try {
+            sendData(POST, MediaType.APPLICATION_JSON, "/notification-config/destination-paths",
+                    "{\"name\":\"junit-fresh-target\",\"target\":[{\"name\":\"junit-fresh-role\",\"command\":[\"javaEmail\"]}],\"escalate\":[]}", 204);
+            sendRequest(DELETE, "/notification-config/destination-paths/junit-fresh-target", 204);
+        } finally {
+            changeRoles(() -> m_onCallRoleDao.delete(m_onCallRoleDao.findByName("junit-fresh-role")));
+        }
     }
 
     @Test

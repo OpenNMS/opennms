@@ -7,9 +7,8 @@
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 ">
 
-  <!-- Users, groups and on-call roles: from the database (org.opennms.usermgmt.store=db, the default) or from
-       users.xml and groups.xml (xml). Imported by applicationContext-dao.xml, because the database managers
-       need the DAOs. UserMgmtManagers reads the property and rejects an invalid value. -->
+  <!-- Users, groups and on-call roles, from the database. Imported by applicationContext-dao.xml, because the
+       managers need the DAOs. -->
 
   <bean id="userMgmtManagers" class="org.opennms.netmgt.config.UserMgmtManagers">
     <constructor-arg ref="userAccountDao"/>

@@ -152,8 +152,7 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private final TestDestinationPaths m_paths = new TestDestinationPaths();
 
     @After
-    public void clearStoreProperty() {
-        System.clearProperty("org.opennms.usermgmt.store");
+    public void restorePaths() {
         m_paths.restore();
     }
 
@@ -1002,28 +1001,6 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         exec(POST, "/users", "{\"userId\":\"zoned\",\"password\":\"pw\",\"timeZoneId\":\"GMT+1\"}", null, 201);
         assertEquals("GMT+01:00", column("zoned", "time_zone_id"));
         assertEquals("GMT+01:00", new JSONObject(getJson("/users/zoned", 200)).getString("timeZoneId"));
-    }
-
-    @Test
-    public void testXmlStoreIs503() throws Exception {
-        System.setProperty("org.opennms.usermgmt.store", "xml");
-        try {
-            final String message = "User management through this API needs org.opennms.usermgmt.store=db.";
-            final List<MockHttpServletResponse> responses = Arrays.asList(
-                    exec(GET, "/users", null, null, 503),
-                    exec(GET, "/users/admin", null, null, 503),
-                    exec(GET, "/users/available-roles", null, null, 503),
-                    exec(POST, "/users", "{\"userId\":\"x\",\"password\":\"x\"}", null, 503),
-                    exec(PUT, "/users/admin", "{\"userId\":\"admin\"}", null, 503),
-                    exec(PUT, "/users/admin/password", "{\"password\":\"x\"}", null, 503),
-                    exec(POST, "/users/admin/rename", "{\"newUserId\":\"x\"}", null, 503),
-                    exec(DELETE, "/users/admin", null, null, 503));
-            for (final MockHttpServletResponse response : responses) {
-                assertEquals(message, response.getContentAsString());
-            }
-        } finally {
-            System.clearProperty("org.opennms.usermgmt.store");
-        }
     }
 
     @Test

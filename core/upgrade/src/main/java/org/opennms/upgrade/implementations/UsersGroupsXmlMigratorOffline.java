@@ -129,7 +129,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
 
     @Override
     public int getOrder() {
-        // after MagicUsersMigratorOffline (12), which edits users.xml
+        // before DefaultUsersSeedOffline (19), which adds the default users only when no user data was copied
         return 18;
     }
 

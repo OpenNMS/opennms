@@ -46,7 +46,7 @@ import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * UserManager on the usermgmt tables. Caches the users like UserFactory does and reloads them when the "users" row
+ * UserManager on the usermgmt tables. Caches the users and reloads them when the "users" row
  * of usermgmt_version changes; {@link #getLastModified()} returns that version, so the Spring Security user cache
  * follows it.
  */

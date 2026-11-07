@@ -8,7 +8,7 @@ import { createResultWithPayload } from '@/types/validation'
 
 const loaded = <T>(payload: T) => createResultWithPayload(true, '', payload)
 const failed = (message: string) => createResultWithPayload<never>(false, message)
-const UNAVAILABLE = 'User management through this API needs org.opennms.usermgmt.store=db.'
+const UNAVAILABLE = 'User management is temporarily unavailable.'
 
 // feedback belongs to the components: the store must never show any
 const showSnackBar = vi.hoisted(() => vi.fn())

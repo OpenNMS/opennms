@@ -48,7 +48,7 @@ import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * GroupManager on the usermgmt tables. Caches the groups and on-call roles like GroupFactory does, and reloads them
+ * GroupManager on the usermgmt tables. Caches the groups and on-call roles, and reloads them
  * when usermgmt_version changes. Group member and supervisor names come from the users, so both version rows are
  * followed; a save only checks the "groups" row, so a user change does not make a group save fail.
  */

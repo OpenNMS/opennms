@@ -21,48 +21,25 @@
  */
 package org.opennms.web.api;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import java.util.function.Supplier;
 
-import org.opennms.core.utils.BundleLists;
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.model.usermgmt.SecurityRoles;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An uninstantiatable class that provides a servlet container-independent
  * interface to the authentication system and a list of useful constants.
- * 
- * A predefined list of roles will be used. Optionally, it is possible to
- * define additional roles by creating a file called security-roles.proeprties.
- * 
- * Here is an example for adding 2 additional roles:
- * 
- * roles=operator,manager
- * 
- * The 'default' roles are always going to be added, so the above list is
- * equivalent to:
- * 
- * roles=user,admin,operator,manager
- * 
- * The role names will be translated to upper case, prefixing it with 'ROLE_'.
+ *
+ * The valid roles come from the role source, which DatabaseSecurityRoles sets to the security_roles table. Without
+ * a role source, only the built-in roles are valid.
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="mailto:agalue@opennms.org">Alejandro Galue</A>
  */
 public final class Authentication extends Object {
-
-    private static final Logger LOG = LoggerFactory.getLogger(Authentication.class);
-
-    public static final String ROLE_CONFIGURATION_FILE = "security-roles.properties";
 
     public static final String ROLE_USER = SecurityRoles.ROLE_USER;
     public static final String ROLE_ADMIN = SecurityRoles.ROLE_ADMIN;
@@ -81,8 +58,7 @@ public final class Authentication extends Object {
     public static final String ROLE_FLOW_MANAGER = SecurityRoles.ROLE_FLOW_MANAGER;
     public static final String ROLE_DEVICE_CONFIG_BACKUP = SecurityRoles.ROLE_DEVICE_CONFIG_BACKUP;
 
-    private static List<String> s_availableRoles = new ArrayList<>();
-    private static long lastModified = 0;
+    private static final List<String> BUILTIN_ROLES = Collections.unmodifiableList(new ArrayList<>(SecurityRoles.BUILTIN_ROLES.keySet()));
 
     private static final long ROLE_SOURCE_CACHE_MS = 1000;
 
@@ -90,17 +66,13 @@ public final class Authentication extends Object {
     private static volatile List<String> s_sourceRoles;
     private static volatile long s_sourceRolesLoaded;
 
-    static {
-        s_availableRoles.addAll(SecurityRoles.BUILTIN_ROLES.keySet());
-    }
-
     /** Private, empty constructor so this class cannot be instantiated. */
     private Authentication() {
     }
 
     /**
-     * Sets where the valid roles come from. With null (the default), they are the built-in roles plus the roles in
-     * etc/security-roles.properties. In the database mode, DatabaseSecurityRoles sets the security_roles table here.
+     * Sets where the valid roles come from. With null (the default), only the built-in roles are valid.
+     * DatabaseSecurityRoles sets the security_roles table here.
      *
      * @param source the names of all valid roles
      */
@@ -116,20 +88,11 @@ public final class Authentication extends Object {
 
     public static List<String> getAvailableRoles() {
         final List<String> sourceRoles = sourceRoles();
-        if (sourceRoles != null) {
-            return sourceRoles;
-        }
-        loadRoles();
-        return Collections.unmodifiableList(s_availableRoles);
+        return sourceRoles != null ? sourceRoles : BUILTIN_ROLES;
     }
 
     public static boolean isValidRole(String role) {
-        final List<String> sourceRoles = sourceRoles();
-        if (sourceRoles != null) {
-            return sourceRoles.contains(role);
-        }
-        loadRoles();
-        return s_availableRoles.contains(role);
+        return getAvailableRoles().contains(role);
     }
 
     /** @return the roles of the role source, read at most once a second, or null without a role source */
@@ -146,32 +109,5 @@ public final class Authentication extends Object {
             s_sourceRolesLoaded = now;
         }
         return roles;
-    }
-
-    private static void loadRoles() {
-        File configFile = new File(ConfigFileConstants.getHome(), "etc" + File.separator + ROLE_CONFIGURATION_FILE);
-        if (configFile.exists() && configFile.lastModified() > lastModified) {
-            lastModified = configFile.lastModified();
-            Properties p = new Properties();
-            try {
-                LOG.info("Loading security roles from {}", configFile);
-                p.load(new FileInputStream(configFile));
-                String roleList = p.getProperty("roles");
-                if (roleList != null) {
-                    for (String role : BundleLists.parseBundleList(roleList)) {
-                        if (role.isEmpty()) {
-                            continue;
-                        }
-                        String securityRole = SecurityRoles.toRoleName(role);
-                        if (!s_availableRoles.contains(securityRole)) {
-                            LOG.info("Adding role {}", securityRole);
-                            s_availableRoles.add(securityRole);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                LOG.warn("Can't load security roles from {}, because: {}", configFile, e.getMessage());
-            }
-        }
     }
 }

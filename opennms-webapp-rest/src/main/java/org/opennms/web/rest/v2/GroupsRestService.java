@@ -100,7 +100,6 @@ public class GroupsRestService implements GroupsRestApi {
     @Transactional(readOnly = true)
     public Response listGroups(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, "Group management");
-        m_support.requireDatabaseStore();
         try {
             // one query for every authorization, so that the number of statements grows with neither the groups
             // nor the categories
@@ -120,7 +119,6 @@ public class GroupsRestService implements GroupsRestApi {
     @Transactional(readOnly = true)
     public Response listAvailableCategories(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, "Group management");
-        m_support.requireDatabaseStore();
         try {
             // the names only: findAll() would also fill the DAO's per-thread cache with entities of this closed session
             final List<String> categories = m_categoryDao.getAllCategoryNames().stream()
@@ -159,7 +157,6 @@ public class GroupsRestService implements GroupsRestApi {
     @Transactional
     public Response createGroup(final SecurityContext securityContext, final GroupDto dto) {
         m_support.assertAdmin(securityContext, "Group management");
-        m_support.requireDatabaseStore();
         if (dto == null || StringUtils.isBlank(dto.getName())) {
             throw m_support.badRequest("A group name is required.");
         }

@@ -43,33 +43,20 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.web.api.Authentication;
 
 public class OpenNMSLoginModuleTest {
-    @Rule
-    public TemporaryFolder m_opennmsHome = new TemporaryFolder();
-
-    @Before
-    public void setUp() {
-        // Keep Authentication from picking up a security-roles.properties outside of this test.
-        System.setProperty("opennms.home", m_opennmsHome.getRoot().getAbsolutePath());
-    }
-
     @After
     public void tearDown() {
-        System.clearProperty("opennms.home");
         Authentication.setRoleSource(null);
     }
 
     @Test
     public void usesTheInstalledRoleSource() throws Exception {
-        // the database mode: a custom role that is only in the security_roles table
+        // a custom role that is only in the security_roles table
         final UserConfig userConfig = userConfig("admin", "secret", "ROLE_ADMIN", "ROLE_OPERATOR");
         final Subject subject = new Subject();
         final OpenNMSLoginModule module = new OpenNMSLoginModule() {

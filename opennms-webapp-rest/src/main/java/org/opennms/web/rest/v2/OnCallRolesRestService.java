@@ -112,7 +112,6 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     @Transactional(readOnly = true)
     public Response listOnCallRoles(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, WHAT);
-        m_support.requireDatabaseStore();
         try {
             final List<OnCallRole> roles = new ArrayList<>(m_onCallRoleDao.findAll());
             roles.sort(Comparator.comparing(OnCallRole::getName, String.CASE_INSENSITIVE_ORDER));
@@ -153,7 +152,6 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     @Transactional
     public Response createOnCallRole(final SecurityContext securityContext, final OnCallRoleDto dto) {
         m_support.assertAdmin(securityContext, WHAT);
-        m_support.requireDatabaseStore();
         if (dto == null || StringUtils.isBlank(dto.getName())) {
             throw m_support.badRequest("An on-call role name is required.");
         }
@@ -306,7 +304,6 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     @Transactional(readOnly = true)
     public Response getScheduleSettings(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, WHAT);
-        m_support.requireDatabaseStore();
         final OnCallScheduleSettingsDto settings = new OnCallScheduleSettingsDto();
         settings.setTimeZone(TimeZone.getDefault().getID());
         settings.setShortMonths(Arrays.asList(DateFormatSymbols.getInstance(Locale.ROOT).getShortMonths()).subList(0, 12));
@@ -317,7 +314,6 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     @Transactional(readOnly = true)
     public Response previewCalendar(final SecurityContext securityContext, final String month, final OnCallRoleDto draft) {
         m_support.assertAdmin(securityContext, WHAT);
-        m_support.requireDatabaseStore();
         final YearMonth yearMonth;
         if (month == null || !month.matches("\\d{4}-\\d{2}")) {
             throw m_support.badRequest("month must be YYYY-MM.");

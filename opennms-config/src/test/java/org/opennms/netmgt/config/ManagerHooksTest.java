@@ -168,7 +168,7 @@ public class ManagerHooksTest {
 
     @Test
     public void testRoleAndMembershipReadsLoadFirst() throws Exception {
-        // GroupFactory loaded in its constructor; a manager that loads on first use needs update() in every read
+        // the old XML manager loaded in its constructor; a manager that loads on first use needs update() in every read
         final TestGroupManager manager = new TestGroupManager();
         manager.getRoles();
         manager.getRoleNames();

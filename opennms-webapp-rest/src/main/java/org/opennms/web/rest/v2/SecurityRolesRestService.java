@@ -79,7 +79,6 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
     @Transactional(readOnly = true)
     public Response listSecurityRoles(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, "Security role management");
-        m_support.requireDatabaseStore();
         try {
             final Map<String, Integer> counts = m_securityRoleDao.countUsersByRole();
             final List<SecurityRole> roles = new ArrayList<>(m_securityRoleDao.findAll());
@@ -99,7 +98,6 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
     @Transactional(readOnly = true)
     public Response getSecurityRole(final SecurityContext securityContext, final String pathName) {
         m_support.assertAdmin(securityContext, "Security role management");
-        m_support.requireDatabaseStore();
         try {
             final SecurityRole role = load(normalizePathName(pathName));
             final int version = role.getVersion();
@@ -113,7 +111,6 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
     @Transactional
     public Response createSecurityRole(final SecurityContext securityContext, final SecurityRoleDto dto) {
         m_support.assertAdmin(securityContext, "Security role management");
-        m_support.requireDatabaseStore();
         if (dto == null || StringUtils.isBlank(dto.getName())) {
             throw m_support.badRequest("A security role name is required.");
         }
@@ -143,7 +140,6 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
     @Transactional
     public Response updateSecurityRole(final SecurityContext securityContext, final HttpHeaders headers, final String pathName, final SecurityRoleDto dto) {
         m_support.assertAdmin(securityContext, "Security role management");
-        m_support.requireDatabaseStore();
         // the path takes the name as the POST does: /security-roles/auditor is ROLE_AUDITOR
         final String name = normalizePathName(pathName);
         if (dto == null) {
@@ -178,7 +174,6 @@ public class SecurityRolesRestService implements SecurityRolesRestApi {
     @Transactional
     public Response deleteSecurityRole(final SecurityContext securityContext, final HttpHeaders headers, final String pathName) {
         m_support.assertAdmin(securityContext, "Security role management");
-        m_support.requireDatabaseStore();
         final String name = normalizePathName(pathName);
         try {
             m_support.lockForWrite();

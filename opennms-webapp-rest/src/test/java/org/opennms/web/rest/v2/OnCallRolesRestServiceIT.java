@@ -30,7 +30,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.text.DateFormatSymbols;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.function.Supplier;
@@ -168,9 +167,8 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private final TestDestinationPaths m_paths = new TestDestinationPaths();
 
     @After
-    public void clearStoreProperty() {
+    public void restoreLocaleAndPaths() {
         Locale.setDefault(m_locale);
-        System.clearProperty("org.opennms.usermgmt.store");
         m_paths.restore();
     }
 
@@ -945,26 +943,6 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         final JSONObject settings = new JSONObject(sendRequest(GET, "/oncall-roles/schedule-settings", 200));
         assertEquals("Mar", settings.getJSONArray("shortMonths").getString(2));
-    }
-
-    @Test
-    public void testXmlStoreIs503() throws Exception {
-        System.setProperty("org.opennms.usermgmt.store", "xml");
-        try {
-            final String message = "User management through this API needs org.opennms.usermgmt.store=db.";
-            final List<MockHttpServletResponse> responses = Arrays.asList(
-                    exec(GET, "/oncall-roles", null, null, 503),
-                    exec(GET, "/oncall-roles/x", null, null, 503),
-                    exec(POST, "/oncall-roles", role("x", null), null, 503),
-                    exec(PUT, "/oncall-roles/x", "{}", null, 503),
-                    exec(POST, "/oncall-roles/x/rename", "{\"newName\":\"y\"}", null, 503),
-                    exec(DELETE, "/oncall-roles/x", null, null, 503));
-            for (final MockHttpServletResponse response : responses) {
-                assertEquals(message, response.getContentAsString());
-            }
-        } finally {
-            System.clearProperty("org.opennms.usermgmt.store");
-        }
     }
 
     @Test

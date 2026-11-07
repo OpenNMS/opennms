@@ -78,7 +78,6 @@ public class UserMgmtRestSupportTest {
 
     @After
     public void tearDown() {
-        System.clearProperty("org.opennms.usermgmt.store");
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
             TransactionSynchronizationManager.clearSynchronization();
         }
@@ -97,21 +96,6 @@ public class UserMgmtRestSupportTest {
     private static void assertStatus(final int status, final String text, final WebApplicationException e) {
         assertEquals(status, e.getResponse().getStatus());
         assertEquals(text, e.getResponse().getEntity());
-    }
-
-    @Test
-    public void testRequireDatabaseStoreIn503XmlMode() {
-        System.setProperty("org.opennms.usermgmt.store", "xml");
-        try {
-            m_support.requireDatabaseStore();
-            fail("expected 503");
-        } catch (final WebApplicationException e) {
-            assertStatus(503, "User management through this API needs org.opennms.usermgmt.store=db.", e);
-        }
-        System.clearProperty("org.opennms.usermgmt.store");
-        m_support.requireDatabaseStore();
-        System.setProperty("org.opennms.usermgmt.store", "db");
-        m_support.requireDatabaseStore();
     }
 
     @Test
@@ -152,13 +136,6 @@ public class UserMgmtRestSupportTest {
             fail("expected 403");
         } catch (final WebApplicationException e) {
             assertStatus(403, "Group management requires the admin role.", e);
-        }
-        System.setProperty("org.opennms.usermgmt.store", "xml");
-        try {
-            m_support.checkTarget(admin, "Group management", "name", null);
-            fail("expected 503");
-        } catch (final WebApplicationException e) {
-            assertEquals(503, e.getResponse().getStatus());
         }
     }
 

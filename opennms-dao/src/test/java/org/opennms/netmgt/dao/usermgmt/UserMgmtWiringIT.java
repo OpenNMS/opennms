@@ -43,7 +43,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-/** The default store (org.opennms.usermgmt.store unset) wires the database managers. */
+/** The user management context wires the database managers. */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -68,7 +68,7 @@ public class UserMgmtWiringIT {
     private GroupDao m_groupDao;
 
     @Test
-    public void testDatabaseIsTheDefault() {
+    public void testWiresTheDatabaseManagers() {
         assertTrue(m_userManager instanceof DbUserManager);
         assertTrue(m_groupManager instanceof DbGroupManager);
         assertSame(m_userManager, UserFactory.getInstance());

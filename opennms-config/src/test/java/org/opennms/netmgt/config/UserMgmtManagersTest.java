@@ -22,22 +22,12 @@
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
-import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.opennms.netmgt.config.api.UserMgmtStore;
 import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.dao.api.SecurityRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
@@ -47,70 +37,34 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 public class UserMgmtManagersTest {
 
-    @Rule
-    public TemporaryFolder m_home = new TemporaryFolder();
-
-    @After
-    public void tearDown() {
-        System.clearProperty(UserMgmtStore.PROPERTY);
-    }
-
-    private static UserMgmtManagers managers() throws Exception {
+    private static UserMgmtManagers managers() {
         return new UserMgmtManagers(mock(UserAccountDao.class), mock(UserGroupDao.class), mock(OnCallRoleDao.class),
                 mock(SecurityRoleDao.class), mock(UserMgmtVersionDao.class), mock(PlatformTransactionManager.class));
     }
 
     @Test
-    public void testDatabaseIsTheDefault() throws Exception {
+    public void testBuildsTheDatabaseManagers() {
         final UserMgmtManagers managers = managers();
         assertTrue(managers.getUserManager() instanceof DbUserManager);
         assertTrue(managers.getGroupManager() instanceof DbGroupManager);
     }
 
     @Test
-    public void testValueIsTrimmed() throws Exception {
-        // java.util.Properties keeps trailing spaces of a value
-        System.setProperty(UserMgmtStore.PROPERTY, "db ");
-        assertTrue(managers().getUserManager() instanceof DbUserManager);
+    public void testExpireAllExpiresBothManagers() throws Exception {
+        final UserMgmtManagers managers = managers();
+        final Field userCheck = lastCheck(DbUserManager.class);
+        final Field groupCheck = lastCheck(DbGroupManager.class);
+        userCheck.setLong(managers.getUserManager(), 42L);
+        groupCheck.setLong(managers.getGroupManager(), 42L);
+
+        managers.expireAll();
+        assertEquals(0L, userCheck.getLong(managers.getUserManager()));
+        assertEquals(0L, groupCheck.getLong(managers.getGroupManager()));
     }
 
-    @Test
-    public void testAnInvalidValueFailsWithAClearMessage() {
-        System.setProperty(UserMgmtStore.PROPERTY, "DB");
-        final IllegalStateException e = assertThrows(IllegalStateException.class, UserMgmtManagersTest::managers);
-        assertEquals("org.opennms.usermgmt.store must be \"db\" or \"xml\", not \"DB\"", e.getMessage());
-    }
-
-    @Test
-    public void testExpireAllIsNoOpInXmlMode() throws Exception {
-        final Path home = m_home.getRoot().toPath();
-        final Path etc = Files.createDirectory(home.resolve("etc"));
-        Files.write(etc.resolve("users.xml"), ("<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"><header><rev>1</rev>"
-                + "<created>now</created><mstation>m</mstation></header><users><user><user-id>admin</user-id><full-name>A</full-name><password>x</password></user></users></userinfo>").getBytes(StandardCharsets.UTF_8));
-        Files.write(etc.resolve("groups.xml"), ("<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\"><header><rev>1</rev>"
-                + "<created>now</created><mstation>m</mstation></header><groups><group><name>Admin</name></group></groups></groupinfo>").getBytes(StandardCharsets.UTF_8));
-        final String oldHome = System.getProperty("opennms.home");
-        System.setProperty("opennms.home", home.toString());
-        System.setProperty(UserMgmtStore.PROPERTY, "xml");
-        try {
-            final UserMgmtManagers managers = managers();
-            managers.expireAll();
-            assertSame(UserFactory.getInstance(), managers.getUserManager());
-            assertSame(GroupFactory.getInstance(), managers.getGroupManager());
-            // expireAll() only reaches the database managers: xml mode must not have any
-            for (final Field field : UserMgmtManagers.class.getDeclaredFields()) {
-                field.setAccessible(true);
-                final Object value = field.get(managers);
-                assertFalse(field.getName(), value instanceof DbUserManager || value instanceof DbGroupManager);
-            }
-        } finally {
-            if (oldHome == null) {
-                System.clearProperty("opennms.home");
-            } else {
-                System.setProperty("opennms.home", oldHome);
-            }
-            UserFactory.setInstance(null);
-            GroupFactory.setInstance(null);
-        }
+    private static Field lastCheck(final Class<?> clazz) throws NoSuchFieldException {
+        final Field field = clazz.getDeclaredField("m_lastCheck");
+        field.setAccessible(true);
+        return field;
     }
 }
