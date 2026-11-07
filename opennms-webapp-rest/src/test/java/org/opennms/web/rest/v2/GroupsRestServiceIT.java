@@ -466,7 +466,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // an explicit empty string clears; an omitted key preserves
         exec(PUT, "/groups/commentgroup", "{\"name\":\"commentgroup\",\"comments\":\"\"}", null, 200);
         final JSONObject json = new JSONObject(getJson("/groups/commentgroup", 200));
-        assertTrue(!json.has("comments") || json.isNull("comments"));
+        assertTrue("comments are cleared", json.isNull("comments"));
         sendRequest(DELETE, "/groups/commentgroup", 204);
     }
 
@@ -567,6 +567,11 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertNotNull(renamed.getHeader("ETag"));
         sendRequest(GET, "/groups/renamegroup", 404);
         sendRequest(GET, "/groups/renamedgroup", 200);
+
+        // the renamed group can be edited with the tag the rename returned
+        final MockHttpServletResponse edited = exec(PUT, "/groups/renamedgroup", "{\"name\":\"renamedgroup\",\"comments\":\"After Rename\"}",
+                renamed.getHeader("ETag"), 200);
+        assertEquals("After Rename", new JSONObject(edited.getContentAsString()).getString("comments"));
 
         sendRequest(DELETE, "/groups/renamedgroup", 204);
         sendRequest(DELETE, "/groups/occupiedgroup", 204);

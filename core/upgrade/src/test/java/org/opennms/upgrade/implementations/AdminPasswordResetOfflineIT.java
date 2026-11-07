@@ -42,11 +42,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.TemporaryDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.api.UserAccountDao;
-import org.opennms.netmgt.model.usermgmt.UserAccount;
-import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.core.password.DatabasePasswords;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,9 +65,6 @@ public class AdminPasswordResetOfflineIT implements TemporaryDatabaseAware<Tempo
 
     @Rule
     public TemporaryFolder m_home = new TemporaryFolder();
-
-    @Autowired
-    private UserAccountDao m_userDao;
 
     private JdbcTemplate m_jdbc;
     private String m_previousHome;

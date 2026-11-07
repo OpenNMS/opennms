@@ -25,6 +25,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Groupinfo;
@@ -47,11 +49,11 @@ public class UserMgmtDefaultsTest {
         assertEquals("Default administrator, do not delete", admin.getUserComments().get());
         assertEquals("gU2wmSW7k9v1xg4/MrAsaI+VyddBAhJJt4zPX5SGG0BK+qiASGnJsqM8JOug/aEL", admin.getPassword().getEncryptedPassword());
         assertTrue(admin.getPassword().getSalt());
-        assertEquals(java.util.Arrays.asList("ROLE_ADMIN"), admin.getRoles());
+        assertEquals(List.of("ROLE_ADMIN"), admin.getRoles());
 
         final User rtc = user(info, "rtc");
         assertEquals("sHMy+HycWKGJC/uUMF0IGlXUXP1KhcqD0GEchFlvYTw40jT9r+zMxOb3F+phWNzX", rtc.getPassword().getEncryptedPassword());
-        assertEquals(java.util.Arrays.asList("ROLE_RTC"), rtc.getRoles());
+        assertEquals(List.of("ROLE_RTC"), rtc.getRoles());
     }
 
     @Test
@@ -61,7 +63,7 @@ public class UserMgmtDefaultsTest {
         final Group admin = info.getGroups().get(0);
         assertEquals("Admin", admin.getName());
         assertEquals("The administrators", admin.getComments().get());
-        assertEquals(java.util.Arrays.asList("admin"), admin.getUsers());
+        assertEquals(List.of("admin"), admin.getUsers());
     }
 
     @Test

@@ -77,8 +77,6 @@ public class UsersRestService implements UsersRestApi {
     /** The value of the view parameter that lists only the id and the full name. */
     private static final String SUMMARY_VIEW = "summary";
 
-    /** System accounts that must not be deleted or renamed. */
-
     @Autowired
     private UserMgmtRestSupport m_support;
 

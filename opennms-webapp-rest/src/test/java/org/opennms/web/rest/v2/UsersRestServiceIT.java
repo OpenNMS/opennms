@@ -589,6 +589,11 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, "/users/renameme", 404);
         sendRequest(GET, "/users/renamed", 200);
 
+        // the renamed user can be edited with the tag the rename returned
+        final MockHttpServletResponse edited = exec(PUT, "/users/renamed", "{\"userId\":\"renamed\",\"fullName\":\"After Rename\"}",
+                renamed.getHeader("ETag"), 200);
+        assertEquals("After Rename", new JSONObject(edited.getContentAsString()).getString("fullName"));
+
         sendRequest(DELETE, "/users/renamed", 204);
         sendRequest(DELETE, "/users/occupied", 204);
     }
