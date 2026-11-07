@@ -32,6 +32,12 @@ import org.jasypt.util.password.StrongPasswordEncryptor;
 /** Sets a web user's password in the users table. */
 public final class DatabasePasswords {
 
+    /**
+     * System property that carries the password of install -R to the upgrade task AdminPasswordResetOffline when the
+     * admin user does not exist yet. The upgrade runs in the installer's JVM.
+     */
+    public static final String RESET_ADMIN_PASSWORD_PROPERTY = "opennms.install.resetAdminPassword";
+
     private DatabasePasswords() {
     }
 

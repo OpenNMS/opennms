@@ -22,6 +22,7 @@
 package org.opennms.install;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 
@@ -41,6 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.opennms.bootstrap.FilesystemPermissionValidator;
+import org.opennms.core.password.DatabasePasswords;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.util.FileSystemUtils;
 
@@ -78,6 +80,7 @@ public class InstallerTest {
 
     @After
     public void tearDown() throws Exception {
+        System.clearProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY);
         FileSystemUtils.deleteRecursively(opennmsHome.toFile());
         FilesystemPermissionValidator.VERBOSE = false;
     }
@@ -245,6 +248,27 @@ public class InstallerTest {
         recording.resetWebAppAdminPassword();
         assertEquals(List.of("db:n3w"), recording.m_calls);
         assertEquals("<userinfo/>", Files.readString(etcDir.resolve("users.xml")));
+    }
+
+    @Test
+    public void testResetIsDeferredWhenAdminDoesNotExistYet() throws Exception {
+        final RecordingInstaller recording = recordingInstaller();
+        recording.m_adminMissing = true;
+        try {
+            recording.resetWebAppAdminPassword();
+            assertEquals("n3w", System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY));
+        } finally {
+            System.clearProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY);
+        }
+    }
+
+    @Test
+    public void testResetIsNotDeferredWhenUpgradeToolsAreSkipped() throws Exception {
+        final RecordingInstaller recording = recordingInstaller();
+        recording.m_adminMissing = true;
+        recording.m_skip_upgrade_tools = true;
+        recording.resetWebAppAdminPassword();
+        assertNull(System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY));
     }
 
     @Test

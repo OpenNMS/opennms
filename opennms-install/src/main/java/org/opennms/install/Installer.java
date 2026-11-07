@@ -295,8 +295,14 @@ public class Installer {
         try {
             setAdminPasswordInDatabase(m_resetWebAppAdminPassword);
         } catch (final IllegalArgumentException e) {
-            System.out.println("The password was NOT set: the admin user does not exist in the database."
-                    + " If this is a new installation or an upgrade, run the installer with -R again after the upgrade.");
+            if (m_skip_upgrade_tools) {
+                System.out.println("The password was NOT set: the admin user does not exist in the database."
+                        + " If this is a new installation or an upgrade, run the installer with -R again after the upgrade.");
+            } else {
+                // the upgrade tasks create the admin user; the last one (AdminPasswordResetOffline) sets the password
+                System.setProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY, m_resetWebAppAdminPassword);
+                System.out.println("The admin user does not exist yet; its password is set after the upgrade tasks.");
+            }
             return;
         }
         System.out.println("Password for the web application admin user was set.");

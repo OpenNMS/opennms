@@ -15,7 +15,6 @@
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.password</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
     <!-- Upgrade API Dependencies -->
     <dependency>
