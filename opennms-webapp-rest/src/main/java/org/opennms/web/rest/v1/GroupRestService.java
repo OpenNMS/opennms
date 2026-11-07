@@ -65,6 +65,7 @@ import org.opennms.netmgt.model.usermgmt.OnCallRole;
 import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.v1.model.GroupUpdateForm;
+import org.opennms.web.rest.v2.GroupsRestService;
 import org.opennms.web.rest.v2.UserMgmtRestSupport;
 import org.opennms.web.rest.v2.UserMgmtValidation;
 import org.opennms.web.rest.v2.UserMgmtValidationException;
@@ -695,6 +696,7 @@ public class GroupRestService extends OnmsRestService {
             if (problem != null) {
                 throw m_support.badRequest(problem);
             }
+            m_support.checkNotLookAlike(name, GroupsRestService.PROTECTED_GROUPS, "group name");
         }
         // OnmsGroup carries no duty schedules, so there are none to validate here
         checkMembers(group);
@@ -730,8 +732,11 @@ public class GroupRestService extends OnmsRestService {
         if (t instanceof IllegalArgumentException || t instanceof UserMgmtValidationException) {
             return getException(Status.BAD_REQUEST, t);
         }
-        if (t instanceof UserDataChangedException) {
-            return getException(Status.CONFLICT, t);
+        // the group DAO wraps what the manager throws, so the stale cache is found along the cause chain
+        for (Throwable cause = t; cause != null; cause = cause.getCause()) {
+            if (cause instanceof UserDataChangedException) {
+                return getException(Status.CONFLICT, cause);
+            }
         }
         return getException(Status.INTERNAL_SERVER_ERROR, t);
     }

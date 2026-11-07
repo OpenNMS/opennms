@@ -260,7 +260,7 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
 
     @Test
     public void testCreateRefusesReservedAndInvalidNames() throws Exception {
-        for (final String name : new String[] { "item", "available-categories", "a/b", "&lt;b&gt;", "a b", "a%b" }) {
+        for (final String name : new String[] { "item", "available-categories", "admin", "ADMIN", "a/b", "&lt;b&gt;", "a b", "a%b" }) {
             sendPost("/groups", "<group><name>" + name + "</name></group>", 400);
             assertEquals(name + " must not exist", 0, count("select count(*) from groups where name = '" + name + "'"));
         }
@@ -336,6 +336,31 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
         assertEquals("Group \"dbonCall\" is the membership group of the on-call role \"bossrole\". Change the membership group first.",
                 sendData(DELETE, "application/xml", "/groups/dbonCall", "", 409).getContentAsString());
         assertEquals(1, count("select count(*) from groups where name = 'dbonCall'"));
+    }
+
+    @Test
+    public void testV1SavesKeepDutySchedulesAndDefaultMap() throws Exception {
+        createGroup("dbkeep");
+        new JdbcTemplate(m_dataSource).update("update groups set default_map = 'Map1' where name = 'dbkeep'");
+        new JdbcTemplate(m_dataSource).update("insert into group_duty_schedules (group_id, position, schedule)"
+                + " select id, 0, 'MoTuWeThFr800-1700' from groups where name = 'dbkeep'");
+
+        // the SQL change is one the group manager's cache has not seen: the save is a 409, and the retry is fine
+        assertEquals("User data was changed by another process. Try again.",
+                sendData(PUT, "application/x-www-form-urlencoded", "/groups/dbkeep", "comments=edited", 409).getContentAsString());
+        sendPut("/groups/dbkeep", "comments=edited", 204);
+        assertKept("dbkeep", "edited");
+
+        sendPost("/groups", "<group><name>dbkeep</name><comments>overwritten</comments></group>", 201, "/groups/dbkeep");
+        assertKept("dbkeep", "overwritten");
+    }
+
+    private void assertKept(final String group, final String comments) {
+        final JdbcTemplate jdbc = new JdbcTemplate(m_dataSource);
+        assertEquals(comments, jdbc.queryForObject("select comments from groups where name = ?", String.class, group));
+        assertEquals("Map1", jdbc.queryForObject("select default_map from groups where name = ?", String.class, group));
+        assertEquals(List.of("MoTuWeThFr800-1700"), jdbc.queryForList("select s.schedule from group_duty_schedules s"
+                + " join groups g on g.id = s.group_id where g.name = ?", String.class, group));
     }
 
     @Test

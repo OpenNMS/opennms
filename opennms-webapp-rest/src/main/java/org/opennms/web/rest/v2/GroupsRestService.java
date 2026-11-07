@@ -73,7 +73,7 @@ public class GroupsRestService implements GroupsRestApi {
     private static final Logger LOG = LoggerFactory.getLogger(GroupsRestService.class);
 
     /** The default group; the on-call role machinery references it. */
-    private static final Set<String> PROTECTED_GROUPS = Set.of("Admin");
+    public static final Set<String> PROTECTED_GROUPS = Set.of("Admin");
 
     @Autowired
     private UserMgmtRestSupport m_support;
