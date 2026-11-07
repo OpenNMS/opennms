@@ -258,7 +258,7 @@
     public String buildDelaySelect(String[] intervals, String name, String currValue)
     {
           boolean gotCurrValue = false;
-          StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" id=\"input_" + name + "\" name=\"" + name  + "\">");
+          StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" id=\"input_" + Encode.forHtmlAttribute(name) + "\" name=\"" + Encode.forHtmlAttribute(name)  + "\">");
                     
           for (int i = 0; i < intervals.length; i++)
           {
@@ -283,7 +283,7 @@
     
     public String buildTargetList(int index, Path path, String name)
     {
-        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" name=\""+name+"\" size=\"4\">");
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" name=\""+Encode.forHtmlAttribute(name)+"\" size=\"4\">");
         List<Target> targets = null;
         
         if (index == 0)
