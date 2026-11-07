@@ -193,7 +193,7 @@ public abstract class UserManager implements UserConfig {
 
 
     /**
-     * Adds a new user and overwrites the "users.xml"
+     * Adds a new user, or replaces the user with this name, and saves all users (see {@link #saveUsers(Userinfo)}).
      *
      * @param name a {@link java.lang.String} object.
      * @param details a {@link org.opennms.netmgt.config.users.User} object.
@@ -216,7 +216,7 @@ public abstract class UserManager implements UserConfig {
             final Password p = details.getPassword();
             if (p != null) {
                 if (!p.getSalt()) {
-                    throw new IllegalStateException("org.opennms.users.allowUnsaltedPasswords=false, but " + details.getUserId() + " contains an unsalted password.");
+                    throw new IllegalStateException(ALLOW_UNSALTED_PROPERTY + "=false, but " + details.getUserId() + " contains an unsalted password.");
                 }
             }
         }
@@ -288,7 +288,7 @@ public abstract class UserManager implements UserConfig {
                     try {
                         dutyList.add(new DutySchedule(duty));
                     } catch (final RuntimeException e) {
-                        LOG.warn("Ignoring the duty schedule \"{}\" of user {}: it can't be read", duty, key, e);
+                        LOG.warn("Ignoring the duty schedule \"{}\" of user {}: it can't be read: {}", duty, key, e.toString());
                     }
                 }
 
@@ -897,8 +897,7 @@ public abstract class UserManager implements UserConfig {
     }
 
     /**
-     * Removes the user from the list of users. Then overwrites to the
-     * "users.xml"
+     * Removes the user from the list of users and the groups, then saves all users (see {@link #saveUsers(Userinfo)}).
      *
      * @param name a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
@@ -931,7 +930,7 @@ public abstract class UserManager implements UserConfig {
     }
 
     /**
-     * Saves into "users.xml" file
+     * Saves all users (see {@link #saveUsers(Userinfo)}).
      */
     private void _saveCurrent() throws Exception {
         final List<User> users = new ArrayList<>(m_users.values());
@@ -975,7 +974,7 @@ public abstract class UserManager implements UserConfig {
 
     /**
      * When this method is called users name is changed, so also is the username
-     * belonging to the group and the view. Also overwrites the "users.xml" file
+     * belonging to the group and the view. Then saves all users (see {@link #saveUsers(Userinfo)}).
      *
      * @param oldName a {@link java.lang.String} object.
      * @param newName a {@link java.lang.String} object.

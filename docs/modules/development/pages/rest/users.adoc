@@ -14,6 +14,10 @@ The write operations need the `ROLE_ADMIN` role and use the same checks as the v
   The response is `400`.
 * A user cannot be renamed with a form `PUT` that contains `username`.
   The response is `400`, which points to `PUT /api/v2/users/\{userId}/rename`.
+* A form `PUT` key with an index or a nested path, such as `roles[0]`, is refused.
+  The response is `400`.
+* A `POST` without `user-id` is refused, and so is an unsalted password while the system property `org.opennms.users.allowUnsalted` is `false` (send `hashPassword=true`).
+  The response is `400`.
 * The `admin` and `rtc` users cannot be deleted, and `admin` keeps `ROLE_ADMIN`.
   The response is `400`.
 * The last holder of `ROLE_ADMIN` cannot be deleted or lose the role, and a user who supervises an on-call role or is the target of a notification destination path cannot be deleted.

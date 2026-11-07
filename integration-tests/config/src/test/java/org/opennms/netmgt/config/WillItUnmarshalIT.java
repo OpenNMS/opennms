@@ -73,7 +73,6 @@ import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.geoip.GeoIpConfig;
-import org.opennms.netmgt.config.groups.Groupinfo;
 import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
 import org.opennms.netmgt.config.javamail.JavamailConfiguration;
@@ -267,7 +266,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, false, null);
         addFile(Source.EXAMPLE, "event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "event-proxy/vacuumd-configuration.xml", VacuumdConfiguration.class, false, null);
-        addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, false, null);
         addFile(Source.EXAMPLE, "jvm-datacollection/collectd-configuration.xml", CollectdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-config.d/activemq.xml", JmxDatacollectionConfig.class, false, null);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-config.d/cassandra.xml", JmxDatacollectionConfig.class, false, null);

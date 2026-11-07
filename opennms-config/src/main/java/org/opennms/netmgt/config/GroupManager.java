@@ -149,7 +149,7 @@ public abstract class GroupManager implements GroupConfig {
         }
         buildDutySchedules(m_groups);
         
-        // always rebuild, so removing the last role from groups.xml doesn't
+        // always rebuild, so removing the last role from the store doesn't
         // leave the previous roles cached until restart
         m_roles = new LinkedHashMap<String, Role>();
         for (final Role role : groupinfo.getRoles()) {
@@ -320,7 +320,7 @@ public abstract class GroupManager implements GroupConfig {
                     try {
                         dutyList.add(new DutySchedule(duty));
                     } catch (final RuntimeException e) {
-                        LOG.warn("Ignoring the duty schedule \"{}\" of group {}: it can't be read", duty, key, e);
+                        LOG.warn("Ignoring the duty schedule \"{}\" of group {}: it can't be read: {}", duty, key, e.toString());
                     }
                 }
                 // a group with no readable schedule has none, which means always on duty
@@ -392,7 +392,7 @@ public abstract class GroupManager implements GroupConfig {
     protected abstract void saveXml(String data) throws IOException;
 
     /**
-     * Adds a new user and overwrites the "groups.xml"
+     * Adds a new group, or replaces the group with this name, and saves all groups.
      *
      * @param name a {@link java.lang.String} object.
      * @param details a {@link org.opennms.netmgt.config.groups.Group} object.
@@ -423,8 +423,7 @@ public abstract class GroupManager implements GroupConfig {
 
 
     /**
-     * Removes the user from the list of groups. Then overwrites to the
-     * "groups.xml"
+     * Removes the user from the groups, then saves all groups.
      *
      * @param name a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
@@ -451,13 +450,11 @@ public abstract class GroupManager implements GroupConfig {
         }
         
         
-        // Saves into "groups.xml" file
         saveGroups();
     }
 
     /**
-     * Removes the group from the list of groups. Then overwrites to the
-     * "groups.xml"
+     * Removes the group from the list of groups, then saves all groups.
      *
      * @param name a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
@@ -473,7 +470,6 @@ public abstract class GroupManager implements GroupConfig {
         } else {
             throw new Exception("GroupFactory:delete Invalid user group:" + name);
         }
-        // Saves into "groups.xml" file
         saveGroups();
     }
     
@@ -499,8 +495,7 @@ public abstract class GroupManager implements GroupConfig {
 
 
     /**
-     * Renames the group from the list of groups. Then overwrites to the
-     * "groups.xml"
+     * Renames the group in the list of groups, then saves all groups.
      *
      * @param oldName a {@link java.lang.String} object.
      * @param newName a {@link java.lang.String} object.
@@ -515,13 +510,12 @@ public abstract class GroupManager implements GroupConfig {
     		grp.setName(newName);
     		m_groups.put(newName, grp);
     		try {
-    			// Save into groups.xml
     			saveGroups();
     		} catch (final Exception e) {
     			// The save did not persist, so undo the in-memory rename: the map
-    			// must keep reflecting groups.xml. Callers key referential-integrity
+    			// must keep reflecting the stored groups. Callers key referential-integrity
     			// decisions (and their rollback) on hasGroup(), which must not report
-    			// a rename the file never received.
+    			// a rename the store never received.
     			m_groups.remove(newName);
     			grp.setName(oldName);
     			m_groups.put(oldName, grp);
@@ -532,7 +526,7 @@ public abstract class GroupManager implements GroupConfig {
 
     /**
      * When this method is called group name is changed, so also is the
-     * group name belonging to the view. Also overwrites the "groups.xml" file
+     * group name belonging to the view. Then saves all groups.
      *
      * @param oldName a {@link java.lang.String} object.
      * @param newName a {@link java.lang.String} object.

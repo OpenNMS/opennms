@@ -118,7 +118,10 @@ public class UserMgmtRestSupport {
     /** Static so that tests can replace it in the per-test CXF context. */
     private static volatile Callable<Collection<Path>> s_destinationPaths = NOTIFD_DESTINATION_PATHS;
 
-    /** For tests; {@link #NOTIFD_DESTINATION_PATHS} restores the default. */
+    /**
+     * Replaces where the destination paths are read from. Visible for tests only; production code must not call it.
+     * {@link #NOTIFD_DESTINATION_PATHS} restores the default.
+     */
     public static void setDestinationPaths(final Callable<Collection<Path>> destinationPaths) {
         s_destinationPaths = destinationPaths;
     }

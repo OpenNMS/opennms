@@ -167,12 +167,12 @@ The on-call schedule page for users who are not admins (`/opennms/roles`), the p
 *RPM upgrades:* the package no longer contains `users.xml` and `groups.xml`.
 If you changed one of them, the upgrade renames it to `users.xml.rpmsave` or `groups.xml.rpmsave`.
 Do not delete these files: `install -dis` copies them into the database and moves them to `etc_archive/`.
-{page-component-title} does not start while `.rpmsave` files remain in `etc`, which only happens when the installer has not run.
+{page-component-title} does not start while `.rpmsave` files remain in `etc`, which happens when the installer has not run or has failed.
 If you did not change a file, the upgrade deletes it, and the installer uses the former default for it: the `admin` and `rtc` users, and the `Admin` group with `admin` as its member.
 
-*Containers:* `etc_archive` is not a volume, so the archived copies are lost when the container is replaced.
-The original files stay in the configuration volume or `etc` overlay.
-Copy the files out of the container, or mount `etc_archive`, if you need them.
+*Containers:* files that come from the `etc` overlay stay in the overlay.
+Files that are only in the configuration volume (`etc`) are moved out of it to `etc_archive`, which is not a volume, so they are lost when the container is replaced.
+Copy them out of the container, or mount `etc_archive`, before you replace the container if you need them.
 If an overlay copies `users.xml` or `groups.xml` into `etc` again, the installer recognizes it as already archived and removes it.
 
 If you run `install -R` on a new installation or an upgrade, it sets the password of `admin` after the upgrade tasks, in the same run.

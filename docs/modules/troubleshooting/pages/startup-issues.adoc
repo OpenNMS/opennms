@@ -170,7 +170,8 @@ systemd[1]: Failed to start OpenNMS server.
 
 NOTE: Do not delete `users.xml.rpmsave` or `groups.xml.rpmsave`: they hold your users and groups.
 Run `/opt/opennms/bin/install -dis`, which copies them into the database and moves them to `etc_archive/`.
-{page-component-title} refuses to start while they remain in `etc`, which only happens when the installer has not run.
+{page-component-title} refuses to start while they remain in `etc`, which happens when the installer has not run or has failed.
+If it failed, its log names the cause: fix it and run the installer again.
 
 NOTE: For other files, you should evaluate the `.rpmnew` or `.rpmsave` file against the original file with the same name to determine which to keep.
 Delete the appropriate file, remove the `.rpmnew` or `.rpmsave` file extension (if applicable), and start {page-component-title}.

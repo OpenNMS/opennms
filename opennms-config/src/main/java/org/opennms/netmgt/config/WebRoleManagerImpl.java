@@ -78,7 +78,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         try {
             return m_userManager.getUser(name);
         } catch (IOException e) {
-            throw new WebRolesException("Error reading users.xml config file", e);
+            throw new WebRolesException("Error reading the user data", e);
         }
     }
     
@@ -86,7 +86,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         try {
             return m_userManager.getUsers().values();
         } catch (IOException e) {
-            throw new WebRolesException("Error reading users.xml config file", e);
+            throw new WebRolesException("Error reading the user data", e);
         }
     }
     
@@ -98,7 +98,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         try {
             return m_groupManager.getGroup(groupName);
         } catch (IOException e) {
-            throw new WebRolesException("Error reading groups.xml config file", e);
+            throw new WebRolesException("Error reading the group data", e);
         }
     }
     
@@ -106,7 +106,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         try {
             return m_groupManager.getGroups().values();
         } catch (IOException e) {
-            throw new WebRolesException("Error reading groups.xml config file", e);
+            throw new WebRolesException("Error reading the group data", e);
         }
     }
     
@@ -120,7 +120,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
             }
             return webUsers;
         } catch (IOException e) {
-            throw new WebRolesException("Error reading users.xml config file", e);
+            throw new WebRolesException("Error reading the user data", e);
         }
 
     }

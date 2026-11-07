@@ -256,8 +256,6 @@
         <span>Descriptions</span>
       </div>
       <div class="card-body">
-        </p>
-
         <p><b>Configure Users</b>: Add, modify or delete existing users, and assign
             them security roles.
             (User: A person)

@@ -189,7 +189,7 @@ A violation returns `400`.
 == Names that a path cannot carry
 
 A user id stored before the rules above existed (for example `DOMAIN\jdoe` from a migrated `users.xml`) can contain `/`, `\` or `%`, which a URL path cannot carry reliably.
-A user with one of the reserved ids, which the deprecated v1 API still accepts, is also out of reach of the path form: a client resolves `.` and `..` away, and `/users/available-roles` is the list of roles, not that user.
+A user with one of the reserved ids, stored before the ids were reserved (neither API accepts them for a new user), is also out of reach of the path form: a client resolves `.` and `..` away, and `/users/available-roles` is the list of roles, not that user.
 Every per-user endpoint therefore has a query form, `item`, that takes the id in the `userId` query parameter.
 URL-encode the value (`DOMAIN%5Cjdoe`).
 The query form behaves exactly like the path form, with the same `If-Match` and `ETag` rules, bodies and status codes.
