@@ -7,6 +7,8 @@ import "google/protobuf/wrappers.proto";
 message StringAttribute {
   string name = 1;  
   string value = 2;
+  // Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+  string metric_id = 3;
 }
 
 message NumericAttribute {
@@ -20,6 +22,8 @@ message NumericAttribute {
   Type type = 4; 
   // Copy of `value` that is ALWAYS serialized, even when zero
   google.protobuf.DoubleValue metric_value = 5;
+  // Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+  string metric_id = 6;
 }
 
 message NodeLevelResource {

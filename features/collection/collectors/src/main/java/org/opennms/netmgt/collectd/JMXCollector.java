@@ -113,6 +113,15 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 public class JMXCollector extends AbstractRemoteServiceCollector {
+
+    /** Agent protocol of this collector, published as {@code agent_protocol} on Kafka. */
+    public static final String AGENT_PROTOCOL = "JMX";
+
+    @Override
+    public String getAgentProtocol() {
+        return AGENT_PROTOCOL;
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(JMXCollector.class);
 
     private static final String JMX_COLLECTION_KEY = "jmxCollection";
@@ -333,7 +342,7 @@ public class JMXCollector extends AbstractRemoteServiceCollector {
                     metricId = metricId.replace("_", ".");
                     metricId = metricId.concat(".");
                     metricId = metricId.concat(ds.getName());
-                    metricId = "JMX_".concat(metricId);
+                    metricId = AGENT_PROTOCOL + "_" + metricId;
 
                     collectionSetBuilder.withIdentifiedNumericAttribute(resource, groupName, ds.getName(), value,
                             ds.getType(), metricId);

@@ -87,6 +87,15 @@ import com.vmware.vim25.HostSystemPowerState;
 import com.vmware.vim25.mo.HostSystem;
 
 public class VmwareCimCollector extends AbstractRemoteServiceCollector {
+
+    /** Agent protocol of this collector, published as {@code agent_protocol} on Kafka. */
+    public static final String AGENT_PROTOCOL = "VMWARE_CIM";
+
+    @Override
+    public String getAgentProtocol() {
+        return AGENT_PROTOCOL;
+    }
+
     /**
      * Interface for defining methods for value modifications
      */

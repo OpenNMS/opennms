@@ -63,6 +63,26 @@ public final class CollectionSetProtos {
      */
     com.google.protobuf.ByteString
         getValueBytes();
+
+    /**
+     * <pre>
+     * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+     * </pre>
+     *
+     * <code>string metric_id = 3;</code>
+     * @return The metricId.
+     */
+    java.lang.String getMetricId();
+    /**
+     * <pre>
+     * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+     * </pre>
+     *
+     * <code>string metric_id = 3;</code>
+     * @return The bytes for metricId.
+     */
+    com.google.protobuf.ByteString
+        getMetricIdBytes();
   }
   /**
    * Protobuf type {@code StringAttribute}
@@ -79,6 +99,7 @@ public final class CollectionSetProtos {
     private StringAttribute() {
       name_ = "";
       value_ = "";
+      metricId_ = "";
     }
 
     @java.lang.Override
@@ -179,6 +200,53 @@ public final class CollectionSetProtos {
       }
     }
 
+    public static final int METRIC_ID_FIELD_NUMBER = 3;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object metricId_ = "";
+    /**
+     * <pre>
+     * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+     * </pre>
+     *
+     * <code>string metric_id = 3;</code>
+     * @return The metricId.
+     */
+    @java.lang.Override
+    public java.lang.String getMetricId() {
+      java.lang.Object ref = metricId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        metricId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+     * </pre>
+     *
+     * <code>string metric_id = 3;</code>
+     * @return The bytes for metricId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getMetricIdBytes() {
+      java.lang.Object ref = metricId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        metricId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -199,6 +267,9 @@ public final class CollectionSetProtos {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(value_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, value_);
       }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(metricId_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, metricId_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -213,6 +284,9 @@ public final class CollectionSetProtos {
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(value_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, value_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(metricId_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, metricId_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -233,6 +307,8 @@ public final class CollectionSetProtos {
           .equals(other.getName())) return false;
       if (!getValue()
           .equals(other.getValue())) return false;
+      if (!getMetricId()
+          .equals(other.getMetricId())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -248,6 +324,8 @@ public final class CollectionSetProtos {
       hash = (53 * hash) + getName().hashCode();
       hash = (37 * hash) + VALUE_FIELD_NUMBER;
       hash = (53 * hash) + getValue().hashCode();
+      hash = (37 * hash) + METRIC_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getMetricId().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -381,6 +459,7 @@ public final class CollectionSetProtos {
         bitField0_ = 0;
         name_ = "";
         value_ = "";
+        metricId_ = "";
         return this;
       }
 
@@ -419,6 +498,9 @@ public final class CollectionSetProtos {
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.value_ = value_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.metricId_ = metricId_;
         }
       }
 
@@ -476,6 +558,11 @@ public final class CollectionSetProtos {
           bitField0_ |= 0x00000002;
           onChanged();
         }
+        if (!other.getMetricId().isEmpty()) {
+          metricId_ = other.metricId_;
+          bitField0_ |= 0x00000004;
+          onChanged();
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -512,6 +599,11 @@ public final class CollectionSetProtos {
                 bitField0_ |= 0x00000002;
                 break;
               } // case 18
+              case 26: {
+                metricId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -672,6 +764,98 @@ public final class CollectionSetProtos {
         onChanged();
         return this;
       }
+
+      private java.lang.Object metricId_ = "";
+      /**
+       * <pre>
+       * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+       * </pre>
+       *
+       * <code>string metric_id = 3;</code>
+       * @return The metricId.
+       */
+      public java.lang.String getMetricId() {
+        java.lang.Object ref = metricId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          metricId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+       * </pre>
+       *
+       * <code>string metric_id = 3;</code>
+       * @return The bytes for metricId.
+       */
+      public com.google.protobuf.ByteString
+          getMetricIdBytes() {
+        java.lang.Object ref = metricId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          metricId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+       * </pre>
+       *
+       * <code>string metric_id = 3;</code>
+       * @param value The metricId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMetricId(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        metricId_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+       * </pre>
+       *
+       * <code>string metric_id = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearMetricId() {
+        metricId_ = getDefaultInstance().getMetricId();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+       * </pre>
+       *
+       * <code>string metric_id = 3;</code>
+       * @param value The bytes for metricId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMetricIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        metricId_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -807,6 +991,26 @@ public final class CollectionSetProtos {
      * <code>.google.protobuf.DoubleValue metric_value = 5;</code>
      */
     com.google.protobuf.DoubleValueOrBuilder getMetricValueOrBuilder();
+
+    /**
+     * <pre>
+     * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+     * </pre>
+     *
+     * <code>string metric_id = 6;</code>
+     * @return The metricId.
+     */
+    java.lang.String getMetricId();
+    /**
+     * <pre>
+     * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+     * </pre>
+     *
+     * <code>string metric_id = 6;</code>
+     * @return The bytes for metricId.
+     */
+    com.google.protobuf.ByteString
+        getMetricIdBytes();
   }
   /**
    * Protobuf type {@code NumericAttribute}
@@ -824,6 +1028,7 @@ public final class CollectionSetProtos {
       group_ = "";
       name_ = "";
       type_ = 0;
+      metricId_ = "";
     }
 
     @java.lang.Override
@@ -1100,6 +1305,53 @@ public final class CollectionSetProtos {
       return metricValue_ == null ? com.google.protobuf.DoubleValue.getDefaultInstance() : metricValue_;
     }
 
+    public static final int METRIC_ID_FIELD_NUMBER = 6;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object metricId_ = "";
+    /**
+     * <pre>
+     * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+     * </pre>
+     *
+     * <code>string metric_id = 6;</code>
+     * @return The metricId.
+     */
+    @java.lang.Override
+    public java.lang.String getMetricId() {
+      java.lang.Object ref = metricId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        metricId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+     * </pre>
+     *
+     * <code>string metric_id = 6;</code>
+     * @return The bytes for metricId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getMetricIdBytes() {
+      java.lang.Object ref = metricId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        metricId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -1129,6 +1381,9 @@ public final class CollectionSetProtos {
       if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(5, getMetricValue());
       }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(metricId_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, metricId_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -1155,6 +1410,9 @@ public final class CollectionSetProtos {
       if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(5, getMetricValue());
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(metricId_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, metricId_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -1184,6 +1442,8 @@ public final class CollectionSetProtos {
         if (!getMetricValue()
             .equals(other.getMetricValue())) return false;
       }
+      if (!getMetricId()
+          .equals(other.getMetricId())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -1208,6 +1468,8 @@ public final class CollectionSetProtos {
         hash = (37 * hash) + METRIC_VALUE_FIELD_NUMBER;
         hash = (53 * hash) + getMetricValue().hashCode();
       }
+      hash = (37 * hash) + METRIC_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getMetricId().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -1354,6 +1616,7 @@ public final class CollectionSetProtos {
           metricValueBuilder_.dispose();
           metricValueBuilder_ = null;
         }
+        metricId_ = "";
         return this;
       }
 
@@ -1405,6 +1668,9 @@ public final class CollectionSetProtos {
               ? metricValue_
               : metricValueBuilder_.build();
           to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.metricId_ = metricId_;
         }
         result.bitField0_ |= to_bitField0_;
       }
@@ -1472,6 +1738,11 @@ public final class CollectionSetProtos {
         if (other.hasMetricValue()) {
           mergeMetricValue(other.getMetricValue());
         }
+        if (!other.getMetricId().isEmpty()) {
+          metricId_ = other.metricId_;
+          bitField0_ |= 0x00000020;
+          onChanged();
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -1525,6 +1796,11 @@ public final class CollectionSetProtos {
                 bitField0_ |= 0x00000010;
                 break;
               } // case 42
+              case 50: {
+                metricId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 50
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -1926,6 +2202,98 @@ public final class CollectionSetProtos {
           metricValue_ = null;
         }
         return metricValueBuilder_;
+      }
+
+      private java.lang.Object metricId_ = "";
+      /**
+       * <pre>
+       * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+       * </pre>
+       *
+       * <code>string metric_id = 6;</code>
+       * @return The metricId.
+       */
+      public java.lang.String getMetricId() {
+        java.lang.Object ref = metricId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          metricId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+       * </pre>
+       *
+       * <code>string metric_id = 6;</code>
+       * @return The bytes for metricId.
+       */
+      public com.google.protobuf.ByteString
+          getMetricIdBytes() {
+        java.lang.Object ref = metricId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          metricId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+       * </pre>
+       *
+       * <code>string metric_id = 6;</code>
+       * @param value The metricId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMetricId(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        metricId_ = value;
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+       * </pre>
+       *
+       * <code>string metric_id = 6;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearMetricId() {
+        metricId_ = getDefaultInstance().getMetricId();
+        bitField0_ = (bitField0_ & ~0x00000020);
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * Normalized source identifier (OID, gNMI path, ...), empty when the collector sets none
+       * </pre>
+       *
+       * <code>string metric_id = 6;</code>
+       * @param value The bytes for metricId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMetricIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        metricId_ = value;
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -9182,35 +9550,36 @@ public final class CollectionSetProtos {
   static {
     java.lang.String[] descriptorData = {
       "\n\023collectionset.proto\032\036google/protobuf/w" +
-      "rappers.proto\".\n\017StringAttribute\022\014\n\004name" +
-      "\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\270\001\n\020NumericAttribu" +
-      "te\022\r\n\005group\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\r\n\005value" +
-      "\030\003 \001(\001\022$\n\004type\030\004 \001(\0162\026.NumericAttribute." +
-      "Type\0222\n\014metric_value\030\005 \001(\0132\034.google.prot" +
-      "obuf.DoubleValue\"\036\n\004Type\022\t\n\005GAUGE\020\000\022\013\n\007C" +
-      "OUNTER\020\001\"v\n\021NodeLevelResource\022\017\n\007node_id" +
-      "\030\001 \001(\003\022\026\n\016foreign_source\030\002 \001(\t\022\022\n\nforeig" +
-      "n_id\030\003 \001(\t\022\022\n\nnode_label\030\004 \001(\t\022\020\n\010locati" +
-      "on\030\005 \001(\t\"^\n\026InterfaceLevelResource\022 \n\004no" +
-      "de\030\001 \001(\0132\022.NodeLevelResource\022\020\n\010instance" +
-      "\030\002 \001(\t\022\020\n\010if_index\030\003 \001(\005\"W\n\023GenericTypeR" +
-      "esource\022 \n\004node\030\001 \001(\0132\022.NodeLevelResourc" +
-      "e\022\014\n\004type\030\002 \001(\t\022\020\n\010instance\030\003 \001(\t\"\\\n\024Res" +
-      "ponseTimeResource\022\020\n\010instance\030\001 \001(\t\022\020\n\010l" +
-      "ocation\030\002 \001(\t\022 \n\004node\030\003 \001(\0132\022.NodeLevelR" +
-      "esource\"\327\002\n\025CollectionSetResource\022\"\n\004nod" +
-      "e\030\001 \001(\0132\022.NodeLevelResourceH\000\022,\n\tinterfa" +
-      "ce\030\002 \001(\0132\027.InterfaceLevelResourceH\000\022\'\n\007g" +
-      "eneric\030\003 \001(\0132\024.GenericTypeResourceH\000\022)\n\010" +
-      "response\030\004 \001(\0132\025.ResponseTimeResourceH\000\022" +
-      "\023\n\013resource_id\030\005 \001(\t\022\025\n\rresource_name\030\006 " +
-      "\001(\t\022\032\n\022resource_type_name\030\007 \001(\t\022 \n\006strin" +
-      "g\030\n \003(\0132\020.StringAttribute\022\"\n\007numeric\030\013 \003" +
-      "(\0132\021.NumericAttributeB\n\n\010resource\"L\n\rCol" +
-      "lectionSet\022\021\n\ttimestamp\030\001 \001(\003\022(\n\010resourc" +
-      "e\030\002 \003(\0132\026.CollectionSetResourceB@\n)org.o" +
-      "pennms.features.kafka.producer.modelB\023Co" +
-      "llectionSetProtosb\006proto3"
+      "rappers.proto\"A\n\017StringAttribute\022\014\n\004name" +
+      "\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\022\021\n\tmetric_id\030\003 \001(\t" +
+      "\"\313\001\n\020NumericAttribute\022\r\n\005group\030\001 \001(\t\022\014\n\004" +
+      "name\030\002 \001(\t\022\r\n\005value\030\003 \001(\001\022$\n\004type\030\004 \001(\0162" +
+      "\026.NumericAttribute.Type\0222\n\014metric_value\030" +
+      "\005 \001(\0132\034.google.protobuf.DoubleValue\022\021\n\tm" +
+      "etric_id\030\006 \001(\t\"\036\n\004Type\022\t\n\005GAUGE\020\000\022\013\n\007COU" +
+      "NTER\020\001\"v\n\021NodeLevelResource\022\017\n\007node_id\030\001" +
+      " \001(\003\022\026\n\016foreign_source\030\002 \001(\t\022\022\n\nforeign_" +
+      "id\030\003 \001(\t\022\022\n\nnode_label\030\004 \001(\t\022\020\n\010location" +
+      "\030\005 \001(\t\"^\n\026InterfaceLevelResource\022 \n\004node" +
+      "\030\001 \001(\0132\022.NodeLevelResource\022\020\n\010instance\030\002" +
+      " \001(\t\022\020\n\010if_index\030\003 \001(\005\"W\n\023GenericTypeRes" +
+      "ource\022 \n\004node\030\001 \001(\0132\022.NodeLevelResource\022" +
+      "\014\n\004type\030\002 \001(\t\022\020\n\010instance\030\003 \001(\t\"\\\n\024Respo" +
+      "nseTimeResource\022\020\n\010instance\030\001 \001(\t\022\020\n\010loc" +
+      "ation\030\002 \001(\t\022 \n\004node\030\003 \001(\0132\022.NodeLevelRes" +
+      "ource\"\327\002\n\025CollectionSetResource\022\"\n\004node\030" +
+      "\001 \001(\0132\022.NodeLevelResourceH\000\022,\n\tinterface" +
+      "\030\002 \001(\0132\027.InterfaceLevelResourceH\000\022\'\n\007gen" +
+      "eric\030\003 \001(\0132\024.GenericTypeResourceH\000\022)\n\010re" +
+      "sponse\030\004 \001(\0132\025.ResponseTimeResourceH\000\022\023\n" +
+      "\013resource_id\030\005 \001(\t\022\025\n\rresource_name\030\006 \001(" +
+      "\t\022\032\n\022resource_type_name\030\007 \001(\t\022 \n\006string\030" +
+      "\n \003(\0132\020.StringAttribute\022\"\n\007numeric\030\013 \003(\013" +
+      "2\021.NumericAttributeB\n\n\010resource\"L\n\rColle" +
+      "ctionSet\022\021\n\ttimestamp\030\001 \001(\003\022(\n\010resource\030" +
+      "\002 \003(\0132\026.CollectionSetResourceB@\n)org.ope" +
+      "nnms.features.kafka.producer.modelB\023Coll" +
+      "ectionSetProtosb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -9222,13 +9591,13 @@ public final class CollectionSetProtos {
     internal_static_StringAttribute_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_StringAttribute_descriptor,
-        new java.lang.String[] { "Name", "Value", });
+        new java.lang.String[] { "Name", "Value", "MetricId", });
     internal_static_NumericAttribute_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_NumericAttribute_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_NumericAttribute_descriptor,
-        new java.lang.String[] { "Group", "Name", "Value", "Type", "MetricValue", });
+        new java.lang.String[] { "Group", "Name", "Value", "Type", "MetricValue", "MetricId", });
     internal_static_NodeLevelResource_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_NodeLevelResource_fieldAccessorTable = new

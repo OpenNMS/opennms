@@ -34,6 +34,14 @@ import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowTele
 import com.codahale.metrics.MetricRegistry;
 
 public class Netflow9TelemetryAdapter extends NetflowTelemetryAdapter {
+    /** Agent protocol of this adapter, published as {@code agent_protocol} on Kafka. */
+    public static final String AGENT_PROTOCOL = "NETFLOW9";
+
+    @Override
+    public String getAgentProtocol() {
+        return AGENT_PROTOCOL;
+    }
+
     public Netflow9TelemetryAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry, final NodeInfoCache nodeMetadataCache) {
         super(adapterConfig, metricRegistry, nodeMetadataCache);
     }

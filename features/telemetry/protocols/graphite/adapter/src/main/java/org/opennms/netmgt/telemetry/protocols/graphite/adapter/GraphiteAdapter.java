@@ -48,6 +48,14 @@ import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
 
 public class GraphiteAdapter extends AbstractScriptedCollectionAdapter {
+    /** Agent protocol of this adapter, published as {@code agent_protocol} on Kafka. */
+    public static final String AGENT_PROTOCOL = "GRAPHITE";
+
+    @Override
+    public String getAgentProtocol() {
+        return AGENT_PROTOCOL;
+    }
+
     private CollectionAgentFactory collectionAgentFactory;
     private InterfaceToNodeCache interfaceToNodeCache;
     private NodeDao nodeDao;
