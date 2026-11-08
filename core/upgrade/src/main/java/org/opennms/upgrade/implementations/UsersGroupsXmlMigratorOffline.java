@@ -93,7 +93,8 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * with the default users and group, and sets the marker in the same transaction: the custom roles alone would make
  * its next run skip the database as one with user data, so a failed or interrupted seed would leave it without
  * users. When neither is found and there are no custom roles (a new installation), the task copies nothing and leaves
- * the marker unset, and {@link DefaultUsersSeedOffline} adds the default users.</p>
+ * the marker unset, and {@link DefaultUsersSeedOffline} adds the default users. It still archives a
+ * security-roles.properties with only built-in roles: the seed adds no users while the file is in etc.</p>
  *
  * <p>Everything is written in one transaction. Entries that the tables cannot hold are skipped with a message: unknown security roles (which login drops today as
  * well), group members and schedule users that do not exist, on-call roles whose membership group or

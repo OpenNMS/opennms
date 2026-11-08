@@ -41,19 +41,22 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * sets (even when it copies no users). Thus a site without local users (LDAP, RADIUS or SSO only), or one that
  * deleted them, does not get admin/admin back on its next upgrade.
  *
- * It does not seed while etc holds users.xml, groups.xml or their .rpmsave copies: the migrator copies these files into
- * a database without the marker (with the default users or group in place of a missing one) and then moves them to
- * etc_archive, so here it failed. The upgrade runs the other tasks before it fails, and a seeded admin would make the
- * migrator's next run copy nothing, so the users and groups of the files would be lost. security-roles.properties does
- * not hold it back: without users.xml and groups.xml, the migrator copies its custom roles together with the default
- * users and sets the marker, so this task seeds only a database where the migrator found nothing to copy.
+ * It does not seed while etc holds users.xml, groups.xml, their .rpmsave copies or security-roles.properties: the
+ * migrator copies these files into a database without the marker (with the default users or group in place of a
+ * missing one) and then moves them to etc_archive, so here it failed. The upgrade runs the other tasks before it fails,
+ * and a seeded admin would make the migrator's next run copy nothing, so the users, groups and custom security roles of
+ * the files would be lost. Without users.xml and groups.xml, the migrator copies the custom roles of
+ * security-roles.properties together with the default users and sets the marker, and it archives a file with only
+ * built-in roles after its commit, in the same run, before this task. So the roles file holds the seed back only when
+ * its migration failed.
  *
  * The task is critical, like the migrator: a database it fails to seed has no users, so no one could log in.
  */
 public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
 
-    /** The files that the migrator copies users and groups from. */
-    private static final List<String> MIGRATED_FILE_NAMES = Arrays.asList("users.xml", "users.xml.rpmsave", "groups.xml", "groups.xml.rpmsave");
+    /** The files that the migrator copies into the database and then moves to etc_archive. */
+    private static final List<String> MIGRATED_FILE_NAMES = Arrays.asList("users.xml", "users.xml.rpmsave", "groups.xml", "groups.xml.rpmsave",
+            "security-roles.properties");
 
     public DefaultUsersSeedOffline() throws OnmsUpgradeException {
         super();
@@ -109,8 +112,8 @@ public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
             for (final String name : MIGRATED_FILE_NAMES) {
                 final File file = new File(getHomeDirectory(), "etc" + File.separator + name);
                 if (file.exists()) {
-                    // the migrator runs before this task, sets the marker when it copies the file, and archives it: it failed
-                    log("No default users are added: %s exists, but its users and groups were not copied. See the messages of UsersGroupsXmlMigratorOffline.\n", file);
+                    // the migrator runs before this task and archives the file once it has copied it: it failed
+                    log("No default users are added: %s exists, but it was not copied into the database. See the messages of UsersGroupsXmlMigratorOffline.\n", file);
                     return;
                 }
             }
