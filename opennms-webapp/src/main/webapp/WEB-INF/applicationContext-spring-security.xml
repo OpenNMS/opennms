@@ -208,6 +208,33 @@
     <intercept-url pattern="/rest/sched-outages/applies-to/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
     <intercept-url pattern="/rest/sched-outages/*/applies-to/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
 
+    <!-- NMS-20519: writing users, groups and the group authorizations of categories (the same group ACL as
+         /rest/groups/{group}/categories/{category}) is admin-only, the same as the v2 users and groups APIs.
+         The services also check it in code. The reads keep the generic rules below. "/rest/categories/*/groups/**"
+         matches only the group authorizations, not the writes of the categories themselves.
+         Each "<root>.*" pattern applies the rule of its "<root>/**" pattern to the suffixed root, e.g. /rest/users.xml.
+         These rules must come before the generic /rest/** write rules (first match wins). -->
+    <intercept-url pattern="/rest/users/**" method="POST" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/users/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/users/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/users/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/users.*" method="POST" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/users.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/users.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/users.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups/**" method="POST" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups.*" method="POST" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/categories/*/groups/**" method="POST" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/categories/*/groups/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/categories/*/groups/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/categories/*/groups/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')"/>
+
     <!-- read-only calls should be allowed for any user -->
     <intercept-url pattern="/rest/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
     <intercept-url pattern="/rest/**" method="HEAD" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>

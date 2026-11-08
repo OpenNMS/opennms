@@ -96,13 +96,15 @@ import org.springframework.transaction.annotation.Transactional;
         (use `PUT /api/v2/groups/{name}/rename`). A save through this API keeps the duty schedules and the
         default map of the stored group. Deleting a group that is the membership group of an on-call role or
         a target of a notification destination path answers 409, as does a stale save.
-        Unlike the v2 API, which needs `ROLE_ADMIN`, the write operations are also allowed for `ROLE_REST`.
+        The write operations need `ROLE_ADMIN`, like the v2 API (403 without it).
         Password hashes of other users are shown as `xxxxxxxx` to callers without `ROLE_ADMIN`.""")
 @Transactional
 @Deprecated(since = "37.0.0", forRemoval = true)
 public class GroupRestService extends OnmsRestService {
 	
     private static final Logger LOG = LoggerFactory.getLogger(GroupRestService.class);
+    /** For the message of a write without the admin role. */
+    private static final String WHAT = "Group management";
 
     @Autowired
     private GroupService m_groupService;
@@ -228,6 +230,10 @@ public class GroupRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "jroe is not a user."))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Group management requires the admin role."))),
             @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"))),
@@ -237,7 +243,8 @@ public class GroupRestService extends OnmsRestService {
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Failed to marshal/unmarshal XML file while unmarshalling an object (OnmsGroup)")))
     })
-    public Response addGroup(@Context final UriInfo uriInfo, final OnmsGroup group) {
+    public Response addGroup(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, final OnmsGroup group) {
+        m_support.assertAdmin(securityContext, WHAT);
         writeLock();
         
         try {
@@ -282,6 +289,10 @@ public class GroupRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Renaming is not supported by the deprecated v1 API; use PUT /api/v2/groups/{name}/rename."))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Group management requires the admin role."))),
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -291,8 +302,10 @@ public class GroupRestService extends OnmsRestService {
                             schema = @Schema(type = "string")))
     })
     public Response updateGroup(
+            @Context final SecurityContext securityContext,
             @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName, final MultivaluedMapImpl params) {
+        m_support.assertAdmin(securityContext, WHAT);
         writeLock();
         
         try {
@@ -340,6 +353,10 @@ public class GroupRestService extends OnmsRestService {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The group was deleted."),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Group management requires the admin role."))),
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -350,8 +367,10 @@ public class GroupRestService extends OnmsRestService {
                             examples = @ExampleObject(value = "Group \"NOC\" is the membership group of the on-call role \"Weekend\". Change the membership group first.")))
     })
     public Response deleteGroup(
+            @Context final SecurityContext securityContext,
             @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName) {
+        m_support.assertAdmin(securityContext, WHAT);
         writeLock();
         try {
             final OnmsGroup group = getOnmsGroup(groupName);
@@ -387,6 +406,10 @@ public class GroupRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User with name 'jroe' already added or does not exist."))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Group management requires the admin role."))),
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -396,10 +419,12 @@ public class GroupRestService extends OnmsRestService {
                             schema = @Schema(type = "string")))
     })
     public Response addUser(
+            @Context final SecurityContext securityContext,
             @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName,
             @Parameter(description = "User name.", example = "admin", required = true)
             @PathParam("userName") final String userName) {
+        m_support.assertAdmin(securityContext, WHAT);
         writeLock();
         try {
             getOnmsGroup(groupName); // just ensure that group exists
@@ -432,6 +457,10 @@ public class GroupRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User with name 'jroe' does not exist in group 'NOC'"))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Group management requires the admin role."))),
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -441,10 +470,12 @@ public class GroupRestService extends OnmsRestService {
                             schema = @Schema(type = "string")))
     })
     public Response removeUser(
+            @Context final SecurityContext securityContext,
             @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName,
             @Parameter(description = "User name.", example = "admin", required = true)
             @PathParam("userName") final String userName) {
+        m_support.assertAdmin(securityContext, WHAT);
         writeLock();
         try {
             final OnmsGroup group = getOnmsGroup(groupName);
@@ -573,6 +604,10 @@ public class GroupRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Category with name 'Routers' already added or does not exist."))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Group management requires the admin role."))),
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -582,10 +617,12 @@ public class GroupRestService extends OnmsRestService {
                             schema = @Schema(type = "string")))
     })
     public Response addCategory(
+            @Context final SecurityContext securityContext,
             @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName,
             @Parameter(description = "Surveillance category name.", example = "Routers", required = true)
             @PathParam("categoryName") final String categoryName) {
+        m_support.assertAdmin(securityContext, WHAT);
         writeLock();
         try {
             getOnmsGroup(groupName); // check if group exists.
@@ -618,6 +655,10 @@ public class GroupRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Category with name 'Routers' does not exist. Remove failed."))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Group management requires the admin role."))),
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -627,10 +668,12 @@ public class GroupRestService extends OnmsRestService {
                             schema = @Schema(type = "string")))
     })
     public Response removeCategory(
+            @Context final SecurityContext securityContext,
             @Parameter(description = "Group name.", example = "Admin", required = true)
             @PathParam("groupName") final String groupName,
             @Parameter(description = "Surveillance category name.", example = "Routers", required = true)
             @PathParam("categoryName") final String categoryName) {
+        m_support.assertAdmin(securityContext, WHAT);
         writeLock();
         try {
             getOnmsGroup(groupName); // check if group exists.

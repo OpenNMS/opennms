@@ -395,6 +395,57 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
     }
 
     @Test
+    public void testWritesNeedTheAdminRole() throws Exception {
+        createUser("jroe");
+        createUser("jdoe");
+        createGroup("dbadmin");
+        createCategory("Edge");
+        createCategory("Core");
+        sendRequest(PUT, "/groups/dbadmin/users/jroe", 204);
+        sendRequest(PUT, "/groups/dbadmin/categories/Edge", 204);
+        final int version = version("dbadmin");
+        final JdbcTemplate jdbc = new JdbcTemplate(m_dataSource);
+        final String message = "Group management requires the admin role.";
+        final String comments = jdbc.queryForObject("select comments from groups where name = 'dbadmin'", String.class);
+
+        setUser("rest", new String[] { "ROLE_REST" });
+        try {
+            assertEquals(message, sendData(POST, "application/xml", "/groups", "<group><name>dbintruder</name></group>", 403).getContentAsString());
+            assertEquals(message, sendData(POST, "application/xml", "/groups", "<group><name>dbadmin</name><user>jdoe</user></group>", 403).getContentAsString());
+            assertEquals(message, sendData(PUT, "application/x-www-form-urlencoded", "/groups/dbadmin", "comments=changed", 403).getContentAsString());
+            assertEquals(message, sendData(PUT, "application/xml", "/groups/dbadmin/users/jdoe", "", 403).getContentAsString());
+            assertEquals(message, sendData(DELETE, "application/xml", "/groups/dbadmin/users/jroe", "", 403).getContentAsString());
+            assertEquals(message, sendData(PUT, "application/xml", "/groups/dbadmin/categories/Core", "", 403).getContentAsString());
+            assertEquals(message, sendData(DELETE, "application/xml", "/groups/dbadmin/categories/Edge", "", 403).getContentAsString());
+            // the same group ACL through the categories API
+            assertEquals(message, sendData(PUT, "application/xml", "/categories/Core/groups/dbadmin", "", 403).getContentAsString());
+            assertEquals(message, sendData(DELETE, "application/xml", "/categories/Edge/groups/dbadmin", "", 403).getContentAsString());
+            assertEquals(message, sendData(DELETE, "application/xml", "/groups/dbadmin", "", 403).getContentAsString());
+            // a missing group is a 403 too, not a 404
+            assertEquals(message, sendData(DELETE, "application/xml", "/groups/nogroup", "", 403).getContentAsString());
+        } finally {
+            setUser("admin", new String[] { "ROLE_ADMIN" });
+        }
+
+        assertEquals(0, count("select count(*) from groups where name = 'dbintruder'"));
+        assertEquals(1, count("select count(*) from groups where name = 'dbadmin'"));
+        assertEquals(version, version("dbadmin"));
+        assertEquals(List.of("jroe"), members("dbadmin"));
+        assertEquals(List.of("Edge"), authorizedCategories("dbadmin"));
+        assertEquals(comments, jdbc.queryForObject("select comments from groups where name = 'dbadmin'", String.class));
+
+        // the admin role still writes
+        sendPut("/groups/dbadmin", "comments=changed", 204);
+        sendRequest(PUT, "/groups/dbadmin/users/jdoe", 204);
+        sendRequest(PUT, "/categories/Core/groups/dbadmin", 204);
+        sendRequest(DELETE, "/categories/Edge/groups/dbadmin", 204);
+        assertEquals(List.of("Core"), authorizedCategories("dbadmin"));
+        assertEquals(List.of("jdoe", "jroe"), members("dbadmin"));
+        sendRequest(DELETE, "/groups/dbadmin", 204);
+        assertEquals(0, count("select count(*) from groups where name = 'dbadmin'"));
+    }
+
+    @Test
     public void testGroupCrudStillWorks() throws Exception {
         createUser("jroe");
         createUser("jdoe");

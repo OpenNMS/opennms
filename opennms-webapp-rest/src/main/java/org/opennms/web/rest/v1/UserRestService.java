@@ -90,8 +90,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Tag(name = "Users", description = """
         **Deprecated** in Horizon 37 and removed in Horizon 38. Use `/api/v2/users`.
 
-        Users are stored in the database. The write operations need `ROLE_ADMIN` and apply the same
-        checks as the v2 API. A new user ID is validated and must not be reserved, and duty schedules are
+        Users are stored in the database. The write operations need `ROLE_ADMIN`, like the v2 API (403 without
+        it), and apply the same checks as the v2 API. A new user ID is validated and must not be reserved, and duty schedules are
         validated (values already stored are accepted unchanged). Security roles have to be known roles.
         These checks answer 400, as does renaming a user (use `PUT /api/v2/users/{userId}/rename`).
         The `admin` user always keeps `ROLE_ADMIN`.
@@ -101,6 +101,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Deprecated(since = "37.0.0", forRemoval = true)
 public class UserRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(UserRestService.class);
+    /** For the message of a write without the admin role. */
+    private static final String WHAT = "User management";
     private static final Comparator<OnmsUser> USER_COMPARATOR = new Comparator<OnmsUser>() {
         @Override public int compare(final OnmsUser a, final OnmsUser b) {
             return a.getUsername().compareTo(b.getUsername());
@@ -295,10 +297,14 @@ public class UserRestService extends OnmsRestService {
                     </user>""")))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User stored. `Location` points at the new user."),
-            @ApiResponse(responseCode = "400", description = "The caller does not hold `ROLE_ADMIN`, or the request is invalid (see the operation description).",
+            @ApiResponse(responseCode = "400", description = "The request is invalid (see the operation description).",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "User jroe does not have write access to users!"))),
+                            examples = @ExampleObject(value = "user-id is required."))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User management requires the admin role."))),
             @ApiResponse(responseCode = "415", description = "The body was not `application/xml`."),
             @ApiResponse(responseCode = "409", description = "The change would leave no `ROLE_ADMIN` holder, or the user data was changed by another process since it was loaded.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
@@ -313,9 +319,7 @@ public class UserRestService extends OnmsRestService {
             @QueryParam("hashPassword") final boolean hashPassword) {
         writeLock();
         try {
-            if (!hasEditRights(securityContext)) {
-                throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
-            }
+            m_support.assertAdmin(securityContext, WHAT);
             LOG.debug("addUser: Adding user {}", user);
             try {
                 // The checks run before the manager call and without m_support.lockForWrite(): the manager saves in its
@@ -360,10 +364,14 @@ public class UserRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The user was updated."),
             @ApiResponse(responseCode = "304", description = "No supplied key matched a writable property, so nothing was written."),
-            @ApiResponse(responseCode = "400", description = "The caller does not hold `ROLE_ADMIN`, or the request is invalid (see the operation description).",
+            @ApiResponse(responseCode = "400", description = "The request is invalid (see the operation description).",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "User jroe does not have write access to users!"))),
+                            examples = @ExampleObject(value = "Renaming is not supported by the deprecated v1 API; use PUT /api/v2/users/{userId}/rename."))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User management requires the admin role."))),
             @ApiResponse(responseCode = "404", description = "No such user.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -381,9 +389,7 @@ public class UserRestService extends OnmsRestService {
             @PathParam("userCriteria") final String userCriteria, final MultivaluedMapImpl params) {
         writeLock();
         try {
-            if (!hasEditRights(securityContext)) {
-                throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
-            }
+            m_support.assertAdmin(securityContext, WHAT);
             final OnmsUser user = getOnmsUser(userCriteria);
             LOG.debug("updateUser: updating user {}", user);
             checkFormKeys(params);
@@ -440,10 +446,14 @@ public class UserRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The role was added."),
             @ApiResponse(responseCode = "304", description = "The user already held the role."),
-            @ApiResponse(responseCode = "400", description = "Unknown role name, or the caller does not hold `ROLE_ADMIN`.",
+            @ApiResponse(responseCode = "400", description = "Unknown role name.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Invalid role ROLE_BOGUS!"))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User management requires the admin role."))),
             @ApiResponse(responseCode = "404", description = "No such user.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -464,9 +474,7 @@ public class UserRestService extends OnmsRestService {
             @PathParam("roleName") final String roleName) {
         writeLock();
         try {
-            if (!hasEditRights(securityContext)) {
-                throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
-            }
+            m_support.assertAdmin(securityContext, WHAT);
             if (! Authentication.isValidRole(roleName)) {
                 throw getException(Status.BAD_REQUEST, "Invalid role {}!", roleName);
             }
@@ -504,10 +512,14 @@ public class UserRestService extends OnmsRestService {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The user was deleted."),
-            @ApiResponse(responseCode = "400", description = "The caller does not hold `ROLE_ADMIN`, or the request is invalid (see the operation description).",
+            @ApiResponse(responseCode = "400", description = "The request is invalid (see the operation description).",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "User jroe does not have write access to users!"))),
+                            examples = @ExampleObject(value = "The system user admin cannot be deleted."))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User management requires the admin role."))),
             @ApiResponse(responseCode = "404", description = "No such user.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -525,9 +537,7 @@ public class UserRestService extends OnmsRestService {
             @PathParam("userCriteria") final String userCriteria) {
         writeLock();
         try {
-            if (!hasEditRights(securityContext)) {
-                throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
-            }
+            m_support.assertAdmin(securityContext, WHAT);
             final OnmsUser user = getOnmsUser(userCriteria);
             LOG.debug("deleteUser: deleting user {}", user);
             try {
@@ -556,10 +566,14 @@ public class UserRestService extends OnmsRestService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The role was removed."),
             @ApiResponse(responseCode = "304", description = "The user did not hold the role."),
-            @ApiResponse(responseCode = "400", description = "Unknown role name, the caller does not hold `ROLE_ADMIN`, or `admin` would lose `ROLE_ADMIN`.",
+            @ApiResponse(responseCode = "400", description = "Unknown role name, or `admin` would lose `ROLE_ADMIN`.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Invalid role ROLE_BOGUS!"))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User management requires the admin role."))),
             @ApiResponse(responseCode = "404", description = "No such user.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -580,9 +594,7 @@ public class UserRestService extends OnmsRestService {
             @PathParam("roleName") final String roleName) {
         writeLock();
         try {
-            if (!hasEditRights(securityContext)) {
-                throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
-            }
+            m_support.assertAdmin(securityContext, WHAT);
             if (! Authentication.isValidRole(roleName)) {
                 throw getException(Status.BAD_REQUEST, "Invalid role {}!", roleName);
             }

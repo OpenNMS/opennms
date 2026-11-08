@@ -194,6 +194,10 @@ The v1 REST APIs `/rest/users` and `/rest/groups` are deprecated in Horizon 37 a
 Use `/api/v2/users` and `/api/v2/groups` instead, and `GET /rest/whoami` instead of `GET /rest/users/whoami`.
 Until they are removed, the v1 APIs apply the same checks as the v2 APIs:
 
+* Their write operations need `ROLE_ADMIN`, like the v2 APIs, and answer `403` without it.
+  This is a change for `/rest/groups`, which an account with only `ROLE_REST` could change before, and for the group authorizations of the categories API (`PUT` and `DELETE` on `/rest/categories/\{category}/groups/\{group}`).
+  `/rest/users` answered `400` to a caller without `ROLE_ADMIN` before.
+  Update any integration that used a `ROLE_REST` account to change users or groups to use a `ROLE_ADMIN` account.
 * They refuse to rename a user or group (`400`; use the v2 rename endpoints).
 * They validate new user IDs and group names, duty schedules, security roles and group members (`400`).
 * They refuse to delete `admin` and `rtc` (`400`).

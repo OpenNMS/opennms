@@ -72,6 +72,7 @@ Does not allow user to change alarm states or notifications.
 | ROLE_REST
 | Permissions to interact with the {page-component-title} REST API. +
 Writing configuration through the REST API (the `/rest/config` endpoints) requires `ROLE_ADMIN`. +
+Changing users and groups through the REST API (the `/rest/users` and `/rest/groups` endpoints, and the group authorizations of `/rest/categories`) requires `ROLE_ADMIN`. +
 Reading requisitions through the REST API (the `/rest/requisitions` endpoints) requires `ROLE_PROVISION` or `ROLE_ADMIN`.
 
 | ROLE_RTC *

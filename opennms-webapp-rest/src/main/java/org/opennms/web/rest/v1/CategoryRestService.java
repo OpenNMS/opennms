@@ -36,6 +36,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -485,6 +486,7 @@ public class CategoryRestService extends OnmsRestService {
             summary = "Authorize a group for a category",
             description = """
                     Adds the category to a group's authorized-category list. No request body is read.
+                    Needs `ROLE_ADMIN`, like the other group writes.
 
                     Both the "category does not exist" and the "category is already authorized for this group"
                     cases come back as the same 400 message.""",
@@ -496,24 +498,30 @@ public class CategoryRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Category with name 'Routers' already added or does not exist."))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Group management requires the admin role."))),
             @ApiResponse(responseCode = "404", description = "No group has that name.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NoSuchGroup' does not exist.")))
     })
-    public Response addCategoryToGroup(@Context final ResourceContext context,
+    public Response addCategoryToGroup(@Context final ResourceContext context, @Context final SecurityContext securityContext,
                                        @Parameter(description = "Name of an existing group.", example = "Admin")
                                        @PathParam("groupName") final String groupName,
                                        @Parameter(description = "Name of an existing category.", example = "Routers")
                                        @PathParam("categoryName") final String categoryName) {
-        return context.getResource(GroupRestService.class).addCategory(groupName, categoryName);
+        // GroupRestService.addCategory checks the admin role: this is the same group ACL as /groups/{group}/categories/{category}
+        return context.getResource(GroupRestService.class).addCategory(securityContext, groupName, categoryName);
     }
 
     @DELETE
     @Path("/{categoryName}/groups/{groupName}")
     @Operation(
             summary = "Withdraw a group's authorization for a category",
-            description = "Removes the category from a group's authorized-category list. The category definition itself is untouched.",
+            description = "Removes the category from a group's authorized-category list. The category definition itself is untouched. "
+                    + "Needs `ROLE_ADMIN`, like the other group writes.",
             operationId = "deauthorizeGroupForCategory"
     )
     @ApiResponses(value = {
@@ -522,17 +530,22 @@ public class CategoryRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Category with name 'Routers' does not exist. Remove failed."))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Group management requires the admin role."))),
             @ApiResponse(responseCode = "404", description = "No group has that name.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NoSuchGroup' does not exist.")))
     })
-    public Response removeCategoryFromGroup(@Context final ResourceContext context,
+    public Response removeCategoryFromGroup(@Context final ResourceContext context, @Context final SecurityContext securityContext,
                                             @Parameter(description = "Name of an existing group.", example = "Admin")
                                             @PathParam("groupName") final String groupName,
                                             @Parameter(description = "Category name.", example = "Routers")
                                             @PathParam("categoryName") final String categoryName) {
-        return context.getResource(GroupRestService.class).removeCategory(groupName, categoryName);
+        // GroupRestService.removeCategory checks the admin role
+        return context.getResource(GroupRestService.class).removeCategory(securityContext, groupName, categoryName);
     }
 
     @GET

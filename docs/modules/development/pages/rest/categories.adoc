@@ -53,6 +53,7 @@
 
 | /categories/\{category}/groups/\{group}
 | Add the given category to the given user group (similar to `/groups/\{group}/categories/\{category}`).
+Requires `ROLE_ADMIN`, like the other group writes.
 |===
 
 == DELETEs (removing data)
@@ -71,4 +72,5 @@
 
 | /categories/\{category}/groups/\{group}
 | Remove the given category from the given user group (similar to `/groups/\{group}/categories/\{category}`).
+Requires `ROLE_ADMIN`, like the other group writes.
 |===

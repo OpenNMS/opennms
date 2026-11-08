@@ -305,6 +305,40 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
     }
 
     @Test
+    public void testWritesNeedTheAdminRole() throws Exception {
+        createUser("victim");
+        final JdbcTemplate jdbc = new JdbcTemplate(m_dataSource);
+        final String message = "User management requires the admin role.";
+        final List<String> victimRoles = roles("victim");
+
+        setUser("rest", new String[] { "ROLE_REST" });
+        try {
+            assertEquals(message, sendData(POST, "application/xml", "/users", userXml("intruder", null, "ROLE_ADMIN"), 403).getContentAsString());
+            assertEquals(message, sendData(POST, "application/xml", "/users", userXml("victim", null, "ROLE_ADMIN"), 403).getContentAsString());
+            assertEquals(message, sendData(PUT, "application/x-www-form-urlencoded", "/users/victim", "fullName=changed", 403).getContentAsString());
+            assertEquals(message, sendData(PUT, "application/xml", "/users/victim/roles/ROLE_ADMIN", "", 403).getContentAsString());
+            assertEquals(message, sendData(DELETE, "application/xml", "/users/admin/roles/ROLE_ADMIN", "", 403).getContentAsString());
+            assertEquals(message, sendData(DELETE, "application/xml", "/users/victim", "", 403).getContentAsString());
+            // a missing user is a 403 too, not a 404
+            assertEquals(message, sendData(DELETE, "application/xml", "/users/nobody", "", 403).getContentAsString());
+        } finally {
+            setUser("admin", new String[] { "ROLE_ADMIN" });
+        }
+
+        assertFalse(exists("intruder"));
+        assertTrue(exists("victim"));
+        assertEquals("victim Full Name", jdbc.queryForObject("select full_name from users where username = 'victim'", String.class));
+        assertEquals(victimRoles, roles("victim"));
+        assertEquals(List.of("ROLE_ADMIN"), roles("admin"));
+
+        // the admin role still writes
+        sendPut("/users/victim", "fullName=changed", 204);
+        sendRequest(PUT, "/users/victim/roles/ROLE_PROVISION", 204);
+        sendRequest(DELETE, "/users/victim", 204);
+        assertFalse(exists("victim"));
+    }
+
+    @Test
     public void testCrudStillWorks() throws Exception {
         sendPost("/users", userXml("crud", "MoTuWeThFr800-1700", "ROLE_USER"), 201, "/users/crud");
         assertEquals("crud Full Name", new JdbcTemplate(m_dataSource).queryForObject("select full_name from users where username = 'crud'", String.class));

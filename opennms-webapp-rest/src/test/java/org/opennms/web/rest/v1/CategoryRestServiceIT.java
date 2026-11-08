@@ -27,6 +27,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
@@ -234,6 +236,34 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, "/categories/groups/Admin", 200); // list all categories of group Admin
         sendRequest(PUT, "/categories/Routers/groups/Admin", 204); // add category Routers to group Admin
         sendRequest(DELETE, "/categories/Routers/groups/Admin", 204); // remove category from Group 
+    }
+
+    /**
+     * The group authorizations of a category are the group ACL that /groups/{group}/categories/{category} changes too,
+     * so they need the admin role like the other group writes.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGroupCategoriesNeedTheAdminRole() throws Exception {
+        final String message = "Group management requires the admin role.";
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        assertEquals(message, sendData(PUT, MediaType.APPLICATION_XML, "/categories/Routers/groups/Admin", "", 403).getContentAsString());
+        setUser("admin", new String[]{ "ROLE_ADMIN" });
+        assertFalse(authorizedCategoryNames("Admin").contains("Routers"));
+
+        sendRequest(PUT, "/categories/Routers/groups/Admin", 204);
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        assertEquals(message, sendData(DELETE, MediaType.APPLICATION_XML, "/categories/Routers/groups/Admin", "", 403).getContentAsString());
+        setUser("admin", new String[]{ "ROLE_ADMIN" });
+        assertTrue(authorizedCategoryNames("Admin").contains("Routers"));
+
+        sendRequest(DELETE, "/categories/Routers/groups/Admin", 204);
+        assertFalse(authorizedCategoryNames("Admin").contains("Routers"));
+    }
+
+    private List<String> authorizedCategoryNames(final String groupName) throws Exception {
+        return JaxbUtils.unmarshal(OnmsCategoryCollection.class, sendRequest(GET, "/categories/groups/" + groupName, 200))
+                .getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toList());
     }
     
     protected void createCategory(final OnmsCategory category) throws Exception {

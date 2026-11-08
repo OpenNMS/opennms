@@ -6,7 +6,8 @@ Use the xref:development:rest/users_v2.adoc[Users (v2)] API at `/api/v2/users` i
 
 Users are stored in the database.
 You cannot use hibernate criteria for filtering.
-The write operations need the `ROLE_ADMIN` role and use the same checks as the v2 API:
+The write operations need the `ROLE_ADMIN` role, like the v2 API, and answer `403` without it.
+They use the same checks as the v2 API:
 
 * A new user ID must not be reserved or look like `admin` or `rtc`, and must not contain markup, whitespace, control characters or any of `: / \ % ? #`.
   The response is `400`.

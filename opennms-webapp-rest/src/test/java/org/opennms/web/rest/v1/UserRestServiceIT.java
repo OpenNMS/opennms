@@ -132,7 +132,7 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
 
         // change password and email
         setUser("doesntHavePermissions", new String[] { "ROLE_USER" });
-        sendPut("/users/test", "password=MONKEYS&email=test@opennms.org", 400); 
+        sendPut("/users/test", "password=MONKEYS&email=test@opennms.org", 403);
 
         setUser("admin", new String[] { "ROLE_ADMIN" });
         sendPut("/users/test", "password=MONKEYS&email=test@opennms.org", 204); 
@@ -190,7 +190,7 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
     @Test
     public void testWriteUserWithEmail() throws Exception {
         setUser("doesntHavePermissions", new String[] { "ROLE_USER" });
-        createUser("test123", "test123@opennms.org", 400, null);
+        createUser("test123", "test123@opennms.org", 403, null);
 
         setUser("admin", new String[] { "ROLE_ADMIN" });
         createUser("test123", "test123@opennms.org", 201, "/users/test123");
@@ -271,7 +271,7 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
         sendRequest(DELETE, "/users/idontexist", 404);
 
         setUser("doesntHavePermissions", new String[] { "ROLE_USER" });
-        sendRequest(DELETE, "/users/deleteMe", 400);
+        sendRequest(DELETE, "/users/deleteMe", 403);
 
         setUser("admin", new String[] { "ROLE_ADMIN" });
         sendRequest(DELETE, "/users/deleteMe", 204);

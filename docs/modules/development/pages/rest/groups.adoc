@@ -5,7 +5,8 @@ WARNING: This API is deprecated in {page-component-title} 37 and will be removed
 Use the xref:development:rest/groups_v2.adoc[Groups (v2)] API at `/api/v2/groups` instead.
 
 Groups are stored in the database.
-The write operations are allowed for `ROLE_REST` as well as `ROLE_ADMIN`; the v2 API allows them only for `ROLE_ADMIN`.
+The write operations need the `ROLE_ADMIN` role, like the v2 API, and answer `403` without it; `ROLE_REST` is not enough.
+This includes the category authorizations of a group, also when they are changed through `/categories/\{category}/groups/\{group}`.
 They check the data like the v2 API does:
 
 * A new group name must not be reserved or look like `Admin`, and must not contain markup, whitespace or any of `: / \ % ? #`.
