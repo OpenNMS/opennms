@@ -145,15 +145,15 @@ public final class UserMgmtValidation {
     /**
      * Validates the duty schedules of a request. Entries already stored on the record are kept as they are, so
      * that hand-edited or migrated data never makes the record uneditable; only the entries new to the request
-     * must pass {@link #validateDutySchedule}. Every entry must fit its column.
+     * must pass {@link #validateDutySchedule}, and must not be blank. Every entry must fit its column.
      *
      * @param stored the schedules stored on the record, or null when the object is being created
-     * @throws UserMgmtValidationException on a null or blank entry, an invalid new entry or one that is too long
+     * @throws UserMgmtValidationException on a null entry, a blank or invalid new entry or one that is too long
      */
     public static void validateDutySchedules(final String owner, final List<String> requested, final Collection<String> stored) {
         final Set<String> preExisting = stored == null ? Set.of() : new LinkedHashSet<>(stored);
         for (final String schedule : requested) {
-            if (StringUtils.isBlank(schedule)) {
+            if (schedule == null || (StringUtils.isBlank(schedule) && !preExisting.contains(schedule))) {
                 throw new UserMgmtValidationException("Duty schedules must not be blank.");
             }
             if (!preExisting.contains(schedule)) {

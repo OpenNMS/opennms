@@ -160,6 +160,20 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
     }
 
     @Test
+    public void testStoredBlankDutyScheduleIsGrandfathered() throws Exception {
+        createUser("blank");
+        new JdbcTemplate(m_dataSource).update("insert into user_duty_schedules (user_id, position, schedule) select id, 0, '' from users where username = 'blank'");
+        // the manager's cache was loaded before this edit behind its back
+        m_userManager.reload();
+
+        sendPut("/users/blank", "fullName=x", 204);
+        assertEquals("x", new JdbcTemplate(m_dataSource).queryForObject("select full_name from users where username = 'blank'", String.class));
+        // the v1 save goes through the users.xml model of the user manager, which drops a blank schedule (as before)
+        assertEquals(List.of(), new JdbcTemplate(m_dataSource).queryForList("select schedule from user_duty_schedules"
+                + " where user_id = (select id from users where username = 'blank')", String.class));
+    }
+
+    @Test
     public void testUnknownRoleIs400() throws Exception {
         sendPost("/users", userXml("roley", null, "ROLE_BOGUS"), 400);
         assertFalse(exists("roley"));

@@ -469,6 +469,19 @@ public class UsersRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testStoredBlankDutyScheduleIsGrandfathered() throws Exception {
+        // e.g. from a hand-edited users.xml
+        createUser("blankduty", u -> u.getDutySchedules().add(""));
+
+        // echoed back unchanged, along with another change, as the editor sends every field
+        exec(PUT, "/users/blankduty", "{\"userId\":\"blankduty\",\"dutySchedules\":[\"\"],\"fullName\":\"Blank Duty\"}", null, 200);
+        assertEquals("Blank Duty", column("blankduty", "full_name"));
+
+        // but a new blank one is refused
+        exec(PUT, "/users/blankduty", "{\"userId\":\"blankduty\",\"dutySchedules\":[\"\",\" \"]}", null, 400);
+    }
+
+    @Test
     public void testStoredInvalidTimeZoneIsGrandfathered() throws Exception {
         // a zone Java's ZoneId does not know, e.g. from a hand-edited users.xml
         createUser("oldzone", u -> u.setTimeZoneId("Mars/Olympus"));
