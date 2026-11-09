@@ -31,6 +31,7 @@ import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
+import org.opennms.netmgt.model.OnmsGroup;
 
 
 /**
@@ -110,6 +111,14 @@ public interface GroupDao {
      * @param details a {@link org.opennms.netmgt.config.groups.Group} object.
      */
     void saveGroup(String name, Group details);
+
+    /**
+     * Adds the group, or replaces the comments and members of the stored group and keeps its other fields (duty
+     * schedules, default map), which an {@link OnmsGroup} does not carry.
+     *
+     * @param group the name, comments and members
+     */
+    void saveGroup(OnmsGroup group);
     
     /**
      * <p>saveRole</p>

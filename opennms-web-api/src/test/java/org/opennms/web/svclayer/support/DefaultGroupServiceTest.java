@@ -24,6 +24,7 @@ package org.opennms.web.svclayer.support;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -42,6 +43,7 @@ import org.junit.Test;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsGroup;
 import org.springframework.test.util.ReflectionTestUtils;
 
 public class DefaultGroupServiceTest {
@@ -147,5 +149,17 @@ public class DefaultGroupServiceTest {
         assertTrue(m_first.getAuthorizedGroups().isEmpty());
         assertTrue(m_second.getAuthorizedGroups().isEmpty());
         verifyNoInteractions(m_groupDao);
+    }
+
+    @Test
+    public void testSaveOfAnOnmsGroupLeavesTheMergeToTheGroupDao() {
+        // the manager keeps the stored schedules and default map under its own lock, after its own update()
+        final OnmsGroup group = new OnmsGroup("ops");
+        group.setComments("edited");
+        m_service.saveGroup(group);
+
+        verify(m_groupDao).saveGroup(group);
+        verify(m_groupDao, never()).getGroup(anyString());
+        verify(m_groupDao, never()).saveGroup(anyString(), any());
     }
 }

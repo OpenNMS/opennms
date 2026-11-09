@@ -100,14 +100,9 @@ public class DefaultGroupService implements InitializingBean, GroupService {
 
     @Override
     public void saveGroup(OnmsGroup group) {
-        final Group saved = onmsGroupMapper.map(group);
-        // an OnmsGroup carries only the name, comments and members: the rest of a stored group is kept as it is
-        final Group stored = m_groupDao.getGroup(group.getName());
-        if (stored != null) {
-            saved.setDefaultMap(stored.getDefaultMap().orElse(null));
-            saved.setDutySchedules(new ArrayList<>(stored.getDutySchedules()));
-        }
-        saveGroup(saved);
+        // an OnmsGroup carries only the name, comments and members: the manager keeps the rest of the stored group,
+        // read under its own lock, so that a change made elsewhere since is not overwritten
+        m_groupDao.saveGroup(group);
     }
 
     @Override

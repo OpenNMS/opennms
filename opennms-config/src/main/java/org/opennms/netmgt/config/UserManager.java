@@ -76,6 +76,8 @@ import org.slf4j.LoggerFactory;
 public abstract class UserManager implements UserConfig {
     private static final Logger LOG = LoggerFactory.getLogger(UserManager.class);
 	public static final String ALLOW_UNSALTED_PROPERTY = "org.opennms.users.allowUnsalted";
+    /** How many user or group and schedule pairs the managers remember as warned about. */
+    static final int MAX_WARNED_SCHEDULES = 1000;
     private final boolean m_allowUnsalted;
 
     private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -134,6 +136,8 @@ public abstract class UserManager implements UserConfig {
      * The duty schedules for each user
      */
     protected Map<String, List<DutySchedule>> m_dutySchedules;
+    /** The user and schedule pairs warned about; every reload builds the schedules again, and logs them at DEBUG. */
+    private final WarnOnce m_warnedSchedules = new WarnOnce(MAX_WARNED_SCHEDULES);
     private Header oldHeader;
 
     /**
@@ -270,7 +274,7 @@ public abstract class UserManager implements UserConfig {
     /**
      * Builds a mapping between user IDs and duty schedules. These are used by
      * Notifd when determining to send a notice to a given user. This helps
-     * speed up the decision process.
+     * speed up the decision process. A blank or unreadable schedule is skipped, with a WARN once per user and value.
      * 
      * @param users
      *            the map of users parsed from the XML configuration file
@@ -288,11 +292,15 @@ public abstract class UserManager implements UserConfig {
                     try {
                         dutyList.add(new DutySchedule(duty));
                     } catch (final RuntimeException e) {
-                        LOG.warn("Ignoring the duty schedule \"{}\" of user {}: it can't be read: {}", duty, key, e.toString());
+                        if (m_warnedSchedules.isNew(key, duty)) {
+                            LOG.warn("Ignoring the duty schedule \"{}\" of user {}: it can't be read: {}", duty, key, e.toString());
+                        } else {
+                            LOG.debug("Ignoring the duty schedule \"{}\" of user {}: it can't be read: {}", duty, key, e.toString());
+                        }
                     }
                 }
 
-                // a user with no readable schedule has none, which means always on duty
+                // a user whose schedules are all blank or unreadable has none, so it is treated as always on duty
                 if (!dutyList.isEmpty()) {
                     m_dutySchedules.put(key, dutyList);
                 }

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -35,9 +36,16 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.Level;
+import org.opennms.core.test.LoggingEvent;
+import org.opennms.core.test.MockLogAppender;
 
 public class DutyScheduleLoadTest {
 
@@ -66,6 +74,10 @@ public class DutyScheduleLoadTest {
             parseXml(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
         }
 
+        void reload(final String xml) throws IOException {
+            parseXml(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+        }
+
         @Override
         public void update() {
         }
@@ -78,6 +90,10 @@ public class DutyScheduleLoadTest {
     private static final class TestUserManager extends UserManager {
         TestUserManager(final GroupManager gm, final String xml) {
             super(gm);
+            parseXML(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+        }
+
+        void reloadFrom(final String xml) {
             parseXML(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
         }
 
@@ -109,6 +125,18 @@ public class DutyScheduleLoadTest {
         }
     }
 
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging(false, "DEBUG");
+    }
+
+    private static List<String> logged(final Class<?> logger, final Level level) {
+        return Arrays.stream(MockLogAppender.getEvents())
+                .filter(e -> logger.getName().equals(e.getLoggerName()) && e.getLevel() == level)
+                .map(LoggingEvent::getMessage)
+                .collect(Collectors.toList());
+    }
+
     private static Calendar monday(final int hour) {
         final Calendar c = Calendar.getInstance();
         c.set(2024, Calendar.JANUARY, 1, hour, 0, 0); // 2024-01-01 is a Monday
@@ -131,5 +159,37 @@ public class DutyScheduleLoadTest {
         assertFalse(gm.isGroupOnDuty("a", monday(20)));
         assertTrue(gm.isGroupOnDuty("b", monday(9)));
         assertTrue(gm.isGroupOnDuty("b", monday(20)));
+    }
+
+    /** Every reload builds the schedules again: an unreadable one is a WARN once per user and value, then DEBUG. */
+    @Test
+    public void testUnreadableUserScheduleWarnsOncePerUserAndValue() throws Exception {
+        final TestUserManager um = new TestUserManager(new TestGroupManager(GROUPS_XML), USERS_XML);
+        um.reloadFrom(USERS_XML);
+        um.reloadFrom(USERS_XML);
+        final List<String> warned = logged(UserManager.class, Level.WARN);
+        assertEquals(warned.toString(), 2, warned.size());
+        assertTrue(warned.toString(), warned.get(0).contains("\"garbage\" of user a"));
+        assertTrue(warned.toString(), warned.get(1).contains("\"Xx800-1700\" of user b"));
+        assertEquals(4, logged(UserManager.class, Level.DEBUG).stream().filter(m -> m.startsWith("Ignoring the duty schedule")).count());
+
+        // another value of the same user warns again
+        um.reloadFrom(USERS_XML.replace("garbage", "rubbish"));
+        assertEquals(3, logged(UserManager.class, Level.WARN).size());
+    }
+
+    @Test
+    public void testUnreadableGroupScheduleWarnsOncePerGroupAndValue() throws Exception {
+        final TestGroupManager gm = new TestGroupManager(GROUPS_XML);
+        gm.reload(GROUPS_XML);
+        gm.reload(GROUPS_XML);
+        final List<String> warned = logged(GroupManager.class, Level.WARN);
+        assertEquals(warned.toString(), 2, warned.size());
+        assertTrue(warned.toString(), warned.get(0).contains("\"garbage\" of group a"));
+        assertTrue(warned.toString(), warned.get(1).contains("\"Xx800-1700\" of group b"));
+        assertEquals(4, logged(GroupManager.class, Level.DEBUG).stream().filter(m -> m.startsWith("Ignoring the duty schedule")).count());
+
+        gm.reload(GROUPS_XML.replace("garbage", "rubbish"));
+        assertEquals(3, logged(GroupManager.class, Level.WARN).size());
     }
 }

@@ -116,6 +116,9 @@ public abstract class GroupManager implements GroupConfig {
      */
     protected static Map<String, List<DutySchedule>> m_dutySchedules = new HashMap<>();
 
+    /** The group and schedule pairs warned about; every reload builds the schedules again, and logs them at DEBUG. */
+    private final WarnOnce m_warnedSchedules = new WarnOnce(UserManager.MAX_WARNED_SCHEDULES);
+
     /**
      * A mapping of Group object by name
      */
@@ -191,16 +194,24 @@ public abstract class GroupManager implements GroupConfig {
         return new OnmsGroupMapper().map(xmlGroup);
     }
 
+    /**
+     * Adds the group, or replaces the comments and members of the group with this name and keeps its other fields
+     * (duty schedules, default map), and saves all groups. The other fields are read after the save's one update(),
+     * from the cache the save writes and is checked against, so a newer change made elsewhere fails the save
+     * instead of being overwritten with older values. The cached group is not changed in place.
+     */
     public synchronized void save(final OnmsGroup group) throws Exception {
-        Group xmlGroup = getGroup(group.getName());
-        if (xmlGroup == null) {
-            xmlGroup = new Group();
-            xmlGroup.setName(group.getName());
+        update();
+        final Group current = m_groups.get(group.getName());
+        final Group merged = new Group();
+        merged.setName(group.getName());
+        merged.setComments(group.getComments());
+        merged.setUsers(group.getUsers());
+        if (current != null) {
+            merged.setDefaultMap(current.getDefaultMap().orElse(null));
+            merged.setDutySchedules(new ArrayList<>(current.getDutySchedules()));
         }
-        xmlGroup.setComments(group.getComments());
-        xmlGroup.setUsers(group.getUsers());
-        
-        saveGroup(group.getName(), xmlGroup);
+        putGroupAndSave(group.getName(), merged);
     }
 
     /**
@@ -307,9 +318,10 @@ public abstract class GroupManager implements GroupConfig {
     /**
      * Builds a mapping between groups and duty schedules. These are used when
      * determining to send a notice to a given group. This helps speed up the decision process.
+     * A blank or unreadable schedule is skipped, with a WARN once per group and value.
      * @param groups the map of groups parsed from the XML configuration file
      */
-    private static void buildDutySchedules(Map<String, Group> groups) {
+    private void buildDutySchedules(Map<String, Group> groups) {
         m_dutySchedules = new HashMap<String, List<DutySchedule>>();
         for (final Entry<String, Group> entry : groups.entrySet()) {
             final String key = entry.getKey();
@@ -320,10 +332,14 @@ public abstract class GroupManager implements GroupConfig {
                     try {
                         dutyList.add(new DutySchedule(duty));
                     } catch (final RuntimeException e) {
-                        LOG.warn("Ignoring the duty schedule \"{}\" of group {}: it can't be read: {}", duty, key, e.toString());
+                        if (m_warnedSchedules.isNew(key, duty)) {
+                            LOG.warn("Ignoring the duty schedule \"{}\" of group {}: it can't be read: {}", duty, key, e.toString());
+                        } else {
+                            LOG.debug("Ignoring the duty schedule \"{}\" of group {}: it can't be read: {}", duty, key, e.toString());
+                        }
                     }
                 }
-                // a group with no readable schedule has none, which means always on duty
+                // a group whose schedules are all blank or unreadable has none, so it is treated as always on duty
                 if (!dutyList.isEmpty()) {
                     m_dutySchedules.put(key, dutyList);
                 }
@@ -400,12 +416,14 @@ public abstract class GroupManager implements GroupConfig {
      */
     public synchronized void saveGroup(String name, Group details) throws Exception {
         update();
+        putGroupAndSave(name, details);
+    }
+
+    private void putGroupAndSave(final String name, final Group details) throws Exception {
         if (name == null || details == null) {
             throw new Exception("GroupFactory:saveGroup  null");
-        } else {
-            m_groups.put(name, details);
         }
-    
+        m_groups.put(name, details);
         saveGroups();
     }
     

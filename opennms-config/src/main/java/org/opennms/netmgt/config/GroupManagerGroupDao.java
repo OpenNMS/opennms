@@ -33,6 +33,7 @@ import org.opennms.netmgt.config.api.GroupConfig;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
+import org.opennms.netmgt.model.OnmsGroup;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
@@ -243,6 +244,16 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
             m_groupManager.saveGroup(name, details);
         } catch (Throwable e) {
             throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("saving group '" + name + "' with details " + details, e);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void saveGroup(final OnmsGroup group) {
+        try {
+            m_groupManager.save(group);
+        } catch (Throwable e) {
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("saving group '" + group.getName() + "'", e);
         }
     }
 
