@@ -211,6 +211,7 @@ public class InstallerTest {
     private static class RecordingInstaller extends Installer {
         private final List<String> m_calls = new ArrayList<>();
         private boolean m_adminMissing;
+        private boolean m_userDataInitialized;
 
         RecordingInstaller() throws Exception {
             super();
@@ -222,6 +223,11 @@ public class InstallerTest {
             if (m_adminMissing) {
                 throw new IllegalArgumentException("User \"admin\" does not exist.");
             }
+        }
+
+        @Override
+        protected boolean isUserDataInitialized() {
+            return m_userDataInitialized;
         }
     }
 
@@ -260,6 +266,17 @@ public class InstallerTest {
         } finally {
             System.clearProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY);
         }
+    }
+
+    @Test
+    public void testResetIsNotDeferredWhenTheUserDataIsInitialized() throws Exception {
+        // an install whose admin user was deleted or renamed: no upgrade task creates it, so there is nothing to wait for
+        final RecordingInstaller recording = recordingInstaller();
+        recording.m_adminMissing = true;
+        recording.m_userDataInitialized = true;
+        recording.resetWebAppAdminPassword();
+        assertNull(System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY));
+        assertEquals(List.of("db:n3w"), recording.m_calls);
     }
 
     @Test

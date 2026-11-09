@@ -38,6 +38,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -69,6 +70,7 @@ import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.best.BestMatchPingerFactory;
+import org.opennms.upgrade.implementations.UserMgmtInitialized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
@@ -298,6 +300,9 @@ public class Installer {
             if (m_skip_upgrade_tools) {
                 System.out.println("The password was NOT set: the admin user does not exist in the database."
                         + " If this is a new installation or an upgrade, run the installer with -R again after the upgrade.");
+            } else if (isUserDataInitialized()) {
+                // admin was deleted or renamed: no upgrade task creates it
+                System.out.println("The password was NOT set: the admin user does not exist in the database.");
             } else {
                 // the upgrade tasks create the admin user; the last one (AdminPasswordResetOffline) sets the password
                 System.setProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY, m_resetWebAppAdminPassword);
@@ -310,6 +315,13 @@ public class Installer {
 
     protected void setAdminPasswordInDatabase(final String password) throws Exception {
         DatabasePasswords.setPassword(openNmsDataSource(), "admin", password);
+    }
+
+    /** Whether the user data of the database was initialized (from the files or with the default users) already. */
+    protected boolean isUserDataInitialized() throws Exception {
+        try (final Connection connection = openNmsDataSource().getConnection()) {
+            return UserMgmtInitialized.isSet(connection);
+        }
     }
 
     private static DataSource openNmsDataSource() throws Exception {

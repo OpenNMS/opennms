@@ -21,6 +21,11 @@
  */
 package org.opennms.upgrade.implementations;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.password.DatabasePasswords;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
@@ -70,10 +75,29 @@ public class AdminPasswordResetOffline extends AbstractOnmsUpgrade {
         return m_passwordGiven || passwordGiven();
     }
 
-    /** Skipped while OpenNMS runs, the task would not set the password that was given. */
+    /**
+     * Pending while a password is given: skipping the task while OpenNMS runs would drop it. Not pending when the user
+     * data is initialized and there is no admin user (it was deleted or renamed): no task will create it, so the task
+     * has nothing to do.
+     */
     @Override
-    public boolean isPending() {
-        return passwordGiven();
+    public boolean isPending() throws OnmsUpgradeException {
+        if (!passwordGiven()) {
+            return false;
+        }
+        try (final Connection connection = DataSourceFactory.getInstance().getConnection()) {
+            return !UserMgmtInitialized.isSet(connection) || adminExists(connection);
+        } catch (final SQLException e) {
+            throw new OnmsUpgradeException("Can't read the users: " + e.getMessage(), e);
+        }
+    }
+
+    private static boolean adminExists(final Connection connection) throws SQLException {
+        try (final Statement statement = connection.createStatement();
+             final ResultSet rs = statement.executeQuery("SELECT EXISTS (SELECT 1 FROM users WHERE username = 'admin')")) {
+            rs.next();
+            return rs.getBoolean(1);
+        }
     }
 
     private static boolean passwordGiven() {

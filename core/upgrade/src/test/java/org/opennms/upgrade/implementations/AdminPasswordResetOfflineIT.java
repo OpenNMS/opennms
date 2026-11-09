@@ -165,6 +165,22 @@ public class AdminPasswordResetOfflineIT implements TemporaryDatabaseAware<Tempo
     }
 
     @Test
+    public void testNotPendingWhenNothingWillCreateTheAdminUser() throws Exception {
+        System.setProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY, "secret");
+        final AdminPasswordResetOffline reset = new AdminPasswordResetOffline();
+        // the user data is not initialized yet: the seed creates admin, so skipping the task would drop the password
+        assertTrue(reset.isPending());
+
+        // initialized without admin (deleted or renamed): the task has nothing to do, so skipping it fails nothing
+        m_jdbc.update("INSERT INTO usermgmt_initialized (initialized_by) VALUES ('test')");
+        assertFalse(reset.isPending());
+
+        // initialized with admin: the task sets the password
+        m_jdbc.update("INSERT INTO users (id, username, password_hash) VALUES (nextval('users_id_seq'), 'admin', '')");
+        assertTrue(reset.isPending());
+    }
+
+    @Test
     public void testAFailedUpdateFailsTheUpgrade() throws Exception {
         seed();
         final String before = adminHash();
