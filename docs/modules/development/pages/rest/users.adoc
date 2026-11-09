@@ -11,17 +11,24 @@ They use the same checks as the v2 API:
 
 * A new user ID must not be reserved or look like `admin` or `rtc`, and must not contain markup, whitespace, control characters or any of `: / \ % ? #`.
   The response is `400`.
-* Duty schedules are validated (values that are already stored are accepted unchanged) and every role must be a known security role.
+* Comments must not contain markup, and every value must fit its column.
+  Duty schedules are validated, and every role must be a known security role.
+  Values that are already stored are accepted unchanged.
   The response is `400`.
-* A user cannot be renamed with a form `PUT` that contains `username`.
-  The response is `400`, which points to `PUT /api/v2/users/\{userId}/rename`.
-* A form `PUT` key with an index or a nested path, such as `roles[0]`, is refused.
+* A password is only accepted in plain text with `hashPassword=true`, and is always stored hashed and salted.
+  A password hash is not accepted, and `passwordSalt` is ignored.
+  A missing or blank password, or one without `hashPassword=true`, is refused.
   The response is `400`.
-* A `POST` without `user-id` is refused, and so is an unsalted password while the system property `org.opennms.users.allowUnsalted` is `false` (send `hashPassword=true`).
+* A form `PUT` accepts only the keys `fullName`, `comments`, `email`, `password`, `hashPassword`, `dutySchedule` and `roles`, spelled exactly.
+  Any other key is refused before anything is changed.
+  The response is `400`.
+  For `username` or `name`, in any case, it points to `PUT /api/v2/users/\{userId}/rename`.
+* A `POST` without `user-id` is refused.
   The response is `400`.
 * The `admin` and `rtc` users cannot be deleted, and `admin` keeps `ROLE_ADMIN`.
   The response is `400`.
 * The last holder of `ROLE_ADMIN` cannot be deleted or lose the role, and a user who supervises an on-call role or is the target of a notification destination path cannot be deleted.
+  A path target can be deleted when a group or an on-call role has the same name, because the path notifies that group or role.
   The response is `409`.
 * A save that races with another change, or is based on stale data, answers `409`.
 * A caller without `ROLE_ADMIN` sees `xxxxxxxx` in place of the password hash of every user but their own.
@@ -58,11 +65,11 @@ POST requires XML using `application/xml` as its `Content-Type`.
 |===
 | Parameter | Description
 
-| /users
-| Add a user.
-If supplying a password it is assumed to be hashed or encrypted already. +
-To indicate that the supplied password uses the salted encryption algorithm rather than the older MD5-based algorithm, you need to pass an element named `passwordSalt` with text `true` after the password element. +
-Note that you may add the query parameter `hashPassword=true` to tell OpenNMS you are passing an unencrypted password; it will hash and salt the password when it is saved.
+| /users?hashPassword=true
+| Add a user, or overwrite the user with the same `user-id`.
+The `password` is the password in plain text: it is hashed and salted when it is saved.
+A password hash is not accepted. +
+An overwrite may send the stored `password` and `passwordSalt` back unchanged, as `GET` returns them, without `hashPassword=true`: the stored password is kept.
 |===
 
 == PUTs (modifying data)
@@ -74,8 +81,8 @@ Note that you may add the query parameter `hashPassword=true` to tell OpenNMS yo
 | Parameter | Description
 
 | /users/\{username}
-| Update an existing user's `full-name`, `user-comments`, `password`, `passwordSalt`, and `duty-schedule` values. +
-Note that, if you are setting the password, you may also add the query parameter `hashPassword=true` to tell OpenNMS you are passing an unencrypted password so it will hash and salt the password when it is saved.
+| Update an existing user with form fields: `fullName`, `comments`, `email`, `password`, `dutySchedule` and `roles`. +
+A `password` is the new password in plain text, and needs the field `hashPassword=true`: it is hashed and salted when it is saved.
 
 | /users/\{username}/roles/\{rolename}
 | Add a security role to the user.

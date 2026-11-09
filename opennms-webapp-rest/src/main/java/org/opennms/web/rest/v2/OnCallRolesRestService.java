@@ -28,12 +28,10 @@ import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -51,6 +49,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.opennms.netmgt.config.OnCallScheduleExpander;
 import org.opennms.netmgt.config.OnCallScheduleExpander.OnCallNow;
 import org.opennms.netmgt.config.UserMgmtJaxbMapper;
+import org.opennms.netmgt.config.WarnOnce;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.groups.Time;
@@ -100,15 +99,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     /** How many role and message pairs {@link #onCallNow} remembers as warned; the least recently seen is dropped. */
     static final int MAX_WARNED_SCHEDULES = 1000;
     /** The role and message pairs that {@link #onCallNow} has warned about; later reads log them at DEBUG. */
-    private static final Set<List<String>> WARNED_SCHEDULES = Collections.newSetFromMap(Collections.synchronizedMap(
-            new LinkedHashMap<List<String>, Boolean>(16, 0.75f, true) {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                protected boolean removeEldestEntry(final Map.Entry<List<String>, Boolean> eldest) {
-                    return size() > MAX_WARNED_SCHEDULES;
-                }
-            }));
+    private final WarnOnce m_warnedSchedules = new WarnOnce(MAX_WARNED_SCHEDULES);
 
     @Autowired
     private UserMgmtRestSupport m_support;
@@ -606,7 +597,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         return Arrays.asList(dto.getUser(), dto.getType(), times);
     }
 
-    private static OnCallRoleDto toDto(final OnCallRole role, final int version) {
+    private OnCallRoleDto toDto(final OnCallRole role, final int version) {
         final OnCallRoleDto dto = new OnCallRoleDto();
         dto.setName(role.getName());
         dto.setDescription(role.getDescription());
@@ -642,11 +633,11 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
      * Every read of the role evaluates it, so the failure is a WARN once per role and message (which names the
      * unreadable value, such as a monthly day), and a DEBUG after that.
      */
-    static OnCallNow onCallNow(final OnCallRole role) {
+    OnCallNow onCallNow(final OnCallRole role) {
         try {
             return OnCallScheduleExpander.onCallAt(UserMgmtJaxbMapper.toRole(role), new Date());
         } catch (final RuntimeException e) {
-            if (WARNED_SCHEDULES.add(Arrays.asList(role.getName(), e.getMessage()))) {
+            if (m_warnedSchedules.isNew(role.getName(), e.getMessage())) {
                 LOG.warn("Cannot evaluate the schedules of on-call role {}: {}", role.getName(), e.getMessage());
             } else {
                 LOG.debug("Cannot evaluate the schedules of on-call role {}: {}", role.getName(), e.getMessage());

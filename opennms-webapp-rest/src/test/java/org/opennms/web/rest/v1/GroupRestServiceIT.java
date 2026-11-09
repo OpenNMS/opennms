@@ -211,15 +211,16 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(PUT, "/groups/hashes/users/admin", 204);
         sendRequest(PUT, "/groups/hashes/users/foo", 204);
 
+        final String fooHash = JaxbUtils.unmarshal(OnmsUser.class, sendRequest(GET, "/users/foo", 200)).getPassword();
         setUser("foo", new String[] { "ROLE_USER" });
         try {
             final OnmsUserList users = JaxbUtils.unmarshal(OnmsUserList.class, sendRequest(GET, "/groups/hashes/users", 200));
             assertEquals(2, users.size());
             for (final OnmsUser user : users) {
-                assertEquals(user.getUsername(), "foo".equals(user.getUsername()) ? "blah" : "xxxxxxxx", user.getPassword());
+                assertEquals(user.getUsername(), "foo".equals(user.getUsername()) ? fooHash : "xxxxxxxx", user.getPassword());
             }
             assertEquals("xxxxxxxx", JaxbUtils.unmarshal(OnmsUser.class, sendRequest(GET, "/groups/hashes/users/admin", 200)).getPassword());
-            assertEquals("blah", JaxbUtils.unmarshal(OnmsUser.class, sendRequest(GET, "/groups/hashes/users/foo", 200)).getPassword());
+            assertEquals(fooHash, JaxbUtils.unmarshal(OnmsUser.class, sendRequest(GET, "/groups/hashes/users/foo", 200)).getPassword());
         } finally {
             setUser("admin", new String[] { "ROLE_ADMIN" });
         }
@@ -228,7 +229,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         for (final OnmsUser user : JaxbUtils.unmarshal(OnmsUserList.class, sendRequest(GET, "/groups/hashes/users", 200))) {
             assertFalse(user.getUsername(), "xxxxxxxx".equals(user.getPassword()));
         }
-        assertEquals("blah", JaxbUtils.unmarshal(OnmsUser.class, sendRequest(GET, "/groups/hashes/users/foo", 200)).getPassword());
+        assertEquals(fooHash, JaxbUtils.unmarshal(OnmsUser.class, sendRequest(GET, "/groups/hashes/users/foo", 200)).getPassword());
     }
 
     @Test
@@ -289,7 +290,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         OnmsUser user = new OnmsUser();
         user.setUsername(userName);
         user.setPassword("blah");
-        sendPost("/users", JaxbUtils.marshal(user), 201, "/users/" + userName);
+        sendPost("/users?hashPassword=true", JaxbUtils.marshal(user), 201, null);
     }
     
     protected void createGroup(final String groupname) throws Exception {

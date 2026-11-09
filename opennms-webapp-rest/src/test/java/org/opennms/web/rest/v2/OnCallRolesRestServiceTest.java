@@ -43,12 +43,15 @@ import org.opennms.netmgt.model.usermgmt.UserGroup;
 /** The WARN for a stored schedule that cannot be evaluated: once per role and value, then DEBUG. */
 public class OnCallRolesRestServiceTest {
 
+    private OnCallRolesRestService m_service;
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging(false, "DEBUG");
+        m_service = new OnCallRolesRestService();
     }
 
-    /** A role with one monthly schedule on {@code day}; each test uses its own role names, as the warned set is static. */
+    /** A role with one monthly schedule on {@code day}. */
     private static OnCallRole role(final String name, final String day) {
         final OnCallRole role = new OnCallRole(name, new UserGroup("Ops"), new UserAccount("alice"));
         final OnCallSchedule schedule = new OnCallSchedule(new UserAccount("bob"), OnCallSchedule.Type.monthly);
@@ -66,38 +69,45 @@ public class OnCallRolesRestServiceTest {
 
     @Test
     public void testUnreadableMonthlyDayWarnsOncePerRoleAndValue() {
-        final OnCallNow now = OnCallRolesRestService.onCallNow(role("warn-once", "x"));
+        final OnCallNow now = m_service.onCallNow(role("warn-once", "x"));
         assertTrue(now.users().isEmpty());
-        OnCallRolesRestService.onCallNow(role("warn-once", "x"));
-        OnCallRolesRestService.onCallNow(role("warn-once", "x"));
+        m_service.onCallNow(role("warn-once", "x"));
+        m_service.onCallNow(role("warn-once", "x"));
         assertEquals(1, logged(Level.WARN).size());
         assertTrue(logged(Level.WARN).get(0), logged(Level.WARN).get(0).contains("warn-once"));
         assertTrue(logged(Level.WARN).get(0), logged(Level.WARN).get(0).contains("\"x\""));
         assertEquals(2, logged(Level.DEBUG).size());
 
         // another value on the same role, and the same value on another role, each warn once more
-        OnCallRolesRestService.onCallNow(role("warn-once", "y"));
-        OnCallRolesRestService.onCallNow(role("warn-once-too", "x"));
-        OnCallRolesRestService.onCallNow(role("warn-once-too", "x"));
+        m_service.onCallNow(role("warn-once", "y"));
+        m_service.onCallNow(role("warn-once-too", "x"));
+        m_service.onCallNow(role("warn-once-too", "x"));
         assertEquals(3, logged(Level.WARN).size());
         assertEquals(3, logged(Level.DEBUG).size());
     }
 
     @Test
     public void testTheWarnedSetIsBounded() {
-        OnCallRolesRestService.onCallNow(role("bounded-first", "x"));
+        m_service.onCallNow(role("bounded-first", "x"));
         for (int i = 0; i < OnCallRolesRestService.MAX_WARNED_SCHEDULES; i++) {
-            OnCallRolesRestService.onCallNow(role("bounded-" + i, "x"));
+            m_service.onCallNow(role("bounded-" + i, "x"));
         }
         assertEquals(OnCallRolesRestService.MAX_WARNED_SCHEDULES + 1, logged(Level.WARN).size());
         // the first key was dropped to make room, so it warns again
-        OnCallRolesRestService.onCallNow(role("bounded-first", "x"));
+        m_service.onCallNow(role("bounded-first", "x"));
         assertEquals(OnCallRolesRestService.MAX_WARNED_SCHEDULES + 2, logged(Level.WARN).size());
     }
 
     @Test
+    public void testEachServiceRemembersItsOwnWarnings() {
+        m_service.onCallNow(role("per-instance", "x"));
+        new OnCallRolesRestService().onCallNow(role("per-instance", "x"));
+        assertEquals(2, logged(Level.WARN).size());
+    }
+
+    @Test
     public void testAReadableScheduleLogsNothing() {
-        OnCallRolesRestService.onCallNow(role("readable", "15"));
+        m_service.onCallNow(role("readable", "15"));
         assertTrue(logged(Level.WARN).isEmpty());
         assertTrue(logged(Level.DEBUG).isEmpty());
     }

@@ -94,7 +94,7 @@ public final class UserMgmtValidation {
      *
      * @param stored the stored comments, or null when the object is being created or has none
      */
-    static void checkComments(final String owner, final String incoming, final String stored) {
+    public static void checkComments(final String owner, final String incoming, final String stored) {
         if (incoming != null && INVALID_COMMENTS.matcher(incoming).find() && !textUnchanged(incoming, stored)) {
             throw new UserMgmtValidationException("The comments must not contain any HTML markup.");
         }
@@ -145,7 +145,9 @@ public final class UserMgmtValidation {
     /**
      * Validates the duty schedules of a request. Entries already stored on the record are kept as they are, so
      * that hand-edited or migrated data never makes the record uneditable; only the entries new to the request
-     * must pass {@link #validateDutySchedule}, and must not be blank. Every entry must fit its column.
+     * must pass {@link #validateDutySchedule}, and must not be blank. Every entry must fit its column. A stored blank
+     * or unreadable entry is skipped by the duty evaluation, so a user or group whose schedules are all blank or
+     * unreadable is treated as always on duty.
      *
      * @param stored the schedules stored on the record, or null when the object is being created
      * @throws UserMgmtValidationException on a null entry, a blank or invalid new entry or one that is too long
@@ -179,7 +181,7 @@ public final class UserMgmtValidation {
      * @return the value, if it fits a column of max characters
      * @throws UserMgmtValidationException if it does not
      */
-    static String checkLength(final String owner, final String field, final String value, final int max) {
+    public static String checkLength(final String owner, final String field, final String value, final int max) {
         try {
             return UserMgmtJaxbMapper.checkLength(owner, field, value, max);
         } catch (final IllegalArgumentException e) {

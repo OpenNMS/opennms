@@ -37,13 +37,10 @@ import javax.ws.rs.core.SecurityContext;
 import org.apache.commons.lang3.StringUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.UserMgmtJaxbMapper;
-import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.dao.api.SecurityRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
-import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
 import org.opennms.netmgt.model.usermgmt.ContactType;
-import org.opennms.netmgt.model.usermgmt.OnCallRole;
 import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.netmgt.model.usermgmt.SecurityRole;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
@@ -85,14 +82,6 @@ public class UsersRestService implements UsersRestApi {
 
     @Autowired
     private SecurityRoleDao m_securityRoleDao;
-
-    /** For the checks on delete: the roles the user supervises, and a role named like the user. */
-    @Autowired
-    private OnCallRoleDao m_onCallRoleDao;
-
-    /** For the destination path check on delete: a group named like the user. */
-    @Autowired
-    private UserGroupDao m_userGroupDao;
 
     @Override
     @Transactional(readOnly = true)
@@ -338,28 +327,12 @@ public class UsersRestService implements UsersRestApi {
 
     private Response doDeleteUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId) {
         m_support.checkTarget(securityContext, "User management", "userId", userId);
-        if (UserMgmtRestSupport.PROTECTED_USERS.contains(userId)) {
-            throw m_support.badRequest("The system user " + userId + " cannot be deleted.");
-        }
+        m_support.checkUserNotProtected(userId);
         try {
             m_support.lockForWrite();
             final UserAccount user = load(userId, headers);
             m_support.checkIfMatch(headers, VersionedTable.users, user.getId(), "User " + userId);
-            // the DAO strips memberships and schedules but refuses a supervisor; checking first lets the
-            // message name the roles
-            final List<String> supervisedRoles = m_onCallRoleDao.findBySupervisor(userId).stream()
-                    .map(OnCallRole::getName)
-                    .collect(Collectors.toList());
-            if (!supervisedRoles.isEmpty()) {
-                throw m_support.conflict("User " + userId
-                        + " is the supervisor of on-call role(s) " + String.join(", ", supervisedRoles)
-                        + "; assign a different supervisor first.");
-            }
-            m_support.checkNotLastAdministrator(user, "be deleted");
-            // notifd resolves a target name as a group, then an on-call role, then a user: one of those takes the paths
-            if (m_userGroupDao.findByName(userId) == null && m_onCallRoleDao.findByName(userId) == null) {
-                m_support.checkNotDestinationPathTarget("User " + userId, userId);
-            }
+            m_support.checkUserDeletable(userId, user);
             m_userAccountDao.delete(user);
             m_support.flushAndCheckConstraints();
             LOG.info("User {} deleted by {}", userId, UserMgmtValidation.principal(securityContext));

@@ -276,11 +276,11 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
 
     @Test
     public void testBadDutyScheduleIsRefused() throws Exception {
-        // an OnmsGroup, the body of POST and the form of PUT, has no duty schedules: a form key for them matches no
-        // property and is skipped, so no bad schedule gets in that way
+        // an OnmsGroup, the body of POST and the form of PUT, has no duty schedules: a form key for them is refused,
+        // so no bad schedule gets in that way
         createGroup("dbduty");
-        sendPut("/groups/dbduty", "dutySchedule=MoTuWeThFrSaSu8000-1700", 304);
-        sendPut("/groups/dbduty", "dutySchedules=garbage", 304);
+        sendPut("/groups/dbduty", "dutySchedule=MoTuWeThFrSaSu8000-1700", 400);
+        sendPut("/groups/dbduty", "dutySchedules=garbage", 400);
         assertEquals(0, count("select count(*) from group_duty_schedules"));
     }
 
@@ -312,6 +312,73 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
         assertEquals(0, count("select count(*) from groups where name = 'other'"));
         assertEquals(1, count("select count(*) from groups where name = 'dbrename'"));
         assertEquals(0, count("select count(*) from groups where comments = 'changed'"));
+
+        // the bean wrapper takes Name for name too
+        sendPut("/groups/dbrename", "Name=other", 400);
+        sendPut("/groups/dbrename", "NAME=other", 400);
+        assertEquals(version, version("dbrename"));
+        assertEquals(0, count("select count(*) from groups where name = 'other'"));
+    }
+
+    @Test
+    public void testFormKeysOutsideTheAllowlistAre400() throws Exception {
+        createGroup("dbkeys");
+        final int version = version("dbkeys");
+        assertEquals("The form field foo is not supported. Supported fields: comments, users.",
+                sendData(PUT, "application/x-www-form-urlencoded", "/groups/dbkeys", "comments=changed&foo=bar", 400).getContentAsString());
+        sendPut("/groups/dbkeys", "Comments=changed", 400);
+        sendPut("/groups/dbkeys", "defaultMap=Map2", 400);
+        assertEquals(version, version("dbkeys"));
+        assertEquals(0, count("select count(*) from groups where comments = 'changed'"));
+    }
+
+    @Test
+    public void testAdminGroupCannotBeDeleted() throws Exception {
+        inTx(() -> {
+            m_userGroupDao.save(new UserGroup("Admin"));
+            return null;
+        });
+        // the group manager's cache has not seen the group
+        ((DbGroupManager) m_groupManager).reload();
+        assertEquals("The system group Admin cannot be deleted.", sendData(DELETE, "application/xml", "/groups/Admin", "", 400).getContentAsString());
+        assertEquals(1, count("select count(*) from groups where name = 'Admin'"));
+    }
+
+    @Test
+    public void testTooLongGroupNameIs400() throws Exception {
+        final String name = "g".repeat(257);
+        sendPost("/groups", "<group><name>" + name + "</name></group>", 400);
+        assertEquals(0, count("select count(*) from groups"));
+    }
+
+    @Test
+    public void testCommentsAreChecked() throws Exception {
+        final String markup = "The comments must not contain any HTML markup.";
+        assertEquals(markup, sendData(POST, "application/xml", "/groups",
+                "<group><name>dbcomments</name><comments>&lt;b&gt;x&lt;/b&gt;</comments></group>", 400).getContentAsString());
+        sendPost("/groups", "<group><name>dbcomments</name><comments>" + "x".repeat(4097) + "</comments></group>", 400);
+        assertEquals(0, count("select count(*) from groups where name = 'dbcomments'"));
+
+        createGroup("dbcomments");
+        assertEquals(markup, sendData(PUT, "application/x-www-form-urlencoded", "/groups/dbcomments", "comments=%3Cb%3Ex%3C%2Fb%3E", 400).getContentAsString());
+
+        // stored comments that today's rules refuse are grandfathered
+        createUser("jroe");
+        new JdbcTemplate(m_dataSource).update("update groups set comments = '<b>old</b>' where name = 'dbcomments'");
+        ((DbGroupManager) m_groupManager).reload();
+        sendPut("/groups/dbcomments", "users=jroe", 204);
+        assertEquals(List.of("jroe"), members("dbcomments"));
+        assertEquals("<b>old</b>", new JdbcTemplate(m_dataSource).queryForObject("select comments from groups where name = 'dbcomments'", String.class));
+    }
+
+    @Test
+    public void testBlankAndDuplicateMembersAre400() throws Exception {
+        createUser("jroe");
+        assertEquals("Duplicate group member: jroe", sendData(POST, "application/xml", "/groups",
+                "<group><name>dbdup</name><user>jroe</user><user>jroe</user></group>", 400).getContentAsString());
+        assertEquals("Group members must not be blank.", sendData(POST, "application/xml", "/groups",
+                "<group><name>dbdup</name><user> </user></group>", 400).getContentAsString());
+        assertEquals(0, count("select count(*) from groups where name = 'dbdup'"));
     }
 
     @Test
@@ -320,7 +387,7 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
         sendPost("/groups", "<group><name>dbindexed</name><user>jroe</user></group>", 201, "/groups/dbindexed");
         final int version = version("dbindexed");
 
-        assertEquals("The form field users[0] is not supported: indexed and nested fields cannot be set.",
+        assertEquals("The form field users[0] is not supported. Supported fields: comments, users.",
                 sendData(PUT, "application/x-www-form-urlencoded", "/groups/dbindexed", "users%5B0%5D=admin", 400).getContentAsString());
         sendPut("/groups/dbindexed", "comments=changed&comments.bytes=x", 400);
         assertEquals(version, version("dbindexed"));
@@ -353,7 +420,7 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
             return null;
         });
 
-        assertEquals("Group \"dbonCall\" is the membership group of the on-call role \"bossrole\". Change the membership group first.",
+        assertEquals("Group dbonCall is the membership group of on-call role(s) bossrole; delete or reassign those roles first.",
                 sendData(DELETE, "application/xml", "/groups/dbonCall", "", 409).getContentAsString());
         assertEquals(1, count("select count(*) from groups where name = 'dbonCall'"));
     }
@@ -473,7 +540,7 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
         final OnmsUser user = new OnmsUser();
         user.setUsername(name);
         user.setPassword("blah");
-        sendPost("/users", JaxbUtils.marshal(user), 201, "/users/" + name);
+        sendPost("/users?hashPassword=true", JaxbUtils.marshal(user), 201, null);
     }
 
     private int count(final String sql) {

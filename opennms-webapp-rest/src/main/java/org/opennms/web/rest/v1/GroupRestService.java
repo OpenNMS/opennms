@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -35,13 +37,14 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
+
+import org.apache.commons.lang3.StringUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -52,28 +55,23 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.opennms.netmgt.config.UserDataChangedException;
 import org.opennms.netmgt.config.UserManager;
-import org.opennms.netmgt.dao.api.OnCallRoleDao;
+import org.opennms.netmgt.config.UserMgmtJaxbMapper;
+import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsGroup;
 import org.opennms.netmgt.model.OnmsGroupList;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
-import org.opennms.netmgt.model.usermgmt.OnCallRole;
 import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.v1.model.GroupUpdateForm;
-import org.opennms.web.rest.v2.GroupsRestService;
 import org.opennms.web.rest.v2.UserMgmtRestSupport;
 import org.opennms.web.rest.v2.UserMgmtValidation;
-import org.opennms.web.rest.v2.UserMgmtValidationException;
 import org.opennms.web.svclayer.api.GroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,11 +89,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Tag(name = "Groups", description = """
         **Deprecated** in Horizon 37 and removed in Horizon 38. Use `/api/v2/groups`.
 
-        Groups are stored in the database. A new group name is validated and must not be reserved, and every
-        member must be an existing user. Both answer 400, as does renaming a group
-        (use `PUT /api/v2/groups/{name}/rename`). A save through this API keeps the duty schedules and the
-        default map of the stored group. Deleting a group that is the membership group of an on-call role or
-        a target of a notification destination path answers 409, as does a stale save.
+        Groups are stored in the database. The checks are those of the v2 API. A new group name is validated,
+        must not be reserved and must fit its column. Comments must not contain markup (stored comments are
+        accepted unchanged), and every member must be an existing user, named once. All of these answer 400, as
+        does renaming a group (use `PUT /api/v2/groups/{name}/rename`). A save through this API keeps the duty
+        schedules and the default map of the stored group. Deleting the `Admin` group answers 400. Deleting a group
+        that is the membership group of an on-call role or a target of a notification destination path answers
+        409, as does a stale save.
         The write operations need `ROLE_ADMIN`, like the v2 API (403 without it).
         Password hashes of other users are shown as `xxxxxxxx` to callers without `ROLE_ADMIN`.""")
 @Transactional
@@ -111,9 +111,6 @@ public class GroupRestService extends OnmsRestService {
 
     @Autowired
     private UserManager m_userManager;
-
-    @Autowired
-    private OnCallRoleDao m_onCallRoleDao;
 
     @Autowired
     private UserMgmtRestSupport m_support;
@@ -209,9 +206,10 @@ public class GroupRestService extends OnmsRestService {
                     Create a group from an XML `<group>` document. Only `application/xml` is consumed; a JSON body
                     is rejected with 415.
                     Posting a name that already exists overwrites that group rather than failing. A new group's name
-                    must not be reserved or contain markup, whitespace or the characters `: / \\ % ? #`, and every
-                    member must be an existing user. Both answer 400. The stored group's duty schedules and default
-                    map are kept when it is overwritten.
+                    must not be reserved, be too long, or contain markup, whitespace or the characters
+                    `: / \\ % ? #`. Comments must not contain markup, and every member must be an existing user, named
+                    once and not blank. All of these answer 400. The stored group's duty schedules and default map are
+                    kept when it is overwritten.
                     The response carries no entity; the new group's URI is in the `Location` header.""",
             operationId = "addGroupV1"
     )
@@ -226,7 +224,7 @@ public class GroupRestService extends OnmsRestService {
                     </group>""")))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Group stored. `Location` points at the new group."),
-            @ApiResponse(responseCode = "400", description = "The name is reserved or invalid, or a member is not a user.",
+            @ApiResponse(responseCode = "400", description = "The request is invalid (see the operation description).",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "jroe is not a user."))),
@@ -253,7 +251,7 @@ public class GroupRestService extends OnmsRestService {
                 checkNewGroup(group);
                 m_groupService.saveGroup(group);
             } catch (final Throwable t) {
-                throw translate(t);
+                throw V1UserMgmtForms.translate(t);
             }
             return Response.created(getRedirectUri(uriInfo, group.getName())).build();
         } finally {
@@ -268,11 +266,11 @@ public class GroupRestService extends OnmsRestService {
             deprecated = true,
             summary = "Update a group",
             description = """
-                    Apply form-encoded fields to an existing group. Keys are matched against the writable
-                    `OnmsGroup` bean properties; a key that matches none is skipped, and a request that wrote
-                    nothing comes back as 304. Sending `name` answers 400, because renaming is not supported
-                    here; use `PUT /api/v2/groups/{name}/rename`. A key with an index or a nested path, such as
-                    `users[0]`, answers 400. Members have to be existing users (400).
+                    Apply form-encoded fields to an existing group. The accepted keys are `comments` and `users`,
+                    spelled exactly; any other key answers 400, before anything is applied. Sending `name` answers
+                    400, because renaming is not supported here; use `PUT /api/v2/groups/{name}/rename`. An empty
+                    form comes back as 304. Comments must not contain markup (stored comments are accepted
+                    unchanged), and members have to be existing users (400).
                     The stored duty schedules and default map are kept. A stale save answers 409.
                     `users` is a list property that the conversion fills with a single element, so a
                     comma-separated value becomes one element containing the commas.""",
@@ -284,8 +282,8 @@ public class GroupRestService extends OnmsRestService {
                     examples = @ExampleObject(value = "comments=Second-line+network+operations")))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The group was updated."),
-            @ApiResponse(responseCode = "304", description = "No supplied key matched a writable property, so nothing was written."),
-            @ApiResponse(responseCode = "400", description = "The form carries `name` (renaming is not supported here) or an indexed or nested key, or a member is not a user.",
+            @ApiResponse(responseCode = "304", description = "The form carried no field, so nothing was written."),
+            @ApiResponse(responseCode = "400", description = "The form carries a key other than `comments` and `users`, or a field is invalid.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Renaming is not supported by the deprecated v1 API; use PUT /api/v2/groups/{name}/rename."))),
@@ -309,29 +307,16 @@ public class GroupRestService extends OnmsRestService {
         writeLock();
         
         try {
-            OnmsGroup group = getOnmsGroup(groupName);
+            final OnmsGroup group = getOnmsGroup(groupName);
             LOG.debug("updateGroup: updating group {}", group);
-            if (params.containsKey("name")) {
-                throw getException(Status.BAD_REQUEST, "Renaming is not supported by the deprecated v1 API; use PUT /api/v2/groups/{name}/rename.");
-            }
-            UserRestService.checkFormKeys(params);
-            boolean modified = false;
-            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(group);
-            for(final String key : params.keySet()) {
-                if (wrapper.isWritableProperty(key)) {
-                    final String stringValue = params.getFirst(key);
-                    final Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
-                    wrapper.setPropertyValue(key, value);
-                    modified = true;
-                }
-            }
-            if (modified) {
+            V1UserMgmtForms.checkFormKeys(params, V1UserMgmtForms.GROUP_FORM_KEYS, V1UserMgmtForms.RENAME_GROUP);
+            if (V1UserMgmtForms.applyForm(group, params, Set.of())) {
                 LOG.debug("updateGroup: group {} updated", group);
                 try {
-                    checkMembers(group);
+                    checkFields(group);
                     m_groupService.saveGroup(group);
                 } catch (final Throwable t) {
-                    throw translate(t);
+                    throw V1UserMgmtForms.translate(t);
                 }
                 return Response.noContent().build();
             }
@@ -347,12 +332,16 @@ public class GroupRestService extends OnmsRestService {
             deprecated = true,
             summary = "Delete a group",
             description = "Delete a group. Its category authorizations go with it; the member users are left alone. "
-                    + "Deleting the membership group of an on-call role or a target of a notification destination path "
-                    + "answers 409.",
+                    + "Deleting the `Admin` group answers 400. Deleting the membership group of an on-call role or a "
+                    + "target of a notification destination path answers 409.",
             operationId = "deleteGroupV1"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "The group was deleted."),
+            @ApiResponse(responseCode = "400", description = "The group is the `Admin` group.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "The system group Admin cannot be deleted."))),
             @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -364,7 +353,7 @@ public class GroupRestService extends OnmsRestService {
             @ApiResponse(responseCode = "409", description = "The group is the membership group of an on-call role or a target of a destination path, or the group data was changed by another process since it was loaded.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Group \"NOC\" is the membership group of the on-call role \"Weekend\". Change the membership group first.")))
+                            examples = @ExampleObject(value = "Group NOC is the membership group of on-call role(s) Weekend; delete or reassign those roles first.")))
     })
     public Response deleteGroup(
             @Context final SecurityContext securityContext,
@@ -378,10 +367,10 @@ public class GroupRestService extends OnmsRestService {
             try {
                 // the checks run before the manager call and without m_support.lockForWrite(): the manager saves in
                 // its own REQUIRES_NEW transaction and takes the version locks itself, so holding them here would deadlock
-                checkDeletable(groupName);
+                m_support.checkGroupDeletable(groupName);
                 m_groupService.deleteGroup(groupName);
             } catch (final Throwable t) {
-                throw translate(t);
+                throw V1UserMgmtForms.translate(t);
             }
             return Response.noContent().build();
         } finally {
@@ -432,7 +421,7 @@ public class GroupRestService extends OnmsRestService {
             try {
                 success = m_groupService.addUser(groupName, userName);
             } catch (final Throwable t) {
-                throw translate(t);
+                throw V1UserMgmtForms.translate(t);
             }
             if (success) {
                 return Response.noContent().build();
@@ -484,7 +473,7 @@ public class GroupRestService extends OnmsRestService {
                 try {
                     m_groupService.saveGroup(group);
                 } catch (final Throwable t) {
-                    throw translate(t);
+                    throw V1UserMgmtForms.translate(t);
                 }
                 return Response.noContent().build();
             } else {
@@ -541,7 +530,7 @@ public class GroupRestService extends OnmsRestService {
         getOnmsGroup(groupName); // check if group exists.
         final OnmsUserList users = m_groupService.getUsersOfGroup(groupName);
         for (final OnmsUser user : users) {
-            UserRestService.filterUserPassword(securityContext, user);
+            V1UserMgmtForms.filterUserPassword(securityContext, user);
         }
         return users;
     }
@@ -583,7 +572,7 @@ public class GroupRestService extends OnmsRestService {
             @PathParam("userName") final String userName) {
         getOnmsGroup(groupName); // check if group exists.
         OnmsUser user = m_groupService.getUserForGroup(groupName,  userName);
-        if (user != null) return UserRestService.filterUserPassword(securityContext, user);
+        if (user != null) return V1UserMgmtForms.filterUserPassword(securityContext, user);
         throw getException(Status.NOT_FOUND, "User with name '{}' does not exist in group '{}'", userName, groupName);
     }
 
@@ -630,7 +619,7 @@ public class GroupRestService extends OnmsRestService {
             try {
                 success = m_groupService.addCategory(groupName, categoryName);
             } catch (final Throwable t) {
-                throw translate(t);
+                throw V1UserMgmtForms.translate(t);
             }
             if (success) {
                 return Response.noContent().build();
@@ -681,7 +670,7 @@ public class GroupRestService extends OnmsRestService {
             try {
                 success = m_groupService.removeCategory(groupName, categoryName);
             } catch (final Throwable t) {
-                throw translate(t);
+                throw V1UserMgmtForms.translate(t);
             }
             if (success) {
                 return Response.noContent().build();
@@ -783,49 +772,40 @@ public class GroupRestService extends OnmsRestService {
             if (problem != null) {
                 throw m_support.badRequest(problem);
             }
-            m_support.checkNotLookAlike(name, GroupsRestService.PROTECTED_GROUPS, "group name");
+            m_support.checkNotLookAlike(name, UserMgmtRestSupport.PROTECTED_GROUPS, "group name");
+            UserMgmtValidation.checkLength(owner(name), "group name", name, UserMgmtJaxbMapper.GROUP_NAME_LENGTH);
         }
         // OnmsGroup carries no duty schedules, so there are none to validate here
-        checkMembers(group);
+        checkFields(group);
     }
 
-    /** Every member must be a user, as the database store requires: a member that is not is a 400, not a 500. */
-    private void checkMembers(final OnmsGroup group) throws IOException {
+    /**
+     * The v2 checks of the fields an OnmsGroup carries: comments (stored ones are grandfathered), and members, each
+     * an existing user, named once and not blank.
+     */
+    private void checkFields(final OnmsGroup group) throws IOException {
+        final Group stored = m_groupService.getGroup(group.getName());
+        UserMgmtValidation.checkComments(owner(group.getName()), group.getComments(),
+                stored == null ? null : stored.getComments().orElse(null));
         if (group.getUsers() == null) {
             return;
         }
+        final Set<String> seen = new HashSet<>();
         for (final String user : group.getUsers()) {
-            if (user == null || !m_userManager.hasUser(user)) {
+            if (StringUtils.isBlank(user)) {
+                throw m_support.badRequest("Group members must not be blank.");
+            }
+            if (!seen.add(user)) {
+                throw m_support.badRequest("Duplicate group member: " + user);
+            }
+            if (!m_userManager.hasUser(user)) {
                 throw m_support.badRequest(user + " is not a user.");
             }
         }
     }
 
-    private void checkDeletable(final String name) throws Exception {
-        // the manager refuses this too, with this message, but as an IllegalStateException that is not told apart from a failure
-        final List<OnCallRole> roles = m_onCallRoleDao.findByMembershipGroup(name);
-        if (!roles.isEmpty()) {
-            throw m_support.conflict("Group \"" + name + "\" is the membership group of the on-call role \""
-                    + roles.get(0).getName() + "\". Change the membership group first.");
-        }
-        m_support.checkNotDestinationPathTarget("Group " + name, name);
-    }
-
-    /** Answers what the checks and the manager refuse with 400 or 409; only a real failure is a 500. */
-    private static WebApplicationException translate(final Throwable t) {
-        if (t instanceof WebApplicationException) {
-            return (WebApplicationException) t;
-        }
-        if (t instanceof IllegalArgumentException || t instanceof UserMgmtValidationException) {
-            return getException(Status.BAD_REQUEST, t);
-        }
-        // the group DAO wraps what the manager throws, so the stale cache is found along the cause chain
-        for (Throwable cause = t; cause != null; cause = cause.getCause()) {
-            if (cause instanceof UserDataChangedException) {
-                return getException(Status.CONFLICT, cause);
-            }
-        }
-        return getException(Status.INTERNAL_SERVER_ERROR, t);
+    private static String owner(final String name) {
+        return "Group \"" + name + "\"";
     }
 
     protected OnmsGroup getOnmsGroup(final String groupName) {

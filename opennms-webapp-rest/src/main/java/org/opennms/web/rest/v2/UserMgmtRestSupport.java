@@ -48,9 +48,12 @@ import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.UserDataChangedException;
 import org.opennms.netmgt.config.UserMgmtManagers;
 import org.opennms.netmgt.config.destinationPaths.Path;
+import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
+import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
+import org.opennms.netmgt.model.usermgmt.OnCallRole;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
@@ -98,6 +101,12 @@ public class UserMgmtRestSupport {
     @Autowired
     private UserAccountDao m_userAccountDao;
 
+    @Autowired
+    private UserGroupDao m_userGroupDao;
+
+    @Autowired
+    private OnCallRoleDao m_onCallRoleDao;
+
     /** Translates Hibernate's exceptions, e.g. a unique violation to DataIntegrityViolationException. */
     private HibernateTemplate m_hibernateTemplate;
 
@@ -108,6 +117,9 @@ public class UserMgmtRestSupport {
 
     /** The users that the system relies on; they can be neither renamed nor deleted. */
     public static final Set<String> PROTECTED_USERS = Set.of("admin", "rtc");
+
+    /** The default group; the on-call role machinery references it. It can be neither renamed nor deleted. */
+    public static final Set<String> PROTECTED_GROUPS = Set.of("Admin");
 
     /** The destination paths that notifd sends to. */
     public static final Callable<Collection<Path>> NOTIFD_DESTINATION_PATHS = () -> {
@@ -138,6 +150,63 @@ public class UserMgmtRestSupport {
             throw conflict("User " + user.getUsername() + " is the only user with the " + Authentication.ROLE_ADMIN
                     + " role and cannot " + change + "; give the role to another user first.");
         }
+    }
+
+    /** Throws 400 for a user that the system relies on ({@link #PROTECTED_USERS}). */
+    public void checkUserNotProtected(final String userId) {
+        if (PROTECTED_USERS.contains(userId)) {
+            throw badRequest("The system user " + userId + " cannot be deleted.");
+        }
+    }
+
+    /**
+     * The checks of a user delete, shared by the v1 and v2 APIs: 400 for a protected user, 409 for the supervisor of
+     * an on-call role, the last holder of ROLE_ADMIN or the target of a destination path. A path target is no
+     * obstacle when a group or an on-call role has the same name: notifd resolves a target name as a group, then an
+     * on-call role, then a user, so one of those takes the paths. Must be called under the write lock.
+     *
+     * @param user the stored user, or null if there is none (then the last-administrator check is skipped)
+     */
+    public void checkUserDeletable(final String userId, final UserAccount user) throws Exception {
+        checkUserNotProtected(userId);
+        // the DAO strips memberships and schedules but refuses a supervisor; checking first lets the message name the roles
+        final List<String> supervisedRoles = m_onCallRoleDao.findBySupervisor(userId).stream()
+                .map(OnCallRole::getName)
+                .collect(Collectors.toList());
+        if (!supervisedRoles.isEmpty()) {
+            throw conflict("User " + userId + " is the supervisor of on-call role(s) " + String.join(", ", supervisedRoles)
+                    + "; assign a different supervisor first.");
+        }
+        if (user != null) {
+            checkNotLastAdministrator(user, "be deleted");
+        }
+        if (m_userGroupDao.findByName(userId) == null && m_onCallRoleDao.findByName(userId) == null) {
+            checkNotDestinationPathTarget("User " + userId, userId);
+        }
+    }
+
+    /** Throws 400 for a group that the system relies on ({@link #PROTECTED_GROUPS}). */
+    public void checkGroupNotProtected(final String name) {
+        if (PROTECTED_GROUPS.contains(name)) {
+            throw badRequest("The system group " + name + " cannot be deleted.");
+        }
+    }
+
+    /**
+     * The checks of a group delete, shared by the v1 and v2 APIs: 400 for a protected group, 409 for the membership
+     * group of an on-call role or the target of a destination path. Must be called under the write lock.
+     */
+    public void checkGroupDeletable(final String name) throws Exception {
+        checkGroupNotProtected(name);
+        final List<String> referencingRoles = m_onCallRoleDao.findByMembershipGroup(name).stream()
+                .map(OnCallRole::getName)
+                .sorted()
+                .collect(Collectors.toList());
+        if (!referencingRoles.isEmpty()) {
+            throw conflict("Group " + name + " is the membership group of on-call role(s) "
+                    + String.join(", ", referencingRoles) + "; delete or reassign those roles first.");
+        }
+        checkNotDestinationPathTarget("Group " + name, name);
     }
 
     public void assertAdmin(final SecurityContext securityContext, final String what) {

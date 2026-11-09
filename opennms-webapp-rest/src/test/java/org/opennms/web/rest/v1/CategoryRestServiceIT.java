@@ -28,6 +28,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletContext;
@@ -93,12 +94,40 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
         createCategory("AclTest");
         setUser("lowpriv", new String[]{ "ROLE_REST" });
         sendPut("/categories/AclTest", "description=legit&authorizedGroups=AttackerGroup", 204);
+        // other spellings of the property are protected too
+        sendPut("/categories/AclTest", "AuthorizedGroups=AttackerGroup", 304);
+        sendPut("/categories/AclTest", "authorized_groups=AttackerGroup", 304);
 
         final OnmsCategory reloaded = m_categoryDao.findByName("AclTest");
         assertNotNull(reloaded);
         assertFalse("authorizedGroups must not be mass-assignable via updateCategory",
                 reloaded.getAuthorizedGroups().contains("AttackerGroup"));
         assertEquals("legit", reloaded.getDescription());
+    }
+
+    /** A new category's group authorizations are the group ACL too: they need the admin role, and existing groups. */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testCreateWithAuthorizedGroupsNeedsTheAdminRole() throws Exception {
+        final OnmsCategory withGroups = new OnmsCategory("AclCreate");
+        withGroups.getAuthorizedGroups().add("Admin");
+
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        assertEquals("Group management requires the admin role.",
+                sendData(POST, MediaType.APPLICATION_XML, "/categories", JaxbUtils.marshal(withGroups), 403).getContentAsString());
+        assertEquals(null, m_categoryDao.findByName("AclCreate"));
+        // without group authorizations, ROLE_REST still creates categories
+        createCategory("PlainCreate");
+
+        setUser("admin", new String[]{ "ROLE_ADMIN" });
+        final OnmsCategory unknown = new OnmsCategory("AclUnknown");
+        unknown.getAuthorizedGroups().add("NoSuchGroup");
+        assertEquals("Unknown group: NoSuchGroup",
+                sendData(POST, MediaType.APPLICATION_XML, "/categories", JaxbUtils.marshal(unknown), 400).getContentAsString());
+        assertEquals(null, m_categoryDao.findByName("AclUnknown"));
+
+        createCategory(withGroups);
+        assertEquals(Set.of("Admin"), JaxbUtils.unmarshal(OnmsCategory.class, sendRequest(GET, "/categories/AclCreate", 200)).getAuthorizedGroups());
     }
 
     @Override

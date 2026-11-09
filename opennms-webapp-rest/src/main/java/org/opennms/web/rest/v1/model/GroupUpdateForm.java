@@ -27,9 +27,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 /** Describes the form body the group update handler reads out of a MultivaluedMap; it is not bound as a type. */
 @Schema(name = "V1GroupUpdateForm",
         description = """
-                Form-encoded body for updating a group. Field names are the `OnmsGroup` bean property names. Keys
-                that are not writable properties are skipped, and a request in which nothing was written comes back
-                as 304.""")
+                Form-encoded body for updating a group. Field names are the `OnmsGroup` bean property names. Only
+                the keys below are accepted, spelled exactly; any other key answers 400. A request without any of
+                them comes back as 304.""")
 public class GroupUpdateForm {
 
     @Schema(description = "Group comments.", example = "Second-line network operations")

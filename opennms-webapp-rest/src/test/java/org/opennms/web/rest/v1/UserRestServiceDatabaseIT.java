@@ -81,7 +81,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 @JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase(reuseDatabase = false)
 public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase {
-    private static final String PASSWORD = "21232F297A57A5A743894A0E4A801FC3";
+    private static final String PASSWORD = "s3cret";
+    /** A password is only accepted in plain text, with hashPassword. */
+    private static final String USERS = "/users?hashPassword=true";
 
     @Autowired
     private DataSource m_dataSource;
@@ -132,7 +134,7 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
     @Test
     public void testCreateRefusesReservedAndInvalidIds() throws Exception {
         for (final String id : new String[] { "item", "a/b", "&lt;b&gt;", "ADMIN" }) {
-            sendPost("/users", userXml(id, null, null), 400);
+            sendPost(USERS, userXml(id, null, null), 400);
             assertFalse(id + " must not exist", exists(id));
         }
         assertEquals(1, count("select count(*) from users"));
@@ -140,7 +142,7 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
 
     @Test
     public void testBadDutyScheduleIsRefused() throws Exception {
-        sendPost("/users", userXml("duty", "garbage", null), 400);
+        sendPost(USERS, userXml("duty", "garbage", null), 400);
         assertFalse(exists("duty"));
 
         createUser("duty");
@@ -168,24 +170,28 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
 
         sendPut("/users/blank", "fullName=x", 204);
         assertEquals("x", new JdbcTemplate(m_dataSource).queryForObject("select full_name from users where username = 'blank'", String.class));
-        // the v1 save goes through the users.xml model of the user manager, which drops a blank schedule (as before)
+        // the v1 save goes through the users.xml model of the user manager, which drops a blank schedule (as before);
+        // the duty evaluation skips a blank schedule anyway, so the user is treated as always on duty either way
         assertEquals(List.of(), new JdbcTemplate(m_dataSource).queryForList("select schedule from user_duty_schedules"
                 + " where user_id = (select id from users where username = 'blank')", String.class));
     }
 
     @Test
     public void testUnknownRoleIs400() throws Exception {
-        sendPost("/users", userXml("roley", null, "ROLE_BOGUS"), 400);
+        sendPost(USERS, userXml("roley", null, "ROLE_BOGUS"), 400);
         assertFalse(exists("roley"));
 
         createUser("roley");
         assertEquals("Unknown security role ROLE_BOGUS.", sendData(PUT, "application/x-www-form-urlencoded", "/users/roley", "roles=ROLE_BOGUS", 400).getContentAsString());
+        // the role endpoints look the role up in the same place
+        assertEquals("Unknown security role ROLE_BOGUS.", sendData(PUT, "application/xml", "/users/roley/roles/ROLE_BOGUS", "", 400).getContentAsString());
+        assertEquals("Unknown security role ROLE_BOGUS.", sendData(DELETE, "application/xml", "/users/roley/roles/ROLE_BOGUS", "", 400).getContentAsString());
     }
 
     @Test
     public void testAdminKeepsRoleAdmin() throws Exception {
         final String message = "The admin user must keep the ROLE_ADMIN role.";
-        assertEquals(message, sendData(POST, "application/xml", "/users", userXml("admin", null, "ROLE_USER"), 400).getContentAsString());
+        assertEquals(message, sendData(POST, "application/xml", USERS, userXml("admin", null, "ROLE_USER"), 400).getContentAsString());
         assertEquals(message, sendData(DELETE, "application/xml", "/users/admin/roles/ROLE_ADMIN", "", 400).getContentAsString());
         assertEquals(message, sendData(PUT, "application/x-www-form-urlencoded", "/users/admin", "roles=ROLE_USER", 400).getContentAsString());
         assertEquals(List.of("ROLE_ADMIN"), roles("admin"));
@@ -202,7 +208,7 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
         sendPut("/users/second", "roles=ROLE_USER", 204);
         assertEquals(List.of("ROLE_USER"), roles("second"));
         sendRequest(PUT, "/users/second/roles/ROLE_ADMIN", 204);
-        sendPost("/users", userXml("second", null, "ROLE_USER"), 201);
+        sendPost(USERS, userXml("second", null, "ROLE_USER"), 201);
         assertEquals(List.of("ROLE_USER"), roles("second"));
 
         // admin is protected by its own rule, so take the role from admin behind the API's back: second is the only holder
@@ -214,7 +220,7 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
         final String last = "User second is the only user with the ROLE_ADMIN role and cannot lose the ROLE_ADMIN role; give the role to another user first.";
         assertEquals(last, sendData(DELETE, "application/xml", "/users/second/roles/ROLE_ADMIN", "", 409).getContentAsString());
         assertEquals(last, sendData(PUT, "application/x-www-form-urlencoded", "/users/second", "roles=ROLE_USER", 409).getContentAsString());
-        assertEquals(last, sendData(POST, "application/xml", "/users", userXml("second", null, "ROLE_USER"), 409).getContentAsString());
+        assertEquals(last, sendData(POST, "application/xml", USERS, userXml("second", null, "ROLE_USER"), 409).getContentAsString());
         assertEquals("User second is the only user with the ROLE_ADMIN role and cannot be deleted; give the role to another user first.",
                 sendData(DELETE, "application/xml", "/users/second", "", 409).getContentAsString());
         assertTrue(roles("second").contains("ROLE_ADMIN"));
@@ -245,8 +251,8 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
             return null;
         });
 
-        final String message = sendData(DELETE, "application/xml", "/users/boss", "", 409).getContentAsString();
-        assertTrue(message, message.contains("is the supervisor of the on-call role \"bossrole\""));
+        assertEquals("User boss is the supervisor of on-call role(s) bossrole; assign a different supervisor first.",
+                sendData(DELETE, "application/xml", "/users/boss", "", 409).getContentAsString());
         assertTrue(exists("boss"));
     }
 
@@ -267,15 +273,123 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
     }
 
     @Test
-    public void testUnsaltedPasswordIs400WhenNotAllowed() throws Exception {
-        System.setProperty(UserManager.ALLOW_UNSALTED_PROPERTY, "false");
-        try {
-            sendPost("/users", userXml("plain", null, null), 400);
-            assertFalse(exists("plain"));
-            sendPost("/users?hashPassword=true", userXml("hashed", null, null), 201);
-        } finally {
-            System.clearProperty(UserManager.ALLOW_UNSALTED_PROPERTY);
-        }
+    public void testPostTakesOnlyAPlainPasswordWithHashPassword() throws Exception {
+        final String noHash = "Send the password in plain text with hashPassword=true; a password hash is not accepted.";
+        final String required = "A password is required.";
+        // a new user: the password is plain text, hashed and salted, and passwordSalt is ignored
+        assertEquals(noHash, sendData(POST, "application/xml", "/users", userXml("plain", null, null), 400).getContentAsString());
+        assertEquals(required, sendData(POST, "application/xml", USERS, "<user><user-id>plain</user-id></user>", 400).getContentAsString());
+        assertEquals(required, sendData(POST, "application/xml", USERS,
+                "<user><user-id>plain</user-id><password> </password></user>", 400).getContentAsString());
+        assertFalse(exists("plain"));
+        sendPost(USERS, "<user><user-id>plain</user-id><password>" + PASSWORD + "</password><passwordSalt>false</passwordSalt></user>",
+                201, null);
+        assertTrue(m_userManager.comparePasswords("plain", PASSWORD));
+        assertTrue(salted("plain"));
+        final String hash = passwordHash("plain");
+
+        // an overwrite may send the stored password back unchanged, as GET returns it, without hashPassword
+        final String read = sendRequest(GET, "/users/plain", 200);
+        assertTrue(read, read.contains("<password>" + hash + "</password>"));
+        sendPost("/users", read.replace("<user-id>plain</user-id>", "<user-id>plain</user-id><full-name>Round Trip</full-name>"), 201, "/users/plain");
+        assertEquals("Round Trip", new JdbcTemplate(m_dataSource).queryForObject("select full_name from users where username = 'plain'", String.class));
+        assertEquals(hash, passwordHash("plain"));
+        assertTrue(salted("plain"));
+
+        // any other password needs hashPassword, and a missing one is refused
+        assertEquals(noHash, sendData(POST, "application/xml", "/users", userXml("plain", null, null), 400).getContentAsString());
+        assertEquals(noHash, sendData(POST, "application/xml", "/users", read.replace("<passwordSalt>true</passwordSalt>",
+                "<passwordSalt>false</passwordSalt>"), 400).getContentAsString());
+        assertEquals(required, sendData(POST, "application/xml", USERS, "<user><user-id>plain</user-id></user>", 400).getContentAsString());
+        assertEquals(hash, passwordHash("plain"));
+
+        sendPost(USERS, userXml("plain", null, null).replace(PASSWORD, "other"), 201, null);
+        assertTrue(m_userManager.comparePasswords("plain", "other"));
+        assertTrue(salted("plain"));
+    }
+
+    @Test
+    public void testFormPutTakesOnlyAPlainPasswordWithHashPassword() throws Exception {
+        createUser("formpw");
+        final String hash = passwordHash("formpw");
+        assertEquals("Send the password in plain text with hashPassword=true; a password hash is not accepted.",
+                sendData(PUT, "application/x-www-form-urlencoded", "/users/formpw", "password=" + hash, 400).getContentAsString());
+        assertEquals("A password is required.",
+                sendData(PUT, "application/x-www-form-urlencoded", "/users/formpw", "password=&hashPassword=true", 400).getContentAsString());
+        assertEquals(hash, passwordHash("formpw"));
+
+        sendPut("/users/formpw", "password=n3w&hashPassword=true", 204);
+        assertTrue(m_userManager.comparePasswords("formpw", "n3w"));
+        assertTrue(salted("formpw"));
+        // without a password, hashPassword changes nothing
+        final String newHash = passwordHash("formpw");
+        sendPut("/users/formpw", "hashPassword=true", 304);
+        sendPut("/users/formpw", "email=formpw@example.org&hashPassword=true", 204);
+        assertEquals(newHash, passwordHash("formpw"));
+    }
+
+    @Test
+    public void testFormKeysOutsideTheAllowlistAre400() throws Exception {
+        createUser("keys");
+        final String hash = passwordHash("keys");
+        final String supported = "The form field %s is not supported. Supported fields: comments, dutySchedule, email, fullName, hashPassword, password, roles.";
+        final String rename = "Renaming is not supported by the deprecated v1 API; use PUT /api/v2/users/{userId}/rename.";
+        // the bean wrapper takes these spellings too, past the checks of the plain fields
+        assertEquals(rename, sendData(PUT, "application/x-www-form-urlencoded", "/users/keys", "Username=keys2", 400).getContentAsString());
+        assertEquals(rename, sendData(PUT, "application/x-www-form-urlencoded", "/users/keys", "Name=keys2", 400).getContentAsString());
+        assertEquals(String.format(supported, "Password"),
+                sendData(PUT, "application/x-www-form-urlencoded", "/users/keys", "Password=x&hashPassword=true", 400).getContentAsString());
+        assertEquals(String.format(supported, "passwordSalted"),
+                sendData(PUT, "application/x-www-form-urlencoded", "/users/keys", "passwordSalted=false", 400).getContentAsString());
+        // every key is checked before any is applied
+        assertEquals(String.format(supported, "foo"),
+                sendData(PUT, "application/x-www-form-urlencoded", "/users/keys", "fullName=changed&foo=bar", 400).getContentAsString());
+        assertEquals(String.format(supported, "roles[0]"),
+                sendData(PUT, "application/x-www-form-urlencoded", "/users/keys", "roles%5B0%5D=ROLE_ADMIN", 400).getContentAsString());
+
+        assertFalse(exists("keys2"));
+        assertEquals(2, count("select count(*) from users"));
+        assertEquals("keys Full Name", new JdbcTemplate(m_dataSource).queryForObject("select full_name from users where username = 'keys'", String.class));
+        assertEquals(hash, passwordHash("keys"));
+        assertTrue(salted("keys"));
+        assertEquals(List.of(), roles("keys"));
+    }
+
+    @Test
+    public void testCommentsAndLengthsAreChecked() throws Exception {
+        final String markup = "The comments must not contain any HTML markup.";
+        assertEquals(markup, sendData(POST, "application/xml", USERS, userXml("fields", null, null)
+                .replace("</user>", "<user-comments>&lt;b&gt;x&lt;/b&gt;</user-comments></user>"), 400).getContentAsString());
+        sendPost(USERS, userXml("fields", null, null).replace("<full-name>fields Full Name</full-name>",
+                "<full-name>" + "x".repeat(257) + "</full-name>"), 400);
+        assertFalse(exists("fields"));
+
+        createUser("fields");
+        assertEquals(markup, sendData(PUT, "application/x-www-form-urlencoded", "/users/fields", "comments=%3Cb%3Ex%3C%2Fb%3E", 400).getContentAsString());
+        sendPut("/users/fields", "email=" + "x".repeat(300) + "%40example.org", 400);
+        sendPut("/users/fields", "comments=" + "x".repeat(4097), 400);
+
+        // stored comments that today's rules refuse are grandfathered
+        new JdbcTemplate(m_dataSource).update("update users set comments = '<b>old</b>' where username = 'fields'");
+        m_userManager.reload();
+        sendPut("/users/fields", "fullName=Still+Editable", 204);
+        assertEquals("<b>old</b>", new JdbcTemplate(m_dataSource).queryForObject("select comments from users where username = 'fields'", String.class));
+    }
+
+    @Test
+    public void testAPathTargetNamedLikeAGroupIsNoObstacle() throws Exception {
+        // notifd resolves the target noc as the group noc, so the user noc can go, as in v2
+        createUser("noc");
+        inTx(() -> {
+            m_userGroupDao.save(new UserGroup("noc"));
+            return null;
+        });
+        final Path path = new Path("night");
+        path.addTarget(new Target("noc", "javaEmail"));
+        UserMgmtRestSupport.setDestinationPaths(() -> (Collection<Path>) List.of(path));
+
+        sendRequest(DELETE, "/users/noc", 204);
+        assertFalse(exists("noc"));
     }
 
     @Test
@@ -283,6 +397,8 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
         createUser("before");
         assertEquals("Renaming is not supported by the deprecated v1 API; use PUT /api/v2/users/{userId}/rename.",
                 sendData(PUT, "application/x-www-form-urlencoded", "/users/before", "username=after", 400).getContentAsString());
+        sendPut("/users/before", "Username=after", 400);
+        sendPut("/users/before", "name=after", 400);
         assertTrue(exists("before"));
         assertFalse(exists("after"));
     }
@@ -290,11 +406,11 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
     @Test
     public void testIndexedAndNestedFormKeysAre400() throws Exception {
         // the bean wrapper would set roles[0] and dutySchedule[0], past the checks for the roles and duty schedules
-        assertEquals("The form field roles[0] is not supported: indexed and nested fields cannot be set.",
+        assertEquals("The form field roles[0] is not supported. Supported fields: comments, dutySchedule, email, fullName, hashPassword, password, roles.",
                 sendData(PUT, "application/x-www-form-urlencoded", "/users/admin", "roles%5B0%5D=ROLE_USER", 400).getContentAsString());
         assertEquals(List.of("ROLE_ADMIN"), roles("admin"));
 
-        sendPost("/users", userXml("indexed", "MoTuWeThFr800-1700", null), 201, "/users/indexed");
+        sendPost(USERS, userXml("indexed", "MoTuWeThFr800-1700", null), 201, null);
         sendPut("/users/indexed", "dutySchedule%5B0%5D=garbage", 400);
         sendPut("/users/indexed", "fullName=x&password.bytes=y", 400);
         assertEquals(List.of("MoTuWeThFr800-1700"), new JdbcTemplate(m_dataSource).queryForList("select schedule from user_duty_schedules"
@@ -304,7 +420,7 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
 
     @Test
     public void testUserWithoutIdIs400() throws Exception {
-        assertEquals("user-id is required.", sendData(POST, "application/xml", "/users",
+        assertEquals("user-id is required.", sendData(POST, "application/xml", USERS,
                 "<user><full-name>Nobody</full-name><password>" + PASSWORD + "</password></user>", 400).getContentAsString());
         assertEquals(1, count("select count(*) from users"));
     }
@@ -327,8 +443,8 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
 
         setUser("rest", new String[] { "ROLE_REST" });
         try {
-            assertEquals(message, sendData(POST, "application/xml", "/users", userXml("intruder", null, "ROLE_ADMIN"), 403).getContentAsString());
-            assertEquals(message, sendData(POST, "application/xml", "/users", userXml("victim", null, "ROLE_ADMIN"), 403).getContentAsString());
+            assertEquals(message, sendData(POST, "application/xml", USERS, userXml("intruder", null, "ROLE_ADMIN"), 403).getContentAsString());
+            assertEquals(message, sendData(POST, "application/xml", USERS, userXml("victim", null, "ROLE_ADMIN"), 403).getContentAsString());
             assertEquals(message, sendData(PUT, "application/x-www-form-urlencoded", "/users/victim", "fullName=changed", 403).getContentAsString());
             assertEquals(message, sendData(PUT, "application/xml", "/users/victim/roles/ROLE_ADMIN", "", 403).getContentAsString());
             assertEquals(message, sendData(DELETE, "application/xml", "/users/admin/roles/ROLE_ADMIN", "", 403).getContentAsString());
@@ -354,7 +470,7 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
 
     @Test
     public void testCrudStillWorks() throws Exception {
-        sendPost("/users", userXml("crud", "MoTuWeThFr800-1700", "ROLE_USER"), 201, "/users/crud");
+        sendPost(USERS, userXml("crud", "MoTuWeThFr800-1700", "ROLE_USER"), 201, null);
         assertEquals("crud Full Name", new JdbcTemplate(m_dataSource).queryForObject("select full_name from users where username = 'crud'", String.class));
         assertTrue(sendRequest(GET, "/users/crud", 200).contains("<user-id>crud</user-id>"));
         assertEquals(List.of("ROLE_USER"), roles("crud"));
@@ -377,7 +493,7 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
     }
 
     private void createUser(final String name) throws Exception {
-        sendPost("/users", userXml(name, null, null), 201, "/users/" + name);
+        sendPost(USERS, userXml(name, null, null), 201, null);
     }
 
     private static String userXml(final String id, final String dutySchedule, final String role) {
@@ -386,6 +502,14 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
                 + (dutySchedule == null ? "" : "<duty-schedule>" + dutySchedule + "</duty-schedule>")
                 + (role == null ? "" : "<role>" + role + "</role>")
                 + "</user>";
+    }
+
+    private String passwordHash(final String id) {
+        return new JdbcTemplate(m_dataSource).queryForObject("select password_hash from users where username = ?", String.class, id);
+    }
+
+    private boolean salted(final String id) {
+        return new JdbcTemplate(m_dataSource).queryForObject("select password_salted from users where username = ?", Boolean.class, id);
     }
 
     private boolean exists(final String id) {

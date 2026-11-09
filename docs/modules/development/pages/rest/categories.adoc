@@ -35,6 +35,8 @@
 
 | /categories
 | Adds a new category.
+A category with `authorizedGroups` requires `ROLE_ADMIN`, like the other group writes, and answers `403` without it.
+Every group in it must exist, otherwise the response is `400`.
 |===
 
 == PUTs (modifying data)
@@ -47,6 +49,7 @@
 
 | /categories/\{category}
 | Update the specified category.
+`authorizedGroups` is ignored here; use `/categories/\{category}/groups/\{group}`.
 
 | /categories/\{category}/nodes/\{node}
 | Modify the category with the given node ID and name (similar to `/nodes/\{node}/categories/\{category}`).
