@@ -78,6 +78,7 @@ public abstract class UserManager implements UserConfig {
 	public static final String ALLOW_UNSALTED_PROPERTY = "org.opennms.users.allowUnsalted";
     /** How many user or group and schedule pairs the managers remember as warned about. */
     static final int MAX_WARNED_SCHEDULES = 1000;
+    /** Read once from {@value #ALLOW_UNSALTED_PROPERTY}. Not final only so that UserRestServiceDatabaseIT can change it. */
     private boolean m_allowUnsalted;
 
     private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };

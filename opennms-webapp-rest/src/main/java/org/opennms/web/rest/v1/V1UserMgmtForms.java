@@ -105,14 +105,20 @@ final class V1UserMgmtForms {
 
     /**
      * Answers what the checks and the managers refuse with 400 or 409, wherever it is in the cause chain (the group
-     * DAO wraps what the manager throws); only a real failure is a 500.
+     * DAO wraps what the manager throws); only a real failure is a 500. An {@link IllegalArgumentException} is a 400
+     * only when it is the exception itself: one deeper in the chain may come from a bug anywhere below, which must be
+     * a logged 500, not a 400 with an internal message. The checks run before the manager call, so the mapper's own
+     * refusals are not expected here.
      */
     static WebApplicationException translate(final Throwable t) {
+        if (t instanceof IllegalArgumentException) {
+            return error(Status.BAD_REQUEST, t);
+        }
         for (Throwable cause = t; cause != null; cause = cause.getCause()) {
             if (cause instanceof WebApplicationException) {
                 return (WebApplicationException) cause;
             }
-            if (cause instanceof UserMgmtValidationException || cause instanceof IllegalArgumentException) {
+            if (cause instanceof UserMgmtValidationException) {
                 return error(Status.BAD_REQUEST, cause);
             }
             if (cause instanceof UserDataChangedException) {

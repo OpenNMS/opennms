@@ -48,7 +48,13 @@ public class V1UserMgmtFormsTest {
         final Exception validation = new DataRetrievalFailureException("saving group", new UserMgmtValidationException("The group name is too long."));
         assertEquals(400, status(validation));
         assertEquals("The group name is too long.", entity(validation));
-        assertEquals(400, status(new RuntimeException(new IllegalStateException(new IllegalArgumentException("bad value")))));
+        assertEquals(400, status(new IllegalArgumentException("bad value")));
+    }
+
+    @Test
+    public void testAnIllegalArgumentExceptionDeeperInTheChainIs500() {
+        // it may come from a bug anywhere below the service, so it is not reported as the client's mistake
+        assertEquals(500, status(new RuntimeException(new IllegalStateException(new IllegalArgumentException("bad value")))));
     }
 
     @Test
