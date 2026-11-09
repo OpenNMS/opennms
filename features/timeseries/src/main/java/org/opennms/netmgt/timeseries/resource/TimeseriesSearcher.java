@@ -27,8 +27,10 @@ import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toSearchRegex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -52,6 +54,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.cache.CacheLoader;
+import com.google.common.collect.Sets;
 
 /**
  * Finds metrics by resource path.
@@ -65,6 +68,12 @@ import com.google.common.cache.CacheLoader;
  * Every cache entry is built completely by the cache loader and is immutable once
  * visible. Nothing is derived from an entry after it has been published, so a
  * concurrent reader can never observe a partially built or placeholder result.
+ *
+ * Entries expire a fixed time after they were written (see the
+ * {@code cache.timeseriesSearcherCache.expireAfterWrite} property), so resources that
+ * were added to storage become visible within that time even on a node that is read
+ * constantly. Metrics deleted through {@link #removeFromCache(ResourcePath, Collection)}
+ * disappear from the cached entry immediately.
  */
 public class TimeseriesSearcher {
 
@@ -88,19 +97,39 @@ public class TimeseriesSearcher {
      * The returned set is immutable.
      */
     public Set<Metric> search(ResourcePath path, int depth) throws StorageException {
+        return load(queryFor(path, depth)).get(toResourceId(path), depth + 1);
+    }
+
+    /**
+     * Hides metrics that were deleted from storage from the cached entry that
+     * {@link #search(ResourcePath, int)} would consult for {@code path}, without querying
+     * storage again. Does nothing if that entry is not cached. The entry is replaced as a
+     * whole, so a reload that completes concurrently may be overwritten by the previous
+     * content minus the deleted metrics; the next write expiry reconciles that.
+     */
+    public void removeFromCache(final ResourcePath path, final Collection<Metric> deletedMetrics) {
+        if (deletedMetrics.isEmpty()) {
+            return;
+        }
+        // depth 0: the entry delete() searched, and the node entry for everything at or below the node
+        final Query query = queryFor(path, 0);
+        final MetricIndex cached = indexByQuery.getIfCached(query);
+        if (cached != null) {
+            indexByQuery.put(query, cached.without(deletedMetrics));
+        }
+    }
+
+    private Query queryFor(final ResourcePath path, final int depth) {
         final int numPathElementsToNodeLevel = getNumPathElementsToNodeLevel(path);
-        final Query query;
         if (numPathElementsToNodeLevel <= 0) {
             // Above node level: ask storage for exactly what was requested. Only the
             // requested parent is ever looked up in the resulting index.
-            query = new Query(toSearchRegex(path, depth + 1), path.elements().length);
-        } else {
-            // At or below node level: fetch (or reuse) everything under the node. Only
-            // parents at or below the node are ever looked up in the resulting index.
-            final String nodeResourceId = String.join("/", Arrays.asList(path.elements()).subList(0, numPathElementsToNodeLevel));
-            query = new Query(nodeResourceId + "/.*$", numPathElementsToNodeLevel);
+            return new Query(toSearchRegex(path, depth + 1), path.elements().length);
         }
-        return load(query).get(toResourceId(path), depth + 1);
+        // At or below node level: fetch (or reuse) everything under the node. Only
+        // parents at or below the node are ever looked up in the resulting index.
+        final String nodeResourceId = String.join("/", Arrays.asList(path.elements()).subList(0, numPathElementsToNodeLevel));
+        return new Query(nodeResourceId + "/.*$", numPathElementsToNodeLevel);
     }
 
     private MetricIndex load(final Query query) throws StorageException {
@@ -162,7 +191,9 @@ public class TimeseriesSearcher {
 
     /**
      * The result of one storage query, grouped by (parent resource id, number of
-     * elements below it). Immutable.
+     * elements below it). Immutable. Metrics deleted since the query was made are
+     * kept in a separate set and excluded from every answer, which makes a delete
+     * cost nothing but a set union, independent of the size of the index.
      */
     static final class MetricIndex {
 
@@ -195,9 +226,11 @@ public class TimeseriesSearcher {
         }
 
         private final Map<Key, Set<Metric>> metricsByKey;
+        private final Set<Metric> deleted;
 
-        private MetricIndex(final Map<Key, Set<Metric>> metricsByKey) {
+        private MetricIndex(final Map<Key, Set<Metric>> metricsByKey, final Set<Metric> deleted) {
             this.metricsByKey = metricsByKey;
+            this.deleted = deleted;
         }
 
         /**
@@ -228,11 +261,23 @@ public class TimeseriesSearcher {
             }
             final Map<Key, Set<Metric>> immutable = new HashMap<>(index.size() * 2);
             index.forEach((key, list) -> immutable.put(key, Set.copyOf(list)));
-            return new MetricIndex(Collections.unmodifiableMap(immutable));
+            return new MetricIndex(Collections.unmodifiableMap(immutable), Collections.emptySet());
+        }
+
+        /** Returns an index that answers like this one but without the given metrics. */
+        MetricIndex without(final Collection<Metric> metrics) {
+            final Set<Metric> union = new HashSet<>(deleted);
+            union.addAll(metrics);
+            return new MetricIndex(metricsByKey, Collections.unmodifiableSet(union));
         }
 
         Set<Metric> get(final String parentResourceId, final int elementsBelow) {
-            return metricsByKey.getOrDefault(new Key(parentResourceId, elementsBelow), Collections.emptySet());
+            final Set<Metric> metrics = metricsByKey.getOrDefault(new Key(parentResourceId, elementsBelow), Collections.emptySet());
+            if (deleted.isEmpty() || metrics.isEmpty()) {
+                return metrics;
+            }
+            // an unmodifiable live view over two immutable sets
+            return Sets.difference(metrics, deleted);
         }
     }
 

@@ -117,13 +117,17 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
             return false;
         }
 
+        final Set<Metric> deleted = new HashSet<>();
         for (final Metric metric : results) {
                 try {
                     storageManager.get().delete(metric);
+                    deleted.add(metric);
                 } catch (StorageException e) {
                     LOG.error("Could not delete {}, will ignore problem and continue ", metric, e);
                 }
         }
+        // stop answering with the deleted metrics until the cache entry expires
+        searcher.removeFromCache(path, deleted);
 
         return true;
     }
@@ -234,6 +238,10 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         }
 
         return ResourcePath.get(els);
+    }
+
+    public void setStorageManager(TimeseriesStorageManager storageManager) {
+        this.storageManager = storageManager;
     }
 
     public void setSearcher(TimeseriesSearcher searcher) {

@@ -150,6 +150,67 @@ public class TimeseriesSearcherTest {
     }
 
     @Test
+    public void newResourcesShouldAppearDespiteConstantReads() throws Exception {
+        final CacheConfig config = new CacheConfigBuilder().withName("writeExpiry").build();
+        config.setExpireAfterRead(1L);
+        config.setExpireAfterWrite(2L);
+        searcher = new TimeseriesSearcher(storageManager, config);
+
+        Metric existing = createAndAddMetric("snmp/2/eth0/mib2-stats", "ifInOctets");
+        final ResourcePath existingPath = ResourcePath.fromString("snmp/2/eth0");
+        final ResourcePath newPath = ResourcePath.fromString("snmp/2/eth1");
+
+        // read one resource at an interval well below the read expiry, for longer than the read
+        // expiry but shorter than the write expiry: the reads keep the node entry alive
+        final long until = System.currentTimeMillis() + 1500L;
+        while (System.currentTimeMillis() < until) {
+            assertEquals(Collections.singleton(existing), searcher.search(existingPath, 0));
+            Thread.sleep(100L);
+        }
+        verify(storage, times(1)).findMetrics(any());
+
+        // a resource collected after the entry was built ...
+        Metric added = createAndAddMetric("snmp/2/eth1/mib2-stats", "ifInOctets");
+
+        // ... shows up once the write expiry passes, while the constant reads go on
+        final long deadline = System.currentTimeMillis() + 4000L;
+        Set<Metric> found = searcher.search(newPath, 0);
+        while (found.isEmpty() && System.currentTimeMillis() < deadline) {
+            assertEquals(Collections.singleton(existing), searcher.search(existingPath, 0));
+            Thread.sleep(100L);
+            found = searcher.search(newPath, 0);
+        }
+        assertEquals(Collections.singleton(added), found);
+        verify(storage, times(2)).findMetrics(any());
+    }
+
+    @Test
+    public void removeFromCacheShouldHideDeletedMetricsWithoutReloading() throws StorageException {
+        Metric eth0In = createAndAddMetric("snmp/2/eth0/mib2-stats", "ifInOctets");
+        Metric eth0Out = createAndAddMetric("snmp/2/eth0/mib2-stats", "ifOutOctets");
+        Metric eth1In = createAndAddMetric("snmp/2/eth1/mib2-stats", "ifInOctets");
+        final ResourcePath eth0 = ResourcePath.fromString("snmp/2/eth0");
+
+        test("snmp/2/eth0", eth0In, eth0Out);
+        assertEquals(new HashSet<>(Arrays.asList(eth0In, eth0Out, eth1In)), searcher.search(ResourcePath.fromString("snmp/2"), 1));
+
+        // the DAO deleted eth0 from storage and tells the searcher about it
+        storage.delete(eth0In);
+        storage.delete(eth0Out);
+        searcher.removeFromCache(eth0, Arrays.asList(eth0In, eth0Out));
+
+        test("snmp/2/eth0");
+        assertEquals(Collections.singleton(eth1In), searcher.search(ResourcePath.fromString("snmp/2"), 1));
+        test("snmp/2/eth1", eth1In);
+        // all of the above was answered from the cached node entry
+        verify(storage, times(1)).findMetrics(any());
+
+        // removing something that is not cached is a no-op
+        searcher.removeFromCache(ResourcePath.fromString("snmp/3/eth0"), Collections.singletonList(eth1In));
+        verify(storage, times(1)).findMetrics(any());
+    }
+
+    @Test
     public void searchResultsShouldBeImmutable() throws StorageException {
         Metric metric = createAndAddMetric("snmp/2/node-stats", "loadavg1m");
         Set<Metric> found = searcher.search(ResourcePath.fromString("snmp/2"), 0);
