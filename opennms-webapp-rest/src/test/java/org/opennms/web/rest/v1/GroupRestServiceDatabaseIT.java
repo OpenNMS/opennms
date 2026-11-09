@@ -441,6 +441,18 @@ public class GroupRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase
 
         sendPost("/groups", "<group><name>dbkeep</name><comments>overwritten</comments></group>", 201, "/groups/dbkeep");
         assertKept("dbkeep", "overwritten");
+
+        // the member and category endpoints keep them too
+        createUser("jroe");
+        createCategory("Edge");
+        sendRequest(PUT, "/groups/dbkeep/users/jroe", 204);
+        assertKept("dbkeep", "overwritten");
+        assertEquals(List.of("jroe"), members("dbkeep"));
+        sendRequest(PUT, "/groups/dbkeep/categories/Edge", 204);
+        sendRequest(DELETE, "/groups/dbkeep/categories/Edge", 204);
+        sendRequest(DELETE, "/groups/dbkeep/users/jroe", 204);
+        assertKept("dbkeep", "overwritten");
+        assertEquals(List.of(), members("dbkeep"));
     }
 
     /**

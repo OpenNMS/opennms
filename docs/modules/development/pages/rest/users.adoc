@@ -18,6 +18,7 @@ They use the same checks as the v2 API:
 * A password is only accepted in plain text with `hashPassword=true`, and is always stored hashed and salted.
   A password hash is not accepted, and `passwordSalt` is ignored.
   A missing or blank password, or one without `hashPassword=true`, is refused.
+  While `org.opennms.users.allowUnsalted` is `false`, a user whose stored password is unsalted cannot be changed until it gets a new password.
   The response is `400`.
 * A form `PUT` accepts only the keys `fullName`, `comments`, `email`, `password`, `hashPassword`, `dutySchedule` and `roles`, spelled exactly.
   Any other key is refused before anything is changed.
@@ -69,7 +70,8 @@ POST requires XML using `application/xml` as its `Content-Type`.
 | Add a user, or overwrite the user with the same `user-id`.
 The `password` is the password in plain text: it is hashed and salted when it is saved.
 A password hash is not accepted. +
-An overwrite may send the stored `password` and `passwordSalt` back unchanged, as `GET` returns them, without `hashPassword=true`: the stored password is kept.
+An overwrite may send the stored `password` and `passwordSalt` back unchanged, as `GET` returns them, without `hashPassword=true`: the stored password is kept. +
+The stored hash sent back with `hashPassword=true` is refused (`400`): it would be hashed again.
 |===
 
 == PUTs (modifying data)

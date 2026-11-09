@@ -163,7 +163,8 @@ public class UserMgmtRestSupport {
      * The checks of a user delete, shared by the v1 and v2 APIs: 400 for a protected user, 409 for the supervisor of
      * an on-call role, the last holder of ROLE_ADMIN or the target of a destination path. A path target is no
      * obstacle when a group or an on-call role has the same name: notifd resolves a target name as a group, then an
-     * on-call role, then a user, so one of those takes the paths. Must be called under the write lock.
+     * on-call role, then a user, so one of those takes the paths. v2 calls it under the write lock; v1 cannot, as
+     * its managers take the locks themselves (see the v1 UserRestService), so there it is not race-free.
      *
      * @param user the stored user, or null if there is none (then the last-administrator check is skipped)
      */
@@ -194,7 +195,8 @@ public class UserMgmtRestSupport {
 
     /**
      * The checks of a group delete, shared by the v1 and v2 APIs: 400 for a protected group, 409 for the membership
-     * group of an on-call role or the target of a destination path. Must be called under the write lock.
+     * group of an on-call role or the target of a destination path. v2 calls it under the write lock; v1 cannot, as
+     * its managers take the locks themselves (see the v1 UserRestService), so there it is not race-free.
      */
     public void checkGroupDeletable(final String name) throws Exception {
         checkGroupNotProtected(name);

@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
@@ -53,7 +54,11 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.UserMgmtRestSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.AopTestUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -296,6 +301,11 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
         assertEquals(hash, passwordHash("plain"));
         assertTrue(salted("plain"));
 
+        // the stored hash with hashPassword would be hashed again
+        assertEquals("The password is the stored hash; send it without hashPassword to keep it.",
+                sendData(POST, "application/xml", USERS, read, 400).getContentAsString());
+        assertEquals(hash, passwordHash("plain"));
+
         // any other password needs hashPassword, and a missing one is refused
         assertEquals(noHash, sendData(POST, "application/xml", "/users", userXml("plain", null, null), 400).getContentAsString());
         assertEquals(noHash, sendData(POST, "application/xml", "/users", read.replace("<passwordSalt>true</passwordSalt>",
@@ -306,6 +316,72 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
         sendPost(USERS, userXml("plain", null, null).replace(PASSWORD, "other"), 201, null);
         assertTrue(m_userManager.comparePasswords("plain", "other"));
         assertTrue(salted("plain"));
+    }
+
+    /** The Location of a new user carries no query, such as the ?hashPassword=true every password needs. */
+    @Test
+    public void testTheLocationOfANewUserHasNoQuery() throws Exception {
+        // sendPost keeps the query in the request path; here it is a query string, as from a real client
+        final MockHttpServletRequest request = createRequest(POST, "/users");
+        request.setQueryString("hashPassword=true");
+        request.addParameter("hashPassword", "true");
+        request.setContentType("application/xml");
+        request.setContent(userXml("located", null, null).getBytes(StandardCharsets.UTF_8));
+        final MockHttpServletResponse response = createResponse();
+        dispatch(request, response);
+
+        assertEquals(201, response.getStatus());
+        final String location = String.valueOf(response.getHeader("Location"));
+        assertTrue(location, location.endsWith("/users/located"));
+        assertTrue(salted("located"));
+    }
+
+    /**
+     * A refused change must not stay in the user manager's cache: the next save of any user writes every cached user,
+     * so it would reach the database with that unrelated save.
+     */
+    @Test
+    public void testARefusedRoleChangeIsNotSavedWithTheNextUser() throws Exception {
+        createUser("bystander");
+        sendData(DELETE, "application/xml", "/users/admin/roles/ROLE_ADMIN", "", 400);
+        sendPut("/users/bystander", "fullName=First", 204);
+        assertEquals(List.of("ROLE_ADMIN"), roles("admin"));
+
+        // the last holder of ROLE_ADMIN (409)
+        createUser("second");
+        sendRequest(PUT, "/users/second/roles/ROLE_ADMIN", 204);
+        inTx(() -> {
+            m_userAccountDao.findByUsername("admin").getSecurityRoles().clear();
+            return null;
+        });
+        m_userManager.reload();
+        sendData(DELETE, "application/xml", "/users/second/roles/ROLE_ADMIN", "", 409);
+        sendPut("/users/bystander", "fullName=Second", 204);
+        assertEquals(List.of("ROLE_ADMIN"), roles("second"));
+    }
+
+    /** With org.opennms.users.allowUnsalted=false, a write of a user whose stored password is unsalted is a 400, not a 500. */
+    @Test
+    public void testAStoredUnsaltedPasswordWhenUnsaltedIsNotAllowed() throws Exception {
+        createUser("legacy");
+        new JdbcTemplate(m_dataSource).update("update users set password_salted = false where username = 'legacy'");
+        m_userManager.reload();
+        final String read = sendRequest(GET, "/users/legacy", 200);
+        final String message = "User legacy has an unsalted password, which org.opennms.users.allowUnsalted=false does not allow;"
+                + " set a new password with hashPassword=true.";
+        allowUnsalted(false);
+        try {
+            assertEquals(message, sendData(PUT, "application/x-www-form-urlencoded", "/users/legacy", "fullName=x", 400).getContentAsString());
+            assertEquals(message, sendData(PUT, "application/xml", "/users/legacy/roles/ROLE_USER", "", 400).getContentAsString());
+            assertEquals(message, sendData(POST, "application/xml", "/users", read, 400).getContentAsString());
+            assertEquals("legacy Full Name", new JdbcTemplate(m_dataSource).queryForObject("select full_name from users where username = 'legacy'", String.class));
+
+            // a new password fixes it
+            sendPut("/users/legacy", "password=n3w&hashPassword=true", 204);
+            assertTrue(salted("legacy"));
+        } finally {
+            allowUnsalted(true);
+        }
     }
 
     @Test
@@ -502,6 +578,11 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
                 + (dutySchedule == null ? "" : "<duty-schedule>" + dutySchedule + "</duty-schedule>")
                 + (role == null ? "" : "<role>" + role + "</role>")
                 + "</user>";
+    }
+
+    /** The manager reads the property when it is built; this changes what it read. */
+    private void allowUnsalted(final boolean allowed) {
+        ReflectionTestUtils.setField((Object) AopTestUtils.getUltimateTargetObject(m_userManager), "m_allowUnsalted", allowed);
     }
 
     private String passwordHash(final String id) {

@@ -270,7 +270,9 @@ public class UserRestService extends OnmsRestService {
                     salted. A password hash is not accepted, and `passwordSalt` is ignored. The one exception is an
                     overwrite that sends the stored `password` and `passwordSalt` back unchanged, as `GET` returns
                     them: it keeps the stored password. A missing password, or one without `hashPassword=true`,
-                    answers 400.
+                    answers 400, as does the stored hash sent back with `hashPassword=true`.
+                    While `org.opennms.users.allowUnsalted` is `false`, a user whose stored password is unsalted
+                    answers 400 until it gets a new password.
                     A new `user-id` is validated: it must not be reserved, look like `admin` or `rtc`, or contain
                     markup, whitespace, control characters or `: / \\ % ? #`. Comments must not contain markup, values
                     must fit their columns, duty schedules are validated (stored values are grandfathered) and every
@@ -325,6 +327,7 @@ public class UserRestService extends OnmsRestService {
                 // deadlock. So the last-administrator check is not race-free in this deprecated API (v2 is).
                 checkNewUser(user, hashPassword);
                 if (hashPassword) hashPassword(user);
+                checkSaltAcceptable(user);
                 m_userManager.save(user);
             } catch (final Throwable t) {
                 throw V1UserMgmtForms.translate(t);
@@ -404,6 +407,7 @@ public class UserRestService extends OnmsRestService {
                     // not under m_support.lockForWrite(), see addUser: the last-administrator check is not race-free here
                     checkUpdatedUser(user);
                     if (passwordModified) hashPassword(user);
+                    checkSaltAcceptable(user);
                     m_userManager.save(user);
                 } catch (final Throwable t) {
                     throw V1UserMgmtForms.translate(t);
@@ -470,6 +474,7 @@ public class UserRestService extends OnmsRestService {
             if (modified) {
                 LOG.debug("addRole: user {} updated", user.getUsername());
                 try {
+                    checkSaltAcceptable(user);
                     m_userManager.save(user);
                 } catch (final Throwable t) {
                     throw V1UserMgmtForms.translate(t);
@@ -591,6 +596,7 @@ public class UserRestService extends OnmsRestService {
                 try {
                     // not under m_support.lockForWrite(), see addUser: the last-administrator check is not race-free here
                     checkRolesKeepAdministrator(user.getUsername(), user.getRoles());
+                    checkSaltAcceptable(user);
                     m_userManager.save(user);
                 } catch (final Throwable t) {
                     throw V1UserMgmtForms.translate(t);
@@ -624,7 +630,11 @@ public class UserRestService extends OnmsRestService {
         }
         final boolean unchanged = stored != null && user.getPassword() != null
                 && user.getPassword().equals(stored.getPasswordHash()) && user.getPasswordSalted() == stored.isPasswordSalted();
-        if (!unchanged || hashPassword) {
+        if (unchanged && hashPassword) {
+            // it would be hashed again, and the user could no longer log in
+            throw m_support.badRequest("The password is the stored hash; send it without hashPassword to keep it.");
+        }
+        if (!unchanged) {
             checkPlainPassword(user.getPassword(), hashPassword);
         }
         checkFields(user, stored);
@@ -659,6 +669,17 @@ public class UserRestService extends OnmsRestService {
         }
         if (!hashPassword) {
             throw m_support.badRequest("Send the password in plain text with hashPassword=true; a password hash is not accepted.");
+        }
+    }
+
+    /**
+     * The manager refuses an unsalted password while unsalted ones are not allowed (a 500 there): a stored one,
+     * grandfathered, makes every save of the user a 400 until it gets a new password.
+     */
+    private void checkSaltAcceptable(final OnmsUser user) {
+        if (!user.getPasswordSalted() && !m_userManager.isUnsaltedAllowed()) {
+            throw m_support.badRequest("User " + user.getUsername() + " has an unsalted password, which "
+                    + UserManager.ALLOW_UNSALTED_PROPERTY + "=false does not allow; set a new password with hashPassword=true.");
         }
     }
 
