@@ -188,6 +188,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     // The framework doesn't support exposing UDP ports directly, so we use this hook to map some of the exposed ports to UDP
                     TestContainerUtils.exposePortsAsUdp(createCmd, exposedUdpPorts);
+                    // Telemetry listeners and the Karaf RMI server
+                    TestContainerUtils.reserveEphemeralPorts(createCmd, "44444,50000-50002");
                     // Use the generated UID and known GID when simulating OpenShift
                     if (model.isSimulateRestricedOpenShiftEnvironment()) {
                         createCmd.withUser(generatedUserId + ":" + TestContainerUtils.OPENSHIFT_CONTAINER_GID);
