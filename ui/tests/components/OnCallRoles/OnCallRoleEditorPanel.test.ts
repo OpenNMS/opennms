@@ -156,12 +156,15 @@ describe('OnCallRoleEditorPanel', () => {
     expect(store.updateRole).toHaveBeenCalledTimes(1)
     const body = store.updateRole.mock.calls[0][0]
     expect(body.schedules).toEqual(storedRole().schedules)
+    // the stored role as it is, with the draft's fields over it: the service drops the computed on-call fields
     expect(body).toEqual({
       name: 'Ops',
       description: 'Operations rota',
       membershipGroup: 'Night',
       supervisor: 'alice',
       schedules: storedRole().schedules,
+      onCallNow: ['bob'],
+      onCallNowIsSupervisor: false,
       version: 4
     })
     expect(wrapper.emitted('close')).toHaveLength(1)

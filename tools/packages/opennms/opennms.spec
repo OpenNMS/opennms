@@ -717,6 +717,8 @@ rm -rf %{buildroot}
 %pre -p /bin/bash core
 ROOT_INST="$RPM_INSTALL_PREFIX0"
 [ -z "$ROOT_INST" ] && ROOT_INST="%{instprefix}"
+# Users are stored in the database now, but an upgrade still finds the old users.xml, which holds password
+# hashes, until the installer archives it: keep it unreadable for others. RPM keeps this mode on users.xml.rpmsave.
 if [ -e "${ROOT_INST}/etc/users.xml" ]; then
 	chmod 640 "${ROOT_INST}/etc/users.xml"
 fi

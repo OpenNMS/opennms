@@ -821,10 +821,9 @@ public class NotificationConfigRestService {
     private static void validateDestinationPathReferences(final org.opennms.netmgt.config.destinationPaths.Path path) throws Exception {
         final java.util.Set<String> known = new java.util.HashSet<>();
         UserFactory.init();
+        // each of these reads checks the database version and reloads the manager when it changed
         known.addAll(UserFactory.getInstance().getUserNames());
         known.addAll(getGroupManager().getGroupNames());
-        // getUserNames/getGroupNames refresh from the file; getRoleNames does not
-        getGroupManager().update();
         known.addAll(java.util.Arrays.asList(getGroupManager().getRoleNames()));
 
         final List<org.opennms.netmgt.config.destinationPaths.Target> allTargets = new ArrayList<>(path.getTargets());

@@ -277,8 +277,8 @@ const buildCards = () => {
   cardsReady.value = true
 }
 
-// The draft is reset when another role (or a new one) is opened. The parent passing a new object for the
-// same role, as a list reload does, keeps what has been typed: only the name identifies the role.
+// The draft is reset when another role (or a new one) is opened. Only the name identifies the role, so a new
+// object for the same role keeps what has been typed. A stale save does not pass one: the editor closes then.
 watch(
   () => props.role?.name ?? null,
   () => {
@@ -345,10 +345,9 @@ const save = async () => {
   saving.value = true
   try {
     const fields = draftRole()
-    // the stored role without the computed fields, so anything else it carries is kept
-    const { onCallNow: _now, onCallNowIsSupervisor: _isSupervisor, ...stored } = props.role ?? {} as Partial<ManagedOnCallRole>
+    // the stored role under the draft, so anything else it carries is kept; the service drops the computed fields
     const result = await withSpinner(() => props.role
-      ? store.updateRole({ ...stored, ...fields, version: props.role.version })
+      ? store.updateRole({ ...props.role, ...fields, version: props.role.version })
       : store.createRole(fields))
     reportWrite(result, props.role ? `On-call role '${fields.name}' updated.` : `On-call role '${fields.name}' created.`, {
       close: () => emit('close'),
