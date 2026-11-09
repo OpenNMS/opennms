@@ -146,7 +146,9 @@ public class DefaultGroupService implements InitializingBean, GroupService {
         List<String> categoryNames = getAuthorizedCategoriesAsString(groupName);
         if (!categoryNames.contains(categoryName)) {
             categoryNames.add(categoryName);
-            saveGroup(getGroup(groupName), categoryNames);
+            // the authorizations live in category_group, not in the group, whose version a trigger moves: the group
+            // itself is not saved, so that a stale cached copy of it cannot overwrite a newer change
+            setAuthorizedCategories(groupName, categoryNames);
             return true; // added successfully
         }
         return false; // can't be added, already added
@@ -157,7 +159,8 @@ public class DefaultGroupService implements InitializingBean, GroupService {
         List<String> categoryNames = getAuthorizedCategoriesAsString(groupName);
         if (categoryNames.contains(categoryName)) {
             categoryNames.remove(categoryName);
-            saveGroup(getGroup(groupName), categoryNames);
+            // see addCategory: the group itself is not saved
+            setAuthorizedCategories(groupName, categoryNames);
             return true; // removed categoryName from categories successfully
         }
         return false; // categoryName does not exist, removing not possible
@@ -208,12 +211,12 @@ public class DefaultGroupService implements InitializingBean, GroupService {
 
     @Override
     public boolean addUser(String groupName, String userName) {
-        Group group = getGroup(groupName);
+        // a copy of the cached group: the manager merges the members into the stored group under its own lock
+        final OnmsGroup group = getOnmsGroup(groupName);
         if (group != null && hasUser(userName)) {
-            if (getUserForGroup(groupName, userName) != null) {
+            if (group.getUsers().contains(userName)) {
                 return false; // user is already added
             }
-            // user is not added to group, add
             group.addUser(userName);
             saveGroup(group);
             return true;

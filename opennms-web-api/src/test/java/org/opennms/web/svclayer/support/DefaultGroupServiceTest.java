@@ -40,7 +40,10 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.opennms.netmgt.config.GroupDao;
+import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsGroup;
@@ -161,5 +164,38 @@ public class DefaultGroupServiceTest {
         verify(m_groupDao).saveGroup(group);
         verify(m_groupDao, never()).getGroup(anyString());
         verify(m_groupDao, never()).saveGroup(anyString(), any());
+    }
+
+    @Test
+    public void testAddUserMergesUnderTheManagerAndLeavesTheCachedGroupAlone() throws Exception {
+        final UserManager users = mock(UserManager.class);
+        ReflectionTestUtils.setField(m_service, "m_userDao", users);
+        when(users.hasUser("jdoe")).thenReturn(true);
+        final Group cached = new Group();
+        cached.setName("ops");
+        cached.setUsers(List.of("jroe"));
+        when(m_groupDao.getGroup("ops")).thenReturn(cached);
+
+        assertTrue(m_service.addUser("ops", "jdoe"));
+
+        final ArgumentCaptor<OnmsGroup> saved = ArgumentCaptor.forClass(OnmsGroup.class);
+        verify(m_groupDao).saveGroup(saved.capture());
+        assertEquals(List.of("jroe", "jdoe"), saved.getValue().getUsers());
+        verify(m_groupDao, never()).saveGroup(anyString(), any());
+        // the request's change reaches the cache only through the save
+        assertEquals(List.of("jroe"), cached.getUsers());
+    }
+
+    @Test
+    public void testCategoryAuthorizationsDoNotSaveTheGroup() {
+        // they live in category_group, apart from the group row, whose version a trigger moves
+        when(m_categoryDao.findByName("Third")).thenReturn(new OnmsCategory("Third"));
+        when(m_categoryDao.findByNames(Set.of("Third"))).thenReturn(List.of(new OnmsCategory("Third")));
+        assertTrue(m_service.addCategory("old", "Third"));
+        assertTrue(m_service.removeCategory("old", "First"));
+
+        assertFalse(m_first.getAuthorizedGroups().contains("old"));
+        verify(m_groupDao, never()).saveGroup(anyString(), any());
+        verify(m_groupDao, never()).saveGroup(any(OnmsGroup.class));
     }
 }

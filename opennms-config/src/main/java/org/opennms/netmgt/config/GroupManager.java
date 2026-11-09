@@ -84,7 +84,8 @@ public abstract class GroupManager implements GroupConfig {
             if (inputGroup == null) return null;
             final OnmsGroup xmlGroup = new OnmsGroup(inputGroup.getName());
             xmlGroup.setComments(inputGroup.getComments().orElse(null));
-            xmlGroup.setUsers(inputGroup.getUsers());
+            // a copy: a caller that changes it without saving must not change the cached group
+            xmlGroup.setUsers(new ArrayList<>(inputGroup.getUsers()));
             return xmlGroup;
         }
 
@@ -196,9 +197,10 @@ public abstract class GroupManager implements GroupConfig {
 
     /**
      * Adds the group, or replaces the comments and members of the group with this name and keeps its other fields
-     * (duty schedules, default map), and saves all groups. The other fields are read after the save's one update(),
-     * from the cache the save writes and is checked against, so a newer change made elsewhere fails the save
-     * instead of being overwritten with older values. The cached group is not changed in place.
+     * (duty schedules, default map), and saves all groups. The other fields are read under this manager's lock after
+     * the save's one update(), so they come from the same cache that the save writes. The database manager checks
+     * the version of that cache when it writes; a manager without such a check simply writes its cache. The cached
+     * group is not changed in place.
      */
     public synchronized void save(final OnmsGroup group) throws Exception {
         update();

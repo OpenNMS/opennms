@@ -78,7 +78,7 @@ public abstract class UserManager implements UserConfig {
 	public static final String ALLOW_UNSALTED_PROPERTY = "org.opennms.users.allowUnsalted";
     /** How many user or group and schedule pairs the managers remember as warned about. */
     static final int MAX_WARNED_SCHEDULES = 1000;
-    private final boolean m_allowUnsalted;
+    private boolean m_allowUnsalted;
 
     private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
@@ -215,6 +215,11 @@ public abstract class UserManager implements UserConfig {
         }
     }
 
+    /** Whether an unsalted password may be stored: the system property {@value #ALLOW_UNSALTED_PROPERTY}, read once. */
+    public boolean isUnsaltedAllowed() {
+        return m_allowUnsalted;
+    }
+
     private void _assertSaltAcceptable(final User details) throws Exception {
         if (!m_allowUnsalted) {
             final Password p = details.getPassword();
@@ -243,6 +248,10 @@ public abstract class UserManager implements UserConfig {
         m_writeLock.lock();
         
         try {
+            // before the cached user is changed below: a refused save must leave the cache as it was
+            if (!m_allowUnsalted && !onmsUser.getPasswordSalted()) {
+                throw new IllegalStateException(ALLOW_UNSALTED_PROPERTY + "=false, but " + onmsUser.getUsername() + " contains an unsalted password.");
+            }
             User xmlUser = _getUser(onmsUser.getUsername());
             if (xmlUser == null) {
                 xmlUser = new User();
@@ -397,8 +406,9 @@ public abstract class UserManager implements UserConfig {
         user.setComments(trim(xmlUser.getUserComments()));
         user.setPassword(xmlUser.getPassword().getEncryptedPassword());
         user.setPasswordSalted(Boolean.valueOf(xmlUser.getPassword().getSalt()));
-        user.setDutySchedule(xmlUser.getDutySchedules());
-        user.setRoles(xmlUser.getRoles());
+        // copies: a caller that changes them without saving must not change the cache, which the next save writes
+        user.setDutySchedule(new ArrayList<>(xmlUser.getDutySchedules()));
+        user.setRoles(new ArrayList<>(xmlUser.getRoles()));
         user.setEmail(_getContactInfo(xmlUser, ContactType.email));
         return user;
     }
