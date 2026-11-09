@@ -1,6 +1,10 @@
 
 = Scheduled Outages
 
+Reading scheduled outages requires `ROLE_USER`, `ROLE_MOBILE`, `ROLE_REST` or `ROLE_ADMIN`, except for the `applies-to` calls, which list poller, collectd and threshd package names and require `ROLE_REST` or `ROLE_ADMIN`.
+The `applies-to/summary` calls hold no package names and are open to every role that can read scheduled outages.
+Every POST, PUT and DELETE requires `ROLE_REST` or `ROLE_ADMIN`.
+
 == GETs (reading data)
 
 [caption=]
@@ -14,6 +18,21 @@
 
 | /sched-outages/\{outagename}
 | Get the details of a specific outage.
+
+| /sched-outages/\{outagename}/applies-to
+| List every pollerd, collectd and threshd package, each flagged with whether it references the outage, and whether notifications do.
+Requires `ROLE_REST` or `ROLE_ADMIN`.
+
+| /sched-outages/applies-to
+| List every pollerd, collectd and threshd package with the outages it references, and the outages notifications reference.
+Requires `ROLE_REST` or `ROLE_ADMIN`.
+
+| /sched-outages/\{outagename}/applies-to/summary
+| Check whether the outage applies to any poller, collector or thresholder package, and to notifications, without naming the packages.
+Returns, for example, `{"name":"Weekend maintenance","pollers":true,"collectors":false,"thresholders":false,"notifications":true}`.
+
+| /sched-outages/applies-to/summary
+| The same check for every outage, as a list under `outage`.
 
 | /sched-outages/\{outagename}/nodeInOutage/\{nodeId}
 | Check whether the node with the given ID is currently in outage for the named scheduled outage.

@@ -77,6 +77,8 @@ import org.springframework.transaction.annotation.Transactional;
  * <li><b>GET /sched-outages</b><br>to get a list of configured scheduled outages.</li>
  * <li><b>POST /sched-outages</b><br>to add a new outage (or update an existing one).</li>
  * <li><b>GET /sched-outages/{outageName}</b><br>to get the details of a specific outage.</li>
+ * <li><b>GET /sched-outages/{outageName}/applies-to/summary</b><br>to check whether a specific outage applies to pollers, collectors, thresholders and notifications.</li>
+ * <li><b>GET /sched-outages/applies-to/summary</b><br>to check the same for every outage.</li>
  * <li><b>DELETE /sched-outages/{outageName}</b><br>to delete a specific outage.</li>
  * <li><b>PUT /sched-outages/{outageName}/collectd/{package}</b><br>to add a specific outage to a collectd's package.</li>
  * <li><b>PUT /sched-outages/{outageName}/pollerd/{package}</b><br>to add a specific outage to a pollerd's package.</li>
@@ -800,6 +802,92 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     public OutageApplicability getApplicability(@PathParam("outageName") String outageName) {
         getOutage(outageName); // Validate if outageName exists (404 if not).
         return buildApplicability(outageName);
+    }
+
+    @GET
+    @Path("applies-to/summary")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Operation(
+            summary = "Summarize what every scheduled outage applies to",
+            description = """
+                    Return, for every calendar, whether any pollerd, collectd or threshd package references it and
+                    whether notifd does. Package names are not included, so unlike `GET /sched-outages/applies-to`
+                    this is open to every role that can read the calendars: `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER`
+                    or `ROLE_MOBILE`.""",
+            operationId = "getScheduledOutageApplicabilitySummariesV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "One summary per configured calendar.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OutageApplicabilitySummary.Summaries.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "outage": [ {
+                          "name": "Weekend maintenance",
+                          "pollers": true,
+                          "collectors": false,
+                          "thresholders": false,
+                          "notifications": true
+                        } ]
+                    }""")))
+    })
+    public OutageApplicabilitySummary.Summaries getApplicabilitySummaries() {
+        final OutageApplicability applicability = buildApplicability(null);
+        final OutageApplicabilitySummary.Summaries summaries = new OutageApplicabilitySummary.Summaries();
+        for (Outage outage : m_pollOutagesDao.getReadOnlyConfig().getOutages()) {
+            summaries.getOutages().add(summarize(applicability, outage.getName()));
+        }
+        return summaries;
+    }
+
+    @GET
+    @Path("{outageName}/applies-to/summary")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Operation(
+            summary = "Summarize what a scheduled outage applies to",
+            description = """
+                    Return whether any pollerd, collectd or threshd package references the calendar and whether
+                    notifd does. Package names are not included, so unlike `GET /sched-outages/{outageName}/applies-to`
+                    this is open to every role that can read the calendar: `ROLE_ADMIN`, `ROLE_REST`, `ROLE_USER`
+                    or `ROLE_MOBILE`.""",
+            operationId = "getScheduledOutageApplicabilitySummaryV1"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The summary.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OutageApplicabilitySummary.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "name": "Weekend maintenance",
+                      "pollers": true,
+                      "collectors": false,
+                      "thresholders": false,
+                      "notifications": true
+                    }"""))),
+            @ApiResponse(responseCode = "404", description = "No scheduled outage with that name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Scheduled outage Weekend maintenance was not found.")))
+    })
+    public OutageApplicabilitySummary getApplicabilitySummary(
+            @Parameter(description = "Scheduled outage name as it appears in `poll-outages.xml`.",
+                    example = "Weekend maintenance", required = true)
+            @PathParam("outageName") String outageName) {
+        getOutage(outageName); // Validate if outageName exists (404 if not).
+        return summarize(buildApplicability(outageName), outageName);
+    }
+
+    // Derived from the same reads as applies-to, so the two never disagree.
+    private static OutageApplicabilitySummary summarize(OutageApplicability applicability, String outageName) {
+        return new OutageApplicabilitySummary(outageName,
+                references(applicability.getPollers(), outageName),
+                references(applicability.getCollectors(), outageName),
+                references(applicability.getThresholders(), outageName),
+                applicability.getNotificationCalendars().contains(outageName));
+    }
+
+    private static boolean references(List<OutageApplicability.PackageRef> packages, String outageName) {
+        return packages.stream().anyMatch(pkg -> pkg.getCalendars().contains(outageName));
     }
 
     // Enumerate every poller/collectd/threshd package with its outage calendars,
