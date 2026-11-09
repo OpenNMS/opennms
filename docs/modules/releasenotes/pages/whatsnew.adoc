@@ -19,6 +19,10 @@ Most installations require no action, but there are behavior and compatibility c
 custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
 See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
 
+=== Drools 10
+Drools has been upgraded from 8.34 to 10.2.
+Rule files that import classes from `org.drools.core` may no longer compile, because Drools 10 moved or removed many of them.
+
 === Trap audit log
 Trapd on core and Minion can now write one line per received SNMP trap, with the sender address and trap OID, to a dedicated `trap-audit.log`.
 It is disabled by default and is enabled by setting the `trap-audit` logger to `INFO` in `etc/log4j2.xml` (core) or `etc/org.ops4j.pax.logging.cfg` (Minion).

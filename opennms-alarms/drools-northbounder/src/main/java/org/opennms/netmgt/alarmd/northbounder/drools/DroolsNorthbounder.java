@@ -30,13 +30,13 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 
-import org.drools.core.RuleBaseConfiguration;
-import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
 import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.Message.Level;
+import org.kie.api.conf.EqualityBehaviorOption;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.marshalling.KieMarshallers;
 import org.kie.api.marshalling.Marshaller;
@@ -151,12 +151,11 @@ public class DroolsNorthbounder extends AbstractNorthbounder implements Initiali
         }
         KieContainer kContainer = ks.newKieContainer(ks.getRepository().getDefaultReleaseId());
 
-        AssertBehaviour behaviour = AssertBehaviour.determineAssertBehaviour(m_engine.getAssertBehaviour());
-        RuleBaseConfiguration ruleBaseConfig = new RuleBaseConfiguration();
-        ruleBaseConfig.setAssertBehaviour(behaviour);
-        ruleBaseConfig.setEventProcessingMode(EventProcessingOption.STREAM);
+        KieBaseConfiguration kieBaseConfig = ks.newKieBaseConfiguration();
+        kieBaseConfig.setOption(EqualityBehaviorOption.determineEqualityBehavior(m_engine.getAssertBehaviour()));
+        kieBaseConfig.setOption(EventProcessingOption.STREAM);
 
-        m_kieBase = kContainer.newKieBase(ruleBaseConfig);
+        m_kieBase = kContainer.newKieBase(kieBaseConfig);
         m_kieSession = m_kieBase.newKieSession();
         m_kieSession.setGlobal("engine", this);
 

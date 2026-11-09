@@ -8,9 +8,7 @@ dialect "mvel"
 
 global Ticket ticket;
 
-#
-# Set tickets defaults
-#
+// Set ticket defaults
 
 rule "TicketDefaults"
 salience 100
@@ -22,9 +20,7 @@ salience 100
   ticket.user = "admin"
 end
 
-#
-# Overwrite defaults with custom logic
-#
+// Overwrite defaults with custom logic
 
 rule "AssignNodeDownOnRoutersToJesse"
  when
@@ -35,13 +31,11 @@ rule "AssignNodeDownOnRoutersToJesse"
 end
 
 
-#
-# Add ticket attributes that will be used by the ticket plugin
-#
+// Add ticket attributes that will be used by the ticket plugin
 
 rule "NodeNameToCustomerName"
  when
-    $node : OnmsNode( name ~= '^ACME.*$' )
+    $node : OnmsNode( label matches "^ACME.*$" )
  then
     ticket.addAttribute("ClientName", "Acme Inc.")
 end

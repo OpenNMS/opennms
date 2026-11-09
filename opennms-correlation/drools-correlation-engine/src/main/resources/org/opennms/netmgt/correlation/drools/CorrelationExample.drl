@@ -26,8 +26,8 @@ end
 rule "parentDependency"
 	salience 100
 	when
-		PossibleCause( $node : node -> ( $node.getParent() != null ) , $outage : outage )
-		not ( PossibleCause( $node2 : node -> ( $node2 == $node.getParent() ), outage == $outage ) )
+		PossibleCause( $node : node, node.parent != null, $outage : outage )
+		not ( PossibleCause( node == ( $node.getParent() ), outage == $outage ) )
 	then
 	    PossibleCause $cause = new PossibleCause( $node.getParent(), $outage );
 		insert( $cause );
@@ -58,7 +58,7 @@ end
 rule "parentless node is its own root cause"
 	salience 100
 	when
-		$possibleCause : PossibleCause( $node : node -> ( $node.getParent() == null ), $outage: outage, verified == true )
+		$possibleCause : PossibleCause( $node : node, node.parent == null, $outage: outage, verified == true )
 		Outage( node == $node )
 	then
 		$outage.setCause( $node );
@@ -71,7 +71,7 @@ rule "no parent causes possible"
 	salience 200
 	when
 		$outage : Outage( cause == null )
-		$pc : PossibleCause( $node : node -> ( $node.getParent() != null ), outage == $outage, verified == true )
+		$pc : PossibleCause( $node : node, node.parent != null, outage == $outage, verified == true )
 		$o : Outage( node == $node )
 		not( PossibleCause( node == ( $node.getParent() ), outage == $outage ) )
 	then

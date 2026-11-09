@@ -39,13 +39,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.drools.core.RuleBaseConfiguration;
-import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
 import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.Message.Level;
+import org.kie.api.conf.EqualityBehaviorOption;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.definition.type.FactType;
 import org.kie.api.marshalling.KieMarshallers;
@@ -232,18 +232,17 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
 
         KieContainer kContainer = ks.newKieContainer(ks.getRepository().getDefaultReleaseId());
 
-        AssertBehaviour behaviour = AssertBehaviour.determineAssertBehaviour(m_assertBehaviour);
-        RuleBaseConfiguration ruleBaseConfig = new RuleBaseConfiguration();
-        ruleBaseConfig.setAssertBehaviour(behaviour);
+        KieBaseConfiguration kieBaseConfig = ks.newKieBaseConfiguration();
+        kieBaseConfig.setOption(EqualityBehaviorOption.determineEqualityBehavior(m_assertBehaviour));
 
         EventProcessingOption eventProcessingOption = EventProcessingOption.CLOUD;
         if (m_eventProcessingMode != null && m_eventProcessingMode.toLowerCase().equals("stream")) {
             eventProcessingOption = EventProcessingOption.STREAM;
             m_isStreaming = true;
         }
-        ruleBaseConfig.setEventProcessingMode(eventProcessingOption);
+        kieBaseConfig.setOption(eventProcessingOption);
 
-        m_kieBase = kContainer.newKieBase(ruleBaseConfig);
+        m_kieBase = kContainer.newKieBase(kieBaseConfig);
 
         final KieMarshallers kMarshallers = KieServices.Factory.get().getMarshallers();
         final ObjectMarshallingStrategy oms = kMarshallers.newSerializeMarshallingStrategy();
