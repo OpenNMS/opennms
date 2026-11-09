@@ -100,6 +100,7 @@ public class RestMethodAccessIT extends AbstractRestIT {
         for (final String path : new String[] {
                 "/opennms/rest/nodes",
                 "/opennms/rest/alarms",
+                "/opennms/rest/notifications",
                 "/opennms/api/v2/nodes",
                 "/opennms/nrt/starter" }) {
             assertEquals("get " + path, 401, rawStatus("get", path, null));
@@ -116,6 +117,7 @@ public class RestMethodAccessIT extends AbstractRestIT {
         for (final String path : new String[] {
                 "/opennms/rest/nodes",
                 "/opennms/rest/alarms",
+                "/opennms/rest/notifications",
                 "/opennms/api/v2/nodes",
                 "/opennms/nrt/starter" }) {
             assertEquals("get " + path, 403, rawStatus("get", path, admin));
