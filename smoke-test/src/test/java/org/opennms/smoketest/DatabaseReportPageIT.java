@@ -46,6 +46,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.smoketest.containers.WebhookEndpointContainer;
+import org.opennms.smoketest.junit.ContainerRule;
 import org.opennms.smoketest.ui.framework.Button;
 import org.opennms.smoketest.ui.framework.CheckBox;
 import org.opennms.smoketest.ui.framework.DeleteAllButton;
@@ -74,8 +75,10 @@ public class DatabaseReportPageIT extends UiPageTest {
 
     private static Logger LOG = LoggerFactory.getLogger(DatabaseReportPageIT.class);
 
-    @ClassRule
     public static WebhookEndpointContainer webhookEndpointContainer = new WebhookEndpointContainer();
+
+    @ClassRule
+    public static final ContainerRule webhookEndpointRule = ContainerRule.of(webhookEndpointContainer);
 
     private DatabaseReportPage page;
 
