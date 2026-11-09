@@ -19,6 +19,17 @@ Most installations require no action, but there are behavior and compatibility c
 custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
 See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
 
+=== Drools 10
+Alarmd, the Correlator, the Drools northbounder and the Drools ticketer now use Drools 10.2 instead of 8.34.
+Existing rule files compile and behave the same way.
+
+Working memory saved before the upgrade may not be restored on the first start after it.
+This affects Correlator rule sets with `persist-state="true"` and the Drools northbounder when the saved working memory contains facts inserted with `insertLogical`, instances of types declared with `declare`, or the state of a rule that starts with an `accumulate`.
+In that case the engine logs `Failed to restore state for engine` and starts with an empty working memory.
+This happens only once: working memory saved after the upgrade is restored normally.
+
+Rule files that import classes from `org.drools.core` may no longer compile, because Drools 10 moved or removed many of them.
+
 === Trap audit log
 Trapd on core and Minion can now write one line per received SNMP trap, with the sender address and trap OID, to a dedicated `trap-audit.log`.
 It is disabled by default and is enabled by setting the `trap-audit` logger to `INFO` in `etc/log4j2.xml` (core) or `etc/org.ops4j.pax.logging.cfg` (Minion).
