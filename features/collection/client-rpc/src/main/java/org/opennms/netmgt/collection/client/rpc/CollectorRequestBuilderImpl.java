@@ -31,6 +31,7 @@ import java.util.concurrent.CompletionException;
 
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.LazyScope;
 import org.opennms.core.mate.api.MetadataConstants;
 import org.opennms.core.mate.api.Scope;
 import org.opennms.core.rpc.api.RpcRequest;
@@ -132,9 +133,13 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
             throw new IllegalArgumentException("Agent is required.");
         }
 
+        // Each entity scope costs a read-only transaction and several selects, so build
+        // them on demand: no metadata expression means no lookup at all, and an expression
+        // resolved from the node scope never touches the interface scope because
+        // FallbackScope stops at the first match.
         final Scope scope = new FallbackScope(
-                this.client.getEntityScopeProvider().getScopeForNode(agent.getNodeId()),
-                this.client.getEntityScopeProvider().getScopeForInterface(agent.getNodeId(), InetAddressUtils.toIpAddrString(agent.getAddress()))
+                new LazyScope(() -> this.client.getEntityScopeProvider().getScopeForNode(agent.getNodeId())),
+                new LazyScope(() -> this.client.getEntityScopeProvider().getScopeForInterface(agent.getNodeId(), InetAddressUtils.toIpAddrString(agent.getAddress())))
         );
 
         final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, scope);
