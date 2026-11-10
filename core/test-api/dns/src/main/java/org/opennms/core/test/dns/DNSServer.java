@@ -20,8 +20,11 @@
  * License.
  */
 /*
- * Derived from jnamed in dnsjava (https://github.com/dnsjava/dnsjava),
- * distributed at the time under the following license:
+ * The OpenNMS changes to this file are licensed under the AGPL as stated
+ * above. The original code is jnamed from dnsjava
+ * (https://github.com/dnsjava/dnsjava), refactored from DNSServer in the
+ * JDNSS server (http://sourceforge.net/projects/jdnss/). It remains under
+ * the license dnsjava was distributed under at the time:
  *
  * Copyright (c) 1999-2004 Brian Wellington (bwelling@xbill.org)
  * All rights reserved.

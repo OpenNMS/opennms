@@ -48,6 +48,9 @@ For details, view the header in each file:
 * features/nrtg/config.properties
 * features/osgi-jsr223/src/main/java/org/opennms/features/osgi/script/
 * features/prometheus-collector/src/main/java/org/hawkular/
+  (except agent/prometheus/types/MetricVisitor.java and
+  agent/prometheus/walkers/MetricCollectingWalker.java, which are
+  OpenNMS code under the AGPL)
 * features/prometheus-collector/src/test/java/org/hawkular/
 * features/reporting/jasper-reports-compiler/src/main/java/org/opennms/reporting/jasperreports/compiler/CustomJRJdtCompiler.java
 * features/vaadin-components/extender-service/src/main/java/org/opennms/vaadin/extender/Constants.java
