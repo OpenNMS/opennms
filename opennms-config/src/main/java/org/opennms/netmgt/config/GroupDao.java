@@ -113,12 +113,21 @@ public interface GroupDao {
     void saveGroup(String name, Group details);
 
     /**
-     * Adds the group, or replaces the comments and members of the stored group and keeps its other fields (duty
-     * schedules, default map), which an {@link OnmsGroup} does not carry.
-     *
-     * @param group the name, comments and members
+     * The version of the groups, after a check for changes. Read it before the group that a later
+     * {@link #saveGroup(OnmsGroup, long)} writes back.
      */
-    void saveGroup(OnmsGroup group);
+    long getVersion();
+
+    /**
+     * Adds the group, or replaces the comments and members of the stored group and keeps its other fields (duty
+     * schedules, default map), which an {@link OnmsGroup} does not carry. Fails with
+     * {@link UserDataChangedException} in the cause chain if the groups changed since {@link #getVersion()}
+     * returned readVersion.
+     *
+     * @param group the name, comments and members, read after readVersion
+     * @param readVersion what {@link #getVersion()} returned before the group was read
+     */
+    void saveGroup(OnmsGroup group, long readVersion);
     
     /**
      * <p>saveRole</p>

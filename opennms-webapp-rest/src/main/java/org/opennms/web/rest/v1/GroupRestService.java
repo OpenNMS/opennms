@@ -248,8 +248,10 @@ public class GroupRestService extends OnmsRestService {
         try {
             LOG.debug("addGroup: Adding group {}", group);
             try {
+                // read before the checks read the stored group: see groupsVersion
+                final long version = m_groupService.getVersion();
                 checkNewGroup(group);
-                m_groupService.saveGroup(group);
+                m_groupService.saveGroup(group, version);
             } catch (final Throwable t) {
                 throw V1UserMgmtForms.translate(t);
             }
@@ -307,6 +309,7 @@ public class GroupRestService extends OnmsRestService {
         writeLock();
         
         try {
+            final long version = groupsVersion();
             final OnmsGroup group = getOnmsGroup(groupName);
             LOG.debug("updateGroup: updating group {}", group);
             V1UserMgmtForms.checkFormKeys(params, V1UserMgmtForms.GROUP_FORM_KEYS, V1UserMgmtForms.RENAME_GROUP);
@@ -314,7 +317,7 @@ public class GroupRestService extends OnmsRestService {
                 LOG.debug("updateGroup: group {} updated", group);
                 try {
                     checkFields(group);
-                    m_groupService.saveGroup(group);
+                    m_groupService.saveGroup(group, version);
                 } catch (final Throwable t) {
                     throw V1UserMgmtForms.translate(t);
                 }
@@ -467,11 +470,12 @@ public class GroupRestService extends OnmsRestService {
         m_support.assertAdmin(securityContext, WHAT);
         writeLock();
         try {
+            final long version = groupsVersion();
             final OnmsGroup group = getOnmsGroup(groupName);
             if (group.getUsers().contains(userName)) {
                 group.removeUser(userName);
                 try {
-                    m_groupService.saveGroup(group);
+                    m_groupService.saveGroup(group, version);
                 } catch (final Throwable t) {
                     throw V1UserMgmtForms.translate(t);
                 }
@@ -806,6 +810,18 @@ public class GroupRestService extends OnmsRestService {
 
     private static String owner(final String name) {
         return "Group \"" + name + "\"";
+    }
+
+    /**
+     * The version of the groups, read before the group that a write saves back: if another writer changes the groups
+     * in between, the save answers 409 instead of overwriting that change with the older members.
+     */
+    private long groupsVersion() {
+        try {
+            return m_groupService.getVersion();
+        } catch (final Throwable t) {
+            throw V1UserMgmtForms.translate(t);
+        }
     }
 
     protected OnmsGroup getOnmsGroup(final String groupName) {

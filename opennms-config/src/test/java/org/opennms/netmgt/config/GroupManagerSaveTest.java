@@ -105,7 +105,7 @@ public class GroupManagerSaveTest {
         final OnmsGroup group = new OnmsGroup("ops");
         group.setComments("edited");
         group.setUsers(List.of("jroe"));
-        gm.save(group);
+        gm.save(group, 0); // this manager has no versions
 
         final Group saved = gm.saved("ops");
         final Group cached = gm.lastLoaded("ops");
@@ -121,7 +121,7 @@ public class GroupManagerSaveTest {
         final ReloadingGroupManager gm = new ReloadingGroupManager(groupsXml("MoTuWeThFr800-1700", "Map1"));
         final OnmsGroup group = new OnmsGroup("new");
         group.setComments("fresh");
-        gm.save(group);
+        gm.save(group, 0); // this manager has no versions
 
         final Group saved = gm.saved("new");
         assertEquals("fresh", saved.getComments().orElse(null));
@@ -142,7 +142,7 @@ public class GroupManagerSaveTest {
         final OnmsGroup group = new OnmsGroup("ops");
         group.setComments("edited");
         try {
-            gm.save(group);
+            gm.save(group, 0); // this manager has no versions
         } catch (final IOException expected) {
             // the cache is the database manager's to repair; the group read before must not have been changed
         }

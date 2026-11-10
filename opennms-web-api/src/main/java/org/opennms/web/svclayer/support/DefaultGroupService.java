@@ -99,10 +99,15 @@ public class DefaultGroupService implements InitializingBean, GroupService {
     }
 
     @Override
-    public void saveGroup(OnmsGroup group) {
+    public long getVersion() {
+        return m_groupDao.getVersion();
+    }
+
+    @Override
+    public void saveGroup(OnmsGroup group, long readVersion) {
         // an OnmsGroup carries only the name, comments and members: the manager keeps the rest of the stored group,
-        // read under its own lock, so that a change made elsewhere since is not overwritten
-        m_groupDao.saveGroup(group);
+        // read under its own lock, and refuses members read before a change made elsewhere
+        m_groupDao.saveGroup(group, readVersion);
     }
 
     @Override
@@ -211,14 +216,15 @@ public class DefaultGroupService implements InitializingBean, GroupService {
 
     @Override
     public boolean addUser(String groupName, String userName) {
-        // a copy of the cached group: the manager merges the members into the stored group under its own lock
+        // a copy of the cached group, read after the version: the save fails if the groups changed since
+        final long version = getVersion();
         final OnmsGroup group = getOnmsGroup(groupName);
         if (group != null && hasUser(userName)) {
             if (group.getUsers().contains(userName)) {
                 return false; // user is already added
             }
             group.addUser(userName);
-            saveGroup(group);
+            saveGroup(group, version);
             return true;
         }
         return false; // group or user does not exist.

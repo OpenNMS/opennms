@@ -321,6 +321,7 @@ public class UserRestService extends OnmsRestService {
         writeLock();
         try {
             LOG.debug("addUser: Adding user {}", user == null ? null : user.getUsername());
+            final long version = usersVersion();
             try {
                 // The checks run before the manager call and without m_support.lockForWrite(): the manager saves in its
                 // own REQUIRES_NEW transaction and takes the version locks itself, so holding them here would
@@ -328,7 +329,7 @@ public class UserRestService extends OnmsRestService {
                 checkNewUser(user, hashPassword);
                 if (hashPassword) hashPassword(user);
                 checkSaltAcceptable(user);
-                m_userManager.save(user);
+                m_userManager.save(user, version);
             } catch (final Throwable t) {
                 throw V1UserMgmtForms.translate(t);
             }
@@ -393,6 +394,7 @@ public class UserRestService extends OnmsRestService {
         m_support.assertAdmin(securityContext, WHAT);
         writeLock();
         try {
+            final long version = usersVersion();
             final OnmsUser user = getOnmsUser(userCriteria);
             LOG.debug("updateUser: updating user {}", user.getUsername());
             V1UserMgmtForms.checkFormKeys(params, V1UserMgmtForms.USER_FORM_KEYS, V1UserMgmtForms.RENAME_USER);
@@ -408,7 +410,7 @@ public class UserRestService extends OnmsRestService {
                     checkUpdatedUser(user);
                     if (passwordModified) hashPassword(user);
                     checkSaltAcceptable(user);
-                    m_userManager.save(user);
+                    m_userManager.save(user, version);
                 } catch (final Throwable t) {
                     throw V1UserMgmtForms.translate(t);
                 }
@@ -464,6 +466,7 @@ public class UserRestService extends OnmsRestService {
         writeLock();
         try {
             checkRolesKnown(List.of(roleName));
+            final long version = usersVersion();
             final OnmsUser user = getOnmsUser(userCriteria);
             LOG.debug("addRole: updating user {}", user.getUsername());
             boolean modified = false;
@@ -475,7 +478,7 @@ public class UserRestService extends OnmsRestService {
                 LOG.debug("addRole: user {} updated", user.getUsername());
                 try {
                     checkSaltAcceptable(user);
-                    m_userManager.save(user);
+                    m_userManager.save(user, version);
                 } catch (final Throwable t) {
                     throw V1UserMgmtForms.translate(t);
                 }
@@ -585,6 +588,7 @@ public class UserRestService extends OnmsRestService {
         writeLock();
         try {
             checkRolesKnown(List.of(roleName));
+            final long version = usersVersion();
             final OnmsUser user = getOnmsUser(userCriteria);
             boolean modified = false;
             if (user.getRoles().contains(roleName)) {
@@ -597,7 +601,7 @@ public class UserRestService extends OnmsRestService {
                     // not under m_support.lockForWrite(), see addUser: the last-administrator check is not race-free here
                     checkRolesKeepAdministrator(user.getUsername(), user.getRoles());
                     checkSaltAcceptable(user);
-                    m_userManager.save(user);
+                    m_userManager.save(user, version);
                 } catch (final Throwable t) {
                     throw V1UserMgmtForms.translate(t);
                 }
@@ -711,6 +715,18 @@ public class UserRestService extends OnmsRestService {
 
     private static String owner(final String userId) {
         return "User \"" + userId + "\"";
+    }
+
+    /**
+     * The version of the users, read before the user that a write saves back: if another writer changes the users in
+     * between, the save answers 409 instead of overwriting that change with the older copy.
+     */
+    private long usersVersion() {
+        try {
+            return m_userManager.getVersion();
+        } catch (final Throwable t) {
+            throw V1UserMgmtForms.translate(t);
+        }
     }
 
     private OnmsUser getOnmsUser(String username) {

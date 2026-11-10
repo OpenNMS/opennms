@@ -99,6 +99,11 @@ public class DbGroupManager extends GroupManager {
         reload();
     }
 
+    @Override
+    protected synchronized long getCachedVersion() {
+        return m_groupsVersion;
+    }
+
     /**
      * Makes the next read check the versions, without waiting for the check interval; reads nothing and takes no lock.
      * Called after a write that bypassed this manager commits, so the cache reloads once, when it is next read.

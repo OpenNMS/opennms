@@ -61,6 +61,7 @@ import org.opennms.netmgt.dao.api.UserAccountDao;
 import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
+import org.opennms.netmgt.model.OnmsGroup;
 import org.opennms.netmgt.model.usermgmt.OnCallRole;
 import org.opennms.netmgt.model.usermgmt.OnCallSchedule;
 import org.opennms.netmgt.model.usermgmt.OnCallScheduleTime;
@@ -182,6 +183,34 @@ public class DbGroupManagerIT {
         assertThrows(UserDataChangedException.class, () -> m_manager.saveGroup("Ops", group("Ops", "jane")));
         assertNull(m_tx.execute(s -> m_groupDao.findByName("Ops")));
         assertTrue(m_manager.hasGroup("Other")); // reloaded
+    }
+
+    /**
+     * A v1 write reads the group, then saves its comments and members. A change committed in between and loaded by
+     * the save's own reload must make the save fail, not be overwritten by the older members.
+     */
+    @Test
+    public void testSaveOfAnOlderReadIsRejected() throws Exception {
+        m_manager.saveGroup("Ops", group("Ops", "jane"));
+        final long version = m_manager.getVersion();
+        final OnmsGroup read = m_manager.getOnmsGroup("Ops");
+
+        newManager().saveGroup("Ops", group("Ops", "jane", "joe"));
+        m_manager.expire(); // as after a v2 write: the save's update() reloads
+
+        read.setComments("changed");
+        assertThrows(UserDataChangedException.class, () -> m_manager.save(read, version));
+        assertEquals(Arrays.asList("jane", "joe"), newManager().getGroup("Ops").getUsers());
+    }
+
+    @Test
+    public void testSaveOfACurrentReadIsSaved() throws Exception {
+        m_manager.saveGroup("Ops", group("Ops", "jane"));
+        final long version = m_manager.getVersion();
+        final OnmsGroup read = m_manager.getOnmsGroup("Ops");
+        read.addUser("joe");
+        m_manager.save(read, version);
+        assertEquals(Arrays.asList("jane", "joe"), newManager().getGroup("Ops").getUsers());
     }
 
     @Test

@@ -243,12 +243,39 @@ public abstract class UserManager implements UserConfig {
         _saveCurrent();
     }
     
+    /**
+     * The version of the cached users, after a check for changes. A caller that saves a user it read earlier reads
+     * this first and passes it to {@link #save(OnmsUser, long)}.
+     */
+    public long getVersion() throws IOException {
+        update();
+        return getLastModified();
+    }
+
+    /** Adds or replaces the user with every field of this copy. */
     public void save(final OnmsUser onmsUser) throws Exception {
+        save(onmsUser, null);
+    }
+
+    /**
+     * Adds or replaces the user with every field of this copy, which must have been read after {@link #getVersion()}
+     * returned readVersion. If the users changed since, the copy may be older than the stored user and the save
+     * throws {@link UserDataChangedException} instead of overwriting that change.
+     */
+    public void save(final OnmsUser onmsUser, final long readVersion) throws Exception {
+        save(onmsUser, Long.valueOf(readVersion));
+    }
+
+    private void save(final OnmsUser onmsUser, final Long readVersion) throws Exception {
         update();
 
         m_writeLock.lock();
         
         try {
+            // under the write lock, which a reload takes too: the cache below is the one this version describes
+            if (readVersion != null && getLastModified() != readVersion) {
+                throw new UserDataChangedException();
+            }
             // before the cached user is changed below: a refused save must leave the cache as it was
             if (!m_allowUnsalted && !onmsUser.getPasswordSalted()) {
                 throw new IllegalStateException(ALLOW_UNSALTED_PROPERTY + "=false, but " + onmsUser.getUsername() + " contains an unsalted password.");

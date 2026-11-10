@@ -51,6 +51,7 @@ import org.opennms.netmgt.dao.api.UserAccountDao;
 import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
+import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.usermgmt.SecurityRole;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.netmgt.model.usermgmt.UserGroup;
@@ -225,6 +226,35 @@ public class DbUserManagerIT {
         // within the check interval, the cache does not know "external"
         assertThrows(UserDataChangedException.class, () -> m_users.setContactInfo("jane", ContactType.email, "x@example.org"));
         assertTrue(m_users.hasUser("external"));
+    }
+
+    /**
+     * A v1 write reads the user, then saves its whole copy. A change committed in between and loaded by the save's
+     * own reload must make the save fail, not be overwritten by the older copy.
+     */
+    @Test
+    public void testSaveOfAnOlderReadIsRejected() throws Exception {
+        m_users.saveUser("jane", user("jane"));
+        m_users.setContactInfo("jane", ContactType.email, "old@example.org");
+        final long version = m_users.getVersion();
+        final OnmsUser read = m_users.getOnmsUser("jane");
+
+        newUserManager().setContactInfo("jane", ContactType.email, "new@example.org");
+        m_users.expire(); // as after a v2 write: the save's update() reloads
+
+        read.setFullName("Jane");
+        assertThrows(UserDataChangedException.class, () -> m_users.save(read, version));
+        assertEquals("new@example.org", newUserManager().getEmail("jane"));
+    }
+
+    @Test
+    public void testSaveOfACurrentReadIsSaved() throws Exception {
+        m_users.saveUser("jane", user("jane"));
+        final long version = m_users.getVersion();
+        final OnmsUser read = m_users.getOnmsUser("jane");
+        read.setFullName("Jane");
+        m_users.save(read, version);
+        assertEquals("Jane", newUserManager().getUser("jane").getFullName().orElse(null));
     }
 
     @Test

@@ -26,7 +26,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -41,6 +44,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.groups.Group;
@@ -159,9 +163,9 @@ public class DefaultGroupServiceTest {
         // the manager keeps the stored schedules and default map under its own lock, after its own update()
         final OnmsGroup group = new OnmsGroup("ops");
         group.setComments("edited");
-        m_service.saveGroup(group);
+        m_service.saveGroup(group, 7L);
 
-        verify(m_groupDao).saveGroup(group);
+        verify(m_groupDao).saveGroup(group, 7L);
         verify(m_groupDao, never()).getGroup(anyString());
         verify(m_groupDao, never()).saveGroup(anyString(), any());
     }
@@ -175,11 +179,16 @@ public class DefaultGroupServiceTest {
         cached.setName("ops");
         cached.setUsers(List.of("jroe"));
         when(m_groupDao.getGroup("ops")).thenReturn(cached);
+        when(m_groupDao.getVersion()).thenReturn(7L);
 
         assertTrue(m_service.addUser("ops", "jdoe"));
 
+        // the version is read before the group, so that the save fails if the group changed in between
+        final InOrder order = inOrder(m_groupDao);
+        order.verify(m_groupDao).getVersion();
+        order.verify(m_groupDao).getGroup("ops");
         final ArgumentCaptor<OnmsGroup> saved = ArgumentCaptor.forClass(OnmsGroup.class);
-        verify(m_groupDao).saveGroup(saved.capture());
+        order.verify(m_groupDao).saveGroup(saved.capture(), eq(7L));
         assertEquals(List.of("jroe", "jdoe"), saved.getValue().getUsers());
         verify(m_groupDao, never()).saveGroup(anyString(), any());
         // the request's change reaches the cache only through the save
@@ -196,6 +205,6 @@ public class DefaultGroupServiceTest {
 
         assertFalse(m_first.getAuthorizedGroups().contains("old"));
         verify(m_groupDao, never()).saveGroup(anyString(), any());
-        verify(m_groupDao, never()).saveGroup(any(OnmsGroup.class));
+        verify(m_groupDao, never()).saveGroup(any(OnmsGroup.class), anyLong());
     }
 }

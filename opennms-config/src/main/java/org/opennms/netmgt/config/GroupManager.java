@@ -196,14 +196,38 @@ public abstract class GroupManager implements GroupConfig {
     }
 
     /**
-     * Adds the group, or replaces the comments and members of the group with this name and keeps its other fields
-     * (duty schedules, default map), and saves all groups. The other fields are read under this manager's lock after
-     * the save's one update(), so they come from the same cache that the save writes. The database manager checks
-     * the version of that cache when it writes; a manager without such a check simply writes its cache. The cached
-     * group is not changed in place.
+     * The version of the cached groups, which the database manager checks when it writes. A manager without
+     * versions answers 0, so its saves never conflict.
      */
-    public synchronized void save(final OnmsGroup group) throws Exception {
+    protected long getCachedVersion() {
+        return 0;
+    }
+
+    /**
+     * The version of the cached groups, after a check for changes. A caller that saves a group it read earlier reads
+     * this first and passes it to {@link #save(OnmsGroup, long)}.
+     */
+    @Override
+    public synchronized long getVersion() throws IOException {
         update();
+        return getCachedVersion();
+    }
+
+    /**
+     * Adds the group, or replaces the comments and members of the group with this name and keeps its other fields
+     * (duty schedules, default map), and saves all groups. The group must have been read after {@link #getVersion()}
+     * returned readVersion: if the groups changed since, its members may be older than the stored ones, and the
+     * save throws {@link UserDataChangedException} instead of overwriting that change. The other fields are read
+     * under this manager's lock after the save's one update(), so they come from the same cache that the save
+     * writes. The database manager checks the version of that cache when it writes; a manager without such a check
+     * simply writes its cache. The cached group is not changed in place.
+     */
+    @Override
+    public synchronized void save(final OnmsGroup group, final long readVersion) throws Exception {
+        update();
+        if (getCachedVersion() != readVersion) {
+            throw new UserDataChangedException();
+        }
         final Group current = m_groups.get(group.getName());
         final Group merged = new Group();
         merged.setName(group.getName());

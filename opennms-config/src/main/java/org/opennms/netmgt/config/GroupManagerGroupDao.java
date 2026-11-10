@@ -249,9 +249,19 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
 
     /** {@inheritDoc} */
     @Override
-    public void saveGroup(final OnmsGroup group) {
+    public long getVersion() {
         try {
-            m_groupManager.save(group);
+            return m_groupManager.getVersion();
+        } catch (Throwable e) {
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("reading the groups version", e);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void saveGroup(final OnmsGroup group, final long readVersion) {
+        try {
+            m_groupManager.save(group, readVersion);
         } catch (Throwable e) {
             throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("saving group '" + group.getName() + "'", e);
         }
