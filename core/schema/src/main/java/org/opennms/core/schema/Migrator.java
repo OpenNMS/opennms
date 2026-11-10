@@ -695,10 +695,13 @@ public class Migrator {
             dropExistingIpLike();
             setupPlPgsqlIplike();
         } else if (isStalePlPgsqlIplike()) {
-            // a working but older PL/pgSQL revision: replace it in place.
-            // A working C-extension iplike is intentionally left untouched.
-            dropExistingIpLike();
-            setupPlPgsqlIplike();
+            // Replace an older PL/pgSQL revision in place; iplike.sql uses
+            // CREATE OR REPLACE. A working C-extension iplike is not changed.
+            try {
+                setupPlPgsqlIplike();
+            } catch (final MigrationException e) {
+                LOG.warn("Could not replace the PL/pgSQL iplike function. The installed revision stays in use.", e);
+            }
         }
 
         // XXX This error is generated from Postgres if eventtime(text)
