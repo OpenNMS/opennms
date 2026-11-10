@@ -217,6 +217,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 .withCommand(containerCommand)
                 .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this));
 
+        disableServices();
+
         addFileSystemBind(overlay.toString(),
                         "/opt/opennms-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
 
@@ -319,6 +321,29 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                             .put("compression.type", model.getKafkaCompressionStrategy().getCodec())
                             .build());
         }
+    }
+
+    /**
+     * Disables the services from {@link OpenNMSProfile#getDisabledServices()}. The stock
+     * service-configuration.xml resolves each service's enabled flag from a CORE_SERVICE_*_ENABLED
+     * environment variable, so we set that variable instead of patching the file.
+     */
+    private void disableServices() {
+        for (final String serviceName : profile.getDisabledServices()) {
+            withEnv(getServiceEnabledEnvVar(serviceName), Boolean.FALSE.toString());
+        }
+    }
+
+    /**
+     * @param serviceName the service name as found in service-configuration.xml, i.e. "OpenNMS:Name=Pollerd"
+     * @return the environment variable controlling whether the service is enabled, i.e. "CORE_SERVICE_POLLERD_ENABLED"
+     */
+    public static String getServiceEnabledEnvVar(final String serviceName) {
+        final String prefix = "OpenNMS:Name=";
+        if (!serviceName.startsWith(prefix)) {
+            throw new IllegalArgumentException("Unexpected service name: " + serviceName);
+        }
+        return "CORE_SERVICE_" + serviceName.substring(prefix.length()).toUpperCase(Locale.ROOT) + "_ENABLED";
     }
 
     /**
