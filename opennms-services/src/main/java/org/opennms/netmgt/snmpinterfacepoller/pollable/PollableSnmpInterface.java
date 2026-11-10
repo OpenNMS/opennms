@@ -318,6 +318,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
                     LOG.debug("{} Interfaces found. Getting Statutes....", m_snmpinterfaces.size());
                     SnmpPollInterfaceMonitor pollMonitor = new SnmpPollInterfaceMonitor(getContext().getLocationAwareSnmpClient());
                     pollMonitor.setLocation(location);
+                    pollMonitor.setNodeId(getParent().getNodeid());
                     pollMonitor.setInterval(getSnmppollableconfig().getInterval());
                     List<SnmpMinimalPollInterface> mifaces = getSnmpMinimalPollInterface();
                     int size = mifaces.size();

@@ -61,6 +61,7 @@ import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
+import org.opennms.netmgt.provision.persist.policies.ScriptPolicy;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.opennms.netmgt.provision.service.operations.ProvisionOverallMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -287,6 +288,17 @@ public class NodeScan implements Scan {
 
         m_eventForwarder.sendNow(bldr.getEvent());
 
+    }
+
+    static String policyAbortReason(final NodePolicy policy) {
+        final StringBuilder reason = new StringBuilder("Aborted scan of node due to configured policy");
+        if (policy != null) {
+            reason.append(": ").append(policy.getClass().getSimpleName());
+            if (policy instanceof ScriptPolicy) {
+                reason.append(" (script ").append(((ScriptPolicy) policy).getScript()).append(')');
+            }
+        }
+        return reason.toString();
     }
 
     @Override
@@ -838,14 +850,18 @@ public class NodeScan implements Scan {
             LOG.debug("NodeScan.applyNodePolicies: {}", nodePolicies);
 
             OnmsNode node = getNode();
+            NodePolicy abortingPolicy = null;
             for (final NodePolicy policy : nodePolicies) {
                 if (node != null) {
                     node = policy.apply(node, Collections.emptyMap());
+                    if (node == null) {
+                        abortingPolicy = policy;
+                    }
                 }
             }
 
             if (node == null) {
-                abort("Aborted scan of node due to configured policy");
+                abort(policyAbortReason(abortingPolicy));
             } else {
                 setNode(node);
             }
