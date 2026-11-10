@@ -24,14 +24,23 @@ package org.opennms.web.rest.v1;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.AdditionalAnswers.delegatesTo;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
+import org.apache.cxf.endpoint.Server;
+import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+import org.apache.cxf.jaxrs.JAXRSServiceImpl;
+import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,12 +56,14 @@ import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.dao.api.SecurityRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
 import org.opennms.netmgt.dao.api.UserGroupDao;
+import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.usermgmt.OnCallRole;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.netmgt.model.usermgmt.UserGroup;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.UserMgmtRestSupport;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -544,6 +555,45 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
         assertFalse(exists("victim"));
     }
 
+    /**
+     * Two v1 writes don't overlap (the service takes its write lock), so the change in between stands in for a v2
+     * write or another process. It changes a different user: the version covers all users. Nothing is saved, and the
+     * same request sent again succeeds.
+     */
+    @Test
+    public void testAV1WriteOfAStaleReadIs409AndCanBeSentAgain() throws Exception {
+        createUser("target");
+        createUser("bystander");
+        final AtomicBoolean changeOnce = new AtomicBoolean(true);
+        final UserManager manager = mock(UserManager.class, delegatesTo(m_userManager));
+        // the service reads the version, then the user: the other change lands between the two
+        doAnswer(invocation -> {
+            if (changeOnce.getAndSet(false)) {
+                final OnmsUser other = m_userManager.getOnmsUser("bystander");
+                other.setFullName("Changed meanwhile");
+                m_userManager.save(other);
+            }
+            return m_userManager.getOnmsUser(invocation.getArgument(0));
+        }).when(manager).getOnmsUser(anyString());
+
+        final Object service = v1UserService();
+        final Object real = ReflectionTestUtils.getField(service, "m_userManager");
+        ReflectionTestUtils.setField(service, "m_userManager", manager);
+        try {
+            final MockHttpServletResponse stale = sendData(PUT, "application/x-www-form-urlencoded", "/users/target", "fullName=Mine", 409);
+            assertFalse("the other change ran", changeOnce.get());
+            assertEquals("User data was changed by another process. Try again.", stale.getContentAsString());
+            assertEquals("target Full Name", fullName("target"));
+            assertEquals("Changed meanwhile", fullName("bystander"));
+
+            sendPut("/users/target", "fullName=Mine", 204);
+            assertEquals("Mine", fullName("target"));
+            assertEquals("Changed meanwhile", fullName("bystander"));
+        } finally {
+            ReflectionTestUtils.setField(service, "m_userManager", real);
+        }
+    }
+
     @Test
     public void testCrudStillWorks() throws Exception {
         sendPost(USERS, userXml("crud", "MoTuWeThFr800-1700", "ROLE_USER"), 201, null);
@@ -583,6 +633,27 @@ public class UserRestServiceDatabaseIT extends AbstractSpringJerseyRestTestCase 
     /** The manager reads the property when it is built; this changes what it read. */
     private void allowUnsalted(final boolean allowed) {
         ReflectionTestUtils.setField((Object) AopTestUtils.getUltimateTargetObject(m_userManager), "m_allowUnsalted", allowed);
+    }
+
+    /**
+     * The v1 user service that answers the requests. The CXF server creates its own instance of each class it finds,
+     * apart from the Spring bean of the same class, so it is taken from the server.
+     */
+    @SuppressWarnings("removal")
+    private Object v1UserService() {
+        final ApplicationContext cxf = (ApplicationContext) ReflectionTestUtils.getField(getDispatcher(), "createdContext");
+        final Server server = cxf.getBean("cxf-rest-v1", JAXRSServerFactoryBean.class).getServer();
+        for (final ClassResourceInfo resource : ((JAXRSServiceImpl) server.getEndpoint().getService()).getClassResourceInfos()) {
+            final Object instance = AopTestUtils.getUltimateTargetObject(resource.getResourceProvider().getInstance(null));
+            if (instance instanceof UserRestService) {
+                return instance;
+            }
+        }
+        throw new IllegalStateException("The CXF server has no v1 user service.");
+    }
+
+    private String fullName(final String id) {
+        return new JdbcTemplate(m_dataSource).queryForObject("select full_name from users where username = ?", String.class, id);
     }
 
     private String passwordHash(final String id) {
