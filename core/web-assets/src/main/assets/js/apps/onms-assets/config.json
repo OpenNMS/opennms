@@ -275,6 +275,13 @@
                   "tooltip": "Admin contact at the given location",
                   "model": "admin",
                   "type": "text"
+                },
+                {
+                  "label": "Email",
+                  "tooltip": "One or more contact email addresses, separated by semicolons",
+                  "model": "email",
+                  "pattern": "^\\s*([^\\s;@]+@[^\\s;@]+(\\s*;\\s*[^\\s;@]+@[^\\s;@]+)*)?\\s*;?\\s*$",
+                  "type": "text"
                 }
               ]
             }

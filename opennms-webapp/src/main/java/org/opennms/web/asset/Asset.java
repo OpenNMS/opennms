@@ -125,6 +125,8 @@ public class Asset extends Object {
 
     protected String country = "";
 
+    protected String email = "";
+
     protected String longitude = "";
 
     protected String latitude = "";
@@ -1062,6 +1064,28 @@ public class Asset extends Object {
      */
     public String getCountry() {
         return (this.country);
+    }
+
+    /**
+     * <p>Setter for the field <code>email</code>.</p>
+     *
+     * @param email a {@link java.lang.String} object.
+     */
+    public void setEmail(String email) {
+        if (email != null) {
+            this.email = email;
+        } else {
+            this.email = "";
+        }
+    }
+
+    /**
+     * <p>Getter for the field <code>email</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getEmail() {
+        return (this.email);
     }
 
     /**
