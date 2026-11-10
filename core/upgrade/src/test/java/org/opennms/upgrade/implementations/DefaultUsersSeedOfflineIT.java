@@ -24,6 +24,7 @@ package org.opennms.upgrade.implementations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -46,6 +47,7 @@ import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.netmgt.model.usermgmt.UserGroup;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.opennms.upgrade.support.UpgradeStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -69,6 +71,7 @@ public class DefaultUsersSeedOfflineIT implements TemporaryDatabaseAware<Tempora
 
     // users.xsd requires at least one user inside <users>, so a file without users has no <users> element
     private static final String EMPTY_USERS_XML = "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\"/>";
+    private static final String EMPTY_GROUPS_XML = "<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\"/>";
 
     @Rule
     public TemporaryFolder m_home = new TemporaryFolder();
@@ -179,6 +182,85 @@ public class DefaultUsersSeedOfflineIT implements TemporaryDatabaseAware<Tempora
         assertEquals(0, count("groups"));
         // skipping it while OpenNMS runs fails the upgrade: the database has no users yet
         assertTrue(new DefaultUsersSeedOffline().isPending());
+    }
+
+    @Test
+    public void testRpmsaveUsersFileHoldsTheSeedBack() throws Exception {
+        // RPM renamed a changed users.xml; the migrator copies it, so here it failed
+        write("users.xml.rpmsave", EMPTY_USERS_XML);
+        seed();
+        assertEquals(0, count("users"));
+        assertEquals(0, count("groups"));
+        assertTrue(new DefaultUsersSeedOffline().isPending());
+    }
+
+    @Test
+    public void testRpmsaveGroupsFileHoldsTheSeedBack() throws Exception {
+        // the migrator copies it with the default users; here it failed, and a seeded Admin group would hide its groups
+        write("groups.xml.rpmsave", EMPTY_GROUPS_XML);
+        seed();
+        assertEquals(0, count("users"));
+        assertEquals(0, count("groups"));
+        assertTrue(new DefaultUsersSeedOffline().isPending());
+    }
+
+    @Test
+    public void testGroupsFileHoldsTheSeedBack() throws Exception {
+        write("groups.xml", EMPTY_GROUPS_XML);
+        seed();
+        assertEquals(0, count("users"));
+        assertEquals(0, count("groups"));
+    }
+
+    @Test
+    public void testSecurityRolesFileHoldsTheSeedBack() throws Exception {
+        // the migrator archives the file once it copied it, with the default users when it has custom roles: here it failed
+        write("security-roles.properties", "roles=operator");
+        seed();
+        assertEquals(0, count("users"));
+        assertEquals(0, count("groups"));
+        assertTrue(new DefaultUsersSeedOffline().isPending());
+    }
+
+    @Test
+    public void testSeedsAfterTheMigratorArchivedABuiltInRolesFile() throws Exception {
+        // only built-in roles: the migrator copies nothing and sets no marker, but archives the file, so the seed runs
+        write("security-roles.properties", "roles=admin,user");
+        migrate();
+        assertFalse(new File(m_etc, "security-roles.properties").exists());
+        assertTrue(new File(m_home.getRoot(), "etc_archive/security-roles.properties").exists());
+        assertEquals(0, count("usermgmt_initialized"));
+
+        seed();
+        assertEquals(2, count("users"));
+        assertEquals(1, (int) m_jdbc.queryForObject("SELECT COUNT(*) FROM users WHERE username = 'admin'", Integer.class));
+        assertEquals(1, count("usermgmt_initialized"));
+    }
+
+    @Test
+    public void testDoesNotSeedWhileTheRolesFileCannotBeCopied() throws Exception {
+        // a malformed Unicode escape: the migrator fails and leaves the file in etc
+        write("security-roles.properties", "roles=operator,\\uZZZZ");
+        try {
+            migrate();
+            fail("The migrator must fail on a malformed security-roles.properties");
+        } catch (final OnmsUpgradeException e) {
+            // expected; the upgrade runs the other tasks before it fails
+        }
+        seed();
+        assertTrue(new File(m_etc, "security-roles.properties").exists());
+        assertEquals(0, count("users"));
+        assertEquals(0, count("groups"));
+        assertEquals(0, count("usermgmt_initialized"));
+
+        // once the file is fixed, the next run copies the roles, and the default users with them
+        write("security-roles.properties", "roles=operator");
+        migrate();
+        seed();
+        assertFalse(new File(m_etc, "security-roles.properties").exists());
+        assertEquals(1, (int) m_jdbc.queryForObject("SELECT COUNT(*) FROM security_roles WHERE name = 'ROLE_OPERATOR' AND NOT builtin", Integer.class));
+        assertEquals(1, (int) m_jdbc.queryForObject("SELECT COUNT(*) FROM users WHERE username = 'admin'", Integer.class));
+        assertEquals(1, count("usermgmt_initialized"));
     }
 
     @Test

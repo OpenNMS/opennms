@@ -1,10 +1,11 @@
-import { enableAutoUnmount, mount } from '@vue/test-utils'
+import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import GroupsAbout from '@/components/ManageGroups/GroupsAbout.vue'
 import GroupsTable from '@/components/ManageGroups/GroupsTable.vue'
+import { adminWriteSuccess } from '@/types/adminWrite'
 
 const store = vi.hoisted(() => ({
   openGroupEditor: vi.fn(),
@@ -52,6 +53,39 @@ describe('GroupsTable', () => {
     expect(row.find('[data-test="group-actions-menu-button"]').exists()).toBe(true)
     expect(wrapper.find('[data-test="unaddressable-note"]').exists()).toBe(false)
     expect(wrapper.text()).not.toContain('file-managed')
+  })
+
+  describe('delete', () => {
+    // the confirmation dialog is teleported to the body
+    const dialogButton = (label: string) => Array.from(document.body.querySelectorAll('.p-dialog button'))
+      .find(e => e.textContent?.trim() === label) as HTMLElement | undefined
+
+    const askDelete = async (wrapper: ReturnType<typeof mountTable>) => {
+      const row = wrapper.findAll('tbody tr').find(r => r.text().includes('Night'))!
+      await row.find('[data-test="delete-group-button"]').trigger('click')
+      await nextTick()
+    }
+
+    it('asks first and only then deletes with the name and version', async () => {
+      store.deleteGroup.mockResolvedValue(adminWriteSuccess())
+      await askDelete(mountTable())
+      expect(document.body.textContent).toContain('Are you sure you want to delete the group')
+      expect(store.deleteGroup).not.toHaveBeenCalled()
+
+      dialogButton('Delete')!.click()
+      await flushPromises()
+      expect(store.deleteGroup).toHaveBeenCalledWith('Night', 3)
+      expect(document.body.querySelector('.p-dialog')).toBeNull()
+    })
+
+    it('does not delete when the confirmation is cancelled', async () => {
+      await askDelete(mountTable())
+
+      dialogButton('Cancel')!.click()
+      await flushPromises()
+      expect(store.deleteGroup).not.toHaveBeenCalled()
+      expect(document.body.querySelector('.p-dialog')).toBeNull()
+    })
   })
 
   describe('filter', () => {

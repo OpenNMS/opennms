@@ -325,6 +325,8 @@ const move = (index: number, delta: number) => {
 const save = async () => {
   saving.value = true
   try {
+    // users picked in "Add users" but not yet added would be lost: they join the members as Add would
+    addMembers()
     // spread the original so a group that came without categories (absent means
     // "leave alone") is not given an empty list unless the user chose some;
     // default-map is preserved server-side

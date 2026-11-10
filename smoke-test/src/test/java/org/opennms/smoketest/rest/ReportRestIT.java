@@ -69,8 +69,8 @@ public class ReportRestIT extends AbstractRestIT {
     public void setUp() throws IOException, InterruptedException {
         final JSONObject usersObject = getUsers();
         if (usersObject.getInt("count") == 2) { // Only create users if not already created
-            postUser(createUser("test", "Test User", "test@opennms.org", "21232F297A57A5A743894A0E4A801FC3" /* admin */,  "ROLE_USER"));
-            postUser(createUser("ulf", "Report Designer", "ulf@opennms.org", "21232F297A57A5A743894A0E4A801FC3" /* admin */, "ROLE_REPORT_DESIGNER", "ROLE_USER"));
+            postUser(createUser("test", "Test User", "test@opennms.org", "admin", "ROLE_USER"));
+            postUser(createUser("ulf", "Report Designer", "ulf@opennms.org", "admin", "ROLE_REPORT_DESIGNER", "ROLE_USER"));
             // wait for the user config cache to refresh
             Thread.sleep(1100);
         }
@@ -283,16 +283,16 @@ public class ReportRestIT extends AbstractRestIT {
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         JAXB.marshal(user, outputStream);
 
-        sendPost("/rest/users", new String(outputStream.toByteArray()));
+        // v1 takes the password in plain text with hashPassword=true; it does not accept a hash
+        sendPost("/rest/users?hashPassword=true", new String(outputStream.toByteArray()), 201);
     }
 
-    private static OnmsUser createUser(String userId, String username, String userEmail, String userPasswordHash, String... roles) {
+    private static OnmsUser createUser(String userId, String username, String userEmail, String password, String... roles) {
         final OnmsUser user = new OnmsUser();
         user.setUsername(userId);
         user.setFullName(username);
         user.setEmail(userEmail);
-        user.setPassword(userPasswordHash);
-        user.setPasswordSalted(false);
+        user.setPassword(password);
         user.setRoles(Arrays.asList(roles));
         return user;
     }

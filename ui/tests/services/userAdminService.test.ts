@@ -41,7 +41,7 @@ vi.mock('@/services/axiosInstances', async () => {
 })
 
 const IF_MATCH_7 = { headers: { 'If-Match': '"7"' }}
-const UNAVAILABLE = 'User management through this API needs org.opennms.usermgmt.store=db.'
+const UNAVAILABLE = 'User management is temporarily unavailable.'
 
 // the URL a mocked axios call would have requested: its path plus the query built from its params
 const requestedUri = (call: any[], configIndex: number) => axios.getUri({ url: call[0], params: call[configIndex]?.params })
@@ -115,6 +115,31 @@ describe('userAdminService item URLs', () => {
 
     await svc.deleteManagedUser(userId, 7)
     expect(v2.delete).toHaveBeenLastCalledWith('/users/item', { ...IF_MATCH_7, params: { userId }})
+  })
+})
+
+describe('userAdminService summaries', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('reads the summaries from the users endpoint with view=summary', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ data: [{ userId: 'admin', fullName: 'Administrator' }, { userId: 'jdoe', fullName: null }] })
+
+    expect(await svc.getManagedUserSummaries()).toEqual({
+      success: true,
+      message: '',
+      payload: [{ userId: 'admin', fullName: 'Administrator' }, { userId: 'jdoe', fullName: null }]
+    })
+    expect(requestedUri(vi.mocked(v2.get).mock.lastCall!, 1)).toBe('/users?view=summary')
+  })
+
+  it('fails with the server text, or a default without one', async () => {
+    vi.mocked(v2.get).mockRejectedValue({ response: { status: 503, data: UNAVAILABLE }})
+    expect(await svc.getManagedUserSummaries()).toEqual(expect.objectContaining({ success: false, message: UNAVAILABLE }))
+
+    vi.mocked(v2.get).mockRejectedValue(new Error('Network Error'))
+    expect(await svc.getManagedUserSummaries()).toEqual(expect.objectContaining({ success: false, message: 'Failed to load users.' }))
   })
 })
 

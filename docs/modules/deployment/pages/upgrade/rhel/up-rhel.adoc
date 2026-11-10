@@ -72,6 +72,13 @@ NOTE: If you upgrade in place, {page-component-title} renames any shipped config
 Inspect these files manually and reconcile any differences.
 Use `diff -Bbw` and `diff -y` to look for changes.
 If any `.rpmnew` or `.rpmsave` files exist within the configuration directory, services will not start.
++
+NOTE: Do not delete `users.xml.rpmsave` and `groups.xml.rpmsave`.
+{page-component-title} no longer ships `users.xml` and `groups.xml`, so the upgrade renames a modified copy to `.rpmsave` and deletes an unmodified one.
+The installer in the next step copies the users and groups into the database and moves the files to `etc_archive/`.
+For an unmodified file it uses the former defaults: the `admin` and `rtc` users, and the `Admin` group.
+When `users.xml` is missing, the installer reads `users.xml.rpmsave` (and the same for `groups.xml`).
+An old `.rpmsave` file, left in `etc` by an earlier removal of the package, would bring back the users and passwords of that time: delete it before you install on a new database.
 
 . Run the {page-component-title} installer:
 +

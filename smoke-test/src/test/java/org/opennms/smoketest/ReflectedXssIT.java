@@ -93,11 +93,6 @@ public class ReflectedXssIT extends OpenNMSSeleniumIT {
     }
 
     @Test
-    public void testNewGroup() {
-        assertNoScriptRuns("admin/userGroupView/groups/modifyGroup?operation=create&action=redo&groupName=" + enc(HTML));
-    }
-
-    @Test
     public void testHomePageMap() {
         assertNoScriptRuns("index.jsp?mapId=" + enc(HTML));
         assertNoScriptRuns("index.jsp?height=" + enc(NG));
@@ -121,14 +116,6 @@ public class ReflectedXssIT extends OpenNMSSeleniumIT {
     @Test
     public void testPathOutageWizard() {
         assertNoScriptRuns("admin/notification/noticeWizard/buildPathOutage.jsp?mode=" + enc(HTML + "failed"));
-    }
-
-    @Test
-    public void testRoleScheduleEntry() {
-        // Equal start and end times select the error branch, which does not change the role.
-        final String times = "&startMonth=1&startDate=1&startYear=2020&startHour=1&startMinute=0&startAmOrPm=AM"
-                + "&endMonth=1&endDate=1&endYear=2020&endHour=1&endMinute=0&endAmOrPm=AM";
-        assertNoScriptRuns("admin/userGroupView/roles?operation=saveEntry&save=1&role=x&timeIndex=0&schedIndex=0" + enc(HTML) + times);
     }
 
     @Test

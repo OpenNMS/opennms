@@ -49,6 +49,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.opennms.netmgt.config.OnCallScheduleExpander;
 import org.opennms.netmgt.config.OnCallScheduleExpander.OnCallNow;
 import org.opennms.netmgt.config.UserMgmtJaxbMapper;
+import org.opennms.netmgt.config.WarnOnce;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.groups.Time;
@@ -95,6 +96,10 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     private static final String WHAT = "On-call role management";
     /** The earliest year the calendar preview shows; on-call schedules are not kept for earlier ones. */
     static final int MIN_CALENDAR_YEAR = 1900;
+    /** How many role and message pairs {@link #onCallNow} remembers as warned; the least recently seen is dropped. */
+    static final int MAX_WARNED_SCHEDULES = 1000;
+    /** The role and message pairs that {@link #onCallNow} has warned about; later reads log them at DEBUG. */
+    private final WarnOnce m_warnedSchedules = new WarnOnce(MAX_WARNED_SCHEDULES);
 
     @Autowired
     private UserMgmtRestSupport m_support;
@@ -112,7 +117,6 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     @Transactional(readOnly = true)
     public Response listOnCallRoles(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, WHAT);
-        m_support.requireDatabaseStore();
         try {
             final List<OnCallRole> roles = new ArrayList<>(m_onCallRoleDao.findAll());
             roles.sort(Comparator.comparing(OnCallRole::getName, String.CASE_INSENSITIVE_ORDER));
@@ -153,7 +157,6 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     @Transactional
     public Response createOnCallRole(final SecurityContext securityContext, final OnCallRoleDto dto) {
         m_support.assertAdmin(securityContext, WHAT);
-        m_support.requireDatabaseStore();
         if (dto == null || StringUtils.isBlank(dto.getName())) {
             throw m_support.badRequest("An on-call role name is required.");
         }
@@ -306,7 +309,6 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     @Transactional(readOnly = true)
     public Response getScheduleSettings(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, WHAT);
-        m_support.requireDatabaseStore();
         final OnCallScheduleSettingsDto settings = new OnCallScheduleSettingsDto();
         settings.setTimeZone(TimeZone.getDefault().getID());
         settings.setShortMonths(Arrays.asList(DateFormatSymbols.getInstance(Locale.ROOT).getShortMonths()).subList(0, 12));
@@ -317,7 +319,6 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
     @Transactional(readOnly = true)
     public Response previewCalendar(final SecurityContext securityContext, final String month, final OnCallRoleDto draft) {
         m_support.assertAdmin(securityContext, WHAT);
-        m_support.requireDatabaseStore();
         final YearMonth yearMonth;
         if (month == null || !month.matches("\\d{4}-\\d{2}")) {
             throw m_support.badRequest("month must be YYYY-MM.");
@@ -596,7 +597,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         return Arrays.asList(dto.getUser(), dto.getType(), times);
     }
 
-    private static OnCallRoleDto toDto(final OnCallRole role, final int version) {
+    private OnCallRoleDto toDto(final OnCallRole role, final int version) {
         final OnCallRoleDto dto = new OnCallRoleDto();
         dto.setName(role.getName());
         dto.setDescription(role.getDescription());
@@ -627,12 +628,20 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         return dto;
     }
 
-    /** Who is on call now; a stored schedule notifd cannot evaluate must not fail the read, so it reports nobody. */
-    private static OnCallNow onCallNow(final OnCallRole role) {
+    /**
+     * Who is on call now; a stored schedule notifd cannot evaluate must not fail the read, so it reports nobody.
+     * Every read of the role evaluates it, so the failure is a WARN once per role and message (which names the
+     * unreadable value, such as a monthly day), and a DEBUG after that.
+     */
+    OnCallNow onCallNow(final OnCallRole role) {
         try {
             return OnCallScheduleExpander.onCallAt(UserMgmtJaxbMapper.toRole(role), new Date());
         } catch (final RuntimeException e) {
-            LOG.warn("Cannot evaluate the schedules of on-call role {}: {}", role.getName(), e.getMessage());
+            if (m_warnedSchedules.isNew(role.getName(), e.getMessage())) {
+                LOG.warn("Cannot evaluate the schedules of on-call role {}: {}", role.getName(), e.getMessage());
+            } else {
+                LOG.debug("Cannot evaluate the schedules of on-call role {}: {}", role.getName(), e.getMessage());
+            }
             return new OnCallNow(new ArrayList<>(), false);
         }
     }

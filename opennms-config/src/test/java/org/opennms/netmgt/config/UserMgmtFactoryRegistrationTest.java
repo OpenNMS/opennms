@@ -21,8 +21,10 @@
  */
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 
 import org.junit.After;
@@ -63,5 +65,18 @@ public class UserMgmtFactoryRegistrationTest {
         registration.destroy();
         assertSame(laterUsers, UserFactory.getInstance());
         assertSame(laterGroups, GroupFactory.getInstance());
+    }
+
+    @Test
+    public void testInitNeedsARegisteredManager() {
+        // init() never reads users.xml or groups.xml: without a registered manager it fails
+        assertEquals("No user manager is registered: the user management context is not loaded.",
+                assertThrows(IllegalStateException.class, UserFactory::init).getMessage());
+        assertEquals("No group manager is registered: the user management context is not loaded.",
+                assertThrows(IllegalStateException.class, GroupFactory::init).getMessage());
+
+        new UserMgmtFactoryRegistration(mock(UserManager.class), mock(GroupManager.class)).afterPropertiesSet();
+        UserFactory.init();
+        GroupFactory.init();
     }
 }

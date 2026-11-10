@@ -31,7 +31,7 @@ import {
   STALE_ONCALL_ROLE_MESSAGE,
   STALE_ONCALL_ROLE_RELOAD_FAILED_MESSAGE
 } from '@/types/onCallRoleAdmin'
-import { ManagedUser } from '@/types/userAdmin'
+import { UserSummary } from '@/types/userAdmin'
 import { ManagedGroup } from '@/types/groupAdmin'
 import { createResultWithPayload } from '@/types/validation'
 
@@ -46,7 +46,7 @@ vi.mock('@/services', () => ({
   default: {
     getManagedOnCallRoles: vi.fn(),
     getOnCallScheduleSettings: vi.fn(),
-    getManagedUsers: vi.fn(),
+    getManagedUserSummaries: vi.fn(),
     getManagedGroups: vi.fn(),
     createManagedOnCallRole: vi.fn(),
     updateManagedOnCallRole: vi.fn(),
@@ -62,13 +62,13 @@ describe('useOnCallRoleAdminStore', () => {
     { name: 'Ops Rota', membershipGroup: 'NOC', supervisor: 'admin', schedules: [], onCallNow: ['admin'], onCallNowIsSupervisor: false, version: 1 },
     { name: 'Night', membershipGroup: 'NOC', supervisor: 'admin', schedules: [], version: 2 }
   ]
-  const mockUsers = [{ userId: 'admin', fullName: 'Administrator', version: 1 }, { userId: 'jdoe', version: 1 }] as ManagedUser[]
+  const mockUsers: UserSummary[] = [{ userId: 'admin', fullName: 'Administrator' }, { userId: 'jdoe' }]
   const mockGroups = [{ name: 'NOC', users: ['jdoe', 'admin'], version: 1 }, { name: 'Empty', version: 1 }] as ManagedGroup[]
   const settings: OnCallScheduleSettings = { timeZone: 'UTC', shortMonths: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] }
 
   const mockAllReads = () => {
     vi.mocked(API.getManagedOnCallRoles).mockResolvedValue(loaded(mockRoles))
-    vi.mocked(API.getManagedUsers).mockResolvedValue(loaded(mockUsers))
+    vi.mocked(API.getManagedUserSummaries).mockResolvedValue(loaded(mockUsers))
     vi.mocked(API.getManagedGroups).mockResolvedValue(loaded(mockGroups))
     vi.mocked(API.getOnCallScheduleSettings).mockResolvedValue(loaded(settings))
   }
@@ -100,11 +100,51 @@ describe('useOnCallRoleAdminStore', () => {
     expect(store.users).toEqual(mockUsers)
     expect(store.groups).toEqual(mockGroups)
     expect(store.scheduleSettings).toEqual(settings)
+    expect(API.getManagedUserSummaries).toHaveBeenCalledTimes(1)
+  })
+
+  describe('schedule settings load state', () => {
+    it('is pending until the settings load finishes, then loaded', async () => {
+      mockAllReads()
+      let finish: (value: ReturnType<typeof loaded<OnCallScheduleSettings>>) => void = () => {}
+      vi.mocked(API.getOnCallScheduleSettings).mockReturnValue(new Promise((resolve) => {
+        finish = resolve
+      }))
+      expect(store.scheduleSettingsLoad).toBe('pending')
+
+      const populating = store.populate()
+      await Promise.resolve()
+      expect(store.scheduleSettingsLoad).toBe('pending')
+
+      finish(loaded(settings))
+      await populating
+      expect(store.scheduleSettingsLoad).toBe('loaded')
+    })
+
+    it('is failed after a failed load, and loaded again after a retry', async () => {
+      vi.mocked(API.getOnCallScheduleSettings).mockResolvedValue(failed('settings down'))
+      await store.getScheduleSettings()
+      expect(store.scheduleSettingsLoad).toBe('failed')
+      expect(store.scheduleSettings).toBeNull()
+
+      vi.mocked(API.getOnCallScheduleSettings).mockResolvedValue(loaded(settings))
+      await store.getScheduleSettings()
+      expect(store.scheduleSettingsLoad).toBe('loaded')
+    })
+
+    it('stays loaded when a refresh fails after settings were read', async () => {
+      vi.mocked(API.getOnCallScheduleSettings).mockResolvedValue(loaded(settings))
+      await store.getScheduleSettings()
+      vi.mocked(API.getOnCallScheduleSettings).mockResolvedValue(failed('settings down'))
+      await store.getScheduleSettings()
+      expect(store.scheduleSettingsLoad).toBe('loaded')
+      expect(store.scheduleSettings).toEqual(settings)
+    })
   })
 
   it.each([
     ['getManagedOnCallRoles', 'Failed to load on-call roles.'],
-    ['getManagedUsers', 'Failed to load users.'],
+    ['getManagedUserSummaries', 'Failed to load users.'],
     ['getManagedGroups', 'Failed to load groups.'],
     ['getOnCallScheduleSettings', 'Failed to load the schedule settings.']
   ] as const)('populate reports a failed %s with its message', async (read, message) => {
@@ -119,7 +159,7 @@ describe('useOnCallRoleAdminStore', () => {
     mockAllReads()
     await store.populate()
 
-    vi.mocked(API.getManagedUsers).mockResolvedValue(failed('users down'))
+    vi.mocked(API.getManagedUserSummaries).mockResolvedValue(failed('users down'))
     vi.mocked(API.getManagedGroups).mockResolvedValue(failed('groups down'))
     expect(await store.populate()).toEqual(expect.objectContaining({ success: false, message: 'users down' }))
     expect(store.users).toEqual(mockUsers)

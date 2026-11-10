@@ -31,16 +31,18 @@ import {
   STALE_ONCALL_ROLE_MESSAGE,
   STALE_ONCALL_ROLE_RELOAD_FAILED_MESSAGE
 } from '@/types/onCallRoleAdmin'
-import { ManagedUser } from '@/types/userAdmin'
+import { UserSummary } from '@/types/userAdmin'
 import { createSuccessResponse, ValidationResult } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useOnCallRoleAdminStore = defineStore('onCallRoleAdminStore', () => {
   const roles = ref([] as ManagedOnCallRole[])
-  const users = ref([] as ManagedUser[])
+  const users = ref([] as UserSummary[])
   const groups = ref([] as ManagedGroup[])
   const scheduleSettings = ref<OnCallScheduleSettings | null>(null)
+  // missing settings are only an error once their load has failed: until then they are still on the way
+  const scheduleSettingsLoad = ref<'pending' | 'loaded' | 'failed'>('pending')
 
   const editMode = ref(AdminEditMode.Table)
   // the role being edited; null while creating or on the table
@@ -78,7 +80,7 @@ export const useOnCallRoleAdminStore = defineStore('onCallRoleAdminStore', () =>
   }
 
   const getUsers = async (): Promise<ValidationResult> => {
-    const result = await API.getManagedUsers()
+    const result = await API.getManagedUserSummaries()
     if (result.success) {
       users.value = result.payload ?? []
     }
@@ -98,6 +100,8 @@ export const useOnCallRoleAdminStore = defineStore('onCallRoleAdminStore', () =>
     if (result.success) {
       scheduleSettings.value = result.payload ?? null
     }
+    // a failed refresh keeps the settings read before it
+    scheduleSettingsLoad.value = scheduleSettings.value ? 'loaded' : 'failed'
     return result
   }
 
@@ -125,6 +129,7 @@ export const useOnCallRoleAdminStore = defineStore('onCallRoleAdminStore', () =>
     users,
     groups,
     scheduleSettings,
+    scheduleSettingsLoad,
     editMode,
     currentRole,
     openRoleEditor,

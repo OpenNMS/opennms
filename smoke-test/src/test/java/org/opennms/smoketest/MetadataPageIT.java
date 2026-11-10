@@ -44,6 +44,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.core.Response;
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MetadataPageIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(MetadataPageIT.class);
@@ -153,38 +155,17 @@ public class MetadataPageIT extends OpenNMSSeleniumIT {
         return null;
     }
 
-    private void deleteUnpriviledgedUser() throws Exception{
-        logout();
-        login();
+    private void deleteUnpriviledgedUser() {
         LOG.debug("Deleting unpriviledged user...");
-        jspUserListPage();
-        findElementById("users("+ UNPRIVILEDGED_USERNAME +").doDelete").click();
-        acceptAlert("Are you sure you want to delete the user "+ UNPRIVILEDGED_USERNAME +"?");
-        assertElementDoesNotExist(By.id(UNPRIVILEDGED_USERNAME));
+        final Response response = stack.opennms().getRestClient().deleteUser(UNPRIVILEDGED_USERNAME);
+        Assert.assertEquals(Response.Status.Family.SUCCESSFUL, response.getStatusInfo().getFamily());
         LOG.debug("Unpriviledged deleted!");
     }
 
     private void createUnpriviledgedUser() {
         LOG.debug("Creating unpriviledged user...");
-
-        // navigate to the new user page of the JSP user list
-        jspUserListPage();
-        findElementByLink("Add new user").click();
-
-        // enter user credentials
-        enterText(By.id("userID"), UNPRIVILEDGED_USERNAME);
-        enterText(By.id("pass1"), UNPRIVILEDGED_PASSWORD);
-        enterText(By.id("pass2"), UNPRIVILEDGED_PASSWORD);
-        // proceed
-        findElementByXpath("//button[@type='submit' and text()='OK']").click();
-        // finish
-        waitUntil(pageContainsText("Finish"));
-        findElementById("saveUserButton").click();
-
-        // check for the new user
-        waitUntil(pageContainsText("Add new user"));
-        waitUntil(pageContainsText(UNPRIVILEDGED_USERNAME));
-
+        final Response response = stack.opennms().getRestClient().addUser(UNPRIVILEDGED_USERNAME, UNPRIVILEDGED_PASSWORD, "ROLE_USER");
+        Assert.assertEquals(Response.Status.Family.SUCCESSFUL, response.getStatusInfo().getFamily());
         LOG.debug("Unpriviledged user created!");
     }
 

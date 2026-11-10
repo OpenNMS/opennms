@@ -24,7 +24,6 @@ package org.opennms.smoketest;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -46,13 +45,13 @@ import org.junit.Test;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.containers.PostgreSQLContainer;
 import org.opennms.smoketest.rest.AbstractRestIT;
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 
 import io.restassured.RestAssured;
@@ -61,18 +60,16 @@ import io.restassured.response.Response;
 
 /**
  * Stores markup and quotes in the text fields of a user, a group and an on-call role, in the name of a destination
- * path and in the fields of an event notification, then opens the legacy JSP pages and the Vue pages that show them.
- * No script may run, and the text must appear as text.
+ * path and in the fields of an event notification, then opens the pages that show them: the on-call role pages, the
+ * Vue user-management pages and the notification pages. No script may run, and the text must appear as text.
  *
  * <p>The v2 REST API refuses markup in names and comments. It still accepts it in full names, e-mail addresses and
  * role descriptions, so those objects are created through the API. The names that reach JavaScript strings,
- * {@code javascript:} links and {@code id} attributes are created another way. The user ID and the role name go through
- * the classic pages: the role pages do not check the name, and a user ID only may not hold quotes or markup. The
- * classic group pages refuse quotes and markup in a group name and comments, but groups migrated from
- * {@code groups.xml} can hold them, so the group gets its name and comments in the database.</p>
+ * {@code javascript:} links and {@code id} attributes are created another way: the object is created through the API
+ * with a plain seed name, and the test renames it in the database, as a user ID, a group name or a role name
+ * migrated from the XML files can hold them. The managers see the change on their next check, within a second.</p>
  *
- * <p>The objects are created once for the class and removed when it is done. Every test only reads them, except
- * {@link #testDeleteLinksReachTheRightObject()}, which creates and deletes its own.</p>
+ * <p>The objects are created once for the class and removed when it is done. Every test only reads them.</p>
  */
 public class UserMgmtXssIT extends AbstractRestIT {
     private static final String BASE = "/opennms/api/v2/";
@@ -92,15 +89,10 @@ public class UserMgmtXssIT extends AbstractRestIT {
     // the plain name the group is created with, before it gets CLASSIC_GROUP in the database
     private static final String CLASSIC_GROUP_SEED = "xssclassicgroup";
     private static final String CLASSIC_ROLE = "xssr');window.__xss=5;//<u>\"%27);window.__xss=6;//";
-    // a user ID may not contain quotes or markup; a percent-encoded quote and a semicolon get through
-    private static final String CLASSIC_USER = "xssu%27);window.__xss=7;//";
+    private static final String CLASSIC_ROLE_SEED = "xssclassicrole";
+    private static final String CLASSIC_USER = "xssu');window.__xss=7;//<u>\"%27);window.__xss=9;//";
+    private static final String CLASSIC_USER_SEED = "xssclassicuser";
     private static final String CLASSIC_COMMENTS = "<img src=x onerror=window.__xss=8> \"quoted\" 'single'";
-
-    // the same kind of names for the objects the delete test removes; none is a part of another name
-    private static final String DELETE_GROUP = "xssdg');window.__xss=5;//<u>\"%27);window.__xss=6;//";
-    private static final String DELETE_GROUP_SEED = "xssdeletegroup";
-    private static final String DELETE_ROLE = "xssdr');window.__xss=5;//<u>\"%27);window.__xss=6;//";
-    private static final String DELETE_USER = "xssdu%27);window.__xss=7;//";
 
     private static final String DESCRIPTION = "<script>window.__xss=3</script> \"quoted\" 'single' <img src=x onerror=window.__xss=4>";
 
@@ -149,8 +141,8 @@ public class UserMgmtXssIT extends AbstractRestIT {
             cleanUp();
             createApiObjects();
             createClassicGroup(CLASSIC_GROUP, CLASSIC_GROUP_SEED);
-            createClassicUser(CLASSIC_USER);
-            createClassicRole(CLASSIC_ROLE);
+            createClassicUser(CLASSIC_USER, CLASSIC_USER_SEED);
+            createClassicRole(CLASSIC_ROLE, CLASSIC_ROLE_SEED);
         } catch (final Exception | AssertionError e) {
             fixtureError = e;
             throw e;
@@ -185,47 +177,47 @@ public class UserMgmtXssIT extends AbstractRestIT {
         given().basePath(BASE + "oncall-roles").contentType(ContentType.JSON).body(role).post().then().statusCode(201);
     }
 
-    /**
-     * No page or API takes a group name with quotes or markup, so create a plain group and rename it in the database.
-     * The group manager sees the change on its next check, within a second.
-     */
+    /** The API refuses a group name with quotes or markup, so create a plain group and rename it in the database. */
     private void createClassicGroup(final String name, final String seed) throws Exception {
         given().basePath(BASE + "groups").contentType(ContentType.JSON).body(ImmutableMap.of("name", seed))
                 .post().then().statusCode(201);
         sql("UPDATE groups SET name = ?, comments = ? WHERE name = ?", name, CLASSIC_COMMENTS, seed);
-        open(base() + "admin/userGroupView/groups/list.htm");
+        awaitListed("groups", name);
+    }
+
+    /** The API refuses a user ID with quotes or markup, so create a plain user and rename it in the database. */
+    private void createClassicUser(final String userId, final String seed) throws Exception {
+        final Map<String, Object> user = ImmutableMap.of(
+                "userId", seed,
+                "fullName", FULL_NAME,
+                "password", "SmokeTestPassword1");
+        given().basePath(BASE + "users").contentType(ContentType.JSON).body(user).post().then().statusCode(201);
+        sql("UPDATE users SET username = ?, comments = ? WHERE username = ?", userId, CLASSIC_COMMENTS, seed);
+        awaitListed("users", userId);
+    }
+
+    /** The API refuses a role name with quotes or markup. The role has USER as its supervisor and GROUP as its membership group. */
+    private void createClassicRole(final String name, final String seed) throws Exception {
+        final Map<String, Object> role = ImmutableMap.of(
+                "name", seed,
+                "description", DESCRIPTION,
+                "membershipGroup", GROUP,
+                "supervisor", USER);
+        given().basePath(BASE + "oncall-roles").contentType(ContentType.JSON).body(role).post().then().statusCode(201);
+        sql("UPDATE oncall_roles SET name = ? WHERE name = ?", name, seed);
+        awaitListed("oncall-roles", name);
+        // the pages of the roles read the managers, which check the database at most once a second
         wait.until(d -> {
-            d.navigate().refresh();
-            return ((JavascriptExecutor) d).executeScript("return document.getElementById(arguments[0]) !== null", name + ".doModify");
+            d.get(base() + "roles");
+            return d.findElement(By.tagName("body")).getText().contains(name);
         });
     }
 
-    /** The page checks the user ID in the browser only; submit the form without that check. */
-    private void createClassicUser(final String userId) throws Exception {
-        open(base() + "admin/userGroupView/users/newUser.jsp");
-        setValue("userID", userId);
-        setValue("pass1", "SmokeTestPassword1");
-        setValue("pass2", "SmokeTestPassword1");
-        submitForm("newUserForm");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("fullName")));
-        setValue("fullName", FULL_NAME);
-        setValue("userComments", CLASSIC_COMMENTS);
-        findElementById("saveUserButton").click();
-        waitForId("users(" + userId + ").doModify");
-    }
-
-    /** The role pages do not check the name. The role has USER as its supervisor and GROUP as its membership group. */
-    private void createClassicRole(final String name) throws Exception {
-        open(base() + "admin/userGroupView/roles");
-        driver.findElement(By.xpath("//button[text()='Add New On-Call Role']")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("input_roleName")));
-        setValue("input_roleName", name);
-        setValue("input_roleDescr", DESCRIPTION);
-        new Select(driver.findElement(By.id("input_roleUser"))).selectByVisibleText(USER);
-        new Select(driver.findElement(By.id("input_roleGroup"))).selectByVisibleText(GROUP);
-        clickToLoad(driver.findElement(By.name("save")));
-        assertBodyContains(name);
-        assertNothingRan();
+    /** Polls the list of a v2 collection until it holds the name; the name is compared as the JSON text the list shows. */
+    private void awaitListed(final String collection, final String name) throws Exception {
+        final String json = new ObjectMapper().writeValueAsString(name);
+        final String encoded = json.substring(1, json.length() - 1);
+        wait.until(d -> given().basePath(BASE + collection).accept(ContentType.JSON).get().asString().contains(encoded));
     }
 
     @AfterClass
@@ -248,9 +240,9 @@ public class UserMgmtXssIT extends AbstractRestIT {
         RestAssured.authentication = preemptive().basic(OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD);
         // The API refuses the classic names, so delete those objects in the database. The classic roles name USER
         // and GROUP, so they go first.
-        sql("DELETE FROM oncall_roles WHERE name IN (?, ?)", CLASSIC_ROLE, DELETE_ROLE);
-        sql("DELETE FROM groups WHERE name IN (?, ?, ?, ?)", CLASSIC_GROUP, CLASSIC_GROUP_SEED, DELETE_GROUP, DELETE_GROUP_SEED);
-        sql("DELETE FROM users WHERE username IN (?, ?)", CLASSIC_USER, DELETE_USER);
+        sql("DELETE FROM oncall_roles WHERE name IN (?, ?)", CLASSIC_ROLE, CLASSIC_ROLE_SEED);
+        sql("DELETE FROM groups WHERE name IN (?, ?)", CLASSIC_GROUP, CLASSIC_GROUP_SEED);
+        sql("DELETE FROM users WHERE username IN (?, ?)", CLASSIC_USER, CLASSIC_USER_SEED);
         given().basePath(BASE + "oncall-roles").delete(ROLE);
         given().basePath(BASE + "groups").delete(GROUP);
         given().basePath(BASE + "users").delete(USER);
@@ -289,182 +281,92 @@ public class UserMgmtXssIT extends AbstractRestIT {
     }
 
     @Test
-    public void testUserPages() throws Exception {
-        // users list: the full name and the email of each user
-        open(base() + "admin/userGroupView/users/list.jsp");
-        assertText(By.id("users(" + USER + ").fullName"), FULL_NAME);
-        assertText(By.id("users(" + USER + ").email"), EMAIL);
-        assertNothingRan();
-
-        // user detail
-        open(base() + "admin/userGroupView/users/userDetail.jsp?userID=" + USER);
-        assertBodyContains(FULL_NAME);
-        assertBodyContains(EMAIL);
-        assertNothingRan();
-
-        // user modify page, reached from the list. The fields hold the values, so compare the inputs.
-        open(base() + "admin/userGroupView/users/list.jsp");
-        clickToLoad(findElementById("users(" + USER + ").doModify"));
-        assertEquals(FULL_NAME, driver.findElement(By.id("fullName")).getAttribute("value"));
-        assertEquals(EMAIL, driver.findElement(By.id("email")).getAttribute("value"));
-        assertNothingRan();
-
-        // the classic user ID is in onclick handlers and in javascript: URLs of the list
-        open(base() + "admin/userGroupView/users/list.jsp");
-        assertBodyContains(CLASSIC_USER);
-        trapXss();
-        clickToLoad(byId("users(" + CLASSIC_USER + ").doModify"));
-        assertEquals(FULL_NAME, driver.findElement(By.id("fullName")).getAttribute("value"));
-        assertNothingRan();
-
-        open(base() + "admin/userGroupView/users/list.jsp");
-        trapXss();
-        clickToLoad(byId("users(" + CLASSIC_USER + ").doDetails"));
-        assertBodyContains(CLASSIC_USER);
-        assertNothingRan();
-    }
-
-    @Test
-    public void testGroupPages() throws Exception {
-        // groups list: the group name and the comments, not the members
-        open(base() + "admin/userGroupView/groups/list.htm");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("group-" + GROUP)));
-        assertBodyContains(GROUP);
-        assertBodyContains(GROUP_COMMENTS);
-        assertNothingRan();
-
-        // GET modifyGroup?groupName= without an operation shows the group's detail page (read-only)
-        open(base() + "admin/userGroupView/groups/modifyGroup?groupName=" + GROUP);
-        assertBodyContains("Details for Group: " + GROUP);
-        assertBodyContains(GROUP_COMMENTS);
-        assertBodyContains(USER);
-        assertNothingRan();
-
-        // group modify page, reached from the list; the name is in the hidden input, the member in the user list
-        open(base() + "admin/userGroupView/groups/list.htm");
-        clickToLoad(findElementById(GROUP + ".doModify"));
-        assertEquals(GROUP, driver.findElement(By.name("groupName")).getAttribute("value"));
-        assertBodyContains(USER);
-        assertNothingRan();
-
-        // the classic group name is in id attributes, in onclick handlers and in javascript: URLs of the list
-        open(base() + "admin/userGroupView/groups/list.htm");
-        assertBodyContains(CLASSIC_GROUP);
-        assertNothingRan();
-        trapXss();
-        clickToLoad(byId(CLASSIC_GROUP + ".doModify"));
-        assertEquals(CLASSIC_GROUP, driver.findElement(By.name("groupName")).getAttribute("value"));
-        assertNothingRan();
-    }
-
-    @Test
-    public void testRolePages() throws Exception {
-        // on-call role list (admin) and the role view
-        open(base() + "admin/userGroupView/roles");
-        assertBodyContains(DESCRIPTION);
-        assertNothingRan();
-        clickToLoad(driver.findElement(By.linkText(ROLE)));
-        assertBodyContains(DESCRIPTION);
-        assertNothingRan();
-
-        // on-call role list (everyone) and its role view
+    public void testRoleListForEveryone() throws Exception {
         open(base() + "roles");
         assertBodyContains(DESCRIPTION);
         assertNothingRan();
+    }
+
+    @Test
+    public void testRoleViewForEveryone() throws Exception {
+        open(base() + "roles");
         clickToLoad(driver.findElement(By.linkText(ROLE)));
         assertBodyContains(DESCRIPTION);
         assertNothingRan();
+    }
 
-        // The full-name tooltips on the role pages: the supervisor and the scheduled user are USER, whose full name is markup.
-        for (final String page : new String[] { "admin/userGroupView/roles", "roles" }) {
-            open(base() + page);
-            assertBodyContains(CLASSIC_ROLE);
-            assertTitleAttribute(FULL_NAME);
-            assertNothingRan();
-            // the role link is a javascript: URL that holds the name; it must open the right role
-            trapXss();
-            clickToLoad(driver.findElement(By.linkText(CLASSIC_ROLE)));
-            assertBodyContains(DESCRIPTION);
-            assertBodyContains(CLASSIC_ROLE);
-            // only the admin role view has the tooltips; the role view for everyone shows the user ids as plain text
-            if (page.startsWith("admin/")) {
-                assertTitleAttribute(FULL_NAME);
-            }
-            assertNothingRan();
-        }
-
-        // the role edit page: the name is in an attribute
-        open(base() + "admin/userGroupView/roles");
-        trapXss();
-        clickToLoad(driver.findElement(By.linkText(CLASSIC_ROLE)));
-        clickToLoad(driver.findElement(By.xpath("//button[text()='Value Details']")));
-        assertEquals(CLASSIC_ROLE, driver.findElement(By.id("input_roleName")).getAttribute("value"));
+    @Test
+    public void testClassicRoleTooltipsShowFullNameAsText() throws Exception {
+        // the supervisor and the scheduled user are USER, whose full name is markup
+        open(base() + "roles");
+        assertBodyContains(CLASSIC_ROLE);
+        assertTitleAttribute(FULL_NAME);
         assertNothingRan();
     }
 
-    /**
-     * The delete links hold the names in a confirm() string and in a javascript: URL. The dialog must show the name as
-     * stored, and the delete must reach the right object. The test deletes objects of its own, so the other tests keep
-     * theirs whatever the order.
-     */
     @Test
-    public void testDeleteLinksReachTheRightObject() throws Exception {
-        createClassicGroup(DELETE_GROUP, DELETE_GROUP_SEED);
-        createClassicUser(DELETE_USER);
-        createClassicRole(DELETE_ROLE);
-
-        open(base() + "admin/userGroupView/groups/list.htm");
+    public void testClassicRoleLinkOpensTheRightRole() throws Exception {
+        // the role link is a javascript: URL that holds the name
+        open(base() + "roles");
         trapXss();
-        deleteAndConfirm(byId(DELETE_GROUP + ".doDelete"), "Are you sure you want to delete the group " + DELETE_GROUP + "?");
-        assertBodyDoesNotContain(DELETE_GROUP);
-        assertBodyContains(CLASSIC_GROUP);
-        assertNothingRan();
-
-        open(base() + "admin/userGroupView/users/list.jsp");
-        trapXss();
-        deleteAndConfirm(byId("users(" + DELETE_USER + ").doDelete"), "Are you sure you want to delete the user " + DELETE_USER + "?");
-        assertBodyDoesNotContain(DELETE_USER);
-        assertBodyContains(CLASSIC_USER);
-        assertNothingRan();
-
-        open(base() + "admin/userGroupView/roles");
-        trapXss();
-        final WebElement row = driver.findElement(By.xpath("//tr[.//a[text()=" + xpathLiteral(DELETE_ROLE) + "]]"));
-        deleteAndConfirm(row.findElement(By.xpath(".//a[contains(@href, 'doDelete')]")), "Are you sure you want to delete the role " + DELETE_ROLE + "?");
-        assertBodyDoesNotContain(DELETE_ROLE);
+        clickToLoad(driver.findElement(By.linkText(CLASSIC_ROLE)));
+        assertBodyContains(DESCRIPTION);
         assertBodyContains(CLASSIC_ROLE);
         assertNothingRan();
     }
 
     @Test
-    public void testVuePages() throws Exception {
-        // Manage Users
+    public void testManageUsersPage() throws Exception {
         open(base() + "ui/index.html#/admin/users");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage Users']")));
         pageToRow("[data-test='users-table']", USER);
         assertBodyContains(FULL_NAME);
         assertBodyContains(EMAIL);
         assertNothingRan();
+    }
+
+    @Test
+    public void testManageUsersPageShowsClassicUserAsText() throws Exception {
+        open(base() + "ui/index.html#/admin/users");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage Users']")));
         pageToRow("[data-test='users-table']", CLASSIC_USER);
         assertNothingRan();
+    }
 
-        // Manage Groups. GROUP_COMMENTS are plain text, so the members are what the page shows.
+    @Test
+    public void testManageGroupsPage() throws Exception {
+        // GROUP_COMMENTS are plain text, so the members are what the page shows
         open(base() + "ui/index.html#/admin/groups");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage Groups']")));
         pageToRow("[data-test='groups-table']", GROUP);
         assertBodyContains(USER);
         assertNothingRan();
+    }
+
+    @Test
+    public void testManageGroupsPageShowsClassicGroupAsText() throws Exception {
+        open(base() + "ui/index.html#/admin/groups");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage Groups']")));
         pageToRow("[data-test='groups-table']", CLASSIC_GROUP);
         assertBodyContains(CLASSIC_COMMENTS);
         assertNothingRan();
+    }
 
-        // Manage On-Call Roles. The name and description render as literal text.
+    @Test
+    public void testManageOnCallRolesPage() throws Exception {
+        // the name and description render as literal text
         open(base() + "ui/index.html#/admin/oncall-roles");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage On-Call Roles']")));
         pageToRow("[data-test='oncall-roles-table']", ROLE);
         assertBodyContains(DESCRIPTION);
         assertNothingRan();
+    }
+
+    @Test
+    public void testManageOnCallRolesPageShowsClassicRoleAsText() throws Exception {
         // the classic role's name carries markup and %27; the table renders it as text
+        open(base() + "ui/index.html#/admin/oncall-roles");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage On-Call Roles']")));
         pageToRow("[data-test='oncall-roles-table']", CLASSIC_ROLE);
         assertNothingRan();
     }
@@ -698,30 +600,6 @@ public class UserMgmtXssIT extends AbstractRestIT {
                 tableSelector + " .p-paginator-page[aria-current='page']");
     }
 
-    /** Sets the value of the field with the given id or name, without the browser's typing and without client-side checks. */
-    private void setValue(final String idOrName, final String value) {
-        ((JavascriptExecutor) driver).executeScript(
-                "var e = document.getElementById(arguments[0]) || document.getElementsByName(arguments[0])[0]; e.value = arguments[1];",
-                idOrName, value);
-    }
-
-    /** Submits the form the way a script does, which skips its onsubmit check. */
-    private void submitForm(final String formName) {
-        ((JavascriptExecutor) driver).executeScript("document.forms[arguments[0]].submit()", formName);
-    }
-
-    /** Waits for the element with an id that holds markup or quotes, which a locator cannot hold. */
-    private void waitForId(final String id) {
-        wait.until(d -> ((JavascriptExecutor) d).executeScript("return document.getElementById(arguments[0]) !== null", id));
-    }
-
-    /** Finds an element by an id that holds markup or quotes, which a locator cannot hold. */
-    private WebElement byId(final String id) {
-        final Object element = ((JavascriptExecutor) driver).executeScript("return document.getElementById(arguments[0])", id);
-        assertTrue("No element with the id \"" + id + "\" on " + driver.getCurrentUrl(), element != null);
-        return (WebElement) element;
-    }
-
     /** An XPath string literal for text with quotes. */
     private static String xpathLiteral(final String text) {
         return "concat('" + text.replace("'", "', \"'\", '") + "')";
@@ -741,17 +619,6 @@ public class UserMgmtXssIT extends AbstractRestIT {
 
     private void waitForLoad() {
         wait.until(d -> "complete".equals(((JavascriptExecutor) d).executeScript("return document.readyState")));
-    }
-
-    /** Clicks a delete link, checks the text of its confirm() dialog, accepts it and waits for the next page. */
-    private void deleteAndConfirm(final WebElement link, final String expectedText) {
-        final WebElement page = driver.findElement(By.tagName("html"));
-        link.click();
-        final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-        assertEquals(expectedText, alert.getText());
-        alert.accept();
-        wait.until(ExpectedConditions.stalenessOf(page));
-        waitForLoad();
     }
 
     /** At least one element shows the text as its title attribute. */
@@ -789,15 +656,6 @@ public class UserMgmtXssIT extends AbstractRestIT {
     private void assertBodyContains(final String text) {
         final String body = driver.findElement(By.tagName("body")).getText();
         assertTrue("Expected the page to show \"" + text + "\" as text, but it showed:\n" + body, body.contains(text));
-    }
-
-    private void assertBodyDoesNotContain(final String text) {
-        final String body = driver.findElement(By.tagName("body")).getText();
-        assertFalse("Expected the page not to show \"" + text + "\", but it showed:\n" + body, body.contains(text));
-    }
-
-    private void assertText(final By by, final String text) {
-        assertEquals(text, driver.findElement(by).getText().trim());
     }
 
     /** No script from the payloads ran, and no element was injected. */

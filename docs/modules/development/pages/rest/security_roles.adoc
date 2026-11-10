@@ -4,11 +4,6 @@ Security roles control what a user may do in OpenNMS, for example `ROLE_ADMIN` o
 This REST API, served at `/api/v2/security-roles`, lists the built-in roles and manages custom ones.
 Roles are assigned to users with the xref:development:rest/users_v2.adoc[Users (v2)] API.
 
-== Store mode
-
-This API works only when users and groups are stored in the database (`org.opennms.usermgmt.store=db`).
-When the store is `xml`, every operation returns `503 Service Unavailable` with the text `User management through this API needs org.opennms.usermgmt.store=db.`
-
 == Permissions
 
 Every operation, including reads, requires the `ROLE_ADMIN` role.
@@ -29,7 +24,6 @@ Error responses carry a plain-text message.
 | 404 | The named object does not exist.
 | 409 | The object already exists, another object still refers to it, or the data was changed at the same time by another request (try again).
 | 412 | `If-Match` was sent and no longer matches the object.
-| 503 | The user-management store is `xml`.
 |===
 
 == GETs (reading data)

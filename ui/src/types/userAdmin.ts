@@ -46,6 +46,12 @@ export interface ManagedUser {
   version: number
 }
 
+// One entry of GET /api/v2/users?view=summary: what a user picker needs.
+export interface UserSummary {
+  userId: string
+  fullName?: string | null
+}
+
 export interface ManagedUserCreate extends Omit<ManagedUser, 'version'> {
   password: string
 }

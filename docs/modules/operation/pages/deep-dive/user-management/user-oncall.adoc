@@ -15,7 +15,7 @@ Click menu:User Management[Manage On-call Roles] in the side menu.
 Only users with admin permissions can open this page.
 
 The list shows each role's name, supervisor, who is on call now (the supervisor when nobody is scheduled), membership group and description.
-To rename a role, use the row menu.
+To rename a role, use the *More actions* icon beside it.
 You cannot delete a role while a notification destination path names it.
 
 Select a role, or click *Add New On-Call Role* to create one.
@@ -43,25 +43,19 @@ Click an entry to jump to its schedule.
 All times are in the {page-component-title} server's time zone.
 The page shows which time zone that is.
 
-== Assign a group to an on-call role (legacy pages)
-
-The steps below describe the earlier on-call role pages.
-The menus and links now open the new page, but the earlier pages remain available at `/opennms/admin/userGroupView/roles` until they are removed in a later release.
+== Create an on-call role
 
 Before you can assign a group to an on-call role, you must <<deep-dive/user-management/user-groups.adoc#ga-user-group-create, create a group>>.
-After you have created the group, follow these steps to assign it to an on-call role:
+After you have created the group, follow these steps:
 
 . Log in as a user with admin permissions.
-. Open `/opennms/admin/userGroupView/roles` in your browser.
-. Click *Add New On-Call Role* and specify a name, the associated group, a user to be designated as the supervisor, and a description.
+. Click menu:User Management[Manage On-call Roles] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click *Configure On-Call Roles*.
+. Click *Add New On-Call Role*.
+. On the *Details* tab, specify a name, the membership group, the supervisor and a description.
 The description should be meaningful (for example, describe the team that the on-call role has been created for).
-. Click *Save*.
-. In the calendar, select a date and click the *add* symbol (*+*).
-. Specify the user and designate an on-call schedule.
-. Click *Save*.
-+
-.Example on-call schedule configuration
-image::users/on-call-schedule.png["Example on-call schedule settings for a single user"]
+. On the *Schedules* tab, add a schedule for each user and set its type and time ranges.
+. Check the result on the *Calendar* tab.
+. Save the role.
 
-. Repeat as necessary for other dates and users.
-. Click *Done* to apply the changes.
+Users who are not admins can see who is on call on the on-call schedule page, at `/opennms/roles`.

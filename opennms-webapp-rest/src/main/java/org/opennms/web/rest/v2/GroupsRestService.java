@@ -40,12 +40,10 @@ import javax.ws.rs.core.SecurityContext;
 import org.apache.commons.lang3.StringUtils;
 import org.opennms.netmgt.config.UserMgmtJaxbMapper;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
 import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.usermgmt.OnCallRole;
 import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.netmgt.model.usermgmt.UserGroup;
@@ -72,9 +70,6 @@ public class GroupsRestService implements GroupsRestApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupsRestService.class);
 
-    /** The default group; the on-call role machinery references it. */
-    private static final Set<String> PROTECTED_GROUPS = Set.of("Admin");
-
     @Autowired
     private UserMgmtRestSupport m_support;
 
@@ -83,10 +78,6 @@ public class GroupsRestService implements GroupsRestApi {
 
     @Autowired
     private UserAccountDao m_userAccountDao;
-
-    /** For the membership-group referential check on delete. */
-    @Autowired
-    private OnCallRoleDao m_onCallRoleDao;
 
     /** Moves or clears the category authorizations, which are stored with the categories. */
     @Autowired
@@ -100,7 +91,6 @@ public class GroupsRestService implements GroupsRestApi {
     @Transactional(readOnly = true)
     public Response listGroups(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, "Group management");
-        m_support.requireDatabaseStore();
         try {
             // one query for every authorization, so that the number of statements grows with neither the groups
             // nor the categories
@@ -120,7 +110,6 @@ public class GroupsRestService implements GroupsRestApi {
     @Transactional(readOnly = true)
     public Response listAvailableCategories(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, "Group management");
-        m_support.requireDatabaseStore();
         try {
             // the names only: findAll() would also fill the DAO's per-thread cache with entities of this closed session
             final List<String> categories = m_categoryDao.getAllCategoryNames().stream()
@@ -159,7 +148,6 @@ public class GroupsRestService implements GroupsRestApi {
     @Transactional
     public Response createGroup(final SecurityContext securityContext, final GroupDto dto) {
         m_support.assertAdmin(securityContext, "Group management");
-        m_support.requireDatabaseStore();
         if (dto == null || StringUtils.isBlank(dto.getName())) {
             throw m_support.badRequest("A group name is required.");
         }
@@ -168,7 +156,7 @@ public class GroupsRestService implements GroupsRestApi {
         if (nameProblem != null) {
             throw m_support.badRequest(nameProblem);
         }
-        m_support.checkNotLookAlike(name, PROTECTED_GROUPS, "group name");
+        m_support.checkNotLookAlike(name, UserMgmtRestSupport.PROTECTED_GROUPS, "group name");
         try {
             m_support.lockForWrite();
             if (m_userGroupDao.findByName(name) != null) {
@@ -242,7 +230,7 @@ public class GroupsRestService implements GroupsRestApi {
         if (body == null || StringUtils.isBlank(body.getNewName())) {
             throw m_support.badRequest("A newName is required.");
         }
-        if (PROTECTED_GROUPS.contains(name)) {
+        if (UserMgmtRestSupport.PROTECTED_GROUPS.contains(name)) {
             throw m_support.badRequest("The system group " + name + " cannot be renamed.");
         }
         final String newName = body.getNewName().trim();
@@ -250,7 +238,7 @@ public class GroupsRestService implements GroupsRestApi {
         if (nameProblem != null) {
             throw m_support.badRequest(nameProblem);
         }
-        m_support.checkNotLookAlike(newName, PROTECTED_GROUPS, "group name");
+        m_support.checkNotLookAlike(newName, UserMgmtRestSupport.PROTECTED_GROUPS, "group name");
         if (newName.equals(name)) {
             throw m_support.badRequest("The newName is the same as the current name.");
         }
@@ -290,22 +278,12 @@ public class GroupsRestService implements GroupsRestApi {
 
     private Response doDeleteGroup(final SecurityContext securityContext, final HttpHeaders headers, final String name) {
         m_support.checkTarget(securityContext, "Group management", "name", name);
-        if (PROTECTED_GROUPS.contains(name)) {
-            throw m_support.badRequest("The system group " + name + " cannot be deleted.");
-        }
+        m_support.checkGroupNotProtected(name);
         try {
             m_support.lockForWrite();
             final UserGroup group = load(name, headers);
             m_support.checkIfMatch(headers, VersionedTable.groups, group.getId(), "Group " + name);
-            final List<String> referencingRoles = m_onCallRoleDao.findByMembershipGroup(name).stream()
-                    .map(OnCallRole::getName)
-                    .sorted()
-                    .collect(Collectors.toList());
-            if (!referencingRoles.isEmpty()) {
-                throw m_support.conflict("Group " + name + " is the membership group of on-call role(s) "
-                        + String.join(", ", referencingRoles) + "; delete or reassign those roles first.");
-            }
-            m_support.checkNotDestinationPathTarget("Group " + name, name);
+            m_support.checkGroupDeletable(name);
             m_userGroupDao.delete(group);
             // without this, a future group reusing the name would silently inherit the old authorizations
             m_groupService.clearCategoryAuthorizations(name);

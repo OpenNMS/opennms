@@ -53,7 +53,7 @@
 
   <!--
     Sync etc/ from the ACTIVE node while in STANDBY — binary-safe (includes
-    scv.jce, keystores, users.xml). ha-configuration.xml is never synced.
+    scv.jce, keystores). ha-configuration.xml is never synced.
   -->
   <sync-enabled>true</sync-enabled>
   <sync-interval-seconds>60</sync-interval-seconds>

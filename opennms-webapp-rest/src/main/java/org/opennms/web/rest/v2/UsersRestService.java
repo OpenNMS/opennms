@@ -27,7 +27,6 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -38,13 +37,10 @@ import javax.ws.rs.core.SecurityContext;
 import org.apache.commons.lang3.StringUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.UserMgmtJaxbMapper;
-import org.opennms.netmgt.dao.api.OnCallRoleDao;
 import org.opennms.netmgt.dao.api.SecurityRoleDao;
 import org.opennms.netmgt.dao.api.UserAccountDao;
-import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
 import org.opennms.netmgt.model.usermgmt.ContactType;
-import org.opennms.netmgt.model.usermgmt.OnCallRole;
 import org.opennms.netmgt.model.usermgmt.ReservedNames;
 import org.opennms.netmgt.model.usermgmt.SecurityRole;
 import org.opennms.netmgt.model.usermgmt.UserAccount;
@@ -54,6 +50,7 @@ import org.opennms.web.rest.v2.api.UsersRestApi;
 import org.opennms.web.rest.v2.model.UserDto;
 import org.opennms.web.rest.v2.model.UserPasswordRequest;
 import org.opennms.web.rest.v2.model.UserRenameRequest;
+import org.opennms.web.rest.v2.model.UserSummaryDto;
 import org.opennms.web.rest.v2.model.UserWriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,8 +71,8 @@ public class UsersRestService implements UsersRestApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(UsersRestService.class);
 
-    /** System accounts that must not be deleted or renamed. */
-    private static final Set<String> PROTECTED_USERS = Set.of("admin", "rtc");
+    /** The value of the view parameter that lists only the id and the full name. */
+    private static final String SUMMARY_VIEW = "summary";
 
     @Autowired
     private UserMgmtRestSupport m_support;
@@ -86,20 +83,23 @@ public class UsersRestService implements UsersRestApi {
     @Autowired
     private SecurityRoleDao m_securityRoleDao;
 
-    /** For the checks on delete: the roles the user supervises, and a role named like the user. */
-    @Autowired
-    private OnCallRoleDao m_onCallRoleDao;
-
-    /** For the destination path check on delete: a group named like the user. */
-    @Autowired
-    private UserGroupDao m_userGroupDao;
-
     @Override
     @Transactional(readOnly = true)
-    public Response listUsers(final SecurityContext securityContext) {
+    public Response listUsers(final SecurityContext securityContext, final String view) {
         m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
+        if (view != null && !SUMMARY_VIEW.equals(view)) {
+            throw m_support.badRequest("Unknown view \"" + view + "\"; the only view is " + SUMMARY_VIEW + ".");
+        }
         try {
+            if (SUMMARY_VIEW.equals(view)) {
+                // for pickers: no collection is loaded
+                final List<UserSummaryDto> users = new ArrayList<>();
+                for (final UserAccount user : m_userAccountDao.findAll()) {
+                    users.add(new UserSummaryDto(user.getUsername(), user.getFullName()));
+                }
+                users.sort(Comparator.comparing(UserSummaryDto::getUserId, String.CASE_INSENSITIVE_ORDER));
+                return Response.ok(users).build();
+            }
             final List<UserDto> users = new ArrayList<>();
             for (final UserAccount user : m_userAccountDao.findAll()) {
                 users.add(toDto(user, user.getVersion()));
@@ -140,7 +140,6 @@ public class UsersRestService implements UsersRestApi {
     @Transactional(readOnly = true)
     public Response listAvailableRoles(final SecurityContext securityContext) {
         m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
         try {
             final List<String> roles = m_securityRoleDao.findAll().stream()
                     .map(SecurityRole::getName)
@@ -156,7 +155,6 @@ public class UsersRestService implements UsersRestApi {
     @Transactional
     public Response createUser(final SecurityContext securityContext, final UserWriteRequest request) {
         m_support.assertAdmin(securityContext, "User management");
-        m_support.requireDatabaseStore();
         if (request == null || StringUtils.isBlank(request.getUserId())) {
             throw m_support.badRequest("A userId is required.");
         }
@@ -165,7 +163,7 @@ public class UsersRestService implements UsersRestApi {
         if (userIdProblem != null) {
             throw m_support.badRequest(userIdProblem);
         }
-        m_support.checkNotLookAlike(userId, PROTECTED_USERS, "user-id");
+        m_support.checkNotLookAlike(userId, UserMgmtRestSupport.PROTECTED_USERS, "user-id");
         if (StringUtils.isBlank(request.getPassword())) {
             throw m_support.badRequest("A password is required.");
         }
@@ -221,7 +219,7 @@ public class UsersRestService implements UsersRestApi {
             m_support.checkIfMatch(headers, VersionedTable.users, user.getId(), "User " + userId);
             final List<SecurityRole> roles = validateDtoFields(dto, user, userId);
             if (roles != null && roles.stream().noneMatch(r -> Authentication.ROLE_ADMIN.equals(r.getName()))) {
-                checkNotLastAdministrator(user, "lose the " + Authentication.ROLE_ADMIN + " role");
+                m_support.checkNotLastAdministrator(user, "lose the " + Authentication.ROLE_ADMIN + " role");
             }
             applyDto(user, dto, roles);
             m_userAccountDao.saveOrUpdate(user);
@@ -283,7 +281,7 @@ public class UsersRestService implements UsersRestApi {
         if (body == null || StringUtils.isBlank(body.getNewUserId())) {
             throw m_support.badRequest("A newUserId is required.");
         }
-        if (PROTECTED_USERS.contains(userId)) {
+        if (UserMgmtRestSupport.PROTECTED_USERS.contains(userId)) {
             throw m_support.badRequest("The system user " + userId + " cannot be renamed.");
         }
         final String newUserId = body.getNewUserId().trim();
@@ -291,7 +289,7 @@ public class UsersRestService implements UsersRestApi {
         if (userIdProblem != null) {
             throw m_support.badRequest(userIdProblem);
         }
-        m_support.checkNotLookAlike(newUserId, PROTECTED_USERS, "user-id");
+        m_support.checkNotLookAlike(newUserId, UserMgmtRestSupport.PROTECTED_USERS, "user-id");
         if (newUserId.equals(userId)) {
             throw m_support.badRequest("The newUserId is the same as the current userId.");
         }
@@ -329,48 +327,18 @@ public class UsersRestService implements UsersRestApi {
 
     private Response doDeleteUser(final SecurityContext securityContext, final HttpHeaders headers, final String userId) {
         m_support.checkTarget(securityContext, "User management", "userId", userId);
-        if (PROTECTED_USERS.contains(userId)) {
-            throw m_support.badRequest("The system user " + userId + " cannot be deleted.");
-        }
+        m_support.checkUserNotProtected(userId);
         try {
             m_support.lockForWrite();
             final UserAccount user = load(userId, headers);
             m_support.checkIfMatch(headers, VersionedTable.users, user.getId(), "User " + userId);
-            // the DAO strips memberships and schedules but refuses a supervisor; checking first lets the
-            // message name the roles
-            final List<String> supervisedRoles = m_onCallRoleDao.findBySupervisor(userId).stream()
-                    .map(OnCallRole::getName)
-                    .collect(Collectors.toList());
-            if (!supervisedRoles.isEmpty()) {
-                throw m_support.conflict("User " + userId
-                        + " is the supervisor of on-call role(s) " + String.join(", ", supervisedRoles)
-                        + "; assign a different supervisor first.");
-            }
-            checkNotLastAdministrator(user, "be deleted");
-            // notifd resolves a target name as a group, then an on-call role, then a user: one of those takes the paths
-            if (m_userGroupDao.findByName(userId) == null && m_onCallRoleDao.findByName(userId) == null) {
-                m_support.checkNotDestinationPathTarget("User " + userId, userId);
-            }
+            m_support.checkUserDeletable(userId, user);
             m_userAccountDao.delete(user);
             m_support.flushAndCheckConstraints();
             LOG.info("User {} deleted by {}", userId, UserMgmtValidation.principal(securityContext));
             return Response.noContent().build();
         } catch (final Exception e) {
             throw m_support.translate("delete user", e);
-        }
-    }
-
-    /**
-     * Throws 409 if the user is the only one with ROLE_ADMIN. Without an administrator nobody can manage users in
-     * the web UI or log in to the Karaf console until the roles are repaired in the database. Must be called under
-     * the write lock, so that two requests cannot each remove a different last-but-one administrator.
-     */
-    private void checkNotLastAdministrator(final UserAccount user, final String change) {
-        final boolean isAdministrator = user.getSecurityRoles().stream().anyMatch(r -> Authentication.ROLE_ADMIN.equals(r.getName()));
-        if (isAdministrator && m_userAccountDao.findBySecurityRole(Authentication.ROLE_ADMIN).stream()
-                .allMatch(u -> u.getId().equals(user.getId()))) {
-            throw m_support.conflict("User " + user.getUsername() + " is the only user with the " + Authentication.ROLE_ADMIN
-                    + " role and cannot " + change + "; give the role to another user first.");
         }
     }
 

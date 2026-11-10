@@ -47,10 +47,14 @@ import org.hibernate.SessionFactory;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.UserDataChangedException;
 import org.opennms.netmgt.config.UserMgmtManagers;
-import org.opennms.netmgt.config.api.UserMgmtStore;
 import org.opennms.netmgt.config.destinationPaths.Path;
+import org.opennms.netmgt.dao.api.OnCallRoleDao;
+import org.opennms.netmgt.dao.api.UserAccountDao;
+import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
+import org.opennms.netmgt.model.usermgmt.OnCallRole;
+import org.opennms.netmgt.model.usermgmt.UserAccount;
 import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +69,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 /**
  * Shared plumbing for the v2 user-management services (users, groups, security roles, on-call roles):
- * the admin and store-mode checks, the write lock with its after-commit manager expiry, the deferred-constraint check
+ * the admin check, the write lock with its after-commit manager expiry, the deferred-constraint check
  * before the commit, the destination path check, the ETag / If-Match handling, and the translation of exceptions to
  * HTTP errors.
  *
@@ -94,6 +98,15 @@ public class UserMgmtRestSupport {
     @Autowired
     private UserMgmtManagers m_managers;
 
+    @Autowired
+    private UserAccountDao m_userAccountDao;
+
+    @Autowired
+    private UserGroupDao m_userGroupDao;
+
+    @Autowired
+    private OnCallRoleDao m_onCallRoleDao;
+
     /** Translates Hibernate's exceptions, e.g. a unique violation to DataIntegrityViolationException. */
     private HibernateTemplate m_hibernateTemplate;
 
@@ -102,8 +115,14 @@ public class UserMgmtRestSupport {
         m_hibernateTemplate = new HibernateTemplate(sessionFactory);
     }
 
+    /** The users that the system relies on; they can be neither renamed nor deleted. */
+    public static final Set<String> PROTECTED_USERS = Set.of("admin", "rtc");
+
+    /** The default group; the on-call role machinery references it. It can be neither renamed nor deleted. */
+    public static final Set<String> PROTECTED_GROUPS = Set.of("Admin");
+
     /** The destination paths that notifd sends to. */
-    static final Callable<Collection<Path>> NOTIFD_DESTINATION_PATHS = () -> {
+    public static final Callable<Collection<Path>> NOTIFD_DESTINATION_PATHS = () -> {
         DestinationPathFactory.init();
         return DestinationPathFactory.getInstance().getPaths().values();
     };
@@ -111,9 +130,85 @@ public class UserMgmtRestSupport {
     /** Static so that tests can replace it in the per-test CXF context. */
     private static volatile Callable<Collection<Path>> s_destinationPaths = NOTIFD_DESTINATION_PATHS;
 
-    /** For tests; {@link #NOTIFD_DESTINATION_PATHS} restores the default. */
-    static void setDestinationPaths(final Callable<Collection<Path>> destinationPaths) {
+    /**
+     * Replaces where the destination paths are read from. Visible for tests only; production code must not call it.
+     * {@link #NOTIFD_DESTINATION_PATHS} restores the default.
+     */
+    public static void setDestinationPaths(final Callable<Collection<Path>> destinationPaths) {
         s_destinationPaths = destinationPaths;
+    }
+
+    /**
+     * Throws 409 if the user is the only one with ROLE_ADMIN. Without an administrator nobody can manage users in
+     * the web UI or log in to the Karaf console until the roles are repaired in the database. Must be called under
+     * the write lock, so that two requests cannot each remove a different last-but-one administrator.
+     */
+    public void checkNotLastAdministrator(final UserAccount user, final String change) {
+        final boolean isAdministrator = user.getSecurityRoles().stream().anyMatch(r -> Authentication.ROLE_ADMIN.equals(r.getName()));
+        if (isAdministrator && m_userAccountDao.findBySecurityRole(Authentication.ROLE_ADMIN).stream()
+                .allMatch(u -> u.getId().equals(user.getId()))) {
+            throw conflict("User " + user.getUsername() + " is the only user with the " + Authentication.ROLE_ADMIN
+                    + " role and cannot " + change + "; give the role to another user first.");
+        }
+    }
+
+    /** Throws 400 for a user that the system relies on ({@link #PROTECTED_USERS}). */
+    public void checkUserNotProtected(final String userId) {
+        if (PROTECTED_USERS.contains(userId)) {
+            throw badRequest("The system user " + userId + " cannot be deleted.");
+        }
+    }
+
+    /**
+     * The checks of a user delete, shared by the v1 and v2 APIs: 400 for a protected user, 409 for the supervisor of
+     * an on-call role, the last holder of ROLE_ADMIN or the target of a destination path. A path target is no
+     * obstacle when a group or an on-call role has the same name: notifd resolves a target name as a group, then an
+     * on-call role, then a user, so one of those takes the paths. v2 calls it under the write lock; v1 cannot, as
+     * its managers take the locks themselves (see the v1 UserRestService), so there it is not race-free.
+     *
+     * @param user the stored user, or null if there is none (then the last-administrator check is skipped)
+     */
+    public void checkUserDeletable(final String userId, final UserAccount user) throws Exception {
+        checkUserNotProtected(userId);
+        // the DAO strips memberships and schedules but refuses a supervisor; checking first lets the message name the roles
+        final List<String> supervisedRoles = m_onCallRoleDao.findBySupervisor(userId).stream()
+                .map(OnCallRole::getName)
+                .collect(Collectors.toList());
+        if (!supervisedRoles.isEmpty()) {
+            throw conflict("User " + userId + " is the supervisor of on-call role(s) " + String.join(", ", supervisedRoles)
+                    + "; assign a different supervisor first.");
+        }
+        if (user != null) {
+            checkNotLastAdministrator(user, "be deleted");
+        }
+        if (m_userGroupDao.findByName(userId) == null && m_onCallRoleDao.findByName(userId) == null) {
+            checkNotDestinationPathTarget("User " + userId, userId);
+        }
+    }
+
+    /** Throws 400 for a group that the system relies on ({@link #PROTECTED_GROUPS}). */
+    public void checkGroupNotProtected(final String name) {
+        if (PROTECTED_GROUPS.contains(name)) {
+            throw badRequest("The system group " + name + " cannot be deleted.");
+        }
+    }
+
+    /**
+     * The checks of a group delete, shared by the v1 and v2 APIs: 400 for a protected group, 409 for the membership
+     * group of an on-call role or the target of a destination path. v2 calls it under the write lock; v1 cannot, as
+     * its managers take the locks themselves (see the v1 UserRestService), so there it is not race-free.
+     */
+    public void checkGroupDeletable(final String name) throws Exception {
+        checkGroupNotProtected(name);
+        final List<String> referencingRoles = m_onCallRoleDao.findByMembershipGroup(name).stream()
+                .map(OnCallRole::getName)
+                .sorted()
+                .collect(Collectors.toList());
+        if (!referencingRoles.isEmpty()) {
+            throw conflict("Group " + name + " is the membership group of on-call role(s) "
+                    + String.join(", ", referencingRoles) + "; delete or reassign those roles first.");
+        }
+        checkNotDestinationPathTarget("Group " + name, name);
     }
 
     public void assertAdmin(final SecurityContext securityContext, final String what) {
@@ -122,23 +217,15 @@ public class UserMgmtRestSupport {
         }
     }
 
-    public void requireDatabaseStore() {
-        if (!UserMgmtStore.isDatabase()) {
-            throw error(Status.SERVICE_UNAVAILABLE,
-                    "User management through this API needs " + UserMgmtStore.PROPERTY + "=" + UserMgmtStore.DB + ".");
-        }
-    }
-
     /**
-     * The checks of a per-user or per-group endpoint, path or query form: the admin role, the database store, and a
-     * user id or group name, which the query form can leave out. The admin and store checks come first, so that a
-     * caller without the admin role gets 403 and not 400 for a missing parameter.
+     * The checks of a per-user or per-group endpoint, path or query form: the admin role and a user id or group name,
+     * which the query form can leave out. The admin check comes first, so that a caller without the admin role gets
+     * 403 and not 400 for a missing parameter.
      *
      * @param param the name of the query parameter, for the message
      */
     public void checkTarget(final SecurityContext securityContext, final String what, final String param, final String value) {
         assertAdmin(securityContext, what);
-        requireDatabaseStore();
         if (StringUtils.isBlank(value)) {
             throw badRequest(param + " is required");
         }

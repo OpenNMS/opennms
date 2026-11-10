@@ -55,7 +55,9 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
     private final String[][] m_adminPageEntriesAll = new String[][] {
         // OpenNMS System
         new String[] { "System Configuration", "//span[text()='OpenNMS Configuration']" },
-        new String[] { "Configure Users, Groups and On-Call Roles", "//span[text()='Users and Groups']" },
+        new String[] { "Configure Users", "//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage Users']" },
+        new String[] { "Configure Groups", "//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage Groups']" },
+        new String[] { "Configure On-Call Roles", "//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage On-Call Roles']" },
         new String[] { "Connect to Zenith", "//span[text()='Zenith Connect']" },
 
         // Provisioning

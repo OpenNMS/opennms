@@ -39,7 +39,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -64,23 +65,19 @@ import org.opennms.bootstrap.FilesystemPermissionValidator;
 import org.opennms.core.db.DataSourceConfigurationFactory;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.password.DatabasePasswords;
-import org.opennms.core.password.UserMgmtStoreSetting;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ProcessExec;
-import org.opennms.netmgt.config.UserFactory;
-import org.opennms.netmgt.config.UserManager;
-import org.opennms.upgrade.implementations.UserMgmtInitialized;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.best.BestMatchPingerFactory;
+import org.opennms.upgrade.implementations.UserMgmtInitialized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.StringUtils;
 
-import joptsimple.internal.Strings;
 
 /*
  * TODO:
@@ -274,7 +271,7 @@ public class Installer {
             updateTomcatConf();
         }
 
-        if (!Strings.isNullOrEmpty(m_resetWebAppAdminPassword)) {
+        if (m_resetWebAppAdminPassword != null) {
             resetWebAppAdminPassword();
         }
 
@@ -298,22 +295,30 @@ public class Installer {
     }
 
     protected void resetWebAppAdminPassword() throws Exception {
-        if (UserMgmtStoreSetting.isDatabase(new File(m_opennms_home))) {
-            try {
-                setAdminPasswordInDatabase(m_resetWebAppAdminPassword);
-            } catch (final IllegalArgumentException e) {
-                // -R runs before the upgrade tasks: on an upgrade from 36.x, the migrator copies users.xml later.
-                // After the migration, users.xml stays in etc, but nothing reads it.
-                final File home = new File(m_opennms_home);
-                if (!new File(home, "etc" + File.separator + "users.xml").exists() || isUserDataInitialized()) {
-                    System.out.println("The password was NOT set: the admin user does not exist in the database."
-                            + " If this is a new installation or an upgrade, run the installer with -R again after the upgrade.");
-                    return;
-                }
-                resetAdminPasswordInUsersXml(m_resetWebAppAdminPassword);
+        if (m_resetWebAppAdminPassword.isBlank()) {
+            // parseArguments refuses it; the upgrade task would ignore it, so it must not look as if it were set
+            throw new IllegalStateException("The password given to -R must not be blank.");
+        }
+        if (!hasUserTables()) {
+            // e.g. a 36.x database and no -d: the users were in users.xml then
+            throw new IllegalStateException("The password was NOT set: the database has no users table yet."
+                    + " Update the database with the same command and -d, for example: install -dis -R <password>");
+        }
+        try {
+            setAdminPasswordInDatabase(m_resetWebAppAdminPassword);
+        } catch (final IllegalArgumentException e) {
+            if (m_skip_upgrade_tools) {
+                System.out.println("The password was NOT set: the admin user does not exist in the database."
+                        + " If this is a new installation or an upgrade, run the installer with -R again after the upgrade.");
+            } else if (isUserDataInitialized()) {
+                // admin was deleted or renamed: no upgrade task creates it
+                System.out.println("The password was NOT set: the admin user does not exist in the database.");
+            } else {
+                // the upgrade tasks create the admin user; the last one (AdminPasswordResetOffline) sets the password
+                System.setProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY, m_resetWebAppAdminPassword);
+                System.out.println("The admin user does not exist yet; its password is set after the upgrade tasks.");
             }
-        } else {
-            resetAdminPasswordInUsersXml(m_resetWebAppAdminPassword);
+            return;
         }
         System.out.println("Password for the web application admin user was set.");
     }
@@ -322,17 +327,20 @@ public class Installer {
         DatabasePasswords.setPassword(openNmsDataSource(), "admin", password);
     }
 
-    /**
-     * @return true if the user data of the database is initialized (usermgmt_initialized): the migrator copied
-     *         users.xml into it, or the default users were added. The migrator runs once per database, not once per
-     *         etc, so the upgrade status file does not tell.
-     */
+    /** Whether the database has the user tables, which -d creates when it updates an older database. */
+    protected boolean hasUserTables() throws Exception {
+        try (final Connection connection = openNmsDataSource().getConnection();
+             final Statement statement = connection.createStatement();
+             final ResultSet rs = statement.executeQuery("SELECT to_regclass('users') IS NOT NULL AND to_regclass('usermgmt_version') IS NOT NULL")) {
+            rs.next();
+            return rs.getBoolean(1);
+        }
+    }
+
+    /** Whether the user data of the database was initialized (from the files or with the default users) already. */
     protected boolean isUserDataInitialized() throws Exception {
         try (final Connection connection = openNmsDataSource().getConnection()) {
             return UserMgmtInitialized.isSet(connection);
-        } catch (final SQLException e) {
-            // the table does not exist yet: a database before 37
-            return false;
         }
     }
 
@@ -343,12 +351,6 @@ public class Installer {
             dsConfig = new DataSourceConfigurationFactory(is).getJdbcDataSource(OPENNMS_DATA_SOURCE_NAME);
         }
         return new SimpleDataSource(dsConfig);
-    }
-
-    protected void resetAdminPasswordInUsersXml(final String password) throws Exception {
-        UserFactory.init();
-        UserManager userManager = UserFactory.getInstance();
-        userManager.setUnencryptedPassword("admin", password);
     }
 
     private void checkIPv6() {
@@ -626,6 +628,10 @@ public class Installer {
         m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
         m_timescaleDB = m_commandLine.hasOption("t");
         m_resetWebAppAdminPassword = m_commandLine.getOptionValue("R", m_resetWebAppAdminPassword);
+        if (m_resetWebAppAdminPassword != null && m_resetWebAppAdminPassword.isBlank()) {
+            usage(options, m_commandLine, "The password given to -R must not be blank.", null);
+            System.exit(1);
+        }
 
         m_validate_ownership = !m_commandLine.hasOption("o");
 

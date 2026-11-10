@@ -27,6 +27,7 @@ import { adminItemConfig, adminItemUrl } from './adminItemUrl'
 import { v2 } from './axiosInstances'
 import { adminWriteError } from './adminWrite'
 import { serverMessage } from './serverMessage'
+import { getManagedUserSummaries } from './userAdminService'
 
 // Reads return a ValidationResultWithPayload and writes an AdminWriteResult; the
 // component that started the action shows any feedback.
@@ -41,15 +42,13 @@ const getManagedGroups = async (): Promise<ValidationResultWithPayload<ManagedGr
   }
 }
 
-// member picker options: the user ids of the v2 users list
+// member picker options: the user ids of the user summaries
 const getGroupMemberCandidates = async (): Promise<ValidationResultWithPayload<string[]>> => {
-  try {
-    const resp = await v2.get('/users')
-    const users: { userId?: string }[] = Array.isArray(resp.data) ? resp.data : []
-    return createResultWithPayload(true, '', users.map(u => u.userId).filter((id): id is string => !!id))
-  } catch (err: any) {
-    return createResultWithPayload<string[]>(false, serverMessage(err, 'Failed to load users.'))
+  const result = await getManagedUserSummaries()
+  if (!result.success) {
+    return createResultWithPayload<string[]>(false, result.message)
   }
+  return createResultWithPayload(true, '', (result.payload ?? []).map(u => u.userId).filter((id): id is string => !!id))
 }
 
 // category picker options: the names of the categories a group can be limited to

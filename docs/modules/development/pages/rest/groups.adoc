@@ -1,7 +1,31 @@
 
 = Groups
 
-Like users, groups have a simplified interface.
+WARNING: This API is deprecated in {page-component-title} 37 and will be removed in {page-component-title} 38.
+Use the xref:development:rest/groups_v2.adoc[Groups (v2)] API at `/api/v2/groups` instead.
+
+Groups are stored in the database.
+The write operations need the `ROLE_ADMIN` role, like the v2 API, and answer `403` without it; `ROLE_REST` is not enough.
+This includes the category authorizations of a group, also when they are changed through `/categories/\{category}/groups/\{group}`.
+They check the data like the v2 API does:
+
+* A new group name must not be reserved or look like `Admin`, must fit its column, and must not contain markup, whitespace or any of `: / \ % ? #`.
+  The response is `400`.
+* Comments must not contain markup (stored comments are accepted unchanged).
+  Every member of a group must be an existing user, named once and not blank.
+  The response is `400`.
+* A form `PUT` accepts only the keys `comments` and `users`, spelled exactly.
+  Any other key is refused before anything is changed.
+  The response is `400`.
+  For `name`, in any case, it points to `PUT /api/v2/groups/\{name}/rename`.
+* The `Admin` group cannot be deleted.
+  The response is `400`.
+* A group that is the membership group of an on-call role or a target of a notification destination path cannot be deleted.
+  The response is `409`.
+* A write answers `409` when another request changed any group while it ran, not only the same one.
+  Nothing was saved, and the request can be sent again.
+* A save through this API keeps the duty schedules and the default map of the stored group.
+* A caller without `ROLE_ADMIN` sees `xxxxxxxx` in place of the password hash of every user but their own in `/groups/\{groupname}/users`.
 
 == GETs (reading data)
 

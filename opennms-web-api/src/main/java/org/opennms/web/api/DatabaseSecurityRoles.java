@@ -25,13 +25,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.config.api.UserMgmtStore;
 import org.opennms.netmgt.dao.api.SecurityRoleDao;
 import org.opennms.netmgt.model.usermgmt.SecurityRole;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-/** In the database mode, makes {@link Authentication} take the valid roles from the security_roles table. */
+/** Makes {@link Authentication} take the valid roles from the security_roles table. */
 public class DatabaseSecurityRoles implements InitializingBean, DisposableBean {
     private final SecurityRoleDao m_securityRoleDao;
 
@@ -41,9 +40,7 @@ public class DatabaseSecurityRoles implements InitializingBean, DisposableBean {
 
     @Override
     public void afterPropertiesSet() {
-        if (UserMgmtStore.isDatabase()) {
-            Authentication.setRoleSource(this::roleNames);
-        }
+        Authentication.setRoleSource(this::roleNames);
     }
 
     @Override

@@ -208,6 +208,33 @@
     <intercept-url pattern="/rest/sched-outages/applies-to/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
     <intercept-url pattern="/rest/sched-outages/*/applies-to/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
 
+    <!-- NMS-20519: writing users, groups and the group authorizations of categories (the same group ACL as
+         /rest/groups/{group}/categories/{category}) is admin-only, the same as the v2 users and groups APIs.
+         The services also check it in code. The reads keep the generic rules below. "/rest/categories/*/groups/**"
+         matches only the group authorizations, not the writes of the categories themselves.
+         Each "<root>.*" pattern applies the rule of its "<root>/**" pattern to the suffixed root, e.g. /rest/users.xml.
+         These rules must come before the generic /rest/** write rules (first match wins). -->
+    <intercept-url pattern="/rest/users/**" method="POST" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/users/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/users/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/users/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/users.*" method="POST" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/users.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/users.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/users.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups/**" method="POST" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups.*" method="POST" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/groups.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/categories/*/groups/**" method="POST" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/categories/*/groups/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/categories/*/groups/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/categories/*/groups/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')"/>
+
     <!-- read-only calls should be allowed for any user -->
     <intercept-url pattern="/rest/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
     <intercept-url pattern="/rest/**" method="HEAD" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
@@ -430,15 +457,25 @@
 
     <!-- On-call roles and security roles are admin-only in every method (the services also assert it in code) -->
     <intercept-url pattern="/api/v2/oncall-roles/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/oncall-roles.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/oncall-roles/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/oncall-roles.*" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/oncall-roles/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/oncall-roles.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/oncall-roles/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/oncall-roles.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/oncall-roles/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/oncall-roles.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/security-roles/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/security-roles.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/security-roles/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/security-roles.*" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/security-roles/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/security-roles.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/security-roles/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/security-roles.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/security-roles/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/security-roles.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- The system report drives an admin-only page and bundles logs/config, so keep
          even its plugin/formatter metadata to admins rather than the GET catch-all below;
@@ -565,33 +602,9 @@
 
   <beans:bean id="noStoreUnauthorizedEntryPoint" class="org.opennms.web.springframework.security.NoStoreUnauthorizedEntryPoint" />
 
-  <http pattern="/admin/userGroupView/**" use-expressions="true" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
-    <!-- see NMS-13124 -->
-    <csrf request-matcher-ref="csrfMatcher"/>
-    <request-cache ref="requestCache"/>
-
-    <access-denied-handler error-page="/accessDenied.jsp" />
-    <intercept-url pattern="/admin/userGroupView/**" access="hasAnyRole('ROLE_ADMIN')" />
-
-    <http-basic entry-point-ref="xRequestedWithAwareLoginUrlAuthEntryPoint" />
-
-    <!-- should this have a custom logout? <logout logout-url="/j_spring_security_logout" success-handler-ref="openNMSlLogoutSuccessHandler" invalidate-session="true"/> -->
-
-    <custom-filter position="FORM_LOGIN_FILTER" ref="onmsUsernamePasswordAuthenticationFilter" />
-    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
-    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
-    <custom-filter position="LAST" ref="authFilterEnabler"/>
-  </http>
-
   <beans:bean id="csrfMatcher" class="org.springframework.security.web.util.matcher.OrRequestMatcher">
     <beans:constructor-arg>
       <util:list value-type="org.springframework.security.web.util.matcher.RequestMatcher">
-
-        <!-- see NMS-13124 -->
-        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
-          <beans:constructor-arg value="/admin/userGroupView/**"/>
-          <beans:constructor-arg name="httpMethod" value="POST"/>
-        </beans:bean>
 
         <!-- see NMS-14716 -->
         <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
@@ -814,7 +827,7 @@
   </beans:bean>
   <onmsgi:service id="springSecurityUserDaoService" ref="userDao" interface="org.opennms.web.springframework.security.SpringSecurityUserDao" />
 
-  <!-- In the database mode, the valid security roles come from the security_roles table -->
+  <!-- The valid security roles come from the security_roles table -->
   <beans:bean id="databaseSecurityRoles" class="org.opennms.web.api.DatabaseSecurityRoles">
     <beans:constructor-arg ref="securityRoleDao" />
   </beans:bean>

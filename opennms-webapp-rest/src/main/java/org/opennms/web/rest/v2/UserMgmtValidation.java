@@ -41,7 +41,7 @@ import org.opennms.netmgt.model.usermgmt.ReservedNames;
  * descriptions), each with its grandfathering of stored values, the duty schedules (users and groups), and the column
  * length checks. The rules for on-call role names and schedules are in {@link OnCallScheduleValidator}.
  */
-final class UserMgmtValidation {
+public final class UserMgmtValidation {
 
     /**
      * The characters rejected in a user id or group name, and why:
@@ -77,7 +77,7 @@ final class UserMgmtValidation {
      * @param label what the value is called in the message, e.g. "userId" or "group name"
      * @param reserved the names of its collection, {@link ReservedNames#USER_IDS} or {@link ReservedNames#GROUP_NAMES}
      */
-    static String validateName(final String name, final String label, final Collection<String> reserved) {
+    public static String validateName(final String name, final String label, final Collection<String> reserved) {
         if (INVALID_NAME.matcher(name).find()) {
             return "The " + label + " must not contain markup, whitespace, control or invisible characters, or the characters : / \\ % ? #";
         }
@@ -94,7 +94,7 @@ final class UserMgmtValidation {
      *
      * @param stored the stored comments, or null when the object is being created or has none
      */
-    static void checkComments(final String owner, final String incoming, final String stored) {
+    public static void checkComments(final String owner, final String incoming, final String stored) {
         if (incoming != null && INVALID_COMMENTS.matcher(incoming).find() && !textUnchanged(incoming, stored)) {
             throw new UserMgmtValidationException("The comments must not contain any HTML markup.");
         }
@@ -145,15 +145,17 @@ final class UserMgmtValidation {
     /**
      * Validates the duty schedules of a request. Entries already stored on the record are kept as they are, so
      * that hand-edited or migrated data never makes the record uneditable; only the entries new to the request
-     * must pass {@link #validateDutySchedule}. Every entry must fit its column.
+     * must pass {@link #validateDutySchedule}, and must not be blank. Every entry must fit its column. A stored blank
+     * or unreadable entry is skipped by the duty evaluation, so a user or group whose schedules are all blank or
+     * unreadable is treated as always on duty.
      *
      * @param stored the schedules stored on the record, or null when the object is being created
-     * @throws UserMgmtValidationException on a null or blank entry, an invalid new entry or one that is too long
+     * @throws UserMgmtValidationException on a null entry, a blank or invalid new entry or one that is too long
      */
-    static void validateDutySchedules(final String owner, final List<String> requested, final Collection<String> stored) {
+    public static void validateDutySchedules(final String owner, final List<String> requested, final Collection<String> stored) {
         final Set<String> preExisting = stored == null ? Set.of() : new LinkedHashSet<>(stored);
         for (final String schedule : requested) {
-            if (StringUtils.isBlank(schedule)) {
+            if (schedule == null || (StringUtils.isBlank(schedule) && !preExisting.contains(schedule))) {
                 throw new UserMgmtValidationException("Duty schedules must not be blank.");
             }
             if (!preExisting.contains(schedule)) {
@@ -179,7 +181,7 @@ final class UserMgmtValidation {
      * @return the value, if it fits a column of max characters
      * @throws UserMgmtValidationException if it does not
      */
-    static String checkLength(final String owner, final String field, final String value, final int max) {
+    public static String checkLength(final String owner, final String field, final String value, final int max) {
         try {
             return UserMgmtJaxbMapper.checkLength(owner, field, value, max);
         } catch (final IllegalArgumentException e) {

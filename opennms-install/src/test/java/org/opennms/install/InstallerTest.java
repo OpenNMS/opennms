@@ -22,6 +22,8 @@
 package org.opennms.install;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 
@@ -41,9 +43,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.opennms.bootstrap.FilesystemPermissionValidator;
-import org.opennms.netmgt.config.UserFactory;
-import org.opennms.netmgt.config.UserManager;
-import org.opennms.netmgt.config.api.UserMgmtStore;
+import org.opennms.core.password.DatabasePasswords;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.util.FileSystemUtils;
 
@@ -81,10 +81,9 @@ public class InstallerTest {
 
     @After
     public void tearDown() throws Exception {
+        System.clearProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY);
         FileSystemUtils.deleteRecursively(opennmsHome.toFile());
         FilesystemPermissionValidator.VERBOSE = false;
-        // install() copies etc/opennms.properties into the system properties
-        System.clearProperty(UserMgmtStore.PROPERTY);
     }
 
     @Test
@@ -176,47 +175,6 @@ public class InstallerTest {
         }
     }
 
-    @Test
-    public void testPasswordStaysTheSame() throws Exception {
-        Files.copy(Paths.get("src/test/resources/etc").resolve("users.xml"), etcDir.resolve("users.xml"));
-        Files.copy(Paths.get("src/test/resources/etc").resolve("groups.xml"), etcDir.resolve("groups.xml"));
-
-        UserFactory.init();
-        final UserManager userManager = UserFactory.getInstance();
-        userManager.reload();
-
-        assertTrue(userManager.comparePasswords("admin", "admin"));
-        try {
-            // -S: these tests check the password; Upgrade (on the classpath with core.upgrade) would need a full etc
-            installer.install(new String[]{"-s", "-S"});
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        userManager.reload();
-        assertTrue(userManager.comparePasswords("admin", "admin"));
-    }
-
-    @Test
-    public void testPasswordIsSet() throws Exception {
-        Files.copy(Paths.get("src/test/resources/etc").resolve("users.xml"), etcDir.resolve("users.xml"));
-        Files.copy(Paths.get("src/test/resources/etc").resolve("groups.xml"), etcDir.resolve("groups.xml"));
-        // the users.xml path; the database path is in testResetAdminPassword*
-        Files.writeString(etcDir.resolve("opennms.properties"), "org.opennms.usermgmt.store=xml\n");
-
-        UserFactory.init();
-        final UserManager userManager = UserFactory.getInstance();
-        userManager.reload();
-
-        assertTrue(userManager.comparePasswords("admin", "admin"));
-        try {
-            installer.install(new String[]{"-R", "foobar", "-S"});
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        userManager.reload();
-        assertTrue(userManager.comparePasswords("admin", "foobar"));
-    }
-
     public void testPath(final String path, final String extension) throws Exception {
         try (final MockedStatic<Files> filesMock = mockStatic(Files.class)) {
             // mock Files.exists(), so the path (e.g. /usr/lib64) exists for this test
@@ -250,11 +208,12 @@ public class InstallerTest {
         testPath("/usr/lib/jni", libExtension);
     }
 
-    /** Records which path resetWebAppAdminPassword takes, without a database or users.xml manager. */
+    /** Records the password changes of resetWebAppAdminPassword, without a database. */
     private static class RecordingInstaller extends Installer {
         private final List<String> m_calls = new ArrayList<>();
         private boolean m_adminMissing;
         private boolean m_userDataInitialized;
+        private boolean m_hasUserTables = true;
 
         RecordingInstaller() throws Exception {
             super();
@@ -262,20 +221,20 @@ public class InstallerTest {
 
         @Override
         protected void setAdminPasswordInDatabase(final String password) {
-            m_calls.add("db");
+            m_calls.add("db:" + password);
             if (m_adminMissing) {
                 throw new IllegalArgumentException("User \"admin\" does not exist.");
             }
         }
 
         @Override
-        protected void resetAdminPasswordInUsersXml(final String password) {
-            m_calls.add("xml");
+        protected boolean isUserDataInitialized() {
+            return m_userDataInitialized;
         }
 
         @Override
-        protected boolean isUserDataInitialized() {
-            return m_userDataInitialized;
+        protected boolean hasUserTables() {
+            return m_hasUserTables;
         }
     }
 
@@ -290,56 +249,79 @@ public class InstallerTest {
     public void testResetAdminPasswordUsesTheDatabase() throws Exception {
         final RecordingInstaller recording = recordingInstaller();
         recording.resetWebAppAdminPassword();
-        assertEquals(List.of("db"), recording.m_calls);
+        assertEquals(List.of("db:n3w"), recording.m_calls);
     }
 
     @Test
-    public void testResetAdminPasswordFallsBackToUsersXmlBeforeTheMigration() throws Exception {
-        // an upgrade from 36.x: -R runs before the migrator, which copies users.xml later
+    public void testResetAdminPasswordWithoutAdminDoesNotFailNorUseUsersXml() throws Exception {
+        // users.xml is no longer read: a password written there would never reach the login
         Files.writeString(etcDir.resolve("users.xml"), "<userinfo/>");
         final RecordingInstaller recording = recordingInstaller();
         recording.m_adminMissing = true;
         recording.resetWebAppAdminPassword();
-        assertEquals(List.of("db", "xml"), recording.m_calls);
+        assertEquals(List.of("db:n3w"), recording.m_calls);
+        assertEquals("<userinfo/>", Files.readString(etcDir.resolve("users.xml")));
     }
 
     @Test
-    public void testResetAdminPasswordDoesNotUseUsersXmlAfterTheMigration() throws Exception {
-        // the migrator keeps users.xml in etc, but nothing reads it any more: writing it would report a password
-        // that the login never sees
-        Files.writeString(etcDir.resolve("users.xml"), "<userinfo/>");
+    public void testResetIsDeferredWhenAdminDoesNotExistYet() throws Exception {
+        final RecordingInstaller recording = recordingInstaller();
+        recording.m_adminMissing = true;
+        try {
+            recording.resetWebAppAdminPassword();
+            assertEquals("n3w", System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY));
+        } finally {
+            System.clearProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY);
+        }
+    }
+
+    @Test
+    public void testResetIsNotDeferredWhenTheUserDataIsInitialized() throws Exception {
+        // an install whose admin user was deleted or renamed: no upgrade task creates it, so there is nothing to wait for
         final RecordingInstaller recording = recordingInstaller();
         recording.m_adminMissing = true;
         recording.m_userDataInitialized = true;
         recording.resetWebAppAdminPassword();
-        assertEquals(List.of("db"), recording.m_calls);
+        assertNull(System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY));
+        assertEquals(List.of("db:n3w"), recording.m_calls);
     }
 
     @Test
-    public void testResetAdminPasswordUsesTheDatabaseMarkerNotTheStatusFile() throws Exception {
-        // a restored database on an upgraded host: etc records the migrator, but this database was not migrated
-        // yet, so the migrator copies users.xml (with the new password) later
-        Files.writeString(etcDir.resolve("users.xml"), "<userinfo/>");
-        Files.writeString(etcDir.resolve("opennms-upgrade-status.properties"), "UsersGroupsXmlMigratorOffline=Tue Oct 14 10\\:00\\:00 UTC 2026\n");
+    public void testResetIsNotDeferredWhenUpgradeToolsAreSkipped() throws Exception {
         final RecordingInstaller recording = recordingInstaller();
         recording.m_adminMissing = true;
+        recording.m_skip_upgrade_tools = true;
         recording.resetWebAppAdminPassword();
-        assertEquals(List.of("db", "xml"), recording.m_calls);
+        assertNull(System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY));
     }
 
     @Test
-    public void testResetAdminPasswordWithoutAdminDoesNotFail() throws Exception {
+    public void testResetWithoutTheUserTablesSaysToUpdateTheDatabase() throws Exception {
+        // a 36.x database and -R without -d: a plain SQLException would not say what to do
         final RecordingInstaller recording = recordingInstaller();
+        recording.m_hasUserTables = false;
+        final IllegalStateException e = assertThrows(IllegalStateException.class, recording::resetWebAppAdminPassword);
+        assertTrue(e.getMessage(), e.getMessage().contains("install -dis -R"));
+        assertTrue(recording.m_calls.isEmpty());
+        assertNull(System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY));
+    }
+
+    @Test
+    public void testABlankResetPasswordIsRefused() throws Exception {
+        // the upgrade task ignores a blank password, so it must not be deferred as if it would be set
+        final RecordingInstaller recording = recordingInstaller();
+        recording.m_resetWebAppAdminPassword = "  ";
         recording.m_adminMissing = true;
-        recording.resetWebAppAdminPassword();
-        assertEquals(List.of("db"), recording.m_calls);
+        assertThrows(IllegalStateException.class, recording::resetWebAppAdminPassword);
+        assertTrue(recording.m_calls.isEmpty());
+        assertNull(System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY));
     }
 
     @Test
-    public void testResetAdminPasswordInXmlMode() throws Exception {
-        Files.writeString(etcDir.resolve("opennms.properties"), "org.opennms.usermgmt.store=xml\n");
-        final RecordingInstaller recording = recordingInstaller();
-        recording.resetWebAppAdminPassword();
-        assertEquals(List.of("xml"), recording.m_calls);
+    public void testInstallWithResetPasswordSetsItInTheDatabase() throws Exception {
+        final RecordingInstaller recording = new RecordingInstaller();
+        // -S: Upgrade (on the classpath with core.upgrade) would need a full etc
+        recording.install(new String[]{"-R", "foobar", "-S"});
+        assertEquals(List.of("db:foobar"), recording.m_calls);
     }
 }

@@ -28,7 +28,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -38,7 +37,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -127,11 +125,6 @@ public class SecurityRolesRestServiceIT extends AbstractSpringJerseyRestTestCase
             }
             return null;
         });
-    }
-
-    @After
-    public void clearStoreProperty() {
-        System.clearProperty("org.opennms.usermgmt.store");
     }
 
     @Test
@@ -349,21 +342,6 @@ public class SecurityRolesRestServiceIT extends AbstractSpringJerseyRestTestCase
         final String current = exec(GET, "/security-roles/ROLE_STALE", null, null, 200).getHeader("ETag");
         exec(PUT, "/security-roles/ROLE_STALE", "{\"description\":\"Fourth\"}", current, 200);
         exec(DELETE, "/security-roles/ROLE_STALE", null, "*", 204);
-    }
-
-    @Test
-    public void testXmlStoreIs503() throws Exception {
-        System.setProperty("org.opennms.usermgmt.store", "xml");
-        final String message = "User management through this API needs org.opennms.usermgmt.store=db.";
-        final List<MockHttpServletResponse> responses = Arrays.asList(
-                exec(GET, "/security-roles", null, null, 503),
-                exec(GET, "/security-roles/ROLE_USER", null, null, 503),
-                exec(POST, "/security-roles", "{\"name\":\"x\"}", null, 503),
-                exec(PUT, "/security-roles/ROLE_USER", "{\"description\":\"x\"}", null, 503),
-                exec(DELETE, "/security-roles/ROLE_USER", null, null, 503));
-        for (final MockHttpServletResponse response : responses) {
-            assertEquals(message, response.getContentAsString());
-        }
     }
 
     @Test

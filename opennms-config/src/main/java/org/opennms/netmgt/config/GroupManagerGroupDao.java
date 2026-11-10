@@ -33,6 +33,7 @@ import org.opennms.netmgt.config.api.GroupConfig;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
+import org.opennms.netmgt.model.OnmsGroup;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
@@ -228,16 +229,6 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
 
     /** {@inheritDoc} */
     @Override
-    public void renameGroup(String oldName, String newName) {
-        try {
-            m_groupManager.renameGroup(oldName, newName);
-        } catch (Throwable e) {
-            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("renaming group from '" + oldName + "' to '" + newName + "'", e);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void renameUser(String oldName, String newName) {
         try {
             m_groupManager.renameUser(oldName, newName);
@@ -253,6 +244,26 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
             m_groupManager.saveGroup(name, details);
         } catch (Throwable e) {
             throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("saving group '" + name + "' with details " + details, e);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getVersion() {
+        try {
+            return m_groupManager.getVersion();
+        } catch (Throwable e) {
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("reading the groups version", e);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void saveGroup(final OnmsGroup group, final long readVersion) {
+        try {
+            m_groupManager.save(group, readVersion);
+        } catch (Throwable e) {
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("saving group '" + group.getName() + "'", e);
         }
     }
 

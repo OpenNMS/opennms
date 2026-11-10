@@ -26,7 +26,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ManageGroups from '@/containers/ManageGroups.vue'
 import { AdminEditMode } from '@/types/adminWrite'
 
-const UNAVAILABLE = 'User management through this API needs org.opennms.usermgmt.store=db.'
+const UNAVAILABLE = 'User management is temporarily unavailable.'
 
 const store = vi.hoisted(() => ({
   editMode: 'table',

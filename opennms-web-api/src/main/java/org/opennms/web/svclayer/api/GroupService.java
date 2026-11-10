@@ -50,15 +50,21 @@ public interface GroupService {
      */
     void setAuthorizedCategories(String groupName, Collection<String> categoryNames);
 
-    void saveGroup(OnmsGroup group);
+    /** The version of the groups; see {@link #saveGroup(OnmsGroup, long)}. */
+    long getVersion();
+
+    /**
+     * Saves the name, comments and members of a group that was read after {@link #getVersion()} returned
+     * readVersion. Fails with {@code UserDataChangedException} in the cause chain if the groups changed since, so
+     * that an older copy does not overwrite a newer change.
+     */
+    void saveGroup(OnmsGroup group, long readVersion);
 
     void saveGroup(Group group);
 
     void saveGroup(Group group, List<String> authorizedCategories);
 
     void deleteGroup(String groupName);
-
-    void renameGroup(String oldName, String newName);
 
     /**
      * Moves every category authorization from one group name to another. Touches only

@@ -157,8 +157,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private final TestDestinationPaths m_paths = new TestDestinationPaths();
 
     @After
-    public void clearStoreProperty() {
-        System.clearProperty("org.opennms.usermgmt.store");
+    public void restorePaths() {
         m_paths.restore();
     }
 
@@ -230,6 +229,21 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, "/groups/badu", 404);
         sendRequest(GET, "/groups/badd", 404);
         sendRequest(GET, "/groups/bads", 404);
+    }
+
+    @Test
+    public void testQuotesAndAmpersandInGroupNameAre400() throws Exception {
+        exec(POST, "/groups", "{\"name\":\"John<b>Doe</b>\"}", null, 400);
+        exec(POST, "/groups", "{\"name\":\"Jane'Doe'\"}", null, 400);
+        exec(POST, "/groups", "{\"name\":\"John&Doe\"}", null, 400);
+        exec(POST, "/groups", "{\"name\":\"Jane\\\"\\\"Doe\"}", null, 400);
+    }
+
+    @Test
+    public void testPunctuationAndLettersInGroupNameAreAccepted() throws Exception {
+        for (final String name : new String[] { "John-Doe", "John.Doe", "John@D\u00f6e.com", "John\u00e9Doe" }) {
+            exec(POST, "/groups", "{\"name\":\"" + name + "\"}", null, 201);
+        }
     }
 
     @Test
@@ -452,7 +466,7 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // an explicit empty string clears; an omitted key preserves
         exec(PUT, "/groups/commentgroup", "{\"name\":\"commentgroup\",\"comments\":\"\"}", null, 200);
         final JSONObject json = new JSONObject(getJson("/groups/commentgroup", 200));
-        assertTrue(!json.has("comments") || json.isNull("comments"));
+        assertTrue("comments are cleared", json.isNull("comments"));
         sendRequest(DELETE, "/groups/commentgroup", 204);
     }
 
@@ -553,6 +567,11 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertNotNull(renamed.getHeader("ETag"));
         sendRequest(GET, "/groups/renamegroup", 404);
         sendRequest(GET, "/groups/renamedgroup", 200);
+
+        // the renamed group can be edited with the tag the rename returned
+        final MockHttpServletResponse edited = exec(PUT, "/groups/renamedgroup", "{\"name\":\"renamedgroup\",\"comments\":\"After Rename\"}",
+                renamed.getHeader("ETag"), 200);
+        assertEquals("After Rename", new JSONObject(edited.getContentAsString()).getString("comments"));
 
         sendRequest(DELETE, "/groups/renamedgroup", 204);
         sendRequest(DELETE, "/groups/occupiedgroup", 204);
@@ -744,26 +763,6 @@ public class GroupsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertNotEquals(current, updated.getHeader("ETag"));
         exec(POST, "/groups/stalegroup/rename", "{\"newName\":\"stalegroup2\"}", "*", 200);
         exec(DELETE, "/groups/stalegroup2", null, "*", 204);
-    }
-
-    @Test
-    public void testXmlStoreIs503() throws Exception {
-        System.setProperty("org.opennms.usermgmt.store", "xml");
-        try {
-            final String message = "User management through this API needs org.opennms.usermgmt.store=db.";
-            final List<MockHttpServletResponse> responses = Arrays.asList(
-                    exec(GET, "/groups", null, null, 503),
-                    exec(GET, "/groups/Admin", null, null, 503),
-                    exec(POST, "/groups", "{\"name\":\"x\"}", null, 503),
-                    exec(PUT, "/groups/Admin", "{\"name\":\"Admin\"}", null, 503),
-                    exec(POST, "/groups/Admin/rename", "{\"newName\":\"x\"}", null, 503),
-                    exec(DELETE, "/groups/Admin", null, null, 503));
-            for (final MockHttpServletResponse response : responses) {
-                assertEquals(message, response.getContentAsString());
-            }
-        } finally {
-            System.clearProperty("org.opennms.usermgmt.store");
-        }
     }
 
     @Test

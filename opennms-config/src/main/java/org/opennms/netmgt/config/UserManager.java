@@ -76,7 +76,10 @@ import org.slf4j.LoggerFactory;
 public abstract class UserManager implements UserConfig {
     private static final Logger LOG = LoggerFactory.getLogger(UserManager.class);
 	public static final String ALLOW_UNSALTED_PROPERTY = "org.opennms.users.allowUnsalted";
-    private final boolean m_allowUnsalted;
+    /** How many user or group and schedule pairs the managers remember as warned about. */
+    static final int MAX_WARNED_SCHEDULES = 1000;
+    /** Read once from {@value #ALLOW_UNSALTED_PROPERTY}. Not final only so that UserRestServiceDatabaseIT can change it. */
+    private boolean m_allowUnsalted;
 
     private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
@@ -134,6 +137,8 @@ public abstract class UserManager implements UserConfig {
      * The duty schedules for each user
      */
     protected Map<String, List<DutySchedule>> m_dutySchedules;
+    /** The user and schedule pairs warned about; every reload builds the schedules again, and logs them at DEBUG. */
+    private final WarnOnce m_warnedSchedules = new WarnOnce(MAX_WARNED_SCHEDULES);
     private Header oldHeader;
 
     /**
@@ -193,7 +198,7 @@ public abstract class UserManager implements UserConfig {
 
 
     /**
-     * Adds a new user and overwrites the "users.xml"
+     * Adds a new user, or replaces the user with this name, and saves all users (see {@link #saveUsers(Userinfo)}).
      *
      * @param name a {@link java.lang.String} object.
      * @param details a {@link org.opennms.netmgt.config.users.User} object.
@@ -211,12 +216,17 @@ public abstract class UserManager implements UserConfig {
         }
     }
 
+    /** Whether an unsalted password may be stored: the system property {@value #ALLOW_UNSALTED_PROPERTY}, read once. */
+    public boolean isUnsaltedAllowed() {
+        return m_allowUnsalted;
+    }
+
     private void _assertSaltAcceptable(final User details) throws Exception {
         if (!m_allowUnsalted) {
             final Password p = details.getPassword();
             if (p != null) {
                 if (!p.getSalt()) {
-                    throw new IllegalStateException("org.opennms.users.allowUnsaltedPasswords=false, but " + details.getUserId() + " contains an unsalted password.");
+                    throw new IllegalStateException(ALLOW_UNSALTED_PROPERTY + "=false, but " + details.getUserId() + " contains an unsalted password.");
                 }
             }
         }
@@ -233,12 +243,43 @@ public abstract class UserManager implements UserConfig {
         _saveCurrent();
     }
     
+    /**
+     * The version of the cached users, after a check for changes. A caller that saves a user it read earlier reads
+     * this first and passes it to {@link #save(OnmsUser, long)}.
+     */
+    public long getVersion() throws IOException {
+        update();
+        return getLastModified();
+    }
+
+    /** Adds or replaces the user with every field of this copy. */
     public void save(final OnmsUser onmsUser) throws Exception {
+        save(onmsUser, null);
+    }
+
+    /**
+     * Adds or replaces the user with every field of this copy, which must have been read after {@link #getVersion()}
+     * returned readVersion. If the users changed since, the copy may be older than the stored user and the save
+     * throws {@link UserDataChangedException} instead of overwriting that change.
+     */
+    public void save(final OnmsUser onmsUser, final long readVersion) throws Exception {
+        save(onmsUser, Long.valueOf(readVersion));
+    }
+
+    private void save(final OnmsUser onmsUser, final Long readVersion) throws Exception {
         update();
 
         m_writeLock.lock();
         
         try {
+            // under the write lock, which a reload takes too: the cache below is the one this version describes
+            if (readVersion != null && getLastModified() != readVersion) {
+                throw new UserDataChangedException();
+            }
+            // before the cached user is changed below: a refused save must leave the cache as it was
+            if (!m_allowUnsalted && !onmsUser.getPasswordSalted()) {
+                throw new IllegalStateException(ALLOW_UNSALTED_PROPERTY + "=false, but " + onmsUser.getUsername() + " contains an unsalted password.");
+            }
             User xmlUser = _getUser(onmsUser.getUsername());
             if (xmlUser == null) {
                 xmlUser = new User();
@@ -270,7 +311,7 @@ public abstract class UserManager implements UserConfig {
     /**
      * Builds a mapping between user IDs and duty schedules. These are used by
      * Notifd when determining to send a notice to a given user. This helps
-     * speed up the decision process.
+     * speed up the decision process. A blank or unreadable schedule is skipped, with a WARN once per user and value.
      * 
      * @param users
      *            the map of users parsed from the XML configuration file
@@ -285,10 +326,21 @@ public abstract class UserManager implements UserConfig {
             if (curUser.getDutySchedules().size() > 0) {
                 final List<DutySchedule> dutyList = new ArrayList<DutySchedule>();
                 for (final String duty : curUser.getDutySchedules()) {
-                	dutyList.add(new DutySchedule(duty));
+                    try {
+                        dutyList.add(new DutySchedule(duty));
+                    } catch (final RuntimeException e) {
+                        if (m_warnedSchedules.isNew(key, duty)) {
+                            LOG.warn("Ignoring the duty schedule \"{}\" of user {}: it can't be read: {}", duty, key, e.toString());
+                        } else {
+                            LOG.debug("Ignoring the duty schedule \"{}\" of user {}: it can't be read: {}", duty, key, e.toString());
+                        }
+                    }
                 }
-    
-                m_dutySchedules.put(key, dutyList);
+
+                // a user whose schedules are all blank or unreadable has none, so it is treated as always on duty
+                if (!dutyList.isEmpty()) {
+                    m_dutySchedules.put(key, dutyList);
+                }
             }
         }
     }
@@ -382,8 +434,9 @@ public abstract class UserManager implements UserConfig {
         user.setComments(trim(xmlUser.getUserComments()));
         user.setPassword(xmlUser.getPassword().getEncryptedPassword());
         user.setPasswordSalted(Boolean.valueOf(xmlUser.getPassword().getSalt()));
-        user.setDutySchedule(xmlUser.getDutySchedules());
-        user.setRoles(xmlUser.getRoles());
+        // copies: a caller that changes them without saving must not change the cache, which the next save writes
+        user.setDutySchedule(new ArrayList<>(xmlUser.getDutySchedules()));
+        user.setRoles(new ArrayList<>(xmlUser.getRoles()));
         user.setEmail(_getContactInfo(xmlUser, ContactType.email));
         return user;
     }
@@ -890,8 +943,7 @@ public abstract class UserManager implements UserConfig {
     }
 
     /**
-     * Removes the user from the list of users. Then overwrites to the
-     * "users.xml"
+     * Removes the user from the list of users and the groups, then saves all users (see {@link #saveUsers(Userinfo)}).
      *
      * @param name a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
@@ -924,7 +976,7 @@ public abstract class UserManager implements UserConfig {
     }
 
     /**
-     * Saves into "users.xml" file
+     * Saves all users (see {@link #saveUsers(Userinfo)}).
      */
     private void _saveCurrent() throws Exception {
         final List<User> users = new ArrayList<>(m_users.values());
@@ -968,7 +1020,7 @@ public abstract class UserManager implements UserConfig {
 
     /**
      * When this method is called users name is changed, so also is the username
-     * belonging to the group and the view. Also overwrites the "users.xml" file
+     * belonging to the group and the view. Then saves all users (see {@link #saveUsers(Userinfo)}).
      *
      * @param oldName a {@link java.lang.String} object.
      * @param newName a {@link java.lang.String} object.

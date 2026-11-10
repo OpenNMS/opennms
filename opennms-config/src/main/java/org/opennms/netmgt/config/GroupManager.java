@@ -84,7 +84,8 @@ public abstract class GroupManager implements GroupConfig {
             if (inputGroup == null) return null;
             final OnmsGroup xmlGroup = new OnmsGroup(inputGroup.getName());
             xmlGroup.setComments(inputGroup.getComments().orElse(null));
-            xmlGroup.setUsers(inputGroup.getUsers());
+            // a copy: a caller that changes it without saving must not change the cached group
+            xmlGroup.setUsers(new ArrayList<>(inputGroup.getUsers()));
             return xmlGroup;
         }
 
@@ -115,6 +116,9 @@ public abstract class GroupManager implements GroupConfig {
      * The duty schedules for each group
      */
     protected static Map<String, List<DutySchedule>> m_dutySchedules = new HashMap<>();
+
+    /** The group and schedule pairs warned about; every reload builds the schedules again, and logs them at DEBUG. */
+    private final WarnOnce m_warnedSchedules = new WarnOnce(UserManager.MAX_WARNED_SCHEDULES);
 
     /**
      * A mapping of Group object by name
@@ -149,7 +153,7 @@ public abstract class GroupManager implements GroupConfig {
         }
         buildDutySchedules(m_groups);
         
-        // always rebuild, so removing the last role from groups.xml doesn't
+        // always rebuild, so removing the last role from the store doesn't
         // leave the previous roles cached until restart
         m_roles = new LinkedHashMap<String, Role>();
         for (final Role role : groupinfo.getRoles()) {
@@ -191,16 +195,49 @@ public abstract class GroupManager implements GroupConfig {
         return new OnmsGroupMapper().map(xmlGroup);
     }
 
-    public synchronized void save(final OnmsGroup group) throws Exception {
-        Group xmlGroup = getGroup(group.getName());
-        if (xmlGroup == null) {
-            xmlGroup = new Group();
-            xmlGroup.setName(group.getName());
+    /**
+     * The version of the cached groups, which the database manager checks when it writes. A manager without
+     * versions answers 0, so its saves never conflict.
+     */
+    protected long getCachedVersion() {
+        return 0;
+    }
+
+    /**
+     * The version of the cached groups, after a check for changes. A caller that saves a group it read earlier reads
+     * this first and passes it to {@link #save(OnmsGroup, long)}.
+     */
+    @Override
+    public synchronized long getVersion() throws IOException {
+        update();
+        return getCachedVersion();
+    }
+
+    /**
+     * Adds the group, or replaces the comments and members of the group with this name and keeps its other fields
+     * (duty schedules, default map), and saves all groups. The group must have been read after {@link #getVersion()}
+     * returned readVersion: if the groups changed since, its members may be older than the stored ones, and the
+     * save throws {@link UserDataChangedException} instead of overwriting that change. The other fields are read
+     * under this manager's lock after the save's one update(), so they come from the same cache that the save
+     * writes. The database manager checks the version of that cache when it writes; a manager without such a check
+     * simply writes its cache. The cached group is not changed in place.
+     */
+    @Override
+    public synchronized void save(final OnmsGroup group, final long readVersion) throws Exception {
+        update();
+        if (getCachedVersion() != readVersion) {
+            throw new UserDataChangedException();
         }
-        xmlGroup.setComments(group.getComments());
-        xmlGroup.setUsers(group.getUsers());
-        
-        saveGroup(group.getName(), xmlGroup);
+        final Group current = m_groups.get(group.getName());
+        final Group merged = new Group();
+        merged.setName(group.getName());
+        merged.setComments(group.getComments());
+        merged.setUsers(group.getUsers());
+        if (current != null) {
+            merged.setDefaultMap(current.getDefaultMap().orElse(null));
+            merged.setDutySchedules(new ArrayList<>(current.getDutySchedules()));
+        }
+        putGroupAndSave(group.getName(), merged);
     }
 
     /**
@@ -307,9 +344,10 @@ public abstract class GroupManager implements GroupConfig {
     /**
      * Builds a mapping between groups and duty schedules. These are used when
      * determining to send a notice to a given group. This helps speed up the decision process.
+     * A blank or unreadable schedule is skipped, with a WARN once per group and value.
      * @param groups the map of groups parsed from the XML configuration file
      */
-    private static void buildDutySchedules(Map<String, Group> groups) {
+    private void buildDutySchedules(Map<String, Group> groups) {
         m_dutySchedules = new HashMap<String, List<DutySchedule>>();
         for (final Entry<String, Group> entry : groups.entrySet()) {
             final String key = entry.getKey();
@@ -317,9 +355,20 @@ public abstract class GroupManager implements GroupConfig {
             if (curGroup.getDutySchedules().size() > 0) {
                 final List<DutySchedule> dutyList = new ArrayList<DutySchedule>();
                 for (final String duty : curGroup.getDutySchedules()) {
-                    dutyList.add(new DutySchedule(duty));
+                    try {
+                        dutyList.add(new DutySchedule(duty));
+                    } catch (final RuntimeException e) {
+                        if (m_warnedSchedules.isNew(key, duty)) {
+                            LOG.warn("Ignoring the duty schedule \"{}\" of group {}: it can't be read: {}", duty, key, e.toString());
+                        } else {
+                            LOG.debug("Ignoring the duty schedule \"{}\" of group {}: it can't be read: {}", duty, key, e.toString());
+                        }
+                    }
                 }
-                m_dutySchedules.put(key, dutyList);
+                // a group whose schedules are all blank or unreadable has none, so it is treated as always on duty
+                if (!dutyList.isEmpty()) {
+                    m_dutySchedules.put(key, dutyList);
+                }
             }
         }
     }
@@ -385,7 +434,7 @@ public abstract class GroupManager implements GroupConfig {
     protected abstract void saveXml(String data) throws IOException;
 
     /**
-     * Adds a new user and overwrites the "groups.xml"
+     * Adds a new group, or replaces the group with this name, and saves all groups.
      *
      * @param name a {@link java.lang.String} object.
      * @param details a {@link org.opennms.netmgt.config.groups.Group} object.
@@ -393,12 +442,14 @@ public abstract class GroupManager implements GroupConfig {
      */
     public synchronized void saveGroup(String name, Group details) throws Exception {
         update();
+        putGroupAndSave(name, details);
+    }
+
+    private void putGroupAndSave(final String name, final Group details) throws Exception {
         if (name == null || details == null) {
             throw new Exception("GroupFactory:saveGroup  null");
-        } else {
-            m_groups.put(name, details);
         }
-    
+        m_groups.put(name, details);
         saveGroups();
     }
     
@@ -416,8 +467,7 @@ public abstract class GroupManager implements GroupConfig {
 
 
     /**
-     * Removes the user from the list of groups. Then overwrites to the
-     * "groups.xml"
+     * Removes the user from the groups, then saves all groups.
      *
      * @param name a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
@@ -444,13 +494,11 @@ public abstract class GroupManager implements GroupConfig {
         }
         
         
-        // Saves into "groups.xml" file
         saveGroups();
     }
 
     /**
-     * Removes the group from the list of groups. Then overwrites to the
-     * "groups.xml"
+     * Removes the group from the list of groups, then saves all groups.
      *
      * @param name a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
@@ -466,7 +514,6 @@ public abstract class GroupManager implements GroupConfig {
         } else {
             throw new Exception("GroupFactory:delete Invalid user group:" + name);
         }
-        // Saves into "groups.xml" file
         saveGroups();
     }
     
@@ -492,8 +539,7 @@ public abstract class GroupManager implements GroupConfig {
 
 
     /**
-     * Renames the group from the list of groups. Then overwrites to the
-     * "groups.xml"
+     * Renames the group in the list of groups, then saves all groups.
      *
      * @param oldName a {@link java.lang.String} object.
      * @param newName a {@link java.lang.String} object.
@@ -508,13 +554,12 @@ public abstract class GroupManager implements GroupConfig {
     		grp.setName(newName);
     		m_groups.put(newName, grp);
     		try {
-    			// Save into groups.xml
     			saveGroups();
     		} catch (final Exception e) {
     			// The save did not persist, so undo the in-memory rename: the map
-    			// must keep reflecting groups.xml. Callers key referential-integrity
+    			// must keep reflecting the stored groups. Callers key referential-integrity
     			// decisions (and their rollback) on hasGroup(), which must not report
-    			// a rename the file never received.
+    			// a rename the store never received.
     			m_groups.remove(newName);
     			grp.setName(oldName);
     			m_groups.put(oldName, grp);
@@ -525,7 +570,7 @@ public abstract class GroupManager implements GroupConfig {
 
     /**
      * When this method is called group name is changed, so also is the
-     * group name belonging to the view. Also overwrites the "groups.xml" file
+     * group name belonging to the view. Then saves all groups.
      *
      * @param oldName a {@link java.lang.String} object.
      * @param newName a {@link java.lang.String} object.

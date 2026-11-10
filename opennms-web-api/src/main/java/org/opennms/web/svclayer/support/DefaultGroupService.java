@@ -99,8 +99,15 @@ public class DefaultGroupService implements InitializingBean, GroupService {
     }
 
     @Override
-    public void saveGroup(OnmsGroup group) {
-        saveGroup(onmsGroupMapper.map(group));
+    public long getVersion() {
+        return m_groupDao.getVersion();
+    }
+
+    @Override
+    public void saveGroup(OnmsGroup group, long readVersion) {
+        // an OnmsGroup carries only the name, comments and members: the manager keeps the rest of the stored group,
+        // read under its own lock, and refuses members read before a change made elsewhere
+        m_groupDao.saveGroup(group, readVersion);
     }
 
     @Override
@@ -118,12 +125,6 @@ public class DefaultGroupService implements InitializingBean, GroupService {
     public void deleteGroup(String groupName) {
         m_groupDao.deleteGroup(groupName);
         clearCategoryAuthorizations(groupName);
-    }
-
-    @Override
-    public void renameGroup(String oldName, String newName) {
-        m_groupDao.renameGroup(oldName, newName);
-        moveCategoryAuthorizations(oldName, newName);
     }
 
     @Override
@@ -150,7 +151,9 @@ public class DefaultGroupService implements InitializingBean, GroupService {
         List<String> categoryNames = getAuthorizedCategoriesAsString(groupName);
         if (!categoryNames.contains(categoryName)) {
             categoryNames.add(categoryName);
-            saveGroup(getGroup(groupName), categoryNames);
+            // the authorizations live in category_group, not in the group, whose version a trigger moves: the group
+            // itself is not saved, so that a stale cached copy of it cannot overwrite a newer change
+            setAuthorizedCategories(groupName, categoryNames);
             return true; // added successfully
         }
         return false; // can't be added, already added
@@ -161,7 +164,8 @@ public class DefaultGroupService implements InitializingBean, GroupService {
         List<String> categoryNames = getAuthorizedCategoriesAsString(groupName);
         if (categoryNames.contains(categoryName)) {
             categoryNames.remove(categoryName);
-            saveGroup(getGroup(groupName), categoryNames);
+            // see addCategory: the group itself is not saved
+            setAuthorizedCategories(groupName, categoryNames);
             return true; // removed categoryName from categories successfully
         }
         return false; // categoryName does not exist, removing not possible
@@ -212,14 +216,15 @@ public class DefaultGroupService implements InitializingBean, GroupService {
 
     @Override
     public boolean addUser(String groupName, String userName) {
-        Group group = getGroup(groupName);
+        // a copy of the cached group, read after the version: the save fails if the groups changed since
+        final long version = getVersion();
+        final OnmsGroup group = getOnmsGroup(groupName);
         if (group != null && hasUser(userName)) {
-            if (getUserForGroup(groupName, userName) != null) {
+            if (group.getUsers().contains(userName)) {
                 return false; // user is already added
             }
-            // user is not added to group, add
             group.addUser(userName);
-            saveGroup(group);
+            saveGroup(group, version);
             return true;
         }
         return false; // group or user does not exist.

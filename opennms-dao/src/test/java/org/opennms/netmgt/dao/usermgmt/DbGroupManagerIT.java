@@ -61,6 +61,7 @@ import org.opennms.netmgt.dao.api.UserAccountDao;
 import org.opennms.netmgt.dao.api.UserGroupDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao;
 import org.opennms.netmgt.dao.api.UserMgmtVersionDao.VersionedTable;
+import org.opennms.netmgt.model.OnmsGroup;
 import org.opennms.netmgt.model.usermgmt.OnCallRole;
 import org.opennms.netmgt.model.usermgmt.OnCallSchedule;
 import org.opennms.netmgt.model.usermgmt.OnCallScheduleTime;
@@ -184,6 +185,34 @@ public class DbGroupManagerIT {
         assertTrue(m_manager.hasGroup("Other")); // reloaded
     }
 
+    /**
+     * A v1 write reads the group, then saves its comments and members. A change committed in between and loaded by
+     * the save's own reload must make the save fail, not be overwritten by the older members.
+     */
+    @Test
+    public void testSaveOfAnOlderReadIsRejected() throws Exception {
+        m_manager.saveGroup("Ops", group("Ops", "jane"));
+        final long version = m_manager.getVersion();
+        final OnmsGroup read = m_manager.getOnmsGroup("Ops");
+
+        newManager().saveGroup("Ops", group("Ops", "jane", "joe"));
+        m_manager.expire(); // as after a v2 write: the save's update() reloads
+
+        read.setComments("changed");
+        assertThrows(UserDataChangedException.class, () -> m_manager.save(read, version));
+        assertEquals(Arrays.asList("jane", "joe"), newManager().getGroup("Ops").getUsers());
+    }
+
+    @Test
+    public void testSaveOfACurrentReadIsSaved() throws Exception {
+        m_manager.saveGroup("Ops", group("Ops", "jane"));
+        final long version = m_manager.getVersion();
+        final OnmsGroup read = m_manager.getOnmsGroup("Ops");
+        read.addUser("joe");
+        m_manager.save(read, version);
+        assertEquals(Arrays.asList("jane", "joe"), newManager().getGroup("Ops").getUsers());
+    }
+
     @Test
     public void testSaveWithRenamedMemberFailsAndReloads() throws Exception {
         m_manager.saveGroup("Ops", group("Ops", "jane"));
@@ -300,7 +329,7 @@ public class DbGroupManagerIT {
 
     @Test
     public void testWebRoleRenameAndEdit() throws Exception {
-        // the on-call role admin page (AdminRoleServlet) renames and edits through WebRoleManagerImpl
+        // the legacy on-call role admin page renamed and edits through WebRoleManagerImpl
         m_manager.saveGroup("Ops", group("Ops", "jane"));
         m_manager.saveRole(role("Night", "Ops", "jane"));
         final WebRoleManagerImpl webRoles = webRoles();
@@ -504,5 +533,22 @@ public class DbGroupManagerIT {
             executor.shutdownNow();
         }
         assertFalse(users.hasUser("joe"));
+    }
+
+    @Test
+    public void testUnparseableGroupDutyScheduleInTheDatabaseIsSkipped() throws Exception {
+        m_tx.execute(s -> m_groupDao.save(new UserGroup("Other")));
+        m_tx.execute(s -> {
+            final UserGroup group = new UserGroup("Sched");
+            group.setDutySchedules(new java.util.ArrayList<>(Arrays.asList("MoTu800-17x0")));
+            m_groupDao.save(group);
+            return null;
+        });
+
+        m_manager.reload();
+
+        assertNotNull(m_manager.getGroup("Sched"));
+        assertTrue(m_manager.hasGroup("Other"));
+        assertTrue(m_manager.isGroupOnDuty("Sched", java.util.Calendar.getInstance()));
     }
 }

@@ -80,6 +80,17 @@ public class UserMgmtValidationTest {
     }
 
     @Test
+    public void testStoredBlankDutySchedulesAreGrandfathered() {
+        // hand-edited or migrated data must not make the record uneditable
+        UserMgmtValidation.validateDutySchedules("u", Arrays.asList("", "MoWeFr800-1700"), Arrays.asList(""));
+        UserMgmtValidation.validateDutySchedules("u", Arrays.asList(" "), Arrays.asList(" ", "MoTu2000-800"));
+        // a new blank entry is still refused, also next to a stored one, and so is a null entry
+        assertRejected("Duty schedules must not be blank.", Arrays.asList("", " "), Arrays.asList(""));
+        assertRejected("Duty schedules must not be blank.", Arrays.asList(""), Arrays.asList(" "));
+        assertRejected("Duty schedules must not be blank.", Arrays.asList((String) null), Arrays.asList(""));
+    }
+
+    @Test
     public void testStoredDutySchedulesAreKeptAndNewOnesValidated() {
         UserMgmtValidation.validateDutySchedules("u", Arrays.asList("MoTu2000-800", "MoWeFr800-1700"), Arrays.asList("MoTu2000-800"));
         try {

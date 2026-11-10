@@ -42,7 +42,7 @@ vi.mock('@/services/axiosInstances', async () => {
 })
 
 const IF_MATCH_7 = { headers: { 'If-Match': '"7"' }}
-const UNAVAILABLE = 'User management through this API needs org.opennms.usermgmt.store=db.'
+const UNAVAILABLE = 'User management is temporarily unavailable.'
 
 const requestedUri = (call: any[], configIndex: number) => axios.getUri({ url: call[0], params: call[configIndex]?.params })
 
@@ -128,6 +128,20 @@ describe('onCallRoleAdminService writes', () => {
 
     expect(await svc.deleteManagedOnCallRole('Ops Rota', 7)).toEqual(adminWriteSuccess())
     expect(v2.delete).toHaveBeenCalledWith('/oncall-roles/Ops%20Rota', IF_MATCH_7)
+  })
+
+  it('never sends the computed on-call fields on update, whatever the caller passes', async () => {
+    vi.mocked(v2.put).mockResolvedValue({ data: {}})
+    const role = { ...draft, onCallNow: ['bob'], onCallNowIsSupervisor: true, version: 7 } as ManagedOnCallRole
+
+    await svc.updateManagedOnCallRole(role)
+
+    const body = vi.mocked(v2.put).mock.lastCall![1] as Record<string, unknown>
+    expect(body).not.toHaveProperty('onCallNow')
+    expect(body).not.toHaveProperty('onCallNowIsSupervisor')
+    expect(body).toEqual({ ...draft, version: 7 })
+    // the caller's object is left alone
+    expect(role.onCallNow).toEqual(['bob'])
   })
 
   it('on 412 returns the stale flag, whatever the body says', async () => {

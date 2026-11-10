@@ -23,34 +23,40 @@ package org.opennms.upgrade.implementations;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 
 /**
- * Adds the default users (admin, rtc) and the Admin group to a database without users, with the values of the
- * shipped users.xml and groups.xml. Runs after UsersGroupsXmlMigratorOffline, on every install.
+ * Adds the default users (admin, rtc) and the Admin group to a database without users, with the values of
+ * UserMgmtDefaults. Runs after UsersGroupsXmlMigratorOffline, on every install.
  *
  * It seeds a database at most once: not when the table usermgmt_initialized has its row, which the migrator also
  * sets (even when it copies no users). Thus a site without local users (LDAP, RADIUS or SSO only), or one that
  * deleted them, does not get admin/admin back on its next upgrade.
  *
- * It does not seed while etc/users.xml exists: the migrator copies that file into a database without the marker
- * (also a restored or new database on an upgraded host), so here it failed. The upgrade runs the other tasks before it
- * fails, and a seeded admin would make the migrator's next run copy nothing, so the users of the file would be lost.
+ * It does not seed while etc holds users.xml, groups.xml, their .rpmsave copies or security-roles.properties: the
+ * migrator copies these files into a database without the marker (with the default users or group in place of a
+ * missing one) and then moves them to etc_archive, so here it failed. The upgrade runs the other tasks before it fails,
+ * and a seeded admin would make the migrator's next run copy nothing, so the users, groups and custom security roles of
+ * the files would be lost. Without users.xml and groups.xml, the migrator copies the custom roles of
+ * security-roles.properties together with the default users and sets the marker, and it archives a file with only
+ * built-in roles after its commit, in the same run, before this task. So the roles file holds the seed back only when
+ * its migration failed.
  *
  * The task is critical, like the migrator: a database it fails to seed has no users, so no one could log in.
  */
 public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
 
-    // the hashes of the shipped users.xml: admin/admin and rtc/rtc
-    private static final String ADMIN_HASH = "gU2wmSW7k9v1xg4/MrAsaI+VyddBAhJJt4zPX5SGG0BK+qiASGnJsqM8JOug/aEL";
-    private static final String RTC_HASH = "sHMy+HycWKGJC/uUMF0IGlXUXP1KhcqD0GEchFlvYTw40jT9r+zMxOb3F+phWNzX";
+    /** The files that the migrator copies into the database and then moves to etc_archive. */
+    private static final List<String> MIGRATED_FILE_NAMES = Arrays.asList("users.xml", "users.xml.rpmsave", "groups.xml", "groups.xml.rpmsave",
+            "security-roles.properties");
 
     public DefaultUsersSeedOffline() throws OnmsUpgradeException {
         super();
@@ -103,23 +109,22 @@ public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
                 log("No default users are added: the user data of this database was initialized before (see the table usermgmt_initialized), and its users were removed later\n");
                 return;
             }
-            final File usersXml = new File(getHomeDirectory(), "etc" + File.separator + "users.xml");
-            if (usersXml.exists()) {
-                // the migrator runs before this task and sets the marker when it copies users.xml: it failed
-                log("No default users are added: %s exists, but its users were not copied. See the messages of UsersGroupsXmlMigratorOffline.\n", usersXml);
-                return;
+            for (final String name : MIGRATED_FILE_NAMES) {
+                final File file = new File(getHomeDirectory(), "etc" + File.separator + name);
+                if (file.exists()) {
+                    // the migrator runs before this task and archives the file once it has copied it: it failed
+                    log("No default users are added: %s exists, but it was not copied into the database. See the messages of UsersGroupsXmlMigratorOffline.\n", file);
+                    return;
+                }
             }
             connection.setAutoCommit(false);
             try {
-                final int admin = insertUser(connection, "admin", "Administrator", "Default administrator, do not delete", ADMIN_HASH, "ROLE_ADMIN");
-                insertUser(connection, "rtc", "RTC", "RTC user, do not delete", RTC_HASH, "ROLE_RTC");
-                final int group = insertReturningId(connection,
-                        "INSERT INTO groups (id, name, comments, created_time, last_modified) VALUES (nextval('groups_id_seq'), ?, ?, NOW(), NOW()) RETURNING id",
-                        "Admin", "The administrators");
-                update(connection, "INSERT INTO group_members (group_id, position, user_id) VALUES (?, 0, ?)", group, admin);
+                final UsersGroupsXmlMigratorOffline.Import defaults = new UsersGroupsXmlMigratorOffline.Import(connection, this::log);
+                defaults.users(UserMgmtDefaults.users().getUsers());
+                defaults.groups(UserMgmtDefaults.groups().getGroups());
                 UserMgmtInitialized.set(connection, getId());
                 connection.commit();
-            } catch (final SQLException e) {
+            } catch (final SQLException | RuntimeException e) {
                 try {
                     connection.rollback();
                 } catch (final SQLException rollbackFailure) {
@@ -129,48 +134,17 @@ public class DefaultUsersSeedOffline extends AbstractOnmsUpgrade {
             }
             connection.setAutoCommit(true);
             log("Added the default users admin and rtc, and the group Admin\n");
-        } catch (final SQLException e) {
+        } catch (final SQLException | RuntimeException e) {
             throw new OnmsUpgradeException("Cannot add the default users: " + e.getMessage(), e);
         }
     }
 
-
-    private static int insertUser(final Connection connection, final String username, final String fullName,
-                                  final String comments, final String hash, final String role) throws SQLException {
-        final int id = insertReturningId(connection,
-                "INSERT INTO users (id, username, full_name, comments, password_hash, password_salted, created_time, last_modified) "
-                        + "VALUES (nextval('users_id_seq'), ?, ?, ?, ?, true, NOW(), NOW()) RETURNING id",
-                username, fullName, comments, hash);
-        update(connection, "INSERT INTO user_security_roles (user_id, role_id) SELECT ?, id FROM security_roles WHERE name = ?", id, role);
-        return id;
-    }
 
     private static int count(final Connection connection, final String sql) throws SQLException {
         try (final Statement statement = connection.createStatement(); final ResultSet rs = statement.executeQuery(sql)) {
             rs.next();
             return rs.getInt(1);
         }
-    }
-
-    private static int insertReturningId(final Connection connection, final String sql, final Object... args) throws SQLException {
-        try (final PreparedStatement statement = prepare(connection, sql, args); final ResultSet rs = statement.executeQuery()) {
-            rs.next();
-            return rs.getInt(1);
-        }
-    }
-
-    private static void update(final Connection connection, final String sql, final Object... args) throws SQLException {
-        try (final PreparedStatement statement = prepare(connection, sql, args)) {
-            statement.executeUpdate();
-        }
-    }
-
-    private static PreparedStatement prepare(final Connection connection, final String sql, final Object... args) throws SQLException {
-        final PreparedStatement statement = connection.prepareStatement(sql);
-        for (int i = 0; i < args.length; i++) {
-            statement.setObject(i + 1, args[i]);
-        }
-        return statement;
     }
 
     @Override
