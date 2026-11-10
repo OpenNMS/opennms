@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.config.jdbc;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +41,11 @@ public class JdbcRrd implements Serializable, Comparable<JdbcRrd> {
     private static final long serialVersionUID = 143526958273169546L;
     
     @XmlAttribute(name="step")
+    @JsonProperty("step")
     private Integer m_step;
     
     @XmlElement(name="rra")
+    @JsonProperty("rra")
     private List<String> m_jdbcRras = new ArrayList<>();
     
     public JdbcRrd() {

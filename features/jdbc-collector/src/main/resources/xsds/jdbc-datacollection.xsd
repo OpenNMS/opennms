@@ -48,7 +48,7 @@
       </xs:element>
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required"/>
-    <xs:attribute name="recheckInterval" type="xs:int" use="required"/>
+    <xs:attribute name="recheckInterval" type="xs:int"/>
     <xs:attribute name="ifType" type="xs:string" use="required"/>
     <xs:attribute name="resourceType" type="xs:string"/>
     <xs:attribute name="instance-column" type="xs:string"/>
@@ -67,6 +67,5 @@
     <xs:attribute name="rrdRepository" type="xs:string"/>
   </xs:complexType>
 
-  <xs:complexType name="jdbcDataCollectionConfigFactory"/>
 </xs:schema>
 

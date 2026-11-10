@@ -47,7 +47,6 @@
         <entry key="jasper-reports.xml" value="legacyLocalJasperReportsDao"/>
         <entry key="javamail-configuration.properties" value="javaMailerConfig"/>
         <entry key="javamail-configuration.xml" value="javamailConfigurationDao"/>
-        <entry key="jdbc-datacollection-config.xml" value="jdbcDataCollectionConfigDao"/>
         <entry key="jmx-config.xml" value="jmxConfigDao"/>
         <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigDao"/>
         <entry key="xml-datacollection-config.xml" value="xmlDataCollectionConfigDao"/>
@@ -214,8 +213,6 @@
     <property name="configResource" value="file:${opennms.home}/etc/javamail-configuration.xml"/>
   </bean>
   
-  <bean id="jdbcDataCollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.JdbcDataCollectionConfigDaoJaxb"/>
-
   <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.JmxConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/jmx-config.xml"/>
   </bean>

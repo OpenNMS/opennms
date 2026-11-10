@@ -49,6 +49,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -98,7 +99,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     private final static String SCHEMA_NAME_EVENTD = "eventd";
     private final static String SCHEMA_NAME_PROPERTIES = "propertiesTest";
     private final static String SCHEMA_NAME_GRAPHML = "org.opennms.netmgt.graph.provider.graphml";
+    private final static String SCHEMA_NAME_JDBC = "jdbc-datacollection-config";
+    private final static String JDBC_CHANGELOG = "changelog-cm/37.0.0/changelog-cm.xml";
     private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
+    private final static String ASSEMBLY_ETC = "../../../opennms-base-assembly/src/main/filtered/etc/";
 
     private DataSource dataSource;
     private Connection connection;
@@ -155,6 +159,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
         if (cm.getRegisteredConfigDefinition(SCHEMA_NAME_GRAPHML).isPresent()) {
             this.cm.unregisterSchema(SCHEMA_NAME_GRAPHML);
+        }
+
+        if (cm.getRegisteredConfigDefinition(SCHEMA_NAME_JDBC).isPresent()) {
+            this.cm.unregisterSchema(SCHEMA_NAME_JDBC);
         }
 
         FileSystemUtils.deleteRecursively(this.opennmsHome.toFile());
@@ -275,6 +283,68 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         } finally {
             this.db.cleanUp();
         }
+    }
+
+    /**
+     * The 37.0.0 changelog imports jdbc-datacollection-config.xml as 'default' and every file of
+     * jdbc-datacollection.d/ as a configuration named after the file. The files are archived below
+     * etc_archive/jdbc-datacollection.d/ and imported from there again after a database reset.
+     */
+    @Test
+    public void shouldImportJdbcDataCollectionDirectory() throws Exception {
+        try {
+            final Path etcDir = Path.of(this.opennmsHome + "/etc");
+            final Path includeDir = Files.createDirectories(etcDir.resolve("jdbc-datacollection.d"));
+            Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection-config.xml"), etcDir.resolve("jdbc-datacollection-config.xml"));
+            Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection.d/mysql.xml"), includeDir.resolve("mysql.xml"));
+            Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection.d/postgresql.xml"), includeDir.resolve("postgresql.xml"));
+            // not an xml file: ignored
+            FileUtils.writeStringToFile(includeDir.resolve("README.txt").toFile(), "ignored", StandardCharsets.UTF_8);
+
+            new LiquibaseUpgrader(cmSpy).runChangelog(JDBC_CHANGELOG, dataSource.getConnection());
+
+            assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_JDBC).get().getAllowMultiple());
+            assertEquals(Set.of(DEFAULT_CONFIG_ID, "mysql", "postgresql"), this.cm.getConfigIds(SCHEMA_NAME_JDBC));
+            assertEquals("PostgreSQL", this.cm.getJSONConfiguration(SCHEMA_NAME_JDBC, "postgresql").get()
+                    .getJSONArray("jdbc-collection").getJSONObject(0).getString("name"));
+
+            // imported files are archived, keeping the directory
+            assertFalse(Files.exists(etcDir.resolve("jdbc-datacollection-config.xml")));
+            assertFalse(Files.exists(includeDir.resolve("mysql.xml")));
+            assertFalse(Files.exists(includeDir.resolve("postgresql.xml")));
+            assertTrue(Files.exists(includeDir.resolve("README.txt")));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive", "jdbc-datacollection-config.xml"));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive/jdbc-datacollection.d", "mysql.xml"));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive/jdbc-datacollection.d", "postgresql.xml"));
+
+            // simulate dropdb: the archived files are imported again
+            resetDatabase();
+            this.cm.unregisterSchema(SCHEMA_NAME_JDBC);
+            new LiquibaseUpgrader(cm).runChangelog(JDBC_CHANGELOG, dataSource.getConnection());
+            assertEquals(Set.of(DEFAULT_CONFIG_ID, "mysql", "postgresql"), this.cm.getConfigIds(SCHEMA_NAME_JDBC));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    @Test
+    public void shouldImportJdbcDataCollectionWithoutDirectory() throws Exception {
+        try {
+            Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection-config.xml"), Path.of(this.opennmsHome + "/etc/jdbc-datacollection-config.xml"));
+
+            new LiquibaseUpgrader(cmSpy).runChangelog(JDBC_CHANGELOG, dataSource.getConnection());
+
+            assertEquals(Set.of(DEFAULT_CONFIG_ID), this.cm.getConfigIds(SCHEMA_NAME_JDBC));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    private void resetDatabase() throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("DROP TABLE IF EXISTS " + TABLE_NAME_DATABASECHANGELOG);
+        statement.execute();
+        statement = connection.prepareStatement("DROP TABLE IF EXISTS " + LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOGLOCK);
+        statement.execute();
     }
 
     @Test

@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.config.jdbc;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -34,6 +36,7 @@ public class JdbcStatement implements Serializable, Comparable<JdbcStatement> {
     private static final long serialVersionUID = 883422287764280313L;
     
     @XmlElement(name="queryString",required=true)
+    @JsonProperty("queryString")
     private String m_jdbcQuery;
     
     @XmlTransient

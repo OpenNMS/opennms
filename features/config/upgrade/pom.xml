@@ -10,6 +10,18 @@
     <name>OpenNMS :: Features :: Config :: Upgrade</name>
     <packaging>bundle</packaging>
     <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+            <testResource>
+                <!-- jdbc-datacollection.xsd for the 37.0.0 changelog. A dependency on the jdbc-collector would be a reactor cycle. -->
+                <directory>../../jdbc-collector/src/main/resources</directory>
+                <includes>
+                    <include>xsds/jdbc-datacollection.xsd</include>
+                </includes>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
