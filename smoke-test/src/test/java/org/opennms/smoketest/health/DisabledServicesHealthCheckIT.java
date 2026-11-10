@@ -35,6 +35,7 @@ import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC
 
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.junit.Before;
@@ -105,6 +106,13 @@ public class DisabledServicesHealthCheckIT {
         final List<String> statuses = response.jsonPath().getList("responses.status");
         assertThat(body, statuses, not(empty()));
         assertThat(body, statuses, everyItem(is("Success")));
+    }
+
+    @Test
+    public void verifyEnabledDaemonsAreRunning() {
+        final Map<String, String> statuses = stack.opennms().getRestClient().getServiceStatuses();
+        assertThat(statuses.get("Telemetryd"), is("running"));
+        assertThat(statuses.values(), everyItem(is("running")));
     }
 
     @Test
