@@ -42,11 +42,14 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
@@ -83,6 +86,9 @@ public class HibernateCriteriaConverterIT implements InitializingBean {
 
     @Autowired
     SessionFactory m_sessionFactory;
+
+    @Autowired
+    IpInterfaceDao m_ipInterfaceDao;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -275,5 +281,59 @@ public class HibernateCriteriaConverterIT implements InitializingBean {
         cb.alias("node", "node", JoinType.LEFT_JOIN);
         cb.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
         return cb;
+    }
+
+    /**
+     * The iplike restriction rides the converter's native-inet translation
+     * for translatable match expressions and the iplike() stored procedure
+     * for the rest; both must agree with plain string matching on the
+     * populated interfaces, in both polarities.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testIplikeQuery() {
+        final List<OnmsIpInterface> all = m_ipInterfaceDao.findAll();
+        final long expected = all.stream()
+                .map(iface -> InetAddressUtils.str(iface.getIpAddress()))
+                .filter(addr -> addr.startsWith("192.168.1."))
+                .count();
+        assertTrue(expected > 0);
+
+        // translatable pattern: answered by the native-inet predicate
+        CriteriaBuilder cb = new CriteriaBuilder(OnmsIpInterface.class);
+        cb.iplike("ipAddr", "192.168.1.*");
+        assertEquals(expected, m_ipInterfaceDao.findMatching(cb.toCriteria()).size());
+
+        // negated: everything else must come back, exactly like NOT iplike()
+        cb = new CriteriaBuilder(OnmsIpInterface.class);
+        cb.not().iplike("ipAddr", "192.168.1.*");
+        assertEquals(all.size() - expected, m_ipInterfaceDao.findMatching(cb.toCriteria()).size());
+
+        // past the negated-form cap (256 ranges) the negation uses NOT iplike()
+        final long matches192x1 = all.stream()
+                .map(iface -> InetAddressUtils.str(iface.getIpAddress()).split("\\."))
+                .filter(octets -> octets.length == 4 && "192".equals(octets[0]) && "1".equals(octets[2]))
+                .count();
+        assertTrue(matches192x1 > 0);
+        cb = new CriteriaBuilder(OnmsIpInterface.class);
+        cb.not().iplike("ipAddr", "192.*.1.*");
+        assertEquals(all.size() - matches192x1, m_ipInterfaceDao.findMatching(cb.toCriteria()).size());
+
+        // a zoneless v6 rule matches the populator's zoned fe80:...%5
+        // interface through the native predicate (the value's zone id is
+        // stripped by opennms_safe_inet)
+        cb = new CriteriaBuilder(OnmsIpInterface.class);
+        cb.iplike("ipAddr", "fe80:*:*:*:*:*:*:*");
+        assertEquals(1, m_ipInterfaceDao.findMatching(cb.toCriteria()).size());
+
+        // a zone-constrained rule is untranslatable and falls back to the
+        // iplike() stored procedure
+        cb = new CriteriaBuilder(OnmsIpInterface.class);
+        cb.iplike("ipAddr", "fe80:*:*:*:*:*:*:*%5");
+        assertEquals(1, m_ipInterfaceDao.findMatching(cb.toCriteria()).size());
+
+        cb = new CriteriaBuilder(OnmsIpInterface.class);
+        cb.iplike("ipAddr", "fe80:*:*:*:*:*:*:*%99");
+        assertEquals(0, m_ipInterfaceDao.findMatching(cb.toCriteria()).size());
     }
 }
