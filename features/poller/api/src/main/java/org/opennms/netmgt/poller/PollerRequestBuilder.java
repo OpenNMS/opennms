@@ -44,6 +44,13 @@ public interface PollerRequestBuilder {
 
     PollerRequestBuilder withPatternVariables(Map<String, String> patterns);
 
+    /**
+     * Marks the attributes passed to this builder as already interpolated so that
+     * {@link #execute()} will not interpolate them again. Runtime attributes returned
+     * by the monitor are still interpolated on every execution.
+     */
+    PollerRequestBuilder withPreInterpolatedAttributes(boolean preInterpolated);
+
     Map<String, Object> getInterpolatedAttributes();
 
     CompletableFuture<PollerResponse> execute();
