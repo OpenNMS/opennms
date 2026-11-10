@@ -202,6 +202,12 @@
           "roles": ["ROLE_ADMIN"]
         },
         {
+          "id": "configureJdbcDataCollection",
+          "name": "Configure JDBC Data Collection",
+          "url": "ui/index.html#/jdbc-data-collection",
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
           "id": "configureThresholds",
           "name": "Configure Thresholds",
           "url": "ui/index.html#/threshold-config",

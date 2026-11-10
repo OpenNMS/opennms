@@ -198,6 +198,9 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("Administration", "Surveillance Categories");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Surveillance Categories']")));
 
+        clickMenuItem("Administration", "Configure JDBC Data Collection");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[text()='JDBC Data Collection']")));
+
         clickMenuItem("Administration", "Configure Thresholds");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[text()='Threshold Configuration']")));
 

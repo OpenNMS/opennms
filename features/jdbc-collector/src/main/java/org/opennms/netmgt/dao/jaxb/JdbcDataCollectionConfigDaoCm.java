@@ -35,7 +35,9 @@ import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.exception.ConfigNotFoundException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.EventType;
+import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollection;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
 import org.opennms.netmgt.dao.JdbcDataCollectionConfigDao;
@@ -162,6 +164,42 @@ public class JdbcDataCollectionConfigDaoCm extends AbstractCmJaxbConfigDao<JdbcD
             result.merge(config);
         }
         return result;
+    }
+
+    /**
+     * @return a private copy of a stored configuration, safe to modify; the instance {@link #getConfig(String)}
+     *         returns is shared with the collector
+     * @throws ConfigNotFoundException when no configuration with that id is stored
+     */
+    public JdbcDataCollectionConfig copyOfConfig(final String configId) {
+        if (!configurationManagerService.getConfigIds(CONFIG_NAME).contains(configId)) {
+            throw new ConfigNotFoundException("NOT_FOUND: configName: " + CONFIG_NAME + " configId: " + configId);
+        }
+        return ConfigConvertUtil.jsonToObject(ConfigConvertUtil.objectToJson(getConfig(configId)), JdbcDataCollectionConfig.class);
+    }
+
+    /**
+     * Stores a new configuration.
+     *
+     * @throws org.opennms.features.config.exception.ConfigAlreadyExistsException when the id is taken
+     * @throws org.opennms.features.config.exception.ValidationException when the schema rejects it
+     */
+    public void createConfig(final String configId, final JdbcDataCollectionConfig config) {
+        configurationManagerService.registerConfiguration(CONFIG_NAME, configId, new JsonAsString(ConfigConvertUtil.objectToJson(config)));
+    }
+
+    /**
+     * Replaces a stored configuration in full. Unlike {@link #updateConfig(String, JdbcDataCollectionConfig)}, which
+     * merges the top-level keys, this also removes the last collection or the repository.
+     *
+     * @throws org.opennms.features.config.exception.ValidationException when the schema rejects it
+     */
+    public void replaceConfig(final String configId, final JdbcDataCollectionConfig config) {
+        updateConfig(configId, ConfigConvertUtil.objectToJson(config), true);
+    }
+
+    public void deleteConfig(final String configId) {
+        configurationManagerService.unregisterConfiguration(CONFIG_NAME, configId);
     }
 
     @Override

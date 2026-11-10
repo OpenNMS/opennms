@@ -44,6 +44,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.features.config.exception.ConfigNotFoundException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
@@ -130,6 +131,33 @@ public class JdbcDataCollectionConfigCmDaoIT {
 
         cm.unregisterConfiguration(CONFIG_NAME, "oracle");
         assertThat(dao.getDataCollectionByName("Oracle-JDBC"), nullValue());
+    }
+
+    @Test
+    public void writesThroughTheDaoAreVisible() {
+        final JdbcDataCollectionConfig copy = dao.copyOfConfig("postgresql");
+        assertThat("a copy, not the shared instance", copy == dao.getConfig("postgresql"), equalTo(false));
+
+        copy.getJdbcDataCollections().get(0).setName("PostgreSQL-Copy");
+        dao.createConfig("copy", copy);
+        assertThat(dao.getConfigIds(), equalTo(Arrays.asList("default", "copy", "mysql", "postgresql")));
+        assertThat(dao.getDataCollectionByName("PostgreSQL-Copy"), notNullValue());
+        assertThat("the original is untouched", dao.getDataCollectionByName("PostgreSQL"), notNullValue());
+
+        // a replace drops the last collection, a merging update would keep it
+        final JdbcDataCollectionConfig empty = dao.copyOfConfig("copy");
+        empty.getJdbcDataCollections().clear();
+        dao.replaceConfig("copy", empty);
+        assertThat(dao.getDataCollectionByName("PostgreSQL-Copy"), nullValue());
+        assertThat(dao.getConfig("copy").getJdbcDataCollections().isEmpty(), equalTo(true));
+
+        dao.deleteConfig("copy");
+        assertThat(dao.getConfigIds(), equalTo(Arrays.asList("default", "mysql", "postgresql")));
+    }
+
+    @Test(expected = ConfigNotFoundException.class)
+    public void copyOfAnUnknownConfigurationFails() {
+        dao.copyOfConfig("unknown");
     }
 
     @Test

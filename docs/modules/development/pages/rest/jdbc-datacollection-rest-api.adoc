@@ -1,0 +1,210 @@
+[[ga-jdbc-datacollection-rest-api]]
+= JDBC Data Collection REST API (v2)
+:description: Manage the SQL queries the JDBC collector runs through the OpenNMS REST v2 API.
+
+The JDBC data collection configuration lives in the database and is managed over REST at `/api/v2/jdbc-datacollection`.
+It replaces the former `jdbc-datacollection-config.xml` and `jdbc-datacollection.d/*.xml` files.
+
+Reading requires any authenticated role.
+Every write, download and upload requires `ROLE_ADMIN`.
+
+== Sources, collections, queries and columns
+
+The configuration is split into sources.
+The source `default` holds what used to be `jdbc-datacollection-config.xml`, and every former file of `jdbc-datacollection.d/` became a source named after the file, such as `postgresql` or `mysql`.
+
+* A source holds collections and an RRD repository.
+* A collection holds the RRD step and RRAs, and the queries to run.
+* A query holds the SQL statement and the result columns to store.
+
+A collectd service that uses the `JdbcCollector` selects one collection with its `collection` parameter.
+The collector sees all sources merged: `default` first, then the others sorted by id.
+That is why a collection name must be unique across all sources; the API refuses a duplicate with `409 Conflict`.
+The collector also uses the RRD repository of the first source that sets one, normally `default`, for all collections.
+
+Changes take effect with the next collection; no daemon reload is needed.
+
+== Collections are the unit of transfer
+
+Below a source, the collection is the unit of transfer: `POST` and `PUT` carry the whole collection, including its queries and columns.
+Queries and columns have no identity besides their position, so there is no endpoint for an individual query.
+
+A `PUT` body is not a patch.
+A query missing from it is deleted.
+Read the collection, change what you need, and send the whole thing back.
+
+== Concurrent edits
+
+`GET` on a source or a collection returns the `ETag` of the source.
+Send it back as `If-Match` on a later write to the source or any of its collections, and the write fails with `412 Precondition Failed` if the source changed in the meantime, instead of silently overwriting the other change.
+Omitting `If-Match` keeps the last writer.
+
+== Endpoint overview
+
+[options="header"]
+|===
+| Method | Path | Content type | Description
+
+| `GET`
+| `/api/v2/jdbc-datacollection/sources`
+| `application/json`
+| List the sources without their collections, in merge order.
+
+| `GET`
+| `/api/v2/jdbc-datacollection/sources/{sourceId}`
+| `application/json`
+| Get a source with all of its collections. Returns an `ETag`.
+
+| `POST`
+| `/api/v2/jdbc-datacollection/sources`
+| `application/json`
+| Create a source. Fails with `409` if the id or a collection name is taken.
+
+| `PUT`
+| `/api/v2/jdbc-datacollection/sources/{sourceId}`
+| `application/json`
+| Update the RRD repository of a source. The collections in the body are ignored.
+
+| `DELETE`
+| `/api/v2/jdbc-datacollection/sources/{sourceId}`
+| --
+| Delete a source with all of its collections. The `default` source cannot be deleted.
+
+| `GET`
+| `/api/v2/jdbc-datacollection/sources/{sourceId}/collections/{collectionName}`
+| `application/json`
+| Get one collection with its queries. Returns the `ETag` of the source.
+
+| `POST`
+| `/api/v2/jdbc-datacollection/sources/{sourceId}/collections`
+| `application/json`
+| Add a collection to a source.
+
+| `PUT`
+| `/api/v2/jdbc-datacollection/sources/{sourceId}/collections/{collectionName}`
+| `application/json`
+| Replace a collection in full. A different `name` in the body renames it; collectd services keep the old name.
+
+| `DELETE`
+| `/api/v2/jdbc-datacollection/sources/{sourceId}/collections/{collectionName}`
+| --
+| Delete a collection.
+
+| `GET`
+| `/api/v2/jdbc-datacollection/metadata`
+| `application/json`
+| The column types, suggested interface types, the resource types of this system and the defaults of a new source or collection.
+
+| `GET`
+| `/api/v2/jdbc-datacollection/sources/{sourceId}/download?format=xml\|json`
+| `application/xml`, `application/json`
+| Download a source as a file. The XML has the format of the former files. Defaults to XML.
+
+| `POST`
+| `/api/v2/jdbc-datacollection/upload?id=\{sourceId\}&replace=true\|false`
+| `multipart/form-data`
+| Create or replace a source from an XML or JSON file in the `upload` part.
+|===
+
+=== Read-only fields
+
+A source returned by `GET` carries `version`, its `ETag`, and `effectiveRrdRepository`, the repository the collector actually uses.
+Each collection carries `usedBy`, the collectd services that use it as `package/service`, and `shadowedBy`, the id of an earlier source that defines a collection of the same name when there is one; the collector then ignores this collection.
+These fields are ignored on writes.
+
+=== Validation
+
+Besides the schema, a write is checked for:
+
+* a source id of letters, digits, `.`, `_` and `-`, starting with a letter or digit
+* a positive RRD step and at least one RRA of the form `RRA:<AVERAGE|MIN|MAX|LAST>:<xff>:<steps>:<rows>`
+* query names unique within their collection, a non-empty SQL statement, and an interface type
+* a resource type and an instance column set together, for queries returning more than one row
+* at least one column per query, of type `gauge`, `counter` or `string`, with an alias of at most 19 characters, unique within the query
+
+=== Uploads
+
+The upload takes an XML file in the format of the former `jdbc-datacollection.d/*.xml` files, or JSON as returned by the JSON download.
+The source id is taken from the `id` parameter, else from the `id` in a JSON body, else from the file name without `.xml` or `.json`.
+A timestamp suffix of a file from `etc_archive`, such as `mysql.xml.20261110120000`, is stripped as well.
+An existing source is replaced only with `replace=true`.
+
+=== Examples
+
+Get a source:
+
+[source, console]
+----
+curl -u admin:admin http://localhost:8980/opennms/api/v2/jdbc-datacollection/sources/postgresql
+----
+
+[source, json]
+----
+{
+  "id": "postgresql",
+  "rrdRepository": "${install.share.dir}/rrd/snmp/",
+  "effectiveRrdRepository": "${install.share.dir}/rrd/snmp/",
+  "collections": [
+    {
+      "name": "PostgreSQL",
+      "rrdStep": 300,
+      "rras": ["RRA:AVERAGE:0.5:1:2016", "RRA:MAX:0.5:288:366"],
+      "queries": [
+        {
+          "name": "pg_tablespace_size",
+          "recheckInterval": 0,
+          "ifType": "all",
+          "resourceType": "pgTableSpace",
+          "instanceColumn": "spcname",
+          "queryString": "SELECT spcname, pg_tablespace_size(spcname) AS ts_size FROM pg_tablespace",
+          "columns": [
+            { "name": "spcname", "dataSourceName": null, "type": "string", "alias": "spcname" },
+            { "name": "ts_size", "dataSourceName": null, "type": "gauge", "alias": "ts_size" }
+          ]
+        }
+      ],
+      "usedBy": ["example1/PostgreSQL"],
+      "shadowedBy": null
+    }
+  ],
+  "version": "3f1c..."
+}
+----
+
+Replace a collection, guarded by the version read before:
+
+[source, console]
+----
+curl -u admin:admin -X PUT \
+  -H 'Content-Type: application/json' \
+  -H 'If-Match: "3f1c..."' \
+  -d @collection.json \
+  http://localhost:8980/opennms/api/v2/jdbc-datacollection/sources/postgresql/collections/PostgreSQL
+----
+
+Download a source as XML and upload it again under another id:
+
+[source, console]
+----
+curl -u admin:admin -o postgresql.xml \
+  'http://localhost:8980/opennms/api/v2/jdbc-datacollection/sources/postgresql/download?format=xml'
+
+curl -u admin:admin -X POST -F upload=@my-postgresql.xml \
+  'http://localhost:8980/opennms/api/v2/jdbc-datacollection/upload?id=my-postgresql'
+----
+
+== Response codes
+
+[options="header"]
+|===
+| Code | Meaning
+
+| `200` | Read succeeded, or an upload was stored.
+| `201` | Created. The `Location` header points at the new resource.
+| `204` | Write succeeded. No response body.
+| `400` | A failed validation rule, an unreadable upload, a missing body, or an attempt to delete the `default` source. The response body carries the reason.
+| `403` | Admin role required.
+| `404` | No such source or collection.
+| `409` | The source id or a collection name is already taken, or an upload would replace a source without `replace=true`.
+| `412` | `If-Match` no longer matches; the source changed since it was read.
+|===
