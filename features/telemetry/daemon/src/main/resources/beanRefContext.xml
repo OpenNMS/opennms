@@ -3,7 +3,9 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-4.2.xsd" default-lazy-init="true">
 
-    <bean id="telemetrydContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+    <!-- The telemetry adapters require the ThresholdingService, which thresholdingContext only publishes when
+         instantiated. Collectd and Pollerd would otherwise be the only ones to do so (NMS-20470). -->
+    <bean id="telemetrydContext" class="org.springframework.context.support.ClassPathXmlApplicationContext" depends-on="thresholdingContext">
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-telemetryDaemon.xml</value>
