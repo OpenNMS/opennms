@@ -31,6 +31,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.UriInfo;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.cxf.jaxrs.ext.search.ConditionType;
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -76,6 +77,41 @@ import org.opennms.web.rest.support.StringCollection;
 @Transactional
 @Tag(name = "SnmpInterfaces", description = "SNMP Interfaces API")
 public class SnmpInterfaceRestService extends AbstractDaoRestService<OnmsSnmpInterface,SearchBean,Integer,String> {
+
+    /**
+     * String properties that have a case-insensitive (ilike) wildcard search, the same as the
+     * snmpInterface.* searches on /nodes. The Vue node list uses this endpoint to get the
+     * interfaces that its case-insensitive SNMP and MAC searches found. A case-sensitive like
+     * here gave no interfaces for a node that the /nodes search found.
+     */
+    private static final String[] CASE_INSENSITIVE_WILDCARD_PROPERTIES = { "ifAlias", "ifDescr", "ifName", "physAddr" };
+
+    /**
+     * A wildcard ('*') EQUALS or NOT_EQUALS uses ilike instead of the default like. A search
+     * without a wildcard keeps the default exact (eq) match.
+     */
+    private static CriteriaBehavior<String> caseInsensitiveWildcard(final String property) {
+        return new CriteriaBehavior<String>((String)null, String::new, (b, v, c, w) -> {
+            if (!w) {
+                return;
+            }
+            switch (c) {
+            case EQUALS:
+                b.ilike(property, v);
+                break;
+            case NOT_EQUALS:
+                b.not().ilike(property, v);
+                break;
+            default:
+                break;
+            }
+        }) {
+            @Override
+            public boolean shouldSkipProperty(final ConditionType condition, final boolean wildcard) {
+                return wildcard && (condition == ConditionType.EQUALS || condition == ConditionType.NOT_EQUALS);
+            }
+        };
+    }
 
     @Autowired
     private SnmpInterfaceDao m_dao;
@@ -127,6 +163,9 @@ public class SnmpInterfaceRestService extends AbstractDaoRestService<OnmsSnmpInt
 
         // Root alias
         map.putAll(CriteriaBehaviors.SNMP_INTERFACE_BEHAVIORS);
+        for (final String property : CASE_INSENSITIVE_WILDCARD_PROPERTIES) {
+            map.put(property, caseInsensitiveWildcard(property));
+        }
 
         // 1st level JOINs
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.node, CriteriaBehaviors.NODE_BEHAVIORS));

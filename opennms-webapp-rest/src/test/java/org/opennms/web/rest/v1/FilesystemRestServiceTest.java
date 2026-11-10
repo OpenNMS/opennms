@@ -22,6 +22,8 @@
 package org.opennms.web.rest.v1;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -32,6 +34,8 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.ws.rs.BadRequestException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -83,6 +87,41 @@ public class FilesystemRestServiceTest {
         assertEquals(0, requests.size());
 
         httpServer.stop(0);
+    }
+
+    @Test
+    public void testJettyDoctypeIsAccepted() throws IOException {
+        final File file = File.createTempFile("jetty", ".xml");
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!DOCTYPE Configure PUBLIC \"-//Jetty//Configure//EN\" \"http://www.eclipse.org/jetty/configure.dtd\">\n"
+                + "<Configure id=\"Server\"/>");
+        new FilesystemRestService(null).maybeValidateXml(file);
+    }
+
+    @Test
+    public void testEntityExpansionIsLimited() throws IOException {
+        // 10^10 expansions of entity a0. The parser must stop at its expansion limit.
+        final StringBuilder xml = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE root [<!ENTITY a0 \"aaaaaaaaaa\">");
+        for (int i = 1; i <= 9; i++) {
+            xml.append("<!ENTITY a").append(i).append(" \"");
+            for (int j = 0; j < 10; j++) {
+                xml.append("&a").append(i - 1).append(';');
+            }
+            xml.append("\">");
+        }
+        xml.append("]><root>&a9;</root>");
+
+        final File file = File.createTempFile("expansion", ".xml");
+        file.deleteOnExit();
+        Files.writeString(file.toPath(), xml.toString());
+        try {
+            new FilesystemRestService(null).maybeValidateXml(file);
+            fail("The validation must reject a file that exceeds the entity expansion limit");
+        } catch (BadRequestException e) {
+            final String message = String.valueOf(e.getResponse().getEntity());
+            assertTrue(message, message.contains("entity expansions"));
+        }
     }
 
     private String loadDtdFile() throws IOException {

@@ -29,6 +29,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opennms.core.resource.Vault;
 import org.opennms.web.api.Authentication;
+import org.opennms.web.api.ElementConstants;
 import org.opennms.web.rest.support.menu.model.MainMenu;
 import org.opennms.web.rest.support.menu.model.MenuEntry;
 import org.slf4j.Logger;
@@ -95,8 +96,9 @@ public class MenuProvider {
         mainMenu.formattedDate = menuRequestContext.getFormattedDate();
         mainMenu.formattedTime = menuRequestContext.getFormattedTime();
         mainMenu.username = menuRequestContext.getRemoteUser();
-        // for navigating to a specific node id
-        mainMenu.baseNodeUrl = "element/node.jsp?node=";
+        // The Vue Node Details page. No OpenNMS Vue code reads this any more (it links through the
+        // router), but plugins may. Callers append the node id.
+        mainMenu.baseNodeUrl = ElementConstants.NODE_DETAILS_URI;
 
         mainMenu.zenithConnectEnabled =
                 Strings.nullToEmpty(menuRequestContext.getSystemProperty(ZENITH_CONNECT_ENABLED_KEY, "false")).equals("true");

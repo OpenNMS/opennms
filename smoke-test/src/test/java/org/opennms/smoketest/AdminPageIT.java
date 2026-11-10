@@ -87,7 +87,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // Performance Measurement
         new String[] { "Manage SNMP Data Collection Config", "//div[@id='app']//h1[text()='Manage SNMP Data Collection Sources']" },
         new String[] { "Configure SNMP Data Collection per Interface", "//span[text()='Manage SNMP Data Collection per Interface']" },
-        new String[] { "Configure Thresholds", "//span[text()='Threshold Configuration']" },
+        new String[] { "Configure Thresholds", "//div[@id='app']//h1[text()='Threshold Configuration']" },
 
         // Distributed Monitoring
         // both links open the same /ui (Vue) page on different tabs; the xpath requires the title and the selected tab

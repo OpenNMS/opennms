@@ -80,7 +80,7 @@
         <div class="col-sm-10">
           <ul>
             <c:forEach var="scheduledUser" items="${role.currentUsers}">
-              <li>${scheduledUser}</li>
+              <li><c:out value="${scheduledUser}"/></li>
             </c:forEach>
           </ul>
         </div>
@@ -93,10 +93,10 @@
             <c:forEach var="user" items="${userManager.users}">
               <c:choose>
                 <c:when test="${user == role.defaultUser}">
-                  <option selected>${user}</option>
+                  <option selected><c:out value="${user}"/></option>
                 </c:when>
                 <c:otherwise>
-                  <option>${user}</option>
+                  <option><c:out value="${user}"/></option>
                 </c:otherwise>
               </c:choose>
             </c:forEach>
@@ -111,10 +111,10 @@
             <c:forEach var="group" items="${groupManager.groups}">
               <c:choose>
                 <c:when test="${group == role.membershipGroup}">
-                  <option selected>${group}</option>
+                  <option selected><c:out value="${group}"/></option>
                 </c:when>
                 <c:otherwise>
-                  <option>${group}</option>
+                  <option><c:out value="${group}"/></option>
                 </c:otherwise>
               </c:choose>
             </c:forEach>

@@ -97,6 +97,7 @@
 <c:set var="showParms" value="<%=showParms%>"/>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Detail")
           .headTitle("Events")
@@ -122,7 +123,7 @@
           <th class="col-1">Node</th>
           <td ${acknowledgeEvent ? '' : 'colspan="3"'} class="${acknowledgeEvent ? 'col-3' : 'col-7'}">
             <% if( event.getNodeId() > 0 ) { %>
-              <a href="element/node.jsp?node=<%=event.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(event.getNodeLabel())%></a>
+              <a href="<%= ElementConstants.NODE_DETAILS_URI %><%=event.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(event.getNodeLabel())%></a>
             <% } else {%>
               &nbsp;
             <% } %>
@@ -277,7 +278,7 @@
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <input type="hidden" name="actionCode" value="<%=action%>" />
         <input type="hidden" name="event" value="<%=event.getId()%>"/>
-        <input type="hidden" name="redirect" value="<%= "detail.jsp?" + request.getQueryString()%>" />
+        <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString("detail.jsp?" + request.getQueryString()) %>" />
         <input type="submit" value="<%=buttonName%>"/>
       </form>
     </c:if>
