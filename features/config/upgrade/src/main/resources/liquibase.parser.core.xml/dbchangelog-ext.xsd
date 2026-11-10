@@ -65,4 +65,12 @@
         </xsd:complexType>
     </xsd:element>
 
+    <xsd:element name="importConfigDir">
+        <!-- imports every xml file of a directory below etc/, the file name without .xml is the configId -->
+        <xsd:complexType>
+            <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
+            <xsd:attribute name="dirPath" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
 </xsd:schema>

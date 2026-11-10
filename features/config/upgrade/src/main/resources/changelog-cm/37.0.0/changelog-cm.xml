@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:cm="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- jdbc-datacollection-config.xml becomes the configuration 'default', every file of jdbc-datacollection.d/ a configuration named after the file -->
+    <changeSet author="cpape" id="register-schema-jdbc-datacollection-config">
+        <cm:registerSchema id="jdbc-datacollection-config" allowMultiple="true"/>
+        <cm:importSchemaFromXsd id="jdbc-datacollection-config" xsdFileName="jdbc-datacollection.xsd" xsdFileHash="8ed6486ae1ce441c311b6f252dbb9ee19919ca17ee2f5373f59a7b84bba6b369" rootElement="jdbc-datacollection-config"/>
+        <cm:importConfig schemaId="jdbc-datacollection-config" filePath="jdbc-datacollection-config.xml"/>
+        <cm:importConfigDir schemaId="jdbc-datacollection-config" dirPath="jdbc-datacollection.d"/>
+    </changeSet>
+
+</databaseChangeLog>
