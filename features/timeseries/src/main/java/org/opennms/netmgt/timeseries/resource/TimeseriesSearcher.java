@@ -30,11 +30,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Named;
@@ -65,15 +65,16 @@ import com.google.common.collect.Sets;
  * the query result pre-grouped by every (parent path, depth) combination that
  * {@link #search(ResourcePath, int)} can ask for, so a search is a map lookup.
  *
- * Every cache entry is built completely by the cache loader and is immutable once
- * visible. Nothing is derived from an entry after it has been published, so a
- * concurrent reader can never observe a partially built or placeholder result.
+ * Every cache entry is built completely by the cache loader before it becomes
+ * visible, and its index is never modified afterwards, so a concurrent reader can
+ * never observe a partially built or placeholder result. The only mutable part of
+ * an entry is a set of metrics deleted since it was loaded, which only ever grows.
  *
- * Entries expire a fixed time after they were written (see the
+ * Entries expire a fixed time after they were loaded (see the
  * {@code cache.timeseriesSearcherCache.expireAfterWrite} property), so resources that
  * were added to storage become visible within that time even on a node that is read
  * constantly. Metrics deleted through {@link #removeFromCache(ResourcePath, Collection)}
- * disappear from the cached entry immediately.
+ * disappear from the cached entries immediately.
  */
 public class TimeseriesSearcher {
 
@@ -101,22 +102,45 @@ public class TimeseriesSearcher {
     }
 
     /**
-     * Hides metrics that were deleted from storage from the cached entry that
-     * {@link #search(ResourcePath, int)} would consult for {@code path}, without querying
-     * storage again. Does nothing if that entry is not cached. The entry is replaced as a
-     * whole, so a reload that completes concurrently may be overwritten by the previous
-     * content minus the deleted metrics; the next write expiry reconciles that.
+     * Hides metrics that were deleted from storage from every cached entry that could still
+     * answer with them, without querying storage again. The metrics must be the ones a
+     * depth 0 search for {@code path} returned, which is what a resource delete removes.
+     * Cached entries are marked in place and nothing is written to the cache, so concurrent
+     * removals never lose each other and the entries' write expiry is not extended.
+     * Does nothing for entries that are not cached, including an entry whose load is still
+     * in progress: if that load queried storage before the delete it will carry the deleted
+     * metrics until it expires.
      */
     public void removeFromCache(final ResourcePath path, final Collection<Metric> deletedMetrics) {
         if (deletedMetrics.isEmpty()) {
             return;
         }
-        // depth 0: the entry delete() searched, and the node entry for everything at or below the node
-        final Query query = queryFor(path, 0);
-        final MetricIndex cached = indexByQuery.getIfCached(query);
-        if (cached != null) {
-            indexByQuery.put(query, cached.without(deletedMetrics));
+        for (final Query query : queriesContaining(path)) {
+            final MetricIndex cached = indexByQuery.getIfCached(query);
+            if (cached != null) {
+                cached.remove(deletedMetrics);
+            }
         }
+    }
+
+    /**
+     * The cached queries that can contain the depth 0 metrics of {@code path}: at or below
+     * node level that is the single node entry; above node level it is the exact query for
+     * each ancestor at the depth that reaches those metrics, children() and existsWithin()
+     * searches on the ancestors included.
+     */
+    private List<Query> queriesContaining(final ResourcePath path) {
+        if (getNumPathElementsToNodeLevel(path) > 0) {
+            return Collections.singletonList(queryFor(path, 0));
+        }
+        final String[] elements = path.elements();
+        final List<Query> queries = new ArrayList<>(elements.length);
+        for (int k = 1; k <= elements.length; k++) {
+            final ResourcePath ancestor = ResourcePath.get(Arrays.asList(elements).subList(0, k));
+            // the metrics are one element below path, which is elements.length + 1 - k below the ancestor
+            queries.add(new Query(toSearchRegex(ancestor, elements.length + 1 - k), k));
+        }
+        return queries;
     }
 
     private Query queryFor(final ResourcePath path, final int depth) {
@@ -191,9 +215,10 @@ public class TimeseriesSearcher {
 
     /**
      * The result of one storage query, grouped by (parent resource id, number of
-     * elements below it). Immutable. Metrics deleted since the query was made are
-     * kept in a separate set and excluded from every answer, which makes a delete
-     * cost nothing but a set union, independent of the size of the index.
+     * elements below it). The index is immutable. Metrics deleted since the query was
+     * made are added to a separate concurrent set and excluded from every answer, which
+     * makes a delete cost nothing but a few set insertions, independent of the size of
+     * the index.
      */
     static final class MetricIndex {
 
@@ -228,9 +253,9 @@ public class TimeseriesSearcher {
         private final Map<Key, Set<Metric>> metricsByKey;
         private final Set<Metric> deleted;
 
-        private MetricIndex(final Map<Key, Set<Metric>> metricsByKey, final Set<Metric> deleted) {
+        private MetricIndex(final Map<Key, Set<Metric>> metricsByKey) {
             this.metricsByKey = metricsByKey;
-            this.deleted = deleted;
+            this.deleted = ConcurrentHashMap.newKeySet();
         }
 
         /**
@@ -261,14 +286,12 @@ public class TimeseriesSearcher {
             }
             final Map<Key, Set<Metric>> immutable = new HashMap<>(index.size() * 2);
             index.forEach((key, list) -> immutable.put(key, Set.copyOf(list)));
-            return new MetricIndex(Collections.unmodifiableMap(immutable), Collections.emptySet());
+            return new MetricIndex(Collections.unmodifiableMap(immutable));
         }
 
-        /** Returns an index that answers like this one but without the given metrics. */
-        MetricIndex without(final Collection<Metric> metrics) {
-            final Set<Metric> union = new HashSet<>(deleted);
-            union.addAll(metrics);
-            return new MetricIndex(metricsByKey, Collections.unmodifiableSet(union));
+        /** Excludes the given metrics from every answer from now on. Safe to call concurrently. */
+        void remove(final Collection<Metric> metrics) {
+            deleted.addAll(metrics);
         }
 
         Set<Metric> get(final String parentResourceId, final int elementsBelow) {
@@ -276,7 +299,7 @@ public class TimeseriesSearcher {
             if (deleted.isEmpty() || metrics.isEmpty()) {
                 return metrics;
             }
-            // an unmodifiable live view over two immutable sets
+            // an unmodifiable view over the immutable set, minus the (only growing) deleted set
             return Sets.difference(metrics, deleted);
         }
     }

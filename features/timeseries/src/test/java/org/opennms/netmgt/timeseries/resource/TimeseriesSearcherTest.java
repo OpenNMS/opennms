@@ -210,6 +210,108 @@ public class TimeseriesSearcherTest {
         verify(storage, times(1)).findMetrics(any());
     }
 
+    /**
+     * Resources of one node deleted from several threads at once: every removal must stick.
+     * A read-modify-write replacement of the cache entry would let the last writer discard
+     * the removals of the others.
+     */
+    @Test
+    public void concurrentRemovalsShouldAllTakeEffect() throws Exception {
+        final int numInterfaces = 200;
+        final int numThreads = 16;
+        final List<Metric> metrics = new ArrayList<>();
+        for (int i = 0; i < numInterfaces; i++) {
+            metrics.add(createAndAddMetric("snmp/2/eth" + i + "/mib2-stats", "ifInOctets"));
+        }
+        assertEquals(new HashSet<>(metrics), searcher.search(ResourcePath.fromString("snmp/2"), 1));
+
+        final CyclicBarrier start = new CyclicBarrier(numThreads);
+        final ExecutorService pool = Executors.newFixedThreadPool(numThreads);
+        try {
+            final List<Future<?>> removals = new ArrayList<>();
+            for (int t = 0; t < numThreads; t++) {
+                final int thread = t;
+                removals.add(pool.submit(() -> {
+                    start.await();
+                    for (int i = thread; i < numInterfaces; i += numThreads) {
+                        searcher.removeFromCache(ResourcePath.fromString("snmp/2/eth" + i), Collections.singletonList(metrics.get(i)));
+                    }
+                    return null;
+                }));
+            }
+            for (final Future<?> removal : removals) {
+                removal.get(30, TimeUnit.SECONDS);
+            }
+        } finally {
+            pool.shutdownNow();
+        }
+
+        assertEquals(Collections.emptySet(), searcher.search(ResourcePath.fromString("snmp/2"), 1));
+        for (int i = 0; i < numInterfaces; i++) {
+            test("snmp/2/eth" + i);
+        }
+        verify(storage, times(1)).findMetrics(any());
+    }
+
+    /**
+     * Removals mark the cached entry in place. Writing a replacement entry would restart
+     * its write expiry, and a node that keeps getting deletes would never pick up new
+     * resources.
+     */
+    @Test
+    public void removalsShouldNotExtendTheWriteExpiry() throws Exception {
+        final CacheConfig config = new CacheConfigBuilder().withName("writeExpiryOnRemove").build();
+        config.setExpireAfterWrite(1L);
+        searcher = new TimeseriesSearcher(storageManager, config);
+
+        Metric eth0In = createAndAddMetric("snmp/2/eth0/mib2-stats", "ifInOctets");
+        Metric eth1In = createAndAddMetric("snmp/2/eth1/mib2-stats", "ifInOctets");
+        test("snmp/2/eth0", eth0In);
+        verify(storage, times(1)).findMetrics(any());
+
+        // collected after the entry was built
+        Metric eth2In = createAndAddMetric("snmp/2/eth2/mib2-stats", "ifInOctets");
+
+        // keep removing for longer than the write expiry
+        storage.delete(eth0In);
+        final long until = System.currentTimeMillis() + 1500L;
+        while (System.currentTimeMillis() < until) {
+            searcher.removeFromCache(ResourcePath.fromString("snmp/2/eth0"), Collections.singletonList(eth0In));
+            Thread.sleep(100L);
+        }
+
+        // the entry has expired despite the removals, so the new resource is visible after one reload
+        test("snmp/2/eth2", eth2In);
+        test("snmp/2/eth1", eth1In);
+        test("snmp/2/eth0");
+        verify(storage, times(2)).findMetrics(any());
+    }
+
+    /**
+     * Above node level every search is cached separately. Deleting a resource there must
+     * hide its metrics from the cached searches of its ancestors too, such as the parent's
+     * children() search.
+     */
+    @Test
+    public void removeFromCacheAboveNodeLevelShouldUpdateEveryCachedQuery() throws StorageException {
+        Metric host1 = createAndAddMetric("response/host1/icmp", "icmp");
+        Metric host2 = createAndAddMetric("response/host2/icmp", "icmp");
+        final ResourcePath host1Path = ResourcePath.fromString("response/host1");
+        final ResourcePath parent = ResourcePath.fromString("response");
+
+        assertEquals(Collections.singleton(host1), searcher.search(host1Path, 0));
+        assertEquals(new HashSet<>(Arrays.asList(host1, host2)), searcher.search(parent, 1));
+        verify(storage, times(2)).findMetrics(any());
+
+        storage.delete(host1);
+        searcher.removeFromCache(host1Path, Collections.singletonList(host1));
+
+        assertEquals(Collections.emptySet(), searcher.search(host1Path, 0));
+        assertEquals(Collections.singleton(host2), searcher.search(parent, 1));
+        // both answered from the cached entries
+        verify(storage, times(2)).findMetrics(any());
+    }
+
     @Test
     public void searchResultsShouldBeImmutable() throws StorageException {
         Metric metric = createAndAddMetric("snmp/2/node-stats", "loadavg1m");

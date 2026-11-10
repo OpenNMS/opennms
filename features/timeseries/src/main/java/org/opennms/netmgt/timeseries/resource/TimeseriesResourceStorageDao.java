@@ -74,7 +74,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
     @Override
     public boolean exists(ResourcePath path, int depth) {
         Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
-        return searchFor(path, depth).size() > 0;
+        return !searchFor(path, depth).isEmpty();
     }
 
     @Override
@@ -86,7 +86,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         // additional indices to avoid this, but it's not worth the additional
         // writes, since the specified depth should be relatively small.
         return IntStream.rangeClosed(0, depth)
-            .anyMatch(i -> searchFor(path, i).size() > 0);
+            .anyMatch(i -> !searchFor(path, i).isEmpty());
     }
 
     @Override
