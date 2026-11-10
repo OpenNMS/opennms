@@ -41,6 +41,8 @@
           discarded and the connection kept. An oversized octet-counted message closes the
           connection, since the position of the next message is then unknown.
         * max-connections: default 1024.
+        * max-connections-per-source: default 256. The most connections one sender address
+          may hold, so a single address cannot use up max-connections.
         * idle-timeout: seconds before a silent connection is closed. 0 disables.
         * ordered: whether one connection's messages are guaranteed to become events in the
           order they arrived. Off by default, which is what UDP has always offered: the sink

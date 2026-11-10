@@ -39,13 +39,15 @@ import javax.xml.bind.annotation.XmlElement;
  * The framing property is typed as a string rather than as an enum because the containers
  * populate it from a string property, and a getter and setter that disagree on type turns
  * the property read-only under bean introspection. Use {@link #resolveFraming()} to get the
- * parsed value; the setter validates eagerly, so a typo fails at wiring time.
+ * parsed value. The setters accept anything and {@link #validate()} reports a bad value,
+ * since a setter that throws fails the Blueprint container on a Minion.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SyslogTcpConfig {
 
     public static final int DEFAULT_MAX_MESSAGE_SIZE = 65536;
     public static final int DEFAULT_MAX_CONNECTIONS = 1024;
+    public static final int DEFAULT_MAX_CONNECTIONS_PER_SOURCE = 256;
     public static final int DEFAULT_IDLE_TIMEOUT_SECONDS = 0;
     public static final int DEFAULT_DISPATCH_TIMEOUT_SECONDS = 30;
 
@@ -67,6 +69,9 @@ public class SyslogTcpConfig {
 
     @XmlAttribute(name = "max-connections")
     private Integer maxConnections;
+
+    @XmlAttribute(name = "max-connections-per-source")
+    private Integer maxConnectionsPerSource;
 
     @XmlAttribute(name = "idle-timeout")
     private Integer idleTimeoutSeconds;
@@ -133,6 +138,15 @@ public class SyslogTcpConfig {
 
     public void setMaxConnections(final int maxConnections) {
         this.maxConnections = maxConnections;
+    }
+
+    /** Connections accepted at once from a single sender address. */
+    public int getMaxConnectionsPerSource() {
+        return maxConnectionsPerSource != null ? maxConnectionsPerSource : DEFAULT_MAX_CONNECTIONS_PER_SOURCE;
+    }
+
+    public void setMaxConnectionsPerSource(final int maxConnectionsPerSource) {
+        this.maxConnectionsPerSource = maxConnectionsPerSource;
     }
 
     public int getIdleTimeoutSeconds() {
@@ -211,6 +225,9 @@ public class SyslogTcpConfig {
         if (maxConnections != null && maxConnections < 1) {
             throw new IllegalArgumentException("syslog TCP max-connections must be positive, got " + maxConnections);
         }
+        if (maxConnectionsPerSource != null && maxConnectionsPerSource < 1) {
+            throw new IllegalArgumentException("syslog TCP max-connections-per-source must be positive, got " + maxConnectionsPerSource);
+        }
         if (idleTimeoutSeconds != null && idleTimeoutSeconds < 0) {
             throw new IllegalArgumentException("syslog TCP idle-timeout cannot be negative, got " + idleTimeoutSeconds);
         }
@@ -226,7 +243,7 @@ public class SyslogTcpConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hash(port, getListenAddress(), framing, maxMessageSize, maxConnections, idleTimeoutSeconds,
+        return Objects.hash(port, getListenAddress(), framing, maxMessageSize, maxConnections, maxConnectionsPerSource, idleTimeoutSeconds,
                 Boolean.valueOf(ordered), dispatchTimeoutSeconds, tls);
     }
 
@@ -244,6 +261,7 @@ public class SyslogTcpConfig {
                 && Objects.equals(framing, other.framing)
                 && Objects.equals(maxMessageSize, other.maxMessageSize)
                 && Objects.equals(maxConnections, other.maxConnections)
+                && Objects.equals(maxConnectionsPerSource, other.maxConnectionsPerSource)
                 && Objects.equals(idleTimeoutSeconds, other.idleTimeoutSeconds)
                 && ordered == other.ordered
                 && Objects.equals(dispatchTimeoutSeconds, other.dispatchTimeoutSeconds)
@@ -257,6 +275,7 @@ public class SyslogTcpConfig {
                 + ", framing=" + getFraming()
                 + ", maxMessageSize=" + getMaxMessageSize()
                 + ", maxConnections=" + getMaxConnections()
+                + ", maxConnectionsPerSource=" + getMaxConnectionsPerSource()
                 + ", idleTimeoutSeconds=" + getIdleTimeoutSeconds()
                 + ", ordered=" + ordered
                 + ", dispatchTimeoutSeconds=" + getDispatchTimeoutSeconds()

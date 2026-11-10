@@ -21,12 +21,15 @@
  */
 package org.opennms.netmgt.syslogd;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayDeque;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -100,6 +103,11 @@ public class SyslogTcpListener {
     private volatile SyslogTcpFraming m_framing;
 
     private final AtomicLong m_lastRefusalWarning = new AtomicLong();
+
+    private final AtomicLong m_lastSourceRefusalWarning = new AtomicLong();
+
+    /** Open connections per sender address. An entry is removed when its count reaches zero. */
+    private final ConcurrentMap<InetAddress, Integer> m_connectionsBySource = new ConcurrentHashMap<>();
 
     private final AtomicLong m_lastSinkFailureWarning = new AtomicLong();
 
@@ -192,10 +200,7 @@ public class SyslogTcpListener {
                                 // Warned about once a minute rather than per refusal, because a
                                 // client retrying in a loop would fill the log, and debug-only
                                 // left an operator at the cap with nothing to see.
-                                final long now = System.nanoTime();
-                                final long last = m_lastRefusalWarning.get();
-                                if (now - last > REFUSAL_WARNING_INTERVAL_NS
-                                        && m_lastRefusalWarning.compareAndSet(last, now)) {
+                                if (refusalWarningDue(m_lastRefusalWarning)) {
                                     LOG.warn("Refusing syslog TCP connections on {}: already at the {} connection"
                                             + " limit. Raise max-connections, or expect senders to be turned away.",
                                             describeAddress(), m_config.getMaxConnections());
@@ -206,6 +211,26 @@ public class SyslogTcpListener {
                                 ch.close();
                                 return;
                             }
+
+                            // Without this one address holding idle connections can use up the
+                            // whole limit above and turn every other sender away.
+                            final InetAddress sourceAddress = ch.remoteAddress().getAddress();
+                            if (m_connectionsBySource.merge(sourceAddress, 1, Integer::sum) > m_config.getMaxConnectionsPerSource()) {
+                                releaseSource(sourceAddress);
+                                if (refusalWarningDue(m_lastSourceRefusalWarning)) {
+                                    LOG.warn("Refusing syslog TCP connections from {} on {}: that address already"
+                                            + " holds {} connections. Raise max-connections-per-source if several"
+                                            + " senders legitimately share it.",
+                                            sourceAddress.getHostAddress(), describeAddress(), m_config.getMaxConnectionsPerSource());
+                                } else {
+                                    LOG.debug("Refusing syslog TCP connection from {}: at the {} connections per source limit",
+                                            ch.remoteAddress(), m_config.getMaxConnectionsPerSource());
+                                }
+                                ch.close();
+                                return;
+                            }
+                            ch.closeFuture().addListener(closed -> releaseSource(sourceAddress));
+
                             m_channels.add(ch);
                             initSyslogPipeline(ch);
                         }
@@ -224,6 +249,16 @@ public class SyslogTcpListener {
             // The groups and the pool exist by now, and nothing else will come back to close them.
             stop();
         }
+    }
+
+    private static boolean refusalWarningDue(final AtomicLong lastWarning) {
+        final long now = System.nanoTime();
+        final long last = lastWarning.get();
+        return now - last > REFUSAL_WARNING_INTERVAL_NS && lastWarning.compareAndSet(last, now);
+    }
+
+    private void releaseSource(final InetAddress sourceAddress) {
+        m_connectionsBySource.computeIfPresent(sourceAddress, (address, count) -> count > 1 ? count - 1 : null);
     }
 
     private void initSyslogPipeline(final SocketChannel ch) {
@@ -286,8 +321,19 @@ public class SyslogTcpListener {
         @Override
         protected void channelRead0(final ChannelHandlerContext ctx, final SyslogConnection connection) {
             pending.add(connection);
-            ctx.channel().config().setAutoRead(false);
+            setAutoRead(ctx, false);
             dispatchNext(ctx);
+        }
+
+        /**
+         * A message the decoder emits as the sender closes arrives after the channel has
+         * been deregistered, where there are no reads left to pause and Netty rejects the
+         * attempt.
+         */
+        private void setAutoRead(final ChannelHandlerContext ctx, final boolean autoRead) {
+            if (ctx.channel().isActive()) {
+                ctx.channel().config().setAutoRead(autoRead);
+            }
         }
 
         private void dispatchNext(final ChannelHandlerContext ctx) {
@@ -297,7 +343,7 @@ public class SyslogTcpListener {
 
             final SyslogConnection next = pending.poll();
             if (next == null) {
-                ctx.channel().config().setAutoRead(true);
+                setAutoRead(ctx, true);
                 return;
             }
 

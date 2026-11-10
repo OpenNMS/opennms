@@ -26,6 +26,7 @@
 			<cm:property name="syslog.tcp.framing" value="auto" />
 			<cm:property name="syslog.tcp.max.message.size" value="65536" />
 			<cm:property name="syslog.tcp.max.connections" value="1024" />
+			<cm:property name="syslog.tcp.max.connections.per.source" value="256" />
 			<cm:property name="syslog.tcp.idle.timeout" value="0" />
 			<cm:property name="syslog.tcp.ordered" value="false" />
 			<cm:property name="syslog.tcp.dispatch.timeout" value="30" />
@@ -44,6 +45,7 @@
 		<property name="framing" value="${syslog.tcp.framing}" />
 		<property name="maxMessageSize" value="${syslog.tcp.max.message.size}" />
 		<property name="maxConnections" value="${syslog.tcp.max.connections}" />
+		<property name="maxConnectionsPerSource" value="${syslog.tcp.max.connections.per.source}" />
 		<property name="idleTimeoutSeconds" value="${syslog.tcp.idle.timeout}" />
 		<property name="ordered" value="${syslog.tcp.ordered}" />
 		<property name="dispatchTimeoutSeconds" value="${syslog.tcp.dispatch.timeout}" />

@@ -77,6 +77,7 @@ public class SyslogTcpConfigTest {
         assertEquals(SyslogTcpFraming.AUTO, tcpConfig.resolveFraming());
         assertEquals(SyslogTcpConfig.DEFAULT_MAX_MESSAGE_SIZE, tcpConfig.getMaxMessageSize());
         assertEquals(SyslogTcpConfig.DEFAULT_MAX_CONNECTIONS, tcpConfig.getMaxConnections());
+        assertEquals(SyslogTcpConfig.DEFAULT_MAX_CONNECTIONS_PER_SOURCE, tcpConfig.getMaxConnectionsPerSource());
         assertEquals(SyslogTcpConfig.DEFAULT_IDLE_TIMEOUT_SECONDS, tcpConfig.getIdleTimeoutSeconds());
     }
 
@@ -133,6 +134,7 @@ public class SyslogTcpConfigTest {
         tcpConfig.setPort(70000);
         tcpConfig.setMaxMessageSize(0);
         tcpConfig.setMaxConnections(0);
+        tcpConfig.setMaxConnectionsPerSource(0);
         tcpConfig.setIdleTimeoutSeconds(-1);
         tls.setClientAuth("mutual");
         tcpConfig.setTls(tls);
@@ -147,6 +149,7 @@ public class SyslogTcpConfigTest {
         assertThrows(IllegalArgumentException.class, () -> validated(c -> c.setPort(70000)));
         assertThrows(IllegalArgumentException.class, () -> validated(c -> c.setMaxMessageSize(0)));
         assertThrows(IllegalArgumentException.class, () -> validated(c -> c.setMaxConnections(0)));
+        assertThrows(IllegalArgumentException.class, () -> validated(c -> c.setMaxConnectionsPerSource(0)));
         assertThrows(IllegalArgumentException.class, () -> validated(c -> c.setIdleTimeoutSeconds(-1)));
         assertThrows(IllegalArgumentException.class, () -> validated(c -> {
             final SyslogTcpTlsConfig tls = new SyslogTcpTlsConfig();

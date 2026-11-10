@@ -70,6 +70,7 @@ public class SyslogdConfigurationTest extends XmlTest<SyslogdConfiguration> {
                         "             framing=\"octet-counting\"\n" +
                         "             max-message-size=\"32768\"\n" +
                         "             max-connections=\"64\"\n" +
+                        "             max-connections-per-source=\"8\"\n" +
                         "             idle-timeout=\"300\"\n" +
                         "             ordered=\"false\">\n" +
                         "            <tls enabled=\"true\"\n" +
@@ -122,6 +123,7 @@ public class SyslogdConfigurationTest extends XmlTest<SyslogdConfiguration> {
         tcp.setFraming("octet-counting");
         tcp.setMaxMessageSize(32768);
         tcp.setMaxConnections(64);
+        tcp.setMaxConnectionsPerSource(8);
         tcp.setIdleTimeoutSeconds(300);
         tcp.setTls(tls);
         config.setTcpConfig(tcp);

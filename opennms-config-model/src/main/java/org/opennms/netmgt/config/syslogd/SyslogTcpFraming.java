@@ -54,8 +54,9 @@ public enum SyslogTcpFraming {
 
     /**
      * Accepts the hyphenated config spellings as well as the enum names, so that
-     * both {@code non-transparent} and {@code NON_TRANSPARENT} work in
-     * syslogd-configuration.xml and in the Minion .cfg.
+     * both {@code non-transparent} and {@code NON_TRANSPARENT} work in the Minion .cfg.
+     * syslogd-configuration.xml takes only the hyphenated spellings, because its XSD
+     * rejects anything else before this is reached.
      */
     public static SyslogTcpFraming fromConfigValue(final String value) {
         if (value == null || value.trim().isEmpty()) {

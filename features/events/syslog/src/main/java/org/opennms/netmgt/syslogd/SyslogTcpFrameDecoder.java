@@ -121,6 +121,32 @@ public class SyslogTcpFrameDecoder extends ByteToMessageDecoder {
     }
 
     /**
+     * A sender that closes without a trailer has still sent its last non-transparent
+     * message, so what is left in the buffer is that message. An octet-counted remainder is
+     * a truncated frame and is dropped, as is anything still being discarded as oversized.
+     */
+    @Override
+    protected void decodeLast(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) throws Exception {
+        super.decodeLast(ctx, in, out);
+
+        if (activeFraming != SyslogTcpFraming.NON_TRANSPARENT || discarding || !in.isReadable()) {
+            return;
+        }
+
+        final int start = in.readerIndex();
+        final int length = in.readableBytes();
+        if (length > maxMessageSize) {
+            warnOversized(length);
+        } else {
+            final int trimmedLength = trimTrailingTrailers(in, start, length);
+            if (trimmedLength > 0) {
+                out.add(toConnection(in, start, trimmedLength));
+            }
+        }
+        in.skipBytes(length);
+    }
+
+    /**
      * Octet-counting only for digits followed by a space, so a sender that omits PRI and
      * starts with a timestamp such as 2024-01-01 is not mistaken for a length prefix. Null
      * while the buffer holds nothing but digits.

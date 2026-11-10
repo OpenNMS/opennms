@@ -73,9 +73,15 @@ An oversized octet-counted message closes the connection, since the position of 
 
 | max-connections
 | Largest number of connections accepted at once.
-Connections that are still closing count towards it, so a sender that opens a fresh connection per message can be refused well below its apparent concurrency; refusals are logged at debug level.
+Connections that are still closing count towards it, so a sender that opens a fresh connection per message can be refused well below its apparent concurrency.
+Refusals are logged as a warning in `syslogd.log` at most once a minute, and at debug level in between.
 A sender that holds one connection open avoids this entirely.
 | 1024
+
+| max-connections-per-source
+| Largest number of connections accepted at once from a single sender address, so that one address holding idle connections cannot use up `max-connections`.
+Consider raising it if many senders reach the listener through one address, such as a NAT gateway.
+| 256
 
 | idle-timeout
 | Seconds before a connection that has sent nothing is closed.

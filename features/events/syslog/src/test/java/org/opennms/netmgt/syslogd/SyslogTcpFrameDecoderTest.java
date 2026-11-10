@@ -404,6 +404,48 @@ public class SyslogTcpFrameDecoderTest {
     }
 
     @Test
+    public void deliversAFinalMessageTheSenderClosedWithoutATrailer() {
+        // echo -n '<14>msg' | nc host 1601
+        final EmbeddedChannel channel = channel(SyslogTcpFraming.AUTO, DEFAULT_MAX);
+
+        channel.writeInbound(buf(MESSAGE + "\n" + OTHER_MESSAGE));
+        assertEquals(List.of(MESSAGE), drain(channel));
+
+        channel.finish();
+        assertEquals(List.of(OTHER_MESSAGE), drain(channel));
+    }
+
+    @Test
+    public void stripsACarriageReturnFromAFinalMessageWithoutATrailer() {
+        final EmbeddedChannel channel = channel(SyslogTcpFraming.NON_TRANSPARENT, DEFAULT_MAX);
+
+        channel.writeInbound(buf(MESSAGE + "\r"));
+        channel.finish();
+
+        assertEquals(List.of(MESSAGE), drain(channel));
+    }
+
+    @Test
+    public void dropsAnOversizedRemainderAtClose() {
+        final EmbeddedChannel discarding = channel(SyslogTcpFraming.NON_TRANSPARENT, 64);
+        discarding.writeInbound(buf("<34>" + "x".repeat(200)));
+        discarding.writeInbound(buf("tail of the oversized frame"));
+        discarding.finish();
+        assertEquals(List.of(), drain(discarding));
+    }
+
+    @Test
+    public void dropsATruncatedOctetCountedFrameAtClose() {
+        final EmbeddedChannel channel = channel(SyslogTcpFraming.AUTO, DEFAULT_MAX);
+        final String framed = octetCounted(MESSAGE);
+
+        channel.writeInbound(buf(framed.substring(0, framed.length() - 5)));
+        channel.finish();
+
+        assertEquals(List.of(), drain(channel));
+    }
+
+    @Test
     public void autoDetectionDoesNotTakeALeadingTimestampForALengthPrefix() {
         // A sender that omits PRI starts with the year.
         final String noPri = "2024-01-01T10:00:00Z host app: started";

@@ -104,9 +104,11 @@
                         </attribute>
                         <attribute name="max-message-size" use="optional" default="65536">
                             <annotation>
-                                <documentation>Largest message accepted, in bytes. A sender that exceeds
-                                               it has its connection closed, since the position of the
-                                               next message is no longer known.
+                                <documentation>Largest message accepted, in bytes. With non-transparent
+                                               framing an oversized message is discarded and the
+                                               connection kept. With octet-counting the connection is
+                                               closed, since the position of the next message is no
+                                               longer known.
                                 </documentation>
                             </annotation>
                             <simpleType>
@@ -116,6 +118,19 @@
                             </simpleType>
                         </attribute>
                         <attribute name="max-connections" use="optional" default="1024">
+                            <simpleType>
+                                <restriction base="int">
+                                    <minInclusive value="1"/>
+                                </restriction>
+                            </simpleType>
+                        </attribute>
+                        <attribute name="max-connections-per-source" use="optional" default="256">
+                            <annotation>
+                                <documentation>Largest number of connections accepted at once from a
+                                               single sender address, so that one address cannot use up
+                                               max-connections on its own.
+                                </documentation>
+                            </annotation>
                             <simpleType>
                                 <restriction base="int">
                                     <minInclusive value="1"/>

@@ -35,8 +35,8 @@ import javax.xml.bind.annotation.XmlAttribute;
  *
  * The client authentication property is typed as a string rather than as an enum because
  * the containers populate it from a string property, and a getter and setter that disagree
- * on type turns the property read-only under bean introspection. The setter validates
- * eagerly, so a typo fails at wiring time.
+ * on type turns the property read-only under bean introspection. The setter accepts
+ * anything and {@link SyslogTcpConfig#validate()} reports a bad value.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SyslogTcpTlsConfig {

@@ -246,6 +246,58 @@ public class SyslogdReceiverNettyTcpIT {
         assertEquals(OTHER_MESSAGE, nextMessage());
     }
 
+    @Test(timeout = 60 * 1000)
+    public void deliversAFinalMessageTheSenderClosedWithoutATrailer() throws Exception {
+        final int port = startReceiver("auto");
+
+        try (Socket socket = new Socket("127.0.0.1", port)) {
+            write(socket, MESSAGE + "\n" + OTHER_MESSAGE);
+        }
+
+        assertEquals(MESSAGE, nextMessage());
+        assertEquals(OTHER_MESSAGE, nextMessage());
+    }
+
+    @Test(timeout = 60 * 1000)
+    public void oneSourceCannotUseUpTheConnectionLimit() throws Exception {
+        final int port = startReceiver("auto", false, " max-connections-per-source=\"2\"");
+
+        try (Socket first = new Socket("127.0.0.1", port); Socket second = new Socket("127.0.0.1", port)) {
+            // Proves both are counted before the third arrives.
+            write(first, MESSAGE + "\n");
+            write(second, MESSAGE + "\n");
+            assertEquals(MESSAGE, nextMessage());
+            assertEquals(MESSAGE, nextMessage());
+
+            try (Socket third = new Socket("127.0.0.1", port)) {
+                third.setSoTimeout(10000);
+                assertEquals("the third connection from one address must be closed", -1, readOrReset(third));
+            }
+        }
+
+        // The slots come back once the connections close.
+        for (int i = 0; i < 100; i++) {
+            try (Socket again = new Socket("127.0.0.1", port)) {
+                write(again, OTHER_MESSAGE + "\n");
+            } catch (java.io.IOException e) {
+                // refused while the earlier closes are still completing
+            }
+            if (OTHER_MESSAGE.equals(m_received.poll(100, TimeUnit.MILLISECONDS))) {
+                return;
+            }
+        }
+        throw new AssertionError("no connection was accepted after the earlier ones closed");
+    }
+
+    /** -1 for a close, whether it shows up as end of stream or as a reset. */
+    private static int readOrReset(final Socket socket) throws Exception {
+        try {
+            return socket.getInputStream().read();
+        } catch (java.net.SocketException e) {
+            return -1;
+        }
+    }
+
     // --- harness ------------------------------------------------------------
 
     private LinkedBlockingQueue<InetSocketAddress> m_sourceSink;
@@ -255,6 +307,10 @@ public class SyslogdReceiverNettyTcpIT {
     }
 
     private int startReceiver(final String framing, final boolean ordered) throws Exception {
+        return startReceiver(framing, ordered, "");
+    }
+
+    private int startReceiver(final String framing, final boolean ordered, final String extraTcpAttributes) throws Exception {
         final int port = findFreePort();
 
         final String xml = "<syslogd-configuration>\n"
@@ -263,7 +319,7 @@ public class SyslogdReceiverNettyTcpIT {
                 + "                 batch-interval=\"10\"\n"
                 + "                 parser=\"org.opennms.netmgt.syslogd.RadixTreeSyslogParser\">\n"
                 + "    <tcp port=\"" + port + "\" listen-address=\"127.0.0.1\" framing=\"" + framing + "\""
-                + " ordered=\"" + ordered + "\"/>\n"
+                + " ordered=\"" + ordered + "\"" + extraTcpAttributes + "/>\n"
                 + "  </configuration>\n"
                 + "</syslogd-configuration>\n";
 
