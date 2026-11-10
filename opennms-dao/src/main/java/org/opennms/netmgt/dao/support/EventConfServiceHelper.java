@@ -53,7 +53,9 @@ public class EventConfServiceHelper {
     private static final Logger LOG = LoggerFactory.getLogger(EventConfServiceHelper.class);
 
     /**
-     * Creates and persists an EventConfEvent entity from an Event XML object.
+     * Creates and persists an EventConfEvent entity from an Event XML object, and stamps the source's
+     * {@code lastModified} with {@code timestamp}: the source must be a managed entity, so the stamp is
+     * flushed with the event.
      *
      * @param eventConfEventDao The DAO for persisting EventConfEvent entities
      * @param source The EventConfSource to associate with this event
@@ -77,7 +79,9 @@ public class EventConfServiceHelper {
         eventConfEvent.setCreatedTime(timestamp);
         eventConfEvent.setLastModified(timestamp);
         eventConfEvent.setModifiedBy(username);
-        return eventConfEventDao.save(eventConfEvent);
+        final Long id = eventConfEventDao.save(eventConfEvent);
+        source.setLastModified(timestamp);
+        return id;
     }
 
     /**

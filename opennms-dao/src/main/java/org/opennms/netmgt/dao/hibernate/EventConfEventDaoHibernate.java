@@ -91,7 +91,7 @@ public class EventConfEventDaoHibernate
             queryParamList.add("%" + escapeLike(sourceName.trim().toLowerCase()) + "%");
         }
 
-        queryBuilder.append(" order by e.createdTime desc ");
+        queryBuilder.append(" order by e.createdTime desc, e.id desc ");
 
         return findWithPagination(queryBuilder.toString(), queryParamList.toArray(), offset, limit);
     }
