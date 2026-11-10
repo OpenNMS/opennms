@@ -37,6 +37,7 @@ import org.opennms.web.rest.v2.model.mibcompiler.MibGraphTemplatesDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibParseResultDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
@@ -60,14 +61,18 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Filesystem and parser operations behind the MIB compiler REST API.
  *
- * MIB files live on the local filesystem under $OPENNMS_HOME/share/mibs/{pending,compiled},
- * the same layout the Vaadin MIB compiler uses. A fresh {@link JsmiMibParser} is created per
- * operation because the parser is stateful; the blueprint-published singleton must not be shared.
+ * MIB files live on the local filesystem under $OPENNMS_HOME/share/mibs/{pending,compiled}.
+ * A fresh {@link JsmiMibParser} is created per operation because the parser is stateful
+ * and must not be shared between requests.
  */
 @Component
 public class MibFileService {
@@ -84,6 +89,9 @@ public class MibFileService {
 
     private File mibsRootDir = new File(ConfigFileConstants.getHome(), "share" + File.separatorChar + "mibs");
     private File graphTemplatesDir = new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + "snmp-graph.properties.d");
+
+    @Autowired
+    private EventConfPersistenceService eventConfPersistenceService;
 
     /** Thrown when a generated file with the same name already exists and overwrite was not requested. */
     public static class MibExistsException extends RuntimeException {
@@ -237,13 +245,37 @@ public class MibFileService {
             populateFailure(result, parser);
             return result;
         }
+        final String suggestedFileName = mibName + ".events.xml";
         result.setSuccess(true);
         result.setMibName(mibName);
         result.setUeiBase(effectiveUeiBase);
         result.setEventCount(events.getEvents().size());
-        result.setSuggestedFileName(mibName + ".events.xml");
+        result.setSuggestedFileName(suggestedFileName);
         result.setEventsXml(JaxbUtils.marshal(events));
+        // the UI saves the events as a source named after the file, without its .xml suffix
+        result.setExistingUeis(findExistingUeis(events, suggestedFileName.replaceFirst("\\.xml$", "")));
         return result;
+    }
+
+    /**
+     * Looks up which of the generated UEIs other event sources already define. The target source
+     * is left out: saving replaces it wholesale, and the UI asks for consent to that separately.
+     */
+    private Map<String, List<String>> findExistingUeis(Events events, String targetSourceName) {
+        final Map<String, List<String>> existing = new LinkedHashMap<>();
+        if (eventConfPersistenceService == null || events.getEvents().isEmpty()) {
+            return existing;
+        }
+        final Set<String> ueis = new LinkedHashSet<>();
+        events.getEvents().forEach(event -> ueis.add(event.getUei()));
+        eventConfPersistenceService.findSourceNamesByUei(ueis).forEach((uei, sources) -> {
+            final List<String> others = new ArrayList<>(sources);
+            others.remove(targetSourceName);
+            if (!others.isEmpty()) {
+                existing.put(uei, others);
+            }
+        });
+        return existing;
     }
 
     public MibDataCollectionPreviewDto generateDataCollection(String name) throws IOException {
@@ -407,5 +439,9 @@ public class MibFileService {
 
     public void setGraphTemplatesDir(File graphTemplatesDir) {
         this.graphTemplatesDir = graphTemplatesDir;
+    }
+
+    public void setEventConfPersistenceService(EventConfPersistenceService eventConfPersistenceService) {
+        this.eventConfPersistenceService = eventConfPersistenceService;
     }
 }

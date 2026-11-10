@@ -111,7 +111,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.MibParser#setMibDirectory(java.io.File)
+     * @see org.opennms.features.mibcompiler.api.MibParser#setMibDirectory(java.io.File)
      */
     @Override
     public void setMibDirectory(File mibDirectory) {
@@ -119,7 +119,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.MibParser#parseMib(java.io.File)
+     * @see org.opennms.features.mibcompiler.api.MibParser#parseMib(java.io.File)
      */
     @Override
     public boolean parseMib(File mibFile) {
@@ -175,7 +175,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.MibParser#getFormattedErrors()
+     * @see org.opennms.features.mibcompiler.api.MibParser#getFormattedErrors()
      */
     @Override
     public String getFormattedErrors() {
@@ -183,7 +183,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.MibParser#getMissingDependencies()
+     * @see org.opennms.features.mibcompiler.api.MibParser#getMissingDependencies()
      */
     @Override
     public List<String> getMissingDependencies() {
@@ -191,7 +191,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.services.MibParser#getMibName()
+     * @see org.opennms.features.mibcompiler.api.MibParser#getMibName()
      */
     @Override
     public String getMibName() {
@@ -199,7 +199,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.services.MibParser#getEvents(java.lang.String)
+     * @see org.opennms.features.mibcompiler.api.MibParser#getEvents(java.lang.String)
      */
     @Override
     public Events getEvents(String ueibase) {
@@ -220,7 +220,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.api.MibParser#getDataCollection()
+     * @see org.opennms.features.mibcompiler.api.MibParser#getDataCollection()
      */
     @Override
     public DatacollectionGroup getDataCollection() {
@@ -267,7 +267,7 @@ public class JsmiMibParser implements MibParser, Serializable {
 
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.api.MibParser#getPrefabGraphs()
+     * @see org.opennms.features.mibcompiler.api.MibParser#getPrefabGraphs()
      */
     @Override
     public List<PrefabGraph> getPrefabGraphs() {

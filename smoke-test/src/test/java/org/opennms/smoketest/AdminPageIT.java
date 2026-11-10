@@ -98,7 +98,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // Additional Tools
         new String[] { "Configure Grafana Endpoints (Reports only)", "//div/ul/li/a[contains(text(),'Grafana Endpoints')]" },
         new String[] { "Instrumentation Log Reader", "//span[text()='Filtering']" },
-        new String[] { "SNMP MIB Compiler", "//div[@id='content']//iframe[@name='mib-compiler']" },
+        new String[] { "SNMP MIB Compiler", "//div[@id='app']//div[@class='mib-compiler-container']//div[@class='heading']/p[text()='SNMP MIB Compiler']" },
         new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe[@name='surveillance-views-config']" },
         new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe[@name='jmx-config-ui']" },
         new String[] { "Usage Statistics Sharing", "//div[contains(@class, 'card')]//span[text()='Usage Statistics Sharing']" },

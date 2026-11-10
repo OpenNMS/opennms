@@ -44,6 +44,25 @@
       >
         The MIB does not contain any notification or trap definitions, so there is nothing to save.
       </p>
+      <div
+        v-if="duplicateUeis.length > 0"
+        class="duplicate-ueis"
+        data-test="duplicate-ueis"
+      >
+        <p>
+          <strong>{{ duplicateUeis.length }}</strong> of these UEIs are already defined in other event sources.
+          Saving adds another definition for each of them. OpenNMS uses the definition from whichever
+          source it evaluates first, as set by the source order on the Event Configuration page.
+        </p>
+        <ul>
+          <li
+            v-for="item in duplicateUeis"
+            :key="item.uei"
+          >
+            <code>{{ item.uei }}</code> in {{ item.sources.join(', ') }}
+          </li>
+        </ul>
+      </div>
       <OnmsTextarea
         v-if="(preview?.eventCount ?? 0) > 0"
         v-model="eventsXml"
@@ -165,6 +184,21 @@ const validationError = ref('')
 
 const baseName = computed(() => props.fileName.replace(/\.[^.]+$/, ''))
 const sourceName = computed(() => (preview.value?.suggestedFileName ?? `${baseName.value}.events.xml`).replace(/\.xml$/, ''))
+
+// the UEIs in the (possibly edited) XML; null when it does not parse, so the warning keeps every duplicate
+const currentUeis = computed(() => {
+  const parsed = new DOMParser().parseFromString(eventsXml.value, 'application/xml')
+  if (parsed.querySelector('parsererror') !== null) {
+    return null
+  }
+  return new Set(Array.from(parsed.getElementsByTagName('uei')).map(element => element.textContent?.trim() ?? ''))
+})
+
+// the server reports duplicates for the generated UEIs; an edit that changes a UEI resolves its duplicate
+const duplicateUeis = computed(() =>
+  Object.entries(preview.value?.existingUeis ?? {})
+    .filter(([uei]) => currentUeis.value === null || currentUeis.value.has(uei))
+    .map(([uei, sources]) => ({ uei, sources })))
 
 // a response that arrives after the dialog closed, or after it reopened for
 // another file, must not touch the current state
@@ -304,6 +338,16 @@ const close = () => {
 
   .no-traps {
     color: var(--p-orange-600);
+  }
+
+  .duplicate-ueis {
+    color: var(--p-orange-600);
+
+    ul {
+      max-height: 10em;
+      overflow-y: auto;
+      margin: 0 0 1em;
+    }
   }
 }
 </style>

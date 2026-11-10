@@ -67,6 +67,19 @@ public class EventConfEventDaoHibernate
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public List<Object[]> findUeiAndSourceNames(Collection<String> ueis) {
+        if (ueis == null || ueis.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return getHibernateTemplate().execute(session ->
+                session.createQuery("select e.uei, s.name from EventConfEvent e join e.source s "
+                                + "where e.uei in (:ueis) order by e.uei asc, s.fileOrder desc")
+                        .setParameterList("ueis", ueis)
+                        .list());
+    }
+
+    @Override
     public int countBySourceId(Long sourceId) {
         return queryInt("select count(e.id) from EventConfEvent e where e.source.id = ?1", sourceId);
     }

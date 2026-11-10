@@ -41,7 +41,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -49,6 +52,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MibFileServiceTest {
 
@@ -233,6 +239,29 @@ public class MibFileServiceTest {
         final Events events = JaxbUtils.unmarshal(Events.class, result.getEventsXml());
         assertEquals(2, events.getEvents().size());
         assertTrue(events.getEvents().get(0).getUei().startsWith("uei.opennms.org/traps/IF-MIB/"));
+        // no event configuration to check against
+        assertTrue(result.getExistingUeis().isEmpty());
+    }
+
+    @Test
+    public void testGenerateEventsReportsUeisDefinedByOtherSources() throws Exception {
+        compileIfMib();
+        final EventConfPersistenceService persistence = mock(EventConfPersistenceService.class);
+        // the first generated UEI is defined by the target source and another one; the second only by the target
+        when(persistence.findSourceNamesByUei(anyCollection())).thenAnswer(invocation -> {
+            final List<String> ueis = List.copyOf(invocation.<Collection<String>>getArgument(0));
+            final Map<String, List<String>> found = new LinkedHashMap<>();
+            found.put(ueis.get(0), List.of("IF-MIB.events", "acme.events"));
+            found.put(ueis.get(1), List.of("IF-MIB.events"));
+            return found;
+        });
+        service.setEventConfPersistenceService(persistence);
+
+        final MibEventsPreviewDto result = service.generateEvents("IF-MIB.mib", null);
+        assertTrue(result.isSuccess());
+        final Events events = JaxbUtils.unmarshal(Events.class, result.getEventsXml());
+        final String firstUei = events.getEvents().get(0).getUei();
+        assertEquals(Map.of(firstUei, List.of("acme.events")), result.getExistingUeis());
     }
 
     @Test

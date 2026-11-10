@@ -50,6 +50,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.annotation.PostConstruct;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -189,6 +190,22 @@ public class EventConfPersistenceService {
             throw new EntityNotFoundException("EventConfSource not found for id: " + sourceId);
         }
         return eventConfEventDao.findByUeiAndSourceId(uei, sourceId);
+    }
+
+    /**
+     * Maps each of the given UEIs that is already defined to the names of the sources that define it,
+     * in evaluation order (first evaluated first). UEIs that no source defines are left out.
+     */
+    @Transactional(readOnly = true)
+    public Map<String, List<String>> findSourceNamesByUei(final Collection<String> ueis) {
+        final Map<String, List<String>> result = new LinkedHashMap<>();
+        for (final Object[] row : eventConfEventDao.findUeiAndSourceNames(ueis)) {
+            final List<String> sources = result.computeIfAbsent((String) row[0], uei -> new ArrayList<>());
+            if (!sources.contains((String) row[1])) {
+                sources.add((String) row[1]);
+            }
+        }
+        return result;
     }
 
     /** What {@link #upsertEventConfSourceEvent} did, and to which row. */

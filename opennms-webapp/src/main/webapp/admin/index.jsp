@@ -241,6 +241,7 @@
         <ul class="list-unstyled mb-0">
             <li><a href="admin/endpoint/index.jsp">Configure Grafana Endpoints (Reports only)</a></li>
             <li><a href="admin/nodemanagement/instrumentationLogReader.jsp">Instrumentation Log Reader</a></li>
+            <li><a href="ui/index.html#/mib-compiler">SNMP MIB Compiler</a></li>
             <%=getAdminPageNavEntries("operations")%>
         </ul>
       </div> <!-- card-body -->

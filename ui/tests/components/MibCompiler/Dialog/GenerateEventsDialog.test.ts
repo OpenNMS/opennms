@@ -119,6 +119,51 @@ describe('GenerateEventsDialog', () => {
     expect(textarea.value).toBe(eventsXml)
   })
 
+  it('shows no duplicate warning when no other source defines the UEIs', async () => {
+    mockGenerateEvents.mockResolvedValue({ ...preview, existingUeis: {}})
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="duplicate-ueis"]').exists()).toBe(false)
+  })
+
+  it('warns about UEIs that other event sources already define', async () => {
+    mockGenerateEvents.mockResolvedValue({
+      ...preview,
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': ['acme.events', 'vendor.events'] }
+    })
+    mockUploadEventConfigFiles.mockResolvedValue({ success: [{ file: 'IF-MIB.events' }], errors: [] })
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+
+    const warning = wrapper.find('[data-test="duplicate-ueis"]')
+    expect(warning.exists()).toBe(true)
+    expect(warning.text()).toContain('1 of these UEIs')
+    expect(warning.text()).toContain('uei.opennms.org/traps/IF-MIB/linkDown in acme.events, vendor.events')
+
+    // the warning does not block saving
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+    expect(mockUploadEventConfigFiles).toHaveBeenCalledTimes(1)
+  })
+
+  it('drops a duplicate from the warning once its UEI is edited away', async () => {
+    mockGenerateEvents.mockResolvedValue({
+      ...preview,
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': ['acme.events'] }
+    })
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-test="duplicate-ueis"]').exists()).toBe(true)
+
+    await wrapper.find('[data-test="events-xml"]').setValue(
+      '<events><event><uei>uei.opennms.org/traps/IF-MIB/linkDownRenamed</uei></event></events>')
+    expect(wrapper.find('[data-test="duplicate-ueis"]').exists()).toBe(false)
+  })
+
   it('emits failed when the parse is unsuccessful', async () => {
     const failure = { success: false, errors: 'parse error', missingDependencies: ['FOO-MIB'] }
     mockGenerateEvents.mockResolvedValue(failure)

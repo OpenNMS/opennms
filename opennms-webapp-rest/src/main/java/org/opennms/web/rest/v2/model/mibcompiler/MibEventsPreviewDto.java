@@ -21,12 +21,21 @@
  */
 package org.opennms.web.rest.v2.model.mibcompiler;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 public class MibEventsPreviewDto extends MibParseResultDto {
 
     private String ueiBase;
     private int eventCount;
     private String suggestedFileName;
     private String eventsXml;
+    /**
+     * Generated UEIs that other event sources already define, mapped to those sources' names. The
+     * source the events will be saved as is left out, since saving replaces it.
+     */
+    private Map<String, List<String>> existingUeis = new LinkedHashMap<>();
 
     public String getUeiBase() {
         return ueiBase;
@@ -58,5 +67,13 @@ public class MibEventsPreviewDto extends MibParseResultDto {
 
     public void setEventsXml(String eventsXml) {
         this.eventsXml = eventsXml;
+    }
+
+    public Map<String, List<String>> getExistingUeis() {
+        return existingUeis;
+    }
+
+    public void setExistingUeis(Map<String, List<String>> existingUeis) {
+        this.existingUeis = existingUeis;
     }
 }

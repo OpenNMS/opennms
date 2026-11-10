@@ -44,6 +44,8 @@ export interface MibEventsPreview extends MibParseResult {
   eventCount?: number
   suggestedFileName?: string
   eventsXml?: string
+  /** generated UEIs that other event sources already define, mapped to those sources' names */
+  existingUeis?: Record<string, string[]>
 }
 
 export interface MibDataCollectionPreview extends MibParseResult {
