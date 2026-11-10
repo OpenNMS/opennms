@@ -111,8 +111,9 @@ Collectd does not react to asset changes.
 | `nodeGainedService` for the SNMP service evaluates the packages for that interface.
 
 | Threshd
-| threshd-configuration.xml
-| Re-reads `threshd-configuration.xml` and `thresholds.xml`, and evaluates every package filter again.
+| None: stored in the database (see xref:deep-dive/thresholds/thresholding.adoc#threshold-configuration[Threshold configuration])
+| Re-reads the threshd packages and threshold groups from the database, and evaluates every package filter again.
+Saving a change in the web UI or through the REST API does this without a reload.
 | `nodeGainedService` and `nodeCategoryMembershipChanged` evaluate all thresholding package filters again.
 |===
 

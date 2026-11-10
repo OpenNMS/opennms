@@ -31,9 +31,9 @@ Before using metadata in a threshold, you need to add the metadata context pairâ
 Follow these steps to create the expression-based threshold:
 
 . Click menu:Administration[Configure Thresholds] in the side menu.
-. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under *Performance Management*, click *Configure Thresholds*.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under *Performance Measurement*, click *Configure Thresholds*.
 . Click the `netsnmp` group.
-. Click *Create New Expression-based Threshold*.
+. In the Expression-based thresholds area, click *Create new expression-based threshold*.
 . Fill in the following information:
 +
 * Type: High
@@ -47,7 +47,7 @@ Follow these steps to create the expression-based threshold:
 .Example expression-based threshold configuration
 image::metadata/meta-expression1.png["Page displaying configuration settings for an example expression-based threshold"]
 
-. Click *Save*.
+. Click *Create Expression Threshold*.
 
 This expression will trigger an event when the number of logged-in users exceeds one.
 
@@ -119,7 +119,8 @@ The resulting configuration looks like this:
    </group>
 -----
 
-To complete the example, the thresholding package definition from `$OPENNMS_HOME/etc/threshd-configuration.xml` :
+To complete the example, create a threshd package on the *Packages* tab that applies the `high-network-latency` group to the HTTP service (see xref:deep-dive/thresholds/thresh-package.adoc[]).
+The package corresponds to the following configuration:
 
 [source, xml]
 -----
@@ -133,4 +134,4 @@ To complete the example, the thresholding package definition from `$OPENNMS_HOME
    </package>
 -----
 
-After you change a thresholding package, send a `Threshd` reload event or restart {page-component-title} (see xref:deep-dive/admin/configuration/daemon-config-files.adoc#package-filter-changes[Package filter changes]).
+Saving a threshd package in the web UI or through the REST API applies the change and evaluates the package filters again, so you do not need to reload Threshd.

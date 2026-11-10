@@ -1,0 +1,103 @@
+
+[[threshd-package]]
+= Apply Thresholds with a Threshd Package
+:description: How to create and edit threshd packages in {page-component-title} to apply threshold groups to a set of interfaces.
+
+A threshd package decides which interfaces are thresholded, which threshold groups apply to them, and how often thresholds are evaluated.
+A threshold group has no effect until a package applies it.
+
+Threshd packages are stored in the database and are created and edited through the web UI (see xref:deep-dive/thresholds/thresholding.adoc#threshold-configuration[Threshold configuration]).
+Editing `$\{OPENNMS_HOME}/etc/threshd-configuration.xml` has no effect: the file's contents are migrated into the database during the upgrade and the file is no longer read.
+You can also manage packages over the xref:development:rest/thresholds-rest-api.adoc[Thresholds REST API].
+
+== Package settings
+
+[options="autowidth"]
+|===
+| Setting | Description
+
+| Name
+| A unique name for the package.
+
+| Filter
+| A xref:reference:configuration/filters/filters.adoc[filter rule] that selects the interfaces the package applies to, for example `IPADDR != '0.0.0.0'`.
+
+| Specific addresses
+| Individual IP addresses to add to the filter's selection.
+
+| Include URLs
+| URLs of files that list IP addresses to add to the filter's selection.
+
+| Include ranges
+| IP address ranges to add to the filter's selection.
+
+| Exclude ranges
+| IP address ranges to remove from the selection.
+
+| Outage calendars
+| xref:deep-dive/service-assurance/scheduled-outages.adoc[Scheduled outages] during which thresholding is suspended for the package.
+These are also maintained on the scheduled outages page.
+
+| Services
+| The services to threshold.
+Each service names a threshold group and the interval, in milliseconds, between threshold evaluations.
+|===
+
+== Create a package
+
+This procedure creates a package that applies the `demo_group` threshold group (see xref:deep-dive/thresholds/thresh-group.adoc[]) to the SNMP data of every interface:
+
+. Click menu:Administration[Configure Thresholds] in the side menu.
+. On the *Packages* tab, click *New package*.
+. Enter `demo-package` as the name and `IPADDR != '0.0.0.0'` as the filter, then click *Create Threshd Package*.
++
+The package opens.
+. Under *Addresses*, in the *Include ranges* section, click *Add range* and enter `1.1.1.1` to `254.254.254.254`.
+Add a second range from `::1` to `ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff`.
+. Click *Save package*.
+. In the *Services* area, click *New service*.
+. Set the following parameters and click *Create Service*:
++
+[options="autowidth"]
+|===
+| Field | Value
+
+| Service
+| SNMP
+
+| Interval (ms)
+| 300000
+
+| Threshold group
+| demo_group
+
+| Status
+| on
+|===
+
+The package corresponds to the following configuration, as it appears when you download the threshd configuration as XML on the *Upload / download* tab:
+
+[source, xml]
+-----
+<package name="demo-package">
+  <filter>IPADDR != '0.0.0.0'</filter>
+  <include-range begin="1.1.1.1" end="254.254.254.254"/>
+  <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+  <service name="SNMP" interval="300000" user-defined="false" status="on">
+    <parameter key="thresholding-group" value="demo_group"/>
+  </service>
+</package>
+-----
+
+== Edit or delete a package
+
+Click a package's name on the *Packages* tab to open it.
+
+* To change the name, filter, addresses, or outage calendars, edit them and click *Save package*.
+* To change or remove a service, click its *Edit service* or *Delete service* icon.
+Service changes are saved immediately.
+* To delete a package, click its *Delete package* icon on the *Packages* tab.
+The configuration must contain at least one package, so the last package cannot be deleted.
+
+Saving a package applies the change immediately and evaluates the package filters again.
+You do not need to reload Threshd.

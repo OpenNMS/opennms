@@ -36,9 +36,11 @@ Thresholding on flow applications also works without enabling data collection on
 ...
 ----
 
-Next, you need an additional package definition in your `threshd-configuration.xml` file.
+Next, you need an additional threshd package.
+Create it on the *Packages* tab under menu:Administration[Configure Thresholds] (see xref:deep-dive/thresholds/thresh-package.adoc[]), or over the xref:development:rest/thresholds-rest-api.adoc[Thresholds REST API].
+Use `Flow-Threshold` as the service name.
 
-.Example of a package definition in the threshd-configuration.xml
+.Example of a threshd package for flow thresholding
 [source, xml]
 ----
 <?xml version="1.0"?>
@@ -56,8 +58,8 @@ Next, you need an additional package definition in your `threshd-configuration.x
 </threshd-configuration>
 ----
 
-Finally, define the thresholds under menu:Administration[Configure Thresholds], or over the xref:development:rest/thresholds-rest-api.adoc[Thresholds REST API].
-Use `flowApp` for the `ds-type`.
+Finally, define the thresholds in a threshold group named `flow-thresholding-group` on the *Groups* tab under menu:Administration[Configure Thresholds] (see xref:deep-dive/thresholds/thresh-group.adoc[]), or over the xref:development:rest/thresholds-rest-api.adoc[Thresholds REST API].
+Use `flowApp` for the datasource type.
 The following example defines thresholds for HTTPS traffic exceeding 4096000 bytes/second.
 
 .Example of thresholds for https traffic
