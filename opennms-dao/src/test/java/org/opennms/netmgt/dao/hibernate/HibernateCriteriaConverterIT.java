@@ -309,6 +309,16 @@ public class HibernateCriteriaConverterIT implements InitializingBean {
         cb.not().iplike("ipAddr", "192.168.1.*");
         assertEquals(all.size() - expected, m_ipInterfaceDao.findMatching(cb.toCriteria()).size());
 
+        // past the negated-form cap (256 ranges) the negation uses NOT iplike()
+        final long matches192x1 = all.stream()
+                .map(iface -> InetAddressUtils.str(iface.getIpAddress()).split("\\."))
+                .filter(octets -> octets.length == 4 && "192".equals(octets[0]) && "1".equals(octets[2]))
+                .count();
+        assertTrue(matches192x1 > 0);
+        cb = new CriteriaBuilder(OnmsIpInterface.class);
+        cb.not().iplike("ipAddr", "192.*.1.*");
+        assertEquals(all.size() - matches192x1, m_ipInterfaceDao.findMatching(cb.toCriteria()).size());
+
         // a zoneless v6 rule matches the populator's zoned fe80:...%5
         // interface through the native predicate (the value's zone id is
         // stripped by opennms_safe_inet)

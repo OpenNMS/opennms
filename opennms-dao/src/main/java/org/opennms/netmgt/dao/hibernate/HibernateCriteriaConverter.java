@@ -520,11 +520,9 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
             }
             final Criterion criterion = m_criterions.remove(m_criterions.size() - 1);
             if (restriction.getRestriction() instanceof IplikeRestriction) {
-                // the negated native form evaluates opennms_safe_inet() once
-                // per row instead of once per range comparison
-                final String negated = negatedIplikePredicate((IplikeRestriction) restriction.getRestriction());
+                final Criterion negated = negatedIplikeCriterion((IplikeRestriction) restriction.getRestriction());
                 if (negated != null) {
-                    m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(negated));
+                    m_criterions.add(negated);
                     return;
                 }
             }
@@ -572,13 +570,23 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
             return Strings.isNullOrEmpty(attribute) ? "ipAddr" : attribute;
         }
 
-        private static String negatedIplikePredicate(final IplikeRestriction restriction) {
+        /**
+         * The negated native form evaluates opennms_safe_inet() once per row
+         * instead of once per range comparison. Where it declines, NOT iplike()
+         * is cheaper than negating the positive native predicate.
+         */
+        private static Criterion negatedIplikeCriterion(final IplikeRestriction restriction) {
             final String attribute = iplikeAttribute(restriction);
             if (!IplikeRestriction.isValidAttribute(attribute) || !(restriction.getValue() instanceof String)) {
                 return null;
             }
-            return org.opennms.core.utils.IplikeSqlTranslator
+            final String negated = org.opennms.core.utils.IplikeSqlTranslator
                     .toNegatedSqlPredicate((String) restriction.getValue(), "{alias}." + attribute);
+            if (negated != null) {
+                return org.hibernate.criterion.Restrictions.sqlRestriction(negated);
+            }
+            return org.hibernate.criterion.Restrictions.sqlRestriction(
+                    String.format("not ipLike({alias}.%s, ?)", attribute), restriction.getValue(), STRING_TYPE);
         }
 
         @Override

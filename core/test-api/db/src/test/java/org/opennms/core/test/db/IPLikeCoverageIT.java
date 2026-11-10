@@ -23,6 +23,7 @@ package org.opennms.core.test.db;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -166,11 +167,14 @@ public class IPLikeCoverageIT {
             // NULL, or negated filters would drop rows NOT iplike() keeps.
             final String predicate = IplikeSqlTranslator.toSqlPredicate(rule, "v");
             final String negatedPredicate = IplikeSqlTranslator.toNegatedSqlPredicate(rule, "v");
-            assertEquals("both forms translate or neither does for rule " + rule,
-                    predicate == null, negatedPredicate == null);
+            if (predicate == null) {
+                assertNull("negated form must not translate what the positive form rejects: " + rule,
+                        negatedPredicate);
+            }
             if (predicate != null) {
                 final PreparedStatement nativeSt = c.prepareStatement(
-                        "SELECT " + predicate + ", NOT " + predicate + ", " + negatedPredicate
+                        "SELECT " + predicate + ", NOT " + predicate + ", "
+                        + (negatedPredicate != null ? negatedPredicate : "NULL")
                         + " FROM (VALUES (CAST(? AS TEXT))) AS t(v)");
                 util.watch(nativeSt);
                 nativeSt.setString(1, value);
@@ -184,10 +188,12 @@ public class IPLikeCoverageIT {
                         + ": " + predicate, !expected, nativeRs.getBoolean(2));
                 assertFalse("negated native predicate must never be NULL for rule " + rule
                         + " on value " + value, nativeRs.wasNull());
-                assertEquals("negated-form predicate for rule " + rule + " on value " + value
-                        + ": " + negatedPredicate, !expected, nativeRs.getBoolean(3));
-                assertFalse("negated-form predicate must never be NULL for rule " + rule
-                        + " on value " + value, nativeRs.wasNull());
+                if (negatedPredicate != null) {
+                    assertEquals("negated-form predicate for rule " + rule + " on value " + value
+                            + ": " + negatedPredicate, !expected, nativeRs.getBoolean(3));
+                    assertFalse("negated-form predicate must never be NULL for rule " + rule
+                            + " on value " + value, nativeRs.wasNull());
+                }
             }
         } finally {
             util.cleanUp();

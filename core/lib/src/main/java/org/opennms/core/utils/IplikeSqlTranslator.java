@@ -61,6 +61,12 @@ public abstract class IplikeSqlTranslator {
      */
     public static final int MAX_RANGES = 512;
 
+    /**
+     * Expansion cap for negated predicates. They cannot use the index, and
+     * past about 128 ranges the per-row comparisons cost more than iplike().
+     */
+    public static final int NEGATED_MAX_RANGES = 128;
+
     /** Escape hatch: set to "false" to disable translation globally. */
     public static final String ENABLED_PROPERTY = "org.opennms.iplike.native";
 
@@ -95,7 +101,7 @@ public abstract class IplikeSqlTranslator {
             return columnExpression + " IS NOT NULL";
         }
         final String func = SAFE_INET_FUNCTION + "(" + columnExpression + ")";
-        final String ranges = rangeDisjunction(pattern, func);
+        final String ranges = rangeDisjunction(pattern, func, MAX_RANGES);
         if (ranges == null) {
             return null;
         }
@@ -109,7 +115,8 @@ public abstract class IplikeSqlTranslator {
      * The negation of {@link #toSqlPredicate(String, String)}, for callers that
      * know they negate. A negated predicate cannot use the expression index, so
      * every row is evaluated; this form calls opennms_safe_inet() once per row
-     * instead of once per range comparison.
+     * instead of once per range comparison. Patterns over
+     * {@link #NEGATED_MAX_RANGES} ranges fall back.
      *
      * @return a self-contained SQL predicate, or {@code null} if the caller
      *         must fall back to {@code NOT iplike()}
@@ -121,7 +128,7 @@ public abstract class IplikeSqlTranslator {
         if (V4_MATCH_ALL.equals(pattern) || V6_MATCH_ALL.equals(pattern)) {
             return columnExpression + " IS NULL";
         }
-        final String ranges = rangeDisjunction(pattern, NEGATED_VALUE_ALIAS);
+        final String ranges = rangeDisjunction(pattern, NEGATED_VALUE_ALIAS, NEGATED_MAX_RANGES);
         if (ranges == null) {
             return null;
         }
@@ -139,9 +146,10 @@ public abstract class IplikeSqlTranslator {
 
     /**
      * Renders the pattern's ranges as a parenthesized OR of comparisons on
-     * valueExpression, or returns null if the pattern is untranslatable.
+     * valueExpression, or returns null if the pattern is untranslatable or
+     * expands to more than maxRanges ranges.
      */
-    private static String rangeDisjunction(final String pattern, final String valueExpression) {
+    private static String rangeDisjunction(final String pattern, final String valueExpression, final int maxRanges) {
         final List<BigInteger[]> ranges;
         final int family;
         try {
@@ -151,7 +159,7 @@ public abstract class IplikeSqlTranslator {
         } catch (final Untranslatable e) {
             return null;
         }
-        if (ranges.isEmpty()) {
+        if (ranges.isEmpty() || ranges.size() > maxRanges) {
             return null;
         }
         final StringBuilder sb = new StringBuilder("(");

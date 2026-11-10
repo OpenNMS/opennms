@@ -101,6 +101,14 @@ public class IplikeSqlTranslatorTest {
     }
 
     @Test
+    public void testNegatedPredicateFallsBackAboveItsCap() {
+        // 128 and 256 ranges: both translate as positive predicates
+        assertNotNull(IplikeSqlTranslator.toNegatedSqlPredicate("10.1-128.1.*", "ipaddr"));
+        assertNotNull(IplikeSqlTranslator.toSqlPredicate("10.*.1.1", "ipaddr"));
+        assertNull(IplikeSqlTranslator.toNegatedSqlPredicate("10.*.1.1", "ipaddr"));
+    }
+
+    @Test
     public void testSingleRangePredicate() {
         assertEquals("(ipaddr IS NOT NULL AND opennms_safe_inet(ipaddr) IS NOT NULL AND ("
                 + "(opennms_safe_inet(ipaddr) >= inet '10.0.1.0'"
