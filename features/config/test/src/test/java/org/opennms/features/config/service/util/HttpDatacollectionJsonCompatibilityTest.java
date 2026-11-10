@@ -21,7 +21,9 @@
  */
 package org.opennms.features.config.service.util;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
@@ -75,6 +77,30 @@ public class HttpDatacollectionJsonCompatibilityTest {
         assertThat(fromJson, equalTo(JaxbUtils.unmarshal(HttpDatacollectionConfig.class, xml)));
         assertThat(fromJson.getRrdRepository(), equalTo("/opt/opennms/share/rrd/snmp/"));
         DEFINITION.validate(ConfigConvertUtil.objectToJson(fromJson));
+    }
+
+    /**
+     * The import fills in empty wrappers such as {@code "parameters":{"parameter":[]}} for URIs without
+     * parameters. Read back, they must not marshal as an empty {@code <parameters/>}: the schema requires at
+     * least one child, so the XML download and the collector's marshalling for Minion would fail.
+     */
+    @Test
+    public void importedConfigMarshalsToValidXml() throws IOException {
+        // As stored by the configuration manager, which fills in the empty wrappers of the "minimal" URI.
+        final String storedJson = "{\"rrdRepository\":\"/rrd/\",\"http-collection\":[{\"name\":\"c\","
+                + "\"rrd\":{\"step\":300,\"rra\":[\"RRA:AVERAGE:0.5:1:10\"]},"
+                + "\"uris\":{\"uri\":[{\"name\":\"minimal\",\"url\":{\"path\":\"/\","
+                + "\"parameters\":{\"parameter\":[]},\"headers\":{\"header\":[]}},"
+                + "\"attributes\":{\"attrib\":[]}}]}}]}";
+        DEFINITION.validate(storedJson);
+        final HttpDatacollectionConfig fromJson = ConfigConvertUtil.jsonToObject(storedJson, HttpDatacollectionConfig.class);
+
+        final String xml = JaxbUtils.marshal(fromJson);
+
+        assertThat(xml, not(containsString("<parameters/>")));
+        assertThat(xml, not(containsString("<headers/>")));
+        assertThat(xml, not(containsString("<attributes/>")));
+        assertThat(JaxbUtils.unmarshal(HttpDatacollectionConfig.class, xml, true), equalTo(fromJson));
     }
 
     @Test

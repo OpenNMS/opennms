@@ -176,8 +176,9 @@ public class Url implements Serializable {
         return m_parameters == null? Collections.emptyList() : m_parameters;
     }
 
+    /** An empty list is stored as absent: the schema does not allow an empty {@code <parameters/>}. */
     public void setParameters(List<Parameter> value) {
-        m_parameters = value;
+        m_parameters = value == null || value.isEmpty() ? null : value;
     }
 
     /**
@@ -191,8 +192,9 @@ public class Url implements Serializable {
         return m_headers == null ? Collections.emptyList() : m_headers;
     }
 
+    /** An empty list is stored as absent: the schema does not allow an empty {@code <headers/>}. */
     public void setHeaders(final List<Header> value) {
-        m_headers = value;
+        m_headers = value == null || value.isEmpty() ? null : value;
     }
 
     /**
@@ -205,7 +207,7 @@ public class Url implements Serializable {
 
     @JsonProperty("parameters")
     private void setParametersJson(final ParametersJson value) {
-        m_parameters = value == null ? null : value.parameter;
+        setParameters(value == null ? null : value.parameter);
     }
 
     /**
@@ -218,7 +220,7 @@ public class Url implements Serializable {
 
     @JsonProperty("headers")
     private void setHeadersJson(final HeadersJson value) {
-        m_headers = value == null ? null : value.header;
+        setHeaders(value == null ? null : value.header);
     }
 
     public String getMethod() {

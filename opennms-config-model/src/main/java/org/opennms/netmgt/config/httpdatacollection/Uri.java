@@ -95,8 +95,9 @@ public class Uri implements Serializable {
         return m_attributes == null? Collections.emptyList() : m_attributes;
     }
 
+    /** An empty list is stored as absent: the schema does not allow an empty {@code <attributes/>}. */
     public void setAttributes(final List<Attrib> value) {
-        m_attributes = value;
+        m_attributes = value == null || value.isEmpty() ? null : value;
     }
 
     /**
@@ -109,7 +110,7 @@ public class Uri implements Serializable {
 
     @JsonProperty("attributes")
     private void setAttributesJson(final AttributesJson value) {
-        m_attributes = value == null ? null : value.attrib;
+        setAttributes(value == null ? null : value.attrib);
     }
 
     public String getName() {
