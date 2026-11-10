@@ -18,6 +18,9 @@
 
 	<bean id="trapdRestService" class="org.opennms.web.rest.v2.TrapdRestService"/>
 
+	<!-- Defined in the daoContext at runtime (component-dao.xml of the jdbc-collector); needed by the scanned JdbcDataCollectionConfigRestService -->
+	<bean id="jdbcDataCollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.JdbcDataCollectionConfigDaoCm"/>
+
 	<bean id="snmpConfigRestApi" class="org.opennms.web.rest.v2.SnmpConfigRestService"/>
 
 	<bean id="snmpPeerFactory" class="org.opennms.netmgt.config.mock.MockSnmpPeerFactory"/>
