@@ -31,6 +31,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -443,24 +445,78 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
     }
 
     @Test
-    public void testAFailedMoveIsRetriedByTheNextRun() throws Exception {
+    public void testAFailedMoveAfterTheCommitIsAWarningAndRetriedByTheNextRun() throws Exception {
         copyFixtures();
         // a file where the folder must be
         final File archive = archive();
         write(archive, "");
 
-        final OnmsUpgradeException e = assertThrows(OnmsUpgradeException.class, this::migrate);
-        assertTrue(e.getMessage(), e.getMessage().startsWith("Can't move '"));
-        // the data is committed and the marker set: the next run takes the skip branch, which retries the move
+        // the data is committed and the marker set, and nothing reads the files any more: OpenNMS may start
+        migrate();
         assertEquals(5, count("users"));
         assertEquals(1, count("usermgmt_initialized"));
         assertTrue(new File(m_etc, "users.xml").exists());
 
+        // the next run takes the skip branch, which retries the move
         assertTrue(archive.delete());
         migrate();
         assertEquals(5, count("users"));
         assertTrue(new File(archive, "users.xml").exists());
         assertNoneInEtc();
+    }
+
+    @Test
+    public void testAFailedMoveOfAnRpmsaveFileFailsTheTask() throws Exception {
+        // opennms start refuses to start while etc holds a .rpmsave file
+        m_jdbc.update("INSERT INTO usermgmt_initialized (initialized_by) VALUES ('DefaultUsersSeedOffline')");
+        write("users.xml", USERS_ADMIN_ALICE);
+        write("groups.xml.rpmsave", GROUPS_ADMIN_OPS);
+        write(archive(), "");
+
+        final OnmsUpgradeException e = assertThrows(OnmsUpgradeException.class, this::migrate);
+        assertTrue(e.getMessage(), e.getMessage().startsWith("Can't move '" + new File(m_etc, "groups.xml.rpmsave")));
+        assertFalse(e.getMessage(), e.getMessage().contains("users.xml'"));
+        assertAllInEtc("users.xml", "groups.xml.rpmsave");
+    }
+
+    @Test
+    public void testAFailedMoveWithoutTheMarkerFailsTheTask() throws Exception {
+        // a new installation: the seed adds no users while security-roles.properties is in etc
+        write("security-roles.properties", "roles=admin,rest");
+        write(archive(), "");
+
+        final OnmsUpgradeException e = assertThrows(OnmsUpgradeException.class, this::migrate);
+        assertTrue(e.getMessage(), e.getMessage().startsWith("Can't move '" + new File(m_etc, "security-roles.properties")));
+        assertEquals(0, count("usermgmt_initialized"));
+        assertAllInEtc("security-roles.properties");
+    }
+
+    @Test
+    public void testArchiveTargetNeverReusesAName() throws Exception {
+        final Path archive = archive().toPath();
+        Files.createDirectories(archive);
+        final LocalDateTime now = LocalDateTime.of(2026, 11, 1, 1, 30, 0);
+        assertEquals(archive.resolve("users.xml"), UsersGroupsXmlMigratorOffline.archiveTarget(archive, "users.xml", now));
+        write(archive.resolve("users.xml").toFile(), "a");
+        assertEquals(archive.resolve("users.xml.20261101013000"), UsersGroupsXmlMigratorOffline.archiveTarget(archive, "users.xml", now));
+        // a second run in the same second, or in the hour that a clock change repeats
+        write(archive.resolve("users.xml.20261101013000").toFile(), "b");
+        assertEquals(archive.resolve("users.xml.20261101013000-1"), UsersGroupsXmlMigratorOffline.archiveTarget(archive, "users.xml", now));
+        write(archive.resolve("users.xml.20261101013000-1").toFile(), "c");
+        assertEquals(archive.resolve("users.xml.20261101013000-2"), UsersGroupsXmlMigratorOffline.archiveTarget(archive, "users.xml", now));
+    }
+
+    @Test
+    public void testAFileMatchingACopyWithACounterIsNotDuplicated() throws Exception {
+        m_jdbc.update("INSERT INTO usermgmt_initialized (initialized_by) VALUES ('DefaultUsersSeedOffline')");
+        assertTrue(archive().mkdir());
+        write(new File(archive(), "users.xml"), "older");
+        write(new File(archive(), "users.xml.20261101013000-1"), USERS_ADMIN_ALICE);
+        write("users.xml", USERS_ADMIN_ALICE);
+        migrate();
+
+        assertNoneInEtc();
+        assertEquals(2, archive().list().length);
     }
 
     @Test

@@ -115,9 +115,13 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * marker or already has user data. That covers files that an earlier version or a failed move left in {@code etc},
  * and a container that copies users.xml from its overlay on every start. A file is never overwritten: a file whose
  * content {@code etc_archive} already holds under its name is just removed from {@code etc}, and a file whose name
- * is taken gets the suffix {@code .yyyyMMddHHmmss}. On a failure before the commit, nothing is moved, so the next
- * install reads the files again. A file that cannot be moved fails the task; its data is committed and the marker
- * set, so the next install skips the copy and moves the file.</p>
+ * is taken gets the suffix {@code .yyyyMMddHHmmss} (and {@code -1}, {@code -2}... if that is taken too). On a failure
+ * before the commit, nothing is moved, so the next install reads the files again.</p>
+ *
+ * <p>A file that cannot be moved (e.g. a root-owned {@code etc_archive}, or a read-only users.xml) is only a warning
+ * once the marker is set: nothing reads the file any more, and the next install tries again. It still fails the task
+ * when it is a {@code .rpmsave} file, as {@code opennms start} refuses to start with it in {@code etc}, and when the
+ * marker is not set, as the default-users seed adds no users while the file is in {@code etc}.</p>
  */
 public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
 
@@ -218,14 +222,14 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
         try (final Connection connection = DataSourceFactory.getInstance().getConnection()) {
             if (UserMgmtInitialized.isSet(connection)) {
                 log("The user data of this database was initialized before (see the table usermgmt_initialized), so nothing is copied from the files\n");
-                archive();
+                archive(true);
                 return;
             }
             final String existingData = existingData(connection);
             if (existingData != null) {
                 log("The database already contains user data (%s), so nothing is copied from the files\n", existingData);
                 UserMgmtInitialized.set(connection, getId());
-                archive();
+                archive(true);
                 return;
             }
 
@@ -279,7 +283,7 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
             connection.setAutoCommit(true);
             migration.logSummary();
             // only after the commit: on a failure before it, the next install reads the files again
-            archive();
+            archive(userinfo != null);
         } catch (final SQLException | RuntimeException e) {
             throw new OnmsUpgradeException("Can't copy users and groups to the database: " + e.getMessage(), e);
         }
@@ -337,11 +341,15 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
 
     /**
      * Moves the files that exist in {@code etc} to {@code etc_archive}, without overwriting a file there. A file whose
-     * content is already archived under its name ({@code <name>} or {@code <name>.<yyyyMMddHHmmss>}) is just removed:
-     * a container copies its overlay users.xml to {@code etc} on every start.
+     * content is already archived under its name ({@code <name>} or {@code <name>.<yyyyMMddHHmmss>[-n]}) is just
+     * removed: a container copies its overlay users.xml to {@code etc} on every start. Tries every file, then fails
+     * if one that must be moved could not be (see the class comment).
+     *
+     * @param initialized whether the usermgmt_initialized marker is set
      */
-    private void archive() throws OnmsUpgradeException {
+    private void archive(final boolean initialized) throws OnmsUpgradeException {
         final Path archive = new File(getHomeDirectory(), ARCHIVE_DIR_NAME).toPath();
+        final List<String> failures = new ArrayList<>();
         for (final String name : ARCHIVED_FILE_NAMES) {
             final Path source = etcFile(name).toPath();
             if (!Files.exists(source)) {
@@ -355,22 +363,49 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                     log("Removed %s, as %s has the same content\n", source, copy);
                     continue;
                 }
-                Path target = archive.resolve(name);
-                if (Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
-                    target = archive.resolve(name + "." + ARCHIVE_SUFFIX.format(LocalDateTime.now()));
-                }
+                final Path target = archiveTarget(archive, name, LocalDateTime.now());
                 // without REPLACE_EXISTING: fails rather than overwrites
                 Files.move(source, target);
                 log("Moved %s to %s\n", source, target);
             } catch (final IOException | RuntimeException e) {
-                throw new OnmsUpgradeException("Can't move '" + source + "' to '" + archive + "': " + e.getMessage(), e);
+                final String failure = "Can't move '" + source + "' to '" + archive + "': " + e.getMessage();
+                if (initialized && !name.endsWith(RPMSAVE)) {
+                    log("Warning: %s. Nothing reads it any more, but it may hold password hashes: move or delete it. The next install tries again.\n", failure);
+                } else {
+                    log("%s\n", failure);
+                    failures.add(failure);
+                }
             }
         }
+        if (!failures.isEmpty()) {
+            throw new OnmsUpgradeException(String.join("; ", failures)
+                    + (initialized ? ". OpenNMS does not start while etc holds .rpmsave files"
+                                   : ". The default users are not added while the file is in etc")
+                    + ": fix the cause and run the installer again.");
+        }
+    }
+
+    /**
+     * @return {@code <archive>/<name>}, or else {@code <name>.<yyyyMMddHHmmss>}, or else that name with the first free
+     * suffix {@code -1}, {@code -2}...: two runs in the same second, or in the hour that a clock change repeats, must
+     * not fail on a taken name
+     */
+    static Path archiveTarget(final Path archive, final String name, final LocalDateTime now) {
+        Path target = archive.resolve(name);
+        if (!Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
+            return target;
+        }
+        final String stamped = name + "." + ARCHIVE_SUFFIX.format(now);
+        target = archive.resolve(stamped);
+        for (int i = 1; Files.exists(target, LinkOption.NOFOLLOW_LINKS); i++) {
+            target = archive.resolve(stamped + "-" + i);
+        }
+        return target;
     }
 
     /** @return the archived copy of the file with the same content, or null if there is none */
     private static Path archivedCopy(final Path archive, final String name, final Path source) throws IOException {
-        final Pattern copyName = Pattern.compile(Pattern.quote(name) + "(\\.\\d{14})?");
+        final Pattern copyName = Pattern.compile(Pattern.quote(name) + "(\\.\\d{14}(-\\d+)?)?");
         try (final DirectoryStream<Path> copies = Files.newDirectoryStream(archive, p -> copyName.matcher(p.getFileName().toString()).matches())) {
             for (final Path copy : copies) {
                 if (Files.isRegularFile(copy) && Files.mismatch(source, copy) == -1L) {
