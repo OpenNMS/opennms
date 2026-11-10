@@ -21,9 +21,21 @@
  */
 package org.opennms.netmgt.enlinkd;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.enlinkd.service.impl.NodeTopologyServiceImpl;
 
 /**
@@ -37,6 +49,26 @@ public class NodeTopologyServiceGetSnmpNodeTest {
         final NodeTopologyServiceImpl service = new NodeTopologyServiceImpl();
         assertNull(service.getSnmpNode("some-node-label"));
         assertNull(service.getSnmpNode("fs:"));
+        assertNull(service.getSnmpNode(":fid"));
+        assertNull(service.getSnmpNode(":"));
+    }
+
+    @Test
+    public void foreignIdKeepsItsColons() {
+        final NodeDao nodeDao = mock(NodeDao.class);
+        when(nodeDao.findMatching(any(Criteria.class))).thenReturn(List.of());
+        final NodeTopologyServiceImpl service = new NodeTopologyServiceImpl();
+        service.setNodeDao(nodeDao);
+
         assertNull(service.getSnmpNode("a:b:c"));
+
+        final ArgumentCaptor<Criteria> criteria = ArgumentCaptor.forClass(Criteria.class);
+        verify(nodeDao).findMatching(criteria.capture());
+        final List<Object> values = criteria.getValue().getRestrictions().stream()
+                .filter(EqRestriction.class::isInstance)
+                .map(r -> ((EqRestriction) r).getValue())
+                .collect(Collectors.toList());
+        assertEquals(true, values.contains("a"));
+        assertEquals(true, values.contains("b:c"));
     }
 }

@@ -237,8 +237,9 @@ public class NodeTopologyServiceImpl extends TopologyServiceImpl implements Node
         } catch (NumberFormatException e) {
             LOG.info("getSnmpNode: not nodeId");
         }
-        String[] values = nodeCriteria.split(":");
-        if (values.length != 2) {
+        // a foreign source cannot contain ':', a foreign id can
+        String[] values = nodeCriteria.split(":", 2);
+        if (values.length != 2 || values[0].isEmpty() || values[1].isEmpty()) {
             LOG.warn("getSnmpNode: not a foreignSource:foreignId criteria: {}", nodeCriteria);
             return null;
         }

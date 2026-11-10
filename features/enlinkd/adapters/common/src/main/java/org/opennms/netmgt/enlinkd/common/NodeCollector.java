@@ -110,9 +110,9 @@ public abstract class NodeCollector extends Executable {
     }
 
 
-    // value semantics on (collector class, node): SchedulableExecutableGroup
-    // dedupes collectors by equality, so identity-based equals would let the
-    // group accumulate one new collector per node per cycle forever.
+    // value semantics on (collector class, node), priority excluded: the
+    // executor uses equality to skip a collector whose equal is still pending
+    // from an earlier cycle, and the pending one keeps its priority.
     @Override
     public int hashCode() {
         final int prime = 31;

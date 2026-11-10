@@ -24,6 +24,7 @@ package org.opennms.netmgt.enlinkd.common;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,7 +42,7 @@ public abstract class SchedulableNodeCollectorGroup extends SchedulableExecutabl
     private final LocationAwareSnmpClient m_locationAwareSnmpClient;
     private final int m_priority;
     // mutated by event-handler threads while the scheduler thread reads it
-    private final Set<Integer> m_suspended = ConcurrentHashMap.newKeySet();
+    private volatile Set<Integer> m_suspended = ConcurrentHashMap.newKeySet();
 
     public SchedulableNodeCollectorGroup(
             long interval,
@@ -64,6 +65,14 @@ public abstract class SchedulableNodeCollectorGroup extends SchedulableExecutabl
 
     public void wakeUp(final Integer nodeid) {
         m_suspended.remove(nodeid);
+    }
+
+    /**
+     * Shares a suspended-node set owned by the caller, so the suspensions
+     * outlive this group. The set must be safe for concurrent use.
+     */
+    public void setSuspendedNodes(final Set<Integer> suspended) {
+        m_suspended = Objects.requireNonNull(suspended);
     }
 
     public Map<Integer,Integer> getPriorityMap() {

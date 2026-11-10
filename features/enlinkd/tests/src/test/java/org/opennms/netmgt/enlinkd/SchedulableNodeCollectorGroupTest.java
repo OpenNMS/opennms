@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Test;
 import org.opennms.netmgt.enlinkd.common.NodeCollector;
@@ -167,5 +168,21 @@ public class SchedulableNodeCollectorGroupTest {
 
         assertEquals(3, executor.submitted.size());
         assertEquals(2, group.getExecutables().size());
+    }
+
+    @Test
+    public void sharedSuspensionsOutliveTheGroup() {
+        final Set<Integer> suspended = ConcurrentHashMap.newKeySet();
+        final StubNodeTopologyService nodes = new StubNodeTopologyService(Arrays.asList(node(1), node(2)));
+        suspended.add(1);
+
+        // a reload replaces the group; the replacement must still skip node 1
+        final RecordingExecutor executor = new RecordingExecutor();
+        final TestGroup rebuilt = new TestGroup(executor, nodes);
+        rebuilt.setSuspendedNodes(suspended);
+        rebuilt.runSchedulable();
+
+        assertEquals(1, executor.submitted.size());
+        assertEquals(2, ((NodeCollector) executor.submitted.get(0)).getNodeId());
     }
 }
