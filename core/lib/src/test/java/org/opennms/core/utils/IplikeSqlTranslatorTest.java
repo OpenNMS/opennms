@@ -88,6 +88,19 @@ public class IplikeSqlTranslatorTest {
     }
 
     @Test
+    public void testNegatedPredicateCallsFunctionOncePerRow() {
+        assertEquals("NOT (ipaddr IS NOT NULL AND EXISTS (SELECT 1 FROM (SELECT opennms_safe_inet(ipaddr)"
+                + " AS opennms_iplike_addr OFFSET 0) opennms_iplike_addr_s WHERE opennms_iplike_addr IS NOT NULL"
+                + " AND (opennms_iplike_addr = inet '10.0.0.1'"
+                + " OR (opennms_iplike_addr >= inet '10.0.0.3' AND opennms_iplike_addr <= inet '10.0.0.4'))))",
+                IplikeSqlTranslator.toNegatedSqlPredicate("10.0.0.1,3-4", "ipaddr"));
+        assertEquals("{alias}.ipaddr IS NULL",
+                IplikeSqlTranslator.toNegatedSqlPredicate("*.*.*.*", "{alias}.ipaddr"));
+        assertNull(IplikeSqlTranslator.toNegatedSqlPredicate("fe80:*:*:*:*:*:*:*%45", "ipaddr"));
+        assertNull(IplikeSqlTranslator.toNegatedSqlPredicate(null, "ipaddr"));
+    }
+
+    @Test
     public void testSingleRangePredicate() {
         assertEquals("(ipaddr IS NOT NULL AND opennms_safe_inet(ipaddr) IS NOT NULL AND ("
                 + "(opennms_safe_inet(ipaddr) >= inet '10.0.1.0'"
@@ -232,6 +245,7 @@ public class IplikeSqlTranslatorTest {
         System.setProperty(IplikeSqlTranslator.ENABLED_PROPERTY, "false");
         try {
             assertNull(IplikeSqlTranslator.toSqlPredicate("192.168.1.1", "ipaddr"));
+            assertNull(IplikeSqlTranslator.toNegatedSqlPredicate("192.168.1.1", "ipaddr"));
         } finally {
             System.clearProperty(IplikeSqlTranslator.ENABLED_PROPERTY);
         }

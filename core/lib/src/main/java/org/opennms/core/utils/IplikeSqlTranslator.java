@@ -67,6 +67,9 @@ public abstract class IplikeSqlTranslator {
     private static final String V4_MATCH_ALL = "*.*.*.*";
     private static final String V6_MATCH_ALL = "*:*:*:*:*:*:*:*";
 
+    /** Column alias for the once-per-row value in negated predicates. */
+    private static final String NEGATED_VALUE_ALIAS = "opennms_iplike_addr";
+
     private static class Untranslatable extends Exception {
         private static final long serialVersionUID = 1L;
     }
@@ -83,10 +86,7 @@ public abstract class IplikeSqlTranslator {
      *         {@code null} if the caller must fall back to iplike()
      */
     public static String toSqlPredicate(final String pattern, final String columnExpression) {
-        if (!Boolean.parseBoolean(System.getProperty(ENABLED_PROPERTY, "true"))) {
-            return null;
-        }
-        if (pattern == null || columnExpression == null) {
+        if (!isEnabled() || pattern == null || columnExpression == null) {
             return null;
         }
         if (V4_MATCH_ALL.equals(pattern) || V6_MATCH_ALL.equals(pattern)) {
@@ -94,7 +94,54 @@ public abstract class IplikeSqlTranslator {
             // true for every non-null value; NULL never matches
             return columnExpression + " IS NOT NULL";
         }
+        final String func = SAFE_INET_FUNCTION + "(" + columnExpression + ")";
+        final String ranges = rangeDisjunction(pattern, func);
+        if (ranges == null) {
+            return null;
+        }
+        // the func IS NOT NULL conjunct forces the predicate to FALSE (not
+        // NULL) for values opennms_safe_inet() cannot parse, so callers that
+        // wrap it in NOT include those rows exactly like NOT iplike() does
+        return "(" + columnExpression + " IS NOT NULL AND " + func + " IS NOT NULL AND " + ranges + ")";
+    }
 
+    /**
+     * The negation of {@link #toSqlPredicate(String, String)}, for callers that
+     * know they negate. A negated predicate cannot use the expression index, so
+     * every row is evaluated; this form calls opennms_safe_inet() once per row
+     * instead of once per range comparison.
+     *
+     * @return a self-contained SQL predicate, or {@code null} if the caller
+     *         must fall back to {@code NOT iplike()}
+     */
+    public static String toNegatedSqlPredicate(final String pattern, final String columnExpression) {
+        if (!isEnabled() || pattern == null || columnExpression == null) {
+            return null;
+        }
+        if (V4_MATCH_ALL.equals(pattern) || V6_MATCH_ALL.equals(pattern)) {
+            return columnExpression + " IS NULL";
+        }
+        final String ranges = rangeDisjunction(pattern, NEGATED_VALUE_ALIAS);
+        if (ranges == null) {
+            return null;
+        }
+        // OFFSET 0 keeps the planner from inlining the subquery, which would
+        // put one function call back into every range comparison
+        return "NOT (" + columnExpression + " IS NOT NULL AND EXISTS (SELECT 1 FROM (SELECT "
+                + SAFE_INET_FUNCTION + "(" + columnExpression + ") AS " + NEGATED_VALUE_ALIAS
+                + " OFFSET 0) " + NEGATED_VALUE_ALIAS + "_s WHERE " + NEGATED_VALUE_ALIAS
+                + " IS NOT NULL AND " + ranges + "))";
+    }
+
+    private static boolean isEnabled() {
+        return Boolean.parseBoolean(System.getProperty(ENABLED_PROPERTY, "true"));
+    }
+
+    /**
+     * Renders the pattern's ranges as a parenthesized OR of comparisons on
+     * valueExpression, or returns null if the pattern is untranslatable.
+     */
+    private static String rangeDisjunction(final String pattern, final String valueExpression) {
         final List<BigInteger[]> ranges;
         final int family;
         try {
@@ -107,14 +154,7 @@ public abstract class IplikeSqlTranslator {
         if (ranges.isEmpty()) {
             return null;
         }
-
-        final String func = SAFE_INET_FUNCTION + "(" + columnExpression + ")";
-        final StringBuilder sb = new StringBuilder();
-        // the func IS NOT NULL conjunct forces the predicate to FALSE (not
-        // NULL) for values opennms_safe_inet() cannot parse, so callers that
-        // wrap it in NOT include those rows exactly like NOT iplike() does
-        sb.append("(").append(columnExpression).append(" IS NOT NULL AND ")
-          .append(func).append(" IS NOT NULL AND (");
+        final StringBuilder sb = new StringBuilder("(");
         for (int i = 0; i < ranges.size(); i++) {
             if (i > 0) {
                 sb.append(" OR ");
@@ -122,15 +162,14 @@ public abstract class IplikeSqlTranslator {
             final BigInteger lo = ranges.get(i)[0];
             final BigInteger hi = ranges.get(i)[1];
             if (lo.equals(hi)) {
-                sb.append(func).append(" = inet '").append(render(family, lo)).append("'");
+                sb.append(valueExpression).append(" = inet '").append(render(family, lo)).append("'");
             } else {
-                sb.append("(").append(func).append(" >= inet '").append(render(family, lo))
-                  .append("' AND ").append(func).append(" <= inet '").append(render(family, hi))
+                sb.append("(").append(valueExpression).append(" >= inet '").append(render(family, lo))
+                  .append("' AND ").append(valueExpression).append(" <= inet '").append(render(family, hi))
                   .append("')");
             }
         }
-        sb.append("))");
-        return sb.toString();
+        return sb.append(")").toString();
     }
 
     /**

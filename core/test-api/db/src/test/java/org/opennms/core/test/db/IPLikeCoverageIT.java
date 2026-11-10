@@ -165,9 +165,12 @@ public class IPLikeCoverageIT {
             // predicate cannot parse: it must evaluate to FALSE there, not
             // NULL, or negated filters would drop rows NOT iplike() keeps.
             final String predicate = IplikeSqlTranslator.toSqlPredicate(rule, "v");
+            final String negatedPredicate = IplikeSqlTranslator.toNegatedSqlPredicate(rule, "v");
+            assertEquals("both forms translate or neither does for rule " + rule,
+                    predicate == null, negatedPredicate == null);
             if (predicate != null) {
                 final PreparedStatement nativeSt = c.prepareStatement(
-                        "SELECT " + predicate + ", NOT " + predicate
+                        "SELECT " + predicate + ", NOT " + predicate + ", " + negatedPredicate
                         + " FROM (VALUES (CAST(? AS TEXT))) AS t(v)");
                 util.watch(nativeSt);
                 nativeSt.setString(1, value);
@@ -180,6 +183,10 @@ public class IPLikeCoverageIT {
                 assertEquals("negated native predicate for rule " + rule + " on value " + value
                         + ": " + predicate, !expected, nativeRs.getBoolean(2));
                 assertFalse("negated native predicate must never be NULL for rule " + rule
+                        + " on value " + value, nativeRs.wasNull());
+                assertEquals("negated-form predicate for rule " + rule + " on value " + value
+                        + ": " + negatedPredicate, !expected, nativeRs.getBoolean(3));
+                assertFalse("negated-form predicate must never be NULL for rule " + rule
                         + " on value " + value, nativeRs.wasNull());
             }
         } finally {

@@ -519,6 +519,15 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
                 throw new IllegalStateException("NotRestriction called, but no criterions exist to negate!");
             }
             final Criterion criterion = m_criterions.remove(m_criterions.size() - 1);
+            if (restriction.getRestriction() instanceof IplikeRestriction) {
+                // the negated native form evaluates opennms_safe_inet() once
+                // per row instead of once per range comparison
+                final String negated = negatedIplikePredicate((IplikeRestriction) restriction.getRestriction());
+                if (negated != null) {
+                    m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(negated));
+                    return;
+                }
+            }
             m_criterions.add(org.hibernate.criterion.Restrictions.not(criterion));
         }
 
@@ -558,12 +567,23 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
             }
         }
 
+        private static String iplikeAttribute(final IplikeRestriction restriction) {
+            final String attribute = restriction.getAttribute();
+            return Strings.isNullOrEmpty(attribute) ? "ipAddr" : attribute;
+        }
+
+        private static String negatedIplikePredicate(final IplikeRestriction restriction) {
+            final String attribute = iplikeAttribute(restriction);
+            if (!IplikeRestriction.isValidAttribute(attribute) || !(restriction.getValue() instanceof String)) {
+                return null;
+            }
+            return org.opennms.core.utils.IplikeSqlTranslator
+                    .toNegatedSqlPredicate((String) restriction.getValue(), "{alias}." + attribute);
+        }
+
         @Override
         public void visitIplike(final IplikeRestriction restriction) {
-            String attribute = restriction.getAttribute();
-            if (Strings.isNullOrEmpty(attribute)) {
-                attribute = "ipAddr";
-            }
+            final String attribute = iplikeAttribute(restriction);
             // The attribute goes into the SQL text, thus reject all values that are not a plain column name.
             if (!IplikeRestriction.isValidAttribute(attribute)) {
                 throw new IllegalArgumentException("Invalid attribute name for an iplike restriction");
