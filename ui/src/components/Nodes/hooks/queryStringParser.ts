@@ -441,7 +441,7 @@ export const ALLOWED_ASSET_COLUMNS = new Set(Object.keys(ASSET_COLUMN_FIQL_MAP))
  * Human-readable title for every ASSET_COLUMN_FIQL_MAP key, taken verbatim from the display-name
  * strings in `SearchProperties.java`'s `ASSET_RECORD_PROPERTIES` (server-side search-property
  * registry — the source of truth, since it correctly handles abbreviations/oddities like "CPU",
- * "HDD 1", "RAM", "SNMP Community", "ZIP or Postal Code" that a runtime camelCase-to-Title-Case
+ * "HDD 1", "RAM", "SNMP Community" that a runtime camelCase-to-Title-Case
  * conversion would get wrong). Every key in ASSET_COLUMN_FIQL_MAP must have an entry here.
  */
 export const ASSET_COLUMN_TITLES: Record<string, string> = {
@@ -505,7 +505,7 @@ export const ASSET_COLUMN_TITLES: Record<string, string> = {
   vendorAssetNumber: 'Vendor Asset Number',
   vendorFax: 'Vendor Fax',
   vendorPhone: 'Vendor Phone',
-  zip: 'ZIP or Postal Code'
+  zip: 'Postal Code'
 }
 
 /**

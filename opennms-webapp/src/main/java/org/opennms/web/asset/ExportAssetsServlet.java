@@ -92,7 +92,7 @@ public class ExportAssetsServlet extends HttpServlet {
                 "Address 2",
                 "City",
                 "State",
-                "Zip",
+                "Postal Code",
                 "Building",
                 "Floor",
                 "Room",
