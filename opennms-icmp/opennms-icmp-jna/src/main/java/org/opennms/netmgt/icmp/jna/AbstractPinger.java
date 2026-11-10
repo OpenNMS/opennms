@@ -22,8 +22,8 @@
 package org.opennms.netmgt.icmp.jna;
 
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -64,7 +64,9 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
      * its own copy.
      */
     protected static NativeDatagramPacket copyOf(final NativeDatagramPacket received) {
-        final byte[] data = Arrays.copyOf(received.getContent().array(), received.getLength());
+        final ByteBuffer content = received.getContent();
+        final byte[] data = new byte[content.remaining()];
+        content.get(data);
         return new NativeDatagramPacket(data, received.getAddress(), received.getPort());
     }
 

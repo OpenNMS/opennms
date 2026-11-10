@@ -69,6 +69,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
             final int pingerId = getPingerId();
             final NativeDatagramPacket receiveBuffer = new NativeDatagramPacket(MAX_DATAGRAM_SIZE);
             while (!isFinished()) {
+                receiveBuffer.setLength(MAX_DATAGRAM_SIZE);
                 getPingSocket().receive(receiveBuffer);
                 final long received = System.nanoTime();
                 final NativeDatagramPacket datagram = copyOf(receiveBuffer);
