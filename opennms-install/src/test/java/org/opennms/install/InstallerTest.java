@@ -23,6 +23,7 @@ package org.opennms.install;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 
@@ -212,6 +213,7 @@ public class InstallerTest {
         private final List<String> m_calls = new ArrayList<>();
         private boolean m_adminMissing;
         private boolean m_userDataInitialized;
+        private boolean m_hasUserTables = true;
 
         RecordingInstaller() throws Exception {
             super();
@@ -228,6 +230,11 @@ public class InstallerTest {
         @Override
         protected boolean isUserDataInitialized() {
             return m_userDataInitialized;
+        }
+
+        @Override
+        protected boolean hasUserTables() {
+            return m_hasUserTables;
         }
     }
 
@@ -285,6 +292,28 @@ public class InstallerTest {
         recording.m_adminMissing = true;
         recording.m_skip_upgrade_tools = true;
         recording.resetWebAppAdminPassword();
+        assertNull(System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY));
+    }
+
+    @Test
+    public void testResetWithoutTheUserTablesSaysToUpdateTheDatabase() throws Exception {
+        // a 36.x database and -R without -d: a plain SQLException would not say what to do
+        final RecordingInstaller recording = recordingInstaller();
+        recording.m_hasUserTables = false;
+        final IllegalStateException e = assertThrows(IllegalStateException.class, recording::resetWebAppAdminPassword);
+        assertTrue(e.getMessage(), e.getMessage().contains("install -dis -R"));
+        assertTrue(recording.m_calls.isEmpty());
+        assertNull(System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY));
+    }
+
+    @Test
+    public void testABlankResetPasswordIsRefused() throws Exception {
+        // the upgrade task ignores a blank password, so it must not be deferred as if it would be set
+        final RecordingInstaller recording = recordingInstaller();
+        recording.m_resetWebAppAdminPassword = "  ";
+        recording.m_adminMissing = true;
+        assertThrows(IllegalStateException.class, recording::resetWebAppAdminPassword);
+        assertTrue(recording.m_calls.isEmpty());
         assertNull(System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY));
     }
 

@@ -39,6 +39,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -76,7 +78,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.StringUtils;
 
-import joptsimple.internal.Strings;
 
 /*
  * TODO:
@@ -270,7 +271,7 @@ public class Installer {
             updateTomcatConf();
         }
 
-        if (!Strings.isNullOrEmpty(m_resetWebAppAdminPassword)) {
+        if (m_resetWebAppAdminPassword != null) {
             resetWebAppAdminPassword();
         }
 
@@ -294,6 +295,15 @@ public class Installer {
     }
 
     protected void resetWebAppAdminPassword() throws Exception {
+        if (m_resetWebAppAdminPassword.isBlank()) {
+            // parseArguments refuses it; the upgrade task would ignore it, so it must not look as if it were set
+            throw new IllegalStateException("The password given to -R must not be blank.");
+        }
+        if (!hasUserTables()) {
+            // e.g. a 36.x database and no -d: the users were in users.xml then
+            throw new IllegalStateException("The password was NOT set: the database has no users table yet."
+                    + " Update the database with the same command and -d, for example: install -dis -R <password>");
+        }
         try {
             setAdminPasswordInDatabase(m_resetWebAppAdminPassword);
         } catch (final IllegalArgumentException e) {
@@ -315,6 +325,16 @@ public class Installer {
 
     protected void setAdminPasswordInDatabase(final String password) throws Exception {
         DatabasePasswords.setPassword(openNmsDataSource(), "admin", password);
+    }
+
+    /** Whether the database has the user tables, which -d creates when it updates an older database. */
+    protected boolean hasUserTables() throws Exception {
+        try (final Connection connection = openNmsDataSource().getConnection();
+             final Statement statement = connection.createStatement();
+             final ResultSet rs = statement.executeQuery("SELECT to_regclass('users') IS NOT NULL AND to_regclass('usermgmt_version') IS NOT NULL")) {
+            rs.next();
+            return rs.getBoolean(1);
+        }
     }
 
     /** Whether the user data of the database was initialized (from the files or with the default users) already. */
@@ -608,6 +628,10 @@ public class Installer {
         m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
         m_timescaleDB = m_commandLine.hasOption("t");
         m_resetWebAppAdminPassword = m_commandLine.getOptionValue("R", m_resetWebAppAdminPassword);
+        if (m_resetWebAppAdminPassword != null && m_resetWebAppAdminPassword.isBlank()) {
+            usage(options, m_commandLine, "The password given to -R must not be blank.", null);
+            System.exit(1);
+        }
 
         m_validate_ownership = !m_commandLine.hasOption("o");
 

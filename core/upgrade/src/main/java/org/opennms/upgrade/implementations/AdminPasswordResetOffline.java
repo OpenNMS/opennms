@@ -38,7 +38,9 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * The password is never logged.
  *
  * The task is critical only while a password is given: install -R must not report success when the password could not
- * be set. A missing admin user is no failure; the task only logs it.
+ * be set. A missing admin user fails it while the user data is not initialized: an earlier task failed (e.g. the
+ * migrator), so the seed did not create admin, and the installer must be run again with -R. Once the user data is
+ * initialized, a missing admin user (deleted or renamed) is no failure; the task only logs it.
  */
 public class AdminPasswordResetOffline extends AbstractOnmsUpgrade {
 
@@ -100,6 +102,14 @@ public class AdminPasswordResetOffline extends AbstractOnmsUpgrade {
         }
     }
 
+    private static boolean isUserDataInitialized() throws OnmsUpgradeException {
+        try (final Connection connection = DataSourceFactory.getInstance().getConnection()) {
+            return UserMgmtInitialized.isSet(connection);
+        } catch (final SQLException e) {
+            throw new OnmsUpgradeException("Can't read the usermgmt_initialized marker: " + e.getMessage(), e);
+        }
+    }
+
     private static boolean passwordGiven() {
         final String password = System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY);
         return password != null && !password.isBlank();
@@ -120,6 +130,10 @@ public class AdminPasswordResetOffline extends AbstractOnmsUpgrade {
             DatabasePasswords.setPassword(DataSourceFactory.getInstance(), "admin", password);
             log("Password for the web application admin user was set.\n");
         } catch (final IllegalArgumentException e) {
+            if (!isUserDataInitialized()) {
+                throw new OnmsUpgradeException("The password of the admin user was NOT set: the admin user does not exist yet, as the user data"
+                        + " was not initialized (see the failures above). Fix them and run the installer again with -R.");
+            }
             log("The password was NOT set: the admin user does not exist.\n");
         } catch (final Exception e) {
             throw new OnmsUpgradeException("Cannot set the password of the admin user: " + e.getMessage(), e);

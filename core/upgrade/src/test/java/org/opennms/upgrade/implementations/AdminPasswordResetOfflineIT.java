@@ -144,9 +144,24 @@ public class AdminPasswordResetOfflineIT implements TemporaryDatabaseAware<Tempo
     }
 
     @Test
-    public void testNoAdminLogsAndDoesNotFail() throws Exception {
+    public void testNoAdminAfterTheUserDataIsInitializedLogsAndDoesNotFail() throws Exception {
+        // admin was deleted or renamed: no task will create it
+        m_jdbc.update("INSERT INTO usermgmt_initialized (initialized_by) VALUES ('test')");
         System.setProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY, "secret");
         reset();
+        assertEquals(0, count("users"));
+        assertNull(System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY));
+    }
+
+    @Test
+    public void testNoAdminBeforeTheUserDataIsInitializedFailsTheUpgrade() throws Exception {
+        // an earlier task failed (e.g. the migrator), so the seed did not create admin: the rerun needs -R again
+        System.setProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY, "secret");
+        final AdminPasswordResetOffline reset = new AdminPasswordResetOffline();
+        reset.preExecute();
+        final OnmsUpgradeException e = assertThrows(OnmsUpgradeException.class, reset::execute);
+        assertTrue(e.getMessage(), e.getMessage().contains("-R"));
+        assertTrue(reset.isCritical());
         assertEquals(0, count("users"));
         assertNull(System.getProperty(DatabasePasswords.RESET_ADMIN_PASSWORD_PROPERTY));
     }
