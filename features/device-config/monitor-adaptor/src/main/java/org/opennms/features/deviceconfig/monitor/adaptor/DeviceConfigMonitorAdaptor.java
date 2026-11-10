@@ -31,8 +31,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import com.google.common.base.Strings;
 
+import org.opennms.core.soa.Registration;
+import org.opennms.core.soa.RegistrationListener;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.features.deviceconfig.persistence.api.ConfigType;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfig;
@@ -45,8 +51,10 @@ import org.opennms.features.usageanalytics.api.UsageAnalyticMetricName;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
@@ -89,6 +97,40 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
     @Autowired
     private SessionUtils sessionUtils;
+
+    private AnnotationBasedEventListenerAdapter eventListenerAdapter;
+
+    private final RegistrationListener<EventSubscriptionService> eventSubscriptionServiceListener = new RegistrationListener<>() {
+        @Override
+        public void providerRegistered(Registration registration, EventSubscriptionService provider) {
+            subscribe(provider);
+        }
+
+        @Override
+        public void providerUnregistered(Registration registration, EventSubscriptionService provider) {
+        }
+    };
+
+    @PostConstruct
+    private void init() {
+        // Eventd can register the subscription service after this bean is created, so listen when it is available
+        DefaultServiceRegistry.INSTANCE.addListener(EventSubscriptionService.class, eventSubscriptionServiceListener, true);
+    }
+
+    @PreDestroy
+    private synchronized void destroy() {
+        DefaultServiceRegistry.INSTANCE.removeListener(EventSubscriptionService.class, eventSubscriptionServiceListener);
+        if (eventListenerAdapter != null) {
+            eventListenerAdapter.close();
+            eventListenerAdapter = null;
+        }
+    }
+
+    private synchronized void subscribe(EventSubscriptionService eventSubscriptionService) {
+        if (eventListenerAdapter == null) {
+            eventListenerAdapter = new AnnotationBasedEventListenerAdapter(this, eventSubscriptionService);
+        }
+    }
 
     @Override
     public PollStatus handlePollResult(MonitoredService svc, Map<String, Object> parameters, PollStatus status) {
