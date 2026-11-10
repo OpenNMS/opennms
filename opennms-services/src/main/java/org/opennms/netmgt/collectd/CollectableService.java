@@ -602,7 +602,8 @@ public class CollectableService implements ReadyRunnable {
             throw e;
         } catch (Throwable t) {
             LOG.warn("run: failed collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
-            throw new CollectionException("An undeclared throwable was caught during data collection for interface " + m_nodeId + "/" + getHostAddress() + "/" + m_spec.getServiceName(), t);
+            throw new CollectionException("An undeclared throwable was caught during data collection for interface " + m_nodeId + "/" + getHostAddress() + "/" + m_spec.getServiceName()
+                    + ": " + t.getClass().getSimpleName() + (t.getMessage() != null ? ": " + t.getMessage() : ""), t);
         } finally {
             final long elapsedNanos = System.nanoTime() - startNanos;
             m_collectionTimer.update(elapsedNanos, TimeUnit.NANOSECONDS);
