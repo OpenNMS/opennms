@@ -1759,7 +1759,7 @@
     <camelVersion>3.22.4</camelVersion>
     <!-- Match (or beat) Newts version -->
     <cassandraVersion>4.17.0</cassandraVersion>
-    <cloverVersion>3.2.0</cloverVersion>
+    <cloverVersion>4.0.6</cloverVersion>
     <commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
     <commonsChainVersion>1.2</commonsChainVersion>
     <commonsCliVersion>1.7.0</commonsCliVersion>
@@ -1974,7 +1974,7 @@
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
-    <pyroscopeVersion>0.13.1</pyroscopeVersion>
+    <pyroscopeVersion>2.9.2</pyroscopeVersion>
     <lz4JavaVersion>1.11.4</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
     <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>
