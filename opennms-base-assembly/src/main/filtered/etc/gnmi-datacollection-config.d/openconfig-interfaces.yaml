@@ -1,0 +1,110 @@
+# Disclaimer: This configuration is a proof of concept. It evaluates how usable it is
+# to configure gNMI streaming telemetry metric processing. These files are not covered
+# by commercial service agreements.
+#
+# Read by etc/telemetryd-adapters/openconfig-gnmi-mapping.groovy together with every
+# other *.yaml, *.yml and *.json file in this directory. Files are split by YANG
+# model: openconfig-* files are vendor neutral, vendor files such as junos-* map
+# native models. A group only sees the paths the connector subscribes to.
+# Reference: OpenConfig telemetry docs, section "Declarative mapping".
+#
+# Model: openconfig-interfaces, openconfig-if-ethernet, openconfig-qos (egress queues).
+# Connector path: /interfaces/interface (origin openconfig).
+# Checked against a Juniper MX10004. Resource type ocIfQueue is defined in
+# etc/resource-types.d/openconfig-gnmi-resource.xml.
+version: 1
+aliases:
+  if-counters: /interfaces/interface/state/counters
+  if-state: /interfaces/interface/state
+  if-out-queue: /interfaces/interface/state/counters/out-queue
+  subif-counters: /interfaces/interface/subinterfaces/subinterface/state/counters
+groups:
+  # Names follow the SNMP MIB-2 names, so the stock interface graphs work unchanged
+  - name: oc-if-counters
+    match: if-counters
+    resource-type: interface
+    instance: "{interface.name}"
+    attributes:
+      in-octets: { type: counter, name: ifHCInOctets }
+      out-octets: { type: counter, name: ifHCOutOctets }
+      in-unicast-pkts: { type: counter, name: ifHCInUcastPkts }
+      out-unicast-pkts: { type: counter, name: ifHCOutUcastPkts }
+      in-multicast-pkts: { type: counter, name: ifHCInMulticastPkts }
+      out-multicast-pkts: { type: counter, name: ifHCOutMulticastPkt }
+      in-broadcast-pkts: { type: counter, name: ifHCInBroadcastPkts }
+      out-broadcast-pkts: { type: counter, name: ifHCOutBroadcastPkt }
+      in-errors: { type: counter, name: ifInErrors }
+      out-errors: { type: counter, name: ifOutErrors }
+      in-discards: { type: counter, name: ifInDiscards }
+      out-discards: { type: counter, name: ifOutDiscards }
+      in-fcs-errors: { type: counter, name: ocInFcsErrors }
+      carrier-transitions: { type: counter, name: ocCarrierTrans }
+  - name: oc-if-description
+    match: if-state
+    resource-type: interface
+    instance: "{interface.name}"
+    attributes:
+      description: { type: string, name: ifAlias }
+  # Groups may share a match path. Both groups below write to the same interface resource.
+  - name: oc-if-status
+    match: if-state
+    resource-type: interface
+    instance: "{interface.name}"
+    attributes:
+      oper-status: { type: string, name: ocOperStatus }
+      admin-status: { type: string, name: ocAdminStatus }
+      high-speed: { type: gauge, name: ifHighSpeed }
+  # Logical units become interface resources named like the Junos unit,
+  # e.g. xe-0/0/0.100 is stored as xe-0_0_0.100
+  - name: oc-subif-counters
+    match: subif-counters
+    resource-type: interface
+    instance: "{interface.name}.{subinterface.index}"
+    attributes:
+      in-octets: { type: counter, name: ifHCInOctets }
+      out-octets: { type: counter, name: ifHCOutOctets }
+      in-unicast-pkts: { type: counter, name: ifHCInUcastPkts }
+      out-unicast-pkts: { type: counter, name: ifHCOutUcastPkts }
+      in-multicast-pkts: { type: counter, name: ifHCInMulticastPkts }
+      out-multicast-pkts: { type: counter, name: ifHCOutMulticastPkt }
+  # One resource per egress queue, e.g. et-1_4_3_q5
+  - name: oc-if-out-queue
+    match: if-out-queue
+    resource-type: ocIfQueue
+    instance: "{interface.name}_q{out-queue.queue-number}"
+    attributes:
+      queued-pkts: { type: counter, name: qQueuedPkts }
+      queued-bytes: { type: counter, name: qQueuedBytes }
+      hp-red-drop-pkts: { type: counter, name: qHpRedDropPkts }
+      lp-red-drop-pkts: { type: counter, name: qLpRedDropPkts }
+
+# Catch-all alternative. "attributes: all" collects every numeric leaf below the
+# match path, named after the leaf path relative to match with "/" replaced by "-".
+# Strings are not collected by "all", so list them explicitly. Names longer than
+# 19 characters need a "name:" when you persist to RRD. Uncomment these groups
+# only after removing the explicit groups above: two groups on one leaf store it
+# twice. port-speed stays a string such as SPEED_10GB; use high-speed as a gauge.
+#  - name: oc-if-all
+#    match: if-counters
+#    resource-type: interface
+#    instance: "{interface.name}"
+#    attributes: all
+#    default-type: counter
+#  - name: oc-if-state-all
+#    match: if-state
+#    resource-type: interface
+#    instance: "{interface.name}"
+#    attributes:
+#      ifindex: { type: gauge }
+#      mtu: { type: gauge }
+#      high-speed: { type: gauge }
+#      description: { type: string }
+#      oper-status: { type: string }
+#      admin-status: { type: string }
+#      port-speed: { type: string }
+#  - name: oc-subif-all
+#    match: subif-counters
+#    resource-type: interface
+#    instance: "{interface.name}.{subinterface.index}"
+#    attributes: all
+#    default-type: counter

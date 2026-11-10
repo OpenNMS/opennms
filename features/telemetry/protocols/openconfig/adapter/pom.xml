@@ -15,6 +15,25 @@
   <packaging>bundle</packaging>
 
   <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <!-- Test the shipped files, not copies -->
+        <directory>${project.basedir}/../../../../../opennms-base-assembly/src/main/filtered/etc/telemetryd-adapters</directory>
+        <includes>
+          <include>openconfig-gnmi-mapping.groovy</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/../../../../../opennms-base-assembly/src/main/filtered/etc/gnmi-datacollection-config.d</directory>
+        <includes>
+          <include>openconfig-*.yaml</include>
+          <include>junos-*.yaml</include>
+        </includes>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -59,6 +78,16 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

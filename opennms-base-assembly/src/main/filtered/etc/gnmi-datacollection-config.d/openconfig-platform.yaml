@@ -1,0 +1,60 @@
+# Disclaimer: This configuration is a proof of concept. It evaluates how usable it is
+# to configure gNMI streaming telemetry metric processing. These files are not covered
+# by commercial service agreements.
+#
+# Read by etc/telemetryd-adapters/openconfig-gnmi-mapping.groovy together with every
+# other *.yaml, *.yml and *.json file in this directory. Files are split by YANG
+# model: openconfig-* files are vendor neutral, vendor files such as junos-* map
+# native models. A group only sees the paths the connector subscribes to.
+# Reference: OpenConfig telemetry docs, section "Declarative mapping".
+#
+# Model: openconfig-platform, openconfig-platform-cpu, openconfig-platform-transceiver.
+# Connector path: /components/component (origin openconfig).
+# Checked against a Juniper MX10004. Resource type ocComponent is defined in
+# etc/resource-types.d/openconfig-gnmi-resource.xml.
+version: 1
+aliases:
+  cpu-utilization: /components/component/cpu/utilization/state
+  temperature: /components/component/state/temperature
+  transceiver: /components/component/transceiver/state
+groups:
+  - name: oc-cpu
+    match: cpu-utilization
+    resource-type: ocComponent
+    instance: "{component.name}"
+    attributes:
+      avg: { type: gauge, name: cpuAvg }
+      instant: { type: gauge, name: cpuInstant }
+  # Temperature and optics share the ocComponent resource with the CPU group
+  - name: oc-temperature
+    match: temperature
+    resource-type: ocComponent
+    instance: "{component.name}"
+    attributes:
+      instant: { type: gauge, name: tempInstant }
+      avg: { type: gauge, name: tempAvg }
+      min: { type: gauge, name: tempMin }
+      max: { type: gauge, name: tempMax }
+      alarm-status: { type: gauge, name: tempAlarm }  # boolean, stored as 1 or 0
+      alarm-threshold: { type: gauge, name: tempAlarmThresh }
+  # Attribute keys can be nested paths below the match path
+  - name: oc-transceiver
+    match: transceiver
+    resource-type: ocComponent
+    instance: "{component.name}"
+    attributes:
+      input-power/instant: { type: gauge, name: optRxPower }  # dBm
+      output-power/instant: { type: gauge, name: optTxPower }  # dBm
+      laser-bias-current/instant: { type: gauge, name: optLaserBias }  # mA
+      present: { type: string, name: optPresent }
+
+# Catch-all alternative: every numeric leaf below a component as a gauge, named
+# after the relative leaf path, e.g. state-temperature-instant or
+# cpu-utilization-state-avg. Uncomment only after removing the groups above,
+# otherwise shared leaves are stored twice. See openconfig-interfaces.yaml.
+#  - name: oc-component-all
+#    match: /components/component
+#    resource-type: ocComponent
+#    instance: "{component.name}"
+#    attributes: all
+#    default-type: gauge
