@@ -36,7 +36,6 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -51,8 +50,6 @@ import java.util.Properties;
 import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.opennms.smoketest.stacks.InternetProtocol;
 import org.opennms.smoketest.stacks.IpcStrategy;
@@ -220,6 +217,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 .withCommand(containerCommand)
                 .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this));
 
+        disableServices();
+
         addFileSystemBind(overlay.toString(),
                         "/opt/opennms-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
 
@@ -259,7 +258,6 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         OverlayUtils.copyAndTemplate("opennms-overlay", home, model);
 
         Path etc = home.resolve("etc");
-        disableServices(etc.resolve("service-configuration.xml"));
         Path propsD = etc.resolve("opennms.properties.d");
         Files.createDirectories(propsD);
 
@@ -326,24 +324,26 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     }
 
     /**
-     * Marks the services from {@link OpenNMSProfile#getDisabledServices()} as disabled in the overlay's
-     * service-configuration.xml. This is done after the class-path overlay has been copied, since that
-     * overlay ships its own service-configuration.xml and would overwrite a file provided by the profile.
+     * Disables the services from {@link OpenNMSProfile#getDisabledServices()}. The stock
+     * service-configuration.xml resolves each service's enabled flag from a CORE_SERVICE_*_ENABLED
+     * environment variable, so we set that variable instead of patching the file.
      */
-    private void disableServices(final Path serviceConfiguration) throws IOException {
-        if (profile.getDisabledServices().isEmpty()) {
-            return;
-        }
-        String xml = Files.readString(serviceConfiguration, StandardCharsets.UTF_8);
+    private void disableServices() {
         for (final String serviceName : profile.getDisabledServices()) {
-            final Pattern pattern = Pattern.compile("<service(?:\\s+enabled=\"[^\"]*\")?\\s*>(\\s*<name>" + Pattern.quote(serviceName) + "</name>)");
-            final Matcher matcher = pattern.matcher(xml);
-            if (!matcher.find()) {
-                throw new IllegalStateException("Service " + serviceName + " not found in " + serviceConfiguration);
-            }
-            xml = matcher.replaceFirst("<service enabled=\"false\">$1");
+            withEnv(getServiceEnabledEnvVar(serviceName), Boolean.FALSE.toString());
         }
-        Files.writeString(serviceConfiguration, xml, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * @param serviceName the service name as found in service-configuration.xml, i.e. "OpenNMS:Name=Pollerd"
+     * @return the environment variable controlling whether the service is enabled, i.e. "CORE_SERVICE_POLLERD_ENABLED"
+     */
+    public static String getServiceEnabledEnvVar(final String serviceName) {
+        final String prefix = "OpenNMS:Name=";
+        if (!serviceName.startsWith(prefix)) {
+            throw new IllegalArgumentException("Unexpected service name: " + serviceName);
+        }
+        return "CORE_SERVICE_" + serviceName.substring(prefix.length()).toUpperCase(Locale.ROOT) + "_ENABLED";
     }
 
     /**

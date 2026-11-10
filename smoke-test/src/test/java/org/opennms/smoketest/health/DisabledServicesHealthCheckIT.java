@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.TestContainerUtils;
@@ -72,13 +73,16 @@ public class DisabledServicesHealthCheckIT {
     }
 
     @Test
-    public void verifyServicesAreDisabled() {
+    public void verifyServicesAreDisabled() throws Exception {
         final String xml = TestContainerUtils.getFileFromContainerAsString(stack.opennms(),
                 Paths.get("/opt/opennms/etc/service-configuration.xml"));
         for (final String serviceName : DISABLED_SERVICES) {
-            assertThat("service-configuration.xml should disable " + serviceName,
-                    Pattern.compile("<service enabled=\"false\">\\s*<name>" + Pattern.quote(serviceName) + "</name>")
+            final String envVar = OpenNMSContainer.getServiceEnabledEnvVar(serviceName);
+            assertThat("service-configuration.xml should resolve " + serviceName + " from " + envVar,
+                    Pattern.compile("<service enabled=\"\\$\\{env:" + Pattern.quote(envVar) + "\\|[^}]*\\}\">\\s*<name>" + Pattern.quote(serviceName) + "</name>")
                             .matcher(xml).find(), is(true));
+            assertThat(envVar + " should be set in the container",
+                    stack.opennms().execInContainer("printenv", envVar).getStdout().trim(), is("false"));
         }
     }
 

@@ -193,7 +193,7 @@ public class OpenNMSProfile {
         }
 
         /**
-         * Disable a daemon in etc/service-configuration.xml.
+         * Disable a daemon by setting its CORE_SERVICE_*_ENABLED environment variable to false.
          *
          * @param serviceName the service name as found in the XML, i.e. "OpenNMS:Name=Pollerd"
          * @return this builder
