@@ -91,7 +91,25 @@
     <property name="kafkaSendQueueCapacity" value="${kafkaSendQueueCapacity}"/>
     <property name="encoding" value="${encoding}"/>
     <property name="numEventListenerThreads" value="${numEventListenerThreads}"/>
+    <property name="metricRegistry" ref="kafkaProducerMessageMetrics"/>
   </bean>
+
+  <!-- Per message type send counts and timings, shown by opennms:metrics-display and exported over JMX -->
+  <bean id="kafkaProducerMessageMetrics" class="com.codahale.metrics.MetricRegistry"/>
+  <service ref="kafkaProducerMessageMetrics" interface="com.codahale.metrics.MetricSet">
+    <service-properties>
+      <entry key="name" value="org.opennms.features.kafka.producer.messages"/>
+      <entry key="description" value="OpenNMS Kafka Producer messages"/>
+    </service-properties>
+  </service>
+  <bean id="kafkaProducerMessageMetricsJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
+    <argument ref="kafkaProducerMessageMetrics"/>
+  </bean>
+  <bean id="kafkaProducerMessageMetricsDomainedJmxReporterBuilder" factory-ref="kafkaProducerMessageMetricsJmxReporterBuilder" factory-method="inDomain">
+    <argument value="org.opennms.features.kafka.producer"/>
+  </bean>
+  <bean id="kafkaProducerMessageMetricsJmxReporter" factory-ref="kafkaProducerMessageMetricsDomainedJmxReporterBuilder"
+        factory-method="build" init-method="start" destroy-method="stop"/>
 
   <service ref="kafkaProducer" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer">
     <service-properties>
