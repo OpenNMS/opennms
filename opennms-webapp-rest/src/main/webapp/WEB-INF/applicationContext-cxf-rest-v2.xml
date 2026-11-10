@@ -19,6 +19,7 @@
     <!-- Automatically scan for @Component beans -->
     <context:component-scan base-package="org.opennms.web.rest.v2, org.opennms.web.rest.mapper.v2" />
     <onmsgi:reference id="trapdConfigDao" interface="org.opennms.netmgt.dao.api.TrapdConfigDao" />
+    <onmsgi:reference id="httpCollectionConfigDao" interface="org.opennms.netmgt.dao.api.HttpCollectionConfigDao" />
     <!-- Exported by applicationContext-thresholdingConfigDaos.xml. The ids match the exporting beans so
          that a context which already provides them shadows this reference by name rather than competing
          with it by type. -->

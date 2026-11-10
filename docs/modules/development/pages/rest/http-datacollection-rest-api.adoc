@@ -1,0 +1,189 @@
+[[ga-http-datacollection-rest-api]]
+= HTTP Data Collection REST API (v2)
+:description: Manage the HTTP collector configuration through the OpenNMS REST v2 API.
+
+The HTTP collector configuration (formerly `http-datacollection-config.xml`) lives in the database and is managed over REST at `/api/v2/httpcollection`.
+
+Every method, reads included, requires `ROLE_ADMIN`.
+A URL can carry credentials in its user info or in an `Authorization` header, so the configuration is not readable by other roles.
+The same applies to the generic configuration management endpoint `/rest/cm/http-datacollection-config`.
+
+== How collections are used
+
+An HTTP collection lists the URIs the HTTP collector requests and, for each, the attributes it extracts from the response body with the groups of a regular expression.
+A collectd package service collected by the `HttpCollector` selects a collection through its `collection` parameter.
+The collector looks collections up ignoring case, so two collection names that differ only in case are refused.
+
+The collector reads the configuration on every collection, so a change applies from the next collection on; no reload is needed.
+
+A collection that a collectd package still uses cannot be deleted or renamed, and an upload that drops it is refused with `409 Conflict`.
+Point the collectd services at another collection first.
+
+== Collections, not individual URIs
+
+An HTTP collection is the unit of transfer: `GET`, `POST` and `PUT` carry the whole collection, including its URIs and their attributes.
+A `PUT` body is not a patch; a URI missing from it is deleted.
+Read the collection, change what you need, and send the whole thing back.
+
+URL attributes the configuration leaves unset are returned with their default (`method` `GET`, `port` `80`, `host` `$\{ipaddr}`, `matches` `(.*)`, and so on).
+A `null` field in a write also means the default.
+
+== Concurrent edits
+
+`GET` on a collection or on the settings returns an `ETag`, also included as `version` in the body.
+Send it back as `If-Match` on a later write and the write fails with `412 Precondition Failed` if the stored configuration changed in the meantime, instead of silently overwriting the other change.
+Omitting `If-Match` keeps the last writer.
+
+== Endpoint overview
+
+[options="header"]
+|===
+| Method | Path | Content type | Description
+
+| `GET`
+| `/api/v2/httpcollection/config`
+| `application/json`
+| Get the settings that apply to every collection (`rrdRepository`). Returns an `ETag`.
+
+| `PUT`
+| `/api/v2/httpcollection/config`
+| `application/json`
+| Replace the settings. The collections are left as they are.
+
+| `GET`
+| `/api/v2/httpcollection/collections`
+| `application/json`
+| List the collections without their URIs: name, RRD step, number of URIs and attributes.
+
+| `GET`
+| `/api/v2/httpcollection/collections/{name}`
+| `application/json`
+| Get one collection with all of its URIs. Returns an `ETag`.
+
+| `POST`
+| `/api/v2/httpcollection/collections`
+| `application/json`
+| Create a collection. Fails with `409` if the name is taken.
+
+| `PUT`
+| `/api/v2/httpcollection/collections/{name}`
+| `application/json`
+| Replace a collection in full. A different `name` in the body renames it.
+
+| `DELETE`
+| `/api/v2/httpcollection/collections/{name}`
+| --
+| Delete a collection.
+
+| `GET`
+| `/api/v2/httpcollection/metadata`
+| `application/json`
+| The attribute types, HTTP methods and versions an editor can choose from, and the RRD settings suggested for a new collection.
+
+| `GET`
+| `/api/v2/httpcollection/download?format=json\|xml`
+| `application/json`, `application/xml`
+| Download the whole configuration as an attachment. The XML form is the former `http-datacollection-config.xml`.
+
+| `POST`
+| `/api/v2/httpcollection/upload`
+| `multipart/form-data`
+| Replace the whole configuration with the JSON form of the download. The file goes in a part named `upload`.
+
+| `POST`
+| `/api/v2/httpcollection/upload/xml`
+| `multipart/form-data`
+| Replace the whole configuration with an `<http-datacollection-config>` document, validated against `http-datacollection-config.xsd`.
+|===
+
+== Validation
+
+Besides the schema, writes are checked for what the schema cannot express:
+
+* The RRD step is positive and there is at least one RRA of the form `RRA:(AVERAGE|MIN|MAX|LAST):xff:steps:rows`.
+* URI names are unique within a collection, and every URI has a URL path.
+* `matches` compiles as a Java regular expression with the selected flags, and every attribute's `matchGroup` exists in it.
+* Attribute aliases are at most 19 characters (the RRD data source name limit) and unique within a URI.
+* The attribute type is `gauge`, `counter` or `string`. SNMP-style aliases such as `counter32` are accepted and stored as their base type.
+* `port` is between 1 and 65535, and `responseRange` has the form `low-high`.
+* Headers and parameters have a name and a value.
+
+== Examples
+
+Get a collection:
+
+[source, console]
+----
+curl -u admin:admin http://localhost:8980/opennms/api/v2/httpcollection/collections/doc-count
+----
+
+[source, json]
+----
+{
+  "name": "doc-count",
+  "rrd": {
+    "step": 300,
+    "rras": [ "RRA:AVERAGE:0.5:1:2016", "RRA:AVERAGE:0.5:12:1488" ]
+  },
+  "uris": [
+    {
+      "name": "document-counts",
+      "url": {
+        "method": "GET",
+        "httpVersion": "1.1",
+        "scheme": "http",
+        "host": "${ipaddr}",
+        "port": 80,
+        "path": "/test/resources/httpcolltest.html",
+        "matches": "(?s).*?Document Count:\\s+([0-9]+).*",
+        "responseRange": "100-399",
+        "dotall": true,
+        "headers": [ { "name": "Accept", "value": "text/html" } ],
+        "parameters": []
+      },
+      "attributes": [
+        { "alias": "documentCount", "matchGroup": 1, "type": "gauge" }
+      ]
+    }
+  ],
+  "version": "8f1c..."
+}
+----
+
+Replace it, refusing to clobber a concurrent change:
+
+[source, console]
+----
+curl -u admin:admin -X PUT \
+  -H 'Content-Type: application/json' \
+  -H 'If-Match: "8f1c..."' \
+  -d @collection.json \
+  http://localhost:8980/opennms/api/v2/httpcollection/collections/doc-count
+----
+
+Download and re-upload the whole configuration:
+
+[source, console]
+----
+curl -u admin:admin -o http-datacollection-config.xml \
+  'http://localhost:8980/opennms/api/v2/httpcollection/download?format=xml'
+
+curl -u admin:admin -X POST -F upload=@http-datacollection-config.xml \
+  http://localhost:8980/opennms/api/v2/httpcollection/upload/xml
+----
+
+== Response codes
+
+[options="header"]
+|===
+| Code | Meaning
+
+| `200` | Read succeeded, or an upload was applied.
+| `201` | Created. The `Location` header points at the new collection.
+| `204` | Write succeeded. No response body.
+| `400` | A failed validation rule, an unparseable upload, or a missing body. The response body carries the reason.
+| `403` | Admin role required.
+| `404` | No such collection, or no configuration is stored.
+| `409` | The name is already taken, or a collectd package uses the collection that is deleted, renamed or dropped by an upload.
+| `412` | `If-Match` no longer matches; the resource changed since it was read.
+|===
