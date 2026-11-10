@@ -55,3 +55,34 @@ Processes xref:operation:deep-dive/telemetryd/introduction.adoc[telemetry] data 
 | telemetryd.log
 | Logs relating to telemetryd server events.
 |===
+
+== Metrics
+
+Telemetryd metrics are in the `Telemetryd` metric set, which the `opennms:metrics-display` Karaf shell command shows and JMX exports under the `org.opennms.netmgt.telemetry` domain.
+Comparing the counts below can confirm that the telemetry a Minion received reached {page-component-title} or Sentinel.
+
+[cols="1,1,2"]
+|===
+| Where | Metric | Description
+
+| Minion
+| listeners.<listener>.packetsReceived
+| Packets received by a listener.
+
+| Minion
+| parsers.<parser>.packetsReceived
+| Packets handed to a parser, for example the NetFlow v5 or NetFlow v9 parser.
+
+| Minion
+| parsers.<parser>.recordsDispatched
+| Flow records the parser sent to the Sink.
+A single NetFlow or IPFIX packet usually holds several records.
+
+| {page-component-title} or Sentinel
+| consumers.<queue>.messagesReceived
+| Messages received from the Sink for a queue, counted individually rather than per batch.
+For flow protocols each message is one flow record, so compare it with the parser's `recordsDispatched`.
+|===
+
+`consumers.<queue>.messagesReceived` adds up the messages from every Minion that sends to that queue, and from listeners on {page-component-title} or Sentinel itself, so compare it with the sum of the per-Minion counters.
+All of these counters start at zero when the process starts, so compare counts taken over the same interval, without a restart in between.
