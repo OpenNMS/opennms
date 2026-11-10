@@ -165,13 +165,13 @@ public class UserRestService extends OnmsRestService {
             @ApiResponse(responseCode = "500", description = "The users could not be read.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "java.lang.IllegalStateException: The user data could not be read.")))
+                            examples = @ExampleObject(value = "Can't read the users.")))
     })
     public OnmsUserList getUsers(@Context final SecurityContext securityContext) {
         try {
             return filterUserPasswords(securityContext, m_userManager.getOnmsUserList());
         } catch (final Throwable t) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, t);
+            throw V1UserMgmtForms.translate("read the users", t);
         }
     }
 
@@ -312,7 +312,7 @@ public class UserRestService extends OnmsRestService {
             @ApiResponse(responseCode = "500", description = "The body could not be unmarshalled, or the user could not be saved.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "java.lang.IllegalStateException: The user could not be saved.")))
+                            examples = @ExampleObject(value = "Can't save the user.")))
     })
     public Response addUser(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, final OnmsUser user,
             @Parameter(description = "Must be `true` to set a password: the plain-text password is hashed and salted before it is stored.", example = "true")
@@ -331,7 +331,7 @@ public class UserRestService extends OnmsRestService {
                 checkSaltAcceptable(user);
                 m_userManager.save(user, version);
             } catch (final Throwable t) {
-                throw V1UserMgmtForms.translate(t);
+                throw V1UserMgmtForms.translate("save the user", t);
             }
             // not getRedirectUri: it keeps the query, and a password is always sent with ?hashPassword=true
             return Response.created(uriInfo.getAbsolutePathBuilder().path(user.getUsername()).build()).build();
@@ -386,7 +386,7 @@ public class UserRestService extends OnmsRestService {
             @ApiResponse(responseCode = "500", description = "The user could not be saved.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "java.lang.IllegalStateException: The user could not be saved.")))
+                            examples = @ExampleObject(value = "Can't save the user.")))
     })
     public Response updateUser(@Context final SecurityContext securityContext,
             @Parameter(description = "User name.", example = "jroe", required = true)
@@ -412,7 +412,7 @@ public class UserRestService extends OnmsRestService {
                     checkSaltAcceptable(user);
                     m_userManager.save(user, version);
                 } catch (final Throwable t) {
-                    throw V1UserMgmtForms.translate(t);
+                    throw V1UserMgmtForms.translate("save the user", t);
                 }
                 return Response.noContent().build();
             }
@@ -454,7 +454,7 @@ public class UserRestService extends OnmsRestService {
             @ApiResponse(responseCode = "500", description = "The user could not be saved.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "java.lang.IllegalStateException: The user could not be saved.")))
+                            examples = @ExampleObject(value = "Can't save the user.")))
     })
     public Response addRole(@Context final SecurityContext securityContext,
             @Parameter(description = "User name.", example = "jroe", required = true)
@@ -480,7 +480,7 @@ public class UserRestService extends OnmsRestService {
                     checkSaltAcceptable(user);
                     m_userManager.save(user, version);
                 } catch (final Throwable t) {
-                    throw V1UserMgmtForms.translate(t);
+                    throw V1UserMgmtForms.translate("save the user", t);
                 }
                 return Response.noContent().build();
             }
@@ -522,7 +522,7 @@ public class UserRestService extends OnmsRestService {
             @ApiResponse(responseCode = "500", description = "The user could not be removed.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "java.lang.IllegalStateException: The user could not be saved.")))
+                            examples = @ExampleObject(value = "Can't delete the user.")))
     })
     public Response deleteUser(@Context final SecurityContext securityContext,
             @Parameter(description = "User name.", example = "jroe", required = true)
@@ -537,7 +537,7 @@ public class UserRestService extends OnmsRestService {
                 m_support.checkUserDeletable(user.getUsername(), m_userAccountDao.findByUsername(user.getUsername()));
                 m_userManager.deleteUser(user.getUsername());
             } catch (final Throwable t) {
-                throw V1UserMgmtForms.translate(t);
+                throw V1UserMgmtForms.translate("delete the user", t);
             }
             return Response.noContent().build();
         } finally {
@@ -576,7 +576,7 @@ public class UserRestService extends OnmsRestService {
             @ApiResponse(responseCode = "500", description = "The user could not be saved.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "java.lang.IllegalStateException: The user could not be saved.")))
+                            examples = @ExampleObject(value = "Can't save the user.")))
     })
     public Response deleteRole(@Context final SecurityContext securityContext,
             @Parameter(description = "User name.", example = "jroe", required = true)
@@ -603,7 +603,7 @@ public class UserRestService extends OnmsRestService {
                     checkSaltAcceptable(user);
                     m_userManager.save(user, version);
                 } catch (final Throwable t) {
-                    throw V1UserMgmtForms.translate(t);
+                    throw V1UserMgmtForms.translate("save the user", t);
                 }
                 return Response.noContent().build();
             }
@@ -725,7 +725,7 @@ public class UserRestService extends OnmsRestService {
         try {
             return m_userManager.getVersion();
         } catch (final Throwable t) {
-            throw V1UserMgmtForms.translate(t);
+            throw V1UserMgmtForms.translate("read the users", t);
         }
     }
 
@@ -734,7 +734,7 @@ public class UserRestService extends OnmsRestService {
         try {
             user = m_userManager.getOnmsUser(username);
         } catch (final Throwable t) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, t);
+            throw V1UserMgmtForms.translate("read the user", t);
         }
         if (user == null) throw getException(Status.NOT_FOUND, "User {} does not exist.", username);
         return user;

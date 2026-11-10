@@ -105,27 +105,26 @@ final class V1UserMgmtForms {
 
     /**
      * Answers what the checks and the managers refuse with 400 or 409, wherever it is in the cause chain (the group
-     * DAO wraps what the manager throws); only a real failure is a 500. An {@link IllegalArgumentException} is a 400
-     * only when it is the exception itself: one deeper in the chain may come from a bug anywhere below, which must be
-     * a logged 500, not a 400 with an internal message. The checks run before the manager call, so the mapper's own
-     * refusals are not expected here.
+     * DAO wraps what the manager throws). Anything else is a 500 whose message is logged and not returned, as in v2:
+     * it may hold SQL or internals. That includes an {@link IllegalArgumentException}, which is a bug here, since the
+     * checks run before the manager call.
+     *
+     * @param action what failed, for the 500 message, e.g. "save the user"
      */
-    static WebApplicationException translate(final Throwable t) {
-        if (t instanceof IllegalArgumentException) {
-            return error(Status.BAD_REQUEST, t);
-        }
+    static WebApplicationException translate(final String action, final Throwable t) {
         for (Throwable cause = t; cause != null; cause = cause.getCause()) {
             if (cause instanceof WebApplicationException) {
                 return (WebApplicationException) cause;
             }
             if (cause instanceof UserMgmtValidationException) {
-                return error(Status.BAD_REQUEST, cause);
+                return error(Status.BAD_REQUEST, cause.getMessage(), cause);
             }
             if (cause instanceof UserDataChangedException) {
-                return error(Status.CONFLICT, cause);
+                return error(Status.CONFLICT, cause.getMessage(), cause);
             }
         }
-        return error(Status.INTERNAL_SERVER_ERROR, t);
+        LOG.error("Can't {}", action, t);
+        return error(Status.INTERNAL_SERVER_ERROR, "Can't " + action + ".", null);
     }
 
     /** Masks the password hash of every user but the caller for a caller without the admin role. */
@@ -145,12 +144,10 @@ final class V1UserMgmtForms {
         return new WebApplicationException(Response.status(Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN).entity(message).build());
     }
 
-    private static WebApplicationException error(final Status status, final Throwable t) {
-        if (status == Status.INTERNAL_SERVER_ERROR) {
-            LOG.error(t.getMessage(), t);
-        } else {
-            LOG.debug(t.getMessage(), t);
+    private static WebApplicationException error(final Status status, final String message, final Throwable t) {
+        if (t != null) {
+            LOG.debug(message, t);
         }
-        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(message).build());
     }
 }

@@ -36,11 +36,11 @@ import org.springframework.dao.DataRetrievalFailureException;
 public class V1UserMgmtFormsTest {
 
     private static int status(final Throwable t) {
-        return V1UserMgmtForms.translate(t).getResponse().getStatus();
+        return V1UserMgmtForms.translate("save the user", t).getResponse().getStatus();
     }
 
     private static String entity(final Throwable t) {
-        return (String) V1UserMgmtForms.translate(t).getResponse().getEntity();
+        return (String) V1UserMgmtForms.translate("save the user", t).getResponse().getEntity();
     }
 
     @Test
@@ -48,13 +48,15 @@ public class V1UserMgmtFormsTest {
         final Exception validation = new DataRetrievalFailureException("saving group", new UserMgmtValidationException("The group name is too long."));
         assertEquals(400, status(validation));
         assertEquals("The group name is too long.", entity(validation));
-        assertEquals(400, status(new IllegalArgumentException("bad value")));
     }
 
     @Test
-    public void testAnIllegalArgumentExceptionDeeperInTheChainIs500() {
-        // it may come from a bug anywhere below the service, so it is not reported as the client's mistake
-        assertEquals(500, status(new RuntimeException(new IllegalStateException(new IllegalArgumentException("bad value")))));
+    public void testAnIllegalArgumentExceptionIs500WithoutItsMessage() {
+        // the checks run before the manager call, so it comes from a bug below the service, as in v2
+        final IllegalArgumentException internal = new IllegalArgumentException("User \"x\" has the unknown security role \"y\".");
+        assertEquals(500, status(internal));
+        assertEquals("Can't save the user.", entity(internal));
+        assertEquals(500, status(new RuntimeException(new IllegalStateException(internal))));
     }
 
     @Test
@@ -64,9 +66,11 @@ public class V1UserMgmtFormsTest {
 
     @Test
     public void testAnythingElseIs500AndAWebApplicationExceptionPassesThrough() {
-        assertEquals(500, status(new IllegalStateException("The user could not be saved.")));
+        final IllegalStateException internal = new IllegalStateException("ERROR: relation \"users\" does not exist");
+        assertEquals(500, status(internal));
+        assertEquals("Can't save the user.", entity(internal));
         final WebApplicationException forbidden = new WebApplicationException(Response.status(403).build());
-        assertSame(forbidden, V1UserMgmtForms.translate(forbidden));
-        assertSame(forbidden, V1UserMgmtForms.translate(new RuntimeException(forbidden)));
+        assertSame(forbidden, V1UserMgmtForms.translate("save the user", forbidden));
+        assertSame(forbidden, V1UserMgmtForms.translate("save the user", new RuntimeException(forbidden)));
     }
 }

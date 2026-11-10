@@ -253,7 +253,7 @@ public class GroupRestService extends OnmsRestService {
                 checkNewGroup(group);
                 m_groupService.saveGroup(group, version);
             } catch (final Throwable t) {
-                throw V1UserMgmtForms.translate(t);
+                throw V1UserMgmtForms.translate("save the group", t);
             }
             return Response.created(getRedirectUri(uriInfo, group.getName())).build();
         } finally {
@@ -319,7 +319,7 @@ public class GroupRestService extends OnmsRestService {
                     checkFields(group);
                     m_groupService.saveGroup(group, version);
                 } catch (final Throwable t) {
-                    throw V1UserMgmtForms.translate(t);
+                    throw V1UserMgmtForms.translate("save the group", t);
                 }
                 return Response.noContent().build();
             }
@@ -373,7 +373,7 @@ public class GroupRestService extends OnmsRestService {
                 m_support.checkGroupDeletable(groupName);
                 m_groupService.deleteGroup(groupName);
             } catch (final Throwable t) {
-                throw V1UserMgmtForms.translate(t);
+                throw V1UserMgmtForms.translate("delete the group", t);
             }
             return Response.noContent().build();
         } finally {
@@ -424,7 +424,7 @@ public class GroupRestService extends OnmsRestService {
             try {
                 success = m_groupService.addUser(groupName, userName);
             } catch (final Throwable t) {
-                throw V1UserMgmtForms.translate(t);
+                throw V1UserMgmtForms.translate("save the group", t);
             }
             if (success) {
                 return Response.noContent().build();
@@ -477,7 +477,7 @@ public class GroupRestService extends OnmsRestService {
                 try {
                     m_groupService.saveGroup(group, version);
                 } catch (final Throwable t) {
-                    throw V1UserMgmtForms.translate(t);
+                    throw V1UserMgmtForms.translate("save the group", t);
                 }
                 return Response.noContent().build();
             } else {
@@ -623,7 +623,7 @@ public class GroupRestService extends OnmsRestService {
             try {
                 success = m_groupService.addCategory(groupName, categoryName);
             } catch (final Throwable t) {
-                throw V1UserMgmtForms.translate(t);
+                throw V1UserMgmtForms.translate("change the categories of the group", t);
             }
             if (success) {
                 return Response.noContent().build();
@@ -674,7 +674,7 @@ public class GroupRestService extends OnmsRestService {
             try {
                 success = m_groupService.removeCategory(groupName, categoryName);
             } catch (final Throwable t) {
-                throw V1UserMgmtForms.translate(t);
+                throw V1UserMgmtForms.translate("change the categories of the group", t);
             }
             if (success) {
                 return Response.noContent().build();
@@ -820,7 +820,7 @@ public class GroupRestService extends OnmsRestService {
         try {
             return m_groupService.getVersion();
         } catch (final Throwable t) {
-            throw V1UserMgmtForms.translate(t);
+            throw V1UserMgmtForms.translate("read the groups", t);
         }
     }
 
