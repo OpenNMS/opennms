@@ -109,6 +109,7 @@ public class RestMethodAccessIT extends AbstractRestIT {
         assertEquals(401, rawStatus("post", "/opennms/rest/events", null));
         assertEquals(401, rawStatus("delete", "/opennms/rest/categories/nms20348", null));
         assertEquals(401, rawStatus("put", "/opennms/rest/nodes/1", null));
+        assertEquals(401, rawStatus("put", "/opennms/rest/notifications", null));
     }
 
     @Test

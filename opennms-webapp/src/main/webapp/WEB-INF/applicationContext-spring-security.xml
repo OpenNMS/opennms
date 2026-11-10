@@ -74,7 +74,7 @@
     <intercept-url pattern="/rest/notifications/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
     <intercept-url pattern="/rest/notifications/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
 
-    <!-- Fail closed. Deny all requests that match no rule above, such as a request with a lowercase HTTP method. -->
+    <!-- NMS-20462: fail closed. Deny all requests that match no rule above, such as a request with a lowercase HTTP method. -->
     <intercept-url pattern="/**" access="denyAll"/>
 
     <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
