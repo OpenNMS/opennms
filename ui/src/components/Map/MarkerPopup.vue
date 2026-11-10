@@ -1,6 +1,6 @@
 <template>
   <LPopup :options="mapPopupOptions">
-    <h3>Node: <a :href="router.resolve(nodeDetailsRoute(node.id)).href" target="_blank">{{ node.label }}</a></h3>
+    <h3>Node: <a :href="`${baseNodeUrl}${node.id}`" target="_blank">{{ node.label }}</a></h3>
 
     <span class="larger-icon"><OnmsIcon :icon="Location" /></span>
     {{ latitude }}, {{ longitude }}
@@ -44,31 +44,21 @@ import { PropType, computed } from 'vue'
 import { OnmsIcon } from '@opennms/onms-ui'
 import Location from '@opennms/onms-ui/icons/action/Location.vue'
 import { LPopup } from '@vue-leaflet/vue-leaflet'
-import { useRouter } from 'vue-router'
 import { Node } from '@/types'
-import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
-import { mapPopupOptions } from './utils'
-
-const router = useRouter()
+import { mapPopupOptions, stringToFixedFloat } from './utils'
 
 const props = defineProps({
-  baseHref: { type: String, required: true },
+  baseHref: { type: Object as PropType<string> },
+  baseNodeUrl: { type: Object as PropType<string> },
   node: { type: Object as PropType<Node>, default: () => {
     return
   } },
-  ipAddress: { type: String },
+  ipAddress: { type: Object as PropType<string> },
   nodeLabelToAlarmSeverity: { type: Function as PropType<(label: string) => string>, required: true }
 })
 
-const numToFixedFloat = (num: number | null, decimalPlaces: number): string => {
-  if (num === null || num === undefined) {
-    return 'N/A'
-  }
-  return num.toFixed(decimalPlaces)
-}
-
-const latitude = computed(() => numToFixedFloat(props.node.assetRecord.latitude ?? null, 6))
-const longitude = computed(() => numToFixedFloat(props.node.assetRecord.longitude ?? null, 6))
+const latitude = computed(() => stringToFixedFloat(props.node.assetRecord.latitude, 6))
+const longitude = computed(() => stringToFixedFloat(props.node.assetRecord.longitude, 6))
 
 const getTopologyLink = (node: Node) => {
   return `${props.baseHref}topology?provider=Enhanced Linkd&focus-vertices=${node.id}`

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/actiond"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/actiond"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the actiond-configuration.xml configuration
+    file. Version: $Id$. </documentation>
+  </annotation>
+
+  <element name="actiond-configuration">
+    <annotation>
+      <documentation>Top-level element for the actiond-configuration.xml
+      configuration file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <any minOccurs="0" />
+      </sequence>      
+
+      <attribute name="max-outstanding-actions" use="required">
+        <annotation>
+          <documentation>The maximum number of simultaneous processes launched
+          by actiond. If the number of launched processes currently runnning
+          reaches this number, actiond waits for a process to complete or get
+          terminated before it launches the next process.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="max-process-time" type="long" use="required">
+        <annotation>
+          <documentation>The maximum time that a launched process can take to
+          complete. If execution time exceeds this time, the launched process
+          is terminated.</documentation>
+        </annotation>
+      </attribute>
+
+    </complexType>
+  </element>
+</schema>

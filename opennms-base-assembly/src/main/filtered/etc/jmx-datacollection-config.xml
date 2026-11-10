@@ -63,6 +63,12 @@
             <attrib name="HttpConnectionsOpen" alias="HttpConnOpen" type="gauge"/>
             <attrib name="HttpConnectionsOpenMax" alias="HttpConnOpenMax" type="gauge"/>
          </mbean>
+         <mbean name="OpenNMS.Statsd" objectname="OpenNMS:Name=Statsd">
+            <attrib name="ReportsStarted" alias="StaReportsStarted" type="counter"/>
+            <attrib name="ReportsCompleted" alias="StaReportsCompleted" type="counter"/>
+            <attrib name="ReportsPersisted" alias="StaReportsPersisted" type="counter"/>
+            <attrib name="ReportRunTime" alias="StaReportRunTime" type="counter"/>
+         </mbean>
          <mbean name="OpenNMS.Trapd" objectname="OpenNMS:Name=Trapd">
             <attrib name="TrapsDiscarded" alias="TrapsDiscarded" type="counter"/>
             <attrib name="TrapsErrored" alias="TrapsErrored" type="counter"/>
@@ -583,26 +589,6 @@
             <attrib name="FiveMinuteRate" alias="EventProcessRate5m" type="gauge"/>
             <attrib name="OneMinuteRate" alias="EventProcessRate1m" type="gauge"/>
             <attrib name="MeanRate" alias="EventProcessRate" type="gauge"/>
-         </mbean>
-
-         <!-- Pollerd poll time, overall and per service name -->
-         <mbean name="org.opennms.netmgt.poller.polls" resource-type="PollerdPolls" objectname="org.opennms.netmgt.poller:name=polls*,type=timers">
-            <attrib name="Count" alias="PollCount" type="counter"/>
-            <attrib name="Mean" alias="PollTimeMean" type="gauge"/>
-            <attrib name="Max" alias="PollTimeMax" type="gauge"/>
-            <attrib name="Min" alias="PollTimeMin" type="gauge"/>
-            <attrib name="OneMinuteRate" alias="PollRate1m" type="gauge"/>
-            <attrib name="FiveMinuteRate" alias="PollRate5m" type="gauge"/>
-         </mbean>
-
-         <!-- Collectd collection time, overall and per service name -->
-         <mbean name="org.opennms.netmgt.collectd.collections" resource-type="CollectdCollections" objectname="org.opennms.netmgt.collectd:name=collections*,type=timers">
-            <attrib name="Count" alias="CollCount" type="counter"/>
-            <attrib name="Mean" alias="CollTimeMean" type="gauge"/>
-            <attrib name="Max" alias="CollTimeMax" type="gauge"/>
-            <attrib name="Min" alias="CollTimeMin" type="gauge"/>
-            <attrib name="OneMinuteRate" alias="CollRate1m" type="gauge"/>
-            <attrib name="FiveMinuteRate" alias="CollRate5m" type="gauge"/>
          </mbean>
 
          <!-- Provisiond per-requisition histo -->

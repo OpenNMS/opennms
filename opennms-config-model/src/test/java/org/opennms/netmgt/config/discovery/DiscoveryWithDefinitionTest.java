@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class DiscoveryWithDefinitionTest extends XmlTest<DiscoveryConfiguration> {
+public class DiscoveryWithDefinitionTest extends XmlTestNoCastor<DiscoveryConfiguration> {
 
     public DiscoveryWithDefinitionTest(DiscoveryConfiguration sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/discovery-configuration.xsd");

@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<threshd-configuration>
+<threshd-configuration 
+	threads="5">
 	
 	<package name="example1">
 		<filter>IPADDR != '0.0.0.0'</filter>	 

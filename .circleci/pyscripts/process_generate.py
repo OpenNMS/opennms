@@ -108,13 +108,15 @@ for change in changed_files:
         add_to_build_list("smoke_tests")
     elif "trivy-config/trivyignore" in change:
         add_to_build_list("trivy-scan")
+    elif "trivy-config/trivyignore" in change:
+        add_to_build_list("trivy-analyze")
     elif "opennms-container" in change:
         add_to_build_list("oci")
     elif ".circleci" in change and ".circleci/epoch" not in change:
         add_to_build_list("circleci_configuration")
-    elif change.startswith("docs/"):
+    elif "docs/" in change:
         add_to_build_list("docs")
-    elif change.startswith("ui/"):
+    elif "ui" in change:
         add_to_build_list("ui")
     else:
         if "merge-foundation/" not in branch_name:
@@ -358,7 +360,7 @@ if "oci" in git_keywords:
 if "rpms" in git_keywords:
     build_mappings["rpms"] = True
 
-if "trivy-scan" in git_keywords or "trivy-scan" in What_to_build:
+if "trivy-scan" in git_keywords:
     build_mappings["trivy-scan"] = True
 
 if "trivy-analyze" in git_keywords:

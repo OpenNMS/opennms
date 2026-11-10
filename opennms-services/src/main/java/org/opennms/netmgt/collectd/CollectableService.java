@@ -23,10 +23,7 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 import java.net.InetAddress;
-import java.util.Collection;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
@@ -73,10 +70,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.codahale.metrics.LockFreeExponentiallyDecayingReservoir;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-
 /**
  * <P>
  * The CollectableService class ...
@@ -89,8 +82,6 @@ import com.codahale.metrics.Timer;
 public class CollectableService implements ReadyRunnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(CollectableService.class);
-
-    public static final String COLLECTIONS_METRIC = "collections";
 
     protected static final String STRICT_INTERVAL_SYS_PROP = "org.opennms.netmgt.collectd.strictInterval";
 
@@ -158,10 +149,6 @@ public class CollectableService implements ReadyRunnable {
 
     private ThresholdingSession m_thresholdingSession;
 
-    private final Timer m_collectionTimer;
-
-    private final Timer m_serviceCollectionTimer;
-
     // also honored by the poller (LatencyStoringServiceMonitorAdaptor, default false there); collectd defaults to enabled
     private static final String THRESHOLDING_ENABLED_PARAM = "thresholding-enabled";
 
@@ -182,7 +169,7 @@ public class CollectableService implements ReadyRunnable {
     protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, MonitoredServiceDao monitoredServiceDao,
             CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag,
             PlatformTransactionManager transMgr, PersisterFactory persisterFactory,
-            ThresholdingService thresholdingService, MetricRegistry metricRegistry) throws CollectionInitializationException {
+            ThresholdingService thresholdingService) throws CollectionInitializationException {
 
         m_agent = DefaultSnmpCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
         m_spec = spec;
@@ -204,9 +191,6 @@ public class CollectableService implements ReadyRunnable {
 
         m_lastScheduledCollectionTime = 0L;
 
-        m_collectionTimer = collectionTimer(metricRegistry, COLLECTIONS_METRIC);
-        m_serviceCollectionTimer = collectionTimer(metricRegistry, MetricRegistry.name(COLLECTIONS_METRIC, m_spec.getServiceName()));
-
         m_spec.initialize(m_agent);
 
         final ServiceParameters serviceParameters = m_spec.getServiceParameters();
@@ -220,26 +204,6 @@ public class CollectableService implements ReadyRunnable {
         } else {
             LOG.info("Thresholding is disabled for {}/{}/{} ({}=false).", m_nodeId, getHostAddress(), m_spec.getServiceName(), THRESHOLDING_ENABLED_PARAM);
         }
-    }
-
-    private static Timer collectionTimer(MetricRegistry metricRegistry, String name) {
-        return metricRegistry.timer(safeTimerName(name), () -> new Timer(LockFreeExponentiallyDecayingReservoir.builder().build()));
-    }
-
-    private static String safeTimerName(String name) {
-        // JMX quotes ObjectName values containing these, which the name=collections* collection pattern can't match
-        return name.replaceAll("[:,=\"*?\\n]", "_");
-    }
-
-    /**
-     * Removes the per-service timers of services that are no longer configured,
-     * which would otherwise stay registered, and collected, until a restart.
-     */
-    public static void removeUnconfiguredTimers(MetricRegistry metricRegistry, Collection<String> configuredServiceNames) {
-        final var keep = configuredServiceNames.stream()
-                .map(svc -> safeTimerName(MetricRegistry.name(COLLECTIONS_METRIC, svc)))
-                .collect(Collectors.toSet());
-        metricRegistry.removeMatching((name, metric) -> name.startsWith(COLLECTIONS_METRIC + ".") && !keep.contains(name));
     }
 
     private static boolean isThresholdingEnabled(final ServiceParameters serviceParameters) {
@@ -558,8 +522,6 @@ public class CollectableService implements ReadyRunnable {
     private void doCollection() throws CollectionException {
         LOG.info("run: starting new collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
         CollectionSet result = null;
-        // Includes persisting and thresholding, not the status bookkeeping that follows
-        final long startNanos = System.nanoTime();
         try {
             final ServiceParameters serviceParameters = m_spec.getServiceParameters();
             final RrdRepository rrdRepository = m_spec.getRrdRepository(serviceParameters.getCollectionName());
@@ -603,10 +565,6 @@ public class CollectableService implements ReadyRunnable {
         } catch (Throwable t) {
             LOG.warn("run: failed collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
             throw new CollectionException("An undeclared throwable was caught during data collection for interface " + m_nodeId + "/" + getHostAddress() + "/" + m_spec.getServiceName(), t);
-        } finally {
-            final long elapsedNanos = System.nanoTime() - startNanos;
-            m_collectionTimer.update(elapsedNanos, TimeUnit.NANOSECONDS);
-            m_serviceCollectionTimer.update(elapsedNanos, TimeUnit.NANOSECONDS);
         }
         LOG.info("run: finished collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
     }

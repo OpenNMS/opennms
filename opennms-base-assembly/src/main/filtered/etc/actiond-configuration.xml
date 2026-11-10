@@ -1,0 +1,1 @@
+<actiond-configuration xmlns="http://xmlns.opennms.org/xsd/config/actiond" max-outstanding-actions="10" max-process-time="120000"/>

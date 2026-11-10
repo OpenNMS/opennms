@@ -27,9 +27,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class PingRequestDTOTest extends XmlTest<PingRequestDTO> {
+public class PingRequestDTOTest extends XmlTestNoCastor<PingRequestDTO> {
     public PingRequestDTOTest(PingRequestDTO sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, null);
     }

@@ -18,8 +18,8 @@
           variant="outlined"
           :icon="RefreshIcon"
           title="Refresh"
-          tooltip="Reload the resources and redraw the graph with the latest data"
-          :disabled="!(canQuery || canRefresh) || loading"
+          tooltip="Redraw the graph with the latest data"
+          :disabled="!canQuery || loading"
           data-test="toolbar-refresh"
           @click="emit('refresh')"
         />
@@ -46,15 +46,6 @@
           :disabled="!canQuery"
           data-test="toolbar-share"
           @click="emit('share')"
-        />
-        <OnmsIconButton
-          v-if="!viewOnly && canAddToCollection"
-          variant="outlined"
-          :icon="DashboardIcon"
-          tooltip="Add this graph to a graph collection"
-          :disabled="!canQuery"
-          data-test="toolbar-add-to-collection"
-          @click="emit('addToCollection')"
         />
         <OnmsIconButton
           v-if="!viewOnly"
@@ -165,7 +156,6 @@ import CancelIcon from '@opennms/onms-ui/icons/action/Cancel.vue'
 import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import RefreshIcon from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import CodeIcon from '@opennms/onms-ui/icons/action/Code.vue'
-import DashboardIcon from '@opennms/onms-ui/icons/action/Dashboard.vue'
 import PopOutIcon from '@opennms/onms-ui/icons/action/Expand.vue'
 import FullscreenIcon from '@opennms/onms-ui/icons/navigation/Fullscreen.vue'
 import FullscreenExitIcon from '@opennms/onms-ui/icons/navigation/FullscreenExit.vue'
@@ -180,21 +170,15 @@ import { DEFAULT_RESOLUTION, MAX_RESOLUTION } from './utils/adhocQuery'
 withDefaults(defineProps<{
   config: AdhocGraphConfig
   canQuery: boolean
-  /** Refresh also reloads resources, so it is useful before there is anything to query. */
-  canRefresh?: boolean
   hasData: boolean
   loading: boolean
   /** True while the graph is filling the page with the selectors hidden. */
   expanded?: boolean
   /** Graph-only route: no editing controls, no expand/pop-out of its own. */
   viewOnly?: boolean
-  /** Whether this user may write graph collections; the button is hidden otherwise. */
-  canAddToCollection?: boolean
 }>(), {
-  canRefresh: false,
   expanded: false,
-  viewOnly: false,
-  canAddToCollection: false
+  viewOnly: false
 })
 
 const emit = defineEmits<{
@@ -206,7 +190,6 @@ const emit = defineEmits<{
   popOut: []
   showDefinition: []
   share: []
-  addToCollection: []
   exportCsv: []
   exportPdf: []
 }>()

@@ -25,9 +25,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class DnsRequisitionRequestTest extends XmlTest<DnsRequisitionRequest> {
+public class DnsRequisitionRequestTest extends XmlTestNoCastor<DnsRequisitionRequest> {
 
     public DnsRequisitionRequestTest(DnsRequisitionRequest sampleObject, String sampleXml) {
         super(sampleObject, sampleXml, null);

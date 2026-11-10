@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class FilterDefTest extends XmlTest<FilterDef> {
+public class FilterDefTest extends XmlTestNoCastor<FilterDef> {
 
     public FilterDefTest(FilterDef sampleObject, Object sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

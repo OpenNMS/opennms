@@ -13,8 +13,7 @@
           <span class="label">{{ item.label }}</span>
         </div>
         <div class="onms-col-8">
-          <router-link v-if="item.to" :to="item.to" @click="onUpdateVisible(false)">{{ item.text }}</router-link>
-          <a v-else-if="item.link" :href="item.link">{{ item.text }}</a>
+          <a v-if="item.link" :href="item.link">{{ item.text }}</a>
           <span v-else>{{ item.text }}</span>
         </div>
       </div>
@@ -27,13 +26,18 @@ import { PropType, computed } from 'vue'
 import { OnmsDialog } from '@opennms/onms-ui'
 import { hasEgressFlow, hasIngressFlow } from './utils'
 import { useIpInterfaceQuery } from '@/components/Nodes/hooks/useIpInterfaceQuery'
-import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
-import { interfaceLink } from '@/lib/linkUtils'
-import { nodeDetailsRoute } from './nodeDetailsRoute'
 import { Node } from '@/types'
 
 const props = defineProps({
+  computeNodeLink: {
+    required: true,
+    type: Function as PropType<(id: number | string) => string>
+  },
+  computeNodeIpInterfaceLink: {
+    required: true,
+    type: Function as PropType<(nodeId: number | string, ipAddress: string) => string>
+  },
   visible: {
     required: true,
     type: Boolean
@@ -53,20 +57,16 @@ const onUpdateVisible = (value: boolean) => {
 }
 
 const EMPTY = '--'
-const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
 const { getBestIpInterfaceForNode } = useIpInterfaceQuery()
 
 const nodeItems = computed(() => {
   const ipLabel = getBestIpInterfaceForNode(props.node?.id || '', nodeStore.nodeToIpInterfaceMap)
-  const { baseHref } = menuStore.mainMenu
-  const nodeId = props.node?.id || 0
-  const nodeRoute = nodeDetailsRoute(nodeId)
 
   return [
-    { label: 'Node ID', text: props.node?.id, to: nodeRoute },
-    { label: 'Node Label', text: props.node?.label, to: nodeRoute },
-    { label: 'IP Address', text: ipLabel.label, link: interfaceLink(baseHref, nodeId, ipLabel.label) },
+    { label: 'Node ID', text: props.node?.id, link: props.computeNodeLink(props.node?.id || 0) },
+    { label: 'Node Label', text: props.node?.label, link: props.computeNodeLink(props.node?.id || 0) },
+    { label: 'IP Address', text: ipLabel.label, link: props.computeNodeIpInterfaceLink(props.node?.id || 0, ipLabel.label) },
     { label: 'Location', text: props.node?.location },
     { label: 'FS:FID', text: `${props.node?.foreignSource}:${props.node?.foreignId}` },
     { label: 'Sys Contact', text: props.node?.sysContact || EMPTY },
@@ -78,8 +78,6 @@ const nodeItems = computed(() => {
     { label: 'Latitude/Longitude', text: `${props.node?.assetRecord.latitude ?? EMPTY} / ${props.node?.assetRecord.longitude ?? EMPTY}` },
     { label: 'Asset Category', text: props.node?.assetRecord.category || EMPTY },
     { label: 'Asset Description', text: props.node?.assetRecord.description || EMPTY },
-    // The legacy node page's Asset Information box showed the description and these comments.
-    { label: 'Asset Comments', text: props.node?.assetRecord.comment || EMPTY },
     { label: 'Maintenance Contract', text: props.node?.assetRecord.maintcontract || EMPTY }
   ]
 })
@@ -106,13 +104,6 @@ const flowsText = (node?: Node) => {
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
-
-  // Each attribute is its own .onms-row, i.e. its own grid container, so the grid's gap only
-  // separates the label from the value -- nothing separated one row from the next and the list
-  // read as a solid block. A flex column puts the spacing back between them.
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
 }
 
 .label {

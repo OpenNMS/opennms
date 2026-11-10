@@ -1,15 +1,9 @@
 // ui/tests/components/Nodes/NodeDetailsDialog.test.ts
-import { mount, RouterLinkStub } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { describe, expect, it, vi } from 'vitest'
 import PrimeVue from 'primevue/config'
 import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
-import { useMenuStore } from '@/stores/menuStore'
-
-vi.mock('vue-router', async importOriginal => ({
-  ...(await importOriginal<typeof import('vue-router')>()),
-  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), resolve: (to: { params: { id: string }}) => ({ href: `/opennms/ui#/node/${to.params.id}` }) })
-}))
 
 // Stub the teleporting PrimeVue Dialog so its slots render inline and can be
 // queried directly, consistent with the established pattern in this codebase.
@@ -26,20 +20,19 @@ const node = {
   assetRecord: {}, ipInterfaces: []
 } as any
 
-// The dialog builds its own links off menuStore now, rather than taking computeNodeLink /
-// computeNodeIpInterfaceLink props from NodesTable.
-const mountIt = (visible: boolean, nodeProp = node) => {
-  const pinia = createTestingPinia({ createSpy: vi.fn })
-  useMenuStore(pinia).mainMenu = { baseHref: '/opennms/', baseNodeUrl: 'element/node.jsp?node=' } as never
-
-  return mount(NodeDetailsDialog, {
-    props: { visible, node: nodeProp },
+const mountIt = (visible: boolean) =>
+  mount(NodeDetailsDialog, {
+    props: {
+      visible,
+      node,
+      computeNodeLink: (id: any) => `/node/${id}`,
+      computeNodeIpInterfaceLink: (id: any, ip: any) => `/intf/${id}/${ip}`
+    },
     global: {
-      plugins: [PrimeVue, pinia],
-      stubs: { Dialog: DialogStub, RouterLink: RouterLinkStub }
+      plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn })],
+      stubs: { Dialog: DialogStub }
     }
   })
-}
 
 describe('NodeDetailsDialog.vue', () => {
   it('renders the node detail rows when visible', () => {
@@ -49,52 +42,10 @@ describe('NodeDetailsDialog.vue', () => {
     expect(wrapper.text()).toContain('Node Label')
   })
 
-  it('links the node id and label to the Vue Node Details page', () => {
-    const wrapper = mountIt(true)
-    const links = wrapper.findAllComponents(RouterLinkStub)
-
-    expect(links.map(l => l.props('to'))).toEqual([
-      { name: 'Node Details', params: { id: '7' }},
-      { name: 'Node Details', params: { id: '7' }}
-    ])
-  })
-
-  // On the Node Details page these links point at the current route, so following them does
-  // nothing; the dialog has to close itself.
-  it('emits close when a node link is clicked', async () => {
-    const wrapper = mountIt(true)
-    await wrapper.findAllComponents(RouterLinkStub)[0].trigger('click')
-
-    expect(wrapper.emitted('close')).toHaveLength(1)
-  })
-
   it('emits close when the dialog requests hide', async () => {
     const wrapper = mountIt(true)
     // Simulate PrimeVue Dialog update:visible(false)
     await (wrapper.findComponent({ name: 'Dialog' }) as any).vm.$emit('update:visible', false)
     expect(wrapper.emitted('close')).toBeTruthy()
-  })
-
-  // The legacy node page's Asset Information box showed the description and comments.
-  describe('asset rows', () => {
-    const rows = (assetRecord: object) => {
-      const wrapper = mountIt(true, { ...node, assetRecord })
-
-      return wrapper.findAll('.onms-row').map(row => row.text().replace(/\s+/g, ' ').trim())
-    }
-
-    it('shows the asset comments right after the asset description', () => {
-      const all = rows({ description: 'Core router', comment: 'Rack 4, top shelf' })
-      const description = all.findIndex(r => r.startsWith('Asset Description'))
-
-      expect(all[description]).toContain('Core router')
-      expect(all[description + 1]).toMatch(/^Asset Comments\s*Rack 4, top shelf$/)
-    })
-
-    it('shows the empty marker when the node has no asset comments', () => {
-      const comments = rows({ comment: null }).find(r => r.startsWith('Asset Comments'))
-
-      expect(comments).toMatch(/^Asset Comments\s*--$/)
-    })
   })
 })

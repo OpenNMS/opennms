@@ -27,7 +27,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.smoketest.ui.NodeDetailsPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
@@ -97,7 +96,7 @@ public class AdminDataCollectionSnmpInterfacesIT extends OpenNMSSeleniumIT {
             LOG.debug("interface created!");
         }
 
-        new NodeDetailsPage(this).open("SmokeTests:TestMachine1");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestMachine1");
     }
 
     /**
@@ -117,7 +116,7 @@ public class AdminDataCollectionSnmpInterfacesIT extends OpenNMSSeleniumIT {
      */
     @Test
     public void canRenderPage() throws Exception {
-        new NodeDetailsPage(this).clickLink("Admin", "Admin / Node Management");
+        findElementByLink("Admin").click();
         findElementByLink("Configure SNMP Data Collection per Interface").click();
         // 5 columns: ifIndex, ifType, ifDescr, ifName, ifAlias
         List<WebElement> interfaces = driver.findElements(By.cssSelector("onms-interfaces-config td.ng-binding"));

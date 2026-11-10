@@ -22,27 +22,20 @@
 
 import axios from 'axios'
 
-// Without this header, a 401 from the REST APIs carries "WWW-Authenticate: Basic" and the
-// browser shows its own login dialog (see XRequestedWithAwareBasicAuthEntryPoint.java).
-const XHR_HEADERS = { 'X-Requested-With': 'XMLHttpRequest' }
-
 const v2 = axios.create({
   baseURL: import.meta.env.VITE_BASE_V2_URL?.toString() || '/opennms/api/v2',
-  withCredentials: true,
-  headers: XHR_HEADERS
+  withCredentials: true
 })
 
 const rest = axios.create({
   baseURL: import.meta.env.VITE_BASE_REST_URL?.toString() || '/opennms/rest',
-  withCredentials: true,
-  headers: XHR_HEADERS
+  withCredentials: true
 })
 
 const restFile = axios.create({
   baseURL: import.meta.env.VITE_BASE_REST_URL?.toString() || '/opennms/rest',
   withCredentials: true,
   headers: {
-    ...XHR_HEADERS,
     'Content-Type': 'multipart/form-data'
   }
 })

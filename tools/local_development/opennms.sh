@@ -92,9 +92,16 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
-select_jdk || exit 1
-
 if [[ "$DISABLE_JRRD2" != "true" ]]; then
+   # if $JAVA_HOME is not set, ask user to setup JAVA_HOME
+   if [[ -z "${JAVA_HOME:-}" ]]; then
+     echo "JAVA_HOME is not set. Detecting required JDK version from pom.xml..."
+     detect_jdk_version_required
+     echo "Detected required JDK version: $REQUIRED_VERSION"
+     echo "Please set JAVA_HOME to a JDK $REQUIRED_VERSION installation and re-run this script."
+     exit 1
+   fi
+
    detect_jrrd2_location
    if [[ -z "$JRRD_JAR" ]] || [[ ! -f "$JRRD_JAR" ]] || [[ -z "$JRRD_LIB" ]] || [[ ! -f "$JRRD_LIB" ]]; then
      # Build JRRD2 from source then run the rest of script
@@ -120,8 +127,6 @@ if [[ -f "$ROOT/target/opennms/bin/opennms" ]]; then
     ./target/opennms/bin/opennms stop || true
 fi
 
-BUILD_START=$(date +%s)
-
 if [[ "$SKIP_CLEANUP" == "yes" ]]; then
     echo "Skipping cleanup of previous build artifacts."
 else
@@ -129,31 +134,18 @@ else
     ./clean.pl
 fi
 
-# "-p dir" writes the assembly to target/opennms-$RELEASE, so there is no tarball to unpack.
-# Local builds do not use the source tarball or the core and optional tarballs.
-# Packaging problems in the tarballs (permissions, symlinks) show only in CI, which builds the tarballs.
-ASSEMBLE_ARGS=(-p dir -Dbuild.skip.tarball=true -Dbuild.skip.coretar=true)
 if [[ "$ENABLE_TESTS" == "yes" ]]; then
     echo "Compiling & assembling (with tests)..."
-    ./compile.pl -Dbuild.skip.tarball=true && ./assemble.pl "${ASSEMBLE_ARGS[@]}"
+    ./compile.pl && ./assemble.pl
 else
     echo "Compiling & assembling (skip tests)..."
-    # Parallel threads need a larger heap. CI runs checkstyle.
-    # The default is one thread for each CPU, at most 8. Set MAVEN_THREADS to use a different number.
-    CPUS=$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
-    MAVEN_THREADS=${MAVEN_THREADS:-$(( CPUS < 8 ? CPUS : 8 ))}
-    export MAVEN_OPTS=${MAVEN_OPTS:-"-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"}
-    COMPILE_ARGS=(-DskipTests=true -Dbuild.skip.tarball=true -Ddisable.checkstyle=true \
-        --threads "$MAVEN_THREADS" install)
-    # Build the Karaf assemblies in a second run. tools/karaf-assemblies.txt gives the reason.
-    KARAF_ASSEMBLIES=$(grep -Ev '^[[:space:]]*(#|$)' "$ROOT/tools/karaf-assemblies.txt" | paste -sd, -)
-    ./compile.pl "${COMPILE_ARGS[@]}" --projects "!${KARAF_ASSEMBLIES//,/,!}" \
-        && ./compile.pl "${COMPILE_ARGS[@]}" --projects "$KARAF_ASSEMBLIES" \
-        && ./assemble.pl -DskipTests=true "${ASSEMBLE_ARGS[@]}"
+    ./compile.pl -DskipTests=true && ./assemble.pl -DskipTests=true
 fi
 
 echo "Preparing symlink for OpenNMS release $RELEASE"
-ln -sfn "$ROOT/target/opennms-$RELEASE" "$ROOT/target/opennms"
+mkdir -p "./target/opennms-$RELEASE"
+ln -s "$ROOT/target/opennms-$RELEASE" "$ROOT/target/opennms"
+tar -zxvf "./target/opennms-$RELEASE.tar.gz" -C "$ROOT/target/opennms-$RELEASE"
 
 # Set runtime user
 echo "RUNAS=$(id -u -n)" > "$ROOT/target/opennms/etc/opennms.conf"
@@ -185,10 +177,6 @@ echo "Initialize the Java environment..."
 
 echo "Initialize the database schema..."
 "$ROOT/target/opennms/bin/install" -dis
-
-# Show the time before the start, because a foreground start does not return until OpenNMS stops.
-ELAPSED=$(( $(date +%s) - BUILD_START ))
-echo "Build and setup time: $(( ELAPSED / 60 ))m $(( ELAPSED % 60 ))s"
 
 if [[ "$RUN_OPENNMS_FOREGROUND" == "yes" ]]; then
   echo "Starting OpenNMS (foreground)..."

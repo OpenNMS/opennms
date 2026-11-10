@@ -198,12 +198,15 @@
             :sortable="col.id !== 'ipaddress' && col.id !== 'flows'"
           >
             <template #body="{ data }">
-              <router-link
+              <a
                 v-if="col.id === 'id' || col.id === 'label'"
-                :to="nodeDetailsRoute(data.id)"
-              >{{ col.id === 'id' ? data.id : data.label }}</router-link>
+                :href="computeNodeLink(data.id)"
+                target="_blank"
+                @click="onNodeLinkClick(data.id)"
+              >{{ col.id === 'id' ? data.id : data.label }}</a>
               <ManagementIPTooltipCell
                 v-else-if="col.id === 'ipaddress'"
+                :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink"
                 :node="data"
                 :nodeToIpInterfaceMap="nodeStore.nodeToIpInterfaceMap"
               />
@@ -231,12 +234,11 @@
                   title="View Details"
                   data-test="view-details-button"
                   :icon="ViewDetails"
-                  @click="router.push(nodeDetailsRoute(data.id))"
+                  @click="onNodeLinkClick(data.id)"
                 />
                 <NodeActionsDropdown
                   :baseHref="mainMenu.baseHref"
                   :node="data"
-                  :snmpPrimaryIpAddress="snmpPrimaryIpAddressFor(data.id)"
                   :triggerNodeInfo="onNodeInfo"
                   class="triple-icon"
                 />
@@ -273,6 +275,8 @@
   </div>
 
   <NodeDetailsDialog
+    :computeNodeLink="computeNodeLink"
+    :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink"
     :visible="dialogVisible"
     :node="dialogNode"
     @close="dialogVisible = false"
@@ -302,8 +306,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import useSnackbar from '@/composables/useSnackbar'
+import { useMenuStore } from '@/stores/menuStore'
+import { useNodeStore } from '@/stores/nodeStore'
+import { useNodeListStore } from '@/stores/nodeListStore'
+import {
+  ExtendedSearchValue,
+  FilterTypeEnum,
+  Node,
+  NodeColumnSelectionItem,
+  QueryParameters,
+  UpdateModelFunction
+} from '@/types'
+import { MainMenu } from '@/types/mainMenu'
+import { IAutocompleteItemType } from '@/types'
 import {
   OnmsButton,
   OnmsChip,
@@ -316,35 +332,12 @@ import {
   type OnmsTableSortEvent
 } from '@opennms/onms-ui'
 import FilterAlt from '@opennms/onms-ui/icons/action/FilterAlt.vue'
-import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
-import RowCollapsedIcon from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import RowExpandedIcon from '@opennms/onms-ui/icons/navigation/ExpandMore.vue'
-import useSnackbar from '@/composables/useSnackbar'
-import { useMenuStore } from '@/stores/menuStore'
-import { useNodeListStore } from '@/stores/nodeListStore'
-import { useNodeStore } from '@/stores/nodeStore'
-import {
-  ExtendedSearchValue,
-  FilterTypeEnum,
-  IAutocompleteItemType,
-  Node,
-  NodeColumnSelectionItem,
-  QueryParameters,
-  SORT,
-  UpdateModelFunction
-} from '@/types'
-import { MainMenu } from '@/types/mainMenu'
-import {
-  countInterfaceRowsForNode,
-  getInterfaceListMode
-} from './hooks/useInterfaceListing'
-import { useNodeExport } from './hooks/useNodeExport'
-import { useNodeQuery } from './hooks/useNodeQuery'
-import { getAssetColumnLabel } from './hooks/queryStringParser'
-import { nodeDetailsRoute } from './nodeDetailsRoute'
-import { getSnmpPrimaryIpAddress } from './nodeActionLinks'
-import { buildSnmpNarrowing } from './utils'
+import RowCollapsedIcon from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
+import { SORT } from '@/types'
+import { computed, nextTick, ref, watch } from 'vue'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
 import FlowTooltipCell from './FlowTooltipCell.vue'
 import ManagementIPTooltipCell from './ManagementIPTooltipCell.vue'
@@ -354,11 +347,19 @@ import NodeDetailsDialog from './NodeDetailsDialog.vue'
 import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
 import NodeInterfacesPanel from './NodeInterfacesPanel.vue'
 import NodeTooltipCell from './NodeTooltipCell.vue'
+import { useNodeExport } from './hooks/useNodeExport'
+import { useNodeQuery } from './hooks/useNodeQuery'
+import {
+  countInterfaceRowsForNode,
+  getInterfaceListMode,
+  normalizeMacSearch,
+  type InterfaceListMode
+} from './hooks/useInterfaceListing'
+import { getAssetColumnLabel } from './hooks/queryStringParser'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '../Common/FormField.vue'
 
 const menuStore = useMenuStore()
-const router = useRouter()
 const nodeListStore = useNodeListStore()
 const nodeStore = useNodeStore()
 const { showSnackBar } = useSnackbar()
@@ -464,10 +465,17 @@ const onNodeInfo = (node: Node) => {
   dialogVisible.value = true
 }
 
-// The node payload carries no interfaces, so the Update SNMP action's address comes from the
-// interfaces already fetched for the list.
-const snmpPrimaryIpAddressFor = (nodeId: string) =>
-  getSnmpPrimaryIpAddress(nodeStore.nodeToIpInterfaceMap.get(nodeId) ?? [])
+const computeNodeLink = (nodeId: number | string) => {
+  return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`
+}
+
+const computeNodeIpInterfaceLink = (nodeId: number | string, ipAddress: string) => {
+  return `${mainMenu.value.baseHref}element/interface.jsp?node=${nodeId}&intf=${ipAddress}`
+}
+
+const onNodeLinkClick = (nodeId: number | string) => {
+  window.location.assign(computeNodeLink(nodeId))
+}
 
 const extendedSearchValues = computed(() => {
   return getExtendedSearchValues(nodeListStore.queryFilter.extendedSearch)
@@ -552,6 +560,42 @@ const toggleRowExpanded = (node: Node) => {
     updated[node.id] = true
   }
   expandedRows.value = updated
+}
+
+// Characters that make a value unsafe to splice raw into the FIQL attribute-narrowing term below:
+// - '%' / '_' are SQL-LIKE wildcards to the server's FIQL '==*value*' match (literal), while
+//   useInterfaceListing.ts's client-side matchesSnmpParm() treats them as SQL-LIKE wildcards — the
+//   server narrowing would no longer be a superset of the client match.
+// - ',' / ';' are FIQL set operators (OR / AND). sanitizeSearchTerm neutralizes them in other FIQL
+//   builders by replacing them with spaces, but doing that here has the same superset problem as
+//   '%'/'_': the narrowing sent to the server would search for something other than the exact
+//   value, so it could exclude rows the client-side match still considers a hit.
+// - '(' / ')' are FIQL grouping delimiters. Left in raw, they can produce an unbalanced FIQL
+//   expression that fails to parse server-side — surfacing client-side as "No interfaces".
+// If the value contains any of these, omit the attribute narrowing entirely; the node.id scoping
+// alone still limits the fetch to the current page, and exact contains/equals semantics are
+// re-applied client-side anyway (see buildSnmpNarrowing below).
+const UNSAFE_NARROWING_CHARS = /[%_,;()]/
+
+// Build the FIQL narrowing expression passed to nodeStore.getSnmpInterfacesForNodes so we only
+// fetch the SNMP interfaces relevant to the active maclike/snmpParm mode (see
+// getNodeSnmpInterfaceQuery).
+const buildSnmpNarrowing = (mode: InterfaceListMode): string | undefined => {
+  if (mode.mode === 'maclike') {
+    // normalizeMacSearch strips every non-hex character, so the result can never contain any of
+    // UNSAFE_NARROWING_CHARS above — no further guard needed here.
+    return `physAddr==*${normalizeMacSearch(mode.mac)}*`
+  }
+
+  if (mode.mode === 'snmpParm') {
+    if (UNSAFE_NARROWING_CHARS.test(mode.value)) {
+      return undefined
+    }
+
+    return `${mode.attr}==*${mode.value}*`
+  }
+
+  return undefined
 }
 
 const hasTopologySearch = computed(() => {

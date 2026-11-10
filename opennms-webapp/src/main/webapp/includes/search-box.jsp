@@ -39,10 +39,10 @@
 
   <div class="card">
     <div class="card-header">
-      <span><a href="ui/index.html#/graph-collections">Graph Collections</a></span>
+      <span><a href="KSC/index.jsp">Graph Collections</a></span>
     </div>
     <div class="card-body">
-      <onms-search-graph-collections />
+      <onms-search-ksc />
     </div>
   </div>
 

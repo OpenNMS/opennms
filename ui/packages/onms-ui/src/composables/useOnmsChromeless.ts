@@ -26,9 +26,8 @@ import { computed, onScopeDispose, readonly, ref, watch } from 'vue'
 const requested = ref(false)
 const dismissed = ref(false)
 const routeChromeless = ref(false)
-const forced = ref(false)
 
-const isChromeless = computed<boolean>(() => forced.value || (!dismissed.value && (requested.value || routeChromeless.value)))
+const isChromeless = computed<boolean>(() => !dismissed.value && (requested.value || routeChromeless.value))
 
 const enterChromeless = () => {
   requested.value = true
@@ -36,10 +35,6 @@ const enterChromeless = () => {
 }
 
 const exitChromeless = () => {
-  if (forced.value) {
-    return
-  }
-
   requested.value = false
   dismissed.value = true
 }
@@ -88,27 +83,16 @@ export const useOnmsChromeless = () => ({
  * Host only: call once from the app shell's setup. Each `routeKey` change resets the state and
  * re-reads `isRouteChromeless`; it runs before the new page renders, so that page's own
  * `enterChromeless()` still applies. Installs the Escape handler.
- *
- * `options.isForced` (e.g. "is this app inside an iframe") is re-read on each route-key change.
- * While it is true the app is always chromeless, and Escape and `exitChromeless()` do nothing.
  */
-export const useOnmsChromelessHost = (
-  isRouteChromeless: () => boolean,
-  routeKey: () => unknown,
-  options?: { isForced?: () => boolean }
-) => {
+export const useOnmsChromelessHost = (isRouteChromeless: () => boolean, routeKey: () => unknown) => {
   watch(routeKey, () => {
-    forced.value = options?.isForced?.() ?? false
     routeChromeless.value = isRouteChromeless()
     requested.value = false
     dismissed.value = false
   }, { immediate: true })
 
   document.addEventListener('keydown', onKeydown)
-  onScopeDispose(() => {
-    document.removeEventListener('keydown', onKeydown)
-    forced.value = false
-  })
+  onScopeDispose(() => document.removeEventListener('keydown', onKeydown))
 
   return { isChromeless: readonly(isChromeless) }
 }

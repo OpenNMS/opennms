@@ -10,21 +10,11 @@ The `menu-template.json` file controls the menu configuration.
 
 It is read by the Rest API v2 Menu service and displayed by the UI.
 
-Configuration changes made in the file will take effect as soon as the browser page is refreshed (no need to restart OpenNMS). The search "Open ..." results are cached per user and pick up changes within 5 minutes.
-Two template files are installed:
-- `menu-template-default.json` is the default template shipped with OpenNMS and represents our latest recommended design.
-  Never edit this file. To restore the default menu, copy it over `menu-template.json`.
-- `menu-template.json` is the active template, the one the menu actually uses. It is identical to the default when installed.
-  Customize it only if you know what you are doing.
+Configuration changes made in the file will take effect as soon as the browser page is refreshed (no need to restart OpenNMS).
 
-Package (RPM and Debian) upgrades replace both files, so a customized `menu-template.json` is lost on upgrade:
-keep a copy and re-apply your changes to the new file. In containers, a copy placed at `menu/menu-template.json` under
-`/opt/opennms-jetty-webinf-overlay` is applied at every start; compare it with `menu-template-default.json` after upgrading.
-Note that `roles` controls what both the menu and the search results show. Access is enforced by Spring Security and by the UI route guards,
-so hiding an entry does not grant or revoke access to a page.
+`menu-template-default.json` is a reference copy of the recommended menu, which you can copy back over `menu-template.json` after editing it.
 
-Groups that have no visible children for the current user, and stray separators (leading, trailing or doubled),
-are dropped automatically, so you only need to set `roles` on the individual items.
+If you wish to create your own configuration, we recommend creating a new file, then copying it to `menu-template.json`.
 
 
 ## Template structure
@@ -99,6 +89,10 @@ Within the `menus` array, each item is a top-level menu item for the side menu.
     <td>action</td>
     <td>See <code>url</code>, this treat the top-level menu item as a link.</td>
   </tr>
+   <tr>
+    <td>locationMatch</td>
+    <td>Used by the Search feature.</td>
+  </tr>
   <tr>
     <td>icon</td>
     <td>An icon path ID for the icon to display.
@@ -162,6 +156,11 @@ The `items` under each top level menu contain the individual menu items.
     If it is an external link, provide the entire absolute URL, e.g. <code>"url": "https://www.opennms.com"</code>.
     <code>$PRODUCT</code> and <code>$DOCS_VERSION</code> are replaced with this install's docs site product and version,
     e.g. <code>"url": "https://docs.opennms.com/$PRODUCT/$DOCS_VERSION/operation/overview/overview.html"</code>.</td>
+  </tr>
+
+  <tr>
+    <td>locationMatch</td>
+    <td>See above.</td>
   </tr>
 
   <tr>

@@ -3,46 +3,27 @@
     ref="rootEl"
     class="form-field"
   >
-    <!-- With an info text the label shares its row with an info icon that shows the
-         text as a tooltip. The icon sits outside the <label>, so hovering or
-         clicking it does not focus the control. -->
-    <div
-      v-if="label || $slots['label-suffix'] || reserveLabelSpace"
-      class="form-field__label-row"
-      :class="{ 'form-field__label-row--with-suffix': $slots['label-suffix'] }"
+    <label
+      v-if="label"
+      :for="controlId"
+      class="form-field__label"
     >
-      <label
-        v-if="label"
-        :for="controlId"
-        class="form-field__label"
-      >
-        {{ label }}<span
-          v-if="required"
-          class="form-field__required"
-          aria-hidden="true"
-        >*</span>
-      </label>
-      <!-- Presentational stand-in for a label, so a field that has none still lines
-           its control up with the labelled fields beside it (e.g. an action button
-           in a form row). A real <label> element, so it picks up exactly the same
-           typography and spacing as the labelled case; aria-hidden and without a
-           `for`, so it says nothing to assistive tech. -->
-      <label
-        v-else-if="reserveLabelSpace"
-        class="form-field__label"
+      {{ label }}<span
+        v-if="required"
+        class="form-field__required"
         aria-hidden="true"
-      >&nbsp;</label>
-      <OnmsIcon
-        v-if="label && info"
-        v-onms-tooltip.top="info"
-        :icon="InfoIcon"
-        class="form-field__info-icon"
-        tabindex="0"
-        :title="info"
-        data-test="form-field-info"
-      />
-      <slot name="label-suffix" />
-    </div>
+      >*</span>
+    </label>
+    <!-- Presentational stand-in for a label, so a field that has none still lines
+         its control up with the labelled fields beside it (e.g. an action button
+         in a form row). A real <label> element, so it picks up exactly the same
+         typography and spacing as the labelled case; aria-hidden and without a
+         `for`, so it says nothing to assistive tech. -->
+    <label
+      v-else-if="reserveLabelSpace"
+      class="form-field__label"
+      aria-hidden="true"
+    >&nbsp;</label>
     <slot
       :errorId="errorId"
       :invalid="invalid"
@@ -62,8 +43,6 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
-import { OnmsIcon } from '@opennms/onms-ui'
-import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 
 const props = withDefaults(defineProps<{
   label?: string
@@ -71,8 +50,6 @@ const props = withDefaults(defineProps<{
   required?: boolean
   error?: string
   hint?: string
-  /** Description of the field, shown as a tooltip on an info icon beside the label. */
-  info?: string
   reserveLabelSpace?: boolean
 }>(), {
   label: undefined,
@@ -80,7 +57,6 @@ const props = withDefaults(defineProps<{
   required: false,
   error: undefined,
   hint: undefined,
-  info: undefined,
   reserveLabelSpace: false
 })
 
@@ -145,37 +121,12 @@ watch(errorId, () => nextTick(syncAriaDescribedby))
   }
 }
 
-.form-field__label-row {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin-bottom: 0.375rem;
-}
-
-// Fixed height only when a help icon shares the row, so those fields align,
-// row-for-row, with plain-label fields beside them. Plain labels (the ~60
-// existing consumers) keep their natural line height and spacing.
-.form-field__label-row--with-suffix {
-  min-height: 1.25rem;
-}
-
 .form-field__label {
   display: block;
+  margin-bottom: 0.375rem;
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--p-text-color);
-}
-
-// Shows help on hover rather than acting on a click. Sized from the label's
-// 0.875rem, so it stays in proportion to the label text.
-.form-field__info-icon {
-  font-size: 1.05rem;
-  cursor: help;
-  color: var(--p-text-muted-color);
-
-  &:hover {
-    color: var(--p-primary-color);
-  }
 }
 
 .form-field__required {

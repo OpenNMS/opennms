@@ -26,10 +26,10 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
 
-public class ElasticCredentialsTest extends XmlTest {
+public class ElasticCredentialsTest extends XmlTestNoCastor {
 
     public ElasticCredentialsTest(Object sampleObject, Object sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

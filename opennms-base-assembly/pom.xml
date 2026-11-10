@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>37.0.0-SNAPSHOT</version>
+    <version>36.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -625,11 +625,6 @@
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.soa</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.container</groupId>
-      <artifactId>org.opennms.container.daemon</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <!-- webapp dependencies -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -736,6 +731,10 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-web-dependencies</artifactId>
       <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.charts</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.status</groupId>

@@ -41,6 +41,12 @@ public abstract class IpListFromUrl {
     private static final Logger LOG = LoggerFactory.getLogger(IpListFromUrl.class);
 
     /**
+     * The string indicating the start of the comments in a line containing the
+     * IP address in a file URL
+     */
+    private static final String COMMENT_STR = " #";
+
+    /**
      * This character at the start of a line indicates a comment line in a URL
      * file
      */
@@ -59,7 +65,7 @@ public abstract class IpListFromUrl {
      *  #&lt;comments&gt;
      *
      *  Lines starting with a '#' are ignored and so are characters after
-     *  a '#' in a line.
+     *  a '&lt;space&gt;#' in a line.
      * </pre>
      *
      * @param url
@@ -96,11 +102,12 @@ public abstract class IpListFromUrl {
                     }
 
                     // check for comments after IP
-                    final int comIndex = ipLine.indexOf(COMMENT_CHAR);
+                    final int comIndex = ipLine.indexOf(COMMENT_STR);
                     if (comIndex == -1) {
                         specIP = ipLine;
                     } else {
-                        specIP = ipLine.substring(0, comIndex).trim();
+                        specIP = ipLine.substring(0, comIndex);
+                        ipLine = ipLine.trim();
                     }
 
                     iplist.add(specIP);

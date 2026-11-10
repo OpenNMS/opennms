@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class ThreshdConfigurationTest extends XmlTest<ThreshdConfiguration> {
+public class ThreshdConfigurationTest extends XmlTestNoCastor<ThreshdConfiguration> {
 
     public ThreshdConfigurationTest(ThreshdConfiguration sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/thresholding.xsd");
@@ -37,7 +37,8 @@ public class ThreshdConfigurationTest extends XmlTest<ThreshdConfiguration> {
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
         ThreshdConfiguration threshdConfiguration = new ThreshdConfiguration();
-
+        threshdConfiguration.setThreads(5);
+        
         Package pkg = new Package();
         pkg.setName("mib2");
         threshdConfiguration.addPackage(pkg);
@@ -49,7 +50,7 @@ public class ThreshdConfigurationTest extends XmlTest<ThreshdConfiguration> {
         return Arrays.asList(new Object[][] {
             {
                 threshdConfiguration,
-                "<threshd-configuration>\n" + 
+                "<threshd-configuration threads=\"5\">\n" + 
                 "   <package name=\"mib2\">\n" + 
                 "      <filter>IPADDR != '0.0.0.0'</filter>\n" + 
                 "   </package>\n" + 

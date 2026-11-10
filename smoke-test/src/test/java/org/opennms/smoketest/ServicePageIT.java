@@ -42,7 +42,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.model.OnmsUser;
-import org.opennms.smoketest.ui.NodeDetailsPage;
 import org.openqa.selenium.By;
 
 /**
@@ -101,7 +100,8 @@ public class ServicePageIT extends OpenNMSSeleniumIT {
     }
 
     private void openServicePage() {
-        new NodeDetailsPage(this).open(NODE).clickService("ICMP");
+        driver.get(buildUrlInternal("element/node.jsp?node=" + NODE));
+        findElementByLink("ICMP").click();
         // every user sees the Meta-Data link, so the service page has loaded
         findElementByLink("Meta-Data");
     }

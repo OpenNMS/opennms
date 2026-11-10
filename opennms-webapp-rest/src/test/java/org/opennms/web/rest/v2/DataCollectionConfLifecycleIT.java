@@ -36,7 +36,6 @@ import java.nio.file.Path;
 import java.security.Principal;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -378,11 +377,7 @@ public class DataCollectionConfLifecycleIT {
                 });
     }
 
-    /**
-     * Pick the first source, by name, that isn't in any profile's source_names
-     * and declares at least one group (the baseline also ships group-less
-     * unreferenced sources, e.g. Oracle-JDBC).
-     */
+    /** Pick any source name that isn't in any profile's source_names. */
     private SnmpCollectionSource pickUnreferencedSource() {
         final Set<String> referenced = profileDao.findAll().stream()
                 .filter(p -> p.getSourceNames() != null)
@@ -390,8 +385,6 @@ public class DataCollectionConfLifecycleIT {
                 .collect(Collectors.toCollection(TreeSet::new));
         return sourceDao.findAll().stream()
                 .filter(s -> !referenced.contains(s.getName()))
-                .filter(s -> !expectedGroupNamesForSource(s.getName()).isEmpty())
-                .sorted(Comparator.comparing(SnmpCollectionSource::getName))
                 .findFirst()
                 .orElseThrow(() -> new AssertionError(
                         "Baseline has no unreferenced sources — fixture must contain at least one."));

@@ -102,10 +102,6 @@ export const useNodeListStore = defineStore('nodeListStore', () => {
     serviceTypesLoaded.value = true
   }
 
-  const getServiceTypeByName = (name: string): ServiceType | undefined => {
-    return allServiceTypes.value.find(serviceType => serviceType.name.toLocaleLowerCase() === name.toLocaleLowerCase())
-  }
-
   const isAnyFilterSelected = () => {
     return (
       queryFilter.value.searchTerm?.length > 0 ||
@@ -536,7 +532,6 @@ export const useNodeListStore = defineStore('nodeListStore', () => {
     getCategories: fetchCategories,
     getMonitoringLocations: fetchMonitoringLocations,
     getServiceTypes: fetchServiceTypes,
-    getServiceTypeByName,
     getNodePreferences,
     isAnyFilterSelected,
     resetColumnSelectionToDefault,

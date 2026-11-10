@@ -154,13 +154,14 @@
   <c:param name="filter" value="interface=${service.ipInterface.ipAddress.hostAddress}"/>
   <c:param name="filter" value="service=${service.serviceId}"/>
 </c:url>
-<c:url var="nodeLink" value="${ElementConstants.NODE_DETAILS_URI}${service.ipInterface.node.id}"/>
+<c:url var="nodeLink" value="element/node.jsp">
+  <c:param name="node" value="${service.ipInterface.node.id}"/>
+</c:url>
 <c:url var="interfaceLink" value="element/interface.jsp">
   <c:param name="ipinterfaceid" value="${service.ipInterface.id}"/>
 </c:url>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
-<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("${service.serviceName} Service on ${service.ipInterface.ipAddress.hostAddress}")
           .breadcrumb("Search", "element/index.jsp")
@@ -236,7 +237,9 @@ function doDelete() {
             </div>
             <table class="table table-sm">
               <tr>
-                <c:url var="nodeLink" value="${ElementConstants.NODE_DETAILS_URI}${service.ipInterface.node.id}"/>
+                <c:url var="nodeLink" value="element/node.jsp">
+                  <c:param name="node" value="${service.ipInterface.node.id}"/>
+                </c:url>
                 <th>Node</th>
                 <td><a href="${fn:escapeXml(nodeLink)}"><c:out value="${service.ipInterface.node.label}"/></a></td>
               </tr>

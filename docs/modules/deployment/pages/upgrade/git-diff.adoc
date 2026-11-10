@@ -19,31 +19,40 @@ IMPORTANT: Remember to stop {page-component-title} before changing files in the 
 Debian OSes::
 +
 --
-NOTE: On Debian and Ubuntu, `/etc/opennms` is a symbolic link to `/opt/opennms/etc`, so it follows the directory you replace here.
+IMPORTANT: `$OPENNMS_HOME/etc` is linked to `/etc/opennms`.
+Do not move that folder.
+Moving the folder will break the link and cause future upgrades to fail.
 
-Run the following code to move your `/opt/opennms/etc` files to a safe place, then copy `etc-pristine` to the `/opt/opennms/etc` directory:
+Run the following code to prevent breaking the link between folders:
 
 [source, console]
 ----
-mv /opt/opennms/etc /opt/opennms/etc.bak
-cp -pR /opt/opennms/share/etc-pristine /opt/opennms/etc
+cd /opt/opennms
+mv etc etc_bad
+ln -s /etc/opennms etc
 ----
 
-NOTE: On Debian-based installations, `/opt/opennms/share` is a symbolic link to `/var/lib/opennms`, which holds the pristine configuration files in `etc-pristine`.
+Run the following code to move your customized configuration files to `/etc/opennms.bak` and replace them with the contents of `etc-pristine`:
+
+[source, console]
+----
+mv /etc/opennms /etc/opennms.bak
+cp -pR /opt/opennms/share/etc-pristine /etc/opennms
+----
 --
 
 Other OSes::
 +
 --
-Run the following code to move your `/opt/opennms/etc` files to a safe place, then copy `etc-pristine` to the `/opt/opennms/etc` directory:
+Run the following code to move your `$OPENNMS_HOME/etc` files to a safe place, then copy `etc-pristine` to the `$OPENNMS_HOME/etc` directory:
 
 [source, console]
 ----
-mv /opt/opennms/etc /opt/opennms/etc.bak
-cp -pR /opt/opennms/share/etc-pristine /opt/opennms/etc
+mv $OPENNMS_HOME/etc $OPENNMS_HOME/etc.bak
+cp -pR $OPENNMS_HOME/share/etc-pristine $OPENNMS_HOME/etc
 ----
 
-NOTE: On RPM-based installations, the pristine configuration files are located in `/opt/opennms/share/etc-pristine`.
+NOTE: On RPM-based installations, the pristine configuration files are located in `$OPENNMS_HOME/share/etc-pristine`.
 --
 ====
 
@@ -53,9 +62,9 @@ Run the code below to turn your `etc` directory into a Git repository and add th
 
 [source, console]
 ----
-cd /opt/opennms/etc
+cd $OPENNMS_HOME/etc
 git init
-cat << EOF > /opt/opennms/etc/.gitignore
+cat << EOF > $OPENNMS_HOME/etc/.gitignore
 foreign-sources/
 imports/
 examples/
@@ -80,7 +89,7 @@ Run the code below to create a new branch in your repository:
 
 [source, console]
 ----
-cd /opt/opennms/etc
+cd $OPENNMS_HOME/etc
 git branch local-modifications
 git checkout local-modifications
 ----
@@ -93,14 +102,14 @@ If you previously backed up your modified configuration files, you can run this 
 
 [source, console]
 ----
-rsync -avr /opt/opennms/etc.bak/ /opt/opennms/etc/
+rsync -avr $OPENNMS_HOME/etc.bak/ $OPENNMS_HOME/etc/
 ----
 
 Any time you want to save your changes to the `etc` directory, run this code to commit them to the branch you created (in this case, `local-modifications`):
 
 [source, console]
 ----
-cd /opt/opennms/etc
+cd $OPENNMS_HOME/etc
 git add .
 git commit -m "Added initial discovery ranges."
 ----

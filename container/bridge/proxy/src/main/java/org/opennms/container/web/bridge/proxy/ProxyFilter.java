@@ -47,8 +47,6 @@ import org.opennms.container.web.bridge.proxy.trackers.ServletTracker;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.util.tracker.ServiceTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The Apache Felix Http Bridge requires a Http Proxy on the SErvlet Container (Jetty) Side in order to work properly.
@@ -61,8 +59,6 @@ import org.slf4j.LoggerFactory;
  * @author mvrueden
  */
 public class ProxyFilter implements Filter, RequestHandlerRegistry {
-    private static final Logger LOG = LoggerFactory.getLogger(ProxyFilter.class);
-
     private BundleContext bundleContext;
     private DispatcherTracker dispatcherTracker;
     /**
@@ -78,14 +74,6 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         bundleContext = getBundleContext(filterConfig.getServletContext());
-        if (bundleContext == null) {
-            // This filter is attached once, when the web application starts. If Karaf
-            // comes up later, or is restarted on its own, the proxy stays disabled
-            // until the web application is restarted as well.
-            LOG.warn("No Karaf BundleContext is available; the OSGi HTTP proxy filter is disabled. "
-                    + "Requests served by OSGi-registered servlets and resources will not be reachable.");
-            return;
-        }
         try {
             dispatcherTracker = createDispatcherTracker(filterConfig);
             servletTracker = new ServletTracker(bundleContext, filterConfig.getServletContext(), this);
@@ -106,8 +94,7 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         // We try to see if any OSGi servlet's are able to handle the request
         // If so, we forward the request accordingly, otherwise we don't
-        if (dispatcherTracker != null
-                && dispatcherTracker.getDispatcher() != null
+        if (dispatcherTracker.getDispatcher() != null
                 && request instanceof HttpServletRequest
                 && response instanceof HttpServletResponse
                 && canHandle((HttpServletRequest) request)) {
@@ -135,15 +122,8 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
 
     @Override
     public void destroy() {
-        if (servletTracker != null) {
-            servletTracker.close();
-        }
-        if (resourceTracker != null) {
-            resourceTracker.close();
-        }
-        if (dispatcherTracker != null) {
-            dispatcherTracker.close();
-        }
+        servletTracker.close();
+        resourceTracker.close();
         handlerRwLock.writeLock().lock();
         try {
             handlers.clear();
@@ -187,11 +167,11 @@ public class ProxyFilter implements Filter, RequestHandlerRegistry {
         }
     }
 
-    private static BundleContext getBundleContext(final ServletContext servletContext) {
+    private static BundleContext getBundleContext(final ServletContext servletContext) throws ServletException {
         final Object context = servletContext.getAttribute(BundleContext.class.getName());
         if (context instanceof BundleContext) {
             return (BundleContext)context;
         }
-        return null;
+        throw new ServletException("Bundle context attribute [" + BundleContext.class.getName() + "] not set in servlet context");
     }
 }

@@ -90,37 +90,15 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     public PropertiesGraphDao() {
     }
 
-    private void initPrefab() {
+    private void initPrefab() throws IOException {
         for (Map.Entry<String, Resource> configEntry : getPrefabConfigs().entrySet()) {
-            if (!configEntry.getValue().exists()) {
-                LOG.warn("Skipping missing prefab graph configuration for type '{}': {}", configEntry.getKey(), configEntry.getValue());
-                continue;
-            }
-            // Graphs are a presentation concern: a configuration that cannot be read or
-            // is missing required properties must degrade graphing of that type rather
-            // than prevent the Spring context holding this DAO from starting, which
-            // would stop OpenNMS from starting at all.
-            try {
-                loadProperties(configEntry.getKey(), configEntry.getValue());
-            } catch (final Exception e) {
-                LOG.error("Failed to load prefab graph configuration of type '{}' from {}. Graphs of this type will be unavailable.",
-                        configEntry.getKey(), configEntry.getValue(), e);
-            }
+            loadProperties(configEntry.getKey(), configEntry.getValue());
         }
     }
 
-    private void initAdhoc() {
+    private void initAdhoc() throws IOException {
         for (Map.Entry<String, Resource> configEntry : getAdhocConfigs().entrySet()) {
-            if (!configEntry.getValue().exists()) {
-                LOG.warn("Skipping missing ad hoc graph configuration for type '{}': {}", configEntry.getKey(), configEntry.getValue());
-                continue;
-            }
-            try {
-                loadAdhocProperties(configEntry.getKey(), configEntry.getValue());
-            } catch (final Exception e) {
-                LOG.error("Failed to load ad hoc graph configuration of type '{}' from {}. Ad hoc graphs of this type will be unavailable.",
-                        configEntry.getKey(), configEntry.getValue(), e);
-            }
+            loadAdhocProperties(configEntry.getKey(), configEntry.getValue());
         }
     }
 
@@ -318,7 +296,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * @return
      */
     private PrefabGraphTypeDao createPrefabGraphType(String type,
-            Resource sourceResource) throws IOException {
+            Resource sourceResource) {
         // Default to adding a callback
         return this.createPrefabGraphType(type, sourceResource, true);
     }
@@ -339,7 +317,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * @return
      */
     private PrefabGraphTypeDao createPrefabGraphType(String type,
-            Resource sourceResource, boolean reloadable) throws IOException {
+            Resource sourceResource, boolean reloadable) {
         InputStream in = null;
         try {
             in = sourceResource.getInputStream();
@@ -416,6 +394,10 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             //This *must* come after loading the main graph file, to ensure overrides are correct
             this.scanIncludeDirectory(t);
             return t;
+
+        } catch (IOException e) {
+            LOG.error("Failed to load prefab graph configuration of type {} from {}", type, sourceResource, e);
+            return null;
         } finally {
             IOUtils.closeQuietly(in);
         }

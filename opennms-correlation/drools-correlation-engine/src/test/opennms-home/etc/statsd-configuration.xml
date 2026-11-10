@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<statistics-daemon-configuration
+  xmlns:this="http://www.opennms.org/xsd/config/statsd" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.opennms.org/xsd/config/statsd http://www.opennms.org/xsd/config/statistics-daemon-configuration.xsd ">
+
+  <package name="example1">
+    <packageReport name="TopN" description="Top 20 ifInOctets across all nodes"
+                   schedule="0 20 1 * * ?" retainInterval="2592000000"
+                   status="on">
+      <parameter key="count" value="20"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="YESTERDAY"/>
+      <parameter key="resourceTypeMatch" value="interfaceSnmp"/>
+      <parameter key="attributeMatch" value="ifInOctets"/>
+    </packageReport>
+  </package>
+  
+  <report name="TopN" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+
+</statistics-daemon-configuration>
+

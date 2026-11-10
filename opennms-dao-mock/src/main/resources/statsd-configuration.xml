@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<statistics-daemon-configuration
+  xmlns:this="http://www.opennms.org/xsd/config/statsd" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://www.opennms.org/xsd/config/statsd http://www.opennms.org/xsd/config/statistics-daemon-configuration.xsd ">
+
+  <package name="example1">
+    <packageReport name="TopN" description="Top 20 ifInOctets across all nodes"
+                   schedule="0 20 1 * * ?" retainInterval="2592000000"
+                   status="on">
+      <parameter key="count" value="20"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="YESTERDAY"/>
+      <parameter key="resourceTypeMatch" value="interfaceSnmp"/>
+      <parameter key="attributeMatch" value="ifInOctets"/>
+    </packageReport>
+  </package>
+  
+  <package name="ResponseTimeReports">
+    <packageReport name="Top10_Response_Weekly" description="Weekly Top 10 responses across all nodes"
+                   schedule="0 0 0 ? * MON" retainInterval="2592000000"
+                   status="off">
+      <parameter key="count" value="10"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="LASTSEVENDAYS"/>
+      <parameter key="resourceTypeMatch" value="responseTime"/>
+      <parameter key="attributeMatch" value="icmp"/>
+    </packageReport>
+    
+    <packageReport name="Top10_Response_This_Month" description="This Month Top 10 responses across all nodes"
+                   schedule="0 0 0 L * ?" retainInterval="2592000000"
+                   status="off">
+      <parameter key="count" value="10"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="LASTTHIRTYONEDAYS"/>
+      <parameter key="resourceTypeMatch" value="responseTime"/>
+      <parameter key="attributeMatch" value="icmp"/>
+    </packageReport>
+    
+    <packageReport name="Top10_Response_Last_Month" description="Last Month Top 10 responses across all nodes"
+                   schedule="0 0 0 1 * ?" retainInterval="2592000000"
+                   status="off">
+      <parameter key="count" value="10"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="LASTTHIRTYONEDAYS"/>
+      <parameter key="resourceTypeMatch" value="responseTime"/>
+      <parameter key="attributeMatch" value="icmp"/>
+    </packageReport>
+    
+    <packageReport name="Top10_Response_This_Year" description="This Year Top 10 responses across all nodes"
+                   schedule="0 0 0 1 * ?" retainInterval="2592000000"
+                   status="off">
+      <parameter key="count" value="10"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="THISYEAR"/>
+      <parameter key="resourceTypeMatch" value="responseTime"/>
+      <parameter key="attributeMatch" value="icmp"/>
+    </packageReport>
+  </package>
+  
+  
+  <report name="TopN" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="Top10_Response_Weekly" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="Top10_Response_This_Month" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="Top10_Response_Last_Month" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="Top10_Response_This_Year" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+
+</statistics-daemon-configuration>
+

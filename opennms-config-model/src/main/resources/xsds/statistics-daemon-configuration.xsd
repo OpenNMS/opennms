@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/statsd"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/statsd"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the statsd-configuration.xml configuration
+    file. Version: $Id$.</documentation>
+  </annotation>
+
+  <element name="statistics-daemon-configuration">
+    <annotation>
+      <documentation>Top-level element for the statsd-configuration.xml
+      configuration file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:package">
+          <annotation>
+            <documentation>Package encapsulating nodes eligible to have
+            this report run on them.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:report">
+          <annotation>
+            <documentation>Reports</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="report">
+    <annotation>
+      <documentation>Collector for a service</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter">
+          <annotation>
+            <documentation>The parameters for generating this
+            report</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>The report name.  This is used in packages to refer
+          to this report class.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="class-name" type="string" use="required">
+        <annotation>
+          <documentation>The class used to create and view this
+          report</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="package">
+    <annotation>
+      <documentation>Package encapsulating nodes eligible to have
+      this report run on them.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="0" ref="this:filter">
+          <annotation>
+            <documentation>A rule which adresses belonging to this package
+            must pass. This package is applied only to addresses that pass
+            this filter.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:packageReport">
+          <annotation>
+            <documentation>Reports to be run on the nodes in this
+            package</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>The name or identifier for this
+          package</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="filter">
+    <annotation>
+      <documentation>A rule which adresses belonging to this package must
+      pass. This package is applied only to addresses that pass this
+      filter (if specified).</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string"/>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="packageReport">
+    <annotation>
+      <documentation>Report to be generated for nodes matching this
+      package</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter">
+          <annotation>
+            <documentation>Package-specific parameters (if any) to be used
+            for this report</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>The report name.  This is used internally to
+          reference a configured report class.</documentation>
+        </annotation>
+      </attribute>
+      
+      <attribute name="description" type="string" use="required">
+        <annotation>
+          <documentation>The report description.  This is shown in the web
+          UI.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="schedule" type="string" use="required">
+        <annotation>
+          <documentation>the schedule at which the report is to be
+          generated</documentation>
+        </annotation>
+      </attribute>
+      
+      <attribute name="retainInterval" type="string" use="required">
+        <annotation>
+          <documentation>the amount of time after which this report has been
+          created that it can be purged.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="status" use="required">
+        <annotation>
+          <documentation>status of the report; report is generated only if
+          on</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <enumeration value="on"/>
+            <enumeration value="off"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="parameter">
+    <annotation>
+      <documentation>Parameters to be used for this report.
+      Parameters are specfic to the report.</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="key" type="string" use="required"/>
+
+      <attribute name="value" type="string" use="required"/>
+    </complexType>
+  </element>
+</schema>

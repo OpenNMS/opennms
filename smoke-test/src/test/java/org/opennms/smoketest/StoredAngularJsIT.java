@@ -37,7 +37,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 import org.junit.Test;
-import org.opennms.smoketest.ui.NodeDetailsPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
@@ -80,7 +79,7 @@ public class StoredAngularJsIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testIfAliasIsNotEvaluated() throws Exception {
-        // A device sets ifAlias. The Node Details page shows it in the SNMP interfaces table, and the graph page shows it
+        // A device sets ifAlias. The node page shows it in the interface widget, and the graph page shows it
         // in the label of the SNMP interface resource.
         final String fixtureIp = "192.0.2.13";
         final String ifName = "eth1";
@@ -103,13 +102,14 @@ public class StoredAngularJsIT extends OpenNMSSeleniumIT {
                     + " && rrdtool create " + rrdDir + "/ifOutOctets.rrd --step 300 DS:ifOutOctets:COUNTER:600:U:U RRA:AVERAGE:0.5:1:12");
             assertEquals(result.getStderr(), 0, result.getExitCode());
 
-            // The Node Details page must show the ifAlias in the SNMP interfaces table. Otherwise, the marker check proves nothing.
-            final NodeDetailsPage nodePage = new NodeDetailsPage(this).open("smoketests:xssAliasNode");
-            nodePage.showSnmpInterfaces();
+            getDriver().get(getBaseUrlInternal() + "opennms/element/node.jsp?node=smoketests:xssAliasNode");
+            // The interface widget must start and show the ifAlias. Otherwise, the test can pass because AngularJS does not run.
             new WebDriverWait(getDriver(), Duration.ofSeconds(20))
-                    .until(d -> d.findElements(By.cssSelector("[data-test='snmp-interfaces-table'] td")).stream()
+                    .until(ExpectedConditions.elementToBeClickable(By.linkText("SNMP Interfaces"))).click();
+            new WebDriverWait(getDriver(), Duration.ofSeconds(20))
+                    .until(d -> d.findElements(By.cssSelector("#onms-interfaces div.tab-pane.active td")).stream()
                             .anyMatch(td -> LABEL.equals(td.getText())));
-            assertLabelNotEvaluated("the Node Details page");
+            assertLabelNotEvaluated("element/node.jsp?node=smoketests:xssAliasNode");
 
             assertLabelShownAsText("graph/results.htm?reports=all&resourceId="
                     + URLEncoder.encode("node[smoketests:xssAliasNode].interfaceSnmp[" + ifName + "-" + physAddr + "]", StandardCharsets.UTF_8));

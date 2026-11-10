@@ -473,9 +473,7 @@ final class PollerEventProcessor implements EventListener {
             EventBuilder ebldr = null;
             try {
                 getPollerConfig().update();
-                getPoller().resizeScheduler();
                 rescheduleAllServices(event);
-                getPoller().removeUnconfiguredPollTimers();
                 // Preparing successful event
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, daemonName);
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
@@ -494,7 +492,7 @@ final class PollerEventProcessor implements EventListener {
                 }
             }
         } else {
-            LOG.debug("reloadConfigHandler: ignoring reloadDaemonConfig event that is not addressed to {}", daemonName);
+            LOG.warn("reloadConfigHandler: invalid parameters");
         }
     }
 

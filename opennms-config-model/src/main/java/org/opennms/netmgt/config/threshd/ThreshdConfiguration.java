@@ -29,12 +29,12 @@ import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Top-level element for the threshd-configuration.xml
@@ -47,23 +47,43 @@ public class ThreshdConfiguration implements Serializable {
     private static final long serialVersionUID = 2L;
 
     /**
+     * Maximum number of threads used for
+     *  thresholding.
+     */
+    @XmlAttribute(name = "threads", required = true)
+    private Integer m_threads;
+
+    /**
      * Package encapsulating addresses eligible for
      *  thresholding.
      */
     @XmlElement(name = "package", required = true)
-    @JsonProperty("package")
-    private List<Package> packages = new ArrayList<>();
+    private List<Package> m_packages = new ArrayList<>();
+
+    /**
+     * Service thresholders
+     */
+    @XmlElement(name = "thresholder")
+    private List<Thresholder> m_thresholders = new ArrayList<>();
 
     public ThreshdConfiguration() { }
 
+    public Integer getThreads() {
+        return m_threads;
+    }
+
+    public void setThreads(final Integer threads) {
+        m_threads = ConfigUtils.assertNotNull(threads, "threads");
+    }
+
     public List<Package> getPackages() {
-        return packages;
+        return m_packages;
     }
 
     public void setPackages(final List<Package> packages) {
-        if (packages == this.packages) return;
-        this.packages.clear();
-        if (packages != null) this.packages.addAll(packages);
+        if (packages == m_packages) return;
+        m_packages.clear();
+        if (packages != null) m_packages.addAll(packages);
     }
 
     public Optional<Package> getPackage(String packageName) {
@@ -73,16 +93,36 @@ public class ThreshdConfiguration implements Serializable {
     }
 
     public void addPackage(final Package p) {
-        packages.add(p);
+        m_packages.add(p);
     }
 
     public boolean removePackage(final Package p) {
-        return packages.remove(p);
+        return m_packages.remove(p);
+    }
+
+    public List<Thresholder> getThresholders() {
+        return m_thresholders;
+    }
+
+    public void setThresholders(final List<Thresholder> thresholders) {
+        if (thresholders == m_thresholders) return;
+        m_thresholders.clear();
+        if (thresholders != null) m_thresholders.addAll(thresholders);
+    }
+
+    public void addThresholder(final Thresholder thresholder) {
+        m_thresholders.add(thresholder);
+    }
+
+    public boolean removeThresholder(final Thresholder thresholder) {
+        return m_thresholders.remove(thresholder);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(packages);
+        return Objects.hash(m_threads, 
+                            m_packages, 
+                            m_thresholders);
     }
 
     @Override
@@ -93,7 +133,9 @@ public class ThreshdConfiguration implements Serializable {
 
         if (obj instanceof ThreshdConfiguration) {
             final ThreshdConfiguration that = (ThreshdConfiguration)obj;
-            return Objects.equals(this.packages, that.packages);
+            return Objects.equals(this.m_threads, that.m_threads)
+                    && Objects.equals(this.m_packages, that.m_packages)
+                    && Objects.equals(this.m_thresholders, that.m_thresholders);
         }
         return false;
     }

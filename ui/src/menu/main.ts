@@ -28,7 +28,6 @@ import '../styles/onms-base.scss'
 import '../styles/onms-theme.scss'
 import '../styles/opennms-styles.scss'
 import { setupPrimeVue } from '../theme/primevue-setup'
-import { hidesMenuInFrame } from '../lib/framing'
 import { useAppStore } from '../stores/appStore'
 import App from './App.vue'
 
@@ -49,9 +48,4 @@ app.use(createPinia())
 // theme-dependent rules and PrimeVue's darkModeSelector track the stored theme.
 useAppStore().initTheme()
 
-// Inside an iframe (e.g. an embedded page) the host page supplies the chrome,
-// so don't render a second menu, unless the frame's name asks for it (see
-// hidesMenuInFrame). initTheme() above still runs for the theme class.
-if (!hidesMenuInFrame()) {
-  app.mount(`#${appMountId}`)
-}
+app.mount(`#${appMountId}`)

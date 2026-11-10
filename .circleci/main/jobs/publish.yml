@@ -17,8 +17,7 @@ jobs:
       - run:
           name: download resources from parent jobs
           command: |
-            # Don't download rpm deb yml artifacts, since we don't need them for publishing
-            for TYPE in oci; do
+            for TYPE in oci rpm deb; do
               download-artifacts.pl \
                 --vault-layout \
                 --include-failed \
@@ -46,9 +45,9 @@ jobs:
       - run:
           name: Publish to Docker Hub
           command: .circleci/scripts/publish-dockerhub.sh
-#     - run:
-#         name: Publish to Cloudsmith
-#         command: .circleci/scripts/publish-cloudsmith.sh
+      - run:
+          name: Publish to Cloudsmith
+          command: .circleci/scripts/publish-cloudsmith.sh
 #      - run:
 #          name: Publish to Azure
 #          command: .circleci/scripts/publish-azure.sh

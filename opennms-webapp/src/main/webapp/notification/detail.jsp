@@ -75,7 +75,6 @@
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
-<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Notice Detail")
           .breadcrumb("Notifications", "notification/index.jsp")
@@ -126,7 +125,9 @@
     <th class="col-md-1">Node</th>
     <td class="col-md-2">
       <%if (nodeLabel!=null) { %>
-        <c:url var="nodeLink" value='<%= ElementConstants.NODE_DETAILS_URI + notice.getNodeId() %>'/>
+        <c:url var="nodeLink" value="element/node.jsp">
+          <c:param name="node" value="<%=String.valueOf(notice.getNodeId())%>"/>
+        </c:url>
         <a href="${nodeLink}"><c:out value="<%=nodeLabel%>"/></a>
       <% } else { %>
         &nbsp;
@@ -168,7 +169,10 @@
     <td class="col-md-2">
       <c:choose>
         <c:when test="<%= nodeLocation != null %>">
-          <a href="<%= ElementConstants.NODE_DETAILS_URI + notice.getNodeId() %>"><c:out value="<%=nodeLocation%>"/></a>
+          <c:url var="nodeLocationLink" value="element/node.jsp">
+            <c:param name="node" value="<%=String.valueOf(notice.getNodeId())%>"/>
+          </c:url>
+          <a href="${nodeLink}"><c:out value="<%=nodeLocation%>"/></a>
         </c:when>
         <c:otherwise>
           &nbsp;

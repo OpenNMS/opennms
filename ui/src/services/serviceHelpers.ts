@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { NodePage, QueryParameters } from '@/types'
+import { QueryParameters } from '@/types'
 
 const queryParametersHandler = (queryParameters: QueryParameters, endpoint: string): string => {
   let modifiedEndpoint = endpoint + '?'
@@ -36,39 +36,4 @@ const queryParametersHandler = (queryParameters: QueryParameters, endpoint: stri
   return modifiedEndpoint.slice(0, -1)
 }
 
-/**
- * Narrow a v2 query to one node, keeping any FIQL the caller already has. The caller's clause is
- * parenthesised before the `;` (AND): FIQL binds `;` tighter than `,` (OR), so a bare
- * `node.id==1;a,b` would read as `(node AND a) OR b` and let in other nodes' rows.
- */
-/** The page a query asks for, as a node slice records it: no offset is the start, no limit is all. */
-const nodePageOf = (queryParameters?: QueryParameters): NodePage => ({
-  offset: queryParameters?.offset ?? 0,
-  limit: queryParameters?.limit ?? 0
-})
-
-const withNodeFilter = (nodeId: string | number, queryParameters?: QueryParameters): QueryParameters => {
-  const nodeClause = `node.id==${nodeId}`
-  const _s = queryParameters?._s ? `${nodeClause};(${queryParameters._s})` : nodeClause
-
-  return { ...queryParameters, _s }
-}
-
-/**
- * The server's message from a failed request, when it is fit to show a user: a 4xx whose body is a
- * short plain-text message. A 5xx carries an HTML page or a raw persistence exception, so it gets the
- * caller's fallback instead.
- */
-const serverErrorMessage = (err: any, fallback: string): string => {
-  const detail = err?.response?.data
-  const status = Number(err?.response?.status ?? 0)
-  if (typeof detail === 'string' && status >= 400 && status < 500) {
-    const trimmed = detail.trim()
-    if (trimmed && trimmed.length <= 200 && !/[<>]/.test(trimmed)) {
-      return trimmed
-    }
-  }
-  return fallback
-}
-
-export { nodePageOf, queryParametersHandler, serverErrorMessage, withNodeFilter }
+export { queryParametersHandler }

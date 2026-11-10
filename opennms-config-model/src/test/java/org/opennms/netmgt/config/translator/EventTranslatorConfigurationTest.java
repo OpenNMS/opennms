@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class EventTranslatorConfigurationTest extends XmlTest<EventTranslatorConfiguration> {
+public class EventTranslatorConfigurationTest extends XmlTestNoCastor<EventTranslatorConfiguration> {
 
     public EventTranslatorConfigurationTest(EventTranslatorConfiguration sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/translator-configuration.xsd");

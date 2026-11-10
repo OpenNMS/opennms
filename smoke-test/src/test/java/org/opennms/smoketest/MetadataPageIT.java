@@ -33,7 +33,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.smoketest.ui.NodeDetailsPage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
@@ -204,10 +203,11 @@ public class MetadataPageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testMetadataPage() throws Exception {
-        final NodeDetailsPage nodePage = new NodeDetailsPage(this);
+        // visit the node's page
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestNode");
 
-        // visit the node's page and go to the metadata page
-        nodePage.open("SmokeTests:TestNode").clickLink("Inventory", "Metadata");
+        // go to the metadata page
+        findElementByLink("Meta-Data").click();
 
         // check for contexts
         waitUntil(pageContainsText("Context contextA"));
@@ -237,7 +237,8 @@ public class MetadataPageIT extends OpenNMSSeleniumIT {
         waitUntil(pageContainsText("valueC3"));
 
         // visit the node's page to click the interface 10.10.10.10
-        nodePage.open("SmokeTests:TestNode").clickIpInterface("10.10.10.10");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestNode");
+        findElementByLink("10.10.10.10").click();
         // go to the metadata page
         findElementByLink("Meta-Data").click();
         // checking interface-level values
@@ -246,7 +247,8 @@ public class MetadataPageIT extends OpenNMSSeleniumIT {
         waitUntil(pageContainsText("valueD1"));
 
         // visit the node's page to click the service ICMP
-        nodePage.open("SmokeTests:TestNode").clickService("ICMP");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestNode");
+        findElementByLink("ICMP").click();
         // go to the metadata page
         findElementByLink("Meta-Data").click();
         // checking service-level values
@@ -257,8 +259,11 @@ public class MetadataPageIT extends OpenNMSSeleniumIT {
         // login with the unpriviledged user
         loginUnpriviledgedUser();
 
-        // visit the node's page and go to the metadata page
-        nodePage.open("SmokeTests:TestNode").clickLink("Inventory", "Metadata");
+        // visit the node's page
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestNode");
+
+        // go to the metadata page
+        findElementByLink("Meta-Data").click();
 
         // check for contexts
         waitUntil(pageContainsText("Context contextA"));

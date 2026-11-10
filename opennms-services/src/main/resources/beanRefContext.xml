@@ -6,6 +6,7 @@
     <bean id="pollerConfigContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
         <constructor-arg>
             <list>
+                <value>META-INF/opennms/applicationContext-pollerConfigDaos.xml</value>
                 <value>META-INF/opennms/applicationContext-deviceConfig-MonitorAdaptor.xml</value>
             </list>
         </constructor-arg>
@@ -16,6 +17,7 @@
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-thresholding.xml</value>
+         <value>META-INF/opennms/applicationContext-thresholdingConfigDaos.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg ref="pollerConfigContext" />
@@ -53,6 +55,15 @@
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-snmpinterfacepollerd.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="daoContext" />
+   </bean>
+
+    <bean id="statisticsDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-statisticsDaemon.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg ref="daoContext" />

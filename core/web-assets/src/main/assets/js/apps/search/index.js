@@ -29,15 +29,12 @@
 const angular = require('vendor/angular-js');
 require('lib/onms-http');
 
-const graphCollectionsTemplate = require('./template.graph-collections.html');
+const kscTemplate = require('./template.ksc.html');
 const nodesTemplate = require('./template.nodes.html');
 
 import Util from 'lib/util';
 
-// ngSanitize: the typeahead renders each match's label as HTML, sanitized only when
-// $sanitize is injectable. Without it a collection title would run as markup.
 angular.module('onms-search', [
-  'ngSanitize',
   'onms.http',
   'ui.bootstrap'
 ])
@@ -55,12 +52,12 @@ angular.module('onms-search', [
   };
 })
 
-.directive('onmsSearchGraphCollections', function() {
+.directive('onmsSearchKsc', function() {
   return {
     restrict: 'E',
     transclude: true,
-    templateUrl: graphCollectionsTemplate,
-    controller: 'GraphCollectionSearchCtrl'
+    templateUrl: kscTemplate,
+    controller: 'KscSearchCtrl'
   };
 })
 
@@ -82,19 +79,19 @@ angular.module('onms-search', [
 
 }])
 
-.controller('GraphCollectionSearchCtrl', ['$scope', '$window', '$http', '$filter', function($scope, $window, $http, $filter) {
+.controller('KscSearchCtrl', ['$scope', '$window', '$http', '$filter', function($scope, $window, $http, $filter) {
 
-  $scope.getGraphCollections = function(criteria) {
+  $scope.getKscReports = function(criteria) {
     return $http({
-      url: 'api/v2/graph-collections',
+      url: 'rest/ksc',
       method: 'GET'
     }).then(function(response) {
-       return $filter('filter')(response.data, { title: criteria });
+       return $filter('filter')(response.data.kscReport, criteria);
     });
   };
 
-  $scope.goToGraphCollection = function(collection) {
-    $window.location.href = Util.getBaseHref() + 'ui/index.html#/graph-collections/' + collection.id;
+  $scope.goToKscReport = function(ksc) {
+    $window.location.href = Util.getBaseHref() + 'KSC/customView.htm?type=custom&report=' + ksc.id;
   }
 
 }]);

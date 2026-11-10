@@ -21,12 +21,9 @@
  */
 package org.opennms.web.rest.support.menu.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class MainMenu {
     public String templateName;
     public String baseHref;

@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.smoketest.ui.NodeDetailsPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.Keys;
@@ -274,15 +273,15 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
         // single-node auto-redirect, were removed in NMS-18217; we already know the node's
         // foreignSource:foreignId here, so go straight to its detail page rather than relying
         // on Vue table click timing.)
-        final NodeDetailsPage nodePage = new NodeDetailsPage(this).open(REQUISITION_NAME + ":" + NODE_FOREIGNID);
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=" + REQUISITION_NAME + ":" + NODE_FOREIGNID);
 
-        // The Availability panel lists the detected services; the IP Interfaces table the address.
-        waitUntil(elementToBeClickable(By.xpath("//tr[@data-test='timeline-service-row']//a[text()='ICMP']")));
-        findElementByXpath("//tr[@data-test='timeline-service-row']//a[text()='HTTP-8980']");
-        findElementByXpath("//*[@data-test='ip-interfaces-table']//a[contains(@href, 'element/interface.jsp') and text()='" + NODE_IPADDR + "']");
+        waitUntil(elementToBeClickable(By.linkText("ICMP")));
+        findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + NODE_IPADDR + "']");
+        findElementByLink("HTTP-8980");
 
         // Verify that the meta-data was persisted
-        nodePage.clickLink("Inventory", "Metadata");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=" + REQUISITION_NAME + ":" + NODE_FOREIGNID);
+        findElementByLink("Meta-Data").click();
         waitUntil(pageContainsText("Context requisition"));
         waitUntil(pageContainsText("foo"));
         waitUntil(pageContainsText("bar"));

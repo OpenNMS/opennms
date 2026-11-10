@@ -1,0 +1,125 @@
+
+= KSC Reports
+
+== GETs (reading data)
+
+[caption=]
+.KSC Reports API GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /ksc
+| Get a list of all KSC reports, including ID and label.
+
+| /ksc/\{reportid}
+| Get a specific KSC report, by ID.
+
+| /ksc/count
+| Get a count of all KSC reports.
+|===
+
+== PUT (modifying data)
+
+[caption=]
+.KSC Reports API PUT functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /ksc/reloadConfig
+| Reload the KSC report configuration from disk.
+
+| /ksc/\{reportid}
+| Add a graph to the existing report with the given ID.
+The graph is built from the query string parameters below; the report is then saved to disk.
+|===
+
+The following query string parameters apply to `PUT /ksc/\{reportid}`:
+
+[caption=]
+[cols="1,1,3"]
+|===
+| Name  | Required | Comment
+
+| reportName
+| Yes
+| The graph definition's `report.name` from `snmp-graph.properties.d` (stored as the graph type).
+
+| resourceId
+| Yes
+| The timeseries xref:rest/resources.adoc#gets-reading-data[resourceId] to graph.
+
+| title
+| No
+| Title for the graph.
+
+| timespan
+| No
+| One of the valid timespan options; defaults to `7_day` if omitted or invalid.
+|===
+
+== POSTs (Creating Data)
+POST requires XML using `application/xml` as its `Content-Type`.
+|===
+| Resource            | Description
+| `/ksc`              | Create a report from an XML payload.
+|===
+
+== DELETEs (Removing Data)
+|===
+| Resource            | Description
+| `none`              | _not supported_
+|===
+
+== Examples using cURL
+
+.Get a list of all KSC reports
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/ksc"
+----
+
+.Response
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kscReports count="1" offset="0" totalCount="1">
+  <kscReport id="0" label="Report_Title"/>
+</kscReports>
+----
+
+.Create a report
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/xml' -d @ksc.xml http://localhost:8980/opennms/rest/ksc
+----
+
+.XML Payload ksc.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kscReport
+  id="1"<1>
+  label="JVM Heap"<2>
+  show_timespan_button="true"<3>
+  show_graphtype_button="true"<4>
+  graphs_per_line="2"><5>
+  <kscGraph
+     title="Heap Memory Usage"<6>
+     timespan="7_day"<7>
+     graphtype="heap.memory"<8>
+     resourceId="node[selfmonitor:1].interfaceSnmp[opennms-jvm]"<9>
+     />
+</kscReport>
+----
+<1>	id is required.
+<2>	label is required.
+<3>	Optional; defaults to false
+<4>	Optional; defaults to false
+<5>	Optional; default 1
+<6>	Graph title is required
+<7>	Optional, defaults to 7 days
+<8>	From graph definition in snmp-graph.properties.d, this is the report.name
+<9>	Required; the timeseries xref:rest/resources.adoc#gets-reading-data[resourceId].
+

@@ -31,9 +31,7 @@ commands:
             export SIGN_KEY_PASS="$(echo "${GPG_PASSPHRASE}" | base64 -d)"
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             << parameters.node-memory >>
-            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
-            # Terser starts one worker per host CPU. Limit the workers to half of the container CPUs.
-            export TERSER_WORKERS=$(( << parameters.number-vcpu >> / 2 ))
+            export MAVEN_OPTS="-Xmx12g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             MAVEN_ARGS="install"
             mkdir -p target/artifacts
             case "${CIRCLE_BRANCH}" in
@@ -50,7 +48,7 @@ commands:
             esac
             echo "export OPENNMS_VERSION=\"$OPENNMS_VERSION\"" >> $BASH_ENV
             # No job uses the javadoc jars from this build. The publish job generates its own.
-            COMPILE_ARGS=(-DskipTests=true -DskipITs=true -Dbuild.skip.tarball=false \
+            ./compile.pl -DskipTests=true -DskipITs=true -Dbuild.skip.tarball=false \
               -Dmaven.javadoc.skip=true \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
@@ -60,12 +58,7 @@ commands:
               -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
-              --threads << parameters.number-vcpu >> \
-              $MAVEN_ARGS)
-            # Build the Karaf assemblies in a second run. tools/karaf-assemblies.txt gives the reason.
-            KARAF_ASSEMBLIES=$(grep -Ev '^[[:space:]]*(#|$)' tools/karaf-assemblies.txt | paste -sd, -)
-            ./compile.pl "${COMPILE_ARGS[@]}" --projects "!${KARAF_ASSEMBLIES//,/,!}" || exit 1
-            ./compile.pl "${COMPILE_ARGS[@]}" --projects "$KARAF_ASSEMBLIES" || exit 1
+              $MAVEN_ARGS || exit 1
             ./compile.pl -s .circleci/scripts/structure-settings.xml \
               --batch-mode \
               --fail-at-end \

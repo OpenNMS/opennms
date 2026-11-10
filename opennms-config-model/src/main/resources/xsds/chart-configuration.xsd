@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.opennms.org/xsd/config/charts"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/charts" elementFormDefault="qualified">
+
+<!-- This configuration file is used to generate JFreeChart graphics 
+
+All Chart Requirements:
+	name: (unique named given to each chart defined)
+	background-color: (hex)
+	
+Bar Chart Requirements:
+	variation: (2d|3d)
+	title: (string)
+	sub-titles:
+		value: (string)
+		font: (i.e. SansSerif)
+		style: (i.e. plain)
+		pitch: (integer)
+		position: (top, bottom)
+		horizontal-alignment: (left, center, right)
+	grid-line:
+		paint: (hex)
+		visible: (boolean)
+	category-data-set: rows/columns (series/categories)
+		value:
+		series:
+		category:
+	series: (one or more)
+		row-keys and values
+	categories: (one or more)
+		column-keys and values
+	domain-axis:
+		label: (string)
+		grid-line:
+			paint: (hex)
+			visible: (true|false)
+		lower-margin: (percent)
+		category-margin: (percent)
+		upper-margin: (percent)
+	range-axis-label: (string)
+	range-grid-line:
+		paint: (hex)
+		visible: (true|false)
+	preferred-size: 
+		horizontal: (pixels)
+		vertical: (pixels)
+	range-axis-tick-units: (float|integer)
+	plot-orientation: (vertical|horizontal)
+	include-legend: (true|false)
+	tool-tips: (true|false)
+	urls: (true|false)
+	draw-bar-outline: (true|false)
+	series:
+		value: (0-9999)
+		paint: (hex ? gradiant)?????
+		gradient: ???????
+		
+Line Chart Requirements: (pretty much the same as bar)
+	fill:
+		use: (boolean)
+		paint: (hex)
+		
+Pie Chart Requirements:
+
+TODO: XYDataSets
+ -->
+    <element name="chart-configuration">
+    		<complexType>
+    			<sequence>
+	    			<element ref="this:bar-chart" minOccurs="0" maxOccurs="unbounded" />
+    			</sequence>
+    		</complexType>
+    </element>
+    
+    <element name="bar-chart" >
+    		<complexType>
+    			<sequence>
+    				<element ref="this:title" minOccurs="1" maxOccurs="1" />
+    				<element ref="this:image-size" minOccurs="1" maxOccurs="1" />
+    				<element ref="this:sub-title" minOccurs="0" maxOccurs="unbounded" />
+    				<element ref="this:grid-lines" minOccurs="0" maxOccurs="1" />
+    				<element ref="this:series-def" minOccurs="0" maxOccurs="unbounded" />
+                    <element ref="this:plot-background-color" minOccurs="0" maxOccurs="1" />
+                    <element ref="this:chart-background-color" minOccurs="0" maxOccurs="1" />
+    			</sequence>
+    			<attribute name="name" type="string" use="required" />
+    			<attribute name="domain-axis-label" type="string" use="required" />
+    			<attribute name="range-axis-label" type="string" use="required" />
+    			<attribute name="sub-label-class" type="string" use="optional" />
+    			<attribute name="series-color-class" type="string" use="optional" />
+    			<attribute name="draw-bar-outline" type="boolean" use="optional" default="true"/>
+    			<attribute name="show-legend" type="boolean" use="optional" default="true"/>
+    			<attribute name="show-tool-tips" type="boolean" use="optional" default="false"/>
+    			<attribute name="show-urls" type="boolean" use="optional" default="false"/>
+    			<attribute name="variation" use="optional" >
+    				<simpleType>
+    					<restriction base="string">
+    						<pattern value="(2d|3d)" />
+    					</restriction>
+    				</simpleType>
+    			</attribute>
+    			<attribute name="plot-orientation" use="optional" >
+    				<simpleType>
+    					<restriction base="string">
+    						<pattern value="(horizontal|vertical)" />
+    					</restriction>
+    				</simpleType>
+    			</attribute>
+    		</complexType>
+    </element>
+        
+    <element name="series-def" >
+    		<complexType>
+    			<sequence>
+    				<element ref="this:jdbc-data-set" minOccurs="1" maxOccurs="1" />
+	    			<element ref="this:rgb" minOccurs="0" maxOccurs="1" />
+	    		</sequence>
+	    		<attribute name="number" use="required" >
+                  <simpleType>
+                    <restriction base="int">
+                      <minInclusive value="1"/>
+                    </restriction>
+                  </simpleType>
+                </attribute>
+	    		<attribute name="series-name" type="string" use="required" />
+	    		<attribute name="use-labels" type="boolean" use="optional" default="true" />
+    		</complexType>
+    </element>
+    
+    <element name="jdbc-data-set" >
+    		<complexType>
+    			<attribute name="db-name" type="string" use="required" />
+    			<attribute name="sql" type="string" use="required" />
+    		</complexType>
+    </element>
+    
+    <element name="plot-background-color">
+        <complexType>
+            <sequence>
+                <element ref="this:rgb" minOccurs="0" maxOccurs="1" />
+            </sequence>
+        </complexType>
+    </element>
+    
+    <element name="chart-background-color">
+        <complexType>
+            <sequence>
+                <element ref="this:rgb" />
+            </sequence>
+        </complexType>
+    </element>
+    
+    <element name="grid-lines">
+	    	<complexType>
+	    		<sequence>
+		    		<element ref="this:rgb" minOccurs="0" maxOccurs="1" />
+	    		</sequence>
+	    		<attribute name="visible" type="boolean" use="required" />
+    		</complexType>
+    </element>
+    
+    <!-- select severity, count(*) as count from alarms group by severity order by severity desc -->
+    
+    <element name="sub-title" >
+    		<complexType>
+    			<sequence>
+    				<element ref="this:title" minOccurs="1" maxOccurs="1"/>
+    			</sequence>
+    			<attribute name="position" use="optional" >
+    				<simpleType>
+	    				<restriction base="string" >
+    						<pattern value="(top|bottom)" />
+    					</restriction>
+    				</simpleType>
+    			</attribute>
+    			<attribute name="horizontal-alignment" use="optional" >
+    				<simpleType>
+	    				<restriction base="string" >
+    						<pattern value="(left|center|right)" />
+    					</restriction>
+    				</simpleType>
+    			</attribute>
+    		</complexType>
+    </element>
+    
+    <element name="title" >
+    		<complexType>
+    			<sequence>
+    				<element ref="this:rgb" minOccurs="0" maxOccurs="0" />
+    			</sequence>
+    			<attribute name="value" type="string" use="required" />
+    			<attribute name="font" type="string" use="optional" />
+    			<attribute name="pitch" use="optional" >
+                  <simpleType>
+                    <restriction base="int">
+                      <minInclusive value="1"/>
+                    </restriction>
+                  </simpleType>
+                </attribute>
+    			<attribute name="style" type="string" use="optional" />
+    		</complexType>
+    </element>
+    
+    <element name="hex-color" >
+    		<simpleType>
+    			<restriction base="string">
+    				<pattern value="#([0-9a-f]{1,2}){3}" />
+    			</restriction>
+    		</simpleType>
+    </element>
+    
+    <element name="rgb" >
+    		<complexType>
+    			<sequence>
+    				<element ref="this:red" minOccurs="1" maxOccurs="1" />
+    				<element ref="this:green" minOccurs="1" maxOccurs="1" />
+    				<element ref="this:blue" minOccurs="1" maxOccurs="1" />    				
+    			</sequence>
+    		</complexType>
+    </element>
+    
+    <element name="red" >
+    		<complexType>
+	    		<sequence>
+    				<element ref="this:rgb-color" minOccurs="1" maxOccurs="1" />
+    			</sequence>
+    		</complexType>
+    </element>
+    <element name="green" >
+    		<complexType>
+	    		<sequence>
+    				<element ref="this:rgb-color" minOccurs="1" maxOccurs="1" />
+    			</sequence>
+    		</complexType>
+    </element>
+    <element name="blue" >
+    		<complexType>
+	    		<sequence>
+    				<element ref="this:rgb-color" minOccurs="1" maxOccurs="1" />
+    			</sequence>
+    		</complexType>
+    </element>
+    
+    <element name="rgb-color" >
+    		<simpleType>
+    			<restriction base="int" >
+                    <minInclusive value="0" />
+    				<maxInclusive value="255" />
+    			</restriction>
+    		</simpleType>
+    </element>
+
+	<element name="image-size" >
+		<complexType>
+			<sequence>
+				<element ref="this:hz-size" minOccurs="1" maxOccurs="1" />
+				<element ref="this:vt-size" minOccurs="1" maxOccurs="1" />
+			</sequence>
+		</complexType>
+	</element>
+	
+	<element name="vt-size" >
+		<complexType>
+			<sequence>
+				<element ref="this:pixels" minOccurs="1" maxOccurs="1" />
+			</sequence>
+		</complexType>
+	</element>
+	    
+    <element name="hz-size" >
+    		<complexType>
+    			<sequence>
+    				<element ref="this:pixels" minOccurs="1" maxOccurs="1" />
+    			</sequence>
+    		</complexType>
+    </element>
+
+    <element name="pixels" >
+    		<simpleType>
+    			<restriction base="int" >
+                  <minInclusive value="1"/>
+                </restriction>
+    		</simpleType>
+    </element>
+    
+</schema>

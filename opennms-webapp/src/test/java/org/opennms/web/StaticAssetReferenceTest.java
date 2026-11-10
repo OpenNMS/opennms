@@ -62,7 +62,8 @@ public class StaticAssetReferenceTest {
 
     /**
      * Surefire runs with the module directory as the working directory, so the webapp
-     * sources are addressable as a relative path.
+     * sources are addressable as a relative path. NavBarControllerTest relies on the same
+     * convention via {@code new MockServletContext("file:src/main/webapp")}.
      */
     private static final Path WEBAPP_ROOT = Path.of("src", "main", "webapp");
 

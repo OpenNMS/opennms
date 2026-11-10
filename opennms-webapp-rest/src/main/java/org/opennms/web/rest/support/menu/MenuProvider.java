@@ -22,18 +22,18 @@
 package org.opennms.web.rest.support.menu;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opennms.core.resource.Vault;
 import org.opennms.web.api.Authentication;
-import org.opennms.web.api.ElementConstants;
 import org.opennms.web.rest.support.menu.model.MainMenu;
 import org.opennms.web.rest.support.menu.model.MenuEntry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
@@ -46,8 +46,8 @@ import com.google.common.collect.ImmutableSet;
  * due to runtime data and role or system property evaluation.
  */
 public class MenuProvider {
-    private static final Logger LOG = LoggerFactory.getLogger(MenuProvider.class);
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    /** Fully qualified classname of RoleBasedNavBarEntry class, from opennms-webapp. */
+    private final String ROLE_BASED_NAV_BAR_ENTRY_CLASS = "org.opennms.web.navigate.RoleBasedNavBarEntry";
 
     private final String ADMIN_ROLE_ICON = "fa-cogs";
 
@@ -64,23 +64,43 @@ public class MenuProvider {
         Authentication.ROLE_FILESYSTEM_EDITOR
     );
 
-    public MenuProvider() {
+    /** Full file path to menu-template.json file, see "applicationContext-cxf-rest-v2.xml" */
+    private String menuTemplateFilePath;
+
+    /** Context that must be set before using the MenuProvider. */
+    private MenuRequestContext menuRequestContext;
+
+    public MenuProvider(String menuTemplateFilePath) {
+        this.menuTemplateFilePath = menuTemplateFilePath;
     }
 
-    /**
-     * Kept so that an applicationContext-cxf-rest-v2.xml from an earlier release, which passes the template
-     * path here, still loads (it is a package conffile, so an edited copy can survive an upgrade).
-     * The path is ignored: MenuTemplatePaths decides which file is read.
-     */
-    @Deprecated
-    public MenuProvider(String ignoredMenuTemplateFilePath) {
-        this();
+    public void setMenuRequestContext(MenuRequestContext context) {
+        this.menuRequestContext = context;
     }
 
-    /**
-     * Build the menu for one request. Stateless: all per-request data comes from the arguments.
-     */
-    public MainMenu getMainMenu(MenuRequestContext menuRequestContext, String templatePath) throws Exception {
+    public String getMenuTemplateFilePath() {
+        return this.menuTemplateFilePath;
+    }
+
+    public void setMenuTemplateFilePath(String path) {
+        this.menuTemplateFilePath = path;
+    }
+
+    public MainMenu getMainMenu() throws Exception, IOException {
+        ensureContext();
+
+        MainMenu mainMenu = generateMenuFromTemplate();
+
+        return mainMenu;
+    }
+
+    public MainMenu generateMenuFromTemplate() throws Exception, IOException {
+        return generateMenuFromTemplate(null);
+    }
+
+    public MainMenu generateMenuFromTemplate(String menuTemplateFile) throws Exception, IOException {
+        final String templatePath = menuTemplateFile != null ? menuTemplateFile : this.menuTemplateFilePath;
+
         MainMenu mainMenu = parseMenuTemplate(templatePath);
 
         if (mainMenu == null) {
@@ -96,9 +116,8 @@ public class MenuProvider {
         mainMenu.formattedDate = menuRequestContext.getFormattedDate();
         mainMenu.formattedTime = menuRequestContext.getFormattedTime();
         mainMenu.username = menuRequestContext.getRemoteUser();
-        // The Vue Node Details page. No OpenNMS Vue code reads this any more (it links through the
-        // router), but plugins may. Callers append the node id.
-        mainMenu.baseNodeUrl = ElementConstants.NODE_DETAILS_URI;
+        // for navigating to a specific node id
+        mainMenu.baseNodeUrl = "element/node.jsp?node=";
 
         mainMenu.zenithConnectEnabled =
                 Strings.nullToEmpty(menuRequestContext.getSystemProperty(ZENITH_CONNECT_ENABLED_KEY, "false")).equals("true");
@@ -112,13 +131,16 @@ public class MenuProvider {
         mainMenu.product = Strings.emptyToNull(Vault.getProperty("opennms.product"));
         mainMenu.docsVersion = Strings.emptyToNull(Vault.getProperty("opennms.docs.version"));
 
-        List<MenuEntry> filteredMenus = MenuEntryFilter.filter(mainMenu.menus, menuRequestContext);
+        // Remove any MenuEntry items marked as RoleBased where user does not have any required role
+        List<MenuEntry> filteredTopMenuEntries = filterMenuEntriesByRole(mainMenu.menus);
+        filteredTopMenuEntries = filterMenuEntriesBySystemProperties(filteredTopMenuEntries);
+
         mainMenu.menus.clear();
-        mainMenu.menus.addAll(filteredMenus);
+        mainMenu.menus.addAll(filteredTopMenuEntries);
 
         // These are mostly in the template now
         // May have to remove some depending on Admin role, etc.
-        mainMenu.helpMenu.items = MenuEntryFilter.filter(mainMenu.helpMenu.items, menuRequestContext);
+        mainMenu.helpMenu.items = filterMenuEntriesByRole(mainMenu.helpMenu.items);
 
         mainMenu.selfServiceMenu.name = menuRequestContext.getRemoteUser();
 
@@ -133,17 +155,20 @@ public class MenuProvider {
         }
 
         // Template should include ROLE_ADMIN and ROLE_PROVISION
-        if (!MenuEntryFilter.isVisible(mainMenu.provisionMenu, menuRequestContext)) {
+        if (!evaluateRoleBasedMenuEntry(mainMenu.provisionMenu)) {
             mainMenu.provisionMenu = null;
         }
 
-        if (!MenuEntryFilter.isVisible(mainMenu.configurationMenu, menuRequestContext)) {
+        if (!evaluateRoleBasedMenuEntry(mainMenu.configurationMenu)) {
             mainMenu.configurationMenu = null;
         }
 
-        replaceDocsTokens(mainMenu.menus, mainMenu.product, mainMenu.docsVersion);
+        // the docs site has no unversioned product root, so fall back to the Horizon docs rather than a broken link
+        final String product = mainMenu.product != null ? mainMenu.product : "horizon";
+        final String docsVersion = mainMenu.product != null && mainMenu.docsVersion != null ? mainMenu.docsVersion : "latest";
+        replaceDocsTokens(mainMenu.menus, product, docsVersion);
         replaceDocsTokens(Arrays.asList(mainMenu.helpMenu, mainMenu.selfServiceMenu, mainMenu.userNotificationMenu,
-                mainMenu.provisionMenu, mainMenu.configurationMenu), mainMenu.product, mainMenu.docsVersion);
+                mainMenu.provisionMenu, mainMenu.configurationMenu), product, docsVersion);
 
         return mainMenu;
     }
@@ -153,24 +178,7 @@ public class MenuProvider {
         return String.format("2002-%d", LocalDate.now().getYear());
     }
 
-    /**
-     * Replaces {@link #PRODUCT_TOKEN} and {@link #DOCS_VERSION_TOKEN} in the URLs of these entries and their
-     * descendants. {@code product} and {@code docsVersion} are the raw values (null when unknown); the docs site
-     * has no unversioned product root, so an unknown product falls back to the Horizon docs rather than a broken link.
-     */
-    public static void replaceDocsTokens(List<MenuEntry> entries, String product, String docsVersion) {
-        final String docsProduct = product != null ? product : "horizon";
-        final String version = product != null && docsVersion != null ? docsVersion : "latest";
-        substituteDocsTokens(entries, docsProduct, version);
-    }
-
-    /** {@link #replaceDocsTokens(List, String, String)} with the product and docs version of this server. */
-    public static void replaceDocsTokens(List<MenuEntry> entries) {
-        replaceDocsTokens(entries, Strings.emptyToNull(Vault.getProperty("opennms.product")),
-                Strings.emptyToNull(Vault.getProperty("opennms.docs.version")));
-    }
-
-    private static void substituteDocsTokens(List<MenuEntry> entries, String product, String docsVersion) {
+    private static void replaceDocsTokens(List<MenuEntry> entries, String product, String docsVersion) {
         if (entries == null) {
             return;
         }
@@ -181,17 +189,101 @@ public class MenuProvider {
             if (entry.url != null) {
                 entry.url = entry.url.replace(PRODUCT_TOKEN, product).replace(DOCS_VERSION_TOKEN, docsVersion);
             }
-            substituteDocsTokens(entry.items, product, docsVersion);
+            replaceDocsTokens(entry.items, product, docsVersion);
         }
     }
 
-    /** Reads a menu template. Returns null, after logging why, when it is missing or invalid. */
-    public static MainMenu parseMenuTemplate(String menuTemplateFile) {
-        try (var fis = new FileInputStream(menuTemplateFile)) {
-            return OBJECT_MAPPER.readValue(fis, MainMenu.class);
+    public MainMenu parseMenuTemplate() {
+        return parseMenuTemplate(null);
+    }
+
+    public MainMenu parseMenuTemplate(String menuTemplateFile) {
+        final String MENU_TEMPLATE_FILE = "./menu-template.json";
+
+        var objectMapper = new ObjectMapper();
+        MainMenu template = null;
+        String path = menuTemplateFile != null ? menuTemplateFile : MENU_TEMPLATE_FILE;
+
+        try (var fis = new FileInputStream(path)) {
+            template = objectMapper.readValue(fis, MainMenu.class);
+        } catch (FileNotFoundException fnfe) {
+            // TODO: Log error and return null
+            System.out.println("ERROR: FileNotFoundException: " + fnfe.getMessage());
+            return null;
+        } catch (DatabindException dbex) {
+            System.out.println("ERROR: DatabindException: " + dbex.getMessage());
+            return null;
         } catch (Exception e) {
-            LOG.warn("Unable to read menu template '{}': {}", menuTemplateFile, e.getMessage(), e);
+            System.out.println("ERROR: Exception: " + e.getMessage());
             return null;
         }
+
+        return template;
+    }
+
+    private void ensureContext() throws Exception {
+        if (this.menuRequestContext == null) {
+            throw new Exception("Must set MenuRequestContext when using a MenuProvider.");
+        }
+    }
+
+    private List<MenuEntry> filterMenuEntriesByRole(List<MenuEntry> entries) {
+        // remove any top-level menu entries that have roles that the user is not part of
+        List<MenuEntry> filteredEntries = entries.stream()
+            .filter(this::evaluateRoleBasedMenuEntry).toList();
+
+        // If the entry has child items, filter those
+        for (MenuEntry filteredEntry : filteredEntries) {
+            if (filteredEntry.items != null && !filteredEntry.items.isEmpty()) {
+                filteredEntry.items = filterMenuEntriesByRole(filteredEntry.items);
+            }
+        }
+
+        return filteredEntries;
+    }
+
+    private List<MenuEntry> filterMenuEntriesBySystemProperties(List<MenuEntry> entries) {
+        // remove any top-level menu entries where the required system properties do not match
+        List<MenuEntry> filteredEntries = entries.stream()
+            .filter(this::evaluateRequiredSystemProperties).toList();
+
+        // If the entry has child items, filter those
+        for (MenuEntry filteredEntry : filteredEntries) {
+            if (filteredEntry.items != null && !filteredEntry.items.isEmpty()) {
+                filteredEntry.items = filterMenuEntriesBySystemProperties(filteredEntry.items);
+            }
+        }
+
+        return filteredEntries;
+    }
+
+    private boolean evaluateRoleBasedMenuEntry(MenuEntry menuEntry) {
+        if (menuEntry.roles != null && !menuEntry.roles.isEmpty()) {
+            return menuRequestContext.isUserInAnyRole(menuEntry.roles);
+        }
+
+       return true;
+    }
+
+    private boolean evaluateRequiredSystemProperties(MenuEntry menuEntry) {
+        if (menuEntry.requiredSystemProperties != null && !menuEntry.requiredSystemProperties.isEmpty()) {
+            return menuEntry.requiredSystemProperties.stream()
+                    .allMatch(p -> evaluateSystemPropertyMenuEntry(p.name, p.value));
+        }
+
+        return true;
+    }
+
+    /**
+     * Evaluate any required system properties to determine whether to add this menu item or not.
+     */
+    private boolean evaluateSystemPropertyMenuEntry(String systemProperty, String systemPropertyValue) {
+        if (!Strings.isNullOrEmpty(systemProperty) && !Strings.isNullOrEmpty(systemPropertyValue)) {
+            String value = menuRequestContext.getSystemProperty(systemProperty, "");
+
+            return !Strings.isNullOrEmpty(value) && value.equals(systemPropertyValue);
+        }
+
+        return true;
     }
 }

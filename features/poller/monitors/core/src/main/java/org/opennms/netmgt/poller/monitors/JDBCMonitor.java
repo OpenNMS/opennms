@@ -80,7 +80,7 @@ public class JDBCMonitor extends ParameterSubstitutingMonitor {
 	 * @throws java.lang.IllegalAccessException if any.
 	 */
 	public JDBCMonitor() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		LOG.debug("JDBCmonitor class loaded");
+		LOG.info("JDBCmonitor class loaded");
 	}
 
 	/**

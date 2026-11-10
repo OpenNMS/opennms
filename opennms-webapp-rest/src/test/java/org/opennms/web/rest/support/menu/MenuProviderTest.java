@@ -21,17 +21,10 @@
  */
 package org.opennms.web.rest.support.menu;
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Strings;
 import org.junit.Assert;
@@ -40,36 +33,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.startsWith;
 
-import org.opennms.web.api.ElementConstants;
 import org.opennms.core.resource.Vault;
 import org.opennms.web.rest.support.menu.model.MainMenu;
 import org.opennms.web.rest.support.menu.model.MenuEntry;
 
 public class MenuProviderTest {
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
-
-    @Test
-    public void parsesTemplateWithUnknownProperties() throws Exception {
-        File file = tempFolder.newFile("menu-template.json");
-        String json = "{\"menus\": [{\"name\": \"Info\", \"locationMatch\": \"x\", \"someFutureKey\": 1,"
-                + " \"requiredSystemProperties\": [{\"name\": \"a\", \"value\": \"b\", \"another\": 2}]}],"
-                + " \"unknownTopLevel\": true}";
-        Files.write(file.toPath(), json.getBytes(StandardCharsets.UTF_8));
-
-        MainMenu menu = MenuProvider.parseMenuTemplate(file.getAbsolutePath());
-
-        assertNotNull(menu);
-        assertEquals(1, menu.menus.size());
-        assertEquals("Info", menu.menus.get(0).name);
-    }
     final static String MENU_TEMPLATE_PATH = "src/test/resources/menu/menu-template.json";
 
     final static String[] ADMIN_ROLES = new String[] { "ROLE_ADMIN", "ROLE_FLOW_MANAGER" };
@@ -90,7 +63,7 @@ public class MenuProviderTest {
         assertEquals("20:30:00 UTC+00", mainMenu.formattedTime);
         assertEquals("On", mainMenu.noticeStatus);
         assertEquals("admin1", mainMenu.username);
-        assertEquals(ElementConstants.NODE_DETAILS_URI, mainMenu.baseNodeUrl);
+        assertEquals("element/node.jsp?node=", mainMenu.baseNodeUrl);
         assertTrue(mainMenu.zenithConnectEnabled);
         assertEquals("https://zenith.opennms.com", mainMenu.zenithConnectBaseUrl);
         assertEquals("/zenith-connect", mainMenu.zenithConnectRelativeUrl);
@@ -214,50 +187,16 @@ public class MenuProviderTest {
         }
     }
 
-    /**
-     * Regression guard: MenuProvider used to store each request's user and roles in fields of the shared
-     * singleton, so concurrent requests could get each other's menu. It is stateless now, so this cannot
-     * fail today; it is here to catch per-request state being added back.
-     */
-    @Test
-    public void concurrentContextsDoNotLeak() throws Exception {
-        final MenuProvider provider = new MenuProvider();
-        final ExecutorService executor = Executors.newFixedThreadPool(8);
-
-        try {
-            List<Future<Boolean>> futures = new ArrayList<>();
-
-            for (int i = 0; i < 200; i++) {
-                final boolean admin = i % 2 == 0;
-                futures.add(executor.submit(() -> {
-                    var ctx = new TestMenuRequestContext(admin ? "admin1" : "user1", false,
-                            Arrays.asList(admin ? "ROLE_ADMIN" : "ROLE_USER"));
-                    MainMenu menu = provider.getMainMenu(ctx, MENU_TEMPLATE_PATH);
-                    assertEquals(admin ? "admin1" : "user1", menu.username);
-                    boolean hasLogs = getMenuNames(getMenuEntry(menu.menus, "Info")).contains("Logs");
-                    assertEquals(admin, hasLogs);
-                    return true;
-                }));
-            }
-
-            for (Future<Boolean> f : futures) {
-                assertTrue(f.get(30, TimeUnit.SECONDS));
-            }
-        } finally {
-            executor.shutdownNow();
-        }
-    }
-
     private MainMenu parseMainMenu(boolean isZenithConnectEnabled, String[] roles) {
         MainMenu mainMenu = null;
         List<String> roleList = Arrays.stream(roles).toList();
 
         try {
-            MenuProvider provider = new MenuProvider();
+            MenuProvider provider = new MenuProvider(MENU_TEMPLATE_PATH);
 
-            mainMenu = provider.getMainMenu(
-                    new MenuProviderTest.TestMenuRequestContext("admin1", isZenithConnectEnabled, roleList),
-                    MENU_TEMPLATE_PATH);
+            provider.setMenuRequestContext(
+                    new MenuProviderTest.TestMenuRequestContext(isZenithConnectEnabled, roleList));
+            mainMenu = provider.getMainMenu();
         } catch (Exception e) {
             Assert.fail("Error in MenuProvider.getMainMenu: " + e.getMessage());
         }
@@ -280,8 +219,7 @@ public class MenuProviderTest {
     }
 
     public static class TestMenuRequestContext implements MenuRequestContext {
-        public TestMenuRequestContext(String username, boolean isZenithConnectEnabled, List<String> roles) {
-            this.username = username;
+        public TestMenuRequestContext(boolean isZenithConnectEnabled, List<String> roles) {
             this.isZenithConnectEnabled = isZenithConnectEnabled;
 
             if (roles != null && !roles.isEmpty()) {
@@ -289,14 +227,12 @@ public class MenuProviderTest {
             }
         }
 
-        final private String username;
-
         final private boolean isZenithConnectEnabled;
 
         final private List<String> userRoles = new ArrayList<>();
 
         public String getRemoteUser() {
-            return username;
+            return "admin1";
         }
 
         public String calculateUrlBase() {

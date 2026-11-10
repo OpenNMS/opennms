@@ -149,7 +149,6 @@
 <c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
-<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("List")
           .headTitle("Alarms")
@@ -666,7 +665,7 @@
 	    <% if(alarms[i].getNodeId() != null && alarms[i].getNodeLabel()!= null ) { %>
               <% Filter nodeFilter = new NodeFilter(alarms[i].getNodeId(), getServletContext()); %>             
               <% String[] labels = this.getNodeLabels( alarms[i].getNodeLabel() ); %>
-              <a href="<%= ElementConstants.NODE_DETAILS_URI %><%=alarms[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
+              <a href="element/node.jsp?node=<%=alarms[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
                     
               <% if( !parms.getFilters().contains(nodeFilter) ) { %>
                 <nobr>
@@ -704,7 +703,7 @@
         <% if (alarms[i].getNodeId() != null && alarms[i].getNode() != null && alarms[i].getNode().getLocation() != null) { %>
           <% String location = alarms[i].getNode().getLocation().getLocationName(); %>
           <% Filter locationFilter = new NodeLocationFilter(location); %>
-          <a href="<%= ElementConstants.NODE_DETAILS_URI %><%=alarms[i].getNodeId()%>"><%= location %></a>
+          <a href="element/node.jsp?node=<%=alarms[i].getNodeId()%>"><%= location %></a>
           <% if( !parms.getFilters().contains(locationFilter) ) { %>
             <nobr>
               <a href="<%=this.makeLink(callback, parms, locationFilter, true, favorite)%>" class="filterLink" title="Show only alarms for this node location">${addPositiveFilter}</a>

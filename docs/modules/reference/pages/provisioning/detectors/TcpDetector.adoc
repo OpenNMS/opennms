@@ -25,9 +25,8 @@ The TCPDetector lets you find TCP-based services for monitoring in your network.
 | 23
 
 | banner
-| Regular expression the banner sent by the server must match.
-If not set, the service is detected as soon as the TCP connection succeeds, whether or not the server sends a banner.
-| none
+| RegEx expression to match.
+| .*
 |===
 
 == Example configuration

@@ -20,11 +20,13 @@ The ActiveMQDetector finds and assigns services based on the existence of Active
 | Description
 | Default value
 
-3+| *Optional*
+3+| *Required*
 
-| brokerURL
+| broker-url
 | URL used to connect to ActiveMQ broker.
 | vm://localhost?create=false
+
+3+| *Optional*
 
 | user
 | Authentication username for connecting to broker.
@@ -34,19 +36,13 @@ The ActiveMQDetector finds and assigns services based on the existence of Active
 | Password for connecting to broker.
 | none
 
-| useNodeLabel
-| Has no effect in the current implementation; the detector does not rewrite `brokerURL`.
-| none
+| use-nodelabel
+| If `true`, modify broker URL to use node label instead of IP address in broker URL.
+| false
 |===
 
 == Examples
 
-The detector connects to `brokerURL` exactly as configured.
-It does not substitute the address of the interface being scanned or the node label, so set `brokerURL` to the broker you want to check:
+=== Example for use-nodelabel=true
 
-[source,xml]
-----
-<detector name="ActiveMQ" class="org.opennms.netmgt.provision.detector.jms.ActiveMQDetector">
-  <parameter key="brokerURL" value="tcp://broker.example.org:61616"/>
-</detector>
-----
+If you are using an SSL-based connector, use this flag so that the detector will adjust the broker-url to reflect the node label as the hostname.

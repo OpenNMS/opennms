@@ -29,7 +29,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -59,7 +58,6 @@ import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.model.resource.ResourceDTO;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -130,21 +128,6 @@ public class RestClient {
             LOG.debug("Failed to get displayVersion from the info REST service. (OpenNMS is probably not up yet): {}", e.getMessage());
         }
         return null;
-    }
-
-    public Map<String, String> getServiceStatuses() {
-        final WebTarget target = getTarget().path("info");
-        final String json = getBuilder(target).get(String.class);
-
-        final ObjectMapper mapper = new ObjectMapper();
-        try {
-            final JsonNode services = mapper.readTree(json).path("services");
-            final Map<String, String> statuses = new LinkedHashMap<>();
-            services.fields().forEachRemaining(entry -> statuses.put(entry.getKey(), entry.getValue().asText()));
-            return statuses;
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to read services from the info REST service", e);
-        }
     }
 
     public void addOrReplaceRequisition(Requisition requisition) {
@@ -307,11 +290,6 @@ public class RestClient {
     public Response deleteMinion(String id) {
         final WebTarget target = getTargetV2().path("minions").path(id);
         return getBuilder(target).delete();
-    }
-
-    public Response addMonitoringLocation(OnmsMonitoringLocation location) {
-        final WebTarget target = getTargetV2().path("monitoringLocations");
-        return getBuilder(target).post(Entity.entity(location, MediaType.APPLICATION_XML));
     }
 
     public void sendEvent(Event event) {

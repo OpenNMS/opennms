@@ -29,7 +29,6 @@
 // - legacy `snmpParm`/`snmpParmValue`/`snmpParmMatchType` (ifAlias/ifName/ifDescr, contains/equals)
 //     -> filter.extendedSearch.snmpParams.{snmpIfAlias,snmpIfName,snmpIfDescription}
 //        + filter.extendedSearch.snmpParams.snmpMatchType (MatchType.Equals / MatchType.Contains)
-import { interfaceByIdLink, snmpInterfaceLink } from '@/lib/linkUtils'
 import { IpInterface, MatchType, NodeQueryFilter, SnmpInterface } from '@/types'
 
 export interface InterfaceListRow {
@@ -314,8 +313,8 @@ const buildSnmpInterfaceRow = (
         : formatIfIndexFallback(snmpInterface.ifIndex)
 
   const href = associatedIp
-    ? interfaceByIdLink(baseHref, associatedIp.id)
-    : snmpInterfaceLink(baseHref, nodeId, snmpInterface.ifIndex)
+    ? `${baseHref}element/interface.jsp?ipinterfaceid=${associatedIp.id}`
+    : `${baseHref}element/snmpinterface.jsp?node=${nodeId}&ifindex=${snmpInterface.ifIndex}`
 
   return {
     key: `snmp-${snmpInterface.id}`,
@@ -332,7 +331,7 @@ const buildSnmpInterfaceRow = (
  * Cisco-style dotted MAC like 'aabb.ccdd' never matched anything there. Stripping every non-hex
  * character means our maclike/snmpParm matching treats 'aabb.ccdd', 'aabb:ccdd', and 'aabbccdd' as
  * the same search, which is an improvement, not a port of the old behavior. Shared by the
- * client-side maclike match here, utils.ts's buildSnmpNarrowing, and useNodeQuery.ts's
+ * client-side maclike match here, NodesTable.vue's buildSnmpNarrowing, and useNodeQuery.ts's
  * buildMaclikeQuery so all three treat a given input identically.
  */
 export const normalizeMacSearch = (mac: string): string => mac.replace(/[^0-9a-fA-F]/g, '').toLowerCase()
@@ -352,7 +351,7 @@ const getDefaultModeRows = (ipInterfaces: IpInterface[], baseHref: string): Inte
     .map(ip => ({
       key: `ip-${ip.id}`,
       label: ip.ipAddress,
-      href: interfaceByIdLink(baseHref, ip.id)
+      href: `${baseHref}element/interface.jsp?ipinterfaceid=${ip.id}`
     }))
 }
 
@@ -381,27 +380,24 @@ const getMaclikeModeRows = (
     .map(snmp => buildSnmpInterfaceRow(nodeId, snmp, ipInterfaces, baseHref, String(snmp.physAddr), ifIndex => `ifIndex:${ifIndex}`))
 }
 
-const escapeRegExp = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
 /**
- * Build the regex for a snmpParm value with the same rules as the v2 REST search that selected
- * the node (useNodeQuery.ts's buildSnmpQuery):
- * - '*' is a wildcard. The server has no escape for '*' (see @/lib/fiql).
- * - All other characters are literal, also '%', '_' and '\'. The server escapes them.
- * - Case is ignored (the server uses ilike).
- * 'contains' matches the pattern anywhere in the value; 'equals' matches the full value.
- *
- * This is different from the legacy JSP node list, where '%' and '_' were SQL LIKE wildcards.
- * The v2 search cannot do that, and the panel must show the interfaces that qualified the node.
+ * Build the legacy SQL-LIKE-flavored "contains" regex: lowercase the value, backslash-escape
+ * every non-word character, turn escaped '%' into '.*' and '_' into '.', then wrap in '.*' on
+ * both sides. Matched with full-string anchoring (replicating Java's String#matches).
  */
-const buildSnmpParmRegex = (value: string, matchType: 'contains' | 'equals'): RegExp => {
-  const pattern = value.split('*').map(escapeRegExp).join('.*')
-  const anywhere = matchType === 'contains' ? '.*' : ''
-  return new RegExp(`^${anywhere}${pattern}${anywhere}$`, 'is')
+const buildContainsRegex = (value: string): RegExp => {
+  const escaped = value.toLowerCase().replace(/(\W)/g, '\\$1')
+  const withPercentWildcard = escaped.replace(/\\%/g, '.*')
+  const withUnderscoreWildcard = withPercentWildcard.replace(/_/g, '.')
+  return new RegExp(`^.*${withUnderscoreWildcard}.*$`)
 }
 
 const matchesSnmpParm = (value: string, attrValue: string, matchType: 'contains' | 'equals'): boolean => {
-  return buildSnmpParmRegex(value, matchType).test(attrValue)
+  if (matchType === 'equals') {
+    return attrValue.toLowerCase() === value.toLowerCase()
+  }
+
+  return buildContainsRegex(value).test(attrValue.toLowerCase())
 }
 
 /**

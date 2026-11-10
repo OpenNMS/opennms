@@ -1,0 +1,14 @@
+
+= Feature Matrix
+:description: View the list of features in {page-component-title} that leverage Elasticsearch.
+
+The following features leverage Elasticsearch.
+
+[options="header, autowidth"]
+|===
+| Name                       | Enabled by Default | Feature
+| Event and Alarm Forwarder  | no                 | opennms-es-rest
+| Flow Support               | yes                | opennms-flows
+| Situation Feedback (ALEC)  | no                 | opennms-situation-feedback
+| Alarm History              | yes                | opennms-alarm-history-elastic
+|===

@@ -22,39 +22,14 @@
 
 import {
   getNodes,
-  getNodesByFilterRule,
   getNodeById,
-  lookupNodeById,
-  resolveNodeId,
-  getNodeAlarmStatus,
-  getNodeCriticalPath,
+  getNodeOutages,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage
 } from './nodeService'
-import { getNodeOutageTimeline } from './nodeAvailabilityTimelineService'
-import { getNodeOutages, getOutages } from './outageService'
-import { nodeExistsInRequisition } from './requisitionService'
-import { getNodeEnlinkdElements } from './enlinkdService'
 import { getCategories } from './categoryService'
 import { getMonitoringLocations } from './monitoringLocationService'
-import {
-  createMonitoringLocation,
-  deleteMonitoringLocation,
-  getApplicationsUsingPerspective,
-  getNodeCountByLocation,
-  getPerspectiveOutageCount,
-  listMonitoringLocations,
-  updateMonitoringLocation
-} from './monitoringLocationAdminService'
-import {
-  createApplication,
-  deleteApplication,
-  getApplicationMembers,
-  listApplicationSummaries,
-  searchServiceCandidates,
-  updateApplicationMembers
-} from './applicationAdminService'
 import { getServiceTypes } from './serviceTypes'
 import { getProvisionDService, putProvisionDService } from './configurationService'
 import {
@@ -82,10 +57,9 @@ import { getAliases, getAllCredentials, getCredentialsByAlias, addCredentials, u
 
 import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
-import { getNodeIfServices, getNodeServicesByName } from './ifService'
+import { getNodeIfServices } from './ifService'
 import { getIpInterfaces, getNodeIpInterfaceQuery } from './ipInterfaceService'
 import { getSnmpInterfaces, getNodeSnmpInterfaceQuery } from './snmpInterfaceService'
-import { getFlowGraphUrl } from './flowService'
 import { search } from './searchService'
 import { performLogout } from './logoutService'
 import { getLogs, getLog } from './logsService'
@@ -101,108 +75,10 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
-import {
-  createThresholdGroup,
-  createThreshdPackage,
-  deleteThresholdGroup,
-  deleteThreshdPackage,
-  downloadThresholdingConfiguration,
-  downloadThreshdConfiguration,
-  getThresholdGroup,
-  getThresholdGroups,
-  getThresholdingMetadata,
-  getThreshdConfiguration,
-  getThreshdPackage,
-  getThreshdPackages,
-  updateThresholdGroup,
-  updateThreshdConfiguration,
-  updateThreshdPackage,
-  uploadThresholdingConfiguration,
-  uploadThreshdConfiguration
-} from './thresholdConfigurationService'
-import { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import { getAbout } from './aboutService'
-import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from './wsmanAdminService'
-import {
-  createManagedUser,
-  deleteManagedUser,
-  getAvailableUserRoles,
-  getManagedUsers,
-  renameManagedUser,
-  setManagedUserPassword,
-  updateManagedUser
-} from './userAdminService'
-import {
-  addDestinationPath,
-  addEventNotification,
-  applyPathOutage,
-  deleteDestinationPath,
-  deleteEventNotification,
-  deletePathOutage,
-  getDestinationPaths,
-  getEventNotifications,
-  getNotificationCommands,
-  getNotificationConfigStatus,
-  getNotificationGroups,
-  getNotificationServices,
-  getNotificationUsers,
-  getOnCallRoles,
-  getPathOutages,
-  previewPathOutageRule,
-  searchEventConfUeis,
-  setEventNotificationStatus,
-  setNotificationConfigStatus,
-  testDestinationPath,
-  updateDestinationPath,
-  updateEventNotification,
-  validateNotificationRule
-} from './notificationConfigService'
-import { acknowledgeNotification, browseNotifications } from './notificationService'
-import {
-  addGraphToCollection,
-  createGraphCollection,
-  deleteGraphCollection,
-  getGraphCollection,
-  getGraphCollectionTimespans,
-  getGraphCollections,
-  getResolvedGraphCollection,
-  getResolvedSyntheticGraphCollection,
-  reloadGraphCollections,
-  updateGraphCollection
-} from './graphCollectionsService'
-import {
-  createManagedGroup,
-  deleteManagedGroup,
-  getGroupMemberCandidates,
-  getManagedGroups,
-  renameManagedGroup,
-  updateManagedGroup
-} from './groupAdminService'
 
 export default {
-  createThresholdGroup,
-  createThreshdPackage,
-  deleteThresholdGroup,
-  deleteThreshdPackage,
-  downloadThresholdingConfiguration,
-  downloadThreshdConfiguration,
-  getThresholdGroup,
-  getThresholdGroups,
-  getThresholdingMetadata,
-  getThreshdConfiguration,
-  getThreshdPackage,
-  getThreshdPackages,
-  updateThresholdGroup,
-  updateThreshdConfiguration,
-  updateThreshdPackage,
-  uploadThresholdingConfiguration,
-  uploadThreshdConfiguration,
-  getMinionNodeIds,
-  getCoreVersion,
-  listMinions,
-  deleteMinion,
-  getMinion,
   search,
   getAbout,
   getSystemReportPlugins,
@@ -210,46 +86,22 @@ export default {
   generateSystemReport,
   getInfo,
   getNodes,
-  getNodesByFilterRule,
   getAlarms,
   getEvents,
   modifyAlarm,
   getNodeById,
-  lookupNodeById,
-  resolveNodeId,
-  getNodeAlarmStatus,
-  getNodeCriticalPath,
   getNodeOutages,
-  getOutages,
-  nodeExistsInRequisition,
-  getNodeEnlinkdElements,
   getNodeIfServices,
-  getNodeServicesByName,
   getIpInterfaces,
   getNodeIpInterfaceQuery,
   getSnmpInterfaces,
-  getFlowGraphUrl,
   getNodeSnmpInterfaceQuery,
   getGraphNodesNodes,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage,
-  getNodeOutageTimeline,
   getCategories,
   getMonitoringLocations,
-  createMonitoringLocation,
-  deleteMonitoringLocation,
-  getApplicationsUsingPerspective,
-  getNodeCountByLocation,
-  getPerspectiveOutageCount,
-  listMonitoringLocations,
-  listApplicationSummaries,
-  createApplication,
-  deleteApplication,
-  getApplicationMembers,
-  updateApplicationMembers,
-  searchServiceCandidates,
-  updateMonitoringLocation,
   getLog,
   getLogs,
   getFile,
@@ -293,63 +145,5 @@ export default {
   setUsageStatisticsStatus,
   addZenithRegistration,
   getZenithRegistrations,
-  performLogout,
-  createManagedUser,
-  deleteManagedUser,
-  getAvailableUserRoles,
-  getManagedUsers,
-  renameManagedUser,
-  setManagedUserPassword,
-  updateManagedUser,
-  acknowledgeNotification,
-  addDestinationPath,
-  addEventNotification,
-  applyPathOutage,
-  browseNotifications,
-  deleteDestinationPath,
-  deleteEventNotification,
-  deletePathOutage,
-  getPathOutages,
-  previewPathOutageRule,
-  getDestinationPaths,
-  getEventNotifications,
-  getNotificationCommands,
-  getNotificationConfigStatus,
-  getNotificationGroups,
-  getNotificationServices,
-  getNotificationUsers,
-  getOnCallRoles,
-  searchEventConfUeis,
-  setEventNotificationStatus,
-  setNotificationConfigStatus,
-  testDestinationPath,
-  updateDestinationPath,
-  updateEventNotification,
-  validateNotificationRule,
-  createManagedGroup,
-  deleteManagedGroup,
-  getGroupMemberCandidates,
-  getManagedGroups,
-  renameManagedGroup,
-  updateManagedGroup,
-  getWsmanConfig,
-  getWsmanDataCollection,
-  getWsmanStatus,
-  getRequisitionNames,
-  getWsmanReadiness,
-  runWsmanReadinessAction,
-  resetWsmanDataCollection,
-  syncWsmanDefinition,
-  updateWsmanConfig,
-  updateWsmanDataCollectionFile,
-  addGraphToCollection,
-  createGraphCollection,
-  deleteGraphCollection,
-  getGraphCollection,
-  getGraphCollectionTimespans,
-  getGraphCollections,
-  getResolvedGraphCollection,
-  getResolvedSyntheticGraphCollection,
-  reloadGraphCollections,
-  updateGraphCollection
+  performLogout
 }

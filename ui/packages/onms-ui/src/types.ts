@@ -25,8 +25,6 @@ export type OnmsHourFormat = '12' | '24'
 
 export type OnmsTagSeverity = 'secondary' | 'success' | 'info' | 'warn' | 'danger'
 
-export type OnmsMessageSeverity = 'success' | 'info' | 'warn' | 'error'
-
 // Menu model item in OpenNMS vocabulary (structurally compatible with
 // PrimeVue's MenuItem). The index signature permits app-specific fields
 // (e.g. iconComponent, statusClass) consumed by custom #item templates.

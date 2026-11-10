@@ -22,9 +22,7 @@
 package org.opennms.netmgt.dao.mock;
 
 import java.net.InetAddress;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.ApplicationDao;
@@ -86,14 +84,5 @@ public class MockApplicationDao extends AbstractMockDao<OnmsApplication, Integer
     @Override
     public List<ServicePerspective> getServicePerspectives() {
         return null;
-    }
-
-    @Override
-    public Map<Integer, Long> getMonitoredServiceCounts() {
-        final Map<Integer, Long> counts = new HashMap<>();
-        for (final OnmsApplication app : findAll()) {
-            counts.put(app.getId(), (long) app.getMonitoredServices().size());
-        }
-        return counts;
     }
 }

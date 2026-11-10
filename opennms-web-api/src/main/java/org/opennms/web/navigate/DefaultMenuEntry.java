@@ -29,20 +29,12 @@ public class DefaultMenuEntry implements MenuEntry {
     private final String name;
     private final String url;
     private final DisplayStatus displayStatus;
-    private final boolean externalLink;
-    private final String linkTarget;
     private final List<MenuEntry> entries = new ArrayList<>();
 
     public DefaultMenuEntry(String name, String url, DisplayStatus displayStatus) {
-        this(name, url, displayStatus, false, null);
-    }
-
-    public DefaultMenuEntry(String name, String url, DisplayStatus displayStatus, boolean externalLink, String linkTarget) {
         this.name = name;
         this.url = url;
         this.displayStatus = displayStatus;
-        this.externalLink = externalLink;
-        this.linkTarget = linkTarget;
     }
 
     @Override
@@ -63,16 +55,6 @@ public class DefaultMenuEntry implements MenuEntry {
     @Override
     public DisplayStatus getDisplayStatus() {
         return displayStatus;
-    }
-
-    @Override
-    public boolean isExternalLink() {
-        return externalLink;
-    }
-
-    @Override
-    public String getLinkTarget() {
-        return linkTarget;
     }
 
     public void addEntries(List<MenuEntry> entries) {

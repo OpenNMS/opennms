@@ -42,6 +42,18 @@ const numericSeverityLevel = (severity: string | undefined) => {
   return 0
 }
 
+const stringToFixedFloat = (floatAsString: string, decimalPoints: number): string => {
+  if (floatAsString) {
+    const num = parseFloat(floatAsString)
+
+    if (!Number.isNaN(num)) {
+      return num.toFixed(decimalPoints)
+    }
+  }
+
+  return floatAsString
+}
+
 // Shared options for marker + cluster popups. Popups open BELOW the marker
 // (the downward offset is applied per-popup in LeafletMap's popupopen handler,
 // and the .onms-popup-below CSS hides the now-pointless tip) instead of
@@ -57,4 +69,4 @@ const mapPopupOptions: PopupOptions = {
   keepInView: false
 }
 
-export { mapPopupOptions, numericSeverityLevel }
+export { mapPopupOptions, numericSeverityLevel, stringToFixedFloat }

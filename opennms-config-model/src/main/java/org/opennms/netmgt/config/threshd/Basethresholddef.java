@@ -39,8 +39,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 @XmlRootElement(name = "basethresholddef")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("thresholding.xsd")
@@ -55,7 +53,6 @@ public abstract class Basethresholddef implements Serializable {
      *  This can be useful when processing expressions with conditionals. Default: false
      */
     @XmlAttribute(name = "relaxed")
-    @JsonProperty("relaxed")
     private Boolean m_relaxed;
 
     /**
@@ -63,7 +60,6 @@ public abstract class Basethresholddef implements Serializable {
      * purpose.
      */
     @XmlAttribute(name = "description")
-    @JsonProperty("description")
     private String m_description;
 
     /**
@@ -75,7 +71,6 @@ public abstract class Basethresholddef implements Serializable {
      * threshold value
      */
     @XmlAttribute(name = "type", required = true)
-    @JsonProperty("type")
     private ThresholdType m_type;
 
     /**
@@ -83,7 +78,6 @@ public abstract class Basethresholddef implements Serializable {
      *  "if" indicates an interface level datasource.
      */
     @XmlAttribute(name = "ds-type", required = true)
-    @JsonProperty("ds-type")
     private String m_dsType;
 
     /**
@@ -98,7 +92,6 @@ public abstract class Basethresholddef implements Serializable {
      *  reaches the trigger value then a threshold event is generated.
      */
     @XmlAttribute(name = "value", required = true)
-    @JsonProperty("value")
     private String m_value;
 
     /**
@@ -108,7 +101,6 @@ public abstract class Basethresholddef implements Serializable {
      *  rearm, and once again be eligible to generate an event.
      */
     @XmlAttribute(name = "rearm", required = true)
-    @JsonProperty("rearm")
     private String m_rearm;
 
     /**
@@ -117,7 +109,6 @@ public abstract class Basethresholddef implements Serializable {
      *  before a threshold event is generated.
      */
     @XmlAttribute(name = "trigger", required = true)
-    @JsonProperty("trigger")
     private String m_trigger;
 
     /**
@@ -125,14 +116,12 @@ public abstract class Basethresholddef implements Serializable {
      *  datasource.
      */
     @XmlAttribute(name = "ds-label")
-    @JsonProperty("ds-label")
     private String m_dsLabel;
 
      /**
      * An optional, human-readable label for an expression
      */
     @XmlAttribute(name = "expr-label")
-    @JsonProperty("expr-label")
     private String m_exprLabel;
 
     /**
@@ -140,7 +129,6 @@ public abstract class Basethresholddef implements Serializable {
      *  specified, defaults to standard threshold UEIs
      */
     @XmlAttribute(name = "triggeredUEI")
-    @JsonProperty("triggeredUEI")
     private String m_triggeredUEI;
 
     /**
@@ -148,7 +136,6 @@ public abstract class Basethresholddef implements Serializable {
      *  specified, defaults to standard threshold UEIs
      */
     @XmlAttribute(name = "rearmedUEI")
-    @JsonProperty("rearmedUEI")
     private String m_rearmedUEI;
 
     /**
@@ -157,7 +144,6 @@ public abstract class Basethresholddef implements Serializable {
      *  you should specify "and";
      */
     @XmlAttribute(name = "filterOperator")
-    @JsonProperty("filterOperator")
     @XmlJavaTypeAdapter(FilterOperatorAdapter.class)
     private FilterOperator m_filterOperator;
 
@@ -165,7 +151,6 @@ public abstract class Basethresholddef implements Serializable {
      * The filter used to select the ds by a string
      */
     @XmlElement(name = "resource-filter")
-    @JsonProperty("resource-filter")
     private List<ResourceFilter> m_resourceFilters = new ArrayList<>();
 
     public Basethresholddef() { }

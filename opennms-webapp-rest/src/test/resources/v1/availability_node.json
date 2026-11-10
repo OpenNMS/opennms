@@ -1,7 +1,6 @@
 {
     "availability": 100.0,
     "id": 1,
-    "ipinterfaceCount": 4,
     "ipinterfaces": [
         {
             "address": "192.168.1.1",
@@ -11,14 +10,12 @@
                 {
                     "id": 2,
                     "name": "ICMP",
-                    "serviceId": 1,
                     "availability": -1.0,
                     "up": true
                 },
                 {
                     "id": 3,
                     "name": "SNMP",
-                    "serviceId": 2,
                     "availability": -1.0,
                     "up": true
                 }
@@ -32,14 +29,12 @@
                 {
                     "id": 5,
                     "name": "ICMP",
-                    "serviceId": 1,
                     "availability": -1.0,
                     "up": true
                 },
                 {
                     "id": 6,
                     "name": "HTTP",
-                    "serviceId": 3,
                     "availability": -1.0,
                     "up": true
                 }
@@ -53,7 +48,6 @@
                 {
                     "id": 8,
                     "name": "ICMP",
-                    "serviceId": 1,
                     "availability": -1.0,
                     "up": true
                 }
@@ -67,7 +61,6 @@
                 {
                     "id": 10,
                     "name": "ICMP",
-                    "serviceId": 1,
                     "availability": -1.0,
                     "up": true
                 }

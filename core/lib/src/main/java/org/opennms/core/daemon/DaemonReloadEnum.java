@@ -28,7 +28,6 @@ public enum DaemonReloadEnum {
     EVENTD("Eventd"),
     NOTIFD("Notifd"),
     POLLERD("Pollerd"),
-    SNMPPOLLER("SnmpPoller"),
     SYSLOGD("syslogd"),
     TELEMETRYD("Telemetryd"),
     TRAPD("trapd"),

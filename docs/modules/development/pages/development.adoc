@@ -12,4 +12,5 @@ This section covers the following topics:
 * Enable CORS support
 * Develop against REST APIs
 * Write and publish documentation
+* Integration in environments using AMQP
 * Working with OSGi in OpenNMS

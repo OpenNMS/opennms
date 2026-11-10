@@ -22,7 +22,6 @@
 package org.opennms.netmgt.collection.client.rpc;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -32,7 +31,6 @@ import static org.mockito.Mockito.when;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -52,16 +50,13 @@ public class CollectorExecutorLifecycleTest {
         reader.loadBeanDefinitions(new ClassPathResource(
                 "META-INF/opennms/applicationContext-rpc-collector.xml"));
 
-        assertEquals("shutdownNow", beanFactory.getBeanDefinition("collectorExecutor").getDestroyMethodName());
         final ExecutorService executor = beanFactory.getBean("collectorExecutor", ExecutorService.class);
-        final AtomicReference<String> threadName = new AtomicReference<>();
         final CountDownLatch taskStarted = new CountDownLatch(1);
         final CountDownLatch taskInterrupted = new CountDownLatch(1);
         final CountDownLatch blocker = new CountDownLatch(1);
 
         final ServiceCollector collector = mock(ServiceCollector.class);
         when(collector.collect(any(CollectionAgent.class), anyMap())).thenAnswer(invocation -> {
-            threadName.set(Thread.currentThread().getName());
             taskStarted.countDown();
             try {
                 blocker.await();
@@ -89,7 +84,6 @@ public class CollectorExecutorLifecycleTest {
 
         try {
             assertTrue("Collector task did not start", taskStarted.await(1, SECONDS));
-            assertTrue("Unexpected thread name " + threadName.get(), threadName.get().matches("Collector-RPC-\\d+"));
 
             // This exercises Spring's destruction of the collectorExecutor bean from
             // the production context. It must interrupt the task rather than wait for it.

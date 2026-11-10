@@ -33,6 +33,7 @@ const createMenuItem = (id: string, name: string) => {
     id,
     name,
     url: null,
+    locationMatch: null,
     roles: null
   } as MenuItem
 }
@@ -43,6 +44,7 @@ const createTopMenuItem = (id: string, name: string, items: MenuItem[], url?: st
     name,
     items,
     url: (url && url.length > 0) ? url : null,
+    locationMatch: null,
     roles: null
   } as MenuItem
 }
@@ -79,19 +81,6 @@ const getMenuLink = (menuItem: MenuItem, baseHref?: string | null) => {
   }
 
   return '#'
-}
-
-const getSearchResultLink = (
-  item: { url?: string | null, value?: string | null, properties?: Record<string, string> | null },
-  baseHref: string
-): { url: string, target: '_self' | '_blank' } => {
-  const rawUrl = item.url || item.value || ''
-  const isExternal = item.properties?.isExternalLink === 'true'
-
-  return {
-    url: isExternal ? rawUrl : `${baseHref}${rawUrl}`,
-    target: item.properties?.linkTarget === '_blank' ? '_blank' : '_self'
-  }
 }
 
 const createMenuIcon = (menuItem: MenuItem, getIcon: (iconId?: string | null) => Component | null) => {
@@ -271,6 +260,5 @@ export {
   createPrimeMenuModel,
   createTopMenuItem,
   getMenuLink,
-  getSearchResultLink,
   updateWithPluginsMenuItems
 }

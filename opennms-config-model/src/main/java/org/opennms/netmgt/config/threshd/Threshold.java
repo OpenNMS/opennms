@@ -33,8 +33,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Threshold definition
  */
@@ -49,7 +47,6 @@ public class Threshold extends Basethresholddef implements Serializable {
      *  but one of them must be specified
      */
     @XmlAttribute(name = "ds-name", required = true)
-    @JsonProperty("ds-name")
     private String m_dsName;
 
     public Threshold() { }

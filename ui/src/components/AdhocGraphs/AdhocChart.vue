@@ -113,7 +113,7 @@ import { plottedSeries, toConvertedGraphData } from './utils/adhocQuery'
 Chart.register(...registerables)
 Chart.register(zoomPlugin)
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   config: AdhocGraphConfig
   measurements: GraphMetricsResponse | null
   time: StartEndTime
@@ -121,16 +121,10 @@ const props = withDefaults(defineProps<{
   error: string
   /** Let the plot fill the available height instead of its default band. */
   expanded?: boolean
-  /**
-   * The canvas element id, which the legend and data table ids derive from. The builder page
-   * hosts one chart and keeps the default; a page drawing several (a graph collection) gives each
-   * its own, since the canvas is looked up by id.
-   */
-  canvasId?: string
-}>(), {
-  expanded: false,
-  canvasId: 'adhoc-graph'
-})
+}>()
+
+/** Stable id — this page hosts exactly one ad-hoc chart. */
+const canvasId = 'adhoc-graph'
 
 const appStore = useAppStore()
 const chartAreaRef = ref<HTMLElement | null>(null)
@@ -237,7 +231,7 @@ const buildOptions = (): ChartOptions<'line'> => {
       intersect: false
     },
     plugins: {
-      htmlLegend: { containerID: `${props.canvasId}-lc` },
+      htmlLegend: { containerID: `${canvasId}-lc` },
       legend: { display: false },
       title: {
         display: Boolean(props.config.title),
@@ -285,7 +279,7 @@ const buildOptions = (): ChartOptions<'line'> => {
 }
 
 const render = () => {
-  const canvas = document.getElementById(props.canvasId) as HTMLCanvasElement | null
+  const canvas = document.getElementById(canvasId) as HTMLCanvasElement | null
 
   if (!canvas || !showCanvas.value) {
     return

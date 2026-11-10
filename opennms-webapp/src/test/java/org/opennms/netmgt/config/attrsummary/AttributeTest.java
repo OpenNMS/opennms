@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class AttributeTest extends XmlTest<Attribute> {
+public class AttributeTest extends XmlTestNoCastor<Attribute> {
 
     public AttributeTest(final Attribute sampleObject, final Object sampleXml, final String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

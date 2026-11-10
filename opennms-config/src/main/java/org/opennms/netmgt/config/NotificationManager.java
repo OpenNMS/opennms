@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -1027,37 +1026,8 @@ public abstract class NotificationManager {
      * @throws java.lang.ClassNotFoundException if any.
      */
     public synchronized void removeNotification(final String name) throws IOException, ClassNotFoundException {
-        saveWithRollback(() -> m_notifications.removeNotification(getNotification(name)));
-    }
-
-    @FunctionalInterface
-    private interface ConfigChange {
-        void apply() throws IOException, ClassNotFoundException;
-    }
-
-    /**
-     * Applies an in-memory change and persists it, restoring the previous in-memory
-     * model if persistence fails. saveCurrent() marshals the model only after the
-     * caller has already changed it, so a change that leaves the config
-     * unmarshallable — e.g. removing the last notification, which violates
-     * notifications.xsd — would otherwise leave memory diverged from the on-disk
-     * file until a restart (update() will not reload a file whose mtime is unchanged).
-     */
-    private synchronized void saveWithRollback(final ConfigChange change) throws IOException, ClassNotFoundException {
-        final String snapshot = JaxbUtils.marshal(m_notifications);
-        try {
-            change.apply();
-            saveCurrent();
-        } catch (final RuntimeException | IOException | ClassNotFoundException e) {
-            // parseXML does a validating unmarshal and can itself throw; don't let a
-            // restore failure replace the original cause
-            try {
-                parseXML(new StringReader(snapshot));
-            } catch (final RuntimeException restoreFailure) {
-                e.addSuppressed(restoreFailure);
-            }
-            throw e;
-        }
+        m_notifications.removeNotification(getNotification(name));
+        saveCurrent();
     }
 
     /**
@@ -1069,11 +1039,11 @@ public abstract class NotificationManager {
      * @throws java.lang.ClassNotFoundException if any.
      */
     public synchronized void addNotification(final Notification notice) throws IOException, ClassNotFoundException {
-        saveWithRollback(() -> {
-            // remove any existing notice with the same name
-            m_notifications.removeNotification(getNotification(notice.getName()));
-            m_notifications.addNotification(notice);
-        });
+        // remove any existing notice with the same name
+        m_notifications.removeNotification(getNotification(notice.getName()));
+
+        m_notifications.addNotification(notice);
+        saveCurrent();
     }
 
     /**
@@ -1087,36 +1057,30 @@ public abstract class NotificationManager {
     public synchronized void replaceNotification(final String oldName, final Notification newNotice) throws IOException, ClassNotFoundException {
         //   In order to preserve the order of the notices, we have to replace "in place".
 
-        final Notification notice = getNotification(oldName);
+        Notification notice = getNotification(oldName);
         if (notice != null) {
-            // The setters mutate the live object field by field and some assert
-            // non-empty, so a PUT missing a required field (e.g. status) throws
-            // mid-way and leaves the object half-updated. saveWithRollback restores
-            // the previous in-memory model if any setter or the save fails.
-            saveWithRollback(() -> {
-                notice.setWriteable(newNotice.getWriteable());
-                notice.setName(newNotice.getName());
-                notice.setDescription(newNotice.getDescription().orElse(null));
-                notice.setUei(newNotice.getUei());
-                notice.setRule(newNotice.getRule());
-                notice.setDestinationPath(newNotice.getDestinationPath());
-                notice.setNoticeQueue(newNotice.getNoticeQueue().orElse(null));
-                notice.setTextMessage(newNotice.getTextMessage());
-                notice.setSubject(newNotice.getSubject().orElse(null));
-                notice.setNumericMessage(newNotice.getNumericMessage().orElse(null));
-                notice.setStatus(newNotice.getStatus());
-                notice.setEventSeverity(newNotice.getEventSeverity().orElse(null));
-                notice.setVarbind(newNotice.getVarbind());
-                notice.getParameters().clear(); // Required to avoid NMS-5948
-                for (Parameter parameter : newNotice.getParameters()) {
-                    Parameter newParam = new Parameter();
-                    newParam.setName(parameter.getName());
-                    newParam.setValue(parameter.getValue());
-                    notice.addParameter(newParam);
-                }
-            });
+            notice.setWriteable(newNotice.getWriteable());
+            notice.setName(newNotice.getName());
+            notice.setDescription(newNotice.getDescription().orElse(null));
+            notice.setUei(newNotice.getUei());
+            notice.setRule(newNotice.getRule());
+            notice.setDestinationPath(newNotice.getDestinationPath());
+            notice.setNoticeQueue(newNotice.getNoticeQueue().orElse(null));
+            notice.setTextMessage(newNotice.getTextMessage());
+            notice.setSubject(newNotice.getSubject().orElse(null));
+            notice.setNumericMessage(newNotice.getNumericMessage().orElse(null));
+            notice.setStatus(newNotice.getStatus());
+            notice.setVarbind(newNotice.getVarbind());
+            notice.getParameters().clear(); // Required to avoid NMS-5948
+            for (Parameter parameter : newNotice.getParameters()) {
+                Parameter newParam = new Parameter();
+                newParam.setName(parameter.getName());
+                newParam.setValue(parameter.getValue());
+                notice.addParameter(newParam);
+            } 
+            saveCurrent();
         }
-        else
+        else	
             addNotification(newNotice);
     }
 
@@ -1132,7 +1096,10 @@ public abstract class NotificationManager {
      */
     public synchronized void updateStatus(final String name, final String status) throws IOException, ClassNotFoundException {
         if ("on".equals(status) || "off".equals(status)) {
-            saveWithRollback(() -> getNotification(name).setStatus(status));
+            Notification notice = getNotification(name);
+            notice.setStatus(status);
+
+            saveCurrent();
         } else
             throw new IllegalArgumentException("Status must be on|off, not " + status);
     }

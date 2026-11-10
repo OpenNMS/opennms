@@ -26,11 +26,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
 import com.google.common.collect.Lists;
 
-public class QueryRequestTest extends XmlTest<QueryRequest> {
+public class QueryRequestTest extends XmlTestNoCastor<QueryRequest> {
 
     public QueryRequestTest(QueryRequest sampleObject, Object sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

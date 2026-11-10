@@ -139,7 +139,7 @@ If an invalid or empty argument is provided, `v1` is used.
 | _None_
 | Integer > `0`
 
-| retry
+| retries
 | 1
 | _None_
 | Integer > `0`
@@ -195,8 +195,8 @@ If an invalid or empty argument is provided, `v1` is used.
 | Integer value, which can be `null`, `1`, `2`, or `3`.
 See note below table for an explanation of these values.
 
-| authPassphrase
-| _Blank_
+| authPassPhrase
+| 0p3nNMSv3
 | v3
 | _None_
 
@@ -204,18 +204,16 @@ See note below table for an explanation of these values.
 | MD5
 | v3
 | Only `MD5`, `SHA`, `SHA-224`, `SHA-256`, `SHA-512` are valid arguments.
-The effective value is `null` when no `authPassphrase` applies.
 
-| privacyPassphrase
-| _Blank_
+| privPassPhrase
+| 0p3nNMSv3
 | v3
 | _None_
 
-| privacyProtocol
+| privProtocol
 | DES
 | v3
 | Only `DES`, `AES`, `AES192`, or `AES256` are valid arguments.
-The effective value is `null` when no `privacyPassphrase` applies.
 
 | engineId
 | _Blank_
@@ -248,9 +246,9 @@ Possible values for this field:
 
 If you do not set the security level manually it is determined automatically:
 
-* If no `authPassphrase` set, the securityLevel is 1.
-* If `authPassphrase` is set but no `privacyPassphrase` is set, the securityLevel is 2.
-* If both a `authPassphrase` and a `privacyPassphrase` are set, the securityLevel is 3.
+* If no `authPassPhrase` set, the securityLevel is 1.
+* If `authPassPhrase` is set but no `privPassPhrase` is set, the securityLevel is 2.
+* If both a `authPassPhrase` and a `privPassPhrase` are set, the securityLevel is 3.
 ****
 
 NOTE: In the JSON examples below, the commented sections are explanatory only and are not part of the actual JSON body that you would send in a request.

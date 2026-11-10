@@ -36,10 +36,19 @@
         /WEB-INF/spring-security.d/*.xml
         classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml
 
+        <!-- From org.opennms.features.reporting.core -->
+        classpath:/META-INF/opennms/applicationContext-reportingCore.xml
+        <!-- From org.opennms.features.reporting.dao -->
+        classpath:/META-INF/opennms/applicationContext-reportingDao.xml
+        <!-- From org.opennms.features.reporting.repository -->
+        classpath:/META-INF/opennms/applicationContext-reportingRepository.xml
         <!-- From org.opennms.features.system-report -->
         classpath:/META-INF/opennms/applicationContext-systemReport.xml
 
+        classpath*:/META-INF/opennms/component-measurement.xml
         classpath*:/META-INF/opennms/component-service.xml
+        classpath*:/META-INF/opennms/component-reporting.xml
+        classpath*:/META-INF/opennms/component-timeformat.xml
 
         <!-- WARMERGE: insert contextConfigLocation -->
     </param-value>
@@ -350,6 +359,10 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/element/node.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/element/linkednode.jsp</url-pattern>
   </filter-mapping>
   <filter-mapping>
@@ -367,6 +380,10 @@
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/graph/results.htm</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/KSC/customView.htm</url-pattern>
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-120</filter-name>
@@ -614,20 +631,6 @@
   <servlet-mapping>
     <servlet-name>nodeLabelChange</servlet-name>
     <url-pattern>/admin/nodeLabelChange</url-pattern>
-  </servlet-mapping>
-
-  <!--
-    The legacy node page URL redirects to the Vue Node Details page. Keep it: external links
-    (RSS, email, stored event text) use it. An exact mapping takes precedence over the *.jsp
-    mapping, so no JSP file is needed at this path.
-  -->
-  <servlet>
-    <servlet-name>nodeDetailsRedirect</servlet-name>
-    <servlet-class>org.opennms.web.element.NodeDetailsRedirectServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>nodeDetailsRedirect</servlet-name>
-    <url-pattern>/element/node.jsp</url-pattern>
   </servlet-mapping>
 
   <!-- Servlet for modify Discovery configuration service -->
@@ -887,6 +890,14 @@
     <servlet-class>org.opennms.web.inventory.InvCloginServlet</servlet-class>
   </servlet-->
 
+  <servlet>
+  	<servlet-name>purdyChart</servlet-name>
+  	<servlet-class>org.opennms.web.graph.PurdyChartServlet</servlet-class>
+  	<init-param>
+  		<param-name>chart-name</param-name>
+  		<param-value>sample-bar-chart</param-value>
+  	</init-param>
+  </servlet>
 
   <servlet>
         <servlet-name>dispatcher</servlet-name>
@@ -902,6 +913,10 @@
   <!-- desktop graph servlet mapping -->
   <!-- desktop survey report servlet mapping -->
 
+  <servlet-mapping>
+  	<servlet-name>purdyChart</servlet-name>
+  	<url-pattern>/charts</url-pattern>
+  </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>queryEvent</servlet-name>
@@ -1226,6 +1241,10 @@
   <error-page>
     <exception-type>java.lang.SecurityException</exception-type>
     <location>/errors/sealingviolation.jsp</location>
+  </error-page>
+  <error-page>
+    <exception-type>org.opennms.web.controller.statisticsReports.StatisticsReportIdNotFoundException</exception-type>
+    <location>/errors/statisticsreportidnotfound.jsp</location>
   </error-page>
   <error-page>
     <exception-type>org.opennms.netmgt.events.api.EventProxyException</exception-type>

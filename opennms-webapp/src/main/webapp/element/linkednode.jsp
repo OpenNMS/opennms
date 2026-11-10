@@ -76,12 +76,11 @@
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
-<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("${nodeLabel}")
           .headTitle("Linked Node Info")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", ElementConstants.NODE_DETAILS_URI + "${nodeId}")
+          .breadcrumb("Node", "element/node.jsp?node=${nodeId}")
           .breadcrumb("Links")
           .build(request);
 %>

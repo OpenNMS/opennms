@@ -33,8 +33,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Range of adresses to be included in this
  *  package
@@ -49,14 +47,12 @@ public class IncludeRange implements Serializable {
      * Starting address of the range
      */
     @XmlAttribute(name = "begin", required = true)
-    @JsonProperty("begin")
     private String m_begin;
 
     /**
      * Ending address of the range
      */
     @XmlAttribute(name = "end", required = true)
-    @JsonProperty("end")
     private String m_end;
 
     public IncludeRange() {

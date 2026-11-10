@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>37.0.0-SNAPSHOT</version>
+    <version>36.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -33,6 +33,9 @@
 
     <!-- Alarms -->
     <module>alarms</module>
+
+    <!-- AMQP Event Gateway and Alarm Northbounder -->
+    <module>amqp</module>
 
     <!-- DHCP integration -->
     <module>dhcpd</module>
@@ -170,6 +173,8 @@
     <!-- IfTtt integration -->
     <module>ifttt</module>
 
+    <!-- JFreeChart charts -->
+    <module>charts</module>
 
     <module>jest</module>
     <module>dnsresolver</module>

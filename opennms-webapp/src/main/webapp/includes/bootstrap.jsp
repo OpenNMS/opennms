@@ -58,21 +58,16 @@
   
   This include JSP takes two parameters:
     title (required): used in the middle of the header bar
-    location (optional): accepted for page identification only; it is not
-      used by this include and no longer affects the menu
-    nomenujs (optional): "true" to omit the Vue menu bundle's modulepreload
-      link, for pages that never mount the menu but still use the bundle's
-      stylesheet (also settable as the Bootstrap "nomenujs" flag). Without
-      login, the menu bundle is never loaded.
+    location (optional): used to "dull out" the item in the menu bar
+      that has a link to the location given  (for example, on the
+      outage/index.jsp, give the location "outages")
 --%>
 
 <%@page language="java"
         import="
 		org.opennms.core.utils.TimeSeries,
-		org.opennms.web.api.ElementConstants,
 		org.opennms.web.api.Util,
 		org.opennms.netmgt.config.NotifdConfigFactory,
-		org.opennms.web.springframework.security.LoginState,
 		org.owasp.encoder.Encode
 	"%>
 
@@ -81,6 +76,7 @@
 
 <%
   final String __baseHref = Util.calculateUrlBase( request );
+  final String oldMenuValue = request.getParameter("oldmenu");
 
   // Cache-buster for the Vue menu bundle links below. The bundle is built with
   // fixed filenames (ui/vite.config.menu.ts), so without a version param a
@@ -92,20 +88,13 @@
   // modulepreload link and the module script tag: the browser's module map is
   // keyed by the full URL, so differing queries would fetch the bundle twice.
   long __menuAssetsLastModified = 0;
-  for (final String __menuAsset : new String[] { "/ui-components/assets/index.js", "/ui-components/assets/index.css", "/ui-components/assets/anonymous-pages.css" }) {
+  for (final String __menuAsset : new String[] { "/ui-components/assets/index.js", "/ui-components/assets/index.css" }) {
       final String __menuAssetPath = application.getRealPath(__menuAsset);
       if (__menuAssetPath != null) {
           __menuAssetsLastModified = Math.max(__menuAssetsLastModified, new java.io.File(__menuAssetPath).lastModified());
       }
   }
   final String __menuAssetsVersion = "?v=" + __menuAssetsLastModified;
-
-  // The menu bundle files (/ui-components/assets/**) are for logged-in users only: a request
-  // without login gets a 401 (see applicationContext-spring-security.xml). Pages open to
-  // anonymous users (login.jsp, accessDenied.jsp, logoff.jsp, error pages) load only the
-  // bundle's base styles instead (anonymous-pages.css). LoginState, not getRemoteUser():
-  // on an error page the security filter has finished, so getRemoteUser() is null there.
-  final boolean __menuAssetsAllowed = LoginState.isLoggedIn(request);
 %>
 <%-- The <html> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
@@ -189,18 +178,6 @@
     }
   </script>
 
-  <script type="text/javascript">
-    // Opens the Vue node detail page for the node id or foreignSource:foreignId typed into a
-    // form field. A GET form can't target a hash route, so node lookup forms call this from onsubmit.
-    window.onmsGoToNodeDetails = function (input) {
-      var value = input.value.trim();
-      if (value) {
-        window.location.href = '<%= ElementConstants.NODE_DETAILS_URI %>' + encodeURIComponent(value);
-      }
-      return false;
-    };
-  </script>
-
   <c:if test='${__bs_flags.contains("renderGraphs")}'>
       <!-- Graphing -->
       <script type="text/javascript">
@@ -262,39 +239,22 @@
         // localStorage unavailable; fall through to the default theme
       }
       document.documentElement.classList.add(theme);
-      // Mirrors hidesMenuInFrame() in ui/src/lib/framing.ts: a framed page gets no menu,
-      // unless the frame's name contains "-with-header" (e.g. <iframe name="noc-with-header">).
-      var framed;
-      try {
-        framed = window.self !== window.top;
-      } catch (e) {
-        // top is not accessible (cross-origin), so we are framed
-        framed = true;
-      }
-      if (framed && String(window.name || '').indexOf('-with-header') === -1) {
-        document.documentElement.classList.add('onms-embedded');
-      }
     })();
   </script>
-  <% if (__menuAssetsAllowed) { %>
   <link rel="stylesheet" href="<%= __baseHref %>ui-components/assets/index.css<%= __menuAssetsVersion %>" media="screen" />
   <%-- Start fetching/compiling the menu bundle now rather than when the parser
        reaches its <script type="module"> tag near the end of the body.
 
-       Omitted on pages that never mount the menu: the 'nomenujs' include param
-       or Bootstrap flag (the password gate, which still uses the stylesheet
-       above). Other 'quiet' pages still get the preload even though they don't
-       run the bundle. Without login, neither is loaded (see __menuAssetsAllowed):
-       the server answers a plain, uncacheable 401, so a browser can never cache
-       an auth redirect as text/html under the asset URL and break the menu after
-       login (NMS-20174). Keep the version query in sync with the script tags below. --%>
-  <c:if test='${param.nomenujs != "true" and not __bs_flags.contains("nomenujs")}'>
-    <link rel="modulepreload" href="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>" />
-  </c:if>
-  <% } else { %>
-  <%-- Without login: only the menu bundle's base styles (reset, typography, theme tokens). --%>
-  <link rel="stylesheet" href="<%= __baseHref %>ui-components/assets/anonymous-pages.css<%= __menuAssetsVersion %>" media="screen" />
-  <% } %>
+       These two links are deliberately emitted on 'quiet' pages too, including
+       the unauthenticated login page: preloading there warms the cache while
+       the user types their credentials, so the menu mounts instantly on the
+       first post-login page. This is only safe because the bundle is
+       anonymously accessible (see the /ui-components/assets/** rule in
+       applicationContext-spring-security.xml) — without that rule the preload
+       would cache an auth redirect as text/html under the asset URL and break
+       the menu on every JSP page after login (NMS-20174). Keep the two in
+       sync. --%>
+  <link rel="modulepreload" href="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>" />
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the
@@ -319,6 +279,20 @@
 </c:if>
 <%= ">" %>
 
+<!-- Bootstrap header -->
+<c:choose>
+  <c:when test='${__bs_flags.contains("quiet")}'>
+    <!-- No visual header is being displayed -->
+  </c:when>
+  <c:otherwise>
+    <%-- Only display old menu when user has 'oldmenu=true' in query string --%>
+    <% if (oldMenuValue != null && oldMenuValue.equals("true")) { %>
+      <jsp:include page="/navBar.htm" flush="false" />
+    <% } %>
+  </c:otherwise>
+</c:choose>
+<!-- End bootstrap header -->
+
 <!-- Body -->
 <%-- This <div> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
@@ -334,7 +308,7 @@
     <c:choose>
       <c:when test="${param.fromVaadin == 'true'}">
         <!-- both superQuiet and fromVaadin are true -->
-        <% if (__menuAssetsAllowed) { %>
+        <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
           <div id="opennms-sidemenu-container"></div>
           <script type="module" src="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>"></script>
         <% } %>
@@ -346,8 +320,10 @@
       <jsp:param name="asset" value="onms-default-apps" />
     </jsp:include>
 
-    <%-- Logout form, on every logged-in page: AngularJS submits it on a 401 (see onms-http). --%>
-    <% if (__menuAssetsAllowed) { %><form id="headerLogoutForm" name="headerLogoutForm" action="<%= __baseHref %>j_spring_security_logout" method="post"></form><% } %>
+    <%-- Logout form, expected to exist on some pages. --%>
+    <c:if test='${(__bs_includeLogoutForm != null) && (__bs_includeLogoutForm.contains("true"))}'>
+      <form id="headerLogoutForm" name="headerLogoutForm" action="${baseHref}j_spring_security_logout" method="post"></form>
+    </c:if>
 
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
 
@@ -362,7 +338,8 @@
     <%= "<div id=\"content-body\">" %>
 
     <%-- Vue menus: do not display if 'quiet' is true (whether requested via the
-         'quiet' include param or the Bootstrap 'quiet' flag, e.g. login.jsp). On unauthenticated quiet pages
+         'quiet' include param or the Bootstrap 'quiet' flag, e.g. login.jsp), or
+         if 'oldmenu' query string param is true. On unauthenticated quiet pages
          the menu app must not execute at all: its REST calls would trigger the
          browser's basic-auth prompt and poison SPRING_SECURITY_SAVED_REQUEST
          with a REST URL (NMS-20174). --%>
@@ -371,7 +348,7 @@
         <!-- 'quiet' mode, not displaying Vue menus -->
       </c:when>
       <c:otherwise>
-        <% if (__menuAssetsAllowed) { %>
+        <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
           <div id="opennms-sidemenu-container"></div>
           <script type="module" src="<%= __baseHref %>ui-components/assets/index.js<%= __menuAssetsVersion %>"></script>
         <% } %>

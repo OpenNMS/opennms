@@ -11,7 +11,7 @@ import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
 import PrimeVue from 'primevue/config'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 let routeQuery: Record<string, unknown> = {}
 const routerReplaceMock = vi.fn()
@@ -34,6 +34,8 @@ vi.mock('@/services/localStorageService', () => ({
 }))
 
 describe('Nodes.vue container', () => {
+  let replaceSpy: ReturnType<typeof vi.spyOn>
+
   const mountComponent = (mainMenu: Record<string, unknown> = { homeUrl: '/home' }) => {
     const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
     setActivePinia(pinia)
@@ -63,6 +65,11 @@ describe('Nodes.vue container', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     routeQuery = {}
+    replaceSpy = vi.spyOn(window.location, 'replace').mockImplementation(() => { /* no-op: prevent jsdom navigation */ })
+  })
+
+  afterEach(() => {
+    replaceSpy.mockRestore()
   })
 
   it('sets showInterfaces when the route query has listInterfaces=true', async () => {
@@ -102,40 +109,59 @@ describe('Nodes.vue container', () => {
   })
 
   describe('legacy nodeId redirect', () => {
-    it('replaces the route with Node Details when nodeId is a positive integer', async () => {
+    const loadedMainMenu = { homeUrl: '/home', baseHref: '/opennms/', baseNodeUrl: 'element/node.jsp?node=' }
+
+    it('redirects to the node detail page when nodeId is a positive integer', async () => {
       routeQuery = { nodeId: '42' }
 
-      mountComponent()
+      mountComponent(loadedMainMenu)
       await flushPromises()
 
-      expect(routerReplaceMock).toHaveBeenCalledWith({ name: 'Node Details', params: { id: '42' }})
+      expect(replaceSpy).toHaveBeenCalledWith('/opennms/element/node.jsp?node=42')
+      // The redirect bypasses normal query handling entirely — the URL should not be cleared.
+      expect(routerReplaceMock).not.toHaveBeenCalled()
+    })
+
+    it('defers the redirect until menuStore.mainMenu finishes loading', async () => {
+      routeQuery = { nodeId: '7' }
+
+      // mainMenu has not loaded yet (no baseHref/baseNodeUrl).
+      const { menuStore } = mountComponent({})
+      await flushPromises()
+
+      expect(replaceSpy).not.toHaveBeenCalled()
+
+      menuStore.mainMenu = loadedMainMenu as any
+      await flushPromises()
+
+      expect(replaceSpy).toHaveBeenCalledWith('/opennms/element/node.jsp?node=7')
     })
 
     it('does not redirect when nodeId is non-numeric, and normal query handling proceeds', async () => {
       routeQuery = { nodeId: 'abc' }
 
-      mountComponent()
+      mountComponent(loadedMainMenu)
       await flushPromises()
 
-      expect(routerReplaceMock).not.toHaveBeenCalledWith(expect.objectContaining({ name: 'Node Details' }))
+      expect(replaceSpy).not.toHaveBeenCalled()
     })
 
     it('does not redirect when nodeId is zero or negative', async () => {
       routeQuery = { nodeId: '-1' }
 
-      mountComponent()
+      mountComponent(loadedMainMenu)
       await flushPromises()
 
-      expect(routerReplaceMock).not.toHaveBeenCalledWith(expect.objectContaining({ name: 'Node Details' }))
+      expect(replaceSpy).not.toHaveBeenCalled()
     })
 
     it('does not redirect when nodeId is absent from the route query', async () => {
       routeQuery = {}
 
-      mountComponent()
+      mountComponent(loadedMainMenu)
       await flushPromises()
 
-      expect(routerReplaceMock).not.toHaveBeenCalledWith(expect.objectContaining({ name: 'Node Details' }))
+      expect(replaceSpy).not.toHaveBeenCalled()
     })
   })
 })

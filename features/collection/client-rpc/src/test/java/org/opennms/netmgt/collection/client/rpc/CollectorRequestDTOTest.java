@@ -25,11 +25,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
 
-public class CollectorRequestDTOTest extends XmlTest<CollectorRequestDTO> {
+public class CollectorRequestDTOTest extends XmlTestNoCastor<CollectorRequestDTO> {
 
     public CollectorRequestDTOTest(CollectorRequestDTO sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, null);

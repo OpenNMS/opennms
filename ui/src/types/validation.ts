@@ -24,8 +24,6 @@ export interface ValidationResult {
   success: boolean
   message: string
   errors?: string[]
-  /** HTTP status of a failed request, when there was a response. */
-  status?: number
 }
 
 export interface ValidationResultWithPayload<T> extends ValidationResult {

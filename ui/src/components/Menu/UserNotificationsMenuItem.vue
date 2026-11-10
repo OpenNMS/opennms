@@ -52,7 +52,7 @@
         <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
           <OnmsIcon :icon="IconPerson" class="user-notifications-icon" />
           <span class="left-margin-small">
-            {{ notificationSummary.userUnacknowledgedCount ?? 0 }} notifications assigned to you
+            {{ notificationSummary.userUnacknowledgedCount ?? 0 }} notices assigned to you
           </span>
         </a>
       </div>
@@ -69,7 +69,11 @@
             <i :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase() ?? 'indeterminate'}`" />
             <div class="full-width-left">
               <div>
-                <span class="font-weight-bold">{{ formatPageTime(item.pageTime) }}</span>
+                <span class="font-weight-bold">
+                  {{ new Date(item.pageTime).toLocaleDateString() }} {{ new
+                  Date(item.pageTime).toLocaleTimeString()
+                  }}
+                </span>
               </div>
               <div class="dropdown-info-bar">
                 <span>{{ item.notificationName }}</span>
@@ -133,14 +137,13 @@ import IconGroup from '@opennms/onms-ui/icons/action/Group.vue'
 import IconNotificationsOff from '@opennms/onms-ui/icons/notification/NotificationsOff.vue'
 import IconNotificationSelected from '@opennms/onms-ui/icons/notification/NotificationSelected.vue'
 import IconPerson from '@opennms/onms-ui/icons/action/Person.vue'
-import { navigateTo } from '@/lib/navigation'
 import { useMenuStore } from '@/stores/menuStore'
 import {
   MainMenu,
   NoticeStatusDisplay,
-  NotificationSummary
+  NotificationSummary,
+  OnmsNotification
 } from '@/types/mainMenu'
-import { OnmsNotification } from '@/types/notifications'
 
 const menuStore = useMenuStore()
 const maxNotifications = 2
@@ -204,14 +207,14 @@ const noticeStatusDisplay = computed<NoticeStatusDisplay>(() => {
       icon: 'fa-solid fa-bell',
       iconComponent: markRaw(IconNotificationSelected),
       colorClass: 'alarm-ok',
-      title: 'Notifications: On'
+      title: 'Notices: On'
     }
   } else if (status === 'Off') {
     return {
       icon: 'fa-solid fa-bell-slash',
       iconComponent: markRaw(IconNotificationsOff),
       colorClass: 'alarm-error',
-      title: 'Notifications: Off'
+      title: 'Notices: Off'
     }
   }
 
@@ -220,7 +223,7 @@ const noticeStatusDisplay = computed<NoticeStatusDisplay>(() => {
     icon: 'fa-solid fa-bell',
     iconComponent: markRaw(IconNotificationSelected),
     colorClass: 'alarm-unknown',
-    title: 'Notifications: Unknown'
+    title: 'Notices: Unknown'
   }
 })
 
@@ -259,23 +262,13 @@ const computeLink = (url: string) => {
 }
 
 const onMenuItemClick = (url: string) => {
-  // re-clicking the link for the page already open (e.g. a preset of the
-  // Notifications page) refreshes that page instead of doing nothing
-  navigateTo(computeLink(url))
+  const link = computeLink(url)
+  window.location.assign(link)
 }
 
-const formatPageTime = (pageTime: OnmsNotification['pageTime']) => {
-  if (pageTime === null || pageTime === undefined) {
-    return ''
-  }
-  const date = new Date(pageTime)
-  return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
-}
-
-const onNotificationItemClick = (_item: OnmsNotification) => {
-  // open the new Notifications page filtered to the user's outstanding notices
-  // (which include this one) instead of the legacy per-notice detail page
-  onMenuItemClick('ui/index.html#/notifications?preset=yourOutstanding')
+const onNotificationItemClick = (item: OnmsNotification) => {
+  const url = `notification/detail.jsp?notice=${item.id}`
+  onMenuItemClick(url)
 }
 </script>
 

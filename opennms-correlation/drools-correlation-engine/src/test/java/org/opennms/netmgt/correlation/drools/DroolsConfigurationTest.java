@@ -32,6 +32,8 @@ import org.opennms.netmgt.correlation.drools.config.EngineConfiguration;
 import org.opennms.netmgt.correlation.drools.config.Global;
 import org.opennms.netmgt.correlation.drools.config.RuleSet;
 
+import bsh.ParseException;
+
 public class DroolsConfigurationTest extends XmlTest<EngineConfiguration> {
 
 	public DroolsConfigurationTest(String schemaFile, EngineConfiguration sampleObject, String sampleXml) {
@@ -94,7 +96,7 @@ public class DroolsConfigurationTest extends XmlTest<EngineConfiguration> {
 	}
 	
 	@Parameters
-	public static Collection<Object[]> data() {
+	public static Collection<Object[]> data() throws ParseException {
 		   		return Arrays.asList(new Object[][] {
 		   				{   "target/classes/xsds/drools-engine.xsd",
 		   					new ConfigBuilder().get(), 

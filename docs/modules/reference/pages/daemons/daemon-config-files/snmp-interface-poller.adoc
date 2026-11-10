@@ -13,8 +13,7 @@ This is independent of the xref:operation:deep-dive/performance-data-collection/
 | Reload Event
 
 | SnmpPoller
-| uei.opennms.org/internal/reloadSnmpPollerConfig +
-uei.opennms.org/internal/reloadDaemonConfig with `daemonName SnmpPoller`
+| uei.opennms.org/internal/reloadSnmpPollerConfig
 |===
 
 .SnmpPoller configuration file overview
@@ -27,10 +26,9 @@ uei.opennms.org/internal/reloadDaemonConfig with `daemonName SnmpPoller`
 | Restart Required
 
 | snmp-interface-poller-configuration.xml
-| Change how and when polling is performed globally or define fine-grained settings for specific packages. +
-A reload event re-reads the file, reschedules every SNMP interface against the new packages, and resizes the polling thread pool to the configured `threads` value.
+| Change how and when polling is performed globally or define fine-grained settings for specific packages.
 | yes
-| no
+| yes
 |===
 
 .Example reload command
@@ -38,11 +36,4 @@ A reload event re-reads the file, reschedules every SNMP interface against the n
 ----
 cd ${OPENNMS_HOME}/bin
 ./send-event.pl uei.opennms.org/internal/reloadSnmpPollerConfig
-----
-
-The generic daemon reload has the same effect and additionally reports the outcome with a `reloadDaemonConfigSuccessful` or `reloadDaemonConfigFailed` event:
-
-[source, console]
-----
-./send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName SnmpPoller'
 ----

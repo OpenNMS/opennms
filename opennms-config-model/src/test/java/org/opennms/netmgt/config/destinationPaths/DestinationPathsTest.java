@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class DestinationPathsTest extends XmlTest<DestinationPaths> {
+public class DestinationPathsTest extends XmlTestNoCastor<DestinationPaths> {
 
     public DestinationPathsTest(final DestinationPaths sampleObject, final Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/destinationPaths.xsd");

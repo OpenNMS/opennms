@@ -415,8 +415,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
                         try {
                             processPendingOperationForNode(this);
                         } catch (ProvisioningAdapterException e) {
-                            LOG.warn("{} could not complete {}, rescheduling: {}", getName(), this, e.getMessage());
-                            LOG.debug("{} could not complete {}", getName(), this, e);
+                            LOG.warn("Exception thrown during adapter queuing, rescheduling: {}", e.getMessage(), e);
                             //reschedule if the adapter throws a provisioning adapter exception
                             schedule(getExecutorService(), true);
                         } finally {

@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<statistics-daemon-configuration
+  xmlns:this="http://www.opennms.org/xsd/config/statsd"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opennms.org/xsd/config/statsd http://www.opennms.org/xsd/config/statistics-daemon-configuration.xsd ">
+
+  <!--
+       The following packages are simple sample configuration.
+       All of them are disabled by default (status="off").
+       Change the status to be "on" on to enable the scheduling.
+
+       To reload the configuration, use the following command:
+       ${install.dir}/bin/send-event.pl \
+         uei.opennms.org/internal/reloadDaemonConfig \
+         -p 'daemonName Statsd'
+  -->
+
+  <package name="ThroughputReports">
+    <packageReport name="TopN_InOctets" description="Top 20 ifInOctets across all nodes"
+                   schedule="0 20 1 * * ?" retainInterval="2592000000"
+                   status="off">
+      <parameter key="count" value="20"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="YESTERDAY"/>
+      <parameter key="resourceTypeMatch" value="interfaceSnmp"/>
+      <parameter key="attributeMatch" value="ifInOctets"/>
+    </packageReport>
+  </package>
+
+  <package name="IOWAITReports">
+    <packageReport name="TopN_IOWait" description="Top 20 iowait across all nodes"
+                   schedule="0 17 10 * * ?" retainInterval="2592000000"
+                   status="off">
+      <parameter key="count" value="20"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="YESTERDAY"/>
+      <parameter key="resourceTypeMatch" value="nodeSnmp"/>
+      <parameter key="attributeMatch" value="CpuRawWait"/>
+    </packageReport>
+  </package>
+
+  <package name="ResponseTimeReports">
+    <packageReport name="Top10_Response_Weekly" description="Weekly Top 10 responses across all nodes"
+                   schedule="0 0 0 ? * MON" retainInterval="2592000000"
+                   status="off">
+      <parameter key="count" value="10"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="LASTSEVENDAYS"/>
+      <parameter key="resourceTypeMatch" value="responseTime"/>
+      <parameter key="attributeMatch" value="icmp"/>
+    </packageReport>
+
+    <packageReport name="Top10_Response_This_Month" description="This Month Top 10 responses across all nodes"
+                   schedule="0 0 0 L * ?" retainInterval="2592000000"
+                   status="off">
+      <parameter key="count" value="10"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="LASTTHIRTYONEDAYS"/>
+      <parameter key="resourceTypeMatch" value="responseTime"/>
+      <parameter key="attributeMatch" value="icmp"/>
+    </packageReport>
+
+    <packageReport name="Top10_Response_Last_Month" description="Last Month Top 10 responses across all nodes"
+                   schedule="0 0 0 1 * ?" retainInterval="2592000000"
+                   status="off">
+      <parameter key="count" value="10"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="LASTTHIRTYONEDAYS"/>
+      <parameter key="resourceTypeMatch" value="responseTime"/>
+      <parameter key="attributeMatch" value="icmp"/>
+    </packageReport>
+
+    <packageReport name="Top10_Response_This_Year" description="This Year Top 10 responses across all nodes"
+                   schedule="0 0 0 1 * ?" retainInterval="2592000000"
+                   status="off">
+      <parameter key="count" value="10"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="THISYEAR"/>
+      <parameter key="resourceTypeMatch" value="responseTime"/>
+      <parameter key="attributeMatch" value="icmp"/>
+    </packageReport>
+  </package>
+
+
+  <report name="TopN_InOctets" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="TopN_IOWait" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="Top10_Response_Weekly" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="Top10_Response_This_Month" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="Top10_Response_Last_Month" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="Top10_Response_This_Year" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+
+</statistics-daemon-configuration>
+

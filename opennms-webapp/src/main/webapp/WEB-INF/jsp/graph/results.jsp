@@ -39,14 +39,14 @@
           .breadcrumb("Resource Graphs", "graph/index.jsp")
           .breadcrumb("Results")
           .scrollSpy("#results-sidebar")
-          .ngApp("onms-graph-results")
+          .ngApp("onms-ksc")
           .flags("renderGraphs")
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
-    <jsp:param name="asset" value="graph-results" />
+    <jsp:param name="asset" value="add-to-ksc" />
 </jsp:include>
 
 <div id="graph-results">
@@ -167,7 +167,7 @@
 <c:set var="showFootnote1" value="false"/>
 
 
-<div class="row" ng-controller="AddToGraphCollectionCtrl">
+<div class="row" ng-controller="AddToKscCtrl">
 
     <div class="col-md-10" ng-controller="graphSearchBoxCtrl" id="search-graphs">
         <form class="form-inline pull-right mb-4">

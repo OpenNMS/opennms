@@ -41,7 +41,6 @@ import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.web.rest.support.menu.HttpMenuRequestContext;
 import org.opennms.web.rest.support.menu.model.MainMenu;
 import org.opennms.web.rest.support.menu.MenuProvider;
-import org.opennms.web.rest.support.menu.MenuTemplatePaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +54,7 @@ import org.springframework.stereotype.Component;
 @Tag(name = "Menu", description = "Menu API")
 public class MenuRestService {
     private static final Logger LOG = LoggerFactory.getLogger(MenuRestService.class);
+    private static final String WEB_INF_PREFIX = "/WEB-INF";
     private CentralizedDateTimeFormat dateTimeFormat = new CentralizedDateTimeFormat();
 
     @Autowired
@@ -91,16 +91,16 @@ public class MenuRestService {
                       "formattedTime": "02:57:01 UTC-04",
                       "noticeStatus": "Off",
                       "username": "admin",
-                      "baseNodeUrl": "ui/index.html#/node/",
+                      "baseNodeUrl": "element/node.jsp?node=",
                       "zenithConnectEnabled": false,
                       "zenithConnectBaseUrl": "",
                       "zenithConnectRelativeUrl": "",
                       "displayAddNodeButton": false,
                       "sideMenuInitialExpand": false,
                       "copyrightDates": "2002-2026",
-                      "version": "37.0.0-SNAPSHOT",
+                      "version": "36.0.6-SNAPSHOT",
                       "product": "horizon",
-                      "docsVersion": "37",
+                      "docsVersion": "36",
                       "menus": [
                         {
                           "type": "header",
@@ -108,6 +108,7 @@ public class MenuRestService {
                           "name": "",
                           "url": null,
                           "isExternalLink": null,
+                          "locationMatch": null,
                           "action": null,
                           "linkTarget": null,
                           "icon": null,
@@ -175,17 +176,40 @@ public class MenuRestService {
     }
 
     /**
-     * Build the menu definition from menu-template.json via MenuProvider, which filters entries
-     * for the caller with MenuEntryFilter. Holds no per-request state: this class is a singleton.
+     * Build the menu definition.
+     * Should correspond to logic in opennms-webapp org.opennms.web.controller.NavBarController
+     * as well as opennms-webapp webapp/WEB-INF/templates/navbar.ftl.
      */
     private MainMenu buildMenu(final HttpServletRequest request) throws Exception {
+        MainMenu mainMenu = null;
+        this.menuProvider.setMenuRequestContext(new HttpMenuRequestContext(request));
+
+        if (containsHomeVariable(menuProvider.getMenuTemplateFilePath())) {
+            this.menuProvider.setMenuTemplateFilePath(getExpandedWebInfPrefixPath(request, menuProvider.getMenuTemplateFilePath()));
+        }
+
         try {
-            return this.menuProvider.getMainMenu(
-                    new HttpMenuRequestContext(request),
-                    MenuTemplatePaths.resolve(request.getServletContext()));
+            mainMenu = this.menuProvider.getMainMenu();
         } catch (Exception e) {
             LOG.error("Error creating menu entries: " + e.getMessage(), e);
             throw e;
         }
+
+        return mainMenu;
+    }
+
+    private boolean containsHomeVariable(String path) {
+        return path != null && path.contains("${opennms.home}");
+    }
+
+    private String getExpandedWebInfPrefixPath(final HttpServletRequest request, final String path) {
+        int index = path.indexOf(WEB_INF_PREFIX);
+
+        if (index >= 0) {
+            String webInfRealPath = request.getServletContext().getRealPath(WEB_INF_PREFIX);
+            return webInfRealPath + path.substring(index + WEB_INF_PREFIX.length());
+        }
+
+        return path;
     }
 }

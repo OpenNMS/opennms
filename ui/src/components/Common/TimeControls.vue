@@ -106,15 +106,8 @@ import {
 // applied from outside would fall through to this component's plain root div,
 // where it is inert; inside, it can name the actual trigger button. Optional so
 // a consumer that supplies its own heading can omit it.
-const props = defineProps<{
+defineProps<{
   label?: string
-  /**
-   * What the button reads before anything is picked. A seed, not a binding: this component owns the
-   * label once mounted, so a later change is not reflected. It exists for a consumer that restores
-   * a previously chosen range on mount -- without it the button would claim the default while the
-   * consumer showed something else.
-   */
-  initialLabel?: string
 }>()
 
 const emit = defineEmits(['updateTime'])
@@ -132,7 +125,7 @@ const menu = ref()
 const startDateRef = ref<Date | null>(null)
 const endDateRef = ref<Date | null>(null)
 
-const selectedTime = ref(props.initialLabel ?? 'Last day')
+const selectedTime = ref('Last day')
 
 // How many picker overlays are on screen (there are two, and both can be open in
 // sequence). Fed by OnmsDatePicker's show/hide.

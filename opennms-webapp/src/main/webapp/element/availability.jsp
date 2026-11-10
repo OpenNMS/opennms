@@ -35,6 +35,7 @@
         java.net.*,
         java.sql.SQLException,
         org.opennms.core.spring.BeanUtils,
+        org.opennms.core.soa.ServiceRegistry,
         org.opennms.core.utils.InetAddressUtils,
         org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao,
         org.opennms.netmgt.config.poller.outages.Outage,
@@ -45,7 +46,10 @@
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
         org.opennms.web.element.*,
-        org.springframework.util.StringUtils"
+        org.opennms.web.navigate.*,
+        org.springframework.util.StringUtils,
+        org.springframework.web.context.WebApplicationContext,
+        org.springframework.web.context.support.WebApplicationContextUtils"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -197,9 +201,26 @@
 
     pageContext.setAttribute("model", nodeModel);
 
+	final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+	final ServiceRegistry registry = webAppContext.getBean(ServiceRegistry.class);
+
+	final List<String> renderedLinks = new ArrayList<>();
+	final Collection<ConditionalPageNavEntry> navLinks = registry.findProviders(ConditionalPageNavEntry.class, "(Page=node)");
+	for (final ConditionalPageNavEntry link : navLinks) {
+	    final DisplayStatus displayStatus = link.evaluate(request, node_db);
+	    if (displayStatus == null) continue;
+	    if (displayStatus == DisplayStatus.DISPLAY_NO_LINK) {
+	        renderedLinks.add(link.getName());
+	    } else if (displayStatus == DisplayStatus.DISPLAY_LINK) {
+	        renderedLinks.add("<a href=\"" + link.getUrl().replace("%nodeid%", ""+nodeId) + "\">" + link.getName() + "</a>");
+	    }
+	}
+	
+	pageContext.setAttribute("navEntries", renderedLinks);
+
     final List<String> schedOutages = new ArrayList<>();
 
-    ReadablePollOutagesDao pollOutagesDao = BeanUtils.getBean("daoContext", "pollOutagesDao",
+    ReadablePollOutagesDao pollOutagesDao = BeanUtils.getBean("pollerConfigContext", "pollOutagesDao",
             ReadablePollOutagesDao.class);
 
     for (final Outage outage : pollOutagesDao.getReadOnlyConfig().getOutages()) {
@@ -224,12 +245,13 @@
 	pageContext.setAttribute("schedOutages", schedOutages.isEmpty() ? null : StringUtils.collectionToDelimitedString(schedOutages, ", "));
 %>
 
-<c:url var="nodeLink" value='<%= ElementConstants.NODE_DETAILS_URI + nodeId %>'/>
+<c:url var="nodeLink" value="element/node.jsp">
+  <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+</c:url>
 
 <%@page import="org.opennms.core.resource.Vault"%>
 <%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
-<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("${model.label}")
           .headTitle("ID ${model.id}")

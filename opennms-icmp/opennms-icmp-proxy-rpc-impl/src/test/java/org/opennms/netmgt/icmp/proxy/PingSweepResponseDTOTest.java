@@ -29,9 +29,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class PingSweepResponseDTOTest extends XmlTest<PingSweepResponseDTO> {
+public class PingSweepResponseDTOTest extends XmlTestNoCastor<PingSweepResponseDTO> {
 
     public PingSweepResponseDTOTest(PingSweepResponseDTO sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, null);

@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<threshd-configuration>
+<threshd-configuration 
+   threads="5">
    
    <package name="reload-use-case-a">
        <filter>catincCAT1</filter>

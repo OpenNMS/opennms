@@ -27,9 +27,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class OnmsGroupTest extends XmlTest<OnmsGroup> {
+public class OnmsGroupTest extends XmlTestNoCastor<OnmsGroup> {
 
     public OnmsGroupTest(final OnmsGroup sampleObject, final Object sampleXml) {
         super(sampleObject, sampleXml, null);

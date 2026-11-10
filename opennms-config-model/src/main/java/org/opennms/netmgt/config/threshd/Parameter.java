@@ -33,8 +33,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Parameters to be used for threshold checking this
  *  service. Parameters are specfic to the service
@@ -47,11 +45,9 @@ public class Parameter implements Serializable {
     private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "key", required = true)
-    @JsonProperty("key")
     private String m_key;
 
     @XmlAttribute(name = "value", required = true)
-    @JsonProperty("value")
     private String m_value;
 
     public Parameter() {

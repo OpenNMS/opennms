@@ -45,21 +45,15 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsPathOutage;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -89,12 +83,6 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private NodeDao m_nodeDao;
-
-    @Autowired
-    private PathOutageDao m_pathOutageDao;
-
-    @Autowired
-    private TransactionTemplate m_transactionTemplate;
 
     public NodeRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -662,115 +650,6 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, url, parseParamData("_s=assetRecord.building==A%252CX"), 204);
     }
 
-    /**
-     * NMS-18294: the Vue node list sends wildcard ("contains") searches with ',' and ';' in the
-     * value. It double-encodes the value and keeps '*' raw, for example
-     * label==*ABC%2520Systems.%252C%2520Inc.*. The value must match as a literal, and the
-     * characters must not act as FIQL OR / AND.
-     */
-    @Test
-    @JUnitTemporaryDatabase
-    public void testWildcardSearchValueWithFiqlCharacters() throws Exception {
-        saveNode("ABC Systems., Inc.", "abc-inc", "Cisco IOS Software, C2960 (rev;2)");
-        saveNode("ABC Systems", "abc-decoy", "Cisco IOS Software");
-        saveNode("Inc. Holdings", "inc-decoy", "C2960 switch");
-        saveNode("Alpha;Beta", "semi", null);
-        saveNode("Alpha", "semi-decoy", null);
-
-        final String url = "/nodes";
-
-        // Comma in a label 'contains' search: only the exact literal matches, not
-        // "ABC Systems" OR "Inc."
-        String json = sendRequest(GET, url, parseParamData("_s=(label==*ABC%2520Systems.%252C%2520Inc.*);node.type!=D"), 200);
-        assertTrue(json, json.contains("\"label\":\"ABC Systems., Inc.\""));
-        assertFalse(json, json.contains("\"label\":\"ABC Systems\""));
-        assertFalse(json, json.contains("\"label\":\"Inc. Holdings\""));
-
-        // Semicolon in a label 'contains' search: not "Alpha" AND "Beta"
-        json = sendRequest(GET, url, parseParamData("_s=(label==*Alpha%253BBeta*);node.type!=D"), 200);
-        assertTrue(json, json.contains("\"label\":\"Alpha;Beta\""));
-        assertFalse(json, json.contains("\"label\":\"Alpha\""));
-
-        // Comma, semicolon and parentheses in a sysDescription 'contains' search
-        json = sendRequest(GET, url, parseParamData("_s=(node.sysDescription==*Software%252C%2520C2960%2520%2528rev%253B2%2529*);node.type!=D"), 200);
-        assertTrue(json, json.contains("\"label\":\"ABC Systems., Inc.\""));
-        assertFalse(json, json.contains("\"label\":\"ABC Systems\""));
-        assertFalse(json, json.contains("\"label\":\"Inc. Holdings\""));
-
-        // A raw '*' between encoded segments is still a wildcard
-        json = sendRequest(GET, url, parseParamData("_s=(node.sysDescription==*IOS*C2960%2520%2528rev*);node.type!=D"), 200);
-        assertTrue(json, json.contains("\"label\":\"ABC Systems., Inc.\""));
-
-        // The value is a literal: a comma value that is in no label matches nothing
-        sendRequest(GET, url, parseParamData("_s=(label==*ABC%2520Systems%252C%2520Holdings*);node.type!=D"), 204);
-
-        // Exact match (Criteria eq, no wildcard): a comma in foreignId is a literal, not
-        // foreignId 'a' OR foreignId 'b'
-        saveNode("Comma FID", "a,b", null);
-        saveNode("FID A", "a", null);
-        saveNode("FID B", "b", null);
-        json = sendRequest(GET, url, parseParamData("_s=(node.foreignId==a%252Cb);node.type!=D"), 200);
-        assertTrue(json, json.contains("\"label\":\"Comma FID\""));
-        assertFalse(json, json.contains("\"label\":\"FID A\""));
-        assertFalse(json, json.contains("\"label\":\"FID B\""));
-    }
-
-    /**
-     * The snmpInterface.* string searches use an "ilike ?" SQL subquery. A double-encoded ',' must
-     * arrive as a literal. Without a '*', '%' and '_' must also be literals: CXF escapes them
-     * only for a wildcard value, so NodeRestService escapes them for an exact value.
-     */
-    @Test
-    @JUnitTemporaryDatabase
-    public void testSnmpInterfaceSearchValueWithFiqlAndLikeCharacters() throws Exception {
-        final NetworkBuilder builder = new NetworkBuilder();
-        builder.addNode("SnmpMatchNode").setForeignSource("JUnit").setForeignId("snmp-match").setType(OnmsNode.NodeType.ACTIVE);
-        builder.addSnmpInterface(1).setIfName("Gi0_1").setIfAlias("uplink,core").setIfDescr("50%").setCollectionEnabled(true);
-        commitNode(builder.getCurrentNode());
-        builder.addNode("SnmpDecoyNode").setForeignSource("JUnit").setForeignId("snmp-decoy").setType(OnmsNode.NodeType.ACTIVE);
-        builder.addSnmpInterface(1).setIfName("Gi0X1").setIfAlias("uplink").setIfDescr("50 percent").setCollectionEnabled(true);
-        commitNode(builder.getCurrentNode());
-
-        final String url = "/nodes";
-
-        // Wildcard with a comma: not ifAlias *uplink* OR core*
-        String json = sendRequest(GET, url, parseParamData("_s=(snmpInterface.ifAlias==*uplink%252Ccore*);node.type!=D"), 200);
-        assertTrue(json, json.contains("\"label\":\"SnmpMatchNode\""));
-        assertFalse(json, json.contains("\"label\":\"SnmpDecoyNode\""));
-
-        // Exact with '_': must not match any one character ("Gi0X1")
-        json = sendRequest(GET, url, parseParamData("_s=(snmpInterface.ifName==Gi0_1);node.type!=D"), 200);
-        assertTrue(json, json.contains("\"label\":\"SnmpMatchNode\""));
-        assertFalse(json, json.contains("\"label\":\"SnmpDecoyNode\""));
-
-        // Exact matching stays case-insensitive
-        json = sendRequest(GET, url, parseParamData("_s=(snmpInterface.ifName==gi0_1);node.type!=D"), 200);
-        assertTrue(json, json.contains("\"label\":\"SnmpMatchNode\""));
-
-        // Exact with '%': must not match any text ("50 percent")
-        json = sendRequest(GET, url, parseParamData("_s=(snmpInterface.ifDescr==50%2525);node.type!=D"), 200);
-        assertTrue(json, json.contains("\"label\":\"SnmpMatchNode\""));
-        assertFalse(json, json.contains("\"label\":\"SnmpDecoyNode\""));
-    }
-
-    private void saveNode(final String label, final String foreignId, final String sysDescription) {
-        final NetworkBuilder builder = new NetworkBuilder();
-        builder.addNode(label).setForeignSource("JUnit").setForeignId(foreignId).setType(OnmsNode.NodeType.ACTIVE);
-        final OnmsNode node = builder.getCurrentNode();
-        node.setSysDescription(sysDescription);
-        commitNode(node);
-    }
-
-    private void commitNode(final OnmsNode node) {
-        // Commit the fixture so the separate-session REST reads can see it (see
-        // testAssetFilterValueWithFiqlCharacters).
-        m_databasePopulator.getTransactionTemplate().execute(status -> {
-            m_databasePopulator.getNodeDao().save(node);
-            m_databasePopulator.getNodeDao().flush();
-            return null;
-        });
-    }
-
     @Test
     public void testMaclikeSearch() throws Exception {
         // Create a node with a known SNMP interface MAC (physical) address via the REST API
@@ -804,11 +683,6 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // NOT_EQUALS: the node does NOT have this MAC, so it appears in results
         sendRequest(GET, url, parseParamData("_s=maclike!=112233445566"), 200);
-
-        // As in the legacy search, '%' and '_' are SQL LIKE wildcards (double-encoded '%')
-        sendRequest(GET, url, parseParamData("_s=maclike==aabb%2525eeff"), 200);
-        sendRequest(GET, url, parseParamData("_s=maclike==aabb_cddeeff"), 200);
-        sendRequest(GET, url, parseParamData("_s=maclike==aabb%2525eeee"), 204);
     }
 
     @Test
@@ -837,106 +711,5 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         final JSONObject object = new JSONObject(response);
         Assert.assertEquals(Optional.ofNullable(parent.getId()), Optional.of(object.getInt("nodeParentID")));
-    }
-
-    @Test
-    @JUnitTemporaryDatabase
-    public void testCriticalPath() throws Exception {
-        final JSONObject node = new JSONObject();
-        node.put("type", "A");
-        node.put("label", "TestMachine1");
-        node.put("foreignSource", "JUnit");
-        node.put("foreignId", "TestMachine1");
-        node.put("location", "Default");
-        node.put("labelSource", "H");
-        sendData(POST, MediaType.APPLICATION_JSON, "/nodes", node.toString(), 201);
-
-        // No pathoutage row of its own: nothing to report, whatever the default critical path is.
-        sendRequest(GET, "/nodes/1/criticalPath", 204);
-
-        m_transactionTemplate.execute(status -> {
-            m_pathOutageDao.save(new OnmsPathOutage(m_nodeDao.get(1), InetAddressUtils.addr("10.0.0.3"), "ICMP"));
-            m_pathOutageDao.flush();
-            return null;
-        });
-
-        final JSONObject byId = new JSONObject(sendRequest(GET, "/nodes/1/criticalPath", 200));
-        assertEquals("10.0.0.3", byId.getString("criticalPathIp"));
-        assertEquals("ICMP", byId.getString("criticalPathServiceName"));
-
-        // Addressed by foreignSource:foreignId, like the node's other resources.
-        final JSONObject byForeignId = new JSONObject(sendRequest(GET, "/nodes/JUnit:TestMachine1/criticalPath", 200));
-        assertEquals("10.0.0.3", byForeignId.getString("criticalPathIp"));
-
-        sendRequest(GET, "/nodes/999999/criticalPath", 404);
-    }
-
-    @Test
-    @JUnitTemporaryDatabase
-    public void testAlarmStatus() throws Exception {
-        m_databasePopulator.populateDatabase();
-        final int nodeId = m_databasePopulator.getNode1().getId();
-        final String url = "/nodes/" + nodeId + "/alarmStatus";
-
-        // The populator's only alarm on node1 is Normal, which is not a problem.
-        JSONObject status = new JSONObject(sendRequest(GET, url, 200));
-        assertEquals("NORMAL", status.getString("severity"));
-        assertFalse(status.getBoolean("nodeDown"));
-        assertEquals(0, status.getLong("interfacesDown"));
-        assertEquals(0, status.getLong("servicesDown"));
-        assertEquals(0, status.getLong("acknowledgedCount"));
-        assertEquals(0, status.getLong("unacknowledgedCount"));
-
-        m_transactionTemplate.execute(s -> {
-            saveAlarm("uei.opennms.org/nodes/nodeLostService", OnmsSeverity.MAJOR, false);
-            saveAlarm("uei.opennms.org/nodes/nodeLostService", OnmsSeverity.MINOR, false);
-            // Acknowledged: counted, but does not raise the severity.
-            saveAlarm("uei.opennms.org/nodes/interfaceDown", OnmsSeverity.CRITICAL, true);
-            // Cleared: not a problem, so the node is not down.
-            saveAlarm("uei.opennms.org/nodes/nodeDown", OnmsSeverity.CLEARED, false);
-            return null;
-        });
-
-        status = new JSONObject(sendRequest(GET, url, 200));
-        assertEquals("MAJOR", status.getString("severity"));
-        assertFalse(status.getBoolean("nodeDown"));
-        assertEquals(1, status.getLong("interfacesDown"));
-        assertEquals(2, status.getLong("servicesDown"));
-        assertEquals(1, status.getLong("acknowledgedCount"));
-        assertEquals(2, status.getLong("unacknowledgedCount"));
-
-        m_transactionTemplate.execute(s -> {
-            saveAlarm("uei.opennms.org/nodes/nodeDown", OnmsSeverity.MAJOR, false);
-            return null;
-        });
-        assertTrue(new JSONObject(sendRequest(GET, url, 200)).getBoolean("nodeDown"));
-
-        // Another node's alarms are not counted.
-        final JSONObject node2 = new JSONObject(sendRequest(GET, "/nodes/" + m_databasePopulator.getNode2().getId() + "/alarmStatus", 200));
-        assertEquals(0, node2.getLong("unacknowledgedCount"));
-
-        sendRequest(GET, "/nodes/999999/alarmStatus", 404);
-    }
-
-    private void saveAlarm(final String uei, final OnmsSeverity severity, final boolean acknowledged) {
-        final OnmsEvent event = m_databasePopulator.buildEvent(m_databasePopulator.getDistPollerDao().whoami());
-        event.setEventUei(uei);
-        m_databasePopulator.getEventDao().save(event);
-
-        final OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setDistPoller(event.getDistPoller());
-        alarm.setUei(uei);
-        alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
-        alarm.setNode(m_databasePopulator.getNode1());
-        alarm.setCounter(1);
-        alarm.setSeverity(severity);
-        alarm.setFirstEventTime(event.getEventTime());
-        alarm.setLastEvent(event);
-        if (acknowledged) {
-            alarm.setAlarmAckTime(new Date());
-            alarm.setAlarmAckUser("admin");
-        }
-        m_databasePopulator.getAlarmDao().save(alarm);
-        m_databasePopulator.getAlarmDao().flush();
     }
 }

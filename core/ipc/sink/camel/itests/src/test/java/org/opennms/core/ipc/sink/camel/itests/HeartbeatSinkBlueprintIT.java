@@ -49,8 +49,6 @@ import org.opennms.core.ipc.sink.common.ThreadLockingMessageConsumer;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.core.tracing.api.TracerRegistry;
-import org.opennms.distributed.core.api.Identity;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.distributed.core.api.SystemType;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -70,6 +68,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-opennms-identity.xml"
 })
 @JUnitConfigurationEnvironment
+@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
@@ -82,9 +81,6 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
     private Component queuingservice;
 
     @Autowired
-    private TracerRegistry tracerRegistry;
-
-    @Autowired
     private MessageDispatcherFactory localMessageDispatcherFactory;
 
     @Autowired
@@ -93,7 +89,7 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
     @SuppressWarnings( "rawtypes" )
     @Override
     protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-        services.put(Identity.class.getName(),
+        services.put(MinionIdentity.class.getName(),
                 new KeyValueHolder<Object, Dictionary>(new MinionIdentity() {
                     @Override
                     public String getId() {
@@ -112,26 +108,11 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
         Properties props = new Properties();
         props.setProperty("alias", "opennms.broker");
         services.put(Component.class.getName(), new KeyValueHolder<Object, Dictionary>(queuingservice, props));
-        services.put(TracerRegistry.class.getName(), asService(tracerRegistry, null, null));
     }
 
     @Override
     protected String getBlueprintDescriptor() {
         return "OSGI-INF/blueprint/blueprint-ipc-client.xml";
-    }
-
-    // The descriptor above already runs as the test bundle; loading the client jar's copy too
-    // creates a second sinkClient context and dispatcher service.
-    @Override
-    protected String getBundleFilter() {
-        return "(!(Bundle-SymbolicName=org.opennms.core.ipc.sink.camel.client))";
-    }
-
-    // The test support starts only the context it picks; without a filter that may be sinkServer,
-    // leaving sinkClient (used by the remote dispatcher) stopped.
-    @Override
-    protected String getCamelContextFilter() {
-        return "(camel.context.name=sinkClient)";
     }
 
     @Test(timeout=60000)
@@ -156,7 +137,7 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
         localDispatcher.send(new Heartbeat());
         await().atMost(1, MINUTES).until(() -> heartbeatCount.get(), equalTo(1));
 
-        MessageDispatcherFactory remoteMessageDispatcherFactory = getOsgiService(MessageDispatcherFactory.class, "(osgi.service.blueprint.compname=camelRemoteMessageDispatcherFactory)");
+        MessageDispatcherFactory remoteMessageDispatcherFactory = context.getRegistry().lookupByNameAndType("camelRemoteMessageDispatcherFactory", MessageDispatcherFactory.class);
         SyncDispatcher<Heartbeat> remoteDispatcher = remoteMessageDispatcherFactory.createSyncDispatcher(module);
         remoteDispatcher.send(new Heartbeat());
         await().atMost(1, MINUTES).until(() -> heartbeatCount.get(), equalTo(2));
@@ -165,8 +146,6 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
     }
 
     @Test(timeout=60000)
-    // Never sees all consumer threads blocked at once on Camel 3; needs its own investigation.
-    @org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
     public void canConsumeMessagesInParallel() throws Exception {
         final int NUM_CONSUMER_THREADS = 7;
 
@@ -183,7 +162,7 @@ public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
         CompletableFuture<Integer> future = consumer.waitForThreads(NUM_CONSUMER_THREADS);
         consumerManager.registerConsumer(consumer);
 
-        MessageDispatcherFactory remoteMessageDispatcherFactory = getOsgiService(MessageDispatcherFactory.class, "(osgi.service.blueprint.compname=camelRemoteMessageDispatcherFactory)");
+        MessageDispatcherFactory remoteMessageDispatcherFactory = context.getRegistry().lookupByNameAndType("camelRemoteMessageDispatcherFactory", MessageDispatcherFactory.class);
         SyncDispatcher<Heartbeat> dispatcher = remoteMessageDispatcherFactory.createSyncDispatcher(HeartbeatModule.INSTANCE);
 
         HeartbeatGenerator generator = new HeartbeatGenerator(dispatcher, 100.0);

@@ -30,7 +30,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.smoketest.ui.NodeDetailsPage;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,16 +56,24 @@ public class EditInRequisitionIT extends OpenNMSSeleniumIT {
     public void testIfNotRequisition() throws Exception {
         LOG.debug("Check whether the 'Edit in Requisition' link appear for nodes in database without requisition...");
 
-        assertNoEditInRequisitionLink("my-foreign-source:my-foreign-id", "my-node");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=my-foreign-source:my-foreign-id");
+        final WebElement viewEvents = waitForElement(By.linkText("View Events"));
+        Assert.assertNotNull("Link 'View Events' should appear on the node page.", viewEvents);
+
+        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+        final WebElement editInRequisition = getElementWithoutWaiting(By.linkText("Edit in Requisition"));
+        Assert.assertNull("Link 'Edit in Requisition' should not appear on the node page!", editInRequisition);
     }
 
     @Test
     public void testIfDeployed() throws Exception {
         LOG.debug("Check whether the 'Edit in Requisition' link appear for nodes in database and requisition...");
 
-        // The link shows once the page has found the node in its requisition.
-        new NodeDetailsPage(this).open(OpenNMSSeleniumIT.REQUISITION_NAME + ":my-foreign-id-1")
-                .clickLink("Admin", "Edit in Requisition");
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=" + OpenNMSSeleniumIT.REQUISITION_NAME + ":my-foreign-id-1");
+
+        final WebElement webElement = waitForElement(By.linkText("Edit in Requisition"));
+        Assert.assertNotNull("Link 'Edit in Requisition' should appear on the node page.", webElement);
+        webElement.click();
 
         waitUntil(pageContainsText("Node my-node-1 at " + OpenNMSSeleniumIT.REQUISITION_NAME));
     }
@@ -73,17 +82,13 @@ public class EditInRequisitionIT extends OpenNMSSeleniumIT {
     public void testIfPending() throws Exception {
         LOG.debug("Check whether the 'Edit in Requisition' link appear for nodes in database that are not in a requisition anymore...");
 
-        assertNoEditInRequisitionLink(OpenNMSSeleniumIT.REQUISITION_NAME + ":my-foreign-id-2", "my-node-2");
-    }
+        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=" + OpenNMSSeleniumIT.REQUISITION_NAME + ":my-foreign-id-2");
 
-    private void assertNoEditInRequisitionLink(final String node, final String label) {
-        // The page asks whether the node is in its requisition after the node has loaded, and adds
-        // the link only when it is. Wait for the answer, or the check below could pass before the
-        // link would have been added.
-        final NodeDetailsPage nodePage = new NodeDetailsPage(this).open(node).waitForLabel(label)
-                .waitForRequisitionCheck();
-        Assert.assertFalse("Link 'Edit in Requisition' should not appear on the node page!",
-                nodePage.getLinkLabels("Admin").contains("Edit in Requisition"));
+        final WebElement viewEvents = waitForElement(By.linkText("View Events"));
+        Assert.assertNotNull("Link 'View Events' should appear on the node page.", viewEvents);
+
+        final WebElement editInRequisition = getElementWithoutWaiting(By.linkText("Edit in Requisition"));
+        Assert.assertNull("Link 'Edit in Requisition' should not appear on the node page!", editInRequisition);
     }
 
     private void deleteRequisition() throws Exception {

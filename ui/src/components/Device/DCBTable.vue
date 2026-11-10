@@ -104,14 +104,17 @@
 
       <OnmsColumn field="deviceName" header="Node Name" sortable>
         <template #body="{ data }">
-          <router-link :to="nodeDetailsRoute(data.nodeId)">
+          <a
+            :href="computeNodeLink(data.nodeId)"
+            @click="onNodeLinkClick(data.nodeId)"
+          >
             {{ data.deviceName }}
             <OnmsIcon
               v-if="data.configType !== 'default'"
               :icon="Speed"
               v-onms-tooltip="data.configName"
             />
-          </router-link>
+          </a>
         </template>
       </OnmsColumn>
 
@@ -200,7 +203,8 @@ import DCBModalConfigDiffContent from './DCBModalConfigDiffContent.vue'
 import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
 import DCBTableStatusDropdown from './DCBTableStatusDropdown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
-import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
+import { useMenuStore } from '@/stores/menuStore'
+import { MainMenu } from '@/types/mainMenu'
 
 enum DCBModalContentComponentNames {
   DCBModalLastBackupContent = 'DCBModalLastBackupContent',
@@ -209,6 +213,8 @@ enum DCBModalContentComponentNames {
 }
 
 const deviceStore = useDeviceStore()
+const menuStore = useMenuStore()
+const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const dcbModalVisible = ref(false)
 const dcbModalContentComponentName = ref('')
 const all = ref(false)
@@ -218,6 +224,14 @@ const sortField = ref('deviceName')
 const sortOrder = ref(1)
 const rows = ref(deviceStore.deviceConfigBackupQueryParams.limit || defaultQuerySize)
 const first = computed(() => deviceStore.deviceConfigBackupQueryParams.offset || 0)
+
+const computeNodeLink = (nodeId: number) => {
+  return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`
+}
+
+const onNodeLinkClick = (nodeId: number) => {
+  window.location.assign(computeNodeLink(nodeId))
+}
 
 const selectedDeviceConfigIds = computed<number[]>(() => {
   return Object.keys(selectedDeviceConfigBackups.value)

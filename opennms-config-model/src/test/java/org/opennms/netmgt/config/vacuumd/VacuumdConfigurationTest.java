@@ -28,10 +28,10 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
 public class VacuumdConfigurationTest extends
-        XmlTest<VacuumdConfiguration> {
+        XmlTestNoCastor<VacuumdConfiguration> {
 
     public VacuumdConfigurationTest(final VacuumdConfiguration sampleObject,
             final String sampleXml, final String schemaFile) {

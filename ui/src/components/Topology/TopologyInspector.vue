@@ -250,9 +250,7 @@ License.
           </div>
           <h4 class="ti-section-title">Node Details</h4>
           <dl class="ti-detail">
-            <!-- A new tab, like the node menu's Node Details action, so the topology stays put. -->
-            <dt>Node ID</dt>
-            <dd><router-link :to="nodeDetailsRoute(nodeDetail.id)" target="_blank">{{ nodeDetail.id }}</router-link></dd>
+            <dt>Node ID</dt><dd>{{ nodeDetail.id }}</dd>
             <dt>Node label</dt><dd>{{ nodeDetail.label }}</dd>
             <!-- The legacy map shows the sysObjectId as "Enterprise OID", and
                  only when the node has one (it needs SNMP data). -->
@@ -446,7 +444,6 @@ License.
 import { computed, ref, watch } from 'vue'
 import { OnmsButton, OnmsCard, OnmsColorPicker, OnmsInputNumber, OnmsInputText, OnmsToggleSwitch } from '@opennms/onms-ui'
 import { useTopologyStore } from '@/stores/topologyStore'
-import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
 import { isLabelId, isShapeId, nodeIdFromPlacedId } from '@/components/Topology/nodeIds'
 import { severityColor } from '@/components/Topology/severity'
 import TopologyInfoTip from '@/components/Topology/TopologyInfoTip.vue'

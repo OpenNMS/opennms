@@ -101,12 +101,11 @@
 </c:url>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
-<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitleText(ipAddr)
           .headTitle("Interface")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", ElementConstants.NODE_DETAILS_URI + nodeId)
+          .breadcrumb("Node", "element/node.jsp?node=" + nodeId)
           .breadcrumb("Interface")
           .build(request);
 %>
@@ -243,7 +242,7 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
       <table class="table table-sm">
         <tr>
           <th>Node</th>
-          <td><a href="<%= ElementConstants.NODE_DETAILS_URI %><%=intf_db.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(node.getLabel())%></a></td>
+          <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(node.getLabel())%></a></td>
         </tr>
         <tr> 
           <th>Polling Status</th>

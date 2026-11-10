@@ -25,10 +25,10 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
 
-public class DnsLookupRequestDTOTest extends XmlTest<DnsLookupRequestDTO>{
+public class DnsLookupRequestDTOTest extends XmlTestNoCastor<DnsLookupRequestDTO>{
 
     public DnsLookupRequestDTOTest(DnsLookupRequestDTO sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, null);

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-alarms</artifactId>
-    <version>37.0.0-SNAPSHOT</version>
+    <version>36.0.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-alarm-northbounder-bsf</artifactId>
@@ -60,12 +60,9 @@
       <groupId>bsf</groupId>
       <artifactId>bsf</artifactId>
     </dependency>
-    <!-- provides the Groovy BSF engine, the default for this northbounder -->
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>groovy-dependencies</artifactId>
-      <type>pom</type>
-      <scope>runtime</scope>
+      <groupId>org.apache-extras.beanshell</groupId>
+      <artifactId>bsh</artifactId>
     </dependency>
     <!-- test dependencies -->
     <dependency>

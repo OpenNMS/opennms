@@ -198,8 +198,7 @@ public class CategoryModel extends Object {
     /**
      * Return the availability percentage for all managed services on the given
      * node for the last 24 hours. If there are no managed services on this
-     * node, then 100 is returned: getManagePercentAvailNodeWindow answers 100 for a zero-length
-     * total service time.
+     * node, then a value of -1 is returned.
      *
      * @param nodeId a int.
      * @return a double.
@@ -217,8 +216,7 @@ public class CategoryModel extends Object {
     /**
      * Return the availability percentage for all managed services on the given
      * node from the given start time until the given end time. If there are no
-     * managed services on this node, then 100 is returned: getManagePercentAvailNodeWindow answers
-     * 100 for a zero-length total service time.
+     * managed services on this node, then a value of -1 is returned.
      *
      * @param nodeId a int.
      * @param start a {@link java.util.Date} object.
@@ -226,7 +224,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public static double getNodeAvailability(int nodeId, Date start, Date end) throws SQLException {
+    static double getNodeAvailability(int nodeId, Date start, Date end) throws SQLException {
         if (start == null || end == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -272,8 +270,7 @@ public class CategoryModel extends Object {
     /**
      * Return the availability percentage for all managed services on the given
      * interface for the last 24 hours. If there are no managed services on this
-     * interface, then 100 is returned: getManagePercentAvailIntfWindow answers 100 for a
-     * zero-length total service time.
+     * interface, then a value of -1 is returned.
      *
      * @param nodeId a int.
      * @param ipAddr a {@link java.lang.String} object.
@@ -296,8 +293,8 @@ public class CategoryModel extends Object {
     /**
      * Return the availability percentage for all managed services on the given
      * interface from the given start time until the given end time. If there
-     * are no managed services on this interface, then 100 is returned:
-     * getManagePercentAvailIntfWindow answers 100 for a zero-length total service time.
+     * are no managed services on this interface, then a value of -1 is
+     * returned.
      *
      * @param nodeId a int.
      * @param ipAddr a {@link java.lang.String} object.
@@ -306,7 +303,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public static double getInterfaceAvailability(int nodeId, String ipAddr, Date start, Date end) throws SQLException {
+    static double getInterfaceAvailability(int nodeId, String ipAddr, Date start, Date end) throws SQLException {
         if (ipAddr == null || start == null || end == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -386,7 +383,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public static double getServiceAvailability(int nodeId, String ipAddr, int serviceId, Date start, Date end) throws SQLException {
+    static double getServiceAvailability(int nodeId, String ipAddr, int serviceId, Date start, Date end) throws SQLException {
         if (ipAddr == null || start == null || end == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
