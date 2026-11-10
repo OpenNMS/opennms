@@ -95,7 +95,8 @@ import org.springframework.transaction.annotation.Transactional;
         does renaming a group (use `PUT /api/v2/groups/{name}/rename`). A save through this API keeps the duty
         schedules and the default map of the stored group. Deleting the `Admin` group answers 400. Deleting a group
         that is the membership group of an on-call role or a target of a notification destination path answers
-        409, as does a stale save.
+        409. A write also answers 409 when another request changed any group while it ran, not only the same one:
+        nothing was saved, and the request can be sent again.
         The write operations need `ROLE_ADMIN`, like the v2 API (403 without it).
         Password hashes of other users are shown as `xxxxxxxx` to callers without `ROLE_ADMIN`.""")
 @Transactional
@@ -232,7 +233,7 @@ public class GroupRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group management requires the admin role."))),
-            @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
+            @ApiResponse(responseCode = "409", description = "The groups were changed by another request while this one ran (any group, not only this one). Nothing was saved: send the request again.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "415", description = "The body was not `application/xml`."),
@@ -273,7 +274,7 @@ public class GroupRestService extends OnmsRestService {
                     400, because renaming is not supported here; use `PUT /api/v2/groups/{name}/rename`. An empty
                     form comes back as 304. Comments must not contain markup (stored comments are accepted
                     unchanged), and members have to be existing users (400).
-                    The stored duty schedules and default map are kept. A stale save answers 409.
+                    The stored duty schedules and default map are kept. A concurrent change answers 409: send the request again.
                     `users` is a list property that the conversion fills with a single element, so a
                     comma-separated value becomes one element containing the commas.""",
             operationId = "updateGroupV1"
@@ -297,7 +298,7 @@ public class GroupRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist."))),
-            @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
+            @ApiResponse(responseCode = "409", description = "The groups were changed by another request while this one ran (any group, not only this one). Nothing was saved: send the request again.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string")))
     })
@@ -353,7 +354,7 @@ public class GroupRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist."))),
-            @ApiResponse(responseCode = "409", description = "The group is the membership group of an on-call role or a target of a destination path, or the group data was changed by another process since it was loaded.",
+            @ApiResponse(responseCode = "409", description = "The group is the membership group of an on-call role or a target of a destination path, or the groups were changed by another request while this one ran (any group, not only this one), and the request can be sent again.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group NOC is the membership group of on-call role(s) Weekend; delete or reassign those roles first.")))
@@ -406,7 +407,7 @@ public class GroupRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist."))),
-            @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
+            @ApiResponse(responseCode = "409", description = "The groups were changed by another request while this one ran (any group, not only this one). Nothing was saved: send the request again.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string")))
     })
@@ -457,7 +458,7 @@ public class GroupRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NOC' does not exist."))),
-            @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
+            @ApiResponse(responseCode = "409", description = "The groups were changed by another request while this one ran (any group, not only this one). Nothing was saved: send the request again.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string")))
     })
@@ -604,10 +605,7 @@ public class GroupRestService extends OnmsRestService {
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist."))),
-            @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
-                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
-                            schema = @Schema(type = "string")))
+                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
     public Response addCategory(
             @Context final SecurityContext securityContext,
@@ -655,10 +653,7 @@ public class GroupRestService extends OnmsRestService {
             @ApiResponse(responseCode = "404", description = "No such group.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist."))),
-            @ApiResponse(responseCode = "409", description = "The group data was changed by another process since it was loaded.",
-                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
-                            schema = @Schema(type = "string")))
+                            examples = @ExampleObject(value = "Group with name 'NOC' does not exist.")))
     })
     public Response removeCategory(
             @Context final SecurityContext securityContext,

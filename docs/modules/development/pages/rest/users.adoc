@@ -31,7 +31,8 @@ They use the same checks as the v2 API:
 * The last holder of `ROLE_ADMIN` cannot be deleted or lose the role, and a user who supervises an on-call role or is the target of a notification destination path cannot be deleted.
   A path target can be deleted when a group or an on-call role has the same name, because the path notifies that group or role.
   The response is `409`.
-* A save that races with another change, or is based on stale data, answers `409`.
+* A write answers `409` when another request changed any user while it ran, not only the same one.
+  Nothing was saved, and the request can be sent again.
 * A caller without `ROLE_ADMIN` sees `xxxxxxxx` in place of the password hash of every user but their own.
 
 `GET /users/whoami` is deprecated too.

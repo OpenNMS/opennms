@@ -93,7 +93,9 @@ import org.springframework.transaction.annotation.Transactional;
         salted; a password hash is not accepted. These checks answer 400, as does renaming a user
         (use `PUT /api/v2/users/{userId}/rename`). The `admin` user always keeps `ROLE_ADMIN`.
         A change that would leave the system without a `ROLE_ADMIN` holder, or that removes a user that an
-        on-call role or a notification destination path depends on, answers 409, as does a stale save.""")
+        on-call role or a notification destination path depends on, answers 409. A write also answers 409 when
+        another request changed any user while it ran, not only the same one: nothing was saved, and the request
+        can be sent again.""")
 @Transactional
 @Deprecated(since = "37.0.0", forRemoval = true)
 public class UserRestService extends OnmsRestService {
@@ -278,7 +280,7 @@ public class UserRestService extends OnmsRestService {
                     must fit their columns, duty schedules are validated (stored values are grandfathered) and every
                     role must be a known security role. Any of these answers 400.
                     Overwriting a user so that it loses `ROLE_ADMIN` answers 400 for `admin` and 409 for the last
-                    holder of the role. A stale save answers 409.
+                    holder of the role. A concurrent change answers 409: send the request again.
                     The response carries no entity; the new user's URI is in the `Location` header.""",
             operationId = "addUserV1"
     )
@@ -306,7 +308,7 @@ public class UserRestService extends OnmsRestService {
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User management requires the admin role."))),
             @ApiResponse(responseCode = "415", description = "The body was not `application/xml`."),
-            @ApiResponse(responseCode = "409", description = "The change would leave no `ROLE_ADMIN` holder, or the user data was changed by another process since it was loaded.",
+            @ApiResponse(responseCode = "409", description = "The change would leave no `ROLE_ADMIN` holder, or the users were changed by another request while this one ran (any user, not only this one), and the request can be sent again.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "The body could not be unmarshalled, or the user could not be saved.",
@@ -358,7 +360,7 @@ public class UserRestService extends OnmsRestService {
                     Comments must not contain markup and values must fit their columns. Duty schedules are validated
                     (stored values are grandfathered) and roles have to be known. All of these answer 400.
                     A user without `ROLE_ADMIN` after the change answers 400 for `admin` and 409 for the last holder
-                    of the role. A stale save answers 409.""",
+                    of the role. A concurrent change answers 409: send the request again.""",
             operationId = "updateUserV1"
     )
     @RequestBody(required = true, description = "Fields to apply.",
@@ -380,7 +382,7 @@ public class UserRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User jroe does not exist."))),
-            @ApiResponse(responseCode = "409", description = "The change would leave no `ROLE_ADMIN` holder, or the user data was changed by another process since it was loaded.",
+            @ApiResponse(responseCode = "409", description = "The change would leave no `ROLE_ADMIN` holder, or the users were changed by another request while this one ran (any user, not only this one), and the request can be sent again.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "The user could not be saved.",
@@ -430,7 +432,7 @@ public class UserRestService extends OnmsRestService {
             description = """
                     Add one security role to a user. The role has to be a known security role, as listed by
                     `/api/v2/security-roles`.
-                    The request takes no body. A stale save answers 409.""",
+                    The request takes no body. A concurrent change answers 409: send the request again.""",
             operationId = "addUserRoleV1"
     )
     @ApiResponses(value = {
@@ -448,7 +450,7 @@ public class UserRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User jroe does not exist."))),
-            @ApiResponse(responseCode = "409", description = "The user data was changed by another process since it was loaded.",
+            @ApiResponse(responseCode = "409", description = "The users were changed by another request while this one ran (any user, not only this one). Nothing was saved: send the request again.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "The user could not be saved.",
@@ -516,7 +518,7 @@ public class UserRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User jroe does not exist."))),
-            @ApiResponse(responseCode = "409", description = "The user is the last `ROLE_ADMIN` holder, an on-call supervisor or a notification destination path target, or the user data was changed by another process.",
+            @ApiResponse(responseCode = "409", description = "The user is the last `ROLE_ADMIN` holder, an on-call supervisor or a notification destination path target, or the users were changed by another request while this one ran (any user, not only this one), and the request can be sent again.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "The user could not be removed.",
@@ -570,7 +572,7 @@ public class UserRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "User jroe does not exist."))),
-            @ApiResponse(responseCode = "409", description = "The change would leave no `ROLE_ADMIN` holder, or the user data was changed by another process since it was loaded.",
+            @ApiResponse(responseCode = "409", description = "The change would leave no `ROLE_ADMIN` holder, or the users were changed by another request while this one ran (any user, not only this one), and the request can be sent again.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "The user could not be saved.",
