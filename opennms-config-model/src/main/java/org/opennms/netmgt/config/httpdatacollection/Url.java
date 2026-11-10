@@ -38,6 +38,10 @@ import javax.xml.bind.annotation.XmlType;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -91,56 +95,80 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
         "m_headers"
 })
 @XmlRootElement(name = "url")
+@JsonAutoDetect(isGetterVisibility = JsonAutoDetect.Visibility.NONE)
 @ValidateUsing("http-datacollection-config.xsd")
 public class Url implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @JsonIgnore
     @XmlElementWrapper(name = "parameters")
     @XmlElement(name = "parameter")
     protected List<Parameter> m_parameters;
+    @JsonIgnore
     @XmlElementWrapper(name = "headers")
     @XmlElement(name = "header")
     protected List<Header> m_headers;
+    @JsonProperty("method")
     @XmlAttribute(name = "method")
     protected String m_method;
+    @JsonProperty("http-version")
     @XmlAttribute(name = "http-version")
     protected String m_httpVersion;
+    @JsonProperty("user-agent")
     @XmlAttribute(name = "user-agent")
     protected String m_userAgent;
+    @JsonProperty("virtual-host")
     @XmlAttribute(name = "virtual-host")
     protected String m_virtualHost;
+    @JsonProperty("scheme")
     @XmlAttribute(name = "scheme")
     protected String m_scheme;
+    @JsonProperty("user-info")
     @XmlAttribute(name = "user-info")
     protected String m_userInfo;
+    @JsonProperty("host")
     @XmlAttribute(name = "host")
     protected String m_host;
+    @JsonProperty("port")
     @XmlAttribute(name = "port")
     protected Integer m_port;
+    @JsonProperty("path")
     @XmlAttribute(name = "path", required = true)
     protected String m_path;
+    @JsonProperty("query")
     @XmlAttribute(name = "query")
     protected String m_query;
+    @JsonProperty("fragment")
     @XmlAttribute(name = "fragment")
     protected String m_fragment;
+    @JsonProperty("matches")
     @XmlAttribute(name = "matches")
     protected String m_matches;
+    @JsonProperty("response-range")
     @XmlAttribute(name = "response-range")
     protected String m_responseRange;
+    @JsonProperty("canonical-equivalence")
     @XmlAttribute(name = "canonical-equivalence")
     protected Boolean m_canonicalEquivalence;
+    @JsonProperty("case-insensitive")
     @XmlAttribute(name = "case-insensitive")
     protected Boolean m_caseInsensitive;
+    @JsonProperty("comments")
     @XmlAttribute(name = "comments")
     protected Boolean m_comments;
+    @JsonProperty("dotall")
     @XmlAttribute(name = "dotall")
     protected Boolean m_dotall;
+    @JsonProperty("literal")
     @XmlAttribute(name = "literal")
     protected Boolean m_literal;
+    @JsonProperty("multiline")
     @XmlAttribute(name = "multiline")
     protected Boolean m_multiline;
+    @JsonProperty("unicode-case")
     @XmlAttribute(name = "unicode-case")
     protected Boolean m_unicodeCase;
+    @JsonProperty("unix-lines")
     @XmlAttribute(name = "unix-lines")
     protected Boolean m_unixLines;
 
@@ -165,6 +193,32 @@ public class Url implements Serializable {
 
     public void setHeaders(final List<Header> value) {
         m_headers = value;
+    }
+
+    /**
+     * Config Management stores the {@code <parameters>} wrapper element as a nested object: {@code "parameters": {"parameter": [...]}}.
+     */
+    @JsonProperty("parameters")
+    private ParametersJson getParametersJson() {
+        return m_parameters == null || m_parameters.isEmpty() ? null : new ParametersJson(m_parameters);
+    }
+
+    @JsonProperty("parameters")
+    private void setParametersJson(final ParametersJson value) {
+        m_parameters = value == null ? null : value.parameter;
+    }
+
+    /**
+     * Config Management stores the {@code <headers>} wrapper element as a nested object: {@code "headers": {"header": [...]}}.
+     */
+    @JsonProperty("headers")
+    private HeadersJson getHeadersJson() {
+        return m_headers == null || m_headers.isEmpty() ? null : new HeadersJson(m_headers);
+    }
+
+    @JsonProperty("headers")
+    private void setHeadersJson(final HeadersJson value) {
+        m_headers = value == null ? null : value.header;
     }
 
     public String getMethod() {
@@ -363,4 +417,32 @@ public class Url implements Serializable {
                             m_literal, m_multiline, m_unicodeCase, m_unixLines);
     }
 
+
+    private static class ParametersJson implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        @JsonProperty("parameter")
+        private List<Parameter> parameter;
+
+        private ParametersJson() {
+        }
+
+        private ParametersJson(final List<Parameter> parameter) {
+            this.parameter = parameter;
+        }
+    }
+
+    private static class HeadersJson implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        @JsonProperty("header")
+        private List<Header> header;
+
+        private HeadersJson() {
+        }
+
+        private HeadersJson(final List<Header> header) {
+            this.header = header;
+        }
+    }
 }

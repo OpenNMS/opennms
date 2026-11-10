@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlType;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * One HTTP request header sent on the data collection request. The
  * {@code value} field is interpolated through the metadata DSL the
@@ -47,8 +49,10 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 public class Header implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @JsonProperty("name")
     @XmlAttribute(name = "name", required = true)
     protected String m_name;
+    @JsonProperty("value")
     @XmlAttribute(name = "value", required = true)
     protected String m_value;
 

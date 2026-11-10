@@ -37,6 +37,9 @@ import javax.xml.bind.annotation.XmlType;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -69,11 +72,14 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 public class Uri implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @JsonProperty("url")
     @XmlElement(name = "url", required = true)
     protected Url m_url;
+    @JsonIgnore
     @XmlElementWrapper(name="attributes")
     @XmlElement(name="attrib")
     protected List<Attrib> m_attributes;
+    @JsonProperty("name")
     @XmlAttribute(name = "name", required = true)
     protected String m_name;
 
@@ -91,6 +97,19 @@ public class Uri implements Serializable {
 
     public void setAttributes(final List<Attrib> value) {
         m_attributes = value;
+    }
+
+    /**
+     * Config Management stores the {@code <attributes>} wrapper element as a nested object: {@code "attributes": {"attrib": [...]}}.
+     */
+    @JsonProperty("attributes")
+    private AttributesJson getAttributesJson() {
+        return m_attributes == null || m_attributes.isEmpty() ? null : new AttributesJson(m_attributes);
+    }
+
+    @JsonProperty("attributes")
+    private void setAttributesJson(final AttributesJson value) {
+        m_attributes = value == null ? null : value.attrib;
     }
 
     public String getName() {
@@ -117,4 +136,18 @@ public class Uri implements Serializable {
         return Objects.hash(m_url, m_attributes, m_name);
     }
 
+
+    private static class AttributesJson implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        @JsonProperty("attrib")
+        private List<Attrib> attrib;
+
+        private AttributesJson() {
+        }
+
+        private AttributesJson(final List<Attrib> attrib) {
+            this.attrib = attrib;
+        }
+    }
 }
