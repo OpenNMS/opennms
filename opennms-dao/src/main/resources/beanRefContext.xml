@@ -8,6 +8,8 @@
        <list>
          <value>META-INF/opennms/applicationContext-dao.xml</value>
          <value>classpath*:/META-INF/opennms/component-dao.xml</value>
+         <!-- OSGi services that must be published even if the daemon that uses them is disabled (NMS-20470) -->
+         <value>classpath*:/META-INF/opennms/component-shared-services.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg ref="daemonContext" />

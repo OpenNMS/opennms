@@ -24,6 +24,7 @@ package org.opennms.web.filter;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
+import org.opennms.core.utils.IplikeSqlTranslator;
 
 
 /**
@@ -46,15 +47,24 @@ public abstract class IPLikeFilter extends OneArgFilter<String> {
     /** {@inheritDoc} */
     @Override
     public String getSQLTemplate() {
+        // stays on iplike(): the template contract requires exactly one %s
+        // consumed as a bound JDBC parameter (bindParam is final and always
+        // binds one), which a translated predicate cannot satisfy
         return " IPLIKE(" + getSQLFieldName() + ", %s) ";
     }
 
     /** {@inheritDoc} */
     @Override
     public Criterion getCriterion() {
+        // translatable match expressions become native-inet range predicates
+        // answered through an expression index; the rest call iplike()
+        final String nativePredicate = IplikeSqlTranslator.toSqlPredicate(getValue(), "{alias}." + getPropertyName());
+        if (nativePredicate != null) {
+            return Restrictions.sqlRestriction(nativePredicate);
+        }
         return Restrictions.sqlRestriction("iplike( {alias}."+getPropertyName()+", ?)", getValue(), StringType.INSTANCE);
     }
-    
-    
+
+
 
 }
