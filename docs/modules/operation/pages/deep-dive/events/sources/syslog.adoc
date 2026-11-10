@@ -104,6 +104,23 @@ Raising it suits a sink that is merely slow; zero waits indefinitely.
 | 30
 |===
 
+A `tcp` element with the optional attributes spelled out might look like this:
+
+[source, xml]
+----
+<configuration syslog-port="10514" ...>
+    <tcp port="10601"
+         listen-address="0.0.0.0"
+         framing="octet-counting"
+         max-message-size="65536"
+         max-connections="1024"
+         max-connections-per-source="256"
+         idle-timeout="300"
+         ordered="false"
+         dispatch-timeout="30"/>
+</configuration>
+----
+
 [[_message_ordering]]
 === Message ordering
 
@@ -143,6 +160,19 @@ Certificates and keys are PEM encoded, and the private key cannot be password pr
 Setting `client-auth` to `optional` or `require` also verifies sender certificates against `trust-cert-filepath`.
 With `require`, a sender that presents no trusted certificate is rejected during the handshake; with `optional`, it is still accepted.
 
+[source, xml]
+----
+<configuration syslog-port="10514" ...>
+    <tcp port="10601">
+        <tls enabled="true"
+             cert-filepath="/opt/opennms/etc/syslog-tls.crt"
+             private-key-filepath="/opt/opennms/etc/syslog-tls.key"
+             client-auth="require"
+             trust-cert-filepath="/opt/opennms/etc/syslog-tls-ca.crt"/>
+    </tcp>
+</configuration>
+----
+
 If a certificate or key cannot be read, the listener does not start and logs why in `syslogd.log`.
 It does not fall back to accepting plaintext on that port.
 
@@ -174,7 +204,30 @@ Check which framing your version emits before assuming it matches, since this ha
 
 A Minion uses the same syslog listener feature either way.
 Set the `syslog.tcp.*` keys in `$\{MINION_HOME}/etc/org.opennms.netmgt.syslog.cfg`, where `syslog.tcp.listen.port` defaults to `0`, meaning TCP is off.
-The keys mirror the attributes above.
+Each key corresponds to one of the attributes above, with dots in place of hyphens, except that `port` is `syslog.tcp.listen.port` and `listen-address` is `syslog.tcp.listen.interface`.
+The `tls` attributes take a `syslog.tcp.tls.` prefix.
+
+[source, properties]
+----
+# ${MINION_HOME}/etc/org.opennms.netmgt.syslog.cfg
+syslog.tcp.listen.port = 1601
+syslog.tcp.listen.interface = 0.0.0.0
+syslog.tcp.framing = auto
+syslog.tcp.max.message.size = 65536
+syslog.tcp.max.connections = 1024
+syslog.tcp.max.connections.per.source = 256
+syslog.tcp.idle.timeout = 300
+syslog.tcp.ordered = false
+syslog.tcp.dispatch.timeout = 30
+
+# TLS
+syslog.tcp.tls.enabled = true
+syslog.tcp.tls.cert.filepath = /opt/minion/etc/syslog-tls.crt
+syslog.tcp.tls.private.key.filepath = /opt/minion/etc/syslog-tls.key
+syslog.tcp.tls.client.auth = require
+syslog.tcp.tls.trust.cert.filepath = /opt/minion/etc/syslog-tls-ca.crt
+----
+
 Messages still reach {page-component-title} through the same sink the UDP listener uses, so nothing downstream changes.
 
 == Parsers

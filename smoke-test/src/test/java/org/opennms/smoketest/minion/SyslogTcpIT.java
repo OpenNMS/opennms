@@ -24,7 +24,6 @@ package org.opennms.smoketest.minion;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.util.Date;
@@ -99,12 +98,12 @@ public class SyslogTcpIT {
                         .ge("eventCreateTime", startOfTest)
                         .toCriteria());
 
-        await().atMost(2, MINUTES).pollInterval(5, SECONDS).until(count, is(expected));
+        await().atMost(2, MINUTES).pollInterval(1, SECONDS).until(count, is(expected));
 
-        // Awaitility stops the moment the count matches, so a duplicate arriving just after
-        // would go unnoticed. Give it a chance to show up and assert the count again.
-        Thread.sleep(10_000);
-        assertThat("more events arrived than were sent", count.call(), is(expected));
+        // The wait above stops the moment the count matches, so hold the match for a while
+        // to catch a duplicate arriving just after.
+        await("no more events than were sent").during(10, SECONDS).atMost(15, SECONDS)
+                .pollInterval(1, SECONDS).until(count, is(expected));
     }
 
     private void awaitMinion(final Date startOfTest) {
