@@ -195,9 +195,9 @@ import { OnmsButton, OnmsDialog, OnmsInputText, OnmsTextarea } from '@opennms/on
 import FormField from '@/components/Common/FormField.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { getOrderedEventConfigSources, uploadEventConfigFiles } from '@/services/eventConfigService'
-import { generateEvents } from '@/services/mibCompilerService'
+import { findExistingUeis, generateEvents } from '@/services/mibCompilerService'
 import { EventConfigSource } from '@/types/eventConfig'
-import { MibDuplicateUei, MibEventsPreview } from '@/types/mibCompiler'
+import { MibDuplicateUei, MibEventSource, MibEventsPreview } from '@/types/mibCompiler'
 import { getGeneralErrorMessage, isWellFormedXml } from '../mibFilesValidator'
 import DuplicateUeiTable from './DuplicateUeiTable.vue'
 
@@ -223,6 +223,8 @@ const eventsXml = ref('')
 const validationError = ref('')
 // the sources in evaluation order (first entry evaluated first), read when the user saves
 const orderedSources = ref<EventConfigSource[]>([])
+// UEIs that other sources define: from the preview, then checked again for the edited XML on each save
+const existingUeis = ref<Record<string, MibEventSource[]>>({})
 
 const baseName = computed(() => props.fileName.replace(/\.[^.]+$/, ''))
 const sourceName = computed(() => (preview.value?.suggestedFileName ?? `${baseName.value}.events.xml`).replace(/\.xml$/, ''))
@@ -236,9 +238,10 @@ const currentUeis = computed(() => {
   return new Set(Array.from(parsed.getElementsByTagName('uei')).map(element => element.textContent?.trim() ?? ''))
 })
 
-// the server reports duplicates for the generated UEIs; an edit that changes a UEI resolves its duplicate
+// An edit that changes a UEI drops its duplicate at once. An edit that adds a duplicate, or a change in
+// the event configuration since the preview, shows up when the save checks the edited XML again.
 const duplicateUeis = computed<MibDuplicateUei[]>(() =>
-  Object.entries(preview.value?.existingUeis ?? {})
+  Object.entries(existingUeis.value)
     .filter(([uei]) => currentUeis.value === null || currentUeis.value.has(uei))
     .map(([uei, sources]) => ({ uei, sources })))
 
@@ -284,6 +287,7 @@ watch(() => props.visible, (visible) => {
     eventsXml.value = ''
     validationError.value = ''
     orderedSources.value = []
+    existingUeis.value = {}
     ueiBase.value = `uei.opennms.org/traps/${baseName.value}`
   }
 })
@@ -301,6 +305,7 @@ const generatePreview = async () => {
       return
     }
     preview.value = result
+    existingUeis.value = result.existingUeis ?? {}
     eventsXml.value = result.eventsXml ?? ''
     step.value = 'preview'
   } catch (error: unknown) {
@@ -326,15 +331,21 @@ const save = async () => {
     return
   }
   // The upload replaces an existing source wholesale, and the new definitions can override the
-  // definitions of other sources for the same UEIs. Both need the user's explicit consent first.
+  // definitions of other sources for the same UEIs. Both need the user's explicit consent first,
+  // so the duplicates are checked again for the UEIs of the edited XML.
   const requestId = requestSeq.value
   isLoading.value = true
   try {
-    const sources = await getOrderedEventConfigSources()
+    const ueis = [...(currentUeis.value ?? new Set(Object.keys(existingUeis.value)))]
+    const [sources, existing] = await Promise.all([
+      getOrderedEventConfigSources(),
+      findExistingUeis(props.fileName, ueis)
+    ])
     if (requestId !== requestSeq.value) {
       return
     }
     orderedSources.value = sources
+    existingUeis.value = existing
     // shadowed UEIs need an existing target, so they always come with targetExists
     if (targetExists.value || overriddenUeis.value.length > 0) {
       isLoading.value = false
@@ -346,7 +357,7 @@ const save = async () => {
       return
     }
     isLoading.value = false
-    validationError.value = getGeneralErrorMessage(error, 'Failed to check for an existing event source. Try again.')
+    validationError.value = getGeneralErrorMessage(error, 'Failed to check for an existing event source or duplicate UEIs. Try again.')
     return
   }
   await doSave()

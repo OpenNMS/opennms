@@ -61,6 +61,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -85,6 +86,8 @@ public class MibFileService {
 
     private static final String MIB_FILE_EXTENSION = ".mib";
     private static final long MAX_MIB_FILE_SIZE = 10L * 1024 * 1024;
+    /** Far more than any MIB defines traps, and well below the bind-parameter limit of the lookup query. */
+    public static final int MAX_UEIS_TO_CHECK = 10_000;
 
     private final Object compileLock = new Object();
 
@@ -253,22 +256,51 @@ public class MibFileService {
         result.setEventCount(events.getEvents().size());
         result.setSuggestedFileName(suggestedFileName);
         result.setEventsXml(JaxbUtils.marshal(events));
-        // the UI saves the events as a source named after the file, without its .xml suffix
-        result.setExistingUeis(findExistingUeis(events, suggestedFileName.replaceFirst("\\.xml$", "")));
+        final Set<String> ueis = new LinkedHashSet<>();
+        events.getEvents().forEach(event -> ueis.add(event.getUei()));
+        result.setExistingUeis(findExistingUeis(ueis, eventsSourceName(mibName)));
         return result;
     }
 
     /**
-     * Looks up which of the generated UEIs other event sources already define. The target source
-     * is left out: saving replaces it wholesale, and the UI asks for consent to that separately.
+     * Checks the given UEIs, typically those of the edited events XML right before it is saved, against
+     * the event configuration: the preview's {@code existingUeis} only covers the generated UEIs as they
+     * were when the preview was made. The source the events will be saved as is left out, as in the preview.
+     *
+     * @param name the compiled MIB the events were generated from; it names the target source
+     * @param ueis the UEIs to check, at most {@link #MAX_UEIS_TO_CHECK}
      */
-    private Map<String, List<MibEventSourceDto>> findExistingUeis(Events events, String targetSourceName) {
+    public Map<String, List<MibEventSourceDto>> findExistingUeis(String name, Collection<String> ueis) throws IOException {
+        if (ueis == null) {
+            throw new IllegalArgumentException("A list of UEIs is required.");
+        }
+        if (ueis.size() > MAX_UEIS_TO_CHECK) {
+            throw new IllegalArgumentException("At most " + MAX_UEIS_TO_CHECK + " UEIs can be checked at once.");
+        }
+        final File mibFile = existingFile(COMPILED, name);
+        final MibParser parser = createParser();
+        if (!parser.parseMib(mibFile)) {
+            throw new IOException("Failed to parse compiled MIB " + name + ": " + parser.getFormattedErrors());
+        }
+        final Set<String> checked = new LinkedHashSet<>();
+        ueis.stream().filter(uei -> uei != null && !uei.isBlank()).map(String::trim).forEach(checked::add);
+        return findExistingUeis(checked, eventsSourceName(parser.getMibName()));
+    }
+
+    /** The source the UI saves a MIB's events as: the suggested file name without its .xml suffix. */
+    private static String eventsSourceName(String mibName) {
+        return mibName + ".events";
+    }
+
+    /**
+     * Looks up which of the UEIs other event sources already define. The target source is left out:
+     * saving replaces it wholesale, and the UI asks for consent to that separately.
+     */
+    private Map<String, List<MibEventSourceDto>> findExistingUeis(Set<String> ueis, String targetSourceName) {
         final Map<String, List<MibEventSourceDto>> existing = new LinkedHashMap<>();
-        if (eventConfPersistenceService == null || events.getEvents().isEmpty()) {
+        if (eventConfPersistenceService == null || ueis.isEmpty()) {
             return existing;
         }
-        final Set<String> ueis = new LinkedHashSet<>();
-        events.getEvents().forEach(event -> ueis.add(event.getUei()));
         eventConfPersistenceService.findSourcesByUei(ueis).forEach((uei, sources) -> {
             final List<MibEventSourceDto> others = new ArrayList<>();
             sources.forEach((name, enabled) -> {

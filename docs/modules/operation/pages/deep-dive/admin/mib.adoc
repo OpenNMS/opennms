@@ -96,6 +96,7 @@ Sources that are evaluated before it keep their definitions, and {page-component
 If you enable a disabled definition again, these rules apply to it.
 
 Before the save, a confirmation lists the UEIs in each of these groups.
+The save checks the UEIs of the edited XML again, so the confirmation also shows duplicates that your edits add.
 To continue, click *Save Anyway* or *Replace Events*.
 To go back to the XML, click *Back*.
 

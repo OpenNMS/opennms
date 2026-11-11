@@ -26,8 +26,10 @@ import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockGenerateEvents = vi.fn()
+const mockFindExistingUeis = vi.fn()
 vi.mock('@/services/mibCompilerService', () => ({
-  generateEvents: (...args: unknown[]) => mockGenerateEvents(...args)
+  generateEvents: (...args: unknown[]) => mockGenerateEvents(...args),
+  findExistingUeis: (...args: unknown[]) => mockFindExistingUeis(...args)
 }))
 
 // happy-dom's DOMParser never reports parse errors, so the well-formedness
@@ -102,6 +104,8 @@ describe('GenerateEventsDialog', () => {
     vi.clearAllMocks()
     // no existing source by default: saving needs no confirmation
     mockGetOrderedEventConfigSources.mockResolvedValue([])
+    // by default the save-time check agrees with the preview
+    mockFindExistingUeis.mockImplementation(async () => (await mockGenerateEvents.mock.results.at(-1)?.value)?.existingUeis ?? {})
   })
 
   afterEach(() => {
@@ -314,6 +318,63 @@ describe('GenerateEventsDialog', () => {
     await flushPromises()
     expect(wrapper.find('[data-test="confirm-save"]').exists()).toBe(false)
     expect(mockUploadEventConfigFiles).toHaveBeenCalledTimes(1)
+  })
+
+  it('checks the UEIs of the edited XML again when saving', async () => {
+    mockGenerateEvents.mockResolvedValue({ ...preview, existingUeis: {}})
+    mockGetOrderedEventConfigSources.mockResolvedValue([{ name: 'acme.events' }])
+    // the edit renames the UEI to one that acme.events already defines
+    mockFindExistingUeis.mockResolvedValue({ 'uei.opennms.org/vendor/acme/linkDown': enabled('acme.events') })
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-test="duplicate-ueis"]').exists()).toBe(false)
+
+    await wrapper.find('[data-test="events-xml"]').setValue(
+      '<events><event><uei>uei.opennms.org/vendor/acme/linkDown</uei></event></events>')
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(mockFindExistingUeis).toHaveBeenCalledWith('IF-MIB.mib', ['uei.opennms.org/vendor/acme/linkDown'])
+    expect(mockUploadEventConfigFiles).not.toHaveBeenCalled()
+    expect(rowsOf(wrapper.find('[data-test="confirm-overridden-ueis"]')))
+      .toEqual([['uei.opennms.org/vendor/acme/linkDown', 'acme.events']])
+
+    // back in the preview, the warning shows the duplicate found on save
+    await wrapper.find('[data-test="back-button"]').trigger('click')
+    expect(rowsOf(wrapper.find('[data-test="duplicate-ueis"]')))
+      .toEqual([['uei.opennms.org/vendor/acme/linkDown', 'acme.events']])
+  })
+
+  it('saves without confirmation when a duplicate is gone by the time of the save', async () => {
+    mockGenerateEvents.mockResolvedValue({
+      ...preview,
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': enabled('acme.events') }
+    })
+    mockGetOrderedEventConfigSources.mockResolvedValue([{ name: 'acme.events' }])
+    mockFindExistingUeis.mockResolvedValue({})
+    mockUploadEventConfigFiles.mockResolvedValue({ success: [{ file: 'IF-MIB.events' }], errors: [] })
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="confirm-save"]').exists()).toBe(false)
+    expect(mockUploadEventConfigFiles).toHaveBeenCalledTimes(1)
+  })
+
+  it('blocks saving when the duplicate check fails', async () => {
+    mockGenerateEvents.mockResolvedValue(preview)
+    mockFindExistingUeis.mockRejectedValue(new Error('boom'))
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(mockUploadEventConfigFiles).not.toHaveBeenCalled()
+    expect(wrapper.find('[data-test="validation-error"]').text()).toContain('duplicate UEIs')
   })
 
   it('drops a duplicate from the warning once its UEI is edited away', async () => {

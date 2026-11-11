@@ -24,6 +24,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   compileMibFile,
   deleteMibFile,
+  findExistingUeis,
   generateDataCollection,
   generateEvents,
   generateGraphTemplates,
@@ -122,6 +123,17 @@ describe('mibCompilerService', () => {
     vi.mocked(v2.post).mockResolvedValue({ status: 200, data: { success: true }})
     await generateEvents('IF-MIB.mib')
     expect(v2.post).toHaveBeenCalledWith('/mibs/compiled/IF-MIB.mib/events', null, { params: {}})
+  })
+
+  it('findExistingUeis POSTs the UEIs and returns the map', async () => {
+    const existing = { 'uei.opennms.org/a': [{ name: 'acme.events', enabled: true }] }
+    vi.mocked(v2.post).mockResolvedValue({ status: 200, data: existing })
+    const result = await findExistingUeis('IF MIB.mib', ['uei.opennms.org/a', 'uei.opennms.org/b'])
+    expect(v2.post).toHaveBeenCalledWith(
+      '/mibs/compiled/IF%20MIB.mib/events/existing-ueis',
+      ['uei.opennms.org/a', 'uei.opennms.org/b']
+    )
+    expect(result).toEqual(existing)
   })
 
   it('generateDataCollection POSTs to the datacollection endpoint', async () => {

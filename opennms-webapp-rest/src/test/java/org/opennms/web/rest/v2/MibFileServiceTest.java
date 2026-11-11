@@ -42,10 +42,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -55,6 +57,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class MibFileServiceTest {
@@ -325,6 +328,40 @@ public class MibFileServiceTest {
         final MibGraphTemplatesDto overwritten = service.generateGraphTemplates("IF-MIB.mib", false, true);
         assertTrue(overwritten.isWritten());
         assertTrue(Files.readString(target.toPath()).contains("reports="));
+    }
+
+    @Test
+    public void testFindExistingUeisChecksTheGivenUeis() throws Exception {
+        compileIfMib();
+        final EventConfPersistenceService persistence = mock(EventConfPersistenceService.class);
+        final Map<String, Boolean> editedSources = new LinkedHashMap<>();
+        editedSources.put("IF-MIB.events", true);
+        editedSources.put("acme.events", false);
+        final Map<String, Map<String, Boolean>> found = new LinkedHashMap<>();
+        found.put("uei.opennms.org/edited", editedSources);
+        found.put("uei.opennms.org/own", Map.of("IF-MIB.events", true));
+        when(persistence.findSourcesByUei(anyCollection())).thenReturn(found);
+        service.setEventConfPersistenceService(persistence);
+
+        // blank entries are dropped, the rest is trimmed and de-duplicated
+        final Map<String, List<MibEventSourceDto>> result = service.findExistingUeis("IF-MIB.mib",
+                List.of(" uei.opennms.org/edited ", "uei.opennms.org/own", "", "uei.opennms.org/edited"));
+
+        // the target source, named after the MIB module, is left out
+        assertEquals(Map.of("uei.opennms.org/edited", List.of(new MibEventSourceDto("acme.events", false))), result);
+        verify(persistence).findSourcesByUei(Set.of("uei.opennms.org/edited", "uei.opennms.org/own"));
+    }
+
+    @Test
+    public void testFindExistingUeisRejectsInvalidRequests() throws Exception {
+        compileIfMib();
+        assertThrows(IllegalArgumentException.class, () -> service.findExistingUeis("IF-MIB.mib", null));
+        final List<String> tooMany = new ArrayList<>();
+        for (int i = 0; i <= MibFileService.MAX_UEIS_TO_CHECK; i++) {
+            tooMany.add("uei.opennms.org/" + i);
+        }
+        assertThrows(IllegalArgumentException.class, () -> service.findExistingUeis("IF-MIB.mib", tooMany));
+        assertThrows(FileNotFoundException.class, () -> service.findExistingUeis("NO-SUCH.mib", List.of("uei.opennms.org/x")));
     }
 
     @Test

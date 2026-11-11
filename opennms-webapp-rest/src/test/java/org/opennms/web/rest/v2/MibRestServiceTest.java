@@ -140,6 +140,23 @@ public class MibRestServiceTest {
     }
 
     @Test
+    public void testFindExistingUeis() throws Exception {
+        compiledDir.mkdirs();
+        for (final String dep : new String[]{"SNMPv2-SMI.txt", "SNMPv2-TC.txt", "SNMPv2-CONF.txt", "SNMPv2-MIB.txt", "IANAifType-MIB.txt"}) {
+            Files.copy(new File(MIB_FIXTURES, dep).toPath(), new File(compiledDir, dep).toPath());
+        }
+        Files.copy(new File(MIB_FIXTURES, "IF-MIB.txt").toPath(), new File(compiledDir, "IF-MIB.mib").toPath());
+
+        // without an event configuration to check against, nothing is defined elsewhere
+        final Response ok = restService.findExistingUeis("IF-MIB.mib", List.of("uei.opennms.org/traps/IF-MIB/linkDown"));
+        assertEquals(200, ok.getStatus());
+        assertEquals(Map.of(), ok.getEntity());
+
+        assertEquals(400, restService.findExistingUeis("IF-MIB.mib", null).getStatus());
+        assertEquals(404, restService.findExistingUeis("NO-SUCH.mib", List.of("uei.opennms.org/x")).getStatus());
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
     public void testGraphTemplatesWriteConflictReturns409() throws Exception {
         pendingDir.mkdirs();
