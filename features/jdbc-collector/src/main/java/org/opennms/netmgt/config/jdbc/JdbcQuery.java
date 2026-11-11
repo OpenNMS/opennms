@@ -21,6 +21,9 @@
  */
 package org.opennms.netmgt.config.jdbc;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,25 +44,32 @@ public class JdbcQuery implements Serializable, Comparable<JdbcQuery> {
     private static final JdbcColumn[] OF_JDBC_COLUMNS = new JdbcColumn[0];
     
     @XmlAttribute(name="name", required=true)
+    @JsonProperty("name")
     private String m_queryName;
     
     @XmlAttribute(name="recheckInterval")
+    @JsonProperty("recheckInterval")
     private int m_recheckInterval;
     
     @XmlAttribute(name="ifType", required=true)
+    @JsonProperty("ifType")
     private String m_ifType;
     
     @XmlAttribute(name="resourceType", required=true)
+    @JsonProperty("resourceType")
     private String m_resourceType;
 
     @XmlElement(name="statement", required=true)
+    @JsonProperty("statement")
     private JdbcStatement m_jdbcStatement;
     
     @XmlAttribute(name="instance-column", required=false)
+    @JsonProperty("instance-column")
     private String m_instanceColumn;
     
     @XmlElementWrapper(name="columns")
     @XmlElement(name="column")
+    @JsonIgnore // written inside the "columns" wrapper, see getColumnsWrapper()
     private List<JdbcColumn> m_jdbcColumns = new ArrayList<>();
     
     @XmlTransient
@@ -142,6 +152,31 @@ public class JdbcQuery implements Serializable, Comparable<JdbcQuery> {
 
     public void setInstanceColumn(String instanceColumn) {
         m_instanceColumn = instanceColumn;
+    }
+
+    /**
+     * The configuration manager stores the columns like the XML does: {@code "columns": {"column": [...]}}.
+     */
+    @JsonProperty("columns")
+    private Columns getColumnsWrapper() {
+        return m_jdbcColumns == null || m_jdbcColumns.isEmpty() ? null : new Columns(m_jdbcColumns);
+    }
+
+    @JsonProperty("columns")
+    private void setColumnsWrapper(final Columns columns) {
+        m_jdbcColumns = columns == null || columns.column == null ? new ArrayList<>() : columns.column;
+    }
+
+    private static class Columns {
+        @JsonProperty("column")
+        private List<JdbcColumn> column;
+
+        private Columns() {
+        }
+
+        private Columns(final List<JdbcColumn> column) {
+            this.column = column;
+        }
     }
 
     @Override

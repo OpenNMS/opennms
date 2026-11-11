@@ -21,6 +21,9 @@
  */
 package org.opennms.netmgt.config.jdbc;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -44,13 +47,16 @@ public class JdbcDataCollection implements Serializable, Comparable<JdbcDataColl
     private static final JdbcQuery[] OF_QUERIES = new JdbcQuery[0];
     
     @XmlAttribute(name="name")
+    @JsonProperty("name")
     private String m_name;
     
     @XmlElement(name="rrd")
+    @JsonProperty("rrd")
     private JdbcRrd m_jdbcRrd;
     
     @XmlElementWrapper(name="queries")
     @XmlElement(name="query")
+    @JsonIgnore // written inside the "queries" wrapper, see getQueriesWrapper()
     private List<JdbcQuery> m_jdbcQueries = new ArrayList<>();
     
     public JdbcDataCollection() {
@@ -102,6 +108,31 @@ public class JdbcDataCollection implements Serializable, Comparable<JdbcDataColl
         }
     }
     
+    /**
+     * The configuration manager stores the queries like the XML does: {@code "queries": {"query": [...]}}.
+     */
+    @JsonProperty("queries")
+    private Queries getQueriesWrapper() {
+        return m_jdbcQueries == null || m_jdbcQueries.isEmpty() ? null : new Queries(m_jdbcQueries);
+    }
+
+    @JsonProperty("queries")
+    private void setQueriesWrapper(final Queries queries) {
+        m_jdbcQueries = queries == null || queries.query == null ? new ArrayList<>() : queries.query;
+    }
+
+    private static class Queries {
+        @JsonProperty("query")
+        private List<JdbcQuery> query;
+
+        private Queries() {
+        }
+
+        private Queries(final List<JdbcQuery> query) {
+            this.query = query;
+        }
+    }
+
     @Override
     public int compareTo(JdbcDataCollection obj) {
         return new CompareToBuilder()
