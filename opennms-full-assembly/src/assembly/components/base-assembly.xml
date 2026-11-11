@@ -76,13 +76,14 @@
         <include>THIRD-PARTY.txt</include>
       </includes>
     </fileSet>
-    <!-- Add the COPYING license file -->
+    <!-- Add the COPYING and LICENSE.md license files -->
     <fileSet>
       <directory>${project.parent.basedir}</directory>
       <filtered>false</filtered>
       <outputDirectory>licenses</outputDirectory>
       <includes>
         <include>COPYING</include>
+        <include>LICENSE.md</include>
       </includes>
     </fileSet>
     <!-- Put the Karaf 4 boot classpath files into /lib so that they are available in the OpenNMS classpath -->

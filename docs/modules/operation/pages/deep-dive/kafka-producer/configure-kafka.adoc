@@ -170,6 +170,22 @@ admin@opennms()> config:update
 In the example above, the filter is configured such that only metrics associated with the given location are forwarded.
 Available properties are nodeId, nodeLabel, foreignSource, foreignId, location, resourceTypeName, resourceName, resourceId, ifIndex and instance.
 
+The filter is evaluated once per resource, not per metric: a resource either keeps all of its attributes or loses all of them.
+Note that `resourceTypeName` holds `nodeSnmp` for node-level resources, `interfaceSnmp` for interface-level resources, `responseTime` for response time resources and the data collection resource type name for everything else.
+Response time resources carry node information, but their `location` property is only set for nodes outside the `Default` location.
+
+==== Test a metric filter
+
+Use the xref:deep-dive/kafka-producer/shell-commands.adoc#kafka-evaluate-metric-filter[opennms:kafka-evaluate-metric-filter] shell command to see which resources a filter would forward, without waiting for a collection.
+
+[source, console]
+----
+admin@opennms()> opennms:kafka-evaluate-metric-filter -n 5 'getLocation() == "Raleigh"'
+----
+
+The metric filter is read when the feature starts, so a changed configuration only applies after the `opennms-kafka-producer` feature has been restarted.
+The command's `--show-config` option shows both the configured and the running values.
+
 == Enable metric forwarding
 
 To enable metric forwarding, set the value of the `forward.metrics` property to `true`.

@@ -66,6 +66,7 @@ export { default as OnmsToggleSwitch } from './components/OnmsToggleSwitch.vue'
 export { default as OnmsVirtualScroller } from './components/OnmsVirtualScroller.vue'
 
 export { releaseActiveToast, useOnmsToast, ONMS_TOAST_GROUP_CENTER, ONMS_TOAST_GROUP_START } from './composables/useOnmsToast'
+export { useOnmsChromeless, useOnmsChromelessHost } from './composables/useOnmsChromeless'
 
 // Directives — register app-level; core does this in src/theme/primevue-setup.ts
 export { default as OnmsTooltip } from './directives/OnmsTooltip'

@@ -40,14 +40,16 @@
           :for="ifTypeId"
           :error="errors.ifType"
         >
-          <OnmsSelect
+          <OnmsAutoComplete
             :inputId="ifTypeId"
             :modelValue="ifType"
-            @update:modelValue="ifType = $event as ISelectItemType"
-            :options="IF_TYPE_FILTERS_OPTIONS"
-            optionLabel="_text"
+            @update:modelValue="ifType = ($event as string | null) ?? ''"
+            :suggestions="ifTypeSuggestions"
+            @complete="searchIfTypes"
             :invalid="!!errors.ifType"
+            placeholder="all, ignore, 6 or 6,22"
             data-test="mib-group-if-type-input"
+            dropdown
             fluid
           />
         </FormField>
@@ -143,14 +145,16 @@
             :for="instanceId"
             :error="mibObjectErrors.instance"
           >
-            <OnmsSelect
+            <OnmsAutoComplete
               :inputId="instanceId"
               :modelValue="instance"
-              @update:modelValue="instance = $event as ISelectItemType"
-              :options="instancesOptions"
-              optionLabel="_text"
+              @update:modelValue="instance = ($event as string | null) ?? ''"
+              :suggestions="instanceSuggestions"
+              @complete="searchInstances"
               :invalid="!!mibObjectErrors.instance"
+              placeholder="0, 1.5, ifIndex or a resource type"
               data-test="mib-object-instance-input"
+              dropdown
               fluid
             />
           </FormField>
@@ -230,7 +234,18 @@ import { computed, ref, useId, watch, watchEffect } from 'vue'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import useSnackbar from '@/composables/useSnackbar'
-import { DEFAULT_IF_TYPE_FILTER, DEFAULT_MIB_OBJ_TYPE, DEFAULT_STATUS, IF_TYPE_FILTERS_OPTIONS, MIB_OBJECT_DATA_TYPE_OPTIONS, OID_PATTERN } from '@/lib/constants'
+import {
+  DEFAULT_IF_TYPE,
+  DEFAULT_MIB_OBJ_TYPE,
+  DEFAULT_STATUS,
+  IF_TYPE_ALL,
+  IF_TYPE_IGNORE,
+  IF_TYPE_LIST_PATTERN,
+  IF_TYPE_SUGGESTIONS,
+  INSTANCE_ID_PATTERN,
+  MIB_OBJECT_DATA_TYPE_OPTIONS,
+  OID_PATTERN
+} from '@/lib/constants'
 import { mapSnmpDataCollectionMibGroupPayloadToServer } from '@/mappers/snmpDataCollection.mapper'
 import { createMibGroup, updateMibGroup } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
@@ -240,7 +255,7 @@ import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import { ISelectItemType } from '@/types'
 import FormField from '@/components/Common/FormField.vue'
-import { OnmsButton, OnmsColumn, OnmsDrawer, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable, OnmsToggleSwitch } from '@opennms/onms-ui'
+import { OnmsAutoComplete, OnmsButton, OnmsColumn, OnmsDrawer, OnmsIconButton, OnmsInputText, OnmsSelect, OnmsTable, OnmsToggleSwitch } from '@opennms/onms-ui'
 
 const store = useSnmpDataCollectionDetailStore()
 const nameId = useId()
@@ -249,8 +264,10 @@ const oidId = useId()
 const instanceId = useId()
 const aliasId = useId()
 const dataTypeId = useId()
+const DEFAULT_INSTANCE = '0'
 const name = ref('')
-const ifType = ref<ISelectItemType>(DEFAULT_IF_TYPE_FILTER)
+const ifType = ref<string>(DEFAULT_IF_TYPE)
+const ifTypeSuggestions = ref<string[]>([])
 const mibObjects = ref<MibGroupObjectForm[]>([])
 const status = ref(DEFAULT_STATUS)
 const errors = ref<MibGroupErrors>({})
@@ -258,8 +275,8 @@ const isSaveDisabled = ref(true)
 const snackbar = useSnackbar()
 const oid = ref('')
 const dataType = ref<ISelectItemType>(DEFAULT_MIB_OBJ_TYPE)
-const instance = ref<ISelectItemType>({ _text: '0', _value: '0' })
-const instancesOptions = ref<ISelectItemType[]>([])
+const instance = ref<string>(DEFAULT_INSTANCE)
+const instanceSuggestions = ref<string[]>([])
 const alias = ref('')
 const mibObjectErrors = ref<MibGroupObjectFormErrors>({})
 const isMibObjectSaveDisabled = ref(true)
@@ -286,10 +303,10 @@ const mibObjectDrawerTitle = computed(() =>
 const closeMibGroupDrawer = async () => {
   oid.value = ''
   dataType.value = DEFAULT_MIB_OBJ_TYPE
-  instance.value = { _text: '0', _value: '0' }
+  instance.value = DEFAULT_INSTANCE
   alias.value = ''
   name.value = ''
-  ifType.value = DEFAULT_IF_TYPE_FILTER
+  ifType.value = DEFAULT_IF_TYPE
   status.value = true
   mibObjects.value = []
   errors.value = {}
@@ -319,7 +336,7 @@ const closeMibObjectDrawer = () => {
   mibObjectErrors.value = {}
   oid.value = ''
   dataType.value = DEFAULT_MIB_OBJ_TYPE
-  instance.value = { _text: '0', _value: '0' }
+  instance.value = DEFAULT_INSTANCE
   alias.value = ''
   isMibObjectSaveDisabled.value = true
   mibObjectDrawerState.value = {
@@ -334,13 +351,15 @@ const saveMibObject = () => {
   const validationErrors = validateMibObject()
   mibObjectErrors.value = validationErrors
   if (Object.keys(validationErrors).length === 0) {
+    // The form does not show maxval and minval. Thus keep the values of the edited MIB object.
+    const editedMibObject = mibObjectDrawerState.value.mibObject
     const mibObject: MibGroupObjectForm = {
       oid: oid.value,
       alias: alias.value,
-      instance: instance.value._value as string,
+      instance: instance.value.trim(),
       type: dataType.value._value as string,
-      maxval: null,
-      minval: null
+      maxval: editedMibObject?.maxval ?? null,
+      minval: editedMibObject?.minval ?? null
     }
     if (mibObjectDrawerState.value.isEditMode === CreateEditMode.Create) {
       mibObjects.value.push(mibObject)
@@ -368,9 +387,10 @@ const saveMibGroup = async () => {
   try {
     const payload = mapSnmpDataCollectionMibGroupPayloadToServer(
       name.value,
-      ifType.value._value as string,
+      normalizeIfType(ifType.value),
       store.selectedMibGroup?.mibGroupNames || [],
       mibObjects.value,
+      store.selectedMibGroup?.mibObjProperties ?? null,
       status.value,
       store.selectedMibGroup?.id || 0,
       store.mibGroupDrawerState.isEditMode
@@ -395,6 +415,38 @@ const saveMibGroup = async () => {
   }
 }
 
+// An edit can keep the stored instance. When the resource type names are not loaded,
+// the form accepts any value. The server logs a warning at reload for an unknown resource type.
+const isValidInstance = (value: string) =>
+  INSTANCE_ID_PATTERN.test(value) ||
+  value === 'ifIndex' ||
+  value === mibObjectDrawerState.value.mibObject?.instance ||
+  store.resourceTypeNames.length === 0 ||
+  store.resourceTypeNames.includes(value)
+
+// The collector does not trim the ifType list items, and compares all and ignore in lower case.
+const normalizeIfType = (value: string) => {
+  const compact = value.replace(/\s+/g, '')
+  const lower = compact.toLowerCase()
+  return lower === IF_TYPE_ALL || lower === IF_TYPE_IGNORE ? lower : compact
+}
+
+const isValidIfType = (value: string) =>
+  value === IF_TYPE_ALL || value === IF_TYPE_IGNORE || IF_TYPE_LIST_PATTERN.test(value)
+
+const filterSuggestions = (options: string[], query: string) => {
+  const lowerQuery = query.trim().toLowerCase()
+  return lowerQuery ? options.filter(option => option.toLowerCase().includes(lowerQuery)) : [...options]
+}
+
+const searchIfTypes = (query: string) => {
+  ifTypeSuggestions.value = filterSuggestions(IF_TYPE_SUGGESTIONS, query)
+}
+
+const searchInstances = (query: string) => {
+  instanceSuggestions.value = filterSuggestions(store.resourceTypeNames, query)
+}
+
 const validateMibObject = () => {
   const validationErrors: MibGroupObjectFormErrors = {}
 
@@ -404,8 +456,10 @@ const validateMibObject = () => {
   if (!OID_PATTERN.test(oid.value)) {
     validationErrors.oid = 'OID must be in the format of numbers separated by dots (e.g. 1.2.3.4)'
   }
-  if (!instance.value._value) {
+  if (!instance.value.trim()) {
     validationErrors.instance = 'Instance is required'
+  } else if (!isValidInstance(instance.value.trim())) {
+    validationErrors.instance = 'Instance must be an instance identifier such as 0 or 1.5 (no leading zeros), ifIndex or a resource type name'
   }
   if (!dataType.value._value) {
     validationErrors.type = 'Data Type is required'
@@ -422,17 +476,18 @@ const validateMibGroup = (): MibGroupErrors => {
   if (!name.value.trim()) {
     validationErrors.name = 'Name is required.'
   }
-  if (!ifType.value._value) {
+  if (!ifType.value.trim()) {
     validationErrors.ifType = 'Interface Type is required.'
+  } else if (!isValidIfType(normalizeIfType(ifType.value))) {
+    validationErrors.ifType = 'Interface Type must be all, ignore, an ifType number or a comma-separated list of ifType numbers, without leading zeros.'
   }
   return validationErrors
 }
 
 const loadInitialData = () => {
-  instancesOptions.value = store.resourceTypeNames.map(name => ({ _text: name, _value: name }))
   if (store.mibGroupDrawerState.isEditMode === CreateEditMode.Create) {
     name.value = ''
-    ifType.value = DEFAULT_IF_TYPE_FILTER
+    ifType.value = DEFAULT_IF_TYPE
     status.value = true
     mibObjects.value = []
   }
@@ -440,7 +495,7 @@ const loadInitialData = () => {
     const group = store.selectedMibGroup
     if (group) {
       name.value = group.name
-      ifType.value = { _text: group.ifType, _value: group.ifType }
+      ifType.value = group.ifType ?? DEFAULT_IF_TYPE
       status.value = group.enabled
       mibObjects.value = JSON.parse(group.mibObjects) || []
     }
@@ -451,7 +506,7 @@ const loadMibObjectData = () => {
   if (mibObjectDrawerState.value.isEditMode === CreateEditMode.Create) {
     oid.value = ''
     dataType.value = DEFAULT_MIB_OBJ_TYPE
-    instance.value = { _text: '0', _value: '0' }
+    instance.value = DEFAULT_INSTANCE
     alias.value = ''
   }
 
@@ -460,7 +515,7 @@ const loadMibObjectData = () => {
     if (mibObject) {
       oid.value = mibObject.oid
       dataType.value = { _text: mibObject.type, _value: mibObject.type }
-      instance.value = { _text: mibObject.instance, _value: mibObject.instance }
+      instance.value = mibObject.instance
       alias.value = mibObject.alias
     }
   }
@@ -486,7 +541,7 @@ watch(
       errors.value = {}
       oid.value = ''
       dataType.value = DEFAULT_MIB_OBJ_TYPE
-      instance.value = { _text: '0', _value: '0' }
+      instance.value = DEFAULT_INSTANCE
       alias.value = ''
       isSaveDisabled.value = true
     }
@@ -503,10 +558,10 @@ watch(
       // Reset form data and errors when drawer is closed
       oid.value = ''
       dataType.value = DEFAULT_MIB_OBJ_TYPE
-      instance.value = { _text: '0', _value: '0' }
+      instance.value = DEFAULT_INSTANCE
       alias.value = ''
       name.value = ''
-      ifType.value = DEFAULT_IF_TYPE_FILTER
+      ifType.value = DEFAULT_IF_TYPE
       status.value = true
       mibObjects.value = []
       errors.value = {}

@@ -201,6 +201,27 @@ public class BroadcastEventProcessorIT extends NotificationsITCase {
         Assert.assertEquals(expectedText, params.get(NotificationManager.PARAM_SUBJECT));
     }
 
+    /**
+     * A matching notification whose destination path has no users must not
+     * stop later matching notifications for the same event.
+     */
+    @Test
+    public void testPathWithoutUsersDoesNotSkipLaterNotifications() throws Exception {
+        MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
+        Event event = MockEventUtil.createServiceEvent("Test", "uei.opennms.org/test/pathWithoutUsers", svc, null);
+
+        // The first match draws a notice id before it is skipped.
+        String antNID = Integer.toString(m_notificationManager.getNoticeId() + 2);
+
+        Date testDate = new Date();
+        long finishedNotifs = anticipateNotificationsForGroup("notification '" + antNID + "'", "Notification '" + antNID + "'", "InitialGroup", testDate, 0);
+        MockEventUtil.setEventTime(event, testDate);
+
+        m_eventMgr.sendEventToListeners(event);
+
+        verifyAnticipated(finishedNotifs, 1000);
+    }
+
     @Test
     public void testEventWithoutValidNodeDetailsWhenRuleIsStrict() throws Exception {
         int initialSize = m_notificationDao.countAll();

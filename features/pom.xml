@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>36.0.5</version>
+    <version>36.0.6</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -22,6 +22,9 @@
 
     <!-- Custom topology views + the image assets they reference -->
     <module>topology-views</module>
+
+    <!-- Surveillance view definitions + status/drill-down data services -->
+    <module>surveillance-views</module>
 
     <!-- ActiveMQ broker -->
     <module>activemq</module>

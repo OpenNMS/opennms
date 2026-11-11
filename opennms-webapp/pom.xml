@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>36.0.5</version>
+    <version>36.0.6</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -231,7 +231,6 @@
               org.opennms.web.element,
               org.opennms.web.event,
               org.opennms.web.graph,
-              org.opennms.web.mail,
               org.opennms.web.nodelabel
               -->
               !*
