@@ -1142,8 +1142,11 @@
                 <exclude>opennms-base-assembly/src/main/filtered/etc</exclude>
                 <exclude>opennms-base-assembly/src/main/resources</exclude>
 
-                <!-- BSD + GPL, see header for details -->
-                <exclude>core/test-api/dns/**/DNSServer.java</exclude>
+                <!-- compiled GWT output -->
+                <exclude>**/GWTTerminal/war/**/*</exclude>
+
+                <!-- BSD (derived from dnsjava jnamed), see header -->
+                <exclude>**/DNSServer.java</exclude>
 
                 <!-- APLv2 -->
                 <exclude>**/BlueprintCamelStateService.java</exclude>
@@ -1153,7 +1156,17 @@
                 <exclude>**/KafkaOffsetProvider.java</exclude>
                 <exclude>**/OnmsOSGiBridgeActivator.java</exclude>
                 <exclude>**/container/web/WebAppListener.java</exclude>
-                <exclude>**/hawkular/**/*</exclude>
+                <!-- hawkular: MetricVisitor and MetricCollectingWalker are OpenNMS AGPL, so not excluded -->
+                <exclude>**/hawkular/agent/prometheus/*.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/text/*.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Counter.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Gauge.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Histogram.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Metric.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/MetricFamily.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/MetricType.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Summary.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/walkers/PrometheusMetricsWalker.java</exclude>
                 <exclude>**/impl/holtwinters/*</exclude>
                 <exclude>**/osgi/script/*.java</exclude>
                 <exclude>**/vaadin/extender/Constants.java</exclude>
