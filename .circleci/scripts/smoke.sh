@@ -1,4 +1,8 @@
-#!/bin/sh -e
+#!/bin/bash
+set -e
+set -o pipefail
+
+. "$(dirname "$0")/rerun-lib.sh"
 
 SUITE="$1"; shift
 if [ -z "$SUITE" ]; then
@@ -67,17 +71,37 @@ fi
 
 sudo apt update && sudo apt -y install openjdk-11-jdk-headless
 
-# When we are ready to collect coverge on smoke tests, add "-Pcoverage" below
-ionice nice ../compile.pl \
-  -DskipTests=false \
-  -DskipITs=false \
-  -DfailIfNoTests=false \
-  -Dtest.fork.count=1 \
-  -Dit.test="$IT_TESTS" \
-  --fail-fast \
-  --batch-mode \
-  -Dfailsafe.skipAfterFailureCount=1 \
-  -N \
-  '-P!smoke.all' \
-  "-Psmoke.$SUITE" \
-  install
+RERUN_COUNT="${CCI_RERUN_FAILTEST:-0}"
+
+# Pass 0 runs the tests of this node. A later pass runs only the failed classes.
+run_tests()
+{
+  local pass="$1" its="$3"
+  local args=()
+
+  if [ "$pass" -eq 0 ]; then
+    args+=("-Dit.test=${IT_TESTS}")
+  else
+    args+=("-Dit.test=${its}")
+  fi
+
+  if [ "$RERUN_COUNT" -gt 0 ]; then
+    args+=("${RERUN_MAVEN_ARGS[@]}")
+  else
+    args+=("--fail-fast" "-Dfailsafe.skipAfterFailureCount=1")
+  fi
+
+  # When we are ready to collect coverge on smoke tests, add "-Pcoverage" below
+  ionice nice ../compile.pl "${args[@]}" \
+    -DskipTests=false \
+    -DskipITs=false \
+    -DfailIfNoTests=false \
+    -Dtest.fork.count=1 \
+    --batch-mode \
+    -N \
+    '-P!smoke.all' \
+    "-Psmoke.$SUITE" \
+    install
+}
+
+run_tests_with_rerun "$RERUN_COUNT" "${CCI_RERUN_MAX_FAILED:-3}" run_tests

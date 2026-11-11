@@ -5,6 +5,9 @@ commands:
       suite:
         default: core
         type: string
+      rerun-failtest-count:
+        default: 0
+        type: integer
     steps:
       - run:
           name: Enable swap
@@ -22,6 +25,7 @@ commands:
           name: Smoke Tests
           no_output_timeout: 30m
           command: |
+            export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
             .circleci/scripts/smoke.sh << parameters.suite >>
       - run:
           name: Gather system logs
@@ -51,8 +55,24 @@ commands:
             cp -R ~/project/smoke-test/target/*.{flv,mp4} ~/test-artifacts/recordings || true
             cp -R ~/project/smoke-test/target/screenshots ~/test-artifacts/ || true
             cp -R ~/project/smoke-test/target/logs ~/test-artifacts/ || true
+      - run:
+          name: Collect flaky test evidence
+          when: always
+          command: |
+            mkdir -p ~/flaky-evidence
+            if [ -d /tmp/flaky-evidence ]; then
+              cp -R /tmp/flaky-evidence/. ~/flaky-evidence/
+              echo "#### Test classes that failed and ran again:"
+              find /tmp/flaky-evidence -name 'TEST-*.xml' | sed -e 's|.*/TEST-||' -e 's|\.xml$||' | sort -u
+            else
+              echo "No test class ran again."
+            fi
       - store_test_results:
           path: ~/test-results
+      - store_artifacts:
+          when: always
+          path: ~/flaky-evidence
+          destination: flaky-evidence
       - store_artifacts:
           when: always
           path: ~/test-results
