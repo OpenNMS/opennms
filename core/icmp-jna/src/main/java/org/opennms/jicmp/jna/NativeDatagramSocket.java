@@ -93,11 +93,26 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
                 try {
                     return createFfm(family, protocol, listenPort);
                 } catch (final Throwable t) {
+                    if (!isFfmUnavailable(t)) {
+                        // a real socket error (EPERM, EADDRINUSE, ...); JNA would fail the same way
+                        throw t;
+                    }
                     LOG.debug("FFM socket implementation unavailable ({}); using JNA.", t.toString());
                     LOG.trace("FFM socket implementation unavailable.", t);
                     return createJna(family, protocol, listenPort);
                 }
         }
+    }
+
+    /**
+     * True when the FFM implementation cannot be used on this JVM or platform,
+     * as opposed to a genuine socket error. {@link #newInstance} rethrows
+     * exceptions from the constructor directly but leaves errors such as
+     * {@link UnsatisfiedLinkError} wrapped in an {@link InvocationTargetException}.
+     */
+    private static boolean isFfmUnavailable(final Throwable t) {
+        final Throwable cause = t instanceof InvocationTargetException && t.getCause() != null ? t.getCause() : t;
+        return cause instanceof UnsupportedOperationException || cause instanceof LinkageError;
     }
 
     private static NativeDatagramSocket createFfm(final int family, final int protocol, final int listenPort) throws Exception {
