@@ -1809,7 +1809,7 @@
     <dom4jVersion>2.1.4</dom4jVersion>
     <dropwizardMetricsVersion>4.2.25</dropwizardMetricsVersion>
     <ecjVersion>4.6.1</ecjVersion>
-    <eclipselinkVersion>2.5.1</eclipselinkVersion>
+    <eclipselinkVersion>5.0.2</eclipselinkVersion>
     <eddsaVersion>0.3.0</eddsaVersion>
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
     <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
