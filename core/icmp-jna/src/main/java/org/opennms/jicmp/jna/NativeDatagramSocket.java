@@ -50,6 +50,7 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
                                      : NativeOs.isLinux() ? 10 
                                      : NativeOs.isWindows() ? 23 
                                      : NativeOs.isFreeBSD() ? 28 
+                                     : NativeOs.isOpenBSD() ? 24 
                                      : NativeOs.isSolaris() ? 26 
                                      : -1;
     public static final int PF_INET6 = AF_INET6;
