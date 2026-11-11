@@ -50,7 +50,8 @@
         data-test="duplicate-ueis"
       >
         <p>
-          <strong>{{ duplicateUeis.length }}</strong> of these UEIs are already defined in other event sources.
+          <strong>{{ ueiCount(duplicateUeis.length) }}</strong> {{ duplicateUeis.length === 1 ? 'is' : 'are' }}
+          already defined in other event sources.
           OpenNMS uses only the definition from the source that it evaluates first.
           Before the save, the dialog shows which definitions OpenNMS will use.
         </p>
@@ -99,13 +100,13 @@
       >
         <p>
           <template v-if="targetExists">
-            <strong>{{ sourceName }}</strong> is evaluated before the sources below,
+            <strong>{{ sourceName }}</strong> is evaluated before the listed sources,
           </template>
           <template v-else>
             A new event source is evaluated before all existing sources,
           </template>
-          so OpenNMS will no longer use their definitions of these
-          <strong>{{ overriddenUeis.length }}</strong> UEIs:
+          so OpenNMS will no longer use their definitions of the
+          <strong>{{ ueiCount(overriddenUeis.length) }}</strong> below:
         </p>
         <DuplicateUeiTable :items="overriddenUeis" />
         <p>
@@ -119,8 +120,8 @@
         data-test="confirm-shadowed-ueis"
       >
         <p>
-          Sources that are evaluated before <strong>{{ sourceName }}</strong> also define these
-          <strong>{{ shadowedUeis.length }}</strong> UEIs, so OpenNMS will continue to use those definitions
+          Sources that are evaluated before <strong>{{ sourceName }}</strong> also define the
+          <strong>{{ ueiCount(shadowedUeis.length) }}</strong> below. OpenNMS will continue to use their definitions
           and will not use the new ones:
         </p>
         <DuplicateUeiTable :items="shadowedUeis" />
@@ -190,6 +191,7 @@
 
 <script lang="ts" setup>
 import { computed, ref, useId, watch } from 'vue'
+import { refDebounced } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { OnmsButton, OnmsDialog, OnmsInputText, OnmsTextarea } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
@@ -225,13 +227,25 @@ const validationError = ref('')
 const orderedSources = ref<EventConfigSource[]>([])
 // UEIs that other sources define: from the preview, then checked again for the edited XML on each save
 const existingUeis = ref<Record<string, MibEventSource[]>>({})
+// the (trimmed) XML that existingUeis was computed for
+const checkedXml = ref('')
+// parsing a large events document on every keystroke lags the editor
+const debouncedXml = refDebounced(eventsXml, 300)
+
+const ueiCount = (count: number) => count === 1 ? '1 UEI' : `${count} UEIs`
 
 const baseName = computed(() => props.fileName.replace(/\.[^.]+$/, ''))
 const sourceName = computed(() => (preview.value?.suggestedFileName ?? `${baseName.value}.events.xml`).replace(/\.xml$/, ''))
 
-// the UEIs in the (possibly edited) XML; null when it does not parse, so the warning keeps every duplicate
+// The UEIs in the edited XML, to drop duplicates whose UEI an edit removed. null keeps every duplicate:
+// when there are none, when the XML is still the one that was checked, or when it does not parse.
+// The live XML decides whether it was edited, so a save right after an edit never filters its fresh
+// result with the UEIs of the older, debounced XML.
 const currentUeis = computed(() => {
-  const parsed = new DOMParser().parseFromString(eventsXml.value, 'application/xml')
+  if (Object.keys(existingUeis.value).length === 0 || eventsXml.value.trim() === checkedXml.value) {
+    return null
+  }
+  const parsed = new DOMParser().parseFromString(debouncedXml.value, 'application/xml')
   if (parsed.querySelector('parsererror') !== null) {
     return null
   }
@@ -288,6 +302,7 @@ watch(() => props.visible, (visible) => {
     validationError.value = ''
     orderedSources.value = []
     existingUeis.value = {}
+    checkedXml.value = ''
     ueiBase.value = `uei.opennms.org/traps/${baseName.value}`
   }
 })
@@ -306,6 +321,7 @@ const generatePreview = async () => {
     }
     preview.value = result
     existingUeis.value = result.existingUeis ?? {}
+    checkedXml.value = (result.eventsXml ?? '').trim()
     eventsXml.value = result.eventsXml ?? ''
     step.value = 'preview'
   } catch (error: unknown) {
@@ -345,6 +361,7 @@ const save = async () => {
     }
     orderedSources.value = sources
     existingUeis.value = existing
+    checkedXml.value = xml
     // shadowed UEIs need an existing target, so they always come with targetExists
     if (targetExists.value || overriddenUeis.value.length > 0) {
       isLoading.value = false

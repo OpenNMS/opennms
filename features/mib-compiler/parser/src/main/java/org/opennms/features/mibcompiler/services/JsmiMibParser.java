@@ -22,7 +22,6 @@
 package org.opennms.features.mibcompiler.services;
 
 import java.io.File;
-import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
@@ -76,7 +75,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class JsmiMibParser implements MibParser, Serializable {
+public class JsmiMibParser implements MibParser {
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(JsmiMibParser.class);

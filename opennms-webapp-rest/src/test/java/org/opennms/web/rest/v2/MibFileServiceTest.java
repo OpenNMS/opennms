@@ -84,6 +84,8 @@ public class MibFileServiceTest {
         service = new MibFileService();
         service.setMibsRootDir(mibsRoot);
         service.setGraphTemplatesDir(graphDir);
+        // a Mockito mock returns an empty map: no other source defines any UEI
+        service.setEventConfPersistenceService(mock(EventConfPersistenceService.class));
         // seed the compiled directory with the standard MIBs IF-MIB depends on
         compiledDir.mkdirs();
         for (final String mib : DEPENDENCY_MIBS) {
@@ -243,7 +245,7 @@ public class MibFileServiceTest {
         final Events events = JaxbUtils.unmarshal(Events.class, result.getEventsXml());
         assertEquals(2, events.getEvents().size());
         assertTrue(events.getEvents().get(0).getUei().startsWith("uei.opennms.org/traps/IF-MIB/"));
-        // no event configuration to check against
+        // no other source defines the generated UEIs
         assertTrue(result.getExistingUeis().isEmpty());
     }
 

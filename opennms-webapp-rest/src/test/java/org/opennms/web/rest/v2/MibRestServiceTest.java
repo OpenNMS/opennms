@@ -37,6 +37,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public class MibRestServiceTest {
 
@@ -57,6 +58,8 @@ public class MibRestServiceTest {
         final MibFileService fileService = new MibFileService();
         fileService.setMibsRootDir(mibsRoot);
         fileService.setGraphTemplatesDir(tempFolder.newFolder("graphs"));
+        // a Mockito mock returns an empty map: no other source defines any UEI
+        fileService.setEventConfPersistenceService(mock(EventConfPersistenceService.class));
         restService = new MibRestService();
         restService.setMibFileService(fileService);
     }
@@ -147,7 +150,7 @@ public class MibRestServiceTest {
         }
         Files.copy(new File(MIB_FIXTURES, "IF-MIB.txt").toPath(), new File(compiledDir, "IF-MIB.mib").toPath());
 
-        // without an event configuration to check against, nothing is defined elsewhere
+        // no other source defines the UEI
         final String eventsXml = "<events xmlns=\"http://xmlns.opennms.org/xsd/eventconf\"><event>"
                 + "<uei>uei.opennms.org/traps/IF-MIB/linkDown</uei><event-label>linkDown</event-label>"
                 + "<descr>d</descr><logmsg dest=\"logndisplay\">m</logmsg><severity>Indeterminate</severity>"

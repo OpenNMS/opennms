@@ -321,7 +321,7 @@ public class MibFileService {
      */
     private Map<String, List<MibEventSourceDto>> findExistingUeis(Set<String> ueis, String targetSourceName) {
         final Map<String, List<MibEventSourceDto>> existing = new LinkedHashMap<>();
-        if (eventConfPersistenceService == null || ueis.isEmpty()) {
+        if (ueis.isEmpty()) {
             return existing;
         }
         eventConfPersistenceService.findSourcesByUei(ueis).forEach((uei, sources) -> {

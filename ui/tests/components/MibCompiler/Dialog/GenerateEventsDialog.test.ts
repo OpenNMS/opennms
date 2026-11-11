@@ -151,7 +151,7 @@ describe('GenerateEventsDialog', () => {
 
     const warning = wrapper.find('[data-test="duplicate-ueis"]')
     expect(warning.exists()).toBe(true)
-    expect(warning.text()).toContain('1 of these UEIs')
+    expect(warning.text()).toContain('1 UEI is already defined')
     expect(rowsOf(warning)).toEqual([['uei.opennms.org/traps/IF-MIB/linkDown', 'acme.events vendor.events']])
     expect(warning.find('[data-test="disabled-tag"]').exists()).toBe(false)
     expect(warning.find('[data-test="disabled-duplicates-hint"]').exists()).toBe(false)
@@ -222,12 +222,14 @@ describe('GenerateEventsDialog', () => {
     wrapper = await createWrapper()
     await wrapper.find('[data-test="generate-button"]').trigger('click')
     await flushPromises()
+    expect(wrapper.find('[data-test="duplicate-ueis"]').text()).toContain('2 UEIs are already defined')
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()
 
     expect(wrapper.find('[data-test="confirm-replace"]').exists()).toBe(true)
     const overridden = wrapper.find('[data-test="confirm-overridden-ueis"]')
-    expect(overridden.text()).toContain('IF-MIB.events is evaluated before the sources below')
+    expect(overridden.text()).toContain('IF-MIB.events is evaluated before the listed sources')
+    expect(overridden.text()).toContain('their definitions of the 1 UEI below')
     expect(rowsOf(overridden)).toEqual([['uei.opennms.org/traps/IF-MIB/linkUp', 'late.events']])
     const shadowed = wrapper.find('[data-test="confirm-shadowed-ueis"]')
     expect(rowsOf(shadowed)).toEqual([['uei.opennms.org/traps/IF-MIB/linkDown', 'early.events']])
@@ -390,6 +392,9 @@ describe('GenerateEventsDialog', () => {
 
     await wrapper.find('[data-test="events-xml"]').setValue(
       '<events><event><uei>uei.opennms.org/traps/IF-MIB/linkDownRenamed</uei></event></events>')
+    // the XML is parsed only once the typing pauses
+    expect(wrapper.find('[data-test="duplicate-ueis"]').exists()).toBe(true)
+    await new Promise(resolve => setTimeout(resolve, 350))
     expect(wrapper.find('[data-test="duplicate-ueis"]').exists()).toBe(false)
   })
 

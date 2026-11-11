@@ -112,10 +112,10 @@ public class EventConfPersistenceServiceTest {
     public void groupsUeiSourcesAndCountsASourceEnabledWhenOneOfItsDefinitionsIs() {
         // rows come in UEI, then evaluation order; a source can define a UEI more than once
         when(eventConfEventDao.findUeiSources(List.of(KNOWN_UEI, NEW_UEI))).thenReturn(List.of(
-                new Object[] {KNOWN_UEI, "first.events", false},
-                new Object[] {KNOWN_UEI, "first.events", true},
-                new Object[] {KNOWN_UEI, "second.events", false},
-                new Object[] {NEW_UEI, "second.events", true}));
+                new EventConfEventDao.UeiSource(KNOWN_UEI, "first.events", false),
+                new EventConfEventDao.UeiSource(KNOWN_UEI, "first.events", true),
+                new EventConfEventDao.UeiSource(KNOWN_UEI, "second.events", false),
+                new EventConfEventDao.UeiSource(NEW_UEI, "second.events", true)));
 
         final Map<String, Boolean> known = new LinkedHashMap<>();
         known.put("first.events", true);

@@ -200,10 +200,10 @@ public class EventConfPersistenceService {
     @Transactional(readOnly = true)
     public Map<String, Map<String, Boolean>> findSourcesByUei(final Collection<String> ueis) {
         final Map<String, Map<String, Boolean>> result = new LinkedHashMap<>();
-        for (final Object[] row : eventConfEventDao.findUeiSources(ueis)) {
+        for (final EventConfEventDao.UeiSource row : eventConfEventDao.findUeiSources(ueis)) {
             // a source can define the UEI more than once; one enabled definition is enough
-            result.computeIfAbsent((String) row[0], uei -> new LinkedHashMap<>())
-                    .merge((String) row[1], Boolean.TRUE.equals(row[2]), Boolean::logicalOr);
+            result.computeIfAbsent(row.uei(), uei -> new LinkedHashMap<>())
+                    .merge(row.sourceName(), row.enabled(), Boolean::logicalOr);
         }
         return result;
     }

@@ -221,12 +221,12 @@ public class EventConfEventDaoIT implements InitializingBean {
         m_eventDao.saveOrUpdate(duplicate);
         m_eventDao.flush();
 
-        final List<Object[]> rows = m_eventDao.findUeiSources(
+        final List<EventConfEventDao.UeiSource> rows = m_eventDao.findUeiSources(
                 List.of(sharedUei, singleUei, "uei.opennms.org/test/findUeiSources/missing"));
-        assertEquals(3, rows.size());
-        assertEquals(List.of(sharedUei, "other-source", false), List.of(rows.get(0)));
-        assertEquals(List.of(sharedUei, "test-source", true), List.of(rows.get(1)));
-        assertEquals(List.of(singleUei, "test-source", true), List.of(rows.get(2)));
+        assertEquals(List.of(
+                new EventConfEventDao.UeiSource(sharedUei, "other-source", false),
+                new EventConfEventDao.UeiSource(sharedUei, "test-source", true),
+                new EventConfEventDao.UeiSource(singleUei, "test-source", true)), rows);
 
         assertTrue(m_eventDao.findUeiSources(List.of()).isEmpty());
     }
