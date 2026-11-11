@@ -62,14 +62,16 @@ public final class FfmNativeDatagramSocket extends NativeDatagramSocket {
 
     private static final int EINTR = 4;
 
-    // Linux values unless noted
+    // Socket option numbers differ per OS; values taken from each system's
+    // <netinet/in.h> and <netinet6/in6.h> (Linux: <linux/in.h>, <linux/in6.h>).
     private static final int LINUX_IP_TOS = 1;
-    private static final int BSD_IP_TOS = 3;
+    private static final int BSD_IP_TOS = 3;             // macOS, FreeBSD, OpenBSD
     private static final int LINUX_IPV6_TCLASS = 67;
-    private static final int BSD_IPV6_TCLASS = 36;
+    private static final int MACOS_IPV6_TCLASS = 36;
+    private static final int BSD_IPV6_TCLASS = 61;       // FreeBSD, OpenBSD
     private static final int LINUX_IP_MTU_DISCOVER = 10;
     private static final int MACOS_IP_DONTFRAG = 28;
-    private static final int FREEBSD_IP_DONTFRAG = 67;
+    private static final int FREEBSD_IP_DONTFRAG = 67;   // OpenBSD has no IPv4 IP_DONTFRAG
 
     private static final int SOCKADDR_IN_SIZE = 16;
     private static final int SOCKADDR_IN6_SIZE = 28;
@@ -132,7 +134,7 @@ public final class FfmNativeDatagramSocket extends NativeDatagramSocket {
         if (m_family == AF_INET) {
             setIntOption(IPPROTO_IP, m_bsd ? BSD_IP_TOS : LINUX_IP_TOS, tc);
         } else {
-            setIntOption(IPPROTO_IPV6, m_bsd ? BSD_IPV6_TCLASS : LINUX_IPV6_TCLASS, tc);
+            setIntOption(IPPROTO_IPV6, ipv6TclassOption(), tc);
         }
     }
 
@@ -146,9 +148,20 @@ public final class FfmNativeDatagramSocket extends NativeDatagramSocket {
             setIntOption(IPPROTO_IP, LINUX_IP_MTU_DISCOVER, value);
         } else if (NativeOs.isMac()) {
             setIntOption(IPPROTO_IP, MACOS_IP_DONTFRAG, value);
-        } else {
+        } else if (NativeOs.isFreeBSD()) {
             setIntOption(IPPROTO_IP, FREEBSD_IP_DONTFRAG, value);
         }
+        // OpenBSD has no per-socket DF option for IPv4, same as the JNA BSDV4NativeSocket.
+    }
+
+    private static int ipv6TclassOption() {
+        if (NativeOs.isLinux()) {
+            return LINUX_IPV6_TCLASS;
+        }
+        if (NativeOs.isMac()) {
+            return MACOS_IPV6_TCLASS;
+        }
+        return BSD_IPV6_TCLASS;
     }
 
     @Override
