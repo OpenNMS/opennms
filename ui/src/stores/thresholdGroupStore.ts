@@ -26,7 +26,7 @@ import { cloneDeep } from 'lodash'
 import { ThresholdDefinitionKind, FilterOperator, ThresholdType } from '@/lib/thresholdValidator'
 import API from '@/services'
 import type { ValidationResult } from '@/types/validation'
-import { createFailureResult, isConflict } from '@/types/validation'
+import { createFailureResult, isPreconditionFailed, RELOADED_AFTER_PRECONDITION_FAILED } from '@/types/validation'
 import type {
   BaseThresholdDef,
   Expression,
@@ -139,13 +139,13 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
    * A 412 means the loaded copy is stale, and keeping it would make every later save fail the same way.
    * Load the stored group instead, so the user sees what changed and the next save carries its version.
    */
-  const reloadAfterConflict = async (name: string, result: ValidationResult): Promise<ValidationResult> => {
-    if (!isConflict(result)) {
+  const reloadAfterPreconditionFailed = async (name: string, result: ValidationResult): Promise<ValidationResult> => {
+    if (!isPreconditionFailed(result)) {
       return result
     }
 
     await fetchGroup(name)
-    return { ...result, message: `${result.message} The current version has been loaded; please make your change again.` }
+    return { ...result, message: `${result.message} ${RELOADED_AFTER_PRECONDITION_FAILED}` }
   }
 
   /**
@@ -161,10 +161,10 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
       await fetchGroups()
       return result
     }
-    return reloadAfterConflict(name, result)
+    return reloadAfterPreconditionFailed(name, result)
   }
 
-  /** Adds (index null or out of range) or replaces a definition and saves the group. */
+  /** Adds (index null) or replaces a definition and saves the group; an index the group does not have fails. */
   const saveDefinition = async (
     kind: ThresholdDefinitionKind,
     index: number | null,
@@ -177,10 +177,12 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
     const group = cloneDeep(currentGroup.value)
     const definitions = definitionsIn(group, kind)
 
-    if (index === null || index < 0 || index >= definitions.length) {
+    if (index === null) {
       definitions.push(definition)
-    } else {
+    } else if (index >= 0 && index < definitions.length) {
       definitions.splice(index, 1, definition)
+    } else {
+      return createFailureResult('No such threshold.')
     }
     return writeGroup(group)
   }
@@ -205,7 +207,7 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
       await fetchGroups()
       return result
     }
-    return reloadAfterConflict(oldName, result)
+    return reloadAfterPreconditionFailed(oldName, result)
   }
 
   const deleteGroup = async (name: string, version?: string): Promise<ValidationResult> => {

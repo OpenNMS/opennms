@@ -47,9 +47,12 @@ export const createFailureResult = (message: string): ValidationResult => {
 }
 
 /** True when a write was refused with a 412 because the copy it was made on is stale. */
-export const isConflict = (result: ValidationResult): boolean => result.status === 412
+export const isPreconditionFailed = (result: ValidationResult): boolean => result.status === 412
 
-export const createResultWithPayload =<T>(success: boolean, message: string, payload?: T): ValidationResultWithPayload<T> => {
+/** Appended to the message of a 412 after the store has reloaded the stale copy. */
+export const RELOADED_AFTER_PRECONDITION_FAILED = 'The current version has been loaded.'
+
+export const createResultWithPayload = <T>(success: boolean, message: string, payload?: T): ValidationResultWithPayload<T> => {
   return {
     success,
     message,

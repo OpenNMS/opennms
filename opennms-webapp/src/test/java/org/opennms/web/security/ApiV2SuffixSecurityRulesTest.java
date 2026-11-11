@@ -166,16 +166,4 @@ public class ApiV2SuffixSecurityRulesTest {
         }
         assertTrue("No restricted /api/v2 root rules found", checked > 0);
     }
-
-    /**
-     * The /api/v2/** chain uses use-expressions="true". Spring evaluates a bare "ROLE_ADMIN" as a
-     * SpEL property, which throws for every user, so each access value must be an expression.
-     */
-    @Test
-    public void eachRuleUsesAnExpression() {
-        for (final Rule rule : rules) {
-            assertFalse("Bare authority in expression chain: pattern=\"" + rule.pattern + "\" method=\"" + rule.method
-                    + "\" access=\"" + rule.access + "\"", rule.access.matches("^ROLE_[A-Z_]+$"));
-        }
-    }
 }

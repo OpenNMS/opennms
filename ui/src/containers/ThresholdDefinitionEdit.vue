@@ -65,7 +65,7 @@ import {
 } from '@/lib/thresholdValidator'
 import { getDefaultThreshold, useThresholdGroupStore } from '@/stores/thresholdGroupStore'
 import type { ThresholdDefinition } from '@/types/thresholdConfig'
-import { isConflict } from '@/types/validation'
+import { isPreconditionFailed } from '@/types/validation'
 import { OnmsIconButton } from '@opennms/onms-ui'
 import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 
@@ -131,7 +131,7 @@ const onSave = async () => {
 
   // After a 412 the store has loaded the current group, in which the index may address another definition.
   // Saving the draft again would overwrite that one, so the user reselects from the group page instead.
-  if (report(result, 'Threshold saved.') || (!isCreate.value && isConflict(result))) {
+  if (report(result, 'Threshold saved.') || (!isCreate.value && isPreconditionFailed(result))) {
     goBack()
   }
 }
