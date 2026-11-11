@@ -1,6 +1,6 @@
 = On-Call Roles
 
-An on-call role names a membership group, a supervisor and a set of schedules that say which users are on call, and when.
+An on-call role names a membership group, an optional supervisor and a set of schedules that say which users are on call, and when.
 This REST API is served at `/api/v2/oncall-roles`.
 
 == Permissions
@@ -76,7 +76,8 @@ Use them to write the `begins` and `ends` of a `specific` schedule (`dd-MMM-yyyy
 
 | /oncall-roles
 | Create a role.
-`name`, `membershipGroup` and `supervisor` are required, and the group and supervisor must exist.
+`name` and `membershipGroup` are required, and the group must exist.
+`supervisor` is optional; when it is given, the user must exist.
 Returns `201 Created` with the role and its `ETag`, or `409` when it already exists.
 
 | /oncall-roles/\{name}/rename
@@ -92,6 +93,7 @@ Returns `200` with `{"timeZone": "...", "month": "YYYY-MM", "entries": [{"start"
 Times are in the server's time zone, without an offset, and `end` is exclusive.
 Each entry lies within one local day.
 A `scheduleIndex` of `null` is the supervisor, who is on call when no schedule applies.
+A role without a supervisor has no entries for these times.
 A missing or malformed `month` returns `400`.
 |===
 
@@ -164,11 +166,11 @@ To detect concurrent edits, send the version in `If-Match`.
 | name | Role name. Required on create.
 | description | Description, at most 4096 characters. See <<oncall-description>>.
 | membershipGroup | Name of an existing group. Required on create. A new schedule must name a user who is a member of this group; schedules already stored are not re-checked (see <<stored-schedules>>), unless the request changes the group.
-| supervisor | User id of an existing user. Required on create.
+| supervisor | User id of an existing user, or `null` when the role has none. Optional. On update, an empty string removes the supervisor. Without a supervisor, nobody is notified while nobody is scheduled.
 | schedules | List of schedules (see below).
 | version | Opaque row version, also sent as the `ETag`. Ignored on input.
 | onCallNow | Read-only list of the user ids on call at the time of the request, evaluated the way notifd does. Ignored on input. Empty if the role's schedules cannot be evaluated.
-| onCallNowIsSupervisor | Read-only. `true` when nobody is scheduled now and `onCallNow` holds the supervisor instead. Ignored on input.
+| onCallNowIsSupervisor | Read-only. `true` when nobody is scheduled now and `onCallNow` holds the supervisor instead. `false` with an empty `onCallNow` when nobody is scheduled and the role has no supervisor. Ignored on input.
 |===
 
 == Schedule fields

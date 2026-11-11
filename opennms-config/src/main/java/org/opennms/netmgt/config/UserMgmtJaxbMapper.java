@@ -139,7 +139,7 @@ public final class UserMgmtJaxbMapper {
         final Role xml = new Role();
         xml.setName(role.getName());
         xml.setMembershipGroup(role.getMembershipGroup().getName());
-        xml.setSupervisor(role.getSupervisor().getUsername());
+        xml.setSupervisor(role.getSupervisor() == null ? null : role.getSupervisor().getUsername());
         setField(xml, "m_description", role.getDescription());
         for (final OnCallSchedule schedule : role.getSchedules()) {
             xml.addSchedule(toSchedule(schedule));
@@ -237,8 +237,9 @@ public final class UserMgmtJaxbMapper {
             throw new IllegalArgumentException(owner + " has the membership group \"" + source.getMembershipGroup() + "\", which is not a group.");
         }
         target.setMembershipGroup(group);
-        final UserAccount supervisor = usersByName.get(source.getSupervisor());
-        if (supervisor == null) {
+        // the supervisor is optional, but a name that is no user is refused rather than dropped
+        final UserAccount supervisor = source.getSupervisor() == null ? null : usersByName.get(source.getSupervisor());
+        if (source.getSupervisor() != null && supervisor == null) {
             throw new IllegalArgumentException(owner + " has the supervisor \"" + source.getSupervisor() + "\", which is not a user.");
         }
         target.setSupervisor(supervisor);

@@ -5,8 +5,9 @@
 On-call roles let you assign a predefined <<deep-dive/user-management/user-config.adoc#ga-user-schedule, duty schedule>> to an existing group of users.
 A common use case is to have system engineers in on-call rotations with a defined schedule.
 
-For each on-call role, a user is designated as a supervisor.
+For each on-call role, you can designate a user as a supervisor.
 They are responsible for the group of users assigned to the on-call role, and receive {page-component-title} notifications when no one else is on duty.
+A role without a supervisor sends no notifications when no one is on duty.
 The supervisor's account must have admin privileges.
 
 == Manage on-call roles
@@ -14,7 +15,7 @@ The supervisor's account must have admin privileges.
 Click menu:User Management[Manage On-call Roles] in the side menu.
 Only users with admin permissions can open this page.
 
-The list shows each role's name, supervisor, who is on call now (the supervisor when nobody is scheduled), membership group and description.
+The list shows each role's name, supervisor, who is on call now (the supervisor when nobody is scheduled, or nobody if the role has no supervisor), membership group and description.
 To rename a role, use the *More actions* icon beside it.
 You cannot delete a role while a notification destination path names it.
 
@@ -22,7 +23,7 @@ Select a role, or click *Add New On-Call Role* to create one.
 The editor has three tabs:
 
 Details::
-The name (set when you create the role), description, supervisor and membership group.
+The name (set when you create the role), description, supervisor (optional) and membership group.
 
 Schedules::
 One card per schedule.
@@ -52,7 +53,7 @@ After you have created the group, follow these steps:
 . Click menu:User Management[Manage On-call Roles] in the side menu.
 . Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click *Configure On-Call Roles*.
 . Click *Add New On-Call Role*.
-. On the *Details* tab, specify a name, the membership group, the supervisor and a description.
+. On the *Details* tab, specify a name, the membership group, the supervisor (optional) and a description.
 The description should be meaningful (for example, describe the team that the on-call role has been created for).
 . On the *Schedules* tab, add a schedule for each user and set its type and time ranges.
 . Check the result on the *Calendar* tab.

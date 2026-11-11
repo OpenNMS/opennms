@@ -327,12 +327,43 @@ public class OnCallRolesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("outsider", schedule.getString("user"));
     }
 
+    /**
+     * The supervisor is optional: a role without one notifies nobody while nobody is scheduled. A PUT without the
+     * field keeps it, and an empty one removes it.
+     */
+    @Test
+    public void testTheSupervisorIsOptional() throws Exception {
+        JSONObject json = new JSONObject(exec(POST, "/oncall-roles", "{\"name\":\"loose1\",\"membershipGroup\":\"Ops\"}", null, 201).getContentAsString());
+        assertTrue(json.isNull("supervisor"));
+        assertEquals(0, json.getJSONArray("onCallNow").length());
+        assertFalse(json.getBoolean("onCallNowIsSupervisor"));
+        assertTrue(new JSONObject(getJson("/oncall-roles/loose1", 200)).isNull("supervisor"));
+        exec(POST, "/oncall-roles", "{\"name\":\"loose2\",\"membershipGroup\":\"Ops\",\"supervisor\":\"\"}", null, 201);
+        assertTrue(new JSONObject(getJson("/oncall-roles/loose2", 200)).isNull("supervisor"));
+
+        exec(PUT, "/oncall-roles/loose1", "{\"supervisor\":\"alice\"}", null, 200);
+        json = new JSONObject(getJson("/oncall-roles/loose1", 200));
+        assertEquals("alice", json.getString("supervisor"));
+        assertEquals("alice", json.getJSONArray("onCallNow").getString(0));
+        assertTrue(json.getBoolean("onCallNowIsSupervisor"));
+        exec(PUT, "/oncall-roles/loose1", "{\"description\":\"kept\"}", null, 200);
+        assertEquals("alice", new JSONObject(getJson("/oncall-roles/loose1", 200)).getString("supervisor"));
+
+        final int version = rowVersion("loose1");
+        exec(PUT, "/oncall-roles/loose1", "{\"supervisor\":\"\"}", null, 200);
+        json = new JSONObject(getJson("/oncall-roles/loose1", 200));
+        assertTrue(json.isNull("supervisor"));
+        assertFalse(json.getBoolean("onCallNowIsSupervisor"));
+        assertNotEquals(version, rowVersion("loose1"));
+        assertEquals(Integer.valueOf(0), new JdbcTemplate(m_dataSource).queryForObject(
+                "select count(*) from oncall_roles where name = 'loose1' and supervisor_user_id is not null", Integer.class));
+    }
+
     @Test
     public void testUnknownGroupOrSupervisorIs400() throws Exception {
         exec(POST, "/oncall-roles", "{\"name\":\"rota5\",\"membershipGroup\":\"NoSuchGroup\",\"supervisor\":\"alice\"}", null, 400);
         exec(POST, "/oncall-roles", "{\"name\":\"rota5\",\"membershipGroup\":\"Ops\",\"supervisor\":\"nobody\"}", null, 400);
         exec(POST, "/oncall-roles", "{\"name\":\"rota5\",\"supervisor\":\"alice\"}", null, 400);
-        exec(POST, "/oncall-roles", "{\"name\":\"rota5\",\"membershipGroup\":\"Ops\"}", null, 400);
         sendRequest(GET, "/oncall-roles/rota5", 404);
 
         exec(POST, "/oncall-roles", role("rota5", null), null, 201);

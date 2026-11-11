@@ -47,6 +47,12 @@ describe('OnCallSchedulesTab', () => {
     expect(w.find('[data-test="no-schedules"]').exists()).toBe(false)
   })
 
+  it('says who covers a role without schedules: the supervisor, or nobody without one', () => {
+    expect(mountTab([]).find('[data-test="no-schedules"]').text()).toBe('No schedules: the supervisor covers every time.')
+    expect(mountTab([], { noSupervisor: true }).find('[data-test="no-schedules"]').text())
+      .toBe('No schedules and no supervisor: nobody is notified.')
+  })
+
   it('appends an empty card with a problem on Add Schedule', async () => {
     const w = mountTab([])
     await w.find('[data-test="add-schedule"]').trigger('click')

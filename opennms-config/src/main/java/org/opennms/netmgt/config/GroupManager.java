@@ -751,7 +751,7 @@ public abstract class GroupManager implements GroupConfig {
             }
         }
         
-        // if no user is scheduled then the supervisor is schedule by default 
+        // if no user is scheduled then the supervisor, if the role has one, is scheduled by default
         Role role = getRole(roleId);
         if (userId.equals(role.getSupervisor())) {
         	for (Schedule sched : role.getSchedules()) {
@@ -786,6 +786,10 @@ public abstract class GroupManager implements GroupConfig {
                      schedEntries.addAll(BasicScheduleUtils.getIntervalsCovering(start, end, BasicScheduleUtils.getGroupSchedule(sched), owner));
                  }
                  
+                 // without a supervisor, nobody covers the times nobody is scheduled
+                 if (role.getSupervisor() == null) {
+                     return schedEntries;
+                 }
                  OwnedIntervalSequence defaultEntries = new OwnedIntervalSequence(new OwnedInterval(start, end));
                  defaultEntries.removeAll(schedEntries);
                  Owner supervisor = new Owner(roleid, role.getSupervisor());

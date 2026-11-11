@@ -241,8 +241,17 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
         migrate();
 
         m_sessionUtils.withReadOnlyTransaction(() -> {
-            // "orphan" has no membership group and "unsupervised" has no supervisor
-            assertEquals(List.of("night"), m_onCallRoleDao.findAll().stream().map(OnCallRole::getName).collect(Collectors.toList()));
+            // "orphan" has no membership group
+            assertEquals(List.of("night", "nosupervisor", "unsupervised"),
+                    m_onCallRoleDao.findAll().stream().map(OnCallRole::getName).sorted().collect(Collectors.toList()));
+
+            // the supervisor is optional: a role whose supervisor is not a user (a deleted user) keeps its schedules
+            final OnCallRole unsupervised = m_onCallRoleDao.findByName("unsupervised");
+            assertNull(unsupervised.getSupervisor());
+            assertEquals(List.of("bob"), unsupervised.getSchedules().stream().map(s -> s.getUser().getUsername()).collect(Collectors.toList()));
+            final OnCallRole noSupervisor = m_onCallRoleDao.findByName("nosupervisor");
+            assertNull(noSupervisor.getSupervisor());
+            assertEquals(List.of("carol"), noSupervisor.getSchedules().stream().map(s -> s.getUser().getUsername()).collect(Collectors.toList()));
 
             final OnCallRole night = m_onCallRoleDao.findByName("night");
             assertEquals("Night shift", night.getDescription());

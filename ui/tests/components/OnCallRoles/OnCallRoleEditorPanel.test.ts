@@ -132,6 +132,7 @@ describe('OnCallRoleEditorPanel', () => {
   it('offers every user as id (Full Name) and every group', async () => {
     const wrapper = await mountPanel()
     expect(select(wrapper, 'supervisor-select').props('options')).toEqual([
+      { value: '', label: 'None' },
       { value: 'alice', label: 'alice (Alice Liddell)' },
       { value: 'bob', label: 'bob' }
     ])
@@ -175,10 +176,34 @@ describe('OnCallRoleEditorPanel', () => {
     expect(wrapper.find('[data-test="oncall-now"]').text()).toContain('alice (supervisor, nobody scheduled)')
   })
 
-  it('marks the Details tab and disables Save when the supervisor or group is missing', async () => {
-    const wrapper = await mountPanel({ ...storedRole(), supervisor: '', membershipGroup: '' })
+  it('marks the Details tab and disables Save when the group is missing', async () => {
+    const wrapper = await mountPanel({ ...storedRole(), membershipGroup: '' })
     expect(wrapper.find('[data-test="tab-details"] [data-test="tab-problem-marker"]').exists()).toBe(true)
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('creates a role without a supervisor, which is optional', async () => {
+    const wrapper = await mountPanel()
+    await wrapper.find('[data-test="role-name-input"]').setValue('Unsupervised')
+    select(wrapper, 'group-select').vm.$emit('update:modelValue', 'Day')
+    await flushPromises()
+    expect(wrapper.find('[data-test="tab-details"] [data-test="tab-problem-marker"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('Without a supervisor, nobody is notified when nobody is scheduled.')
+    await save(wrapper)
+
+    expect(store.createRole).toHaveBeenCalledWith(expect.objectContaining({ name: 'Unsupervised', supervisor: '' }))
+  })
+
+  it('shows a stored role without a supervisor as None, and removes the supervisor with an empty one', async () => {
+    const wrapper = await mountPanel({ ...storedRole(), supervisor: null })
+    expect(select(wrapper, 'supervisor-select').props('modelValue')).toBe('')
+    expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeUndefined()
+
+    const supervised = await mountPanel(storedRole())
+    select(supervised, 'supervisor-select').vm.$emit('update:modelValue', '')
+    await flushPromises()
+    await save(supervised)
+    expect(store.updateRole).toHaveBeenCalledWith(expect.objectContaining({ supervisor: '' }))
   })
 
   it('waits for the schedule settings before enabling Save', async () => {

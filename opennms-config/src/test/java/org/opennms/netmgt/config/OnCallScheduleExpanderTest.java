@@ -232,6 +232,32 @@ public class OnCallScheduleExpanderTest {
         assertFalse(now.supervisorFallback());
     }
 
+    /** Without a supervisor, nobody covers the times nobody is scheduled: no fallback entries, and nobody on call. */
+    @Test
+    public void testARoleWithoutASupervisorHasNoFallback() {
+        final Role role = role(false);
+        role.setSupervisor(null);
+        final Role supervised = role(false);
+
+        final List<Entry> entries = OnCallScheduleExpander.entries(role, monthStart(2026, 4), monthStart(2026, 5));
+        final List<Entry> scheduled = new ArrayList<>();
+        for (final Entry e : OnCallScheduleExpander.entries(supervised, monthStart(2026, 4), monthStart(2026, 5))) {
+            if (e.scheduleIndex() != null) {
+                scheduled.add(e);
+            }
+        }
+        assertFalse(scheduled.isEmpty());
+        assertEquals(scheduled, entries);
+
+        OnCallNow now = OnCallScheduleExpander.onCallAt(role, at(2026, 4, 2, 17, 30, 0));
+        assertEquals(List.of(), now.users());
+        assertFalse(now.supervisorFallback());
+
+        now = OnCallScheduleExpander.onCallAt(role, at(2026, 3, 10, 5, 0, 0));
+        assertEquals(List.of("bob"), now.users());
+        assertFalse(now.supervisorFallback());
+    }
+
     @Test
     public void testOnCallAtListsAUserOnceWhenTwoSchedulesCoverTheInstant() {
         final Role role = new Role();

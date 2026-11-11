@@ -48,7 +48,9 @@ import org.hibernate.annotations.BatchSize;
 
 /**
  * An on-call role: a notification rota, a {@code <role>} of groups.xml. Its members come from the membership
- * group, its supervisor is notified when nobody is on call, and its schedules say who is on call when.
+ * group, its optional supervisor is notified when nobody is on call, and its schedules say who is on call when.
+ * Without a supervisor, nobody is notified while nobody is scheduled: a role can lose its supervisor in groups.xml
+ * (a deleted user), and the upgrade keeps such a role rather than dropping its schedules.
  * Not to be confused with {@link SecurityRole}.
  * <p>
  * The database refuses to delete the membership group or the supervisor while a role refers to them.
@@ -74,8 +76,9 @@ public class OnCallRole implements Serializable {
     @JoinColumn(name = "membership_group_id", nullable = false)
     private UserGroup membershipGroup;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "supervisor_user_id", nullable = false)
+    /** Null when the role has no supervisor. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supervisor_user_id")
     private UserAccount supervisor;
 
     /**

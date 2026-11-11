@@ -67,8 +67,9 @@
               <FormField
                 label="Supervisor"
                 for="oncall-role-supervisor"
-                required
-                hint="Covers the times nobody is scheduled."
+                :hint="supervisor
+                  ? 'Covers the times nobody is scheduled.'
+                  : 'Without a supervisor, nobody is notified when nobody is scheduled.'"
               >
                 <OnmsSelect
                   v-model="supervisor"
@@ -111,6 +112,7 @@
               :groupChanged="groupChanged"
               :shortMonths="shortMonths"
               :settingsMissing="settingsFailed"
+              :noSupervisor="!supervisor"
               :highlightKey="highlightKey"
               @highlighted="highlightKey = null"
             />
@@ -221,12 +223,13 @@ const descriptionProblem = computed(() =>
     ? `The description must not be longer than ${FREE_TEXT_LENGTH} characters.`
     : null)
 
-// a stored supervisor or group the lists lack is still offered, so that it shows as chosen
+// a stored supervisor or group the lists lack is still offered, so that it shows as chosen; the supervisor is
+// optional, so "None" comes first
 const supervisorOptions = computed(() => {
-  const options = store.users.map(u => ({
+  const options = [{ value: '', label: 'None' }, ...store.users.map(u => ({
     value: u.userId,
     label: u.fullName ? `${u.userId} (${u.fullName})` : u.userId
-  }))
+  }))]
   if (supervisor.value && !options.some(o => o.value === supervisor.value)) {
     options.push({ value: supervisor.value, label: supervisor.value })
   }
@@ -252,10 +255,9 @@ const settingsFailed = computed(() => store.scheduleSettingsLoad === 'failed')
 const shortMonths = computed(() => store.scheduleSettings?.shortMonths ?? [])
 const members = computed(() => store.groupMembers(membershipGroup.value))
 
-const supervisorMissing = computed(() => !supervisor.value)
 const groupMissing = computed(() => !membershipGroup.value)
 const detailsTabProblem = computed(() =>
-  !!(nameProblem.value || descriptionProblem.value || supervisorMissing.value || groupMissing.value))
+  !!(nameProblem.value || descriptionProblem.value || groupMissing.value))
 // a role that changes its membership group has every schedule checked against the new group
 const groupChanged = computed(() => isEditing.value && membershipGroup.value !== props.role?.membershipGroup)
 // values the schedules can't be written with; the calendar can't be previewed while there are any

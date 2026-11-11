@@ -102,7 +102,7 @@
 				
 				<tr>
 				<td><a href="<c:out value='${viewUrl}'/>"><c:out value="${role.name}"/></a></td>
-				<td><c:set var="supervisorUser">${role.defaultUser}</c:set><c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set><span title="<c:out value="${fullName}"/>"><c:out value="${role.defaultUser}"/></span></td>
+				<td><c:choose><c:when test="${empty role.defaultUser}">None</c:when><c:otherwise><c:set var="supervisorUser">${role.defaultUser}</c:set><c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set><span title="<c:out value="${fullName}"/>"><c:out value="${role.defaultUser}"/></span></c:otherwise></c:choose></td>
 				<td>
 					<c:forEach var="scheduledUser" items="${role.currentUsers}">
 						<c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("scheduledUser").toString()) %></c:set>

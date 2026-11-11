@@ -65,7 +65,8 @@ public final class OnCallScheduleExpander {
 
     /**
      * @param users the users on call, in schedule order and distinct
-     * @param supervisorFallback true if nobody is scheduled and the supervisor is on call by default
+     * @param supervisorFallback true if nobody is scheduled and the supervisor is on call by default; false when
+     *                           the role has no supervisor, so nobody is on call
      */
     public record OnCallNow(List<String> users, boolean supervisorFallback) {
     }
@@ -75,7 +76,7 @@ public final class OnCallScheduleExpander {
 
     /**
      * @return the entries intersecting {@code [start, end)}, sorted by start then schedule index (the supervisor
-     *         fallback, which has no index, sorts last)
+     *         fallback, which has no index, sorts last; a role without a supervisor has no fallback entries)
      */
     public static List<Entry> entries(final Role role, final Date start, final Date end) {
         final List<Entry> result = new ArrayList<>();
@@ -119,15 +120,18 @@ public final class OnCallScheduleExpander {
                 }
             }
 
-            long cursor = from;
-            for (final long[] iv : merge(covered)) {
-                if (iv[0] > cursor) {
-                    result.add(new Entry(new Date(cursor), new Date(iv[0]), role.getSupervisor(), null));
+            // the supervisor covers the rest of the day; without one, nobody does and there is no entry
+            if (role.getSupervisor() != null) {
+                long cursor = from;
+                for (final long[] iv : merge(covered)) {
+                    if (iv[0] > cursor) {
+                        result.add(new Entry(new Date(cursor), new Date(iv[0]), role.getSupervisor(), null));
+                    }
+                    cursor = Math.max(cursor, iv[1]);
                 }
-                cursor = Math.max(cursor, iv[1]);
-            }
-            if (cursor < to) {
-                result.add(new Entry(new Date(cursor), new Date(to), role.getSupervisor(), null));
+                if (cursor < to) {
+                    result.add(new Entry(new Date(cursor), new Date(to), role.getSupervisor(), null));
+                }
             }
 
             date = date.plusDays(1);
@@ -151,11 +155,10 @@ public final class OnCallScheduleExpander {
         if (!users.isEmpty()) {
             return new OnCallNow(new ArrayList<>(users), false);
         }
-        final List<String> fallback = new ArrayList<>();
-        if (role.getSupervisor() != null) {
-            fallback.add(role.getSupervisor());
+        if (role.getSupervisor() == null) {
+            return new OnCallNow(List.of(), false);
         }
-        return new OnCallNow(fallback, true);
+        return new OnCallNow(List.of(role.getSupervisor()), true);
     }
 
     private static long startOf(final LocalDate date, final ZoneId zone) {

@@ -21,7 +21,7 @@
 ///
 
 // Wire shapes of the v2 on-call role management API (/api/v2/oncall-roles). A role
-// is a notification rota: a membership group, a supervisor and per-user schedules.
+// is a notification rota: a membership group, an optional supervisor and per-user schedules.
 // onCallNow and onCallNowIsSupervisor are computed by the server and ignored on write.
 
 export type OnCallScheduleType = 'specific' | 'daily' | 'weekly' | 'monthly'
@@ -43,7 +43,8 @@ export interface ManagedOnCallRole {
   name: string
   description?: string | null
   membershipGroup: string
-  supervisor: string
+  // null (on read) or '' when the role has no supervisor; '' in a PUT removes it
+  supervisor: string | null
   schedules: OnCallSchedule[]
   onCallNow?: string[]
   onCallNowIsSupervisor?: boolean

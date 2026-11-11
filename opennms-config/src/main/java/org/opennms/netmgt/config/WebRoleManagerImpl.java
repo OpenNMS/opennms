@@ -198,7 +198,8 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
            super(role.getName());
            m_role = role;
            super.setDescription(role.getDescription().orElse(null));
-           super.setDefaultUser(getWebUser(role.getSupervisor()));
+           // null when the role has no supervisor
+           super.setDefaultUser(role.getSupervisor() == null ? null : getWebUser(role.getSupervisor()));
            super.setMembershipGroup(getWebGroup(role.getMembershipGroup()));
         }
         
@@ -242,7 +243,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
                     role.setDescription(super.getDescription());
                 }
                 if (m_flags.get(USER)) {
-                    role.setSupervisor(super.getDefaultUser().getName());
+                    role.setSupervisor(super.getDefaultUser() == null ? null : super.getDefaultUser().getName());
                 }
                 if (m_flags.get(GROUP)) {
                     role.setMembershipGroup(super.getMembershipGroup().getName());

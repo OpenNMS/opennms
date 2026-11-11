@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -156,6 +157,24 @@ public class DbGroupManagerIT {
         m_manager.saveGroup("Ops", group("Ops", "jane"));
         m_manager.saveRole(role("Night", "Ops", "jane"));
         assertEquals("jane", m_tx.execute(s -> m_onCallRoleDao.findByName("Night").getSupervisor().getUsername()));
+    }
+
+    /** The supervisor is optional: without one, nobody covers the times nobody is scheduled. */
+    @Test
+    public void testARoleWithoutASupervisor() throws Exception {
+        m_manager.saveGroup("Ops", group("Ops", "jane"));
+        m_manager.saveRole(role("Night", "Ops", "jane"));
+        m_manager.saveRole(role("Night", "Ops", null));
+        assertNull(m_tx.execute(s -> m_onCallRoleDao.findByName("Night").getSupervisor()));
+
+        final DbGroupManager loaded = newManager();
+        assertNull(loaded.getRole("Night").getSupervisor());
+        assertFalse(loaded.isUserScheduledForRole("jane", "Night", new Date()));
+        assertFalse(loaded.getRoleScheduleEntries("Night", new Date(0), new Date()).iterator().hasNext());
+
+        loaded.saveRole(role("Night", "Ops", "jane"));
+        assertEquals("jane", m_tx.execute(s -> m_onCallRoleDao.findByName("Night").getSupervisor().getUsername()));
+        assertTrue(newManager().isUserScheduledForRole("jane", "Night", new Date()));
     }
 
     @Test

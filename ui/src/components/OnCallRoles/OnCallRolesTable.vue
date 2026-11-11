@@ -51,7 +51,15 @@
         sortable
       >
         <template #body="{ data }">
-          <span v-onms-tooltip.top="store.fullName(data.supervisor) || data.supervisor">{{ data.supervisor }}</span>
+          <span
+            v-if="data.supervisor"
+            v-onms-tooltip.top="store.fullName(data.supervisor) || data.supervisor"
+          >{{ data.supervisor }}</span>
+          <span
+            v-else
+            v-onms-tooltip.top="'No supervisor: nobody is notified when nobody is scheduled'"
+            data-test="no-supervisor"
+          >--</span>
         </template>
       </OnmsColumn>
       <OnmsColumn header="On Call Now">

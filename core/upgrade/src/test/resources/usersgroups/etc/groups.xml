@@ -54,5 +54,10 @@
             <time begins="00:00:00" ends="08:00:00"/>
          </schedule>
       </role>
+      <role name="nosupervisor" membership-group="Oncall">
+         <schedule name="carol" type="daily">
+            <time begins="08:00:00" ends="17:00:00"/>
+         </schedule>
+      </role>
    </roles>
 </groupinfo>

@@ -97,11 +97,12 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * security-roles.properties with only built-in roles: the seed adds no users while the file is in etc.</p>
  *
  * <p>Everything is written in one transaction. Entries that the tables cannot hold are skipped with a message: unknown security roles (which login drops today as
- * well), group members and schedule users that do not exist, on-call roles whose membership group or
- * supervisor does not exist, a second contact of the same type, unknown contact and schedule types, and
+ * well), group members and schedule users that do not exist, on-call roles whose membership group does not
+ * exist, a second contact of the same type, unknown contact and schedule types, and
  * values longer than their column. Names are matched exactly, without trimming, as OpenNMS matches them
  * today. The XSDs normally reject unknown types, but JaxbUtils reads a file without validation when it
- * cannot find the XSD.</p>
+ * cannot find the XSD. An on-call role whose supervisor does not exist is copied without one, with a warning:
+ * the supervisor only covers the times nobody is scheduled.</p>
  *
  * <p>A user or group with one of the {@link ReservedNames} fails the task before anything is written: such an entry
  * is not dropped, since group members, on-call roles and destination paths refer to it by name.</p>
@@ -653,15 +654,18 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                     skip("on-call role '%s': membership group '%s' is not a group", name, role.getMembershipGroup());
                     continue;
                 }
-                if (supervisorId == null) {
-                    skip("on-call role '%s': supervisor '%s' is not a user", name, role.getSupervisor());
-                    continue;
+                // the supervisor only covers the times nobody is scheduled: keep the role and its schedules without
+                // one, as notifd did with a supervisor that is not a user (a deleted user)
+                if (supervisorId == null && role.getSupervisor() != null) {
+                    warn("On-call role '%s' has the supervisor '%s', which is not a user; the role is copied without a "
+                            + "supervisor, so nobody is notified while nobody is scheduled", name, role.getSupervisor());
                 }
                 if (!fits(name, ONCALL_ROLE_NAME_LENGTH, "on-call role", name, "the name")) {
                     continue;
                 }
+                // the cast: prepare() binds a null as a varchar, which an integer column does not take
                 final int roleId = insert("INSERT INTO oncall_roles (id, name, description, membership_group_id, supervisor_user_id, created_time, last_modified) "
-                                + "VALUES (nextval('oncall_roles_id_seq'), ?, ?, ?, ?, NOW(), NOW()) RETURNING id",
+                                + "VALUES (nextval('oncall_roles_id_seq'), ?, ?, ?, CAST(? AS integer), NOW(), NOW()) RETURNING id",
                         name, role.getDescription().orElse(null), groupId, supervisorId);
                 count("on-call roles");
 

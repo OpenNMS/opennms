@@ -168,9 +168,6 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         if (StringUtils.isBlank(dto.getMembershipGroup())) {
             throw m_support.badRequest("A membership group is required.");
         }
-        if (StringUtils.isBlank(dto.getSupervisor())) {
-            throw m_support.badRequest("A supervisor is required.");
-        }
         try {
             m_support.lockForWrite();
             if (m_onCallRoleDao.findByName(name) != null) {
@@ -217,6 +214,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
             if (dto.getMembershipGroup() != null) {
                 role.setMembershipGroup(loadGroup(dto.getMembershipGroup()));
             }
+            // an empty supervisor removes it
             if (dto.getSupervisor() != null) {
                 role.setSupervisor(loadSupervisor(dto.getSupervisor()));
             }
@@ -363,9 +361,6 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
             final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ROOT);
             final List<OnCallCalendarEntryDto> entries = new ArrayList<>();
             for (final OnCallScheduleExpander.Entry entry : OnCallScheduleExpander.entries(toJaxbRole(draft), start, end)) {
-                if (entry.scheduleIndex() == null && entry.user() == null) {
-                    continue; // the supervisor fallback of a draft without a supervisor
-                }
                 final OnCallCalendarEntryDto entryDto = new OnCallCalendarEntryDto();
                 entryDto.setStart(format.format(entry.start()));
                 entryDto.setEnd(format.format(entry.end()));
@@ -432,7 +427,11 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         return group;
     }
 
+    /** @return the supervisor, or null for a missing or empty name: the role has none */
     private UserAccount loadSupervisor(final String username) {
+        if (StringUtils.isBlank(username)) {
+            return null;
+        }
         final UserAccount user = m_userAccountDao.findByUsername(username);
         if (user == null) {
             throw new UserMgmtValidationException("Unknown supervisor: " + username);
@@ -602,7 +601,7 @@ public class OnCallRolesRestService implements OnCallRolesRestApi {
         dto.setName(role.getName());
         dto.setDescription(role.getDescription());
         dto.setMembershipGroup(role.getMembershipGroup().getName());
-        dto.setSupervisor(role.getSupervisor().getUsername());
+        dto.setSupervisor(role.getSupervisor() == null ? null : role.getSupervisor().getUsername());
         dto.setVersion(version);
         final List<OnCallScheduleDto> schedules = new ArrayList<>();
         for (final OnCallSchedule schedule : role.getSchedules()) {

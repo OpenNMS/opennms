@@ -127,7 +127,9 @@ public class DbGroupManager extends GroupManager {
             final Map<String, Integer> userIds = new HashMap<>();
             groups.forEach(g -> g.getMembers().forEach(u -> userIds.put(u.getUsername(), u.getId())));
             roles.forEach(r -> {
-                userIds.put(r.getSupervisor().getUsername(), r.getSupervisor().getId());
+                if (r.getSupervisor() != null) {
+                    userIds.put(r.getSupervisor().getUsername(), r.getSupervisor().getId());
+                }
                 r.getSchedules().forEach(sched -> userIds.put(sched.getUser().getUsername(), sched.getUser().getId()));
             });
             return new Loaded(UserMgmtJaxbMapper.toGroupinfo(groups, roles), usersVersion, groupsVersion, userIds);
@@ -196,7 +198,9 @@ public class DbGroupManager extends GroupManager {
         final List<String> names = new ArrayList<>();
         groupinfo.getGroups().forEach(g -> names.addAll(g.getUsers()));
         groupinfo.getRoles().forEach(r -> {
-            names.add(r.getSupervisor());
+            if (r.getSupervisor() != null) {
+                names.add(r.getSupervisor());
+            }
             r.getSchedules().forEach(sched -> names.add(sched.getName()));
         });
         for (final String name : names) {

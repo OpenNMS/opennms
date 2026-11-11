@@ -566,9 +566,8 @@ $safeinet$ LANGUAGE sql IMMUTABLE PARALLEL SAFE RETURNS NULL ON NULL INPUT;
             <column name="membership_group_id" type="integer">
                 <constraints nullable="false"/>
             </column>
-            <column name="supervisor_user_id" type="integer">
-                <constraints nullable="false"/>
-            </column>
+            <!-- optional: the user notified when nobody is scheduled; without one, nobody is notified then -->
+            <column name="supervisor_user_id" type="integer"/>
             <column name="created_time" type="timestamp with time zone" defaultValueComputed="NOW()">
                 <constraints nullable="false"/>
             </column>
@@ -581,7 +580,8 @@ $safeinet$ LANGUAGE sql IMMUTABLE PARALLEL SAFE RETURNS NULL ON NULL INPUT;
 
         <createSequence sequenceName="oncall_roles_id_seq" startValue="1" incrementBy="1"/>
 
-        <!-- RESTRICT: a group or user a role depends on cannot be deleted; groups.xml allowed both -->
+        <!-- RESTRICT: a group or user a role depends on cannot be deleted; groups.xml allowed both. A supervisor is
+             changed or removed on the role before the user can be deleted. -->
         <addForeignKeyConstraint baseTableName="oncall_roles" baseColumnNames="membership_group_id"
                                  referencedTableName="groups" referencedColumnNames="id"
                                  constraintName="fk_oncall_roles_membership_group_id" onDelete="RESTRICT"/>

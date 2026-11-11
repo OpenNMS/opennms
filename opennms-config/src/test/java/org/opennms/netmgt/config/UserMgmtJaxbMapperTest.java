@@ -225,6 +225,23 @@ public class UserMgmtJaxbMapperTest {
         assertEquals(role, UserMgmtJaxbMapper.toRole(target));
     }
 
+    /** The supervisor is optional: a role without one maps to a role without one, both ways. */
+    @Test
+    public void testRoleWithoutASupervisorRoundTrips() {
+        final Role role = nightRole();
+        role.setSupervisor(null);
+        final OnCallRole target = new OnCallRole();
+        target.setSupervisor(users("jane").get("jane"));
+        UserMgmtJaxbMapper.applyRole(role, target, groups("Ops"), users("jane"));
+        assertNull(target.getSupervisor());
+        assertNull(UserMgmtJaxbMapper.toRole(target).getSupervisor());
+        assertEquals(role, UserMgmtJaxbMapper.toRole(target));
+
+        // an empty attribute is no supervisor too
+        role.setSupervisor("");
+        assertNull(role.getSupervisor());
+    }
+
     @Test
     public void testRoleWithUnknownSupervisorFails() {
         final Role role = nightRole();

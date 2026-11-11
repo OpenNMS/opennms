@@ -194,6 +194,10 @@ Users must not be named `.`, `..`, `item` or `available-roles`, and groups must 
 If `users.xml` or `groups.xml` has one of these names, the upgrade copies none of the users and groups, and the install log names the entries.
 Rename them in the files, and wherever the files refer to them (group members, on-call roles, destination paths in `notifications.xml`), then run the installer again.
 
+An on-call role whose supervisor is not a user (for example, a deleted user) is copied without a supervisor, and the install log names it.
+A role without a supervisor sends no notifications when no one is scheduled.
+Set a supervisor on the On-Call Roles page if the role needs one.
+
 If the users and groups cannot be copied, for this or any other reason, the upgrade fails: the installer ends with "UPGRADE FAILED" and an error status, and {page-component-title} does not start until the installer has run again without the failure.
 The same happens when the installer runs while {page-component-title} is still running and the users and groups have not been copied yet: the copy needs {page-component-title} to be stopped.
 The running {page-component-title} keeps running, but once it stops, it does not start again until then, also not when a service manager such as systemd restarts it.

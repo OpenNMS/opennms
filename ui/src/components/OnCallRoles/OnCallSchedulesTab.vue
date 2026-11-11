@@ -10,7 +10,9 @@
       v-else-if="!cards.length"
       class="empty"
       data-test="no-schedules"
-    >No schedules: the supervisor covers every time.</p>
+    >{{ noSupervisor
+      ? 'No schedules and no supervisor: nobody is notified.'
+      : 'No schedules: the supervisor covers every time.' }}</p>
     <OnCallScheduleCard
       v-for="(card, index) in cards"
       :key="card.key"
@@ -53,6 +55,8 @@ const props = defineProps<{
   shortMonths: string[]
   // the schedule settings failed to load, so the cards are not the role's schedules
   settingsMissing?: boolean
+  // the role has no supervisor, so nobody covers the times nobody is scheduled
+  noSupervisor?: boolean
   highlightKey: string | null
 }>()
 

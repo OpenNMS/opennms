@@ -25,8 +25,8 @@ import java.util.List;
 
 /**
  * An on-call role as exposed by the v2 user management API: one document with the membership group, the
- * supervisor and all schedules. Fields left out of a PUT body arrive as null and are preserved; the
- * schedules, when present, replace the stored ones. The version is also sent as the ETag and ignored in a
+ * optional supervisor (null when the role has none) and all schedules. Fields left out of a PUT body arrive as
+ * null and are preserved; an empty supervisor removes it, and the schedules, when present, replace the stored ones. The version is also sent as the ETag and ignored in a
  * request body (the If-Match header is the contract). onCallNow and onCallNowIsSupervisor are computed on
  * read and ignored in a request body.
  */

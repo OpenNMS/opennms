@@ -54,7 +54,8 @@ const noop = { mounted: () => undefined }
 const roles = [
   { name: 'Ops', description: 'Operations rota', membershipGroup: 'Night', supervisor: 'alice', schedules: [], onCallNow: ['bob', 'Carol'], onCallNowIsSupervisor: false, version: 1 },
   { name: 'Network', description: 'Network <b>team</b>', membershipGroup: 'Day', supervisor: 'dave', schedules: [], onCallNow: ['dave'], onCallNowIsSupervisor: true, version: 2 },
-  { name: 'Idle', description: '', membershipGroup: 'Day', supervisor: 'erin', schedules: [], version: 3 }
+  { name: 'Idle', description: '', membershipGroup: 'Day', supervisor: 'erin', schedules: [], version: 3 },
+  { name: 'Loose', description: '', membershipGroup: 'Day', supervisor: null, schedules: [], onCallNow: [], onCallNowIsSupervisor: false, version: 4 }
 ]
 
 const mountTable = () => mount(OnCallRolesTable, {
@@ -72,7 +73,7 @@ describe('OnCallRolesTable', () => {
 
   it('renders a row per role with its columns', () => {
     const wrapper = mountTable()
-    expect(names(wrapper)).toEqual(['Ops', 'Network', 'Idle'])
+    expect(names(wrapper)).toEqual(['Ops', 'Network', 'Idle', 'Loose'])
     const ops = rowOf(wrapper, 'Ops')
     expect(ops.text()).toContain('alice')
     expect(ops.text()).toContain('bob, Carol')
@@ -87,6 +88,12 @@ describe('OnCallRolesTable', () => {
     expect(rowOf(wrapper, 'Network').find('.fallback-tag').text()).toBe('fallback')
     expect(rowOf(wrapper, 'Ops').find('.fallback-tag').exists()).toBe(false)
     expect(rowOf(wrapper, 'Idle').find('.fallback-tag').exists()).toBe(false)
+  })
+
+  it('shows -- for a role without a supervisor', () => {
+    const wrapper = mountTable()
+    expect(rowOf(wrapper, 'Loose').find('[data-test="no-supervisor"]').text()).toBe('--')
+    expect(rowOf(wrapper, 'Ops').find('[data-test="no-supervisor"]').exists()).toBe(false)
   })
 
   it('renders markup in a description as text', () => {

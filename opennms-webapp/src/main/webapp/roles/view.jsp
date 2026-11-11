@@ -91,7 +91,7 @@
 		</tr>
 		<tr class="d-flex">
 			<th class="col-md-2">Supervisor</th>
-			<td class="col-md-4"><c:out value="${role.defaultUser}" /></td>
+			<td class="col-md-4"><c:choose><c:when test="${empty role.defaultUser}">None</c:when><c:otherwise><c:out value="${role.defaultUser}" /></c:otherwise></c:choose></td>
 			<th class="col-md-2">Membership&nbsp;Group</th>
 			<td class="col-md-4"><c:out value="${role.membershipGroup}" /></td>
 		</tr>

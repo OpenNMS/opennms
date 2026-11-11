@@ -85,14 +85,14 @@ public interface OnCallRolesRestApi {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Create an on-call role; the membership group and supervisor must exist, and a schedule needs at least one time", operationId = "createOnCallRole")
+    @Operation(summary = "Create an on-call role; the membership group must exist, the supervisor is optional but must exist if given, and a schedule needs at least one time", operationId = "createOnCallRole")
     Response createOnCallRole(@Context SecurityContext securityContext, OnCallRoleDto role);
 
     @PUT
     @Path("{name}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Update an on-call role. Omitted fields are preserved (an empty description clears it); schedules, when sent, replace the stored ones", operationId = "updateOnCallRole")
+    @Operation(summary = "Update an on-call role. Omitted fields are preserved (an empty description clears it, an empty supervisor removes it); schedules, when sent, replace the stored ones", operationId = "updateOnCallRole")
     @Parameters({
             @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
     })
