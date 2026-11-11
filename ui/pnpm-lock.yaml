@@ -151,8 +151,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3(graphology-types@0.24.8)
       splitpanes:
-        specifier: ^3.1.5
-        version: 3.2.0(vue@3.5.33(typescript@5.9.3))
+        specifier: ^4.1.2
+        version: 4.1.2(vue@3.5.33(typescript@5.9.3))
       vite-svg-loader:
         specifier: ^4.0.0
         version: 4.0.0
@@ -2730,8 +2730,8 @@ packages:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
 
-  splitpanes@3.2.0:
-    resolution: {integrity: sha512-K+WKxWdqtKShV33gPjQl769wHxB3glypTOReCvYu/AJd38J+abHlpiF8rK6uBNPMrgw5thHZCI5JkEwsAqa9XA==}
+  splitpanes@4.1.2:
+    resolution: {integrity: sha512-frNchoCv7w0nMQEuaDGgMGMU6jv3NhN6bBGQVfCNgwJdVcYaRmi1dwYDjp7SifAoUFdiQjBRB254LJNidzo15Q==}
     peerDependencies:
       vue: ^3.2.0
 
@@ -5854,7 +5854,7 @@ snapshots:
 
   source-map@0.6.1: {}
 
-  splitpanes@3.2.0(vue@3.5.33(typescript@5.9.3)):
+  splitpanes@4.1.2(vue@3.5.33(typescript@5.9.3)):
     dependencies:
       vue: 3.5.33(typescript@5.9.3)
 
