@@ -32,10 +32,10 @@ public class MibEventsPreviewDto extends MibParseResultDto {
     private String suggestedFileName;
     private String eventsXml;
     /**
-     * Generated UEIs that other event sources already define, mapped to those sources' names. The
-     * source the events will be saved as is left out, since saving replaces it.
+     * Generated UEIs that other event sources already define, mapped to those sources in evaluation
+     * order. The source the events will be saved as is left out, since saving replaces it.
      */
-    private Map<String, List<String>> existingUeis = new LinkedHashMap<>();
+    private Map<String, List<MibEventSourceDto>> existingUeis = new LinkedHashMap<>();
 
     public String getUeiBase() {
         return ueiBase;
@@ -69,11 +69,11 @@ public class MibEventsPreviewDto extends MibParseResultDto {
         this.eventsXml = eventsXml;
     }
 
-    public Map<String, List<String>> getExistingUeis() {
+    public Map<String, List<MibEventSourceDto>> getExistingUeis() {
         return existingUeis;
     }
 
-    public void setExistingUeis(Map<String, List<String>> existingUeis) {
+    public void setExistingUeis(Map<String, List<MibEventSourceDto>> existingUeis) {
         this.existingUeis = existingUeis;
     }
 }

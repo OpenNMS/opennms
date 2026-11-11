@@ -70,6 +70,7 @@ The default is `uei.opennms.org/traps/<MIB module name>`.
 . Review the generated event definitions and edit the XML if needed.
 +
 If other event sources already define some of the generated UEIs, a warning lists those UEIs and the sources that define them.
+A source with only disabled definitions of a UEI is marked *disabled*.
 . Click *Save Events*.
 +
 The events are stored in the database as the event source `<MIB module name>.events`.
@@ -90,6 +91,9 @@ The new definitions replace the existing definitions of the same UEIs, and {page
 * An existing `<MIB module name>.events` source keeps its position when you replace it.
 The new definitions replace only the definitions of sources that are evaluated after it.
 Sources that are evaluated before it keep their definitions, and {page-component-title} does not use the new ones.
+
+{page-component-title} does not load disabled event definitions, so they are not in these groups.
+If you enable a disabled definition again, these rules apply to it.
 
 Before the save, a confirmation lists the UEIs in each of these groups.
 To continue, click *Save Anyway* or *Replace Events*.

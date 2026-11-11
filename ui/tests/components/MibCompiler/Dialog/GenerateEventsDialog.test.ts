@@ -21,7 +21,7 @@
 ///
 
 import GenerateEventsDialog from '@/components/MibCompiler/Dialog/GenerateEventsDialog.vue'
-import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
+import { DOMWrapper, flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -60,6 +60,13 @@ const OnmsDialogStub = {
   template: '<div v-if="visible"><slot /><slot name="footer" /></div>',
   props: ['visible', 'header', 'width']
 }
+
+const enabled = (...names: string[]) => names.map(name => ({ name, enabled: true }))
+
+// the [UEI, sources] cell texts of the duplicate-UEI table rows in a container
+const rowsOf = (container: DOMWrapper<Element>) =>
+  container.findAll('[data-test="duplicate-uei-row"]')
+    .map(row => row.findAll('td').map(cell => cell.text().replace(/\s+/g, ' ').trim()))
 
 const eventsXml = '<events><event><uei>uei.opennms.org/traps/IF-MIB/linkDown</uei></event></events>'
 const preview = {
@@ -131,7 +138,7 @@ describe('GenerateEventsDialog', () => {
   it('warns about UEIs that other event sources already define', async () => {
     mockGenerateEvents.mockResolvedValue({
       ...preview,
-      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': ['acme.events', 'vendor.events'] }
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': enabled('acme.events', 'vendor.events') }
     })
     mockUploadEventConfigFiles.mockResolvedValue({ success: [{ file: 'IF-MIB.events' }], errors: [] })
     wrapper = await createWrapper()
@@ -141,13 +148,15 @@ describe('GenerateEventsDialog', () => {
     const warning = wrapper.find('[data-test="duplicate-ueis"]')
     expect(warning.exists()).toBe(true)
     expect(warning.text()).toContain('1 of these UEIs')
-    expect(warning.text()).toContain('uei.opennms.org/traps/IF-MIB/linkDown in acme.events, vendor.events')
+    expect(rowsOf(warning)).toEqual([['uei.opennms.org/traps/IF-MIB/linkDown', 'acme.events vendor.events']])
+    expect(warning.find('[data-test="disabled-tag"]').exists()).toBe(false)
+    expect(warning.find('[data-test="disabled-duplicates-hint"]').exists()).toBe(false)
   })
 
   it('asks for confirmation before a new source overrides the definitions of other sources', async () => {
     mockGenerateEvents.mockResolvedValue({
       ...preview,
-      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': ['acme.events', 'vendor.events'] }
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': enabled('acme.events', 'vendor.events') }
     })
     mockGetOrderedEventConfigSources.mockResolvedValue([{ name: 'acme.events' }, { name: 'vendor.events' }])
     mockUploadEventConfigFiles.mockResolvedValue({ success: [{ file: 'IF-MIB.events' }], errors: [] })
@@ -162,7 +171,7 @@ describe('GenerateEventsDialog', () => {
     expect(wrapper.find('[data-test="confirm-replace"]').exists()).toBe(false)
     const overridden = wrapper.find('[data-test="confirm-overridden-ueis"]')
     expect(overridden.text()).toContain('evaluated before all existing sources')
-    expect(overridden.text()).toContain('uei.opennms.org/traps/IF-MIB/linkDown in acme.events, vendor.events')
+    expect(rowsOf(overridden)).toEqual([['uei.opennms.org/traps/IF-MIB/linkDown', 'acme.events vendor.events']])
     expect(overridden.text()).toContain('do not contain alarm data')
     const confirmButton = wrapper.find('[data-test="confirm-save-button"]')
     expect(confirmButton.text()).toBe('Save Anyway')
@@ -176,7 +185,7 @@ describe('GenerateEventsDialog', () => {
   it('returns to the preview from the duplicate confirmation', async () => {
     mockGenerateEvents.mockResolvedValue({
       ...preview,
-      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': ['acme.events'] }
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': enabled('acme.events') }
     })
     mockGetOrderedEventConfigSources.mockResolvedValue([{ name: 'acme.events' }])
     wrapper = await createWrapper()
@@ -198,8 +207,8 @@ describe('GenerateEventsDialog', () => {
       eventsXml: '<events><event><uei>uei.opennms.org/traps/IF-MIB/linkDown</uei></event>'
         + '<event><uei>uei.opennms.org/traps/IF-MIB/linkUp</uei></event></events>',
       existingUeis: {
-        'uei.opennms.org/traps/IF-MIB/linkDown': ['early.events'],
-        'uei.opennms.org/traps/IF-MIB/linkUp': ['late.events']
+        'uei.opennms.org/traps/IF-MIB/linkDown': enabled('early.events'),
+        'uei.opennms.org/traps/IF-MIB/linkUp': enabled('late.events')
       }
     })
     // evaluation order: early.events, then the existing IF-MIB.events, then late.events
@@ -215,17 +224,15 @@ describe('GenerateEventsDialog', () => {
     expect(wrapper.find('[data-test="confirm-replace"]').exists()).toBe(true)
     const overridden = wrapper.find('[data-test="confirm-overridden-ueis"]')
     expect(overridden.text()).toContain('IF-MIB.events is evaluated before the sources below')
-    expect(overridden.text()).toContain('uei.opennms.org/traps/IF-MIB/linkUp in late.events')
-    expect(overridden.text()).not.toContain('linkDown')
+    expect(rowsOf(overridden)).toEqual([['uei.opennms.org/traps/IF-MIB/linkUp', 'late.events']])
     const shadowed = wrapper.find('[data-test="confirm-shadowed-ueis"]')
-    expect(shadowed.text()).toContain('uei.opennms.org/traps/IF-MIB/linkDown in early.events')
-    expect(shadowed.text()).not.toContain('linkUp')
+    expect(rowsOf(shadowed)).toEqual([['uei.opennms.org/traps/IF-MIB/linkDown', 'early.events']])
   })
 
   it('only asks to replace when the duplicates are all evaluated first', async () => {
     mockGenerateEvents.mockResolvedValue({
       ...preview,
-      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': ['early.events'] }
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': enabled('early.events') }
     })
     mockGetOrderedEventConfigSources.mockResolvedValue([{ name: 'early.events' }, { name: 'IF-MIB.events' }])
     wrapper = await createWrapper()
@@ -242,7 +249,7 @@ describe('GenerateEventsDialog', () => {
   it('saves without confirmation when a duplicate source was deleted after the preview', async () => {
     mockGenerateEvents.mockResolvedValue({
       ...preview,
-      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': ['deleted.events'] }
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': enabled('deleted.events') }
     })
     mockUploadEventConfigFiles.mockResolvedValue({ success: [{ file: 'IF-MIB.events' }], errors: [] })
     wrapper = await createWrapper()
@@ -254,10 +261,65 @@ describe('GenerateEventsDialog', () => {
     expect(mockUploadEventConfigFiles).toHaveBeenCalledTimes(1)
   })
 
+  it('tags disabled definitions in the warning', async () => {
+    mockGenerateEvents.mockResolvedValue({
+      ...preview,
+      existingUeis: {
+        'uei.opennms.org/traps/IF-MIB/linkDown': [{ name: 'acme.events', enabled: true }, { name: 'old.events', enabled: false }]
+      }
+    })
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+
+    const warning = wrapper.find('[data-test="duplicate-ueis"]')
+    const sources = warning.findAll('[data-test="duplicate-uei-source"]')
+    expect(sources.map(source => source.text().replace(/\s+/g, ' ').trim())).toEqual(['acme.events', 'old.events disabled'])
+    expect(sources[0].find('[data-test="disabled-tag"]').exists()).toBe(false)
+    expect(sources[1].find('[data-test="disabled-tag"]').exists()).toBe(true)
+    expect(warning.find('[data-test="disabled-duplicates-hint"]').exists()).toBe(true)
+  })
+
+  it('leaves disabled definitions out of the confirmation', async () => {
+    mockGenerateEvents.mockResolvedValue({
+      ...preview,
+      existingUeis: {
+        'uei.opennms.org/traps/IF-MIB/linkDown': [{ name: 'acme.events', enabled: true }, { name: 'old.events', enabled: false }]
+      }
+    })
+    mockGetOrderedEventConfigSources.mockResolvedValue([{ name: 'acme.events' }, { name: 'old.events' }])
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(rowsOf(wrapper.find('[data-test="confirm-overridden-ueis"]')))
+      .toEqual([['uei.opennms.org/traps/IF-MIB/linkDown', 'acme.events']])
+  })
+
+  it('saves without confirmation when only disabled definitions share the UEIs', async () => {
+    mockGenerateEvents.mockResolvedValue({
+      ...preview,
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': [{ name: 'old.events', enabled: false }] }
+    })
+    mockGetOrderedEventConfigSources.mockResolvedValue([{ name: 'old.events' }])
+    mockUploadEventConfigFiles.mockResolvedValue({ success: [{ file: 'IF-MIB.events' }], errors: [] })
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-test="duplicate-ueis"]').exists()).toBe(true)
+
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-test="confirm-save"]').exists()).toBe(false)
+    expect(mockUploadEventConfigFiles).toHaveBeenCalledTimes(1)
+  })
+
   it('drops a duplicate from the warning once its UEI is edited away', async () => {
     mockGenerateEvents.mockResolvedValue({
       ...preview,
-      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': ['acme.events'] }
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': enabled('acme.events') }
     })
     wrapper = await createWrapper()
     await wrapper.find('[data-test="generate-button"]').trigger('click')

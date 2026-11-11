@@ -54,14 +54,13 @@
           OpenNMS uses only the definition from the source that it evaluates first.
           Before the save, the dialog shows which definitions OpenNMS will use.
         </p>
-        <ul>
-          <li
-            v-for="item in duplicateUeis"
-            :key="item.uei"
-          >
-            <code>{{ item.uei }}</code> in {{ item.sources.join(', ') }}
-          </li>
-        </ul>
+        <p
+          v-if="hasDisabledDuplicates"
+          data-test="disabled-duplicates-hint"
+        >
+          OpenNMS does not use disabled definitions. If you enable one again, it competes with the new definition.
+        </p>
+        <DuplicateUeiTable :items="duplicateUeis" />
       </div>
       <OnmsTextarea
         v-if="(preview?.eventCount ?? 0) > 0"
@@ -108,14 +107,7 @@
           so OpenNMS will no longer use their definitions of these
           <strong>{{ overriddenUeis.length }}</strong> UEIs:
         </p>
-        <ul>
-          <li
-            v-for="item in overriddenUeis"
-            :key="item.uei"
-          >
-            <code>{{ item.uei }}</code> in {{ item.sources.join(', ') }}
-          </li>
-        </ul>
+        <DuplicateUeiTable :items="overriddenUeis" />
         <p>
           The generated definitions have the severity Indeterminate and do not contain alarm data.
           If an existing definition creates or clears alarms, these traps will no longer do that.
@@ -131,14 +123,7 @@
           <strong>{{ shadowedUeis.length }}</strong> UEIs, so OpenNMS will continue to use those definitions
           and will not use the new ones:
         </p>
-        <ul>
-          <li
-            v-for="item in shadowedUeis"
-            :key="item.uei"
-          >
-            <code>{{ item.uei }}</code> in {{ item.sources.join(', ') }}
-          </li>
-        </ul>
+        <DuplicateUeiTable :items="shadowedUeis" />
       </div>
       <p>
         To change the evaluation order, use the Event Configuration page after the save.
@@ -212,8 +197,9 @@ import useSnackbar from '@/composables/useSnackbar'
 import { getOrderedEventConfigSources, uploadEventConfigFiles } from '@/services/eventConfigService'
 import { generateEvents } from '@/services/mibCompilerService'
 import { EventConfigSource } from '@/types/eventConfig'
-import { MibEventsPreview } from '@/types/mibCompiler'
+import { MibDuplicateUei, MibEventsPreview } from '@/types/mibCompiler'
 import { getGeneralErrorMessage, isWellFormedXml } from '../mibFilesValidator'
+import DuplicateUeiTable from './DuplicateUeiTable.vue'
 
 const props = defineProps<{
   visible: boolean
@@ -251,31 +237,28 @@ const currentUeis = computed(() => {
 })
 
 // the server reports duplicates for the generated UEIs; an edit that changes a UEI resolves its duplicate
-const duplicateUeis = computed(() =>
+const duplicateUeis = computed<MibDuplicateUei[]>(() =>
   Object.entries(preview.value?.existingUeis ?? {})
     .filter(([uei]) => currentUeis.value === null || currentUeis.value.has(uei))
     .map(([uei, sources]) => ({ uei, sources })))
 
-const targetExists = computed(() => orderedSources.value.some(source => source.name === sourceName.value))
+const hasDisabledDuplicates = computed(() => duplicateUeis.value.some(item => item.sources.some(source => !source.enabled)))
 
-interface DuplicateUei {
-  uei: string
-  sources: string[]
-}
+const targetExists = computed(() => orderedSources.value.some(source => source.name === sourceName.value))
 
 // Splits the duplicates by evaluation order. A new source is evaluated before all existing ones; an
 // existing source keeps its position. Sources evaluated after the target lose their definition of the
 // UEI (overridden). If a source evaluated before the target defines it, that definition stays in use and the
-// new one is ignored (shadowed).
+// new one is ignored (shadowed). Disabled definitions are not loaded, so they take part in neither.
 const classifiedDuplicates = computed(() => {
   const position = new Map(orderedSources.value.map((source, index) => [source.name, index]))
   const targetPosition = position.get(sourceName.value) ?? -1
-  const overridden: DuplicateUei[] = []
-  const shadowed: DuplicateUei[] = []
+  const overridden: MibDuplicateUei[] = []
+  const shadowed: MibDuplicateUei[] = []
   for (const { uei, sources } of duplicateUeis.value) {
     // a source that is not in the list any more (deleted after the preview) is no duplicate
-    const known = sources.filter(source => position.has(source))
-    const before = known.filter(source => (position.get(source) ?? 0) < targetPosition)
+    const known = sources.filter(source => source.enabled && position.has(source.name))
+    const before = known.filter(source => (position.get(source.name) ?? 0) < targetPosition)
     if (before.length > 0) {
       shadowed.push({ uei, sources: before })
     } else if (known.length > 0) {
@@ -433,13 +416,7 @@ const close = () => {
 }
 
 // shared by the preview warning and the confirmation step
-.duplicate-ueis {
+.duplicate-ueis > p {
   color: var(--p-orange-600);
-
-  ul {
-    max-height: 10em;
-    overflow-y: auto;
-    margin: 0 0 1em;
-  }
 }
 </style>

@@ -189,9 +189,9 @@ public class EventConfEventDaoIT implements InitializingBean {
 
     @Test
     @Transactional
-    public void testFindUeiAndSourceNames() {
-        final String sharedUei = "uei.opennms.org/test/findUeiAndSourceNames/shared";
-        final String singleUei = "uei.opennms.org/test/findUeiAndSourceNames/single";
+    public void testFindUeiSources() {
+        final String sharedUei = "uei.opennms.org/test/findUeiSources/shared";
+        final String singleUei = "uei.opennms.org/test/findUeiSources/single";
         insertEvent(sharedUei, "Shared", "Defined by two sources", "Normal");
         insertEvent(singleUei, "Single", "Defined by one source", "Normal");
 
@@ -213,21 +213,22 @@ public class EventConfEventDaoIT implements InitializingBean {
         duplicate.setSource(other);
         duplicate.setSeverity("Normal");
         duplicate.setEventOrder(1);
-        duplicate.setEnabled(true);
+        // the event's own flag is reported, not the source's
+        duplicate.setEnabled(false);
         duplicate.setCreatedTime(new Date());
         duplicate.setLastModified(new Date());
         duplicate.setModifiedBy("JUnitTest");
         m_eventDao.saveOrUpdate(duplicate);
         m_eventDao.flush();
 
-        final List<Object[]> rows = m_eventDao.findUeiAndSourceNames(
-                List.of(sharedUei, singleUei, "uei.opennms.org/test/findUeiAndSourceNames/missing"));
+        final List<Object[]> rows = m_eventDao.findUeiSources(
+                List.of(sharedUei, singleUei, "uei.opennms.org/test/findUeiSources/missing"));
         assertEquals(3, rows.size());
-        assertEquals(List.of(sharedUei, "other-source"), List.of(rows.get(0)));
-        assertEquals(List.of(sharedUei, "test-source"), List.of(rows.get(1)));
-        assertEquals(List.of(singleUei, "test-source"), List.of(rows.get(2)));
+        assertEquals(List.of(sharedUei, "other-source", false), List.of(rows.get(0)));
+        assertEquals(List.of(sharedUei, "test-source", true), List.of(rows.get(1)));
+        assertEquals(List.of(singleUei, "test-source", true), List.of(rows.get(2)));
 
-        assertTrue(m_eventDao.findUeiAndSourceNames(List.of()).isEmpty());
+        assertTrue(m_eventDao.findUeiSources(List.of()).isEmpty());
     }
 
     @Test

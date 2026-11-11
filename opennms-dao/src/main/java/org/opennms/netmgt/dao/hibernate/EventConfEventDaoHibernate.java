@@ -68,12 +68,12 @@ public class EventConfEventDaoHibernate
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Object[]> findUeiAndSourceNames(Collection<String> ueis) {
+    public List<Object[]> findUeiSources(Collection<String> ueis) {
         if (ueis == null || ueis.isEmpty()) {
             return Collections.emptyList();
         }
         return getHibernateTemplate().execute(session ->
-                session.createQuery("select e.uei, s.name from EventConfEvent e join e.source s "
+                session.createQuery("select e.uei, s.name, e.enabled from EventConfEvent e join e.source s "
                                 + "where e.uei in (:ueis) order by e.uei asc, s.fileOrder desc")
                         .setParameterList("ueis", ueis)
                         .list());

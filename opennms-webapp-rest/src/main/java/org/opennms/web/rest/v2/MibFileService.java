@@ -31,6 +31,7 @@ import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.model.mibcompiler.MibCompileResultDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibDataCollectionPreviewDto;
+import org.opennms.web.rest.v2.model.mibcompiler.MibEventSourceDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibEventsPreviewDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibFileDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibGraphTemplatesDto;
@@ -261,16 +262,20 @@ public class MibFileService {
      * Looks up which of the generated UEIs other event sources already define. The target source
      * is left out: saving replaces it wholesale, and the UI asks for consent to that separately.
      */
-    private Map<String, List<String>> findExistingUeis(Events events, String targetSourceName) {
-        final Map<String, List<String>> existing = new LinkedHashMap<>();
+    private Map<String, List<MibEventSourceDto>> findExistingUeis(Events events, String targetSourceName) {
+        final Map<String, List<MibEventSourceDto>> existing = new LinkedHashMap<>();
         if (eventConfPersistenceService == null || events.getEvents().isEmpty()) {
             return existing;
         }
         final Set<String> ueis = new LinkedHashSet<>();
         events.getEvents().forEach(event -> ueis.add(event.getUei()));
-        eventConfPersistenceService.findSourceNamesByUei(ueis).forEach((uei, sources) -> {
-            final List<String> others = new ArrayList<>(sources);
-            others.remove(targetSourceName);
+        eventConfPersistenceService.findSourcesByUei(ueis).forEach((uei, sources) -> {
+            final List<MibEventSourceDto> others = new ArrayList<>();
+            sources.forEach((name, enabled) -> {
+                if (!name.equals(targetSourceName)) {
+                    others.add(new MibEventSourceDto(name, enabled));
+                }
+            });
             if (!others.isEmpty()) {
                 existing.put(uei, others);
             }

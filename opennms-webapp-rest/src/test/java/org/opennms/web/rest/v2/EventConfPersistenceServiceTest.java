@@ -32,7 +32,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -104,6 +106,28 @@ public class EventConfPersistenceServiceTest {
 
         verify(eventConfSourceDao, never()).findByName(any());
         verify(eventConfSourceDao, never()).lockForUpdate(anyLong());
+    }
+
+    @Test
+    public void groupsUeiSourcesAndCountsASourceEnabledWhenOneOfItsDefinitionsIs() {
+        // rows come in UEI, then evaluation order; a source can define a UEI more than once
+        when(eventConfEventDao.findUeiSources(List.of(KNOWN_UEI, NEW_UEI))).thenReturn(List.of(
+                new Object[] {KNOWN_UEI, "first.events", false},
+                new Object[] {KNOWN_UEI, "first.events", true},
+                new Object[] {KNOWN_UEI, "second.events", false},
+                new Object[] {NEW_UEI, "second.events", true}));
+
+        final Map<String, Boolean> known = new LinkedHashMap<>();
+        known.put("first.events", true);
+        known.put("second.events", false);
+        final Map<String, Map<String, Boolean>> expected = new LinkedHashMap<>();
+        expected.put(KNOWN_UEI, known);
+        expected.put(NEW_UEI, Map.of("second.events", true));
+
+        final Map<String, Map<String, Boolean>> result = service.findSourcesByUei(List.of(KNOWN_UEI, NEW_UEI));
+        assertEquals(expected, result);
+        // evaluation order is kept
+        assertEquals(List.of("first.events", "second.events"), List.copyOf(result.get(KNOWN_UEI).keySet()));
     }
 
     private static Event event(final String uei) {

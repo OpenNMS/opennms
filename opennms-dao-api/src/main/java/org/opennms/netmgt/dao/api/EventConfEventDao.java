@@ -39,10 +39,11 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
     List<EventConfEvent> findByUeiAndSourceId(String uei, Long sourceId);
 
     /**
-     * Every event, in any source, whose UEI is in the given set, as {@code [uei, sourceName]} rows
-     * ordered by UEI, then source evaluation order (first evaluated first). An empty set yields an empty list.
+     * Every event, in any source, whose UEI is in the given set, as {@code [uei, sourceName, enabled]} rows
+     * ordered by UEI, then source evaluation order (first evaluated first). {@code enabled} is the event's own
+     * flag, the one that decides whether the event is loaded. An empty set yields an empty list.
      */
-    List<Object[]> findUeiAndSourceNames(Collection<String> ueis);
+    List<Object[]> findUeiSources(Collection<String> ueis);
 
     int countBySourceId(Long sourceId);
 

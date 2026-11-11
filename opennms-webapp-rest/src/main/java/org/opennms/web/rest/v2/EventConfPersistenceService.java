@@ -193,17 +193,17 @@ public class EventConfPersistenceService {
     }
 
     /**
-     * Maps each of the given UEIs that is already defined to the names of the sources that define it,
-     * in evaluation order (first evaluated first). UEIs that no source defines are left out.
+     * Maps each of the given UEIs that is already defined to the sources that define it, in evaluation
+     * order (first evaluated first). Each source maps to whether it has an enabled definition of the UEI:
+     * only enabled events are loaded, whatever the source's own flag says. UEIs that no source defines are left out.
      */
     @Transactional(readOnly = true)
-    public Map<String, List<String>> findSourceNamesByUei(final Collection<String> ueis) {
-        final Map<String, List<String>> result = new LinkedHashMap<>();
-        for (final Object[] row : eventConfEventDao.findUeiAndSourceNames(ueis)) {
-            final List<String> sources = result.computeIfAbsent((String) row[0], uei -> new ArrayList<>());
-            if (!sources.contains((String) row[1])) {
-                sources.add((String) row[1]);
-            }
+    public Map<String, Map<String, Boolean>> findSourcesByUei(final Collection<String> ueis) {
+        final Map<String, Map<String, Boolean>> result = new LinkedHashMap<>();
+        for (final Object[] row : eventConfEventDao.findUeiSources(ueis)) {
+            // a source can define the UEI more than once; one enabled definition is enough
+            result.computeIfAbsent((String) row[0], uei -> new LinkedHashMap<>())
+                    .merge((String) row[1], Boolean.TRUE.equals(row[2]), Boolean::logicalOr);
         }
         return result;
     }

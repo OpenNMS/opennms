@@ -30,6 +30,7 @@ import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.model.mibcompiler.MibCompileResultDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibDataCollectionPreviewDto;
+import org.opennms.web.rest.v2.model.mibcompiler.MibEventSourceDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibEventsPreviewDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibFileDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibGraphTemplatesDto;
@@ -247,12 +248,17 @@ public class MibFileServiceTest {
     public void testGenerateEventsReportsUeisDefinedByOtherSources() throws Exception {
         compileIfMib();
         final EventConfPersistenceService persistence = mock(EventConfPersistenceService.class);
-        // the first generated UEI is defined by the target source and another one; the second only by the target
-        when(persistence.findSourceNamesByUei(anyCollection())).thenAnswer(invocation -> {
+        // the first generated UEI is defined by the target source and two others, one of them disabled;
+        // the second only by the target
+        when(persistence.findSourcesByUei(anyCollection())).thenAnswer(invocation -> {
             final List<String> ueis = List.copyOf(invocation.<Collection<String>>getArgument(0));
-            final Map<String, List<String>> found = new LinkedHashMap<>();
-            found.put(ueis.get(0), List.of("IF-MIB.events", "acme.events"));
-            found.put(ueis.get(1), List.of("IF-MIB.events"));
+            final Map<String, Boolean> firstSources = new LinkedHashMap<>();
+            firstSources.put("IF-MIB.events", true);
+            firstSources.put("acme.events", true);
+            firstSources.put("old.events", false);
+            final Map<String, Map<String, Boolean>> found = new LinkedHashMap<>();
+            found.put(ueis.get(0), firstSources);
+            found.put(ueis.get(1), Map.of("IF-MIB.events", true));
             return found;
         });
         service.setEventConfPersistenceService(persistence);
@@ -261,7 +267,8 @@ public class MibFileServiceTest {
         assertTrue(result.isSuccess());
         final Events events = JaxbUtils.unmarshal(Events.class, result.getEventsXml());
         final String firstUei = events.getEvents().get(0).getUei();
-        assertEquals(Map.of(firstUei, List.of("acme.events")), result.getExistingUeis());
+        assertEquals(Map.of(firstUei, List.of(new MibEventSourceDto("acme.events", true), new MibEventSourceDto("old.events", false))),
+                result.getExistingUeis());
     }
 
     @Test
