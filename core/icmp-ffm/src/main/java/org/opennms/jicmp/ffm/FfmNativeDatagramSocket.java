@@ -211,7 +211,7 @@ public final class FfmNativeDatagramSocket extends NativeDatagramSocket {
     public void close() {
         final int socket = m_sock;
         m_sock = -1;
-        if (socket > 0) {
+        if (socket >= 0) {
             closeQuietly(Libc.get(), socket);
         }
     }
