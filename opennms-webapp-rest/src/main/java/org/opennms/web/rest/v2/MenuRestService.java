@@ -98,7 +98,7 @@ public class MenuRestService {
                       "displayAddNodeButton": false,
                       "sideMenuInitialExpand": false,
                       "copyrightDates": "2002-2026",
-                      "version": "36.0.6",
+                      "version": "36.0.7-SNAPSHOT",
                       "product": "horizon",
                       "docsVersion": "36",
                       "menus": [
