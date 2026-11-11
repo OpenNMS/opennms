@@ -337,8 +337,8 @@
         </p>
 
 
-        <p><b>Manage SNMP Collections and Data Collection Groups</b>: Manage SNMP Collections and the content
-            of the files for data collection groups.</p>
+        <p><b>Manage SNMP Data Collection Config</b>: Manage the SNMP collection sources, which hold the data
+            collection groups, and the collection profiles that use them.</p>
 
         <p><b>Configure SNMP Data Collection per Interface</b>: This interface will allow you
             to configure which IP and non-IP interfaces are used in SNMP Data Collection.
