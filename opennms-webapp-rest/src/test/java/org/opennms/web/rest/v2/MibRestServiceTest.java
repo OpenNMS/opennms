@@ -148,12 +148,17 @@ public class MibRestServiceTest {
         Files.copy(new File(MIB_FIXTURES, "IF-MIB.txt").toPath(), new File(compiledDir, "IF-MIB.mib").toPath());
 
         // without an event configuration to check against, nothing is defined elsewhere
-        final Response ok = restService.findExistingUeis("IF-MIB.mib", List.of("uei.opennms.org/traps/IF-MIB/linkDown"));
+        final String eventsXml = "<events xmlns=\"http://xmlns.opennms.org/xsd/eventconf\"><event>"
+                + "<uei>uei.opennms.org/traps/IF-MIB/linkDown</uei><event-label>linkDown</event-label>"
+                + "<descr>d</descr><logmsg dest=\"logndisplay\">m</logmsg><severity>Indeterminate</severity>"
+                + "</event></events>";
+        final Response ok = restService.findExistingUeis("IF-MIB.mib", eventsXml);
         assertEquals(200, ok.getStatus());
         assertEquals(Map.of(), ok.getEntity());
 
         assertEquals(400, restService.findExistingUeis("IF-MIB.mib", null).getStatus());
-        assertEquals(404, restService.findExistingUeis("NO-SUCH.mib", List.of("uei.opennms.org/x")).getStatus());
+        assertEquals(400, restService.findExistingUeis("IF-MIB.mib", "not xml").getStatus());
+        assertEquals(404, restService.findExistingUeis("NO-SUCH.mib", eventsXml).getStatus());
     }
 
     @Test

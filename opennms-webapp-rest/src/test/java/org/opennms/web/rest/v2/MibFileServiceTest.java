@@ -343,9 +343,9 @@ public class MibFileServiceTest {
         when(persistence.findSourcesByUei(anyCollection())).thenReturn(found);
         service.setEventConfPersistenceService(persistence);
 
-        // blank entries are dropped, the rest is trimmed and de-duplicated
+        // blank UEIs are dropped, the rest is trimmed and de-duplicated
         final Map<String, List<MibEventSourceDto>> result = service.findExistingUeis("IF-MIB.mib",
-                List.of(" uei.opennms.org/edited ", "uei.opennms.org/own", "", "uei.opennms.org/edited"));
+                eventsXml(" uei.opennms.org/edited ", "uei.opennms.org/own", " ", "uei.opennms.org/edited"));
 
         // the target source, named after the MIB module, is left out
         assertEquals(Map.of("uei.opennms.org/edited", List.of(new MibEventSourceDto("acme.events", false))), result);
@@ -356,12 +356,35 @@ public class MibFileServiceTest {
     public void testFindExistingUeisRejectsInvalidRequests() throws Exception {
         compileIfMib();
         assertThrows(IllegalArgumentException.class, () -> service.findExistingUeis("IF-MIB.mib", null));
+        assertThrows(IllegalArgumentException.class, () -> service.findExistingUeis("IF-MIB.mib", " "));
+        assertThrows(IllegalArgumentException.class, () -> service.findExistingUeis("IF-MIB.mib", "<events><event>"));
+        // an events document never needs a DOCTYPE, so one is refused (no entity expansion)
+        assertThrows(IllegalArgumentException.class, () -> service.findExistingUeis("IF-MIB.mib",
+                "<!DOCTYPE events [<!ENTITY x \"uei.opennms.org/x\">]><events xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">"
+                        + "<event><uei>&x;</uei></event></events>"));
         final List<String> tooMany = new ArrayList<>();
         for (int i = 0; i <= MibFileService.MAX_UEIS_TO_CHECK; i++) {
             tooMany.add("uei.opennms.org/" + i);
         }
-        assertThrows(IllegalArgumentException.class, () -> service.findExistingUeis("IF-MIB.mib", tooMany));
-        assertThrows(FileNotFoundException.class, () -> service.findExistingUeis("NO-SUCH.mib", List.of("uei.opennms.org/x")));
+        assertThrows(IllegalArgumentException.class,
+                () -> service.findExistingUeis("IF-MIB.mib", eventsXml(tooMany.toArray(new String[0]))));
+        assertThrows(FileNotFoundException.class, () -> service.findExistingUeis("NO-SUCH.mib", eventsXml("uei.opennms.org/x")));
+    }
+
+    private static String eventsXml(String... ueis) {
+        final Events events = new Events();
+        for (final String uei : ueis) {
+            final org.opennms.netmgt.xml.eventconf.Event event = new org.opennms.netmgt.xml.eventconf.Event();
+            event.setUei(uei);
+            event.setEventLabel("label");
+            event.setDescr("descr");
+            event.setSeverity("Indeterminate");
+            final org.opennms.netmgt.xml.eventconf.Logmsg logmsg = new org.opennms.netmgt.xml.eventconf.Logmsg();
+            logmsg.setContent("msg");
+            event.setLogmsg(logmsg);
+            events.addEvent(event);
+        }
+        return JaxbUtils.marshal(events);
     }
 
     @Test

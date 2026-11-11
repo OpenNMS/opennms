@@ -61,7 +61,6 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -263,28 +262,52 @@ public class MibFileService {
     }
 
     /**
-     * Checks the given UEIs, typically those of the edited events XML right before it is saved, against
-     * the event configuration: the preview's {@code existingUeis} only covers the generated UEIs as they
-     * were when the preview was made. The source the events will be saved as is left out, as in the preview.
+     * Checks the events XML, typically the edited XML right before it is saved, against the event
+     * configuration: the preview's {@code existingUeis} only covers the generated events as they were when
+     * the preview was made. The source the events will be saved as is left out, as in the preview.
+     * <p>
+     * The whole document is taken, not only its UEIs, so that a later check of the trap masks can use the
+     * same request.
      *
      * @param name the compiled MIB the events were generated from; it names the target source
-     * @param ueis the UEIs to check, at most {@link #MAX_UEIS_TO_CHECK}
+     * @param eventsXml the events document, at most {@link #MAX_MIB_FILE_SIZE} characters and
+     *                  {@link #MAX_UEIS_TO_CHECK} distinct UEIs
      */
-    public Map<String, List<MibEventSourceDto>> findExistingUeis(String name, Collection<String> ueis) throws IOException {
-        if (ueis == null) {
-            throw new IllegalArgumentException("A list of UEIs is required.");
-        }
-        if (ueis.size() > MAX_UEIS_TO_CHECK) {
-            throw new IllegalArgumentException("At most " + MAX_UEIS_TO_CHECK + " UEIs can be checked at once.");
-        }
+    public Map<String, List<MibEventSourceDto>> findExistingUeis(String name, String eventsXml) throws IOException {
+        final Set<String> ueis = eventUeis(eventsXml);
         final File mibFile = existingFile(COMPILED, name);
         final MibParser parser = createParser();
         if (!parser.parseMib(mibFile)) {
             throw new IOException("Failed to parse compiled MIB " + name + ": " + parser.getFormattedErrors());
         }
-        final Set<String> checked = new LinkedHashSet<>();
-        ueis.stream().filter(uei -> uei != null && !uei.isBlank()).map(String::trim).forEach(checked::add);
-        return findExistingUeis(checked, eventsSourceName(parser.getMibName()));
+        return findExistingUeis(ueis, eventsSourceName(parser.getMibName()));
+    }
+
+    /** The distinct, trimmed, non-blank UEIs of an events document; rejects a missing, oversized or invalid one. */
+    private static Set<String> eventUeis(String eventsXml) {
+        if (eventsXml == null || eventsXml.isBlank()) {
+            throw new IllegalArgumentException("An events XML document is required.");
+        }
+        if (eventsXml.length() > MAX_MIB_FILE_SIZE) {
+            throw new IllegalArgumentException("The events XML exceeds " + MAX_MIB_FILE_SIZE + " characters.");
+        }
+        final Events events;
+        try {
+            // no DOCTYPE: an events document does not need one, and it blocks entity expansion
+            events = JaxbUtils.unmarshal(Events.class, eventsXml, false, true);
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("The events XML is not valid: " + e.getMessage(), e);
+        }
+        final Set<String> ueis = new LinkedHashSet<>();
+        events.getEvents().stream()
+                .map(event -> event.getUei())
+                .filter(uei -> uei != null && !uei.isBlank())
+                .map(String::trim)
+                .forEach(ueis::add);
+        if (ueis.size() > MAX_UEIS_TO_CHECK) {
+            throw new IllegalArgumentException("At most " + MAX_UEIS_TO_CHECK + " UEIs can be checked at once.");
+        }
+        return ueis;
     }
 
     /** The source the UI saves a MIB's events as: the suggested file name without its .xml suffix. */

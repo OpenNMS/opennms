@@ -336,10 +336,9 @@ const save = async () => {
   const requestId = requestSeq.value
   isLoading.value = true
   try {
-    const ueis = [...(currentUeis.value ?? new Set(Object.keys(existingUeis.value)))]
     const [sources, existing] = await Promise.all([
       getOrderedEventConfigSources(),
-      findExistingUeis(props.fileName, ueis)
+      findExistingUeis(props.fileName, xml)
     ])
     if (requestId !== requestSeq.value) {
       return

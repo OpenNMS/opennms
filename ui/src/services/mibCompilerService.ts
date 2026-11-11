@@ -78,13 +78,14 @@ export const generateEvents = async (name: string, ueiBase?: string): Promise<Mi
 }
 
 /**
- * Checks UEIs, typically those of the edited events XML right before it is saved, against the event
+ * Checks an events XML document, typically the edited one right before it is saved, against the event
  * configuration. Returns the same map as the preview's `existingUeis`; the target source is left out.
  */
-export const findExistingUeis = async (name: string, ueis: string[]): Promise<Record<string, MibEventSource[]>> => {
+export const findExistingUeis = async (name: string, eventsXml: string): Promise<Record<string, MibEventSource[]>> => {
   const response = await v2.post<Record<string, MibEventSource[]>>(
     `${endpoint}/compiled/${encodeURIComponent(name)}/events/existing-ueis`,
-    ueis
+    eventsXml,
+    { headers: { 'Content-Type': 'application/xml' }}
   )
   return response.data
 }

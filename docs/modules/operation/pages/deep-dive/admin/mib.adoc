@@ -97,6 +97,12 @@ If you enable a disabled definition again, these rules apply to it.
 
 Before the save, a confirmation lists the UEIs in each of these groups.
 The save checks the UEIs of the edited XML again, so the confirmation also shows duplicates that your edits add.
+
+NOTE: The check compares only UEIs.
+Trap matching uses the mask (enterprise ID, generic type, and specific type), not the UEI.
+An existing definition for the same trap with a different UEI is not reported, for example from a vendor event source with its own UEI base.
+The new source still receives that trap if it is evaluated first.
+If a vendor event source already covers the MIB, review its definitions on the xref:deep-dive/events/event-configuration.adoc[event configuration] page before you save.
 To continue, click *Save Anyway* or *Replace Events*.
 To go back to the XML, click *Back*.
 

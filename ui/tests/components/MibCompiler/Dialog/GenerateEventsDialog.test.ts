@@ -335,7 +335,8 @@ describe('GenerateEventsDialog', () => {
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()
 
-    expect(mockFindExistingUeis).toHaveBeenCalledWith('IF-MIB.mib', ['uei.opennms.org/vendor/acme/linkDown'])
+    expect(mockFindExistingUeis).toHaveBeenCalledWith('IF-MIB.mib',
+      '<events><event><uei>uei.opennms.org/vendor/acme/linkDown</uei></event></events>')
     expect(mockUploadEventConfigFiles).not.toHaveBeenCalled()
     expect(rowsOf(wrapper.find('[data-test="confirm-overridden-ueis"]')))
       .toEqual([['uei.opennms.org/vendor/acme/linkDown', 'acme.events']])
