@@ -91,7 +91,11 @@ Graph templates are written to `etc/snmp-graph.properties.d/`.
 The legacy Vaadin MIB compiler (`admin/mibCompiler.jsp`) has been removed, together with the `vaadin-snmp-events-and-metrics` Karaf feature.
 That feature also held the unlinked Vaadin event and SNMP collection editors (`admin/manageEvents.jsp`, `admin/manageSnmpCollections.jsp`), which edited XML files that now live in the database.
 Use the *Manage Event Configurations* and *Manage SNMP Data Collection Config* pages instead.
-Before upgrading, remove `vaadin-snmp-events-and-metrics` from `featuresBoot` in `etc/org.apache.karaf.features.cfg` and from any file under `etc/featuresBoot.d/`.
+Before upgrading, remove `vaadin-snmp-events-and-metrics` from the Karaf boot features:
+
+* In `featuresBoot` in `etc/org.apache.karaf.features.cfg`, a stale entry is skipped at startup, but remove it to keep the file current.
+* In a file under `etc/featuresBoot.d/`, a stale entry stops every feature listed in that directory from being installed, for example plugins and the Kafka producer.
+{page-component-title} still starts, but the Karaf extender health check reports a failure, and `karaf.log` contains `No matching features for vaadin-snmp-events-and-metrics/0.0.0`.
 
 === Snmp Config file `snmp-config.xml` moved to DB with new UI
 The contents of `snmp-config.xml` are migrated into the database during the upgrade process,
