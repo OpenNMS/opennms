@@ -165,88 +165,9 @@ See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-fil
 
 === Users, groups and roles moved to the DB
 {page-component-title} now stores users, groups, on-call roles and custom security roles in the database.
-The upgrade copies `users.xml`, `groups.xml` and `security-roles.properties` into the database and then moves the original files to `etc_archive/`.
-The files are not read again, and editing them has no effect.
-{page-component-title} no longer ships `users.xml` and `groups.xml`.
-A database that later has no user data gets the default `admin` user with the password `admin`, the `rtc` user and the `Admin` group, not the archived data.
-The data now lives in the database: manage it through the pages and the REST APIs.
-The `org.opennms.usermgmt.store` property no longer exists: the database is the only store.
+The upgrade copies `users.xml`, `groups.xml` and `security-roles.properties` into the database and moves the files to `etc_archive`; new pages replace the JSP pages for users, groups and on-call roles, and the v1 `/rest/users` and `/rest/groups` APIs are deprecated.
 
-The JSP pages for users, groups and on-call roles are removed, and their addresses are not redirected.
-Click *Configure Users*, *Configure Groups* or *Configure On-Call Roles* on the Admin page, or use the User Management menu, to open the new pages.
-The on-call schedule page for users who are not admins (`/opennms/roles`), the page where a user changes their own password, and the page that asks for a new password when `admin` still has the password `admin` stay as they are.
-
-*RPM upgrades:* the package no longer contains `users.xml` and `groups.xml`.
-If you changed one of them, the upgrade renames it to `users.xml.rpmsave` or `groups.xml.rpmsave`.
-Do not delete these files: `install -dis` copies them into the database and moves them to `etc_archive/`.
-{page-component-title} does not start while `.rpmsave` files remain in `etc`, which happens when the installer has not run or has failed.
-If you did not change a file, the upgrade deletes it, and the installer uses the former default for it: the `admin` and `rtc` users, and the `Admin` group with `admin` as its member.
-
-*Containers:* files that come from the `etc` overlay stay in the overlay.
-Files that are only in the configuration volume (`etc`) are moved out of it to `etc_archive`, which is not a volume, so they are lost when the container is replaced.
-Copy them out of the container, or mount `etc_archive`, before you replace the container if you need them.
-If an overlay copies `users.xml` or `groups.xml` into `etc` again, the installer recognizes it as already archived and removes it.
-
-If you run `install -R` on a new installation or an upgrade, it sets the password of `admin` after the upgrade tasks, in the same run.
-See xref:deployment:core/admin-password-reset.adoc[Reset the admin password].
-
-Users must not be named `.`, `..`, `item` or `available-roles`, and groups must not be named `.`, `..`, `item` or `available-categories`.
-If `users.xml` or `groups.xml` has one of these names, the upgrade copies none of the users and groups, and the install log names the entries.
-Rename them in the files, and wherever the files refer to them (group members, on-call roles, destination paths in `notifications.xml`), then run the installer again.
-
-An on-call role whose supervisor is not a user (for example, a deleted user) is copied without a supervisor, and the install log names it.
-A role without a supervisor sends no notifications when no one is scheduled.
-Set a supervisor on the On-Call Roles page if the role needs one.
-
-If the users and groups cannot be copied, for this or any other reason, the upgrade fails: the installer ends with "UPGRADE FAILED" and an error status, and {page-component-title} does not start until the installer has run again without the failure.
-The same happens when the installer runs while {page-component-title} is still running and the users and groups have not been copied yet: the copy needs {page-component-title} to be stopped.
-The running {page-component-title} keeps running, but once it stops, it does not start again until then, also not when a service manager such as systemd restarts it.
-Stop {page-component-title}, then run the installer again.
-This way {page-component-title} never starts without users, where no one could log in.
-
-New REST v2 APIs manage them: xref:development:rest/users_v2.adoc[Users (v2)], xref:development:rest/groups_v2.adoc[Groups (v2)], xref:development:rest/security_roles.adoc[Security Roles] and xref:development:rest/oncall_roles.adoc[On-Call Roles].
-
-The v1 REST APIs `/rest/users` and `/rest/groups` are deprecated in Horizon 37 and will be removed in Horizon 38.
-Use `/api/v2/users` and `/api/v2/groups` instead, and `GET /rest/whoami` instead of `GET /rest/users/whoami`.
-Until they are removed, the v1 APIs apply the same checks as the v2 APIs:
-
-* Their write operations need `ROLE_ADMIN`, like the v2 APIs, and answer `403` without it.
-  This is a change for `/rest/groups`, which an account with only `ROLE_REST` could change before, and for the group authorizations of the categories API (`PUT` and `DELETE` on `/rest/categories/\{category}/groups/\{group}`, and `POST /rest/categories` with `authorizedGroups`).
-  `/rest/users` answered `400` to a caller without `ROLE_ADMIN` before.
-  Update any integration that used a `ROLE_REST` account to change users or groups to use a `ROLE_ADMIN` account.
-* They accept a password only in plain text with `hashPassword=true`, and always store it hashed and salted.
-  A password hash is no longer accepted (`400`).
-  A `POST` that sends a user's stored password back unchanged, as `GET` returns it, keeps it.
-  Update any integration that sent a password hash.
-* A form `PUT` accepts only the documented keys, spelled exactly; any other key is refused (`400`).
-* They refuse to rename a user or group (`400`; use the v2 rename endpoints).
-* They validate new user IDs and group names, comments, value lengths, duty schedules, security roles and group members (`400`).
-* They refuse to delete `admin`, `rtc` and the `Admin` group (`400`).
-* They refuse to delete the last `ROLE_ADMIN` holder, to remove its `ROLE_ADMIN` role, and to delete a user or group that an on-call role or a notification destination path depends on (`409`).
-  The `admin` user must keep `ROLE_ADMIN` (`400`).
-* A stale save answers `409`.
-* A caller without `ROLE_ADMIN` sees `xxxxxxxx` in place of other users' password hashes, also in `/rest/groups/\{groupname}/users`.
-* A v1 group save keeps the duty schedules and default map of the stored group.
-
-{page-component-title} stores text as entered and HTML-encodes it only when it shows the text.
-
-The upgrade decodes HTML entities in full names and contact values once.
-It also decodes the contact values that earlier releases recorded for sent notifications, which the *Users Notified* table of a notification and the notification REST APIs show.
-Some stored text can therefore still show entities such as `&amp;`:
-
-* On-call role names that were created with the role pages between August 2022 and March 2023.
-  The role pages encoded their input in that period.
-  The upgrade does not decode role names, because destination paths refer to roles by name.
-* Full names and contact values that were encoded more than once.
-
-Edit these values to fix them.
-
-The destination path wizard used to HTML-encode path names when it saved them.
-It now stores path names as entered.
-A path name that an earlier release saved with an entity, for example `a&amp;b`, now shows the entity literally.
-To fix it, rename the path on the *Destination Paths* tab of the *Configure Notifications* page (`/opennms/ui/index.html#/notifications-config`).
-That rename also updates the event notifications that use the path.
-The destination path wizard does not: if you rename the path there, change each notification that uses it to the new name.
+See xref:operation:deep-dive/user-management/user-data-in-database.adoc[Users, Groups and Roles in the Database] for the upgrade steps and all changes.
 
 === ActiveMQ store and JVM temp directory moved out of the Karaf cache
 `java.io.tmpdir` moved from `$\{OPENNMS_HOME}/data/tmp` to `$\{OPENNMS_HOME}/tmp`, and the embedded ActiveMQ broker's on-disk store (`activemq.data`) moved from `$\{OPENNMS_HOME}/data/tmp/activemq` to `$\{OPENNMS_HOME}/var/activemq`.
