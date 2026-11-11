@@ -60,7 +60,7 @@
     "primevue": "^4.5.4",
     "rapidoc": "^9.3.8",
     "sass": "^1.75.0",
-    "sass-loader": "^14.1.1",
+    "sass-loader": "^17.1.0",
     "sigma": "^3.0.3",
     "splitpanes": "^3.1.5",
     "vite-svg-loader": "^4.0.0",
