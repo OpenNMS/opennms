@@ -51,8 +51,8 @@
       >
         <p>
           <strong>{{ duplicateUeis.length }}</strong> of these UEIs are already defined in other event sources.
-          Saving adds another definition for each of them. OpenNMS uses the definition from whichever
-          source it evaluates first, as set by the source order on the Event Configuration page.
+          OpenNMS uses only the definition from the source that it evaluates first.
+          Before the save, the dialog shows which definitions OpenNMS will use.
         </p>
         <ul>
           <li
@@ -80,15 +80,68 @@
       </p>
     </div>
 
-    <!-- Step 3 (conditional): the source exists, confirm the replacement -->
+    <!-- Step 3 (conditional): confirm the replacement of the source and the effect on duplicate UEIs -->
     <div
-      v-if="step === 'confirm-replace'"
+      v-if="step === 'confirm'"
       class="confirm-step"
-      data-test="confirm-replace"
+      data-test="confirm-save"
     >
-      <p>
+      <p
+        v-if="targetExists"
+        data-test="confirm-replace"
+      >
         An event source named <strong>{{ sourceName }}</strong> already exists in the database.
         Saving replaces all of its event definitions, including changes made after the source was created.
+      </p>
+      <div
+        v-if="overriddenUeis.length > 0"
+        class="duplicate-ueis"
+        data-test="confirm-overridden-ueis"
+      >
+        <p>
+          <template v-if="targetExists">
+            <strong>{{ sourceName }}</strong> is evaluated before the sources below,
+          </template>
+          <template v-else>
+            A new event source is evaluated before all existing sources,
+          </template>
+          so OpenNMS will no longer use their definitions of these
+          <strong>{{ overriddenUeis.length }}</strong> UEIs:
+        </p>
+        <ul>
+          <li
+            v-for="item in overriddenUeis"
+            :key="item.uei"
+          >
+            <code>{{ item.uei }}</code> in {{ item.sources.join(', ') }}
+          </li>
+        </ul>
+        <p>
+          The generated definitions have the severity Indeterminate and do not contain alarm data.
+          If an existing definition creates or clears alarms, these traps will no longer do that.
+        </p>
+      </div>
+      <div
+        v-if="shadowedUeis.length > 0"
+        class="duplicate-ueis"
+        data-test="confirm-shadowed-ueis"
+      >
+        <p>
+          Sources that are evaluated before <strong>{{ sourceName }}</strong> also define these
+          <strong>{{ shadowedUeis.length }}</strong> UEIs, so OpenNMS will continue to use those definitions
+          and will not use the new ones:
+        </p>
+        <ul>
+          <li
+            v-for="item in shadowedUeis"
+            :key="item.uei"
+          >
+            <code>{{ item.uei }}</code> in {{ item.sources.join(', ') }}
+          </li>
+        </ul>
+      </div>
+      <p>
+        To change the evaluation order, use the Event Configuration page after the save.
       </p>
     </div>
 
@@ -120,14 +173,14 @@
         @click="save"
       />
       <OnmsButton
-        v-if="step === 'confirm-replace'"
-        label="Replace Events"
+        v-if="step === 'confirm'"
+        :label="overriddenUeis.length > 0 ? 'Save Anyway' : 'Replace Events'"
         :disabled="isLoading"
-        data-test="replace-button"
+        data-test="confirm-save-button"
         @click="doSave"
       />
       <OnmsButton
-        v-if="step === 'confirm-replace'"
+        v-if="step === 'confirm'"
         label="Back"
         variant="outlined"
         :disabled="isLoading"
@@ -158,6 +211,7 @@ import FormField from '@/components/Common/FormField.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { getOrderedEventConfigSources, uploadEventConfigFiles } from '@/services/eventConfigService'
 import { generateEvents } from '@/services/mibCompilerService'
+import { EventConfigSource } from '@/types/eventConfig'
 import { MibEventsPreview } from '@/types/mibCompiler'
 import { getGeneralErrorMessage, isWellFormedXml } from '../mibFilesValidator'
 
@@ -175,12 +229,14 @@ const router = useRouter()
 const snackbar = useSnackbar()
 const ueiInputId = useId()
 
-const step = ref<'input' | 'preview' | 'confirm-replace' | 'done'>('input')
+const step = ref<'input' | 'preview' | 'confirm' | 'done'>('input')
 const isLoading = ref(false)
 const ueiBase = ref('')
 const preview = ref<MibEventsPreview | null>(null)
 const eventsXml = ref('')
 const validationError = ref('')
+// the sources in evaluation order (first entry evaluated first), read when the user saves
+const orderedSources = ref<EventConfigSource[]>([])
 
 const baseName = computed(() => props.fileName.replace(/\.[^.]+$/, ''))
 const sourceName = computed(() => (preview.value?.suggestedFileName ?? `${baseName.value}.events.xml`).replace(/\.xml$/, ''))
@@ -200,6 +256,38 @@ const duplicateUeis = computed(() =>
     .filter(([uei]) => currentUeis.value === null || currentUeis.value.has(uei))
     .map(([uei, sources]) => ({ uei, sources })))
 
+const targetExists = computed(() => orderedSources.value.some(source => source.name === sourceName.value))
+
+interface DuplicateUei {
+  uei: string
+  sources: string[]
+}
+
+// Splits the duplicates by evaluation order. A new source is evaluated before all existing ones; an
+// existing source keeps its position. Sources evaluated after the target lose their definition of the
+// UEI (overridden). If a source evaluated before the target defines it, that definition stays in use and the
+// new one is ignored (shadowed).
+const classifiedDuplicates = computed(() => {
+  const position = new Map(orderedSources.value.map((source, index) => [source.name, index]))
+  const targetPosition = position.get(sourceName.value) ?? -1
+  const overridden: DuplicateUei[] = []
+  const shadowed: DuplicateUei[] = []
+  for (const { uei, sources } of duplicateUeis.value) {
+    // a source that is not in the list any more (deleted after the preview) is no duplicate
+    const known = sources.filter(source => position.has(source))
+    const before = known.filter(source => (position.get(source) ?? 0) < targetPosition)
+    if (before.length > 0) {
+      shadowed.push({ uei, sources: before })
+    } else if (known.length > 0) {
+      overridden.push({ uei, sources: known })
+    }
+  }
+  return { overridden, shadowed }
+})
+
+const overriddenUeis = computed(() => classifiedDuplicates.value.overridden)
+const shadowedUeis = computed(() => classifiedDuplicates.value.shadowed)
+
 // a response that arrives after the dialog closed, or after it reopened for
 // another file, must not touch the current state
 const requestSeq = ref(0)
@@ -212,6 +300,7 @@ watch(() => props.visible, (visible) => {
     preview.value = null
     eventsXml.value = ''
     validationError.value = ''
+    orderedSources.value = []
     ueiBase.value = `uei.opennms.org/traps/${baseName.value}`
   }
 })
@@ -253,8 +342,8 @@ const save = async () => {
     validationError.value = 'The events XML is not well-formed. Fix it before saving.'
     return
   }
-  // the upload replaces an existing source wholesale, so an existing
-  // source needs the user's explicit consent first
+  // The upload replaces an existing source wholesale, and the new definitions can override the
+  // definitions of other sources for the same UEIs. Both need the user's explicit consent first.
   const requestId = requestSeq.value
   isLoading.value = true
   try {
@@ -262,9 +351,11 @@ const save = async () => {
     if (requestId !== requestSeq.value) {
       return
     }
-    if (sources.some(source => source.name === sourceName.value)) {
+    orderedSources.value = sources
+    // shadowed UEIs need an existing target, so they always come with targetExists
+    if (targetExists.value || overriddenUeis.value.length > 0) {
       isLoading.value = false
-      step.value = 'confirm-replace'
+      step.value = 'confirm'
       return
     }
   } catch (error: unknown) {
@@ -339,15 +430,16 @@ const close = () => {
   .no-traps {
     color: var(--p-orange-600);
   }
+}
 
-  .duplicate-ueis {
-    color: var(--p-orange-600);
+// shared by the preview warning and the confirmation step
+.duplicate-ueis {
+  color: var(--p-orange-600);
 
-    ul {
-      max-height: 10em;
-      overflow-y: auto;
-      margin: 0 0 1em;
-    }
+  ul {
+    max-height: 10em;
+    overflow-y: auto;
+    margin: 0 0 1em;
   }
 }
 </style>

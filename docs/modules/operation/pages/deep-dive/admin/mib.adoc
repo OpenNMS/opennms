@@ -70,15 +70,35 @@ The default is `uei.opennms.org/traps/<MIB module name>`.
 . Review the generated event definitions and edit the XML if needed.
 +
 If other event sources already define some of the generated UEIs, a warning lists those UEIs and the sources that define them.
-You can still save the events.
-When an event arrives, {page-component-title} uses the definition from the source that it evaluates first, as set by the source order on the xref:deep-dive/events/event-configuration.adoc[event configuration] page.
 . Click *Save Events*.
 +
 The events are stored in the database as the event source `<MIB module name>.events`.
 If that source already exists, you are asked to confirm that you want to replace all of its event definitions.
+If other event sources define some of the UEIs, you are asked to confirm the effect on their definitions (see <<mib-duplicate-ueis>>).
 . To fine-tune the events, click *Go to Event Configuration*.
 
 If you were getting unformatted events, they will now be formatted.
+
+[[mib-duplicate-ueis]]
+=== UEIs that other event sources define
+
+{page-component-title} uses only the definition from the event source that it evaluates first.
+The xref:deep-dive/events/event-configuration.adoc[event configuration] page sets the source order.
+
+* A new event source is evaluated before all existing sources.
+The new definitions replace the existing definitions of the same UEIs, and {page-component-title} no longer uses the existing ones.
+* An existing `<MIB module name>.events` source keeps its position when you replace it.
+The new definitions replace only the definitions of sources that are evaluated after it.
+Sources that are evaluated before it keep their definitions, and {page-component-title} does not use the new ones.
+
+Before the save, a confirmation lists the UEIs in each of these groups.
+To continue, click *Save Anyway* or *Replace Events*.
+To go back to the XML, click *Back*.
+
+IMPORTANT: The generated definitions have the severity `Indeterminate` and do not contain alarm data.
+If a replaced definition creates or clears alarms, the traps for that UEI no longer create or clear alarms after the save.
+To keep the existing behavior, remove those events from the XML before you save, or add the alarm data to them.
+You can also change the source order on the event configuration page after the save.
 
 [[mib-generate-data-collection]]
 == Generate data collection

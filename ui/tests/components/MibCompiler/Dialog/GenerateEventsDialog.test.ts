@@ -142,10 +142,115 @@ describe('GenerateEventsDialog', () => {
     expect(warning.exists()).toBe(true)
     expect(warning.text()).toContain('1 of these UEIs')
     expect(warning.text()).toContain('uei.opennms.org/traps/IF-MIB/linkDown in acme.events, vendor.events')
+  })
 
-    // the warning does not block saving
+  it('asks for confirmation before a new source overrides the definitions of other sources', async () => {
+    mockGenerateEvents.mockResolvedValue({
+      ...preview,
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': ['acme.events', 'vendor.events'] }
+    })
+    mockGetOrderedEventConfigSources.mockResolvedValue([{ name: 'acme.events' }, { name: 'vendor.events' }])
+    mockUploadEventConfigFiles.mockResolvedValue({ success: [{ file: 'IF-MIB.events' }], errors: [] })
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()
+
+    // nothing is uploaded until the user confirms
+    expect(mockUploadEventConfigFiles).not.toHaveBeenCalled()
+    expect(wrapper.find('[data-test="confirm-replace"]').exists()).toBe(false)
+    const overridden = wrapper.find('[data-test="confirm-overridden-ueis"]')
+    expect(overridden.text()).toContain('evaluated before all existing sources')
+    expect(overridden.text()).toContain('uei.opennms.org/traps/IF-MIB/linkDown in acme.events, vendor.events')
+    expect(overridden.text()).toContain('do not contain alarm data')
+    const confirmButton = wrapper.find('[data-test="confirm-save-button"]')
+    expect(confirmButton.text()).toBe('Save Anyway')
+
+    await confirmButton.trigger('click')
+    await flushPromises()
+    expect(mockUploadEventConfigFiles).toHaveBeenCalledTimes(1)
+    expect(wrapper.find('[data-test="events-saved"]').exists()).toBe(true)
+  })
+
+  it('returns to the preview from the duplicate confirmation', async () => {
+    mockGenerateEvents.mockResolvedValue({
+      ...preview,
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': ['acme.events'] }
+    })
+    mockGetOrderedEventConfigSources.mockResolvedValue([{ name: 'acme.events' }])
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-test="confirm-overridden-ueis"]').exists()).toBe(true)
+
+    await wrapper.find('[data-test="back-button"]').trigger('click')
+    expect(wrapper.find('[data-test="confirm-save"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="events-xml"]').exists()).toBe(true)
+    expect(mockUploadEventConfigFiles).not.toHaveBeenCalled()
+  })
+
+  it('splits duplicates by the position of an existing source', async () => {
+    mockGenerateEvents.mockResolvedValue({
+      ...preview,
+      eventsXml: '<events><event><uei>uei.opennms.org/traps/IF-MIB/linkDown</uei></event>'
+        + '<event><uei>uei.opennms.org/traps/IF-MIB/linkUp</uei></event></events>',
+      existingUeis: {
+        'uei.opennms.org/traps/IF-MIB/linkDown': ['early.events'],
+        'uei.opennms.org/traps/IF-MIB/linkUp': ['late.events']
+      }
+    })
+    // evaluation order: early.events, then the existing IF-MIB.events, then late.events
+    mockGetOrderedEventConfigSources.mockResolvedValue([
+      { name: 'early.events' }, { name: 'IF-MIB.events' }, { name: 'late.events' }
+    ])
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="confirm-replace"]').exists()).toBe(true)
+    const overridden = wrapper.find('[data-test="confirm-overridden-ueis"]')
+    expect(overridden.text()).toContain('IF-MIB.events is evaluated before the sources below')
+    expect(overridden.text()).toContain('uei.opennms.org/traps/IF-MIB/linkUp in late.events')
+    expect(overridden.text()).not.toContain('linkDown')
+    const shadowed = wrapper.find('[data-test="confirm-shadowed-ueis"]')
+    expect(shadowed.text()).toContain('uei.opennms.org/traps/IF-MIB/linkDown in early.events')
+    expect(shadowed.text()).not.toContain('linkUp')
+  })
+
+  it('only asks to replace when the duplicates are all evaluated first', async () => {
+    mockGenerateEvents.mockResolvedValue({
+      ...preview,
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': ['early.events'] }
+    })
+    mockGetOrderedEventConfigSources.mockResolvedValue([{ name: 'early.events' }, { name: 'IF-MIB.events' }])
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="confirm-overridden-ueis"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="confirm-shadowed-ueis"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="confirm-save-button"]').text()).toBe('Replace Events')
+  })
+
+  it('saves without confirmation when a duplicate source was deleted after the preview', async () => {
+    mockGenerateEvents.mockResolvedValue({
+      ...preview,
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': ['deleted.events'] }
+    })
+    mockUploadEventConfigFiles.mockResolvedValue({ success: [{ file: 'IF-MIB.events' }], errors: [] })
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+
     expect(mockUploadEventConfigFiles).toHaveBeenCalledTimes(1)
   })
 
@@ -204,7 +309,7 @@ describe('GenerateEventsDialog', () => {
     expect(mockUploadEventConfigFiles).not.toHaveBeenCalled()
     expect(wrapper.find('[data-test="confirm-replace"]').text()).toContain('IF-MIB.events')
 
-    await wrapper.find('[data-test="replace-button"]').trigger('click')
+    await wrapper.find('[data-test="confirm-save-button"]').trigger('click')
     await flushPromises()
     expect(mockUploadEventConfigFiles).toHaveBeenCalledTimes(1)
     expect(wrapper.find('[data-test="events-saved"]').exists()).toBe(true)
