@@ -91,6 +91,13 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- JdbcDataCollectionConfigRestService's config model and DAO; webapp-rest declares it as provided. -->
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>org.opennms.features.jdbc-collector</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
