@@ -411,7 +411,7 @@ component-library version the host is actually running.
 For the full plugin-developer walkthrough — the externals contract, the
 module contract (`window[extensionId]`, derived from the module URL's
 second-to-last path segment), the version handshake, and the dev harness
-(`VITE_EXAMPLE_PLUGIN=true pnpm dev`, then open `/example-plugin`) — see
+(`VITE_EXAMPLE_PLUGIN=true pnpm dev`, then open `/opennms/ui/#/example-plugin`) — see
 [`packages/onms-ui-example-plugin`](../onms-ui-example-plugin/README.md), a
 real externalized plugin built with the toolchain a third-party author would
 use.
