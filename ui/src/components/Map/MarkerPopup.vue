@@ -1,6 +1,6 @@
 <template>
   <LPopup :options="mapPopupOptions">
-    <h3>Node: <a :href="`${baseNodeUrl}${node.id}`" target="_blank">{{ node.label }}</a></h3>
+    <h3>Node: <a :href="router.resolve(nodeDetailsRoute(node.id)).href" target="_blank">{{ node.label }}</a></h3>
 
     <span class="larger-icon"><OnmsIcon :icon="Location" /></span>
     {{ latitude }}, {{ longitude }}
@@ -44,12 +44,15 @@ import { PropType, computed } from 'vue'
 import { OnmsIcon } from '@opennms/onms-ui'
 import Location from '@opennms/onms-ui/icons/action/Location.vue'
 import { LPopup } from '@vue-leaflet/vue-leaflet'
+import { useRouter } from 'vue-router'
 import { Node } from '@/types'
+import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
 import { mapPopupOptions } from './utils'
+
+const router = useRouter()
 
 const props = defineProps({
   baseHref: { type: String, required: true },
-  baseNodeUrl: { type: String, required: true },
   node: { type: Object as PropType<Node>, default: () => {
     return
   } },

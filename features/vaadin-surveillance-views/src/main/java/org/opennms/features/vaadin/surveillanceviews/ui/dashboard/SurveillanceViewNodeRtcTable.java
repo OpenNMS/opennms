@@ -32,6 +32,7 @@ import java.util.concurrent.ExecutionException;
 import org.opennms.features.topology.api.support.InfoWindow;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.web.api.ElementConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +103,7 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
                     public void buttonClick(Button.ClickEvent clickEvent) {
                         final URI currentLocation = getUI().getPage().getLocation();
                         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-                        final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + nodeRtc.getNode().getId();
+                        final String redirectFragment = contextRoot + "/" + ElementConstants.NODE_DETAILS_URI + nodeRtc.getNode().getId();
 
                         LOG.debug("node {} clicked, current location = {}, uri = {}", nodeRtc.getNode().getId(), currentLocation, redirectFragment);
 

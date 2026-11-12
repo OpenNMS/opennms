@@ -2,6 +2,67 @@
 
 = Changelog
 
+[[releasenotes-changelog-36.0.6]]
+
+== Release 36.0.6
+
+=== Bug
+
+* "Delete"-Button on service.jsp page disappeared in 36.0.5 (Issue https://issues.opennms.org/browse/NMS-20468[NMS-20468])
+* "Noon" in search doesn't function correctly (Issue https://issues.opennms.org/browse/NMS-7757[NMS-7757])
+* Improve input validation for ad-hoc graph rendering (Issue https://issues.opennms.org/browse/NMS-20518[NMS-20518])
+* Harden XML processing in the system report (Issue https://issues.opennms.org/browse/NMS-20521[NMS-20521])
+* Collectd does not collect data when a configured collector is not available (Issue https://issues.opennms.org/browse/NMS-20493[NMS-20493])
+* Config Manager REST API exposes SNMP credentials to non-admin roles (Issue https://issues.opennms.org/browse/NMS-20458[NMS-20458])
+* Docs: Daemon page gives incorrect `CORE_SERVICE_*_ENABLED` variable names (Issue https://issues.opennms.org/browse/NMS-20473[NMS-20473])
+* Error invoking scvcli in Horizon (Issue https://issues.opennms.org/browse/NMS-20450[NMS-20450])
+* Health probe never turns healthy when a daemon is disabled, because boot features need services that only that daemon provides (Issue https://issues.opennms.org/browse/NMS-20470[NMS-20470])
+* HeartbeatConsumerIT times out on Meridian CI because DirectoryWatcher floods test output (Issue https://issues.opennms.org/browse/NMS-20509[NMS-20509])
+* JaxbUtils marshalling methods handle Unicode inconsistently (Issue https://issues.opennms.org/browse/NMS-19814[NMS-19814])
+* Karaf does not register the plugin KAR feature repository again after a cache clean (Issue https://issues.opennms.org/browse/NMS-20472[NMS-20472])
+* MIB compiler reachable by non-admin users and writes files outside the datacollection directory (Issue https://issues.opennms.org/browse/NMS-20461[NMS-20461])
+* Make opennms-server package explicitly depend on jrrd2 (Issue https://issues.opennms.org/browse/NMS-20469[NMS-20469])
+* Non-admin users can read SNMP credentials through /api/v2/snmp-config.json (Issue https://issues.opennms.org/browse/NMS-20463[NMS-20463])
+* Not possible to enter numbers for instance in MIB Objects (Issue https://issues.opennms.org/browse/NMS-20454[NMS-20454])
+* Notifications aren't delivered if a destination-path has no users/targets (Issue https://issues.opennms.org/browse/NMS-9359[NMS-9359])
+* On-call role changes run on GET without a CSRF token (Issue https://issues.opennms.org/browse/NMS-20486[NMS-20486])
+* Pollerd: a failed outage insert permanently unschedules the service (Issue https://issues.opennms.org/browse/NMS-20426[NMS-20426])
+* Improve output encoding in web UI pages (Issue https://issues.opennms.org/browse/NMS-20481[NMS-20481])
+* SNMP data collection UI: Allow valid ifType and data type values, and keep values on edit (Issue https://issues.opennms.org/browse/NMS-20456[NMS-20456])
+* Improve input validation in the v1 REST API filters (Issue https://issues.opennms.org/browse/NMS-20460[NMS-20460])
+* Sentinel `health.sh` uses the Minion path (Issue https://issues.opennms.org/browse/NMS-20471[NMS-20471])
+* Smoke tests: core container randomly exits on startup when Telemetryd's UDP ports collide with ephemeral sockets (Issue https://issues.opennms.org/browse/NMS-20588[NMS-20588])
+* Stored AngularJS injection (Issue https://issues.opennms.org/browse/NMS-20485[NMS-20485])
+* Update at.yawk.lz4:lz4-java library (Issues https://issues.opennms.org/browse/NMS-20434[NMS-20434], https://issues.opennms.org/browse/NMS-20439[NMS-20439])
+* Update com.fasterxml.jackson.core:jackson-core library (Issue https://issues.opennms.org/browse/NMS-20437[NMS-20437])
+* Update com.fasterxml.jackson.core:jackson-databind library (Issue https://issues.opennms.org/browse/NMS-20438[NMS-20438])
+* Update libpng library (Issue https://issues.opennms.org/browse/NMS-20066[NMS-20066])
+* Update org.bouncycastle:bcprov-jdk18on library (Issue https://issues.opennms.org/browse/NMS-20401[NMS-20401])
+* Update org.jsoup:jsoup library (Issue https://issues.opennms.org/browse/NMS-20435[NMS-20435])
+* collectd never schedules an SNMP service rejected at import time for a null sysObjectId (Issue https://issues.opennms.org/browse/NMS-20432[NMS-20432])
+
+=== Enhancement
+
+* Implement backend for new UI for Surveillance Views (Issue https://issues.opennms.org/browse/NMS-20045[NMS-20045])
+* Karaf shell command to exercise Kafka Producer's metricFilter (Issue https://issues.opennms.org/browse/NMS-20455[NMS-20455])
+* KarafStartupMonitor delays startup by up to 5 s because it polls the service registry every 5 s (Issue https://issues.opennms.org/browse/NMS-20446[NMS-20446])
+* Let Vue UI pages and plugins hide the app chrome for full-screen views (Issue https://issues.opennms.org/browse/NMS-20488[NMS-20488])
+* Netty quiet period and poll interval add about 5.5 s to every Core stop (Issue https://issues.opennms.org/browse/NMS-20447[NMS-20447])
+* Skip javadoc generation in the CircleCI build job (Issue https://issues.opennms.org/browse/NMS-20495[NMS-20495])
+* Update the About/Help/Support Menu and pages (Issue https://issues.opennms.org/browse/NMS-20523[NMS-20523])
+* Upgrade JICMP/JICMP6 and RRD2 (Issue https://issues.opennms.org/browse/NMS-20355[NMS-20355])
+* Upgrade Testcontainers framework from 1.19.6 to 2.0.5 (Issue https://issues.opennms.org/browse/NMS-19108[NMS-19108])
+
+=== Epic
+
+* Remove dependency on confd (Issue https://issues.opennms.org/browse/NMS-19406[NMS-19406])
+
+=== Task
+
+* Core: Investigate if its possible to move away from Confd (Issue https://issues.opennms.org/browse/NMS-19753[NMS-19753])
+* Review `$sce.trustAsHtml` on Grafana endpoint verification response (Issue https://issues.opennms.org/browse/NMS-20257[NMS-20257])
+* Sentinel: Investigate if its possible to move away from Confd (Issue https://issues.opennms.org/browse/NMS-19640[NMS-19640])
+
 [[releasenotes-changelog-36.0.5]]
 
 == Release 36.0.5

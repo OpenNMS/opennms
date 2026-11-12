@@ -40,4 +40,18 @@ public interface MenuEntry {
      * @return The number of sub elements if this {@link MenuEntry} is a parent element. Otherwise an empty list or null.
      */
     List<MenuEntry> getEntries();
+
+    /**
+     * @return true if the entry links to an external site (outside of this application).
+     */
+    default boolean isExternalLink() {
+        return false;
+    }
+
+    /**
+     * @return the link target (e.g. "_blank") or null if none is defined.
+     */
+    default String getLinkTarget() {
+        return null;
+    }
 }

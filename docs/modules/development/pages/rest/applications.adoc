@@ -18,6 +18,9 @@ An application is represented by the `OnmsApplication` model: `id`, `name`, `mon
 | `/api/v2/applications/properties`              | Lists the searchable properties. Optional `q` filters the property list.
 | `/api/v2/applications/properties/\{propertyId}` | Lists the available values for a searchable property. Optional `q` and `limit`.
 | `/api/v2/applications/\{id}`                    | Fetches a single application by ID.
+| `/api/v2/applications/summaries`               | Lists every application ordered by name, with its number of member services and the names of its perspective locations. Produces `application/json`.
+| `/api/v2/applications/\{id}/members`            | Returns the member services (with node label, IP address and service name) and the perspective locations of one application, plus a `revision` that changes whenever the members change. Produces `application/json`.
+| `/api/v2/applications/service-candidates`      | Searches the monitored services an application can include. `search` matches the node label, IP address or service name, ignoring case. `limit` is at most 200 (50 by default); zero or less returns the maximum. The response has the matching services and their `totalCount`.
 
 |===
 
@@ -46,8 +49,20 @@ An application is represented by the `OnmsApplication` model: `id`, `name`, `mon
 | `/api/v2/applications`        | Bulk-updates the matching applications. Consumes `application/x-www-form-urlencoded`.
 | `/api/v2/applications/\{id}`  | Replaces a single application. Consumes `application/json` or `application/xml`.
 | `/api/v2/applications/\{id}`  | Updates individual properties of a single application. Consumes `application/x-www-form-urlencoded`.
+| `/api/v2/applications/\{id}/members` | Replaces the member services (`serviceIds`), the perspective locations (`perspectiveLocations`), or both. Consumes `application/json`. See <<Replacing the members>>.
 
 |===
+
+[[Replacing the members]]
+=== Replacing the members
+
+A list left out of the body keeps the current members of that kind.
+Nothing changes when any service or location is unknown: an unknown location returns `400` with a `text/plain` message, and services that no longer exist return `400` with a JSON body whose `missingServiceIds` lists them.
+
+To avoid overwriting a change someone else made meanwhile, send the `revision` returned by the members `GET`.
+When it no longer matches, the update is rejected with `409 Conflict`; without a `revision`, the update is not checked.
+
+An `applicationChanged` event is sent once the change is committed.
 
 == DELETEs (Removing Data)
 
@@ -94,4 +109,12 @@ curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/applications/1"
 [source,bash]
 ----
 curl -u admin:admin -X DELETE "http://127.0.0.1:8980/opennms/api/v2/applications/1"
+----
+
+.Replace the members of an application
+[source,bash]
+----
+curl -u admin:admin -X PUT -H 'Content-Type: application/json' \
+  -d '{"serviceIds":[1021,1039],"perspectiveLocations":["Default"],"revision":"5f0c6e1a-2b1d-3c4e-9f8a-0b1c2d3e4f5a"}' \
+  "http://127.0.0.1:8980/opennms/api/v2/applications/1/members"
 ----

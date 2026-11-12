@@ -81,8 +81,8 @@ import org.springframework.stereotype.Component;
  * changes a stored collection in place: writes build a copy and swap it in under the lock, and
  * reads copy under the lock before resolving outside it.
  *
- * The file is validated against its XSD on load, so title, timespan and graphtype are never null
- * on a stored graph; the null guards in the mappers only matter where no XSD can be found. The
+ * The file is validated against its XSD on load, so title and timespan are never null on a stored
+ * graph; the null guards in the mappers only matter where no XSD can be found. The
  * link rule is applied on the way out as well as on the way in, since the v1 API and hand edits
  * store links without it.
  *
@@ -108,9 +108,24 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
     static final String TYPE_NODE_SOURCE = "nodeSource";
     static final String TYPE_DOMAIN = "domain";
 
-    /** Graph entry kinds. Only prefab is stored today; adhoc is reserved for the ad-hoc graph builder. */
+    /** Graph entry kinds: a prefabricated graph of one resource, or a graph from the ad-hoc graph builder. */
     static final String KIND_PREFAB = "prefab";
     static final String KIND_ADHOC = "adhoc";
+
+    /**
+     * The builder's share link is capped at 6000 characters of query string on the client; this leaves
+     * room for a longer one from another client without letting the file grow without bound.
+     */
+    static final int MAX_ADHOC_STATE_LENGTH = 8192;
+
+    /** The share link's time window keys. The entry's timespan sets the window, so the state carries none. */
+    static final Set<String> ADHOC_TIME_KEYS = Set.of("range", "start", "end", "fmt");
+
+    /**
+     * The share link keys that name what is graphed: filters, picks, exclusions, series edits,
+     * expressions and the legacy series form. A state without any of them is not a graph.
+     */
+    static final Set<String> ADHOC_SOURCE_KEYS = Set.of("nf", "rf", "df", "pn", "pr", "pd", "xd", "o", "e", "s");
 
     /** Legacy pages capped titles at 80 and 40 characters; this is a looser bound on the stored strings. */
     static final int MAX_TITLE_LENGTH = 255;
@@ -396,16 +411,28 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
         for (final Graph graph : collection.getGraphs()) {
             final GraphCollectionResolvedGraphDto dto = new GraphCollectionResolvedGraphDto();
             dto.setIndex(index++);
-            dto.setKind(KIND_PREFAB);
+            dto.setKind(kindOf(graph));
             dto.setTitle(graph.getTitle());
             dto.setExtlink(safeLink(graph.getExtlink().orElse(null)));
             dto.setTimespan(timespan != null ? timespan : graph.getTimespan());
-            dto.setGraphtype(graphtype != null ? graphtype : graph.getGraphtype());
-            dto.setResourceId(graph.getResourceId().orElse(null));
 
             // What the editor would reject on save is flagged here too, so a hand-edited entry shows
             // its problem where the user can fix it instead of blocking the next save unexplained.
             final String invalid = validateGraph(toDto(graph), null);
+
+            if (KIND_ADHOC.equals(dto.getKind())) {
+                // The client draws an ad-hoc graph from the builder state over the window computed here;
+                // there is no resource to look up, and the graphtype override does not apply to it.
+                dto.setAdhocState(graph.getAdhocState().orElse(null));
+                dto.setValid(invalid == null);
+                dto.setError(invalid);
+                applyWindow(dto);
+                resolved.getGraphs().add(dto);
+                continue;
+            }
+
+            dto.setGraphtype(graphtype != null ? graphtype : graph.getGraphtype().orElse(null));
+            dto.setResourceId(graph.getResourceId().orElse(null));
 
             OnmsResource resource = null;
             String error = null;
@@ -447,24 +474,7 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
             }
             dto.setValid(resource != null && available != null && invalid == null);
             dto.setError(joinErrors(invalid, error));
-
-            Calendar begin = Calendar.getInstance();
-            Calendar end = Calendar.getInstance();
-            try {
-                GraphCollectionConfigFactory.getBeginEndTime(dto.getTimespan(), begin, end);
-            } catch (final IllegalArgumentException e) {
-                // A timespan the file carries but the list does not know: fall back to the default, on
-                // fresh calendars since the failed call has already zeroed the time fields on these.
-                begin = Calendar.getInstance();
-                end = Calendar.getInstance();
-                GraphCollectionConfigFactory.getBeginEndTime("7_day", begin, end);
-                dto.setValid(false);
-                if (dto.getError() == null) {
-                    dto.setError("Unknown timespan '" + dto.getTimespan() + "'.");
-                }
-            }
-            dto.setStart(begin.getTimeInMillis());
-            dto.setEnd(end.getTimeInMillis());
+            applyWindow(dto);
 
             resolved.getGraphs().add(dto);
         }
@@ -475,6 +485,27 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
     static int defaultGraphsPerLine() {
         final Integer configured = SystemProperties.getInteger(DEFAULT_GRAPHS_PER_LINE_PROPERTY, 1);
         return configured == null || configured < 1 ? 1 : configured;
+    }
+
+    /** Turn the effective timespan into start and end instants, falling back to the default for an unknown one. */
+    private static void applyWindow(final GraphCollectionResolvedGraphDto dto) {
+        Calendar begin = Calendar.getInstance();
+        Calendar end = Calendar.getInstance();
+        try {
+            GraphCollectionConfigFactory.getBeginEndTime(dto.getTimespan(), begin, end);
+        } catch (final IllegalArgumentException e) {
+            // A timespan the file carries but the list does not know: fall back to the default, on
+            // fresh calendars since the failed call has already zeroed the time fields on these.
+            begin = Calendar.getInstance();
+            end = Calendar.getInstance();
+            GraphCollectionConfigFactory.getBeginEndTime("7_day", begin, end);
+            dto.setValid(false);
+            if (dto.getError() == null) {
+                dto.setError("Unknown timespan '" + dto.getTimespan() + "'.");
+            }
+        }
+        dto.setStart(begin.getTimeInMillis());
+        dto.setEnd(end.getTimeInMillis());
     }
 
     private static String normalizeOverride(final String value) {
@@ -533,14 +564,25 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
             return where + (index == null ? "A graph body is required." : "the graph is empty.");
         }
         final String kind = kindOf(graph);
+        if (!KIND_PREFAB.equals(kind) && !KIND_ADHOC.equals(kind)) {
+            return where + "unknown kind '" + kind + "'; expected '" + KIND_PREFAB + "' or '" + KIND_ADHOC + "'.";
+        }
+        final boolean hasLegacyLocator = !StringUtils.isBlank(graph.getNodeId()) || !StringUtils.isBlank(graph.getNodeSource()) || !StringUtils.isBlank(graph.getDomain());
         if (KIND_ADHOC.equals(kind)) {
-            return where + "ad-hoc graphs are not supported in collections yet.";
-        }
-        if (!KIND_PREFAB.equals(kind)) {
-            return where + "unknown kind '" + kind + "'; expected '" + KIND_PREFAB + "'.";
-        }
-        if (StringUtils.isBlank(graph.getGraphtype())) {
-            return where + "a graphtype is required.";
+            if (!StringUtils.isBlank(graph.getResourceId()) || !StringUtils.isBlank(graph.getGraphtype()) || hasLegacyLocator || !StringUtils.isBlank(graph.getInterfaceId())) {
+                return where + "an ad-hoc graph takes no resourceId, graphtype or node address; its sources are in adhocState.";
+            }
+            final String stateProblem = validateAdhocState(graph.getAdhocState());
+            if (stateProblem != null) {
+                return where + stateProblem;
+            }
+        } else {
+            if (!StringUtils.isBlank(graph.getAdhocState())) {
+                return where + "adhocState belongs to an ad-hoc graph only.";
+            }
+            if (StringUtils.isBlank(graph.getGraphtype())) {
+                return where + "a graphtype is required.";
+            }
         }
         if (StringUtils.isBlank(graph.getTimespan())) {
             return where + "a timespan is required.";
@@ -551,15 +593,63 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
         if (graph.getTitle() != null && graph.getTitle().length() > MAX_TITLE_LENGTH) {
             return where + "the title must be at most " + MAX_TITLE_LENGTH + " characters.";
         }
-        final boolean hasLegacyLocator = !StringUtils.isBlank(graph.getNodeId()) || !StringUtils.isBlank(graph.getNodeSource()) || !StringUtils.isBlank(graph.getDomain());
-        if (StringUtils.isBlank(graph.getResourceId()) && !hasLegacyLocator) {
-            return where + "a resourceId is required.";
-        }
-        if (!StringUtils.isBlank(graph.getResourceId()) && !isParseableResourceId(graph.getResourceId())) {
-            return where + "'" + graph.getResourceId() + "' is not a well-formed resourceId.";
+        if (KIND_PREFAB.equals(kind)) {
+            if (StringUtils.isBlank(graph.getResourceId()) && !hasLegacyLocator) {
+                return where + "a resourceId is required.";
+            }
+            if (!StringUtils.isBlank(graph.getResourceId()) && !isParseableResourceId(graph.getResourceId())) {
+                return where + "'" + graph.getResourceId() + "' is not a well-formed resourceId.";
+            }
         }
         if (!StringUtils.isBlank(graph.getExtlink()) && !isSafeLink(graph.getExtlink())) {
             return where + "extlink must be a relative link or an http, https or mailto URL.";
+        }
+        return null;
+    }
+
+    /**
+     * The builder state is opaque to the server, which only checks that it is the query string of a
+     * share link: a bounded, decodable `key=value&key=value` string without the leading `?`, naming
+     * at least one source, and without a time window, since the entry's timespan sets the window
+     * the graph is drawn over.
+     */
+    static String validateAdhocState(final String state) {
+        if (StringUtils.isBlank(state)) {
+            return "an ad-hoc graph needs the builder state in adhocState.";
+        }
+        if (state.length() > MAX_ADHOC_STATE_LENGTH) {
+            return "adhocState must be at most " + MAX_ADHOC_STATE_LENGTH + " characters.";
+        }
+        if (state.startsWith("?") || state.startsWith("#")) {
+            return "adhocState must be a URL query string without the leading '?'.";
+        }
+        if (!state.chars().allMatch(c -> c > ' ' && c < 127)) {
+            return "adhocState must be percent-encoded: it may hold only printable ASCII.";
+        }
+        boolean namesSources = false;
+        for (final String pair : state.split("&")) {
+            final int eq = pair.indexOf('=');
+            final String rawKey = eq < 0 ? pair : pair.substring(0, eq);
+            if (rawKey.isEmpty()) {
+                return "adhocState must be a URL query string without the leading '?'.";
+            }
+            // The key is checked decoded, as URLSearchParams reads it: r%61nge is range to the client.
+            final String key;
+            try {
+                key = URLDecoder.decode(rawKey, StandardCharsets.UTF_8);
+                if (eq >= 0) {
+                    URLDecoder.decode(pair.substring(eq + 1), StandardCharsets.UTF_8);
+                }
+            } catch (final IllegalArgumentException e) {
+                return "adhocState is not a well-formed URL query string: " + e.getMessage();
+            }
+            if (ADHOC_TIME_KEYS.contains(key)) {
+                return "adhocState must not carry a time window (" + key + "); the entry's timespan sets it.";
+            }
+            namesSources |= ADHOC_SOURCE_KEYS.contains(key);
+        }
+        if (!namesSources) {
+            return "adhocState names no sources; a graph's share link carries at least one of nf, rf, df, pn, pr, pd, xd, o or e.";
         }
         return null;
     }
@@ -606,6 +696,10 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
         return StringUtils.isBlank(graph.getKind()) ? KIND_PREFAB : graph.getKind().trim();
     }
 
+    private static String kindOf(final Graph graph) {
+        return graph.getKind().orElse(KIND_PREFAB);
+    }
+
     static GraphCollection toModel(final GraphCollectionDto dto, final Integer id) {
         final GraphCollection collection = new GraphCollection();
         collection.setId(id);
@@ -623,13 +717,16 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
         final Graph graph = new Graph();
         graph.setTitle(dto.getTitle() == null ? "" : dto.getTitle());
         graph.setResourceId(dto.getResourceId());
-        graph.setGraphtype(StringUtils.trimToEmpty(dto.getGraphtype()));
+        graph.setGraphtype(StringUtils.trimToNull(dto.getGraphtype()));
         graph.setTimespan(dto.getTimespan());
         graph.setExtlink(dto.getExtlink() == null ? null : dto.getExtlink().trim());
         graph.setNodeId(dto.getNodeId());
         graph.setNodeSource(dto.getNodeSource());
         graph.setDomain(dto.getDomain());
         graph.setInterfaceId(dto.getInterfaceId());
+        // written only when it says something, so files with prefab graphs look as they always did
+        graph.setKind(KIND_ADHOC.equals(kindOf(dto)) ? KIND_ADHOC : null);
+        graph.setAdhocState(StringUtils.trimToNull(dto.getAdhocState()));
         return graph;
     }
 
@@ -657,16 +754,17 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
 
     static GraphCollectionGraphDto toDto(final Graph graph) {
         final GraphCollectionGraphDto dto = new GraphCollectionGraphDto();
-        dto.setKind(KIND_PREFAB);
+        dto.setKind(kindOf(graph));
         dto.setTitle(graph.getTitle());
         dto.setResourceId(graph.getResourceId().orElse(null));
-        dto.setGraphtype(graph.getGraphtype());
+        dto.setGraphtype(graph.getGraphtype().orElse(null));
         dto.setTimespan(graph.getTimespan());
         dto.setExtlink(graph.getExtlink().orElse(null));
         dto.setNodeId(graph.getNodeId().orElse(null));
         dto.setNodeSource(graph.getNodeSource().orElse(null));
         dto.setDomain(graph.getDomain().orElse(null));
         dto.setInterfaceId(graph.getInterfaceId().orElse(null));
+        dto.setAdhocState(graph.getAdhocState().orElse(null));
         return dto;
     }
 
@@ -718,7 +816,8 @@ public class GraphCollectionRestService implements GraphCollectionRestApi {
                     .append(graph.getResourceId()).append('|').append(graph.getGraphtype()).append('|')
                     .append(graph.getTimespan()).append('|').append(graph.getExtlink()).append('|')
                     .append(graph.getNodeId()).append('|').append(graph.getNodeSource()).append('|')
-                    .append(graph.getDomain()).append('|').append(graph.getInterfaceId());
+                    .append(graph.getDomain()).append('|').append(graph.getInterfaceId()).append('|')
+                    .append(graph.getAdhocState());
         }
         try {
             final byte[] digest = MessageDigest.getInstance("SHA-256").digest(canonical.toString().getBytes(StandardCharsets.UTF_8));

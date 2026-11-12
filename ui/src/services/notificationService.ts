@@ -60,6 +60,7 @@ interface BrowseNotificationsParams {
   acktype: NotificationAckType
   user?: string | null
   excludeUser?: string | null
+  nodeId?: string | null
   limit: number
   offset: number
 }
@@ -81,6 +82,10 @@ const browseNotifications = async (params: BrowseNotificationsParams): Promise<V
     }
     if (params.excludeUser) {
       query.set('excludeNotifiedUser', params.excludeUser)
+    }
+    if (params.nodeId) {
+      // v1 combines node.id with answeredBy and usersNotified.userId (verified on a live instance)
+      query.set('node.id', params.nodeId)
     }
     const resp = await rest.get(`${endpoint}?${query.toString()}`)
     // 204 No Content when nothing matches

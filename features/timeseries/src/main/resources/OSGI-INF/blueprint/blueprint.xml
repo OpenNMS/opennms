@@ -24,6 +24,7 @@
             <cm:property name="cache.timeseriesPersisterMetaTagCache.recordStats" value="true" />
 
             <cm:property name="cache.timeseriesSearcherCache.expireAfterRead" value="300" />
+            <cm:property name="cache.timeseriesSearcherCache.expireAfterWrite" value="300" />
             <cm:property name="cache.timeseriesSearcherCache.maximumSize" value="8192" />
             <cm:property name="cache.timeseriesSearcherCache.recordStats" value="true" />
         </cm:default-properties>
@@ -70,6 +71,7 @@
     <bean id="timeseriesSearcherCache" class="org.opennms.core.cache.CacheConfig">
         <argument index="0" value="timeseriesSearcherCache" />
         <property name="expireAfterRead" value="${cache.timeseriesSearcherCache.expireAfterRead}" />
+        <property name="expireAfterWrite" value="${cache.timeseriesSearcherCache.expireAfterWrite}" />
         <property name="maximumSize" value="${cache.timeseriesSearcherCache.maximumSize}" />
         <property name="recordStats" value="${cache.timeseriesSearcherCache.recordStats}" />
         <property name="metricRegistry" ref="metricRegistry" />

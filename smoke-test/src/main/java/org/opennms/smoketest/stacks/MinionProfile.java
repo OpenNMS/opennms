@@ -24,6 +24,7 @@ package org.opennms.smoketest.stacks;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,7 @@ public class MinionProfile {
     private final String dominionGrpcScvClientSecret;
     private final Function<MinionContainer, WaitStrategy> waitStrategy;
     private final Map<String, String> legacyConfiguration;
+    private final Map<String, String> envVars;
 
     private MinionProfile(Builder builder) {
         location = builder.location;
@@ -67,6 +69,7 @@ public class MinionProfile {
         dominionGrpcScvClientSecret = builder.dominionGrpcScvClientSecret;
         waitStrategy = Objects.requireNonNull(builder.waitStrategy);
         legacyConfiguration = builder.legacyConfiguration; // it is okay for this to be null when config is non-legacy
+        envVars = Collections.unmodifiableMap(builder.envVars);
     }
 
     public static Builder newBuilder() {
@@ -82,6 +85,7 @@ public class MinionProfile {
         private String dominionGrpcScvClientSecret;
         private Function<MinionContainer, WaitStrategy> waitStrategy = MinionContainer.WaitForMinion::new;
         private Map<String, String> legacyConfiguration = null;
+        private Map<String, String> envVars = new HashMap<>();
 
         public Builder withLocation(String location) {
             this.location = Objects.requireNonNull(location);
@@ -134,6 +138,11 @@ public class MinionProfile {
             return this;
         }
 
+        public Builder withEnv(String key, String value) {
+            this.envVars.put(Objects.requireNonNull(key), Objects.requireNonNull(value));
+            return this;
+        }
+
         public Builder withLegacyConfiguration(Map<String, String> configuration) {
             this.legacyConfiguration = Collections.unmodifiableMap(configuration);
             return this;
@@ -178,5 +187,9 @@ public class MinionProfile {
 
     public Map<String, String> getLegacyConfiguration() {
         return legacyConfiguration;
+    }
+
+    public Map<String, String> getEnvVars() {
+        return envVars;
     }
 }

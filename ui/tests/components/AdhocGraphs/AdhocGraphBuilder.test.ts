@@ -8,6 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import AdhocGraphBuilder from '@/components/AdhocGraphs/AdhocGraphBuilder.vue'
 import { useAdhocGraphStore } from '@/stores/adhocGraphStore'
+import { useAuthStore } from '@/stores/authStore'
 import { useMenuStore } from '@/stores/menuStore'
 
 const getNodes = vi.fn()
@@ -64,6 +65,21 @@ vi.mock('@/components/AdhocGraphs/AdhocChart.vue', () => ({
     setup(props, { expose }) {
       expose({ exportTarget: () => null })
       return () => h('div', { 'data-test': 'chart-stub' }, props.error ? [h('p', { 'data-test': 'chart-error' }, props.error)] : [])
+    }
+  })
+}))
+
+// The dialog loads the collections over the service layer; the builder only hands it the graph.
+vi.mock('@/components/GraphCollections/AddToGraphCollectionDialog.vue', () => ({
+  default: defineComponent({
+    name: 'AddToGraphCollectionDialog',
+    props: {
+      visible: { type: Boolean, default: false },
+      graph: { type: Object, required: true },
+      details: { type: Array, default: () => [] }
+    },
+    setup(props) {
+      return () => h('div', { 'data-test': 'add-to-collection-stub', 'data-visible': String(props.visible) })
     }
   })
 }))
@@ -882,6 +898,38 @@ describe('AdhocGraphBuilder', () => {
   })
 
   describe('the toolbar', () => {
+    it('offers "Add to collection" to users who may write collections, and hands over the graph without its window', async () => {
+      const { wrapper, store } = mountBuilder()
+      // nobody is known yet, so nothing is offered
+      expect(wrapper.find('[data-test="toolbar-add-to-collection"]').exists()).toBe(false)
+
+      const auth = useAuthStore()
+      auth.whoAmI = { roles: ['ROLE_USER'] } as never
+      auth.loaded = true
+      await flushPromises()
+      expect(wrapper.find('[data-test="toolbar-add-to-collection"]').exists()).toBe(true)
+
+      await pickOne(store)
+      await wrapper.find('[data-test="toolbar-add-to-collection"]').trigger('click')
+      await flushPromises()
+      const dialog = wrapper.findComponent({ name: 'AddToGraphCollectionDialog' })
+      expect(dialog.props('visible')).toBe(true)
+      const graph = dialog.props('graph') as Record<string, unknown>
+      expect(graph).toMatchObject({ kind: 'adhoc', resourceId: null, graphtype: null, timespan: '1_day' })
+      const params = new URLSearchParams(graph.adhocState as string)
+      expect(params.getAll('pd')).toHaveLength(1)
+      // the collection's timespan draws the graph, so the link's own window stays behind
+      for (const key of ['range', 'start', 'end', 'fmt']) {
+        expect(params.has(key)).toBe(false)
+      }
+      expect(dialog.props('details')).toEqual([{ label: 'Graph', value: 'Custom performance graph' }, { label: 'Series', value: '1' }])
+
+      // a read-only user may look but not add
+      auth.whoAmI = { roles: ['ROLE_USER', 'ROLE_READONLY'] } as never
+      await flushPromises()
+      expect(wrapper.find('[data-test="toolbar-add-to-collection"]').exists()).toBe(false)
+    })
+
     // MenuHeaderIT locates this page by //div[@id='app']//h2[text()='Custom
     // Performance Graphs']; if the tag or the text changes, that smoke test breaks
     // in CI rather than here, so pin it.

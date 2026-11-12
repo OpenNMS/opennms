@@ -66,14 +66,12 @@ const mainMenu = {
     id: 'selfService',
     name: 'admin',
     url: null,
-    locationMatch: null,
     roles: null,
     items: [
       {
         id: 'changePassword',
         name: 'Change Password',
         url: 'account/selfService/newPasswordEntry',
-        locationMatch: null,
         roles: null
       },
       {
@@ -81,7 +79,6 @@ const mainMenu = {
         name: 'Log Out',
         url: 'j_spring_security_logout',
         action: 'logout',
-        locationMatch: null,
         roles: null
       }
     ]

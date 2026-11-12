@@ -52,8 +52,9 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
+import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -125,7 +126,6 @@ public class AggregatedFlowQueryIT {
     // Stock Elasticsearch, on purpose: the proportional sums used by the series/totals
     // queries are computed with inline Painless scripts and must work without the
     // elasticsearch-drift-plugin being installed.
-    @ClassRule
     public static ElasticTestContainerWithPlugins elasticsearchContainer;
 
     static {
@@ -136,6 +136,16 @@ public class AggregatedFlowQueryIT {
         }
     }
 
+    @BeforeClass
+    public static void setUpClass() {
+        elasticsearchContainer.start();
+    }
+
+
+    @AfterClass
+    public static void tearDownClass() {
+        elasticsearchContainer.stop();
+    }
 
     @Before
     public void setUp() throws IOException, ExecutionException, InterruptedException {

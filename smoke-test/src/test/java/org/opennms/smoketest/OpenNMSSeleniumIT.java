@@ -35,6 +35,7 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
+import org.opennms.smoketest.junit.ContainerRule;
 import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.TestContainerUtils;
@@ -130,7 +131,7 @@ public class OpenNMSSeleniumIT extends AbstractOpenNMSSeleniumHelper {
             .outerRule(stack)
             // Start the Selenium container *after* OpenNMS has started so that the recording doesn't start
             // until OpenNMS is actually up and running
-            .around(firefox);
+            .around(ContainerRule.of(firefox));
 
     public static RemoteWebDriver driver;
 

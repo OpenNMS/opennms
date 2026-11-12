@@ -57,7 +57,7 @@ test('Controller: NodeResourcesCtrl: Validate loading process', function() {
   httpBackend.expect('GET', 'rest/resources/fornode/10').respond({
     label: 'Test Node',
     name: 'Test:Node',
-    link: 'element/node.jsp?node=Test:Node',
+    link: 'ui/index.html#/node/Test:Node',
     children: {
       resource: [{
         id: 'node[Test%3ANode].nodeSnmp[]',
@@ -85,7 +85,7 @@ test('Controller: NodeResourcesCtrl: Validate loading process', function() {
   httpBackend.flush();
   console.log('Original Resources: ' + angular.toJson(scope.resources));
   console.log('Filtered Resources: ' + angular.toJson(scope.filteredResources));
-  expect(scope.nodeLink).toEqual('element/node.jsp?node=Test:Node');
+  expect(scope.nodeLink).toEqual('ui/index.html#/node/Test:Node');
   expect(scope.nodeLabel).toEqual('Test Node');
   expect(scope.hasResources).toEqual(true);
   expect(scope.resources['SNMP Node Data'].length).toEqual(1);

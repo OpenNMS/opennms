@@ -605,7 +605,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.2</version>
+        <version>3.3.1</version>
         <configuration>
           <doCheck>false</doCheck>
           <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
@@ -1142,8 +1142,11 @@
                 <exclude>opennms-base-assembly/src/main/filtered/etc</exclude>
                 <exclude>opennms-base-assembly/src/main/resources</exclude>
 
-                <!-- BSD + GPL, see header for details -->
-                <exclude>core/test-api/dns/**/DNSServer.java</exclude>
+                <!-- compiled GWT output -->
+                <exclude>**/GWTTerminal/war/**/*</exclude>
+
+                <!-- BSD (derived from dnsjava jnamed), see header -->
+                <exclude>**/DNSServer.java</exclude>
 
                 <!-- APLv2 -->
                 <exclude>**/BlueprintCamelStateService.java</exclude>
@@ -1153,7 +1156,17 @@
                 <exclude>**/KafkaOffsetProvider.java</exclude>
                 <exclude>**/OnmsOSGiBridgeActivator.java</exclude>
                 <exclude>**/container/web/WebAppListener.java</exclude>
-                <exclude>**/hawkular/**/*</exclude>
+                <!-- hawkular: MetricVisitor and MetricCollectingWalker are OpenNMS AGPL, so not excluded -->
+                <exclude>**/hawkular/agent/prometheus/*.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/text/*.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Counter.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Gauge.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Histogram.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Metric.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/MetricFamily.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/MetricType.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Summary.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/walkers/PrometheusMetricsWalker.java</exclude>
                 <exclude>**/impl/holtwinters/*</exclude>
                 <exclude>**/osgi/script/*.java</exclude>
                 <exclude>**/vaadin/extender/Constants.java</exclude>
@@ -1721,7 +1734,9 @@
     <rpm.database.name>opennms</rpm.database.name>
     <rpm.database.password>opennms</rpm.database.password>
 
-    <testcontainers.version>1.19.7</testcontainers.version>
+    <testcontainers.version>2.0.5</testcontainers.version>
+    <!-- commons-compress 1.28 (from Testcontainers) needs a newer commons-io than commonsIoVersion -->
+    <testcontainers.commons-io.version>2.20.0</testcontainers.commons-io.version>
     <test.keystore>${project.build.directory}/test-keystore.jks</test.keystore>
     <test.storepass>opennms</test.storepass>
     <test.keyalias>opennms-keystore-key</test.keyalias>
@@ -1757,7 +1772,7 @@
     <camelVersion>3.22.4</camelVersion>
     <!-- Match (or beat) Newts version -->
     <cassandraVersion>4.17.0</cassandraVersion>
-    <cloverVersion>3.2.0</cloverVersion>
+    <cloverVersion>4.0.6</cloverVersion>
     <commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
     <commonsChainVersion>1.2</commonsChainVersion>
     <commonsCliVersion>1.7.0</commonsCliVersion>
@@ -1793,7 +1808,7 @@
     <dnsjavaVersion>3.6.1</dnsjavaVersion>
     <dom4jVersion>2.1.4</dom4jVersion>
     <dropwizardMetricsVersion>4.2.25</dropwizardMetricsVersion>
-    <ecjVersion>4.4.2</ecjVersion>
+    <ecjVersion>4.6.1</ecjVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <eddsaVersion>0.3.0</eddsaVersion>
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
@@ -1971,7 +1986,7 @@
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
-    <pyroscopeVersion>0.13.1</pyroscopeVersion>
+    <pyroscopeVersion>2.9.2</pyroscopeVersion>
     <lz4JavaVersion>1.11.4</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
     <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>
@@ -2010,7 +2025,7 @@
     <wsmanVersion>1.3.7</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
     <zstdJniVersion>1.5.6-4</zstdJniVersion>
-    <minaSshdVersion>2.17.1</minaSshdVersion>
+    <minaSshdVersion>2.20.1</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
     <!-- Spring 5.3.x via stock ServiceMix bundles. The custom .ONMS.1 patches that the EOL 4.3.x line

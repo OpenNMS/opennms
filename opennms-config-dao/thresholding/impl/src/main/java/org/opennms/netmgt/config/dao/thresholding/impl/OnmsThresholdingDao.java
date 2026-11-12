@@ -21,115 +21,263 @@
  */
 package org.opennms.netmgt.config.dao.thresholding.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.locks.Lock;
+import java.util.function.Consumer;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.config.api.ConfigReloadContainer;
-import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.xml.JacksonUtils;
+import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.service.api.ConfigUpdateInfo;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.api.EventType;
+import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
-import org.opennms.netmgt.config.dao.common.api.SaveableConfigContainer;
-import org.opennms.netmgt.config.dao.common.impl.FileSystemSaveableConfigContainer;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao;
 import org.opennms.netmgt.config.threshd.Group;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 
-import com.google.common.annotations.VisibleForTesting;
-
+/**
+ * Thresholding (threshold groups) configuration stored in the configuration manager.
+ *
+ * <p>The published configuration ({@link #getReadOnlyConfig()}, {@link #getWriteableConfig()}) is never
+ * mutated; it is only ever replaced. Readers therefore need no lock: whatever they got stays consistent while
+ * they iterate it. Writers get a private draft through {@link #withWriteLock}, and {@link #saveConfig()}
+ * persists that draft; the published configuration only changes once the configuration manager has accepted
+ * it. Every replacement happens under the write lock, so a reload can no longer slip in between a writer's
+ * edits and its save.</p>
+ */
 public class OnmsThresholdingDao extends AbstractThresholdingDao implements WriteableThresholdingDao {
-    private final SaveableConfigContainer<ThresholdingConfig> saveableConfigContainer;
+    public static final String CONFIG_NAME = "thresholding-config";
+
     private final ConfigReloadContainer<ThresholdingConfig> extContainer;
     private final ObjectMapper objectMapper = JacksonUtils.createDefaultObjectMapper();
-    private volatile ThresholdingConfig filesystemConfig;
+    private volatile ThresholdingConfig dbConfig;
+    private volatile ConfigurationManagerService cms;
+    private volatile boolean initialized;
+    /** Set when a configuration manager update arrived while the write lock was held; see {@link #onCmsUpdate()}. */
+    private volatile boolean reloadPending;
 
-    @VisibleForTesting
-    OnmsThresholdingDao(JsonStore jsonStore, File configFile) {
+    // The fields below are only accessed while holding the write lock.
+    /** The draft handed to the current {@link #withWriteLock} consumer, if any. */
+    private ThresholdingConfig pendingDraft;
+    /** Incremented by every successful reload, so a save can tell whether its update event reloaded. */
+    private long reloadCount;
+
+    public OnmsThresholdingDao(JsonStore jsonStore) {
         super(jsonStore);
-        Objects.requireNonNull(configFile);
         extContainer = new ConfigReloadContainer.Builder<>(ThresholdingConfig.class)
                 .withFolder((accumulator, next) -> accumulator.getGroups().addAll(next.getGroups()))
                 .build();
-        saveableConfigContainer = new FileSystemSaveableConfigContainer<>(ThresholdingConfig.class, "thresholds",
-                Collections.singleton(this::fileSystemConfigUpdated), configFile);
-
-        reload();
+        // No I/O in the constructor — CMS is looked up lazily on first access (matches SnmpPeerFactory).
     }
 
-    public OnmsThresholdingDao(JsonStore jsonStore) throws IOException {
-        this(jsonStore, ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME));
+    /** Test hook: uses the given CMS instead of looking it up in the Spring context. */
+    OnmsThresholdingDao(JsonStore jsonStore, ConfigurationManagerService cms) {
+        this(jsonStore);
+        this.cms = registerWith(cms);
     }
 
-    @Override
-    public void saveConfig() {
-        saveableConfigContainer.saveConfig();
+    private ConfigurationManagerService getCms() {
+        if (cms == null) {
+            synchronized (this) {
+                if (cms == null) {
+                    cms = registerWith(BeanUtils.getBean("daoContext", "configurationManagerService", ConfigurationManagerService.class));
+                }
+            }
+        }
+        return cms;
+    }
+
+    private ConfigurationManagerService registerWith(ConfigurationManagerService cms) {
+        cms.registerEventHandler(EventType.UPDATE,
+                new ConfigUpdateInfo(CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID),
+                info -> onCmsUpdate());
+        return cms;
+    }
+
+    private void ensureInitialized() {
+        if (initialized) {
+            return;
+        }
+        final Lock lock = getWriteLock();
+        lock.lock();
+        try {
+            // initialized is only set by a successful reload(), so a failed first load is retried on the next access.
+            if (!initialized) {
+                reload();
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
-     * @return the merged configuration consisting of the filesystem configuration and any configuration provided by
+     * @return the merged configuration consisting of the database configuration and any configuration provided by
      * extensions
      */
     @Override
     public ThresholdingConfig getReadOnlyConfig() {
+        ensureInitialized();
         return getMergedConfig();
     }
 
     /**
-     * @return just the configuration from the filesystem since configuration provided by extensions is read only
+     * @return just the configuration from the database since configuration provided by extensions is read only.
+     * The returned instance is shared with every other reader and must not be modified; use
+     * {@link #withWriteLock} to make changes.
      */
     @Override
     public ThresholdingConfig getWriteableConfig() {
-        return saveableConfigContainer.getConfig();
+        ensureInitialized();
+        return dbConfig;
     }
 
-    private synchronized ThresholdingConfig getMergedConfig() {
-        ThresholdingConfig externalConfig = extContainer.getObject();
-
-        if (filesystemConfig == null && externalConfig == null) {
-            return null;
-        } else if (externalConfig == null) {
-            return filesystemConfig;
-        } else if (filesystemConfig == null) {
-            return externalConfig;
-        }
-
-        // Create a merged config by combining the config from filesystem and the external config provided by extensions
-        ThresholdingConfig mergedConfig = new ThresholdingConfig();
-
-        List<Group> groups = new ArrayList<>();
-        groups.addAll(filesystemConfig.getGroups());
-        groups.addAll(externalConfig.getGroups());
-        mergedConfig.setGroups(Collections.unmodifiableList(groups));
-
-        return mergedConfig;
-    }
-
-    private synchronized void publishMergedConfig() {
+    /**
+     * Hands the consumer a private copy of the database configuration (or {@code null} if there is none) while
+     * holding the write lock. Changes become visible to readers only once {@link #saveConfig()} succeeds.
+     */
+    @Override
+    public void withWriteLock(Consumer<ThresholdingConfig> consumerWithLock) {
+        final Lock lock = getWriteLock();
+        lock.lock();
+        final ThresholdingConfig previousDraft = pendingDraft;
         try {
-            jsonStore.put(JSON_STORE_KEY, objectMapper.writeValueAsString(getMergedConfig()),
-                    ConfigDaoConstants.JSON_KEY_STORE_CONTEXT);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            ensureInitialized();
+            if (pendingDraft == null) {
+                pendingDraft = copyOf(dbConfig);
+            }
+            consumerWithLock.accept(pendingDraft);
+        } finally {
+            pendingDraft = previousDraft;
+            lock.unlock();
         }
+        drainPendingReload();
     }
 
     @Override
     public void reload() {
-        saveableConfigContainer.reload();
+        final Lock lock = getWriteLock();
+        lock.lock();
+        try {
+            reloadPending = false;
+            dbConfig = loadFromDb();
+            publishMergedConfig();
+            initialized = true;
+            reloadCount++;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Persists the draft of the enclosing {@link #withWriteLock} call, or the published configuration when called
+     * outside of one. If the configuration manager rejects it, the published configuration is left as it was.
+     */
+    @Override
+    public void saveConfig() {
+        final Lock lock = getWriteLock();
+        lock.lock();
+        try {
+            final ThresholdingConfig config = pendingDraft != null ? pendingDraft : dbConfig;
+            if (config == null) {
+                throw new IllegalStateException("No thresholding configuration loaded; cannot save");
+            }
+            final long reloadsBefore = reloadCount;
+            getCms().updateConfiguration(CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID,
+                    new JsonAsString(ConfigConvertUtil.objectToJson(config)), true);
+            // The update event normally reloads synchronously on this thread. If it did not (no handler, or the
+            // handler failed and the configuration manager only logged it), publish what was stored ourselves.
+            if (reloadCount == reloadsBefore) {
+                reload();
+            }
+        } finally {
+            lock.unlock();
+        }
+        drainPendingReload();
     }
 
     @Override
     public void onConfigChanged() {
-        publishMergedConfig();
+        reload();
     }
 
-    private synchronized void fileSystemConfigUpdated(ThresholdingConfig updatedConfig) {
-        filesystemConfig = updatedConfig;
-        onConfigChanged();
+    /**
+     * Update handler registered with the configuration manager. It runs while the configuration manager holds a
+     * lock of its own (its handler map entry), and a writer holding our write lock may be waiting for that very
+     * lock in {@code updateConfiguration()}. Blocking here would deadlock, so if the write lock is taken the
+     * reload is left to whoever releases it.
+     */
+    private void onCmsUpdate() {
+        reloadPending = true;
+        drainPendingReload();
+    }
+
+    private void drainPendingReload() {
+        final Lock lock = getWriteLock();
+        while (reloadPending && lock.tryLock()) {
+            try {
+                if (reloadPending) {
+                    reload();
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+    private ThresholdingConfig loadFromDb() {
+        return getCms().getJSONStrConfiguration(CONFIG_NAME, ConfigDefinition.DEFAULT_CONFIG_ID)
+                .map(json -> ConfigConvertUtil.jsonToObject(json, ThresholdingConfig.class))
+                .orElse(null);
+    }
+
+    private static ThresholdingConfig copyOf(ThresholdingConfig config) {
+        return config == null ? null
+                : ConfigConvertUtil.jsonToObject(ConfigConvertUtil.objectToJson(config), ThresholdingConfig.class);
+    }
+
+    private ThresholdingConfig getMergedConfig() {
+        final ThresholdingConfig databaseConfig = dbConfig;
+        final ThresholdingConfig externalConfig = extContainer.getObject();
+
+        if (databaseConfig == null && externalConfig == null) {
+            return null;
+        } else if (externalConfig == null) {
+            return databaseConfig;
+        } else if (databaseConfig == null) {
+            return externalConfig;
+        }
+
+        // Create a merged config by combining the config from the database and the external config provided by extensions
+        ThresholdingConfig mergedConfig = new ThresholdingConfig();
+
+        List<Group> mergedGroups = new ArrayList<>();
+        mergedGroups.addAll(databaseConfig.getGroups());
+        mergedGroups.addAll(externalConfig.getGroups());
+        mergedConfig.setGroups(Collections.unmodifiableList(mergedGroups));
+
+        return mergedConfig;
+    }
+
+    /** Called with the write lock held. */
+    private void publishMergedConfig() {
+        ThresholdingConfig merged = getMergedConfig();
+        if (merged == null) {
+            return;
+        }
+        try {
+            jsonStore.put(JSON_STORE_KEY, objectMapper.writeValueAsString(merged),
+                    ConfigDaoConstants.JSON_KEY_STORE_CONTEXT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

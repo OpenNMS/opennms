@@ -18,7 +18,7 @@
     <!-- These providers enrich search results when the web application is running. -->
     <reference id="graphCollectionService"            interface="org.opennms.web.svclayer.api.GraphCollectionService"           availability="optional"/>
     <reference id="requisitionAccessService"    interface="org.opennms.web.svclayer.api.RequisitionAccessService"   availability="optional"/>
-    <reference id="menuProvider"                interface="org.opennms.web.api.MenuProvider"                        availability="optional"/>
+    <reference id="menuProvider"                interface="org.opennms.web.api.MenuProvider"                        availability="optional" timeout="5000"/>
     <reference id="entityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider" availability="mandatory"/>
 
     <!-- Node Providers -->

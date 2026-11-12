@@ -23,6 +23,7 @@ package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -69,5 +70,12 @@ public interface ApplicationDao extends OnmsDao<OnmsApplication, Integer> {
     List<OnmsMonitoringLocation> getPerspectiveLocationsForService(final int nodeId, final InetAddress ipAddress, final String serviceName);
 
     List<ServicePerspective> getServicePerspectives();
+
+    /**
+     * Counts the member services of every application in one query.
+     *
+     * @return the number of member services, keyed by application id; applications without members map to zero.
+     */
+    Map<Integer, Long> getMonitoredServiceCounts();
 
 }

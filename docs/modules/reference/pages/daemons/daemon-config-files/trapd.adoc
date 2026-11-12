@@ -69,6 +69,122 @@ SNMPv3 passphrases can contain metadata expressions, which lets you reference cr
 The SCV expression format is `${scv:<alias>:<attribute>}`.
 For SCV setup and management, see xref:operation:deep-dive/admin/configuration/scv-configuration.adoc[SCV configuration] and xref:operation:deep-dive/meta-data.adoc#ga-metadata-scv[secure credentials vault metadata].
 
+[[trap-audit-log]]
+== Trap audit log
+
+Trapd can write one line for every SNMP trap or inform handed to the trap listener to a dedicated audit log, `trap-audit.log`.
+The listener is the first point in {page-component-title} that sees a decoded trap, so an entry here confirms that the trap arrived and was accepted, independent of anything that happens later in the pipeline.
+On a Minion, this is the only place a received trap is recorded without raising the general log level to `DEBUG`.
+
+The audit log is disabled by default.
+
+=== Log location
+
+[cols="1,2"]
+|===
+| Component | File
+
+| Core
+| `$\{OPENNMS_HOME}/logs/trap-audit.log`
+
+| Minion (RPM or Debian package)
+| `/var/log/minion/trap-audit.log`
+
+| Minion (container or tarball)
+| `$\{MINION_HOME}/data/log/trap-audit.log`
+|===
+
+On a Minion the audit log is always written to the same directory as `minion.log` (or `karaf.log` in a container or tarball installation).
+The file is created the first time a line is written, so an installation with the audit log disabled has no `trap-audit.log`.
+
+=== What is logged
+
+Each line records an outcome followed by `key=value` fields:
+
+[cols="1,2"]
+|===
+| Field | Description
+
+| `RECEIVED`, `REJECTED`, or `FORWARD_FAILED`
+| `RECEIVED`: the PDU decoded and passed validation. It says nothing about what happened afterwards.
+`REJECTED`: the PDU is not a trap or inform, or does not carry the varbinds the SNMP version requires; the trap is dropped.
+`FORWARD_FAILED`: a received trap could not be handed to the processing queue (on a Minion, the connection to the core); the trap is dropped.
+A trap that fails forwarding therefore produces two lines, `RECEIVED` followed by `FORWARD_FAILED`, so count `FORWARD_FAILED` lines separately when reconciling against events on the core.
+
+| `src`
+| The IP address of the UDP peer the packet came from.
+
+| `agent`
+| The address the trap will be attributed to: the agent address field of an SNMPv1 trap, the `snmpTrapAddress` varbind when `use-address-from-varbind` is enabled, and otherwise the same as `src`.
+
+| `version`
+| `v1`, `v2`, or `v3`.
+
+| `user`
+| The SNMPv3 security name. Only present for `v3` traps. Community strings of v1 and v2c traps are never logged.
+
+| `oid`
+| The trap OID. For SNMPv2c and SNMPv3 traps this is the value of the `snmpTrapOID.0` varbind exactly as the agent sent it, even for standard traps that also carry `snmpTrapEnterprise.0`. For SNMPv1 traps it is the OID derived from the enterprise, generic, and specific fields. `unknown` when the PDU is malformed.
+
+| `varbinds`
+| The number of varbinds in the PDU.
+
+| `reason`
+| The error message, collapsed to a single line. Only present for `REJECTED` and `FORWARD_FAILED` lines.
+|===
+
+Varbind values are not logged.
+
+.Example
+[source]
+----
+2026-11-04 14:02:11,418 TRAP RECEIVED src=10.0.0.5 agent=10.0.0.5 version=v2 oid=.1.3.6.1.4.1.9.9.41.2.0.1 varbinds=7
+2026-11-04 14:02:11,902 TRAP RECEIVED src=10.0.0.9 agent=10.0.0.9 version=v3 user=opennms-user oid=.1.3.6.1.6.3.1.1.5.3 varbinds=4
+2026-11-04 14:02:12,110 TRAP REJECTED src=10.0.0.7 agent=10.0.0.7 version=v2 oid=unknown varbinds=1 reason=V2 TRAP from /10.0.0.7 IGNORED due to not having the required varbinds.  Have 1, needed at least 2
+----
+
+SNMPv3 traps that fail authentication or decryption are discarded by the SNMP library before they reach the listener and do not appear in the audit log.
+
+=== Enable the audit log on core
+
+Edit `$\{OPENNMS_HOME}/etc/log4j2.xml` and change the level of the `trap-audit` logger from `OFF` to `INFO`:
+
+[source, xml]
+----
+<logger name="trap-audit" additivity="false" level="INFO">
+  <appender-ref ref="TrapAuditAsync"/>
+</logger>
+----
+
+The `log4j2.xml` configuration is reloaded automatically every 60 seconds, so the change takes effect without a restart.
+Set the level back to `OFF` to disable the log.
+
+=== Enable the audit log on Minion
+
+Either run the following command in the Karaf shell:
+
+[source, karaf]
+----
+log:set INFO trap-audit
+----
+
+or edit `$\{MINION_HOME}/etc/org.ops4j.pax.logging.cfg` and change `log4j2.logger.trapAudit.level` from `OFF` to `INFO`.
+Both take effect without a restart, and both are persistent: `log:set` writes the new level into `org.ops4j.pax.logging.cfg`, so the audit log stays enabled across restarts until you turn it off again.
+To disable it, run `log:set OFF trap-audit` or set the level back to `OFF` in the file.
+
+=== Log rotation
+
+Both logs keep 4 compressed rotated files. The core log rolls at 100 MB, the Minion log at 16 MB, matching the size of the other Minion logs.
+Adjust the `TrapAuditFile` appender in `log4j2.xml` or the `log4j2.appender.trapAudit` entries in `org.ops4j.pax.logging.cfg` to change this.
+Timestamps use the same `yyyy-MM-dd HH:mm:ss,SSS` format on both.
+
+Audit entries are queued to a background writer thread (the `TrapAuditAsync` appender), so the SNMP receive thread does not wait on the file.
+The queue holds 4096 entries and is non-blocking: if the disk cannot keep up and the queue fills, further audit entries are discarded until it drains, and the trap itself is still forwarded.
+Trap reception is never stalled by the audit log, so a gap in the audit log during a burst means the writer fell behind, not that traps were lost.
+
+NOTE: On a busy trap receiver, the audit log writes one line per trap.
+Disable it again when you are done investigating.
+
 == Trap metrics
 
 Trapd exposes metrics via JMX for monitoring trap processing performance.
