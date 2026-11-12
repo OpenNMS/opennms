@@ -111,8 +111,8 @@ public class DisabledServicesHealthCheckIT {
     @Test
     public void verifyEnabledDaemonsAreRunning() {
         final Map<String, String> statuses = stack.opennms().getRestClient().getServiceStatuses();
-        assertThat(statuses.get("Telemetryd"), is("running"));
-        assertThat(statuses.values(), everyItem(is("running")));
+        assertThat(statuses.toString(), statuses.get("Telemetryd"), is("running"));
+        assertThat(statuses.toString(), statuses.values(), everyItem(is("running")));
     }
 
     @Test

@@ -98,37 +98,47 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
     @Autowired
     private SessionUtils sessionUtils;
 
+    @Autowired
+    private EventSubscriptionService eventSubscriptionService;
+
     private AnnotationBasedEventListenerAdapter eventListenerAdapter;
 
     private final RegistrationListener<EventSubscriptionService> eventSubscriptionServiceListener = new RegistrationListener<>() {
         @Override
         public void providerRegistered(Registration registration, EventSubscriptionService provider) {
-            subscribe(provider);
+            subscribe();
         }
 
         @Override
         public void providerUnregistered(Registration registration, EventSubscriptionService provider) {
+            if (DefaultServiceRegistry.INSTANCE.findProviders(EventSubscriptionService.class).isEmpty()) {
+                unsubscribe();
+            }
         }
     };
 
     @PostConstruct
     private void init() {
-        // Eventd can register the subscription service after this bean is created, so listen when it is available
+        // Eventd can register the subscription service after this bean is created, so subscribe when it is available
         DefaultServiceRegistry.INSTANCE.addListener(EventSubscriptionService.class, eventSubscriptionServiceListener, true);
     }
 
     @PreDestroy
-    private synchronized void destroy() {
+    private void destroy() {
         DefaultServiceRegistry.INSTANCE.removeListener(EventSubscriptionService.class, eventSubscriptionServiceListener);
-        if (eventListenerAdapter != null) {
-            eventListenerAdapter.close();
-            eventListenerAdapter = null;
+        unsubscribe();
+    }
+
+    private synchronized void subscribe() {
+        if (eventListenerAdapter == null) {
+            eventListenerAdapter = new AnnotationBasedEventListenerAdapter(this, eventSubscriptionService);
         }
     }
 
-    private synchronized void subscribe(EventSubscriptionService eventSubscriptionService) {
-        if (eventListenerAdapter == null) {
-            eventListenerAdapter = new AnnotationBasedEventListenerAdapter(this, eventSubscriptionService);
+    private synchronized void unsubscribe() {
+        if (eventListenerAdapter != null) {
+            eventListenerAdapter.close();
+            eventListenerAdapter = null;
         }
     }
 

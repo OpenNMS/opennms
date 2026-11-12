@@ -104,27 +104,48 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
 
     private boolean isDistributed = false;
     
+    private boolean subscribed = false;
+
     private final RegistrationListener<EventIpcManager> eventIpcManagerListener = new RegistrationListener<>() {
         @Override
         public void providerRegistered(Registration registration, EventIpcManager provider) {
-            provider.addEventListener(ThresholdingServiceImpl.this, UEI_LIST);
+            subscribe();
         }
 
         @Override
         public void providerUnregistered(Registration registration, EventIpcManager provider) {
+            if (DefaultServiceRegistry.INSTANCE.findProviders(EventIpcManager.class).isEmpty()) {
+                unsubscribe();
+            }
         }
     };
 
     // Spring init entry point
     @PostConstruct
     private void init() {
-        // Eventd can register the event manager after this bean is created, so listen when it is available
+        // Eventd can register the event manager after this bean is created, so subscribe when it is available
         DefaultServiceRegistry.INSTANCE.addListener(EventIpcManager.class, eventIpcManagerListener, true);
     }
 
     @PreDestroy
     private void destroy() {
         DefaultServiceRegistry.INSTANCE.removeListener(EventIpcManager.class, eventIpcManagerListener);
+        unsubscribe();
+        reInitializeTimer.cancel();
+    }
+
+    private synchronized void subscribe() {
+        if (!subscribed) {
+            eventIpcManager.addEventListener(this, UEI_LIST);
+            subscribed = true;
+        }
+    }
+
+    private synchronized void unsubscribe() {
+        if (subscribed) {
+            eventIpcManager.removeEventListener(this, UEI_LIST);
+            subscribed = false;
+        }
     }
 
     // OSGi init entry point
