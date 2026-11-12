@@ -12,10 +12,11 @@ Make sure that you have the following before you set up flows:
 * A configured {page-component-title} instance.
 * One or more devices that send flows visible to {page-component-title}, and that are monitored with SNMP.
 * An Elasticsearch or OpenSearch cluster to persist and query the flows that {page-component-title} collects.
-** Inline Painless scripting must be enabled on the cluster; it is enabled by default.
-{page-component-title} uses inline scripts to distribute flow traffic proportionally over the time buckets of a graph.
-** The https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch Drift plugin] is no longer required.
-Clusters that still have the plugin installed can keep using it by setting `proportionalSumStrategy=plugin` in `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`; note that the plugin version must match the Elasticsearch version exactly, and that the plugin computes lower totals than the script-based default when a query window does not align with the graph resolution.
+** Flow queries use inline Painless scripts to distribute flow traffic proportionally over the time buckets of a graph.
+Elasticsearch and OpenSearch allow inline scripts by default.
+If you have restricted `script.allowed_types` or `script.allowed_contexts`, make sure that inline scripts are allowed.
+** The Elasticsearch Drift plugin is no longer required.
+See <<flows-drift-plugin, Elasticsearch Drift plugin>>.
 ** (Optional) Configure Elasticsearch variables like `search.max_buckets` or maximum heap size `ES-JAVA_OPTS` if the default values are not sufficient for your volume of flows or number of nodes.
 ** A retention process to remove old flow indices so the disk does not fill up (for example, "keep _X_ days of flows").
 See xref:reference:configuration/tuning-elasticsearch.adoc#ga-elasticsearch-index-retention[Index retention].
@@ -29,6 +30,21 @@ Flows are high volume, and {page-component-title} does not expire them.
 Configure an index retention process before you collect flows in production, or the Elasticsearch disk can fill up.
 See xref:reference:configuration/tuning-elasticsearch.adoc#ga-elasticsearch-index-retention[Index retention].
 ====
+
+[[flows-drift-plugin]]
+== Elasticsearch Drift plugin
+
+Earlier releases required the https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch Drift plugin] on the cluster.
+{page-component-title} now computes the same per-bucket sums with inline Painless scripts, so flows can be stored on a stock Elasticsearch or OpenSearch cluster.
+
+Clusters that still have the plugin installed can keep using it by setting `proportionalSumStrategy=plugin` in `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+The plugin version must match the Elasticsearch version exactly.
+
+Results can differ between the two when a query window does not align with the graph resolution, which is the common case:
+
+* The plugin undercounts traffic, so totals and series values may be higher with the script-based default.
+* With the script-based default, buckets start at the beginning of the query window.
+The plugin returns a mix of window-aligned and epoch-aligned timestamps.
 
 == Configure {page-component-title} to communicate with Elasticsearch
 

@@ -22,12 +22,8 @@ See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upg
 === Elasticsearch Drift plugin no longer required for flows
 Flow series and total queries now compute proportional per-bucket sums with inline Painless scripts instead of the `proportional_sum` aggregation from the https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch Drift plugin].
 This removes the need to install a plugin build that exactly matches the Elasticsearch version, and allows flow data to be stored on stock Elasticsearch or OpenSearch clusters.
-Inline Painless scripting must be enabled on the cluster; it is enabled by default on both products.
-
-Clusters that already run the Drift plugin can keep using it by setting `proportionalSumStrategy=plugin` in `$\{OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
-
-Note that flow totals and series values may increase after upgrading: the plugin undercounts traffic when a query window does not align with the graph resolution (which is the common case), and the script-based implementation corrects this.
-Bucket timestamps also change: buckets now start at the beginning of the query window, where the plugin returned a mix of window-aligned and epoch-aligned timestamps.
+Flow totals and series values may increase after upgrading, because the plugin undercounts traffic when a query window does not align with the graph resolution.
+See xref:operation:deep-dive/flows/basic.adoc#flows-drift-plugin[Elasticsearch Drift plugin] for details, including how to keep using the plugin.
 
 === Faster IP address filtering (IPLIKE)
 

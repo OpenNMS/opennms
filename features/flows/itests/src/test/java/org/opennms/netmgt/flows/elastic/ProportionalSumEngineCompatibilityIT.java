@@ -51,7 +51,8 @@ import com.google.gson.JsonParser;
  * Runs the Painless proportional-sum aggregation on engines other than the ES 8 used by the
  * other flow ITs. ES 7.x and OpenSearch 2.x return date doc values as
  * JodaCompatibleZonedDateTime rather than ZonedDateTime, so date handling must be checked
- * there. Results are compared against a Java reference of the intended semantics.
+ * there. ES 9.x and OpenSearch 3.x cover the newest releases. Results are compared against
+ * a Java reference of the intended semantics.
  */
 @RunWith(Parameterized.class)
 public class ProportionalSumEngineCompatibilityIT {
@@ -77,6 +78,8 @@ public class ProportionalSumEngineCompatibilityIT {
         return Arrays.asList(new Object[][]{
                 {"docker.elastic.co/elasticsearch/elasticsearch:7.17.0"},
                 {"opensearchproject/opensearch:2.19.1"},
+                {"docker.elastic.co/elasticsearch/elasticsearch:9.5.5"},
+                {"opensearchproject/opensearch:3.9.0"},
         });
     }
 
