@@ -33,7 +33,9 @@ import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -50,6 +52,8 @@ import org.w3c.dom.NodeList;
  * <p>
  * The snmp-config and trapd-config CM configurations contain SNMP communities and
  * SNMPv3 passphrases. Only ROLE_PROVISION and ROLE_ADMIN can read or change them.
+ * The http-datacollection-config CM configuration and its /api/v2/httpcollection API
+ * can carry credentials, so only ROLE_ADMIN can read or change them.
  * <p>
  * The test reads the rules in file order and uses the first rule that matches,
  * the same as Spring Security.
@@ -58,11 +62,13 @@ public class CmConfigSecurityRulesTest {
 
     private static final String SECURITY_XML = "src/main/webapp/WEB-INF/applicationContext-spring-security.xml";
     private static final String CHAIN = "/rest/**";
+    private static final String V2_CHAIN = "/api/v2/**";
+    private static final String ADMIN = "hasAnyRole('ROLE_ADMIN')";
     private static final String PROVISION_OR_ADMIN = "hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')";
     private static final String[] METHODS = { "GET", "HEAD", "POST", "PUT", "DELETE", "PATCH" };
 
     private static final AntPathMatcher MATCHER = new AntPathMatcher();
-    private static List<String[]> rules;
+    private static final Map<String, List<String[]>> RULES = new HashMap<>();
 
     @BeforeClass
     public static void readRules() throws Exception {
@@ -73,10 +79,12 @@ public class CmConfigSecurityRulesTest {
         final NodeList chains = doc.getElementsByTagName("http");
         for (int i = 0; i < chains.getLength(); i++) {
             final Element chain = (Element) chains.item(i);
-            if (!CHAIN.equals(chain.getAttribute("pattern"))) {
+            final String pattern = chain.getAttribute("pattern");
+            if (!CHAIN.equals(pattern) && !V2_CHAIN.equals(pattern)) {
                 continue;
             }
-            rules = new ArrayList<>();
+            final List<String[]> rules = new ArrayList<>();
+            RULES.put(pattern, rules);
             final NodeList children = chain.getChildNodes();
             for (int j = 0; j < children.getLength(); j++) {
                 final Node child = children.item(j);
@@ -86,12 +94,19 @@ public class CmConfigSecurityRulesTest {
                 }
             }
         }
-        assertFalse("No rules found for the " + CHAIN + " chain", rules == null || rules.isEmpty());
+        for (final String chain : new String[] { CHAIN, V2_CHAIN }) {
+            assertFalse("No rules found for the " + chain + " chain", RULES.getOrDefault(chain, List.of()).isEmpty());
+        }
     }
 
-    /** Returns the access expression of the first rule that matches, or null. */
+    /** Returns the access expression of the first rule of the /rest/** chain that matches, or null. */
     private static String accessFor(final String path, final String method) {
-        for (final String[] rule : rules) {
+        return accessFor(CHAIN, path, method);
+    }
+
+    /** Returns the access expression of the first rule of the given chain that matches, or null. */
+    private static String accessFor(final String chain, final String path, final String method) {
+        for (final String[] rule : RULES.get(chain)) {
             if ((rule[1].isEmpty() || rule[1].equals(method)) && MATCHER.match(rule[0], path)) {
                 return rule[2];
             }
@@ -113,6 +128,40 @@ public class CmConfigSecurityRulesTest {
                 for (final String method : METHODS) {
                     assertEquals(method + " " + path, PROVISION_OR_ADMIN, accessFor(path, method));
                 }
+            }
+        }
+    }
+
+    @Test
+    public void onlyAdminCanUseHttpDatacollectionConfig() {
+        final String[] paths = {
+            "/rest/cm/http-datacollection-config",
+            "/rest/cm/http-datacollection-config/default",
+            "/rest/cm/http-datacollection-config/default/definition",
+            "/rest/cm/http-datacollection-config.json",
+            "/rest/cm/http-datacollection-config.xml",
+        };
+        for (final String path : paths) {
+            for (final String method : METHODS) {
+                assertEquals(method + " " + path, ADMIN, accessFor(path, method));
+            }
+        }
+    }
+
+    @Test
+    public void onlyAdminCanUseTheHttpCollectionApi() {
+        final String[] paths = {
+            "/api/v2/httpcollection",
+            "/api/v2/httpcollection/config",
+            "/api/v2/httpcollection/collections",
+            "/api/v2/httpcollection/collections/doc-count",
+            "/api/v2/httpcollection/download",
+            "/api/v2/httpcollection/upload/xml",
+            "/api/v2/httpcollection.json",
+        };
+        for (final String path : paths) {
+            for (final String method : METHODS) {
+                assertEquals(method + " " + path, ADMIN, accessFor(V2_CHAIN, path, method));
             }
         }
     }

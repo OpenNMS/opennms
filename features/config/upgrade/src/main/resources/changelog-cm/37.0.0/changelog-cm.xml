@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:cm="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="cpape" id="register-schema-http-datacollection-config">
+        <cm:registerSchema id="http-datacollection-config"/>
+        <cm:importSchemaFromXsd id="http-datacollection-config" xsdFileName="http-datacollection-config.xsd" xsdFileHash="d0f68d14549789ad7197339319bcde6ea21f8dc4560f5a6ab07fe3dbfbb0fba1" rootElement="http-datacollection-config"/>
+        <cm:importConfig schemaId="http-datacollection-config" filePath="http-datacollection-config.xml"/>
+    </changeSet>
+
+</databaseChangeLog>

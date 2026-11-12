@@ -34,6 +34,9 @@ import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -67,12 +70,15 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 public class Attrib implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @JsonProperty("alias")
     @XmlAttribute(name = "alias", required = true)
     protected String m_alias;
 
+    @JsonProperty("match-group")
     @XmlAttribute(name = "match-group", required = true)
     protected int m_matchGroup;
 
+    @JsonIgnore
     @XmlAttribute(name = "type", required = true)
     protected AttributeType m_type;
 
@@ -90,6 +96,19 @@ public class Attrib implements Serializable {
 
     public void setMatchGroup(final int value) {
         m_matchGroup = value;
+    }
+
+    /**
+     * Config Management stores the type by its XML name (e.g. {@code counter}), not the enum constant.
+     */
+    @JsonProperty("type")
+    private String getTypeJson() {
+        return m_type == null ? null : m_type.getName();
+    }
+
+    @JsonProperty("type")
+    private void setTypeJson(final String value) {
+        m_type = value == null ? null : AttributeType.parse(value);
     }
 
     public AttributeType getType() {

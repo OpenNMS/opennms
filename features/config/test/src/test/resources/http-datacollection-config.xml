@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<http-datacollection-config xmlns:http-dc="http://xmlns.opennms.org/xsd/config/http-datacollection"
+                            xmlns="http://xmlns.opennms.org/xsd/config/http-datacollection"
+                            rrdRepository="/opt/opennms/share/rrd/snmp/">
+  <http-collection name="apache">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:MAX:0.5:12:1488</rra>
+    </rrd>
+    <uris>
+      <uri name="status">
+        <url method="POST" http-version="1.0" user-agent="Mozilla/5.0" virtual-host="www.example.org"
+             scheme="https" user-info="user:pass" host="${ipaddr}" port="8443" path="/server-status"
+             query="auto" fragment="top" matches="(?s).*?Accesses:\s([0-9]+).*?kBytes:\s([0-9]+).*"
+             response-range="200-299" canonical-equivalence="true" case-insensitive="true" comments="false"
+             dotall="true" literal="false" multiline="true" unicode-case="false" unix-lines="true">
+          <parameters>
+            <parameter key="form-field" value="value-1"/>
+            <parameter key="other" value="value-2"/>
+          </parameters>
+          <headers>
+            <header name="Accept" value="text/plain"/>
+            <header name="X-Token" value="secret"/>
+          </headers>
+        </url>
+        <attributes>
+          <attrib alias="TotalAccesses" match-group="1" type="counter"/>
+          <attrib alias="TotalkBytes" match-group="2" type="gauge"/>
+          <attrib alias="Server" match-group="3" type="string"/>
+        </attributes>
+      </uri>
+      <uri name="minimal">
+        <url path="/"/>
+      </uri>
+    </uris>
+  </http-collection>
+  <http-collection name="doc-count">
+    <rrd step="60">
+      <rra>RRA:AVERAGE:0.5:1:8928</rra>
+    </rrd>
+    <uris>
+      <uri name="document-counts">
+        <url path="/test/resources/httpcolltest.html" matches=".*([0-9]+).*" response-range="100-399"/>
+        <attributes>
+          <attrib alias="documentCount" match-group="1" type="counter32"/>
+          <attrib alias="someNumber" match-group="1" type="gauge32"/>
+        </attributes>
+      </uri>
+    </uris>
+  </http-collection>
+</http-datacollection-config>

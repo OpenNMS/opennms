@@ -71,6 +71,7 @@ const zenithConnectEnabled = () => useMenuStore().mainMenu?.zenithConnectEnabled
 
 const snmpRoleMsg = 'Must have the proper SNMP role(s) to access SNMP Config.'
 const thresholdRoleMsg = 'Must have the admin role to access Threshold Configuration.'
+const httpCollectionRoleMsg = 'Must have the admin role to access the HTTP Data Collection Configuration.'
 
 // SNMP Config auto-lookup mode. This sets the store to ensure the lookup tab is active and in lookup mode.
 // Then SnmpConfigLookupTab will get the 'ipAddress' and 'location' query params and perform the lookup.
@@ -486,6 +487,43 @@ const router = createRouter({
       name: 'Threshold Service Edit',
       component: () => import('@/containers/ThresholdServiceEdit.vue'),
       beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/http-collection-config',
+      name: 'HTTP Collection Configuration',
+      component: () => import('@/containers/HttpCollectionConfiguration.vue'),
+      beforeEnter: requireRole('adminRole', httpCollectionRoleMsg)
+    },
+    {
+      // Not '/http-collection-config/collection/create', so a collection named 'create' stays reachable.
+      path: '/http-collection-config/create-collection',
+      name: 'HTTP Collection Create',
+      component: () => import('@/containers/HttpCollectionEdit.vue'),
+      beforeEnter: requireRole('adminRole', httpCollectionRoleMsg)
+    },
+    {
+      path: '/http-collection-config/collection/:name',
+      name: 'HTTP Collection Detail',
+      component: () => import('@/containers/HttpCollectionDetail.vue'),
+      beforeEnter: requireRole('adminRole', httpCollectionRoleMsg)
+    },
+    {
+      path: '/http-collection-config/collection/:name/edit',
+      name: 'HTTP Collection Edit',
+      component: () => import('@/containers/HttpCollectionEdit.vue'),
+      beforeEnter: requireRole('adminRole', httpCollectionRoleMsg)
+    },
+    {
+      path: '/http-collection-config/collection/:name/uri/create',
+      name: 'HTTP Collection URI Create',
+      component: () => import('@/containers/HttpUriEdit.vue'),
+      beforeEnter: requireRole('adminRole', httpCollectionRoleMsg)
+    },
+    {
+      path: '/http-collection-config/collection/:name/uri/:index(\\d+)/edit',
+      name: 'HTTP Collection URI Edit',
+      component: () => import('@/containers/HttpUriEdit.vue'),
+      beforeEnter: requireRole('adminRole', httpCollectionRoleMsg)
     },
     {
       path: '/mib-compiler',

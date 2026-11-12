@@ -120,6 +120,18 @@ import {
   uploadThresholdingConfiguration,
   uploadThreshdConfiguration
 } from './thresholdConfigurationService'
+import {
+  createHttpCollection,
+  deleteHttpCollection,
+  downloadHttpCollectionConfiguration,
+  getHttpCollection,
+  getHttpCollectionMetadata,
+  getHttpCollectionSettings,
+  getHttpCollections,
+  updateHttpCollection,
+  updateHttpCollectionSettings,
+  uploadHttpCollectionConfiguration
+} from './httpCollectionConfigService'
 import { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import { getAbout } from './aboutService'
@@ -198,6 +210,16 @@ export default {
   updateThreshdPackage,
   uploadThresholdingConfiguration,
   uploadThreshdConfiguration,
+  createHttpCollection,
+  deleteHttpCollection,
+  downloadHttpCollectionConfiguration,
+  getHttpCollection,
+  getHttpCollectionMetadata,
+  getHttpCollectionSettings,
+  getHttpCollections,
+  updateHttpCollection,
+  updateHttpCollectionSettings,
+  uploadHttpCollectionConfiguration,
   getMinionNodeIds,
   getCoreVersion,
   listMinions,

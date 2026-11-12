@@ -23,90 +23,87 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 
-import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
+import org.opennms.netmgt.dao.api.HttpCollectionConfigDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>HttpCollectionConfigFactory class.</p>
+ * Access to the HTTP collector configuration.
+ *
+ * <p>The configuration is stored in Config Management and read through the
+ * {@link HttpCollectionConfigDao} of the core's DAO context, which is looked up lazily on first use.
+ * Changes made through Config Management are picked up by the DAO, so there is nothing to reload here.</p>
+ *
+ * <p>Only the core side resolves collections. On Minion, the {@code HttpCollector} receives the
+ * already resolved {@link HttpCollection} as a runtime attribute and never calls this factory.</p>
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
 public class HttpCollectionConfigFactory {
     private static final Logger LOG = LoggerFactory.getLogger(HttpCollectionConfigFactory.class);
+
     /** The singleton instance. */
     private static HttpCollectionConfigFactory m_instance;
 
-    private static boolean m_loadedFromFile = false;
+    /** The DAO the configuration is read from; resolved from the DAO context unless set explicitly. */
+    private static volatile HttpCollectionConfigDao s_configDao;
 
     /** Boolean indicating if the init() method has been called. */
     protected boolean initialized = false;
 
-    /** Timestamp of the http collection config, used to know when to reload from disk. */
-    protected static long m_lastModified;
-
-    private static HttpDatacollectionConfig m_config;
+    protected HttpCollectionConfigFactory() {
+    }
 
     /**
-     * <p>Constructor for HttpCollectionConfigFactory.</p>
+     * Creates a factory backed by the configuration in the given file instead of Config Management.
+     * Used by tests only.
      *
-     * @param configFile a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
+     * @param configFile path to an http-datacollection-config.xml file
+     * @throws java.io.IOException if the file cannot be read
      */
-    public HttpCollectionConfigFactory(String configFile) throws IOException {
-        InputStream is = null;
-        try {
-            is = new FileInputStream(configFile);
+    public HttpCollectionConfigFactory(final String configFile) throws IOException {
+        try (InputStream is = new FileInputStream(configFile)) {
             initialize(is);
-        } finally {
-            if (is != null) {
-                IOUtils.closeQuietly(is);
-            }
         }
     }
 
     /**
-     * <p>Constructor for HttpCollectionConfigFactory.</p>
+     * Creates a factory backed by the configuration in the given stream instead of Config Management.
+     * Used by tests only.
      *
-     * @param stream a {@link java.io.InputStream} object.
-     * @throws IOException
+     * @param stream an http-datacollection-config.xml document
+     * @throws IOException if the stream cannot be read
      */
-    public HttpCollectionConfigFactory(InputStream stream) throws IOException {
+    public HttpCollectionConfigFactory(final InputStream stream) throws IOException {
         initialize(stream);
     }
 
-    private void initialize(InputStream stream) throws IOException {
-        LOG.debug("initialize: initializing http collection config factory.");
-        try (InputStreamReader isr = new InputStreamReader(stream)) {
-            m_config = JaxbUtils.unmarshal(HttpDatacollectionConfig.class, isr);
+    private void initialize(final InputStream stream) throws IOException {
+        LOG.debug("initialize: initializing http collection config factory from a stream.");
+        try (InputStreamReader isr = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            setConfig(JaxbUtils.unmarshal(HttpDatacollectionConfig.class, isr));
         }
     }
 
     /**
-     * Be sure to call this method before calling getInstance().
-     *
-     * @throws java.io.IOException if any.
-     * @throws java.io.FileNotFoundException if any.
+     * Be sure to call this method before calling getInstance(). It does not access the configuration,
+     * so it is safe to call where Config Management is not available (e.g. on Minion).
      */
-    public static synchronized void init() throws IOException, FileNotFoundException {
-        
+    public static synchronized void init() {
         if (m_instance == null) {
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.HTTP_COLLECTION_CONFIG_FILE_NAME);
-            m_instance = new HttpCollectionConfigFactory(cfgFile.getPath());
-            m_lastModified = cfgFile.lastModified();
-            m_loadedFromFile = true;
+            m_instance = new HttpCollectionConfigFactory();
         }
     }
 
@@ -118,48 +115,38 @@ public class HttpCollectionConfigFactory {
      *             if init has not been called
      */
     public static synchronized HttpCollectionConfigFactory getInstance() {
-        
         if (m_instance == null) {
             throw new IllegalStateException("You must call HttpCollectionConfigFactory.init() before calling getInstance().");
         }
         return m_instance;
     }
-    
+
     /**
      * <p>setInstance</p>
      *
      * @param instance a {@link org.opennms.netmgt.config.HttpCollectionConfigFactory} object.
      */
-    public static synchronized void setInstance(HttpCollectionConfigFactory instance) {
+    public static synchronized void setInstance(final HttpCollectionConfigFactory instance) {
         m_instance = instance;
-        m_loadedFromFile = false;
     }
 
     /**
-     * <p>reload</p>
-     *
-     * @throws java.io.IOException if any.
-     * @throws java.io.FileNotFoundException if any.
+     * Sets the DAO the configuration is read from. Passing {@code null} makes the factory look up the
+     * DAO from the DAO context again on next use.
      */
-    public synchronized void reload() throws IOException, FileNotFoundException {
-        m_instance = null;
-        init();
+    public static void setConfigDao(final HttpCollectionConfigDao configDao) {
+        s_configDao = configDao;
     }
 
-
-    /**
-     * Reload the http-datacollection-config.xml file if it has been changed since we last
-     * read it.
-     *
-     * @throws java.io.IOException if any.
-     */
-    protected void updateFromFile() throws IOException {
-        if (m_loadedFromFile) {
-            File surveillanceViewsFile = ConfigFileConstants.getFile(ConfigFileConstants.HTTP_COLLECTION_CONFIG_FILE_NAME);
-            if (m_lastModified != surveillanceViewsFile.lastModified()) {
-                this.reload();
+    private static HttpCollectionConfigDao getConfigDao() {
+        if (s_configDao == null) {
+            synchronized (HttpCollectionConfigFactory.class) {
+                if (s_configDao == null) {
+                    s_configDao = BeanUtils.getBean("daoContext", "httpCollectionConfigDao", HttpCollectionConfigDao.class);
+                }
             }
         }
+        return s_configDao;
     }
 
     /**
@@ -167,17 +154,17 @@ public class HttpCollectionConfigFactory {
      *
      * @return a {@link org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig} object.
      */
-    public static synchronized HttpDatacollectionConfig getConfig() {
-        return m_config;
+    public static HttpDatacollectionConfig getConfig() {
+        return getConfigDao().getConfig();
     }
 
     /**
-     * <p>setConfig</p>
+     * Replaces the configuration with the given one, held in memory only. Used by tests only.
      *
-     * @param m_config a {@link org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig} object.
+     * @param config a {@link org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig} object.
      */
-    public static synchronized void setConfig(HttpDatacollectionConfig m_config) {
-        HttpCollectionConfigFactory.m_config = m_config;
+    public static void setConfig(final HttpDatacollectionConfig config) {
+        setConfigDao(new InMemoryHttpCollectionConfigDao(config));
     }
 
     /**
@@ -186,26 +173,14 @@ public class HttpCollectionConfigFactory {
      * @param collectionName a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.config.httpdatacollection.HttpCollection} object.
      */
-    public HttpCollection getHttpCollection(String collectionName) {
-        try {
-            updateFromFile();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        List<HttpCollection> collections = m_config.getHttpCollection();
-        HttpCollection collection = null;
-        for (HttpCollection coll : collections) {
+    public HttpCollection getHttpCollection(final String collectionName) {
+        for (final HttpCollection coll : getConfig().getHttpCollection()) {
             if (coll.getName().equalsIgnoreCase(collectionName)) {
-                collection = coll;
-                break;
+                return coll;
             }
         }
-        if (collection == null) {
-            throw new IllegalArgumentException("getHttpCollection: collection name: "
-                    +collectionName+" specified in collectd configuration not found in http collection configuration.");
-        }
-        return collection;
+        throw new IllegalArgumentException("getHttpCollection: collection name: "
+                + collectionName + " specified in collectd configuration not found in http collection configuration.");
     }
 
     /**
@@ -214,56 +189,48 @@ public class HttpCollectionConfigFactory {
      * @param collectionName a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
-    public RrdRepository getRrdRepository(String collectionName) {
-        RrdRepository repo = new RrdRepository();
+    public RrdRepository getRrdRepository(final String collectionName) {
+        final HttpCollection collection = getHttpCollection(collectionName);
+        final RrdRepository repo = new RrdRepository();
         repo.setRrdBaseDir(new File(getRrdPath()));
-        repo.setRraList(getRRAList(collectionName));
-        repo.setStep(getStep(collectionName));
-        repo.setHeartBeat((2 * getStep(collectionName)));
+        repo.setRraList(collection.getRrd().getRra());
+        repo.setStep(collection.getRrd().getStep());
+        repo.setHeartBeat((2 * collection.getRrd().getStep()));
         return repo;
     }
-    
+
     /**
      * <p>getStep</p>
      *
      * @param cName a {@link java.lang.String} object.
      * @return a int.
      */
-    public int getStep(String cName) {
-        HttpCollection collection = getHttpCollection(cName);
-        if (collection != null)
-            return collection.getRrd().getStep();
-        else
-            return -1;
+    public int getStep(final String cName) {
+        return getHttpCollection(cName).getRrd().getStep();
     }
-    
+
     /**
      * <p>getRRAList</p>
      *
      * @param cName a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      */
-    public List<String> getRRAList(String cName) {
-       HttpCollection collection = getHttpCollection(cName);
-        if (collection != null)
-            return collection.getRrd().getRra();
-        else
-            return null;
-
+    public List<String> getRRAList(final String cName) {
+        return getHttpCollection(cName).getRrd().getRra();
     }
-    
+
     /**
      * <p>getRrdPath</p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getRrdPath() {
-        String rrdPath = m_config.getRrdRepository();
+        String rrdPath = getConfig().getRrdRepository();
         if (rrdPath == null) {
             throw new RuntimeException("Configuration error, failed to "
                     + "retrieve path to RRD repository.");
         }
-    
+
         /*
          * TODO: make a path utils class that has the below in it strip the
          * File.separator char off of the end of the path.
@@ -271,8 +238,30 @@ public class HttpCollectionConfigFactory {
         if (rrdPath.endsWith(File.separator)) {
             rrdPath = rrdPath.substring(0, (rrdPath.length() - File.separator.length()));
         }
-        
+
         return rrdPath;
     }
 
+    private static final class InMemoryHttpCollectionConfigDao implements HttpCollectionConfigDao {
+        private volatile HttpDatacollectionConfig config;
+
+        private InMemoryHttpCollectionConfigDao(final HttpDatacollectionConfig config) {
+            this.config = Objects.requireNonNull(config);
+        }
+
+        @Override
+        public HttpDatacollectionConfig getConfig() {
+            return config;
+        }
+
+        @Override
+        public void updateConfig(final HttpDatacollectionConfig config) {
+            this.config = Objects.requireNonNull(config);
+        }
+
+        @Override
+        public void replaceConfig(final HttpDatacollectionConfig config) {
+            this.config = Objects.requireNonNull(config);
+        }
+    }
 }

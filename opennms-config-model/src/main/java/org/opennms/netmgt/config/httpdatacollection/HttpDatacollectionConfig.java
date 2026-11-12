@@ -36,6 +36,8 @@ import javax.xml.bind.annotation.XmlType;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -66,8 +68,15 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 public class HttpDatacollectionConfig implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The name of the configuration in Config Management.
+     */
+    public static final String CM_CONFIG_NAME = "http-datacollection-config";
+
+    @JsonProperty("http-collection")
     @XmlElement(name = "http-collection")
     protected List<HttpCollection> m_httpCollection = new ArrayList<>();
+    @JsonProperty("rrdRepository")
     @XmlAttribute(name = "rrdRepository", required = true)
     protected String m_rrdRepository;
 
@@ -101,7 +110,7 @@ public class HttpDatacollectionConfig implements Serializable {
         return m_rrdRepository;
     }
 
-    void setRrdRepository(final String value) {
+    public void setRrdRepository(final String value) {
         m_rrdRepository = ConfigUtils.assertNotEmpty(value, "value");
     }
 

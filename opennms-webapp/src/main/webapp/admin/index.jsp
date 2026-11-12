@@ -215,6 +215,7 @@
         <ul class="list-unstyled mb-0">
             <li><a href="ui/index.html#/snmp-data-collection">Manage SNMP Data Collection Config</a></li>
             <li><a href="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
+            <li><a href="ui/index.html#/http-collection-config">Configure HTTP Data Collection</a></li>
             <li><a href="ui/index.html#/threshold-config">Configure Thresholds</a></li>
         </ul>
       </div> <!-- card-body -->
@@ -342,6 +343,9 @@
         <p><b>Configure SNMP Data Collection per Interface</b>: This interface will allow you
             to configure which IP and non-IP interfaces are used in SNMP Data Collection.
         </p>
+
+        <p><b>Configure HTTP Data Collection</b>: Allows you to add, remove, or modify the HTTP collections:
+            the URLs the HTTP collector requests and the values it extracts from the responses.</p>
 
         <p><b>Configure thresholds</b>: Allows you to add, remove, or modify threshold groups,
         thresholds, and the threshd packages that apply them.</p>

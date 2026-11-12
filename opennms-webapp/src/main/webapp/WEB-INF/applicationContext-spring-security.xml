@@ -109,6 +109,10 @@
     <intercept-url pattern="/rest/cm/snmp-config.*" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
     <intercept-url pattern="/rest/cm/trapd-config/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
     <intercept-url pattern="/rest/cm/trapd-config.*" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <!-- The http-datacollection-config CM configuration can carry credentials (URL user-info, Authorization
+         headers). Only the admin role can read or change it, the same as /api/v2/httpcollection. -->
+    <intercept-url pattern="/rest/cm/http-datacollection-config/**" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/cm/http-datacollection-config.*" access="hasAnyRole('ROLE_ADMIN')"/>
 
 
     <!-- Calls to health/overview are always accepted -->
@@ -409,6 +413,11 @@
     <intercept-url pattern="/api/v2/threshd.*" method="PUT" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/threshd/**" method="PATCH" access="ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/threshd.*" method="PATCH" access="ROLE_ADMIN" />
+
+    <!-- The HTTP collector configuration can carry credentials (URL user-info, Authorization headers),
+         so it is admin-only for every method, reads included. -->
+    <intercept-url pattern="/api/v2/httpcollection/**" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/httpcollection.*" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- Discovery is a provisioning operation (its include/exclude URLs can read local files or fetch URLs);
          restrict it to provisioning/admin roles rather than the generic ROLE_REST catch-all below -->
