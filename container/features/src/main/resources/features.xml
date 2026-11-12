@@ -1231,17 +1231,6 @@
         <bundle start-level="${lateStartLevel}">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.mapquest/${project.version}</bundle>
         <bundle start-level="${lateStartLevel}">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>
     </feature>
-    <feature name="vaadin-snmp-events-and-metrics" version="${project.version}" description="OpenNMS :: Features :: SNMP Events and Metrics Admin UI">
-        <details>OpenNMS Vaadin Administration UI for handling SNMP related configuration files for events and data collection.</details>
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features/vaadin-snmp-events-and-metrics/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/widgetset/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.themes/onms-default-theme/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.mib-compiler/org.opennms.features.mib-compiler.parser/${project.version}</bundle>
-        <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
-    </feature>
     <feature name="osgi-nrtg-api" version="${project.version}" description="OpenNMS :: Features :: NRTG :: Features :: API">
         <details>The API contains the models for the NRTG OSGI projects. It has models for collection jobs, measurements and protocol collectors.</details>
         <bundle>mvn:org.opennms.features.nrtg/nrtg-api/${project.version}</bundle>
