@@ -67,6 +67,37 @@ rerun_save_evidence()
   done
 }
 
+# Print the classes from the comma-separated list that have no report in the given modules.
+rerun_missing_reports()
+{
+  local classes="$1" modules="$2" present class module
+
+  present="$(echo "$modules" | tr ',' '\n' | while IFS= read -r module; do
+    find "${module}/target" -path "*-reports/TEST-*.xml" 2>/dev/null || true
+  done | sed -e 's|.*/TEST-||' -e 's|\.xml$||' | sort -u)"
+
+  echo "$classes" | tr ',' '\n' | while IFS= read -r class; do
+    [ -n "$class" ] || continue
+    echo "$present" | grep -q -x -F "$class" || echo "$class"
+  done | paste -s -d, -
+}
+
+# Stop Maven when more test classes fail than the limit permits.
+# This stops a run early when Postgres or Docker is not available.
+rerun_watch_failures()
+{
+  local max_failed="$1" count
+
+  while sleep "${RERUN_WATCH_INTERVAL:-60}"; do
+    count="$(rerun_failed_reports | grep -c . || true)"
+    if [ "$count" -gt "$max_failed" ]; then
+      echo "#### ${count} test classes failed. The limit is ${max_failed}. Stopping Maven."
+      pkill -f 'org.codehaus.plexus.classworlds.launcher.Launcher' || true
+      return 0
+    fi
+  done
+}
+
 # Run the tests, then run the failed classes again.
 #
 #   run_tests_with_rerun <max reruns> <max failed classes> <function>
@@ -75,19 +106,31 @@ rerun_save_evidence()
 # Pass 0 is the full run and gets empty lists. The lists are comma-separated.
 # The function must add RERUN_MAVEN_ARGS to the Maven command when the max reruns value is not 0.
 #
-# The return value is 0 only when Maven has no error and no report contains a failure.
+# The return value is 0 only when Maven has no error, no report contains a failure,
+# and each class of a rerun has a new report.
 run_tests_with_rerun()
 {
   local max_reruns="$1" max_failed="$2" run_fn="$3"
-  local pass=0 exit_code log reports units its modules count retried=""
+  local pass=0 exit_code log reports units its modules count missing watcher retried=""
 
   mkdir -p "$RERUN_LOG_DIR"
 
   while true; do
     log="${RERUN_LOG_DIR}/pass-${pass}.log"
+    watcher=""
+    if [ "$max_reruns" -gt 0 ] && [ "$pass" -eq 0 ]; then
+      rerun_watch_failures "$max_failed" &
+      watcher=$!
+    fi
+
     set +e
     "$run_fn" "$pass" "$units" "$its" "$modules" 2>&1 | tee "$log"
     exit_code="${PIPESTATUS[0]}"
+    if [ -n "$watcher" ]; then
+      pkill -P "$watcher" 2>/dev/null
+      kill "$watcher" 2>/dev/null
+      wait "$watcher" 2>/dev/null
+    fi
     set -e
 
     if [ "$max_reruns" -eq 0 ]; then
@@ -95,7 +138,12 @@ run_tests_with_rerun()
     fi
 
     reports="$(rerun_failed_reports)"
+    count="$(echo "$reports" | grep -c . || true)"
 
+    if [ "$count" -gt "$max_failed" ]; then
+      echo "#### ${count} test classes failed. The limit for a rerun is ${max_failed}, no rerun."
+      return 1
+    fi
     if [ "$exit_code" -ne 0 ]; then
       echo "#### Maven failed with exit code ${exit_code}. This is not a test failure, no rerun."
       return "$exit_code"
@@ -103,6 +151,13 @@ run_tests_with_rerun()
     if rerun_fork_failed "$log"; then
       echo "#### A test JVM crashed or timed out, no rerun."
       return 1
+    fi
+    if [ "$pass" -gt 0 ]; then
+      missing="$(rerun_missing_reports "$retried" "$modules")"
+      if [ -n "$missing" ]; then
+        echo "#### The rerun did not run these classes: ${missing}"
+        return 1
+      fi
     fi
 
     if [ -z "$reports" ]; then
@@ -115,15 +170,10 @@ run_tests_with_rerun()
     units="$(rerun_failed_classes surefire "$reports")"
     its="$(rerun_failed_classes failsafe "$reports")"
     modules="$(rerun_failed_modules "$reports")"
-    count="$(echo "$reports" | wc -l | tr -d ' ')"
     echo "#### Failed tests (unit: ${units:-none}, IT: ${its:-none})"
 
     if [ "$pass" -ge "$max_reruns" ]; then
       echo "#### Rerun result: FAILED after ${pass} rerun(s)"
-      return 1
-    fi
-    if [ "$count" -gt "$max_failed" ]; then
-      echo "#### ${count} test classes failed. The limit for a rerun is ${max_failed}, no rerun."
       return 1
     fi
 
