@@ -21,6 +21,7 @@
  */
 package org.opennms.web.svclayer.api;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.opennms.netmgt.config.groups.Group;
@@ -42,7 +43,22 @@ public interface GroupService {
 
     List<String> getAuthorizedCategoriesAsString(String groupName);
 
-    void saveGroup(OnmsGroup group);
+    /**
+     * Makes the group authorized for exactly the named categories. Only the categories whose membership
+     * differs are touched, so an unchanged set writes nothing. The names must already be validated: a name
+     * that matches no category is ignored.
+     */
+    void setAuthorizedCategories(String groupName, Collection<String> categoryNames);
+
+    /** The version of the groups; see {@link #saveGroup(OnmsGroup, long)}. */
+    long getVersion();
+
+    /**
+     * Saves the name, comments and members of a group that was read after {@link #getVersion()} returned
+     * readVersion. Fails with {@code UserDataChangedException} in the cause chain if the groups changed since, so
+     * that an older copy does not overwrite a newer change.
+     */
+    void saveGroup(OnmsGroup group, long readVersion);
 
     void saveGroup(Group group);
 
@@ -50,7 +66,17 @@ public interface GroupService {
 
     void deleteGroup(String groupName);
 
-    void renameGroup(String oldName, String newName);
+    /**
+     * Moves every category authorization from one group name to another. Touches only
+     * categories (through the CategoryDao) and joins the caller's transaction.
+     */
+    void moveCategoryAuthorizations(String oldName, String newName);
+
+    /**
+     * Removes the group from every category authorization. Touches only categories
+     * (through the CategoryDao) and joins the caller's transaction.
+     */
+    void clearCategoryAuthorizations(String name);
 
     boolean addCategory(String groupName, String categoryName);
 

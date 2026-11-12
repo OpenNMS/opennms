@@ -24,6 +24,7 @@ package org.opennms.netmgt.model;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
+import org.opennms.core.utils.IplikeSqlTranslator;
 
 /**
  * Provide OpenNMS-specific Hibernate Restrictions.
@@ -33,14 +34,20 @@ import org.hibernate.type.StringType;
  */
 public abstract class OnmsRestrictions {
     private static final StringType STRING_TYPE = new StringType();
-    
+
     /**
      * Performs an iplike match on the ipAddr column of the current table.
+     * Translatable match expressions become native-inet range predicates the
+     * database answers through an expression index; the rest call iplike().
      *
      * @param value iplike match
      * @return SQL restriction for this iplike match
      */
     public static Criterion ipLike(String value) {
+        final String nativePredicate = IplikeSqlTranslator.toSqlPredicate(value, "{alias}.ipAddr");
+        if (nativePredicate != null) {
+            return Restrictions.sqlRestriction(nativePredicate);
+        }
         return Restrictions.sqlRestriction("iplike({alias}.ipAddr, ?)", value, STRING_TYPE);
     }
 }

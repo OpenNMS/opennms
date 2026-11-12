@@ -32,18 +32,6 @@
 
     <bean id="notificationFactory" class="org.opennms.netmgt.config.NotificationFactory" depends-on="notificationFactory-init" factory-method="getInstance"/>
 
-    <bean id="groupFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-      <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
-    </bean>
-
-    <bean id="groupFactory" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupFactory-init" factory-method="getInstance"/>
-
-    <bean id="userFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-      <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
-    </bean>
-
-    <bean id="userFactory" class="org.opennms.netmgt.config.UserFactory" depends-on="userFactory-init" factory-method="getInstance"/>
-
     <bean id="destinationPathFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
       <property name="staticMethod"><value>org.opennms.netmgt.config.DestinationPathFactory.init</value></property>
     </bean>
@@ -59,8 +47,8 @@
     <bean id="broadcastEventProcessor" class="org.opennms.netmgt.notifd.BroadcastEventProcessor">
       <property name="notifdConfigManager" ref="notifdConfigFactory" />
       <property name="notificationManager" ref="notificationFactory" />
-      <property name="groupManager" ref="groupFactory" />
-      <property name="userManager" ref="userFactory" />
+      <property name="groupManager" ref="groupManager" />
+      <property name="userManager" ref="userManager" />
       <property name="destinationPathManager" ref="destinationPathFactory" />
       <property name="notificationCommandManager" ref="notificationCommandFactory" />
       <property name="eventConfDao" ref="eventConfDao" />

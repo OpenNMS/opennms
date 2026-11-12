@@ -29,7 +29,8 @@
 	org.opennms.netmgt.config.users.User,
     org.springframework.web.context.WebApplicationContext,
     org.springframework.web.context.support.WebApplicationContextUtils,
-    org.opennms.web.api.Authentication"
+    org.opennms.web.api.Authentication,
+    org.owasp.encoder.Encode"
 %>
 
 <%
@@ -65,7 +66,7 @@
     document.selfServiceForm.action = "account/selfService/newPasswordEntry";
     document.selfServiceForm.submit();
 <% } else { %>
-	alert("The <%= userid %> user is read-only!  Please have an administrator change your password.");
+	alert("The <%= Encode.forJavaScript(userid) %> user is read-only!  Please have an administrator change your password.");
 <% } %>
   }
 </script>

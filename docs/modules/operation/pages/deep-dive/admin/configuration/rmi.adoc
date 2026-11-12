@@ -32,8 +32,8 @@ NOTE: If `$\{OPENNMS_HOME}/etc/opennms.conf` does not exist in your install, you
 == Allow user authentication
 
 Authentication is allowed only for users who are assigned the `admin` or `jmx` roles (`ROLE_ADMIN`, `ROLE_JMX`).
-To assign the `admin` role to a user, add `ROLE_ADMIN` to their entry in `users.xml`.
-Similarly, to assign the `jmx` role to a user, add `ROLE_JMX` to their entry in `users.xml`.
+To assign the `admin` role to a user, add `ROLE_ADMIN` to the user on the Users page.
+Similarly, to assign the `jmx` role to a user, add `ROLE_JMX` to the user on the Users page.
 
 If the `ROLE_USER` role is required to allow access to the web UI, ensure that the user's account has it as well (see xref:deep-dive/user-management/security-roles.adoc[]).
 

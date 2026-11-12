@@ -168,7 +168,7 @@ describe('Menu utils', () => {
       expect(toolsItems[0]).toMatchObject({
         key: 'snmpMibCompiler',
         label: 'SNMP MIB Compiler',
-        url: `${baseHref}admin/mibCompiler.jsp`,
+        url: `${baseHref}ui/index.html#/mib-compiler`,
         target: '_self'
       })
       expect(toolsItems[1]).toMatchObject({

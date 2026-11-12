@@ -27,6 +27,7 @@
 	import="java.util.*,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.api.Util,
+		org.owasp.encoder.Encode,
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.destinationPaths.*,
         org.opennms.netmgt.config.notificationCommands.Command
@@ -90,7 +91,7 @@
 
 </script>
 
-<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br/>" : "")%></h2>
+<h2><%=(newPath.getName()!=null ? "Editing path: " + Encode.forHtml(newPath.getName()) + "<br/>" : "")%></h2>
 
 <form method="post" name="commands"
       action="admin/notification/destinationWizard">
@@ -134,7 +135,7 @@
         
           for (int i = 0; i < targets.length; i++)
           {
-              buffer.append("<tr><td>").append(targets[i].getName()).append("</td>");
+              buffer.append("<tr><td>").append(WebSecurityUtils.sanitizeString(targets[i].getName())).append("</td>");
               // don't let user pick commands for email addresses
               boolean isEmailCommand = targets[i].getCommands().size() == 1 &&
                   ("email".equals(targets[i].getCommands().get(0)) || "javaEmail".equals(targets[i].getCommands().get(0)));
@@ -161,7 +162,7 @@
     public String buildCommandSelect(Path path, int index, String name)
       throws ServletException
     {
-        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" multiple size=\"3\" NAME=\"" + name + "Commands\">");
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" multiple size=\"3\" NAME=\"" + Encode.forHtmlAttribute(name) + "Commands\">");
         
         TreeMap<String, Command> commands = null;
         Collection<String> selectedOptions = null;
@@ -179,11 +180,11 @@
         for(String curCommand : commands.keySet()) {
             if (selectedOptions.contains(curCommand))
             {
-                buffer.append("<option selected VALUE=\"" + curCommand + "\">").append(curCommand).append("</option>");
+                buffer.append("<option selected VALUE=\"" + Encode.forHtmlAttribute(curCommand) + "\">").append(Encode.forHtml(curCommand)).append("</option>");
             }
             else
             {
-                buffer.append("<option VALUE=\"" + curCommand + "\">").append(curCommand).append("</option>");
+                buffer.append("<option VALUE=\"" + Encode.forHtmlAttribute(curCommand) + "\">").append(Encode.forHtml(curCommand)).append("</option>");
             }
         }
         } catch (Throwable e)
@@ -199,7 +200,7 @@
     public String buildAutoNotifySelect(String name, String currValue)
     {
           String values[] = {"off", "auto", "on"};
-          StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" size=\"3\" NAME=\"" + name  + "AutoNotify\">");
+          StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" size=\"3\" NAME=\"" + Encode.forHtmlAttribute(name)  + "AutoNotify\">");
           String defaultOption = "on";
  
           if(currValue == null || currValue.equals("")) {

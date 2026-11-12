@@ -164,6 +164,19 @@ public class JsmiMibParserTest {
     }
 
     /**
+     * Whitespace around the UEI base must not end up in the generated UEIs.
+     */
+    @Test
+    public void testNotificationUeisAreTrimmed() throws Exception {
+        Assert.assertTrue(parser.parseMib(new File(MIB_DIR, "IF-MIB.txt")));
+        final Events events = parser.getEvents("  uei.opennms.org/traps/ifmib/ \n");
+        Assert.assertNotNull(events);
+        final List<String> ueis = new ArrayList<>();
+        events.getEvents().forEach(e -> ueis.add(e.getUei()));
+        Assert.assertEquals(List.of("uei.opennms.org/traps/ifmib/linkDown", "uei.opennms.org/traps/ifmib/linkUp"), ueis);
+    }
+
+    /**
      * Test generate events from a semi-invalid MIB.
      *
      * @throws Exception the exception

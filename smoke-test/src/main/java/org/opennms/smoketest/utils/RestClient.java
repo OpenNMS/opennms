@@ -309,6 +309,26 @@ public class RestClient {
         return getBuilder(target).delete();
     }
 
+    /** Creates a user through the v2 users API, with the given security roles. */
+    public Response addUser(final String userId, final String password, final String... roles) {
+        final Map<String, Object> user = new LinkedHashMap<>();
+        user.put("userId", userId);
+        user.put("password", password);
+        user.put("roles", roles);
+        try {
+            final WebTarget target = getTargetV2().path("users");
+            return getBuilder(target).post(Entity.entity(new ObjectMapper().writeValueAsString(user), MediaType.APPLICATION_JSON));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /** Deletes a user through the v2 users API. */
+    public Response deleteUser(final String userId) {
+        final WebTarget target = getTargetV2().path("users").path(userId);
+        return getBuilder(target).delete();
+    }
+
     public Response addMonitoringLocation(OnmsMonitoringLocation location) {
         final WebTarget target = getTargetV2().path("monitoringLocations");
         return getBuilder(target).post(Entity.entity(location, MediaType.APPLICATION_XML));

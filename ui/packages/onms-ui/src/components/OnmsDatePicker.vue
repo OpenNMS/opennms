@@ -1,5 +1,5 @@
 <template>
-  <DatePicker
+  <TimeSafeDatePicker
     :modelValue="modelValue"
     :showTime="showTime"
     :timeOnly="timeOnly"
@@ -20,8 +20,10 @@
 </template>
 
 <script setup lang="ts">
+import { type ComponentOptions, defineComponent } from 'vue'
 import DatePicker from 'primevue/datepicker'
 import type { OnmsHourFormat } from '../types'
+import { toTimeOnlyDate } from '../utils/timeOnlyDate'
 
 // Seam wrapper (NMS-20081) around PrimeVue DatePicker.
 //
@@ -46,6 +48,50 @@ import type { OnmsHourFormat } from '../types'
 // nullable refs (TimeControls' startDateRef/endDateRef), so this wrapper
 // accepts null and collapses it to undefined instead of pushing that `?? undefined`
 // onto every call site.
+// Time-only and daylight saving (NMS-20534): a time-only value is a Date whose date part means nothing, but PrimeVue
+// builds it on today's date: a typed time with `new Date()` (parseDateTime), and a spinner step on an empty picker
+// from today too (viewDate). On the day the browser's clocks go forward, 02:30 does not exist, and the Date becomes
+// 03:30. In time-only mode this subclass puts both on the fixed day of toTimeOnlyDate instead, so every clock time can
+// be picked. A spinner step on a picker that has a value already keeps that value's date, so consumers start their
+// values on that day too (toTimeOnlyDate). PrimeVue-reality: these are internals of primevue@4.5.5's DatePicker,
+// pinned by the daylight-saving tests in tests/onms-ui/OnmsDatePicker.test.ts.
+
+type DatePickerInternals = {
+  timeOnly: boolean
+  rawValue: unknown
+}
+const base = DatePicker as unknown as {
+  render: unknown
+  methods: { populateTime: (this: DatePickerInternals, value: Date, timeString: string, ampm?: string) => void }
+  computed: { viewDate: (this: DatePickerInternals) => Date }
+}
+
+const TimeSafeDatePicker = defineComponent({
+  // still PrimeVue's DatePicker in devtools and tests
+  name: 'DatePicker',
+  extends: DatePicker as unknown as ComponentOptions,
+  render: base.render as never,
+  computed: {
+    viewDate(this: DatePickerInternals): Date {
+      const date = base.computed.viewDate.call(this)
+      if (!this.timeOnly || this.rawValue instanceof Date) {
+        return date
+      }
+      return toTimeOnlyDate(date.getHours(), date.getMinutes(), date.getSeconds())
+    }
+  },
+  methods: {
+    populateTime(this: DatePickerInternals, value: Date, timeString: string, ampm?: string): void {
+      if (this.timeOnly) {
+        const day = toTimeOnlyDate(0, 0)
+        value.setFullYear(day.getFullYear(), day.getMonth(), day.getDate())
+      }
+      base.methods.populateTime.call(this, value, timeString, ampm)
+    }
+  }
+  // the same props, emits and slots as the DatePicker it extends, so the template below is still type-checked
+}) as unknown as typeof DatePicker
+
 withDefaults(defineProps<{
   modelValue?: Date | null
   showTime?: boolean

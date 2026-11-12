@@ -17,6 +17,9 @@
     <!-- Automatically scan for @Component beans -->
     <context:component-scan base-package="org.opennms.web.rest.v1" />
 
+    <!-- the v2 user-management checks, which the v1 user endpoints share -->
+    <bean class="org.opennms.web.rest.v2.UserMgmtRestSupport"/>
+
     <import resource="classpath:/META-INF/cxf/cxf.xml" />
     <import resource="classpath:/META-INF/cxf/cxf-servlet.xml" />
 

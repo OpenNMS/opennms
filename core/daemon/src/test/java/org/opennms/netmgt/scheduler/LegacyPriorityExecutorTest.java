@@ -131,6 +131,87 @@ public class LegacyPriorityExecutorTest {
         queue.add(3);
     }
 
+    private static class KeyedJob extends Executable {
+        private final String m_key;
+        private final CountDownLatch m_started;
+        private final CountDownLatch m_release;
+        private final AtomicInteger m_runs;
+
+        KeyedJob(String key, CountDownLatch started, CountDownLatch release, AtomicInteger runs) {
+            m_key = key;
+            m_started = started;
+            m_release = release;
+            m_runs = runs;
+        }
+
+        @Override
+        public String getName() {
+            return m_key;
+        }
+
+        @Override
+        public void runExecutable() {
+            m_runs.incrementAndGet();
+            m_started.countDown();
+            try {
+                m_release.await(10, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        @Override
+        public boolean isReady() {
+            return true;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof KeyedJob && m_key.equals(((KeyedJob) o).m_key);
+        }
+
+        @Override
+        public int hashCode() {
+            return m_key.hashCode();
+        }
+    }
+
+    /**
+     * A job equal to one that has not started yet is skipped, so a cycle that
+     * outlasts its interval cannot grow the backlog. Once the job starts, an
+     * equal one is accepted again.
+     */
+    @Test
+    public void testEqualPendingJobIsNotQueuedTwice() throws InterruptedException {
+        final LegacyPriorityExecutor executor = new LegacyPriorityExecutor("DedupeTest", 1, 5);
+        final AtomicInteger runs = new AtomicInteger();
+        final CountDownLatch blockerStarted = new CountDownLatch(1);
+        final CountDownLatch release = new CountDownLatch(1);
+        final CountDownLatch nodeStarted = new CountDownLatch(1);
+        final CountDownLatch open = new CountDownLatch(0);
+
+        // the single pool thread is held by the blocker, so "node" stays pending
+        executor.addPriorityReadyRunnable(new KeyedJob("blocker", blockerStarted, release, runs));
+        executor.start();
+        assertTrue(blockerStarted.await(5, TimeUnit.SECONDS));
+
+        executor.addPriorityReadyRunnable(new KeyedJob("node", nodeStarted, open, runs));
+        executor.addPriorityReadyRunnable(new KeyedJob("node", nodeStarted, open, runs));
+        executor.addPriorityReadyRunnable(new KeyedJob("node", nodeStarted, open, runs));
+
+        release.countDown();
+        assertTrue(nodeStarted.await(5, TimeUnit.SECONDS));
+        Thread.sleep(500);
+        assertEquals(2, runs.get());
+
+        // no longer pending: the next cycle's job is accepted
+        final CountDownLatch again = new CountDownLatch(1);
+        executor.addPriorityReadyRunnable(new KeyedJob("node", again, open, runs));
+        assertTrue(again.await(5, TimeUnit.SECONDS));
+        assertEquals(3, runs.get());
+        executor.stop();
+    }
+
     @Test
     public void testSchedulableExecutableGroup() {
         LegacyPriorityExecutor executor = new LegacyPriorityExecutor("CollectorGroupTest", 2, 5);
