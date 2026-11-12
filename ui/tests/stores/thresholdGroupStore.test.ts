@@ -89,12 +89,14 @@ describe('thresholdGroupStore', () => {
       expect(sent(1).thresholds.map(t => t.dsName)).toEqual(['replaced'])
     })
 
-    test('appends rather than throwing when the index is out of range', async () => {
+    test('refuses an index the group does not have instead of appending', async () => {
       const store = useThresholdGroupStore()
 
-      await store.saveDefinition(ThresholdDefinitionKind.Threshold, 99, { ...getDefaultThreshold(), dsName: 'x' })
+      const result = await store.saveDefinition(ThresholdDefinitionKind.Threshold, 99, { ...getDefaultThreshold(), dsName: 'x' })
 
-      expect(sent().thresholds).toHaveLength(2)
+      expect(result.success).toBe(false)
+      expect(API.updateThresholdGroup).not.toHaveBeenCalled()
+      expect(store.currentGroup?.thresholds.map(t => t.dsName)).toEqual(['original'])
     })
 
     test('routes expressions to the expression list', async () => {
