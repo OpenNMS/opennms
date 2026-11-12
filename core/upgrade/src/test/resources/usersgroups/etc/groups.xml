@@ -49,6 +49,11 @@
             <time begins="00:00:00" ends="08:00:00"/>
          </schedule>
       </role>
+      <role name="orphan2" membership-group="Missing">
+         <schedule name="carol" type="daily">
+            <time begins="08:00:00" ends="17:00:00"/>
+         </schedule>
+      </role>
       <role name="unsupervised" membership-group="Oncall" supervisor="ghost">
          <schedule name="bob" type="daily">
             <time begins="00:00:00" ends="08:00:00"/>

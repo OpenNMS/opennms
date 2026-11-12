@@ -36,6 +36,12 @@ An on-call role whose supervisor is not a user (for example, a deleted user) is 
 A role without a supervisor sends no notifications when no one is scheduled.
 Set a supervisor on the On-Call Roles page if the role needs one.
 
+An on-call role whose membership group is not a group (for example, a group that was deleted or renamed in an earlier release) is copied with a new group of that name, and the install log names it.
+The new group has no members, and its comment names the on-call roles it was created for.
+The role still notifies the users it schedules.
+Add the members of the group on the Groups page: a new schedule of the role can name only members of its membership group.
+If the name of the missing group is empty, longer than 256 characters, or one of the names a group must not have, the role is not copied, and the install log names it.
+
 If the users and groups cannot be copied, for this or any other reason, the upgrade fails: the installer ends with "UPGRADE FAILED" and an error status, and {page-component-title} does not start until the installer has run again without the failure.
 The same happens when the installer runs while {page-component-title} is still running and the users and groups have not been copied yet: the copy needs {page-component-title} to be stopped.
 The running {page-component-title} keeps running, but once it stops, it does not start again until then, also not when a service manager such as systemd restarts it.

@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.BundleLists;
@@ -97,12 +98,15 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * security-roles.properties with only built-in roles: the seed adds no users while the file is in etc.</p>
  *
  * <p>Everything is written in one transaction. Entries that the tables cannot hold are skipped with a message: unknown security roles (which login drops today as
- * well), group members and schedule users that do not exist, on-call roles whose membership group does not
- * exist, a second contact of the same type, unknown contact and schedule types, and
- * values longer than their column. Names are matched exactly, without trimming, as OpenNMS matches them
- * today. The XSDs normally reject unknown types, but JaxbUtils reads a file without validation when it
+ * well), group members and schedule users that do not exist, a second contact of the same type, unknown contact
+ * and schedule types, and values longer than their column. Names are matched exactly, without trimming, as OpenNMS
+ * matches them today. The XSDs normally reject unknown types, but JaxbUtils reads a file without validation when it
  * cannot find the XSD. An on-call role whose supervisor does not exist is copied without one, with a warning:
- * the supervisor only covers the times nobody is scheduled.</p>
+ * the supervisor only covers the times nobody is scheduled. An on-call role whose membership group does not exist
+ * (the group pages deleted or renamed a group without checking the roles) is copied with a new group of that name,
+ * with no members and a comment, and a warning: notifd reads only the schedules, so the role keeps notifying the
+ * users it schedules. Only a role whose missing group has a name no group can have (blank, reserved or too long) is
+ * skipped.</p>
  *
  * <p>A user or group with one of the {@link ReservedNames} fails the task before anything is written: such an entry
  * is not dropped, since group members, on-call roles and destination paths refer to it by name.</p>
@@ -646,22 +650,24 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                     warn("On-call role '%s' is in groups.xml more than once; the last one is used", name);
                 }
             }
+            // the groups created for roles whose membership group is missing -> those roles, for the group comments
+            final Map<String, List<String>> createdGroups = new LinkedHashMap<>();
             for (final Role role : roles.values()) {
                 final String name = role.getName();
-                final Integer groupId = m_groupIds.get(role.getMembershipGroup());
-                final Integer supervisorId = m_userIds.get(role.getSupervisor());
-                if (groupId == null) {
-                    skip("on-call role '%s': membership group '%s' is not a group", name, role.getMembershipGroup());
+                // before the membership group, so a role that is skipped does not leave a group behind
+                if (!fits(name, ONCALL_ROLE_NAME_LENGTH, "on-call role", name, "the name")) {
                     continue;
                 }
+                final Integer groupId = membershipGroup(name, role.getMembershipGroup(), createdGroups);
+                if (groupId == null) {
+                    continue;
+                }
+                final Integer supervisorId = m_userIds.get(role.getSupervisor());
                 // the supervisor only covers the times nobody is scheduled: keep the role and its schedules without
                 // one, as notifd did with a supervisor that is not a user (a deleted user)
                 if (supervisorId == null && role.getSupervisor() != null) {
                     warn("On-call role '%s' has the supervisor '%s', which is not a user; the role is copied without a "
                             + "supervisor, so nobody is notified while nobody is scheduled", name, role.getSupervisor());
-                }
-                if (!fits(name, ONCALL_ROLE_NAME_LENGTH, "on-call role", name, "the name")) {
-                    continue;
                 }
                 // the cast: prepare() binds a null as a varchar, which an integer column does not take
                 final int roleId = insert("INSERT INTO oncall_roles (id, name, description, membership_group_id, supervisor_user_id, created_time, last_modified) "
@@ -676,6 +682,56 @@ public class UsersGroupsXmlMigratorOffline extends AbstractOnmsUpgrade {
                     }
                 }
             }
+            for (final Map.Entry<String, List<String>> created : createdGroups.entrySet()) {
+                final List<String> roleNames = created.getValue();
+                update("UPDATE groups SET comments = ? WHERE id = ?",
+                        "Created by the upgrade for the on-call role" + (roleNames.size() == 1 ? " " : "s ")
+                                + roleNames.stream().map(r -> "'" + r + "'").collect(Collectors.joining(", "))
+                                + ": groups.xml had no group of this name.",
+                        m_groupIds.get(created.getKey()));
+            }
+        }
+
+        /**
+         * The id of the membership group of an on-call role. A group that groups.xml does not have, because it was
+         * deleted or renamed by pages that did not check the roles, is created with no members: notifd reads only the
+         * schedules, so the role keeps notifying the users it schedules. A name that no group can have skips the role.
+         *
+         * @param createdGroups the groups created so far, with their roles; updated
+         * @return the group id, or null if the role is skipped
+         */
+        private Integer membershipGroup(final String roleName, final String groupName, final Map<String, List<String>> createdGroups) throws SQLException {
+            final Integer groupId = m_groupIds.get(groupName);
+            if (createdGroups.containsKey(groupName)) {
+                createdGroups.get(groupName).add(roleName);
+                warn("On-call role '%s' has the membership group '%s', which is not a group; it uses the group created "
+                        + "for the on-call role '%s'", roleName, groupName, createdGroups.get(groupName).get(0));
+                return groupId;
+            }
+            if (groupId != null) {
+                return groupId;
+            }
+            if (groupName == null || groupName.isEmpty()) {
+                skip("on-call role '%s': it has no membership group", roleName);
+                return null;
+            }
+            if (ReservedNames.GROUP_NAMES.contains(groupName)) {
+                skip("on-call role '%s': the membership group '%s' is not a group, and groups must not be named %s",
+                        roleName, groupName, String.join(", ", ReservedNames.GROUP_NAMES));
+                return null;
+            }
+            if (!fits(groupName, GROUP_NAME_LENGTH, "on-call role", roleName, "the name of the membership group, which is not a group,")) {
+                return null;
+            }
+            final int created = insert("INSERT INTO groups (id, name, created_time, last_modified) "
+                    + "VALUES (nextval('groups_id_seq'), ?, NOW(), NOW()) RETURNING id", groupName);
+            m_groupIds.put(groupName, created);
+            createdGroups.put(groupName, new ArrayList<>(List.of(roleName)));
+            count("groups");
+            warn("On-call role '%s' has the membership group '%s', which is not a group; the group is created with no "
+                    + "members, and the role keeps notifying the users it schedules. Add the members on the Groups page",
+                    roleName, groupName);
+            return created;
         }
 
         /** @return true if the schedule was written */

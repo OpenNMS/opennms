@@ -232,7 +232,8 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
             // "Ops" is in groups.xml twice; the last one wins, as in GroupManager
             assertEquals(List.of("bob"), usernames(m_groupDao.findByName("Ops").getMembers()));
         });
-        assertEquals(3, count("groups"));
+        // and "Missing", the membership group of on-call roles, which groups.xml does not have
+        assertEquals(4, count("groups"));
     }
 
     @Test
@@ -241,9 +242,22 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
         migrate();
 
         m_sessionUtils.withReadOnlyTransaction(() -> {
-            // "orphan" has no membership group
-            assertEquals(List.of("night", "nosupervisor", "unsupervised"),
+            assertEquals(List.of("night", "nosupervisor", "orphan", "orphan2", "unsupervised"),
                     m_onCallRoleDao.findAll().stream().map(OnCallRole::getName).sorted().collect(Collectors.toList()));
+
+            // the membership group "Missing" is not in groups.xml (a group the old pages deleted or renamed): notifd
+            // reads only the schedules, so the roles are copied with a new group of that name, empty, which they share
+            final OnCallRole orphan = m_onCallRoleDao.findByName("orphan");
+            final UserGroup missing = orphan.getMembershipGroup();
+            assertEquals("Missing", missing.getName());
+            assertTrue(missing.getMembers().isEmpty());
+            assertEquals("Created by the upgrade for the on-call roles 'orphan', 'orphan2': groups.xml had no group of this name.",
+                    missing.getComments());
+            assertEquals("admin", orphan.getSupervisor().getUsername());
+            assertEquals(List.of("bob"), orphan.getSchedules().stream().map(s -> s.getUser().getUsername()).collect(Collectors.toList()));
+            final OnCallRole orphan2 = m_onCallRoleDao.findByName("orphan2");
+            assertEquals(missing.getId(), orphan2.getMembershipGroup().getId());
+            assertEquals(List.of("carol"), orphan2.getSchedules().stream().map(s -> s.getUser().getUsername()).collect(Collectors.toList()));
 
             // the supervisor is optional: a role whose supervisor is not a user (a deleted user) keeps its schedules
             final OnCallRole unsupervised = m_onCallRoleDao.findByName("unsupervised");
@@ -391,6 +405,27 @@ public class UsersGroupsXmlMigratorOfflineIT implements TemporaryDatabaseAware<T
         assertTrue(e.getMessage(), e.getMessage().contains("the on-call role 'calendar'"));
         assertEquals(0, count("groups"));
         assertEquals(0, count("oncall_roles"));
+    }
+
+    /** A missing membership group is created, but not with a name that no group can have: those roles are skipped. */
+    @Test
+    public void testARoleWhoseMissingGroupCannotBeCreatedIsSkipped() throws Exception {
+        copyFixtures();
+        write("groups.xml", "<groupinfo xmlns=\"http://xmlns.opennms.org/xsd/groups\"><groups>"
+                + "<group><name>Ops</name><user>bob</user></group></groups><roles>"
+                + "<role name=\"reserved\" supervisor=\"admin\" membership-group=\"item\"/>"
+                + "<role name=\"long\" supervisor=\"admin\" membership-group=\"" + "x".repeat(300) + "\"/>"
+                + "<role name=\"blank\" supervisor=\"admin\" membership-group=\"\"/>"
+                + "<role name=\"" + "y".repeat(300) + "\" supervisor=\"admin\" membership-group=\"AlsoMissing\"/>"
+                + "<role name=\"kept\" supervisor=\"admin\" membership-group=\"Ops\"/>"
+                + "</roles></groupinfo>");
+        migrate();
+
+        m_sessionUtils.withReadOnlyTransaction(() -> {
+            assertEquals(List.of("kept"), m_onCallRoleDao.findAll().stream().map(OnCallRole::getName).collect(Collectors.toList()));
+            // a role that is skipped for its own name leaves no group behind
+            assertEquals(List.of("Ops"), m_groupDao.findAll().stream().map(UserGroup::getName).collect(Collectors.toList()));
+        });
     }
 
     @Test
