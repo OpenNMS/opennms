@@ -52,6 +52,7 @@
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" prefix="e"%>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
@@ -96,11 +97,12 @@
           <th>Description</th>
 
 			<c:forEach var="role" items="${roleManager.roles}">
-				<c:set var="viewUrl" value="javascript:doView('${role.name}')" />
+				<%-- javascript: URLs are percent-decoded before they run, so percent-encode the JS string too --%>
+				<c:set var="viewUrl" value="javascript:doView('${e:forUriComponent(e:forJavaScript(role.name))}')" />
 				
 				<tr>
 				<td><a href="<c:out value='${viewUrl}'/>"><c:out value="${role.name}"/></a></td>
-				<td><c:set var="supervisorUser"><c:out value="${role.defaultUser}"/></c:set><c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set><span title="<c:out value="${fullName}"/>"><c:out value="${role.defaultUser}"/></span></td>
+				<td><c:choose><c:when test="${empty role.defaultUser}">None</c:when><c:otherwise><c:set var="supervisorUser">${role.defaultUser}</c:set><c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set><span title="<c:out value="${fullName}"/>"><c:out value="${role.defaultUser}"/></span></c:otherwise></c:choose></td>
 				<td>
 					<c:forEach var="scheduledUser" items="${role.currentUsers}">
 						<c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("scheduledUser").toString()) %></c:set>

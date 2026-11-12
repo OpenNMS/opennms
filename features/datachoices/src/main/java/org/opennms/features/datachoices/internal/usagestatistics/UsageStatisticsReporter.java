@@ -68,12 +68,10 @@ import org.opennms.features.usageanalytics.api.UsageAnalyticDao;
 import org.opennms.features.usageanalytics.api.UsageAnalyticMetricName;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.config.DestinationPathFactory;
-import org.opennms.netmgt.config.GroupFactory;
-import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.api.GroupConfig;
+import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.ServiceConfigFactory;
-import org.opennms.netmgt.config.UserFactory;
-import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.EventDao;
@@ -167,7 +165,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     private UsageAnalyticDao m_usageAnalyticDao;
 
-    private GroupFactory m_groupFactory;
+    private GroupConfig m_groupConfig;
+
+    private UserConfig m_userConfig;
     private ForeignSourceRepository m_deployedForeignSourceRepository;
     private DataSourceFactoryBean m_dataSourceFactoryBean;
 
@@ -308,7 +308,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setUsers(this.getUserCount());
         usageStatisticsReport.setDestinationPathCount(getDestinationPathCount());
         usageStatisticsReport.setNotificationEnablementStatus(getNotificationEnablementStatus());
-        usageStatisticsReport.setOnCallRoleCount(m_groupFactory.getRoles().size());
+        usageStatisticsReport.setOnCallRoleCount(getOnCallRoleCount());
         usageStatisticsReport.setRequisitionCount(getDeployedRequisitionCount());
         usageStatisticsReport.setRequisitionWithChangedFSCount(getDeployedRequisitionWithModifiedFSCount());
         usageStatisticsReport.setBusinessEdgeCount(m_businessServiceEdgeDao.countAll());
@@ -468,24 +468,24 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             LOG.error("Error retrieving datasource information", e);
         }
     }
-    private int getUserCount() {
+    int getUserCount() {
         try {
-            UserFactory.init();
-            UserManager userFactory = UserFactory.getInstance();
-            return userFactory.getUsers().size();
-        }catch (Exception e) {
+            return m_userConfig.getUserNames().size();
+        } catch (Exception e) {
             return 0;
         }
     }
 
-    private int getGroupCount() {
-        try{
-            GroupFactory.init();
-            GroupManager groupFactory = GroupFactory.getInstance();
-            return groupFactory.getGroups().size();
+    int getGroupCount() {
+        try {
+            return m_groupConfig.getGroupNames().size();
         } catch (Exception e) {
             return 0;
         }
+    }
+
+    int getOnCallRoleCount() {
+        return m_groupConfig.getRoles().size();
     }
     private String getInstalledFeatures() {
         String installedFeatures;
@@ -693,8 +693,12 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         this.m_notifdConfigFactory = notifdConfigFactory;
     }
 
-    public void setGroupFactory(GroupFactory groupFactory) {
-        this.m_groupFactory = groupFactory;
+    public void setGroupConfig(GroupConfig groupConfig) {
+        this.m_groupConfig = groupConfig;
+    }
+
+    public void setUserConfig(UserConfig userConfig) {
+        this.m_userConfig = userConfig;
     }
 
     public void setDeployedForeignSourceRepository(ForeignSourceRepository fsRepo) {

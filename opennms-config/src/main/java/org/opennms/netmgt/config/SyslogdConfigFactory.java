@@ -35,6 +35,7 @@ import org.opennms.core.config.api.ConfigReloadContainer;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.syslogd.HideMatch;
+import org.opennms.netmgt.config.syslogd.SyslogTcpConfig;
 import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
 import org.opennms.netmgt.config.syslogd.SyslogdConfigurationGroup;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
@@ -117,6 +118,15 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
     @Override
     public synchronized String getListenAddress() {
         return m_config.getConfiguration().getListenAddress().orElse(null);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public synchronized SyslogTcpConfig getTcpConfig() {
+        // An absent tcp element is the UDP-only default, reported as a disabled config so
+        // that the interface can promise a non-null return.
+        final SyslogTcpConfig tcpConfig = m_config.getConfiguration().getTcpConfig();
+        return tcpConfig != null ? tcpConfig : new SyslogTcpConfig();
     }
     
     /**

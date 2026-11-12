@@ -36,6 +36,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,6 +53,8 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.v2.UserMgmtRestSupport;
+import org.opennms.web.svclayer.api.GroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
@@ -86,6 +89,12 @@ public class CategoryRestService extends OnmsRestService {
 
     @Autowired
     private CategoryDao m_categoryDao;
+
+    @Autowired
+    private GroupService m_groupService;
+
+    @Autowired
+    private UserMgmtRestSupport m_support;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -360,8 +369,10 @@ public class CategoryRestService extends OnmsRestService {
                     Both an XML and a JSON body are accepted. A form-encoded body is rejected with 415, and a
                     body that fails to parse comes back as 500 rather than 400.
 
-                    `id` in the body is ignored; the database assigns it. `authorizedGroups` sent here is not
-                    applied; `PUT /categories/{categoryName}/groups/{groupName}` grants group access.""",
+                    `id` in the body is ignored; the database assigns it. `authorizedGroups` grants group access, as
+                    `PUT /categories/{categoryName}/groups/{groupName}` does: a non-empty list needs `ROLE_ADMIN`
+                    (403 without it), and every group in it must exist (400). Without it, the category is created
+                    without group access.""",
             operationId = "createCategory"
     )
     @RequestBody(
@@ -385,27 +396,49 @@ public class CategoryRestService extends OnmsRestService {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Created. `Location` points at `/categories/{name}`."),
-            @ApiResponse(responseCode = "400", description = "The body was absent, or a category with that name already exists.",
+            @ApiResponse(responseCode = "400", description = "The body was absent, a category with that name already exists, or `authorizedGroups` names a group that does not exist.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = {
                                     @ExampleObject(name = "duplicate", value = "A category with name 'Routers' already exists."),
-                                    @ExampleObject(name = "missing", value = "Category must not be null.")
+                                    @ExampleObject(name = "missing", value = "Category must not be null."),
+                                    @ExampleObject(name = "group", value = "Unknown group: NOC")
                             })),
+            @ApiResponse(responseCode = "403", description = "`authorizedGroups` is not empty and the caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Group management requires the admin role."))),
             @ApiResponse(responseCode = "415", description = "The body was form-encoded. Send XML or JSON."),
             @ApiResponse(responseCode = "500", description = "The body could not be parsed as a category.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Failed to marshal/unmarshal XML file while unmarshalling an object (OnmsCategory): javax.xml.bind.UnmarshalException")))
     })
-    public Response createCategory(@Context final UriInfo uriInfo, final OnmsCategory category) {
+    public Response createCategory(@Context final UriInfo uriInfo, @Context final SecurityContext securityContext, final OnmsCategory category) {
         if (category == null) throw getException(Response.Status.BAD_REQUEST, "Category must not be null.");
+        checkAuthorizedGroups(securityContext, category);
         boolean exists = m_categoryDao.findByName(category.getName()) != null;
         if (!exists) {
             m_categoryDao.save(category);
             return Response.created(getRedirectUri(uriInfo, category.getName())).build();
         }
         throw getException(Response.Status.BAD_REQUEST, "A category with name '{}' already exists.", category.getName());
+    }
+
+    /**
+     * The group authorizations of a new category are the group ACL that the group writes change too: they need the
+     * admin role, and every group must exist.
+     */
+    private void checkAuthorizedGroups(final SecurityContext securityContext, final OnmsCategory category) {
+        if (category.getAuthorizedGroups() == null || category.getAuthorizedGroups().isEmpty()) {
+            return;
+        }
+        m_support.assertAdmin(securityContext, "Group management");
+        for (final String group : category.getAuthorizedGroups()) {
+            if (group == null || !m_groupService.existsGroup(group)) {
+                throw m_support.badRequest("Unknown group: " + group);
+            }
+        }
     }
 
     @GET
@@ -454,7 +487,8 @@ public class CategoryRestService extends OnmsRestService {
             summary = "Delete a category",
             description = """
                     Deletes the category definition and, with it, its assignment to every node and its group ACL
-                    entries.
+                    entries. A category that has group authorizations (`authorizedGroups`) needs `ROLE_ADMIN`
+                    (403 without it), like the other group writes, because the delete removes them.
 
                     Nothing else is checked first. Requisitions, surveillance views, notification rules and
                     filter expressions that reference the name are not consulted and keep referring to a category
@@ -466,12 +500,21 @@ public class CategoryRestService extends OnmsRestService {
             @ApiResponse(responseCode = "400", description = "No category has that name.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "A category with name 'NoSuchCat' does not exist.")))
+                            examples = @ExampleObject(value = "A category with name 'NoSuchCat' does not exist."))),
+            @ApiResponse(responseCode = "403", description = "The category has group authorizations and the caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Deleting a category that has group authorizations requires the admin role.")))
     })
-    public Response deleteCategory(@Parameter(description = "Category name.", example = "Core-Routers")
+    public Response deleteCategory(@Context final SecurityContext securityContext,
+                                   @Parameter(description = "Category name.", example = "Core-Routers")
                                    @PathParam("categoryName") final String categoryName) {
         OnmsCategory category = m_categoryDao.findByName(categoryName);
         if (category != null) {
+            // the delete removes the group authorizations (category_group cascades), a group ACL write
+            if (!category.getAuthorizedGroups().isEmpty()) {
+                m_support.assertAdmin(securityContext, "Deleting a category that has group authorizations");
+            }
             m_categoryDao.delete(category);
             return Response.noContent().build();
         }
@@ -485,6 +528,7 @@ public class CategoryRestService extends OnmsRestService {
             summary = "Authorize a group for a category",
             description = """
                     Adds the category to a group's authorized-category list. No request body is read.
+                    Needs `ROLE_ADMIN`, like the other group writes.
 
                     Both the "category does not exist" and the "category is already authorized for this group"
                     cases come back as the same 400 message.""",
@@ -496,24 +540,30 @@ public class CategoryRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Category with name 'Routers' already added or does not exist."))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Group management requires the admin role."))),
             @ApiResponse(responseCode = "404", description = "No group has that name.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NoSuchGroup' does not exist.")))
     })
-    public Response addCategoryToGroup(@Context final ResourceContext context,
+    public Response addCategoryToGroup(@Context final ResourceContext context, @Context final SecurityContext securityContext,
                                        @Parameter(description = "Name of an existing group.", example = "Admin")
                                        @PathParam("groupName") final String groupName,
                                        @Parameter(description = "Name of an existing category.", example = "Routers")
                                        @PathParam("categoryName") final String categoryName) {
-        return context.getResource(GroupRestService.class).addCategory(groupName, categoryName);
+        // GroupRestService.addCategory checks the admin role: this is the same group ACL as /groups/{group}/categories/{category}
+        return context.getResource(GroupRestService.class).addCategory(securityContext, groupName, categoryName);
     }
 
     @DELETE
     @Path("/{categoryName}/groups/{groupName}")
     @Operation(
             summary = "Withdraw a group's authorization for a category",
-            description = "Removes the category from a group's authorized-category list. The category definition itself is untouched.",
+            description = "Removes the category from a group's authorized-category list. The category definition itself is untouched. "
+                    + "Needs `ROLE_ADMIN`, like the other group writes.",
             operationId = "deauthorizeGroupForCategory"
     )
     @ApiResponses(value = {
@@ -522,17 +572,22 @@ public class CategoryRestService extends OnmsRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Category with name 'Routers' does not exist. Remove failed."))),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Group management requires the admin role."))),
             @ApiResponse(responseCode = "404", description = "No group has that name.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Group with name 'NoSuchGroup' does not exist.")))
     })
-    public Response removeCategoryFromGroup(@Context final ResourceContext context,
+    public Response removeCategoryFromGroup(@Context final ResourceContext context, @Context final SecurityContext securityContext,
                                             @Parameter(description = "Name of an existing group.", example = "Admin")
                                             @PathParam("groupName") final String groupName,
                                             @Parameter(description = "Category name.", example = "Routers")
                                             @PathParam("categoryName") final String categoryName) {
-        return context.getResource(GroupRestService.class).removeCategory(groupName, categoryName);
+        // GroupRestService.removeCategory checks the admin role
+        return context.getResource(GroupRestService.class).removeCategory(securityContext, groupName, categoryName);
     }
 
     @GET

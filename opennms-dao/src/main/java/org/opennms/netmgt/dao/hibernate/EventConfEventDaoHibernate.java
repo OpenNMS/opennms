@@ -67,6 +67,26 @@ public class EventConfEventDaoHibernate
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public List<UeiSource> findUeiSources(Collection<String> ueis) {
+        if (ueis == null || ueis.isEmpty()) {
+            return Collections.emptyList();
+        }
+        final List<Object[]> rows = getHibernateTemplate().execute(session ->
+                // A stored UEI can carry surrounding whitespace, which is never part of it. Native SQL,
+                // because SQL trim() only strips spaces. These four are the only whitespace XML allows.
+                session.createNativeQuery("select btrim(e.uei, E' \\t\\n\\r') as uei, s.name, e.enabled"
+                                + " from eventconf_events e join eventconf_sources s on s.id = e.source_id"
+                                + " where btrim(e.uei, E' \\t\\n\\r') in (:ueis)"
+                                + " order by 1 asc, s.file_order desc")
+                        .setParameterList("ueis", ueis)
+                        .list());
+        return rows.stream()
+                .map(row -> new UeiSource((String) row[0], (String) row[1], Boolean.TRUE.equals(row[2])))
+                .toList();
+    }
+
+    @Override
     public int countBySourceId(Long sourceId) {
         return queryInt("select count(e.id) from EventConfEvent e where e.source.id = ?1", sourceId);
     }

@@ -24,22 +24,27 @@ To create a new user account, follow these steps:
 
 . Log in as a user with admin permissions.
 . Click menu:User Management[Manage Users] in the side menu.
-. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users].
-. Click *Add New User* and specify a username and password, confirm the password, and click *OK*.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click *Configure Users*.
+. Click *Add New User*.
+. On the *User* tab, specify a user ID, a password, and the same password again under *Confirm Password*.
 +
-NOTE: You cannot use angle brackets (`<>`), single (`'`) and double quotation marks (`"`), or the ampersand symbol (`&`) in a username.
+NOTE: A user ID cannot contain whitespace, control characters, angle brackets (`<>`), single (`'`) and double quotation marks (`"`), backticks, or any of the characters `& : / \ % ? #`.
+It cannot be `.`, `..`, `item` or `available-roles`, and it can be at most 256 characters long.
+The user IDs `admin` and `rtc` are reserved.
+Comments cannot contain `&`, `<`, `>`, quotation marks or backticks.
 
-. (Optional) Add user information in the appropriate fields.
-. (Optional) <<deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles, Assign user permissions>>.
+. (Optional) Add user information in the appropriate fields: full name, comments, email addresses, phone numbers, pager details and time zone.
+. (Optional) <<deep-dive/user-management/security-roles.adoc#ga-role-user-management-roles, Assign user permissions>> in the *Security Roles* field.
 +
 NOTE: By default, a new user has permissions to acknowledge and work with alarms and notifications.
 They cannot access the *Configure OpenNMS* administration menu.
 +
 To create a user with admin privileges, add the `ROLE_ADMIN` role to their account.
 
-. (Optional) Specify how to send messages to the user in the notification information area.
-. (Optional) <<ga-user-schedule, Set a notification schedule>> for the user.
-. Click *Finish* to save changes.
+. (Optional) Specify how to send messages to the user in the notification fields.
+. (Optional) <<ga-user-schedule, Set a notification schedule>> for the user on the *Duty Schedules* tab.
+. Click *Add User* to save the user.
+Click *Cancel* to discard your changes.
 
 [[ga-user-schedule]]
 == Create duty schedule
@@ -60,8 +65,12 @@ To add a duty schedule for a user or group of users, follow these steps:
 
 . Log in as a user with admin permissions.
 . Click menu:User Management[Manage Users] or menu:User Management[Manage Groups] in the side menu, as appropriate.
-. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users] or *Configure Groups*, as appropriate.
-. Choose the user or group that you want to modify.
-. In the *Duty Schedule* area, choose the number of schedules you want to add from the list and click *Add Schedule*.
-. Specify the days and times during which you want the user or group to receive notifications.
-. Click *Finish*.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click *Configure Users* or *Configure Groups*, as appropriate.
+. Click the edit icon beside the user or group that you want to modify.
+. Open the *Duty Schedules* tab and add a schedule.
+. Specify the days and the begin and end times during which you want the user or group to receive notifications.
++
+NOTE: A schedule cannot end before it begins.
+To cover a night, add two schedules: one that ends at 23:59 and one that begins at 00:00 on the next day.
+
+. Click *Save User* or *Save Group*.

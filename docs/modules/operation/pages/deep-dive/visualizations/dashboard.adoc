@@ -138,27 +138,13 @@ This procedure shows how to assign the Dashboard role to the `drv4doe` user:
 
 . xref:quick-start/users.adoc#create-user[Create a new user] named `drv4doe`.
 The user represents a router and switch jockey.
-. Add the `ROLE_PROVISION` role to the account through the web UI or by manually editing `$\{OPENNMS_HOME}/etc/users.xml`:
+. Add the `ROLE_PROVISION` role to the account:
 
-** *Web UI:*
-
-... Click menu:User Management[Manage Users] in the side menu.
-... Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users].
-... Click *Modify* beside the `drv4doe` account.
-... In the Security Roles section, select `ROLE_PROVISION` in the *Available Roles* list and click *Add >>* to add it to the account.
-... Click *Finish* at the bottom of the page to update the account.
-** *Manually via code:*
-... Add the following code to `$\{OPENNMS_HOME}/etc/users.xml`:
-+
-[source, xml]
-----
-<user>
-    <user-id>drv4doe</user-id>
-    <full-name>dashboard User</full-name>
-    <password salt="true">6FOip6hgZsUwDhdzdPUVV5UhkSxdbZTlq8M5LXWG5586eDPa7BFizirjXEfV/srK</password>
-    <role>ROLE_DASHBOARD</role>
-</user>
-----
+.. Click menu:User Management[Manage Users] in the side menu.
+.. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click *Configure Users*.
+.. Click the edit icon beside the `drv4doe` account.
+.. In the *Security Roles* field, select `ROLE_PROVISION`.
+.. Click *Save User* to update the account.
 
 . Define the surveillance view for `drv4doe` in `$\{OPENNMS_HOME}/etc/surveillance-view.xml`:
 +

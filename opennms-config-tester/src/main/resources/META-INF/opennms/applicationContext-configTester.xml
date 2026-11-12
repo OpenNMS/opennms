@@ -42,7 +42,6 @@
         <entry key="exclude-ueis.properties" value="excludeUeisProperties"/>
         <entry key="email-northbounder-configuration.xml" value="emailNorthbounderConfigDao"/>
         <entry key="geoip-adapter-configuration.xml" value="geoIpConfigDao"/>
-        <entry key="groups.xml" value="groupFactory"/>
         <entry key="http-datacollection-config.xml" value="httpCollectionConfigFactory"/>
         <entry key="jasper-reports.xml" value="legacyLocalJasperReportsDao"/>
         <entry key="javamail-configuration.properties" value="javaMailerConfig"/>
@@ -83,7 +82,6 @@
         <entry key="telemetryd-configuration.xml" value="telemetrydConfigDao"/>
         <entry key="tl1d-configuration.xml" value="tl1ConfigurationDao"/>
         <entry key="translator-configuration.xml" value="eventTranslatorConfigFactory"/>
-        <entry key="users.xml" value="userFactory"/>
         <entry key="vacuumd-configuration.xml" value="vacuumdConfigFactory"/>
         <entry key="viewsdisplay.xml" value="viewsDisplayFactory"/>
 
@@ -168,16 +166,10 @@
     <property name="configResource" value="file:${opennms.home}/etc/email-northbounder-configuration.xml" />
   </bean>
   
-  <bean id="groupFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
-  </bean>
-
   <bean id="geoIpConfigDao" class="org.opennms.netmgt.config.geoip.GeoIpConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/geoip-adapter-configuration.xml" />
   </bean>
 
-  <bean id="groupFactory" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupFactory-init" factory-method="getInstance"/>
-  
   <bean id="httpCollectionConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.HttpCollectionConfigFactory.init</value></property>
   </bean>
@@ -236,23 +228,6 @@
 
   <bean id="graphCollectionConfigFactory" class="org.opennms.netmgt.config.GraphCollectionConfigFactory" depends-on="graphCollectionConfigFactory-init" factory-method="getInstance"/>
     
-  <bean id="groupManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
-  </bean>
-
-  <bean id="groupManager" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupManager-init" factory-method="getInstance"/>
-
-  <bean id="userManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
-  </bean>
-
-  <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
-
-  <bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
-    <property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
-    <property name="userManager" ref="userManager" />
-  </bean>
-  
   <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
   </bean>
@@ -417,12 +392,6 @@
   <bean id="eventTranslatorConfigFactory" class="org.opennms.netmgt.config.EventTranslatorConfigFactory" depends-on="eventTranslatorConfigFactory-init" factory-method="getInstance"/>
 
   <bean id="trapdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultTrapdConfigDao"/>
-
-  <bean id="userFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
-  </bean>
-
-  <bean id="userFactory" class="org.opennms.netmgt.config.UserFactory" depends-on="userFactory-init" factory-method="getInstance"/>
 
   <bean id="vacuumdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.VacuumdConfigFactory.init</value></property>

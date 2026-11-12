@@ -163,7 +163,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
 	 */
 	@ElementCollection
 	@JoinTable(name="category_group", joinColumns=@JoinColumn(name="categoryId"))
-	@Column(name="groupId", nullable=false, length=64)
+	@Column(name="groupId", nullable=false, length=256)
 	public Set<String> getAuthorizedGroups() {
 	    return m_authorizedGroups;
 	}

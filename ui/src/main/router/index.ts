@@ -165,6 +165,12 @@ const router = createRouter({
       beforeEnter: requireRole('adminRole', 'Must be admin to manage groups.')
     },
     {
+      path: '/admin/oncall-roles',
+      name: 'Manage On-Call Roles',
+      component: () => import('@/containers/ManageOnCallRoles.vue'),
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage on-call roles.')
+    },
+    {
       path: '/admin/wsman-config',
       name: 'Manage WS-Man',
       component: () => import('@/containers/ManageWsman.vue'),

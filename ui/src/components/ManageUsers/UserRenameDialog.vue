@@ -20,7 +20,7 @@
         for="user-rename-new-id"
         required
         :error="nameProblem || undefined"
-        hint="Group memberships follow the rename."
+        hint="Group memberships follow the rename; destination paths that target the user by name do not."
       >
         <OnmsInputText
           id="user-rename-new-id"
@@ -54,23 +54,29 @@ import { computed, ref, watch } from 'vue'
 import { OnmsButton, OnmsDialog, OnmsInputText } from '@opennms/onms-ui'
 
 import FormField from '@/components/Common/FormField.vue'
-import { validateAdminName } from '@/lib/adminValidation'
+import useActionFeedback from '@/composables/useActionFeedback'
+import useAdminWriteFeedback from '@/composables/useAdminWriteFeedback'
+import { RESERVED_USER_IDS, validateAdminName, validateReservedName } from '@/lib/adminValidation'
 import { useUserAdminStore } from '@/stores/userAdminStore'
+import { PROTECTED_USER_IDS } from '@/types/userAdmin'
 
 const props = defineProps<{
   visible: boolean
   userId: string
+  version: number
 }>()
 
 const emit = defineEmits(['update:visible'])
 
 const store = useUserAdminStore()
+const { withSpinner } = useActionFeedback()
+const { reportWrite } = useAdminWriteFeedback()
 
 const newUserId = ref('')
 const saving = ref(false)
 const errorText = ref('')
 
-const nameProblem = computed(() => validateAdminName(newUserId.value, 'user-id'))
+const nameProblem = computed(() => validateAdminName(newUserId.value, 'user-id', RESERVED_USER_IDS) || validateReservedName(newUserId.value, PROTECTED_USER_IDS, 'user-id'))
 
 watch(
   () => props.visible,
@@ -85,12 +91,14 @@ watch(
 const save = async () => {
   saving.value = true
   try {
-    const error = await store.renameUser(props.userId, newUserId.value.trim())
-    if (error === null) {
-      emit('update:visible', false)
-    } else {
-      errorText.value = error
-    }
+    const target = newUserId.value.trim()
+    const result = await withSpinner(() => store.renameUser(props.userId, target, props.version))
+    reportWrite(result, `User '${props.userId}' renamed to '${target}'.`, {
+      close: () => emit('update:visible', false),
+      banner: (msg) => {
+        errorText.value = msg
+      }
+    })
   } finally {
     saving.value = false
   }
