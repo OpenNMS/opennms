@@ -202,6 +202,10 @@ public class CollectionSpecification {
     	final Map<String, Object> m = new TreeMap<String, Object>();
         m.put(ParameterName.SERVICE.toString(), m_svcName);
         m.put(ParameterName.SERVICE_INTERVAL.toString(), getService().getInterval().toString());
+        final String agentProtocol = m_collector.getAgentProtocol();
+        if (agentProtocol != null) {
+            m.put(ParameterName.AGENT_PROTOCOL.toString(), agentProtocol);
+        }
         StringBuilder sb;
         Collection<Parameter> params = getService().getParameters();
         for (Parameter p : params) {

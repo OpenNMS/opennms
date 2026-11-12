@@ -32,8 +32,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -314,5 +316,92 @@ public class CollectionSetMapperTest {
                 .thenAnswer(invocation -> ((Supplier<?>) invocation.getArgument(0)).get());
 
         return new CollectionSetMapper(nodeDao, sessionUtils, Mockito.mock(ResourceDao.class));
+    }
+
+    private CollectionSetProtos.CollectionSetResource mapInterfaceResource(String agentProtocol,
+            java.util.function.BiConsumer<CollectionSetBuilder, InterfaceLevelResource> fill) throws UnknownHostException {
+        final CollectionSetMapper mapper = new CollectionSetMapper(Mockito.mock(NodeDao.class), Mockito.mock(SessionUtils.class), Mockito.mock(ResourceDao.class));
+        final CollectionAgent agent = new MockCollectionAgent(1, "test", InetAddress.getLocalHost());
+        final InterfaceLevelResource r = new InterfaceLevelResource(new NodeLevelResource(1), "25");
+        final CollectionSetBuilder builder = new CollectionSetBuilder(agent).withTimestamp(new Date(2));
+        fill.accept(builder, r);
+        final CollectionSetProtos.CollectionSet proto = mapper.buildCollectionSetProtos(builder.build(),
+                ServiceParameters.forAgentProtocol(agentProtocol));
+        assertThat(proto.getResourceList(), Matchers.hasSize(1));
+        return proto.getResource(0);
+    }
+
+    private static List<String> agentProtocols(CollectionSetProtos.CollectionSetResource resource) {
+        return resource.getStringList().stream().filter(a -> "agent_protocol".equals(a.getName()))
+                .map(CollectionSetProtos.StringAttribute::getValue).collect(Collectors.toList());
+    }
+
+    @Test
+    public void testSnmpIdentifierIsNormalized() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource("SNMP", (b, r) ->
+                b.withIdentifiedNumericAttribute(r, "mib2-X-interfaces", "ifHCInOctets", 10, AttributeType.COUNTER,
+                        "SNMP_.1.3.6.1.2.1.31.1.1.1.6.512"));
+        assertEquals(".1.3.6.1.2.1.31.1.1.1.6.512", resource.getNumeric(0).getMetricId());
+        assertEquals(List.of("SNMP"), agentProtocols(resource));
+    }
+
+    @Test
+    public void testIdentifiedStringAttributeGetsMetricId() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource("SNMP", (b, r) ->
+                b.withIdentifiedStringAttribute(r, "g", "ifAlias", "uplink", "SNMP_.1.3.6.1.2.1.31.1.1.1.18.512"));
+        final CollectionSetProtos.StringAttribute alias = resource.getStringList().stream()
+                .filter(a -> "ifAlias".equals(a.getName())).findFirst().get();
+        assertEquals(".1.3.6.1.2.1.31.1.1.1.18.512", alias.getMetricId());
+        assertEquals(List.of("SNMP"), agentProtocols(resource));
+    }
+
+    @Test
+    public void testProtocolWithoutIdentifierPublishesOnlyAgentProtocol() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource("HTTP", (b, r) ->
+                b.withNumericAttribute(r, "group1", "documentCount", 105, AttributeType.GAUGE));
+        assertEquals("", resource.getNumeric(0).getMetricId());
+        assertEquals(List.of("HTTP"), agentProtocols(resource));
+    }
+
+    @Test
+    public void testNoProtocolPublishesNeither() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource(null, (b, r) ->
+                b.withIdentifiedNumericAttribute(r, "g", "a", 1, AttributeType.GAUGE, "SNMP_.1.3.6.1.2.1.1"));
+        assertEquals("", resource.getNumeric(0).getMetricId());
+        assertEquals(List.of(), agentProtocols(resource));
+    }
+
+    @Test
+    public void testPrefixedAttributeNameIsNotAnIdentifier() throws UnknownHostException {
+        // Without an identifier the attribute name stands in for it; a name that happens
+        // to start with the protocol prefix must not become a metric_id.
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource("SNMP", (b, r) ->
+                b.withNumericAttribute(r, "group1", "SNMP_session_up", 1, AttributeType.GAUGE));
+        assertEquals("", resource.getNumeric(0).getMetricId());
+        assertEquals(List.of("SNMP"), agentProtocols(resource));
+    }
+
+    @Test
+    public void testIdentifierOfAnotherProtocolIsIgnored() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource("JMX", (b, r) ->
+                b.withIdentifiedNumericAttribute(r, "g", "a", 1, AttributeType.GAUGE, "SNMP_.1.3.6.1.2.1.1"));
+        assertEquals("", resource.getNumeric(0).getMetricId());
+        assertEquals(List.of("JMX"), agentProtocols(resource));
+    }
+
+    @Test
+    public void testLowercaseBmpIdentifierIsNotPublished() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource("BMP", (b, r) ->
+                b.withIdentifiedNumericAttribute(r, "bmp", "rejected", 3, AttributeType.COUNTER, "bmp_10.0.0.1_rejected"));
+        assertEquals("", resource.getNumeric(0).getMetricId());
+        assertEquals(List.of("BMP"), agentProtocols(resource));
+    }
+
+    @Test
+    public void testExistingAgentProtocolIsKept() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource("SNMP", (b, r) -> b
+                .withStringAttribute(r, "g", "agent_protocol", "CUSTOM")
+                .withIdentifiedNumericAttribute(r, "g", "a", 1, AttributeType.GAUGE, "SNMP_.1.3.6.1.2.1.1"));
+        assertEquals(List.of("CUSTOM"), agentProtocols(resource));
     }
 }

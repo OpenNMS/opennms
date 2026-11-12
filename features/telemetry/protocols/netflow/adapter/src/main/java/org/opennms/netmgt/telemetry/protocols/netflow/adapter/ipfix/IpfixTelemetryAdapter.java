@@ -34,6 +34,14 @@ import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowTele
 import com.codahale.metrics.MetricRegistry;
 
 public class IpfixTelemetryAdapter extends NetflowTelemetryAdapter {
+    /** Agent protocol of this adapter, published as {@code agent_protocol} on Kafka. */
+    public static final String AGENT_PROTOCOL = "IPFIX";
+
+    @Override
+    public String getAgentProtocol() {
+        return AGENT_PROTOCOL;
+    }
+
     public IpfixTelemetryAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry, final NodeInfoCache nodeMetadataCache) {
         super(adapterConfig, metricRegistry, nodeMetadataCache);
     }
