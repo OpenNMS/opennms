@@ -43,7 +43,6 @@
         <entry key="email-northbounder-configuration.xml" value="emailNorthbounderConfigDao"/>
         <entry key="geoip-adapter-configuration.xml" value="geoIpConfigDao"/>
         <entry key="groups.xml" value="groupFactory"/>
-        <entry key="http-datacollection-config.xml" value="httpCollectionConfigFactory"/>
         <entry key="jasper-reports.xml" value="legacyLocalJasperReportsDao"/>
         <entry key="javamail-configuration.properties" value="javaMailerConfig"/>
         <entry key="javamail-configuration.xml" value="javamailConfigurationDao"/>
@@ -178,12 +177,6 @@
 
   <bean id="groupFactory" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupFactory-init" factory-method="getInstance"/>
   
-  <bean id="httpCollectionConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.HttpCollectionConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="httpCollectionConfigFactory" class="org.opennms.netmgt.config.HttpCollectionConfigFactory" depends-on="httpCollectionConfigFactory-init" factory-method="getInstance"/>
-
   <bean id="legacyLocalJasperReportsConfigResource" class="org.springframework.core.io.UrlResource">
     <constructor-arg value="file:${opennms.home}/etc/jasper-reports.xml"/>
   </bean>
