@@ -28,7 +28,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
@@ -55,7 +54,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         
         @Override
         public String toString() {
-            return "Invalid User ["+ WebSecurityUtils.sanitizeString(getName())+"]";
+            return "Invalid User ["+ getName() +"]";
         }
         
     }
@@ -69,7 +68,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         
         @Override
         public String toString() {
-            return "Invalid Group ["+WebSecurityUtils.sanitizeString(getName())+"]";
+            return "Invalid Group ["+ getName() +"]";
         }
         
     }
@@ -79,7 +78,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         try {
             return m_userManager.getUser(name);
         } catch (IOException e) {
-            throw new WebRolesException("Error reading users.xml config file", e);
+            throw new WebRolesException("Error reading the user data", e);
         }
     }
     
@@ -87,7 +86,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         try {
             return m_userManager.getUsers().values();
         } catch (IOException e) {
-            throw new WebRolesException("Error reading users.xml config file", e);
+            throw new WebRolesException("Error reading the user data", e);
         }
     }
     
@@ -99,7 +98,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         try {
             return m_groupManager.getGroup(groupName);
         } catch (IOException e) {
-            throw new WebRolesException("Error reading groups.xml config file", e);
+            throw new WebRolesException("Error reading the group data", e);
         }
     }
     
@@ -107,7 +106,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         try {
             return m_groupManager.getGroups().values();
         } catch (IOException e) {
-            throw new WebRolesException("Error reading groups.xml config file", e);
+            throw new WebRolesException("Error reading the group data", e);
         }
     }
     
@@ -121,7 +120,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
             }
             return webUsers;
         } catch (IOException e) {
-            throw new WebRolesException("Error reading users.xml config file", e);
+            throw new WebRolesException("Error reading the user data", e);
         }
 
     }
@@ -199,7 +198,8 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
            super(role.getName());
            m_role = role;
            super.setDescription(role.getDescription().orElse(null));
-           super.setDefaultUser(getWebUser(role.getSupervisor()));
+           // null when the role has no supervisor
+           super.setDefaultUser(role.getSupervisor() == null ? null : getWebUser(role.getSupervisor()));
            super.setMembershipGroup(getWebGroup(role.getMembershipGroup()));
         }
         
@@ -235,11 +235,15 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         public void save() {
             try {
                 Role role = (m_role == null ? new Role() : m_role);
+                if (m_role != null && m_flags.get(NAME) && !super.getName().equals(m_role.getName())) {
+                    // rename explicitly: saving the renamed object would add a role under the new name
+                    m_groupManager.renameRole(m_role.getName(), super.getName());
+                }
                 if (m_flags.get(DESCR)) {
                     role.setDescription(super.getDescription());
                 }
                 if (m_flags.get(USER)) {
-                    role.setSupervisor(super.getDefaultUser().getName());
+                    role.setSupervisor(super.getDefaultUser() == null ? null : super.getDefaultUser().getName());
                 }
                 if (m_flags.get(GROUP)) {
                     role.setMembershipGroup(super.getMembershipGroup().getName());
@@ -247,18 +251,16 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
                 if (m_flags.get(NAME)) {
                     role.setName(super.getName());
                 }
-                
+
                 Collection<WebSchedEntry> newEntries = getNewEntries();
                 for (WebSchedEntry entry : newEntries) {
                     entry.update(role);
                 }
-                
-                if (m_role != null) {
-                    m_groupManager.saveGroups();
-                } else {
-                    m_groupManager.saveRole(role);
-                    m_role = role;
-                }
+
+                // saveRole() puts this object back into the cache by name: if the cache was reloaded since
+                // getRole(), saving the cache as it is would lose the edit
+                m_groupManager.saveRole(role);
+                m_role = role;
             } catch (Throwable e) {
                 throw new WebRolesException("Unable to save role "+getName()+". "+e.getMessage(), e);
             }

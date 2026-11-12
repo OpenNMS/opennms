@@ -91,6 +91,7 @@
                             org.opennms.netmgt.model.minion,
                             org.opennms.netmgt.model.monitoringLocations,
                             org.opennms.netmgt.model.outage,
+                            org.opennms.netmgt.model.usermgmt,
                             org.opennms.netmgt.telemetry.protocols.bmp.persistence.api,
                             org.opennms.netmgt.xml.event
                         </Import-Package>

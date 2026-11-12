@@ -21,120 +21,93 @@
  */
 package org.opennms.web.api;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
+import java.util.function.Supplier;
 
-import org.opennms.core.utils.BundleLists;
-import org.opennms.core.utils.ConfigFileConstants;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.model.usermgmt.SecurityRoles;
 
 /**
  * An uninstantiatable class that provides a servlet container-independent
  * interface to the authentication system and a list of useful constants.
- * 
- * A predefined list of roles will be used. Optionally, it is possible to
- * define additional roles by creating a file called security-roles.proeprties.
- * 
- * Here is an example for adding 2 additional roles:
- * 
- * roles=operator,manager
- * 
- * The 'default' roles are always going to be added, so the above list is
- * equivalent to:
- * 
- * roles=user,admin,operator,manager
- * 
- * The role names will be translated to upper case, prefixing it with 'ROLE_'.
+ *
+ * The valid roles come from the role source, which DatabaseSecurityRoles sets to the security_roles table. Without
+ * a role source, only the built-in roles are valid.
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="mailto:agalue@opennms.org">Alejandro Galue</A>
  */
 public final class Authentication extends Object {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Authentication.class);
+    public static final String ROLE_USER = SecurityRoles.ROLE_USER;
+    public static final String ROLE_ADMIN = SecurityRoles.ROLE_ADMIN;
+    public static final String ROLE_READONLY = SecurityRoles.ROLE_READONLY;
+    public static final String ROLE_DASHBOARD = SecurityRoles.ROLE_DASHBOARD;
+    public static final String ROLE_DELEGATE = SecurityRoles.ROLE_DELEGATE;
+    public static final String ROLE_RTC = SecurityRoles.ROLE_RTC;
+    public static final String ROLE_PROVISION = SecurityRoles.ROLE_PROVISION;
+    public static final String ROLE_REST = SecurityRoles.ROLE_REST;
+    public static final String ROLE_ASSET_EDITOR = SecurityRoles.ROLE_ASSET_EDITOR;
+    public static final String ROLE_FILESYSTEM_EDITOR = SecurityRoles.ROLE_FILESYSTEM_EDITOR;
+    public static final String ROLE_MOBILE = SecurityRoles.ROLE_MOBILE;
+    public static final String ROLE_JMX = SecurityRoles.ROLE_JMX;
+    public static final String ROLE_MINION = SecurityRoles.ROLE_MINION;
+    public static final String ROLE_REPORT_DESIGNER = SecurityRoles.ROLE_REPORT_DESIGNER;
+    public static final String ROLE_FLOW_MANAGER = SecurityRoles.ROLE_FLOW_MANAGER;
+    public static final String ROLE_DEVICE_CONFIG_BACKUP = SecurityRoles.ROLE_DEVICE_CONFIG_BACKUP;
 
-    public static final String ROLE_CONFIGURATION_FILE = "security-roles.properties";
+    private static final List<String> BUILTIN_ROLES = Collections.unmodifiableList(new ArrayList<>(SecurityRoles.BUILTIN_ROLES.keySet()));
 
-    public static final String ROLE_USER = "ROLE_USER";
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
-    public static final String ROLE_READONLY = "ROLE_READONLY";
-    public static final String ROLE_DASHBOARD = "ROLE_DASHBOARD";
-    public static final String ROLE_DELEGATE = "ROLE_DELEGATE";
-    public static final String ROLE_RTC = "ROLE_RTC";
-    public static final String ROLE_PROVISION = "ROLE_PROVISION";
-    public static final String ROLE_REST = "ROLE_REST";
-    public static final String ROLE_ASSET_EDITOR = "ROLE_ASSET_EDITOR";
-    public static final String ROLE_FILESYSTEM_EDITOR = "ROLE_FILESYSTEM_EDITOR";
-    public static final String ROLE_MOBILE = "ROLE_MOBILE";
-    public static final String ROLE_JMX = "ROLE_JMX";
-    public static final String ROLE_MINION = "ROLE_MINION";
-    public static final String ROLE_REPORT_DESIGNER = "ROLE_REPORT_DESIGNER";
-    public static final String ROLE_FLOW_MANAGER = "ROLE_FLOW_MANAGER";
-    public static final String ROLE_DEVICE_CONFIG_BACKUP = "ROLE_DEVICE_CONFIG_BACKUP";
+    private static final long ROLE_SOURCE_CACHE_MS = 1000;
 
-    private static List<String> s_availableRoles = new ArrayList<>();
-    private static long lastModified = 0;
-
-    static {
-        s_availableRoles.add(ROLE_USER);
-        s_availableRoles.add(ROLE_ADMIN);
-        s_availableRoles.add(ROLE_READONLY);
-        s_availableRoles.add(ROLE_DASHBOARD);
-        s_availableRoles.add(ROLE_DELEGATE);
-        s_availableRoles.add(ROLE_RTC);
-        s_availableRoles.add(ROLE_PROVISION);
-        s_availableRoles.add(ROLE_REST);
-        s_availableRoles.add(ROLE_ASSET_EDITOR);
-        s_availableRoles.add(ROLE_FILESYSTEM_EDITOR);
-        s_availableRoles.add(ROLE_MOBILE);
-        s_availableRoles.add(ROLE_JMX);
-        s_availableRoles.add(ROLE_MINION);
-        s_availableRoles.add(ROLE_REPORT_DESIGNER);
-        s_availableRoles.add(ROLE_FLOW_MANAGER);
-        s_availableRoles.add(ROLE_DEVICE_CONFIG_BACKUP);
-    }
+    private static volatile Supplier<Collection<String>> s_roleSource;
+    private static volatile List<String> s_sourceRoles;
+    private static volatile long s_sourceRolesLoaded;
 
     /** Private, empty constructor so this class cannot be instantiated. */
     private Authentication() {
     }
 
+    /**
+     * Sets where the valid roles come from. With null (the default), only the built-in roles are valid.
+     * DatabaseSecurityRoles sets the security_roles table here.
+     *
+     * @param source the names of all valid roles
+     */
+    public static void setRoleSource(final Supplier<Collection<String>> source) {
+        s_roleSource = source;
+        s_sourceRoles = null;
+    }
+
+    /** @return true if {@link #setRoleSource(Supplier)} has set a role source */
+    public static boolean hasRoleSource() {
+        return s_roleSource != null;
+    }
+
     public static List<String> getAvailableRoles() {
-        loadRoles();
-        return Collections.unmodifiableList(s_availableRoles);
+        final List<String> sourceRoles = sourceRoles();
+        return sourceRoles != null ? sourceRoles : BUILTIN_ROLES;
     }
 
     public static boolean isValidRole(String role) {
-        loadRoles();
-        return s_availableRoles.contains(role);
+        return getAvailableRoles().contains(role);
     }
 
-    private static void loadRoles() {
-        File configFile = new File(ConfigFileConstants.getHome(), "etc" + File.separator + ROLE_CONFIGURATION_FILE);
-        if (configFile.exists() && configFile.lastModified() > lastModified) {
-            lastModified = configFile.lastModified();
-            Properties p = new Properties();
-            try {
-                LOG.info("Loading security roles from {}", configFile);
-                p.load(new FileInputStream(configFile));
-                String roleList = p.getProperty("roles");
-                if (roleList != null) {
-                    for (String role : BundleLists.parseBundleList(roleList)) {
-                        String securityRole = "ROLE_" + role.toUpperCase();
-                        if (!s_availableRoles.contains(securityRole)) {
-                            LOG.info("Adding role {}", securityRole);
-                            s_availableRoles.add(securityRole);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                LOG.warn("Can't load security roles from {}, because: {}", configFile, e.getMessage());
-            }
+    /** @return the roles of the role source, read at most once a second, or null without a role source */
+    private static List<String> sourceRoles() {
+        final Supplier<Collection<String>> source = s_roleSource;
+        if (source == null) {
+            return null;
         }
+        final long now = System.currentTimeMillis();
+        List<String> roles = s_sourceRoles;
+        if (roles == null || now > s_sourceRolesLoaded + ROLE_SOURCE_CACHE_MS) {
+            roles = Collections.unmodifiableList(new ArrayList<>(source.get()));
+            s_sourceRoles = roles;
+            s_sourceRolesLoaded = now;
+        }
+        return roles;
     }
 }

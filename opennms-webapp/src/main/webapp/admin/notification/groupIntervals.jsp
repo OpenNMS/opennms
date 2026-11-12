@@ -28,6 +28,7 @@
 	    java.util.*,
 		org.opennms.web.api.Util,
 		org.opennms.core.utils.WebSecurityUtils,
+		org.owasp.encoder.Encode,
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.destinationPaths.*
 	"
@@ -64,7 +65,7 @@
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
-<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br/>" : "")%></h2>
+<h2><%=(newPath.getName()!=null ? "Editing path: " + Encode.forHtml(newPath.getName()) + "<br/>" : "")%></h2>
 
 <form method="post" name="groupIntervals" action="admin/notification/destinationWizard" >
   <%=Util.makeHiddenTags(request)%>
@@ -107,7 +108,7 @@
         
         for (int i = 0; i < groups.length; i++)
         {
-            buffer.append("<tr><td>").append(groups[i]).append("</td>");
+            buffer.append("<tr><td>").append(WebSecurityUtils.sanitizeString(groups[i])).append("</td>");
             buffer.append("<td>").append(buildIntervalSelect(path, groups[i], index, intervals)).append("</td>");
             buffer.append("</tr>");
         }
@@ -118,7 +119,7 @@
     
     public String buildIntervalSelect(Path path, String group, int index, String[] intervals)
     {
-        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" NAME=\"" + group + "Interval\">");
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" NAME=\"" + Encode.forHtmlAttribute(group) + "Interval\">");
         
         String selectedOption = "0m";
         

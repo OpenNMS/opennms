@@ -9,10 +9,10 @@
     <reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao" availability="mandatory"/>
     <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="mandatory"/>
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
-    <bean id="groupFactory" class="org.opennms.netmgt.config.GroupFactory" init-method="init" scope="prototype"/>
+    <reference id="groupConfig" interface="org.opennms.netmgt.config.api.GroupConfig" availability="mandatory"/>
 
     <bean id="groupDao" class="org.opennms.netmgt.config.GroupManagerGroupDao">
-        <property name="groupManager" ref="groupFactory"/>
+        <property name="groupManager" ref="groupConfig"/>
     </bean>
 
     <bean id="surveillanceViewsUI" class="org.opennms.features.vaadin.surveillanceviews.ui.SurveillanceViewsUI" scope="prototype">

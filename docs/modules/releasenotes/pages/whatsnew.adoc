@@ -175,6 +175,12 @@ After upgrade, manage event configurations through the *Administration -> Manage
 
 See xref:operation:deep-dive/events/event-configuration.adoc#migrating-event-files-after-upgrade[Migrating event files after upgrade] for the steps to re-upload your customized event files from `etc_archive/events/`.
 
+=== Users, groups and roles moved to the DB
+{page-component-title} now stores users, groups, on-call roles and custom security roles in the database.
+The upgrade copies `users.xml`, `groups.xml` and `security-roles.properties` into the database and moves the files to `etc_archive`; new pages replace the JSP pages for users, groups and on-call roles, and the v1 `/rest/users` and `/rest/groups` APIs are deprecated.
+
+See xref:operation:deep-dive/user-management/user-data-in-database.adoc[Users, Groups and Roles in the Database] for the upgrade steps and all changes.
+
 === ActiveMQ store and JVM temp directory moved out of the Karaf cache
 `java.io.tmpdir` moved from `$\{OPENNMS_HOME}/data/tmp` to `$\{OPENNMS_HOME}/tmp`, and the embedded ActiveMQ broker's on-disk store (`activemq.data`) moved from `$\{OPENNMS_HOME}/data/tmp/activemq` to `$\{OPENNMS_HOME}/var/activemq`.
 

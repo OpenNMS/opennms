@@ -115,7 +115,9 @@
       <div class="card-body">
         <ul class="list-unstyled mb-0">
             <li><a href="admin/sysconfig.jsp">System Configuration</a></li>
-            <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and On-Call Roles</a></li>
+            <li><a href="ui/index.html#/admin/users">Configure Users</a></li>
+            <li><a href="ui/index.html#/admin/groups">Configure Groups</a></li>
+            <li><a href="ui/index.html#/admin/oncall-roles">Configure On-Call Roles</a></li>
 
             <% String showZenithConnectLink = System.getProperty("opennms.zenithConnect.enabled", "false");
                 if (Boolean.parseBoolean(showZenithConnectLink)) { %>
@@ -255,12 +257,19 @@
         <span>Descriptions</span>
       </div>
       <div class="card-body">
+        <p><b>Configure Users</b>: Add, modify or delete existing users, and assign
+            them security roles.
+            (User: A person)
         </p>
 
-        <p><b>Configure Users, Groups and On-Call Roles</b>: Add, modify or delete
-            existing users. Groups contain users. Roles are built from groups and provide
+        <p><b>Configure Groups</b>: Groups contain users and are the recipients of
+            notifications.
+            (Group: Administrators)
+        </p>
+
+        <p><b>Configure On-Call Roles</b>: Roles are built from groups and provide
             a mechanism to implement calendar-based on-call staff rotations.
-            (User: A person, Group: Administrators, Role: On Duty Staff)
+            (Role: On Duty Staff)
         </p>
 
 

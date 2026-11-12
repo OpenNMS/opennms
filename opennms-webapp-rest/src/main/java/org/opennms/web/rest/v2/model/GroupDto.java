@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * A group as exposed by the v2 user management API. Field names mirror
- * groups.xml where they overlap. The user list is ordered — the order drives
+ * the legacy groups.xml where they overlap. The user list is ordered — the order drives
  * notification escalation. Fields the API does not expose (default-map) are
  * preserved server-side on update; list fields default to null (not empty) so
  * a request body that omits them means "preserve".
@@ -40,6 +40,12 @@ public class GroupDto {
     private List<String> users;
 
     private List<String> dutySchedules;
+
+    // the authorized categories; null means "preserve" in a request, and responses list them sorted by name
+    private List<String> categories;
+
+    // the row version, also sent as the ETag; ignored in a request body (the If-Match header is the contract)
+    private Integer version;
 
     public String getName() {
         return name;
@@ -71,5 +77,21 @@ public class GroupDto {
 
     public void setDutySchedules(final List<String> dutySchedules) {
         this.dutySchedules = dutySchedules;
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(final List<String> categories) {
+        this.categories = categories;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(final Integer version) {
+        this.version = version;
     }
 }

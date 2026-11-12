@@ -3,9 +3,10 @@ Using The New Notification System For Fun And Profit
 ==============================================================================
 
 Here is an overview of how to configure and use the new Notification system.
-Configuration takes place in 5 xml files, users.xml, groups.xml,
-notifications.xml, destinationPaths.xml and notificationCommands.xml.  Use of
-each is explained below.
+Configuration takes place in the users and groups, which are stored in the
+database and edited in the Web UI, and in 3 xml files, notifications.xml,
+destinationPaths.xml and notificationCommands.xml.  Use of each is explained
+below.
 
 TERMS:
 notification     - the act of contacting a user or group of users via some
@@ -40,9 +41,9 @@ QUICK START GUIDE
     notificationCommands.xml.  If there aren't any copy the xml listed below
     under the explanation for notificationCommands.xml.
 
-2)  Enter at least one user in the users.xml.  This can be done via the admin
-    interface of the Web UI.  If you want to send to a group then make an
-    entry in groups.xml and add all desired users to the group.
+2)  Create at least one user.  This can be done via the admin interface of
+    the Web UI.  If you want to send to a group then create a group and add
+    all desired users to the group.
 
 3)  Enter a <contact> for each user that will be contacted, with a type
     attribute that corresponds to a command listed in
@@ -78,35 +79,32 @@ QUICK START GUIDE
 
 CONFIG FILE EXPLAINATIONS
 
-users.xml:
-This file holds the notification information for all users in the system.  In
-order for a user to actually receive a notice, there must be contact
-information listed in this config file (All notices will still be logged to
-the database, so if the information is missing or incorrect the database still
-has record of the notice).
+Users:
+The users hold the notification information.  In order for a user to actually
+receive a notice, the user must have contact information (All notices will
+still be logged to the database, so if the information is missing or incorrect
+the database still has record of the notice).
 
-A simple contact for a user is as follows:
-<contact type="email" info="temp.user@opennms.org"/>
+A contact of a user has a type and info, for example the type "email" and the
+info "temp.user@opennms.org".
 
-The "type" attribute must match up to a type of command in the
-notificationCommands.xml (see below).  In this example, the type is "email",
-thus the "email" command will be used to send the notice to the user.  The
-"info" attribute will hold whatever information is needed to contact the user
-via the command that appears in "type", in this case its the email address.
-If a page was being sent the "info" attribute will probably hold the pin #.
-The "serviceProvider" attribute is optional, and can be used to indicate the
-service provider of the media being used for the notice.  
+The type must match up to a type of command in notificationCommands.xml (see
+below).  In this example, the type is "email", thus the "email" command will be
+used to send the notice to the user.  The info will hold whatever information
+is needed to contact the user via the command of that type, in this case its
+the email address.  If a page was being sent the info will probably hold the
+pin #.  The service provider is optional, and can be used to indicate the
+service provider of the media being used for the notice.
 
-The <duty-schedule> tag indicates when this user is "on duty" and able to
+The duty schedules of a user indicate when this user is "on duty" and able to
 receive notifications.  A notice will not be sent to this user if when the
 notice command is being run the user is listed as "off-duty".  If no duty
 schedules are listed for a user then the user is assumed to be "on duty" all
-the time.  A user can have more than one duty-schedule listed and they may
-overlap.
+the time.  A user can have more than one duty schedule and they may overlap.
 
 
-groups.xml:
-This file holds a list of users associated with a group name. If Notifd is
+Groups:
+A group holds a list of users associated with a group name. If Notifd is
 told to contact a group of users it will contact each of the users from the
 group in the order that they are listed.
 
