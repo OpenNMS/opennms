@@ -145,6 +145,16 @@ describe('threshdConfigurationStore', () => {
       expect(vi.mocked(API.updateThreshdPackage).mock.calls[1][1].services.map(s => s.name)).toEqual(['replaced'])
     })
 
+    test('refuses an index the package does not have instead of appending', async () => {
+      const store = await load(packageWithGroup('one', 'mib2'))
+
+      const result = await store.saveService(4, { ...getDefaultThreshdService(), name: 'ICMP' })
+
+      expect(result.success).toBe(false)
+      expect(API.updateThreshdPackage).not.toHaveBeenCalled()
+      expect(store.currentPackage?.services.map(s => s.name)).toEqual(['SNMP'])
+    })
+
     test('leaves the loaded package untouched when a service save fails', async () => {
       const store = await load(packageWithGroup('one', 'mib2'))
       vi.mocked(API.updateThreshdPackage).mockResolvedValue(fail('Threshd package \'one\' has changed since it was read.') as never)
