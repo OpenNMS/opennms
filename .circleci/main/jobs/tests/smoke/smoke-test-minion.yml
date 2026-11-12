@@ -9,3 +9,4 @@
           at: ~/
       - run-smoke-tests:
           suite: minion
+          rerun-failtest-count: 1

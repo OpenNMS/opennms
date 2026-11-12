@@ -38,6 +38,7 @@ find_tests()
 }
 
 . ./.circleci/scripts/lib.sh
+. ./.circleci/scripts/rerun-lib.sh
  
 REFERENCE_BRANCH="$(get_reference_branch || echo "develop")"
 
@@ -105,32 +106,30 @@ export MAVEN_OPTS="$MAVEN_OPTS -Xmx4g -XX:ReservedCodeCacheSize=1g"
 # shellcheck disable=SC3045
 ulimit -n 65536
 
-MAVEN_ARGS=()
+BUILD_ARGS=()
 
 case "${CIRCLE_BRANCH}" in
   "master"*|"release-"*|develop)
-    MAVEN_ARGS+=("-Dbuild.type=production")
+    BUILD_ARGS+=("-Dbuild.type=production")
   ;;
 esac
 
+SKIP_ARGS=()
+
 # if node tests does not exist or is empty, skip surefire
 if [ ! -s /tmp/this_node_tests ]; then
-  MAVEN_ARGS+=("-DskipSurefire=true")
+  SKIP_ARGS+=("-DskipSurefire=true")
 fi
- 
-# if node ITs does not exist or is empty, skip surefire
+
+# if node ITs does not exist or is empty, skip failsafe
 if [ ! -s /tmp/this_node_it_tests ]; then
-  MAVEN_ARGS+=("-DskipFailsafe=true")
+  SKIP_ARGS+=("-DskipFailsafe=true")
 fi
 
-if [ "${CCI_FAILURE_OPTION:--fail-fast}" = "--fail-fast" ]; then
-  MAVEN_ARGS+=("-Dfailsafe.skipAfterFailureCount=1")
-fi
-
-MAVEN_COMMANDS=("install")
+RERUN_COUNT="${CCI_RERUN_FAILTEST:-0}"
 
 echo "#### Building Assembly Dependencies"
-./compile.pl "${MAVEN_ARGS[@]}" \
+./compile.pl "${BUILD_ARGS[@]}" "${SKIP_ARGS[@]}" \
            -P'!checkstyle' \
            -P'!production' \
            -Pbuild-bamboo \
@@ -144,8 +143,33 @@ echo "#### Building Assembly Dependencies"
            --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
            install
 
-echo "#### Executing tests"
-ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
+# Pass 0 runs the tests of this node. A later pass runs only the failed classes in their modules.
+run_tests()
+{
+  local pass="$1" units="$2" its="$3" modules="$4"
+  local args=("${BUILD_ARGS[@]}")
+
+  if [ "$pass" -eq 0 ]; then
+    args+=("${SKIP_ARGS[@]}")
+    args+=("-Dtest=$(< /tmp/this_node_tests paste -s -d, -)")
+    args+=("-Dit.test=$(< /tmp/this_node_it_tests paste -s -d, -)")
+    args+=(--projects "$(< /tmp/this_node_projects paste -s -d, -)")
+  else
+    if [ -n "$units" ]; then args+=("-Dtest=${units}"); else args+=("-DskipSurefire=true"); fi
+    if [ -n "$its" ]; then args+=("-Dit.test=${its}"); else args+=("-DskipFailsafe=true"); fi
+    args+=(--projects "$modules")
+  fi
+
+  if [ "$RERUN_COUNT" -gt 0 ]; then
+    args+=("${RERUN_MAVEN_ARGS[@]}")
+  else
+    args+=("${CCI_FAILURE_OPTION:--fail-fast}")
+    if [ "${CCI_FAILURE_OPTION:--fail-fast}" = "--fail-fast" ]; then
+      args+=("-Dfailsafe.skipAfterFailureCount=1")
+    fi
+  fi
+
+  ionice nice ./compile.pl "${args[@]}" \
            -P'!checkstyle' \
            -P'!production' \
            -Pbuild-bamboo \
@@ -157,10 +181,10 @@ ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
            -DrunPingTests=false \
            -DskipITs=false \
            --batch-mode \
-           "${CCI_FAILURE_OPTION:--fail-fast}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \
            -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
-           -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
-           -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
-           --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
            install
+}
+
+echo "#### Executing tests"
+run_tests_with_rerun "$RERUN_COUNT" "${CCI_RERUN_MAX_FAILED:-10}" run_tests
