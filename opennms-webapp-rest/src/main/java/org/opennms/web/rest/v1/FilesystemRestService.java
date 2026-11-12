@@ -436,7 +436,8 @@ public class FilesystemRestService {
             return;
         }
 
-        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        // Use the JDK parser, not the Xerces parser in lib/. The JDK parser limits entity expansion by default.
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newDefaultInstance();
         factory.setValidating(false);
         factory.setNamespaceAware(true);
 

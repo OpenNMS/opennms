@@ -47,8 +47,10 @@ import org.springframework.util.StringUtils;
 public abstract class LoginModuleUtils {
     public static volatile Logger LOG = LoggerFactory.getLogger(LoginModuleUtils.class);
 
+    // Assets: scripts, stylesheets, images, fonts and source maps. NMS-20178: older clients without
+    // Fetch Metadata headers can be saved with "Accept: */*", which their image and font requests send too.
     private static final String[] INVALID_SAVED_REQUEST_URL_SUFFIXES = new String[] {
-        ".css", ".js", ".ttf"
+        ".css", ".js", ".map", ".ttf", ".woff", ".woff2", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico"
     };
 
     // NMS-20174: REST/API requests captured in the request cache (e.g. an XHR that fired

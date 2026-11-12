@@ -23,9 +23,7 @@ package org.opennms.container.jaas;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.api.UserConfig;
-import org.opennms.web.springframework.security.SpringSecurityUserDao;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
@@ -37,16 +35,12 @@ public final class JaasSupport {
 
 	private static AtomicReference<BundleContext> m_context = new AtomicReference<>();
 	private static AtomicReference<UserConfig> m_userConfig = new AtomicReference<>();
-	private static AtomicReference<GroupDao> m_groupDao = new AtomicReference<>();
-	private static AtomicReference<SpringSecurityUserDao> m_userDao = new AtomicReference<>();
 
 	private JaasSupport() {}
 
 	public static synchronized void setContext(final BundleContext context) {
 	    m_context.set(context);
 		m_userConfig.set(null);
-		m_groupDao.set(null);
-		m_userDao.set(null);
 	}
 
 	public static synchronized BundleContext getContext() {
@@ -65,24 +59,6 @@ public final class JaasSupport {
 	    }
 		m_userConfig.set(getFromRegistry(UserConfig.class));
 		return m_userConfig.get();
-	}
-
-	public static SpringSecurityUserDao getSpringSecurityUserDao() {
-	    final var userDao = m_userDao.get();
-	    if (userDao != null) {
-	        return userDao;
-	    }
-		m_userDao.set(getFromRegistry(SpringSecurityUserDao.class));
-		return m_userDao.get();
-	}
-
-	public static GroupDao getGroupDao() {
-	    final var groupDao = m_groupDao.get();
-	    if (groupDao != null) {
-	        return groupDao;
-	    }
-		m_groupDao.set(getFromRegistry(GroupDao.class));
-		return m_groupDao.get();
 	}
 
 	private static <T> T getFromRegistry(final Class<T> clazz) {

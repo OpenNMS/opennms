@@ -46,7 +46,6 @@
           >
             <MarkerPopup
               :baseHref="mainMenu.baseHref"
-              :baseNodeUrl="baseNodeUrl"
               :node="node"
               :ipAddress="ipAddressForNode(node)"
               :nodeLabelToAlarmSeverity="nodeLabelToAlarmSeverity"
@@ -155,7 +154,6 @@ const bounds = computed(() => {
 
 const nodeLabelAlarmSeverityMap = computed(() => mapStore.getNodeAlarmSeverityMap())
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
-const baseNodeUrl = computed<string>(() => `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}`)
 const ipInterfaces = computed<IpInterface[]>(() => ipInterfaceStore.ipInterfaces)
 
 // cached map of node id -> IpInterface list
@@ -284,7 +282,7 @@ const getNodeCoordinateMap = computed(() => {
   const map = new Map<string, Coordinates>()
 
   allNodes.value.forEach((node: Node) => {
-    const coord = { latitude: node.assetRecord.latitude, longitude: node.assetRecord.longitude }
+    const coord = { latitude: node.assetRecord.latitude ?? 0, longitude: node.assetRecord.longitude ?? 0 }
     map.set(node.id, coord)
     map.set(node.label, coord)
   })

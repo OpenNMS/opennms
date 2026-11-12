@@ -30,25 +30,25 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.config.kscReports.Report;
-import org.opennms.netmgt.config.kscReports.ReportsList;
+import org.opennms.netmgt.config.graphcollections.GraphCollection;
+import org.opennms.netmgt.config.graphcollections.GraphCollectionList;
 import org.opennms.netmgt.model.ResourceId;
 import org.springframework.core.io.FileSystemResource;
 
 /** This test verifies the issue NMS-10309 **/
 public class ResourceIdDecodeTest {
 
-    private ReportsList configForLegacyReport;
-    private ReportsList config;
+    private GraphCollectionList configForLegacyReport;
+    private GraphCollectionList config;
 
     @Test
     public void testResourceRetrieval() throws UnsupportedEncodingException {
-        configForLegacyReport = JaxbUtils.unmarshal(ReportsList.class, new FileSystemResource(this.getClass().getResource("/ksc-performance-reports-legacy.xml").getPath()));
-        config = JaxbUtils.unmarshal(ReportsList.class, new FileSystemResource(this.getClass().getResource("/ksc-performance-reports-test.xml").getPath()));
+        configForLegacyReport = JaxbUtils.unmarshal(GraphCollectionList.class, new FileSystemResource(this.getClass().getResource("/ksc-performance-reports-legacy.xml").getPath()));
+        config = JaxbUtils.unmarshal(GraphCollectionList.class, new FileSystemResource(this.getClass().getResource("/ksc-performance-reports-test.xml").getPath()));
         assertNotNull(configForLegacyReport);
         assertNotNull(config);
-        Report reportWithEncodedResource = configForLegacyReport.getReports().get(0);
-        Report report = config.getReports().get(0);
+        GraphCollection reportWithEncodedResource = configForLegacyReport.getCollections().get(0);
+        GraphCollection report = config.getCollections().get(0);
         assertNotNull(reportWithEncodedResource);
         assertNotNull(report);
         // Check that legacy reportId can be decoded to new reportId

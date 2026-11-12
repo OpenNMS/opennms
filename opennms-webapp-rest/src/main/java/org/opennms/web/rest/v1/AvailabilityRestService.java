@@ -28,6 +28,8 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +38,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -55,6 +58,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
+import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -328,6 +332,7 @@ public class AvailabilityRestService extends OnmsRestService {
                       "availability": 99.92797222222222,
                       "service-count": 1,
                       "service-down-count": 0,
+                      "ipinterfaceCount": 1,
                       "ipinterfaces": [
                         {
                           "id": 1,
@@ -385,6 +390,18 @@ public class AvailabilityRestService extends OnmsRestService {
         Return the node's availability broken down by IP interface and monitored service. `up` on a service
         reflects the current service status, not the availability figure next to it.
 
+        Interfaces are ordered by address (IPv4 before IPv6). `limit` and `offset` page through them, and only
+        the page's interfaces and services have their availability computed -- each figure is a query of its
+        own, so a node with many interfaces is far cheaper a page at a time. `ipinterfaceCount` is the node's
+        total, for a paginator; the node's own figures and service counts always cover every interface.
+        `withServices=true` leaves out interfaces with no monitored services before counting and paging,
+        for a caller that shows only monitored interfaces and would otherwise get short or empty pages.
+
+        With neither `start` nor `end`, the figures are the rolling last-24-hours values, unchanged. Supplying
+        either one computes the figures over that window instead; the missing bound defaults to now, or to 24
+        hours before `end`. A node or interface with no managed services reports 100, and an unmanaged service
+        reports -1.
+
         An unknown node id is reported as 500, not 404.""",
             operationId = "getAvailabilityNode"
     )
@@ -399,6 +416,7 @@ public class AvailabilityRestService extends OnmsRestService {
                       "availability": 99.92797222222222,
                       "service-count": 1,
                       "service-down-count": 0,
+                      "ipinterfaceCount": 1,
                       "ipinterfaces": [
                         {
                           "id": 1,
@@ -418,6 +436,10 @@ public class AvailabilityRestService extends OnmsRestService {
                             @Content(mediaType = MediaType.APPLICATION_XML,
                                     schema = @Schema(implementation = AvailabilityNode.class))
                     }),
+            @ApiResponse(responseCode = "400", description = "The requested window is empty or inverted, or `limit` or `offset` is negative.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "start (1787727543996) must be strictly before end (1787641143996)."))),
             @ApiResponse(responseCode = "500", description = "The node does not exist, or its availability data could not be read.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -425,9 +447,35 @@ public class AvailabilityRestService extends OnmsRestService {
     })
     public AvailabilityNode getNode(
             @Parameter(description = "Database id of the node.", required = true, example = "1")
-            @PathParam("nodeId") final Integer nodeId) {
+            @PathParam("nodeId") final Integer nodeId,
+            @Parameter(description = "Window start, epoch milliseconds. When neither `start` nor `end` "
+                    + "is given the figures cover the last 24 hours, exactly as before.",
+                    example = "1787641143996")
+            @QueryParam("start") final Long start,
+            @Parameter(description = "Window end, epoch milliseconds. Defaults to now when only "
+                    + "`start` is given.", example = "1787727543996")
+            @QueryParam("end") final Long end,
+            @Parameter(description = "Most interfaces to return; 0 or absent for all of them.", example = "10")
+            @QueryParam("limit") final Integer limit,
+            @Parameter(description = "Interfaces to skip, in address order.", example = "0")
+            @QueryParam("offset") final Integer offset,
+            @Parameter(description = "Only interfaces with at least one monitored service, both in the page "
+                    + "and in `ipinterfaceCount`.", example = "true")
+            @QueryParam("withServices") final Boolean withServices) {
+
+        // Resolved and validated before the try: the catch-all below rewraps every exception,
+        // including a WebApplicationException, as a 500.
+        final Date[] window = resolveWindow(start, end);
+        if ((limit != null && limit < 0) || (offset != null && offset < 0)) {
+            throw getException(Status.BAD_REQUEST, "limit and offset must not be negative.");
+        }
+        final int pageOffset = offset == null ? 0 : offset;
+        final int pageLimit = limit == null ? 0 : limit;
+
         try {
-            final AvailabilityNode avail = getAvailabilityNode(nodeId);
+            final AvailabilityNode avail = (window == null)
+                    ? getAvailabilityNode(nodeId, null, null, pageOffset, pageLimit, Boolean.TRUE.equals(withServices))
+                    : getAvailabilityNode(nodeId, window[0], window[1], pageOffset, pageLimit, Boolean.TRUE.equals(withServices));
             if (avail == null) {
                 throw getException(Status.NOT_FOUND, "Node {} was not found.", Integer.toString(nodeId));
             }
@@ -439,6 +487,24 @@ public class AvailabilityRestService extends OnmsRestService {
     }
 
     AvailabilityNode getAvailabilityNode(final int id) throws Exception {
+        return getAvailabilityNode(id, null, null);
+    }
+
+    /**
+     * @param start window start, or null to use the rolling last-24-hours figures
+     * @param end window end, ignored when start is null
+     */
+    AvailabilityNode getAvailabilityNode(final int id, final Date start, final Date end) throws Exception {
+        return getAvailabilityNode(id, start, end, 0, 0, false);
+    }
+
+    /**
+     * @param offset interfaces to skip, in address order
+     * @param limit most interfaces to include, or 0 for all of them
+     * @param withServices count and page only the interfaces with at least one monitored service
+     */
+    AvailabilityNode getAvailabilityNode(final int id, final Date start, final Date end, final int offset, final int limit,
+            final boolean withServices) throws Exception {
 
         final OnmsNode dbNode = m_nodeDao.get(id);
         initialize(dbNode);
@@ -446,20 +512,66 @@ public class AvailabilityRestService extends OnmsRestService {
         if (dbNode == null) {
             throw getException(Status.NOT_FOUND, "Node {} was not found.", Integer.toString(id));
         }
-        final double nodeAvail = CategoryModel.getNodeAvailability(id);
+
+        // Branch per call rather than resolving a default window up front: with no window the code
+        // path stays exactly what it was, including which instant CategoryModel takes as "now".
+        final double nodeAvail = (start == null)
+                ? CategoryModel.getNodeAvailability(id)
+                : CategoryModel.getNodeAvailability(id, start, end);
 
         final AvailabilityNode node = new AvailabilityNode(dbNode, nodeAvail);
-        for (final OnmsIpInterface iface : dbNode.getIpInterfaces()) {
-            final double ifaceAvail = CategoryModel.getInterfaceAvailability(id, str(iface.getIpAddress()));
+
+        // In address order, so a page is stable from one request to the next. Only the page's
+        // interfaces are evaluated below: every figure is a query of its own.
+        final List<OnmsIpInterface> interfaces = new ArrayList<>(dbNode.getIpInterfaces());
+        if (withServices) {
+            interfaces.removeIf(iface -> iface.getMonitoredServices().isEmpty());
+        }
+        interfaces.sort(Comparator.comparing(OnmsIpInterface::getIpAddress, new InetAddressComparator()));
+        node.setIpInterfaceCount((long) interfaces.size());
+        final int from = Math.min(offset, interfaces.size());
+        // Not from + limit, which overflows for a large limit: compare against what is left instead.
+        final int to = (limit > 0 && limit < interfaces.size() - from) ? from + limit : interfaces.size();
+
+        for (final OnmsIpInterface iface : interfaces.subList(from, to)) {
+            final String addr = str(iface.getIpAddress());
+            final double ifaceAvail = (start == null)
+                    ? CategoryModel.getInterfaceAvailability(id, addr)
+                    : CategoryModel.getInterfaceAvailability(id, addr, start, end);
             final AvailabilityIpInterface ai = new AvailabilityIpInterface(iface, ifaceAvail);
             for (final OnmsMonitoredService svc : iface.getMonitoredServices()) {
-                final double serviceAvail = CategoryModel.getServiceAvailability(id, str(iface.getIpAddress()), svc.getServiceId());
+                final double serviceAvail = (start == null)
+                        ? CategoryModel.getServiceAvailability(id, addr, svc.getServiceId())
+                        : CategoryModel.getServiceAvailability(id, addr, svc.getServiceId(), start, end);
                 final AvailabilityMonitoredService ams = new AvailabilityMonitoredService(svc, serviceAvail, !svc.isDown());
                 ai.addService(ams);
             }
             node.addIpInterface(ai);
         }
         return node;
+    }
+
+    /**
+     * Resolve the optional window parameters.
+     *
+     * @return null when neither bound was supplied, meaning "use the legacy last-24-hours path"
+     * @throws javax.ws.rs.WebApplicationException 400 when the window is empty or inverted. This is
+     *     thrown by the caller before its try block, because that block rewraps every exception as a
+     *     500. An empty window would otherwise reach getPercentAvailabilityInWindow, which divides by
+     *     the window length.
+     */
+    private static Date[] resolveWindow(final Long start, final Long end) {
+        if (start == null && end == null) {
+            return null;
+        }
+        final long endMs = (end != null) ? end : System.currentTimeMillis();
+        final long startMs = (start != null) ? start : endMs - 86_400_000L;
+
+        if (startMs >= endMs) {
+            throw getException(Status.BAD_REQUEST, "start ({}) must be strictly before end ({}).",
+                    Long.toString(startMs), Long.toString(endMs));
+        }
+        return new Date[] { new Date(startMs), new Date(endMs) };
     }
 
     private void initialize(final OnmsNode dbNode) {

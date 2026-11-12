@@ -91,6 +91,12 @@ public class MenuActionSearchProvider implements SearchProvider {
             searchResultItem.setIdentifier(entry.getUrl());
             searchResultItem.setUrl(entry.getUrl());
             searchResultItem.setLabel(String.format("Open %s", entry.getName()));
+            if (entry.isExternalLink()) {
+                searchResultItem.getProperties().put("isExternalLink", "true");
+            }
+            if (entry.getLinkTarget() != null) {
+                searchResultItem.getProperties().put("linkTarget", entry.getLinkTarget());
+            }
             return searchResultItem;
         }).collect(Collectors.toList());
         final SearchResult searchResult = new SearchResult(Contexts.Action)

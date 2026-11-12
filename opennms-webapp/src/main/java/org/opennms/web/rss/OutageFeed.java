@@ -95,6 +95,10 @@ public class OutageFeed extends AbstractFeed {
                 if (count++ == this.getMaxEntries()) {
                     break;
                 }
+                // Deliberately not the Vue node page (ElementConstants.NODE_DETAILS_URI): feed readers
+                // open this link from outside the app, and a hash route's fragment never reaches the
+                // server. The node id in the query string does, and element/node.jsp stays as a
+                // permanent redirect to the Vue page (NMS-20441).
                 String link = getUrlBase() + "element/node.jsp?node=" + summary.getNodeId();
 
                 entry = new SyndEntryImpl();

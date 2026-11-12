@@ -30,8 +30,11 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +43,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.ws.rs.core.Response;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AdminPageIT extends OpenNMSSeleniumIT {
@@ -75,19 +80,20 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         new String[] { "Manage Event Configurations", "//div[@id='app']//div[@class='event-config']//div[@class='heading']/h1[text()='Manage Event Configurations']" },
 
         // Service Monitoring
-        new String[] { "Configure Scheduled Outages", "//form//input[@value='New Name']" },
+        new String[] { "Configure Scheduled Outages", "//div[@id='app']//div[@class='card-title' and text()='Scheduled Outages']" },
         new String[] { "Manage and Unmanage Interfaces and Services", "//span[text()='Manage and Unmanage Interfaces and Services']" },
         new String[] { "Manage Business Services", "//div[@id='content']//iframe[@name='bsm-admin-page']" },
 
         // Performance Measurement
         new String[] { "Manage SNMP Data Collection Config", "//div[@id='app']//h1[text()='Manage SNMP Data Collection Sources']" },
         new String[] { "Configure SNMP Data Collection per Interface", "//span[text()='Manage SNMP Data Collection per Interface']" },
-        new String[] { "Configure Thresholds", "//span[text()='Threshold Configuration']" },
+        new String[] { "Configure Thresholds", "//div[@id='app']//h1[text()='Threshold Configuration']" },
 
         // Distributed Monitoring
-        new String[] { "Manage Monitoring Locations", "//div[contains(@class,'card')]/table//tr//a[text()='Location Name']" },
-        new String[] { "Manage Applications", "//span[text()='Applications']" },
-        new String[] { "Manage Minions", "//div[contains(@class,'card')]/table//th/a[text()='Location']" },
+        // both links open the same /ui (Vue) page on different tabs; the xpath requires the title and the selected tab
+        new String[] { "Manage Monitoring Locations", "//div[@id='app'][.//h1[@class='page-title' and normalize-space(text())='Manage Minions and Locations']]//*[@data-test='tab-locations' and @aria-selected='true']" },
+        new String[] { "Manage Applications", "//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage Applications']" },
+        new String[] { "Manage Minions", "//div[@id='app'][.//h1[@class='page-title' and normalize-space(text())='Manage Minions and Locations']]//*[@data-test='tab-minions' and @aria-selected='true']" },
 
         // Additional Tools
         new String[] { "Configure Grafana Endpoints (Reports only)", "//div/ul/li/a[contains(text(),'Grafana Endpoints')]" },
@@ -185,31 +191,37 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // this is a malicious string that should be properly escaped
         final String evilString = "foobar'\"><script>alert(document.domain)</script>";
 
-        // navigate to locations page
-        getDriver().get(getBaseUrlInternal() + "opennms/locations/index.jsp");
-        // add a new location
-        findElementByXpath("//button[text()='Add a new location']").click();
-        // wait for modal dialog to appear
-        waitUntil(pageContainsText("Add a new Monitoring Location"));
-        // enter the evil string...
-        enterText(By.xpath("//*[@id=\"addLocationModal\"]/div/div/div/form/div[1]/input"), evilString);
-        // ...and something in the other mandatory field
-        enterText(By.xpath("//*[@id=\"addLocationModal\"]/div/div/div/form/div[2]/input"), "foobar");
-        // hit the submit button
-        findElementByXpath("//*[@id=\"addLocationModal\"]/div/div/div/form/button").click();
-        // wait till the modal dialog is closed
-        waitForClose(By.cssSelector(".modal-dialog"));
+        // the location editor refuses these characters, so the location is created over REST
+        final Response response = stack.opennms().getRestClient().addMonitoringLocation(new OnmsMonitoringLocation(evilString, "foobar"));
+        assertEquals(Response.Status.Family.SUCCESSFUL, response.getStatusInfo().getFamily());
 
-        // navigate to the applications page
-        driver.get(getBaseUrlInternal() + "opennms/admin/applications.htm");
-        // enter an application name...
-        enterText(By.name("newApplicationName"), "foobar");
-        // ...and create it by hitting the button
-        findElementByName("newApplicationSubmit").click();
-        // now click the edit link...
-        findElementByXpath("//*[@id=\"content\"]//table/tbody/tr[2]/td[2]/a").click();
-        // ...and check for the given text.
-        // This will fail if the text is not properly escaped, as a user dialogue will appear.
-        waitUntil(pageContainsText("Edit application foobar"));
+        // the Monitoring Locations tab must show the name as text; a script that ran would raise an alert and fail the wait
+        getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/distributed-monitoring?tab=locations");
+        wait.until(driver -> {
+            try {
+                return driver.findElements(By.cssSelector("[data-test='locations-table'] td")).stream()
+                        .anyMatch(cell -> evilString.equals(cell.getText().trim()));
+            } catch (final StaleElementReferenceException e) {
+                // the table re-renders as its data loads; poll again
+                return false;
+            }
+        });
+
+        // create an application on Manage Applications; saving it opens its editor
+        getDriver().get(getBaseUrlInternal() + "opennms/ui/index.html#/admin/applications");
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("[data-test='add-application-button']"))).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("[data-test='application-name-input']"))).sendKeys("foobar");
+        getDriver().findElement(By.cssSelector("[data-test='application-create-dialog'] [data-test='save-button']")).click();
+
+        // the editor offers the location as a perspective; it must be listed as text, not run
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("[data-test='perspective-locations']"))).click();
+        wait.until(driver -> {
+            try {
+                return driver.findElements(By.cssSelector(".p-multiselect-option")).stream()
+                        .anyMatch(option -> evilString.equals(option.getText().trim()));
+            } catch (final StaleElementReferenceException e) {
+                return false;
+            }
+        });
     }
 }

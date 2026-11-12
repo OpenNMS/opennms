@@ -20,9 +20,9 @@
     <xs:sequence>
       <xs:element name="name" type="xs:string" minOccurs="1"/>
       <xs:element name="filter" type="xs:string" minOccurs="0"/>
-      <xs:element name="language" type="xs:string" default="beanshell" minOccurs="0"/>
-      <xs:element name="className" type="xs:string" default="bsh.util.BeanShellBSFEngine" minOccurs="0"/>
-      <xs:element name="extensions" type="xs:string" default="bsh" minOccurs="0"/>
+      <xs:element name="language" type="xs:string" default="groovy" minOccurs="0"/>
+      <xs:element name="className" type="xs:string" default="org.codehaus.groovy.bsf.GroovyEngine" minOccurs="0"/>
+      <xs:element name="extensions" type="xs:string" default="groovy,gy" minOccurs="0"/>
       <xs:element name="onStart" type="xs:string" minOccurs="0"/>
       <xs:element name="onStop" type="xs:string" minOccurs="0"/>
       <xs:element name="onAlarm" type="xs:string" minOccurs="1"/>

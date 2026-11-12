@@ -1,7 +1,7 @@
 
 [[getting-started-core]]
 = Installation and Configuration
-:description: Install and configure OpenNMS instance including PostgreSQL setup on CentOS/RHEL 9, Debian/Ubuntu, and Docker.
+:description: Install and configure OpenNMS instance including PostgreSQL setup on CentOS/RHEL 9 and 10, Debian/Ubuntu, and Docker.
 
 This section explains how to install and configure a new {page-component-title} instance, including the following tasks:
 
@@ -63,8 +63,8 @@ include::../time-sync.adoc[]
 [[setup-postgresql]]
 == Set up PostgreSQL
 
-TIP: PostgreSQL 14 and 15 use the `scram-sha-256` https://www.postgresql.org/docs/14/auth-password.html[password authentication] method by default.
-If you use older versions of PostgreSQL, you should change the method to `md5` in the `pg_hba.conf` before installing the {page-component-title} core instance.
+TIP: The supported PostgreSQL versions ({compatible-postgresql}) use the `scram-sha-256` https://www.postgresql.org/docs/current/auth-password.html[password authentication] method by default, and {page-component-title} supports it.
+You do not need to change the method to `md5` in `pg_hba.conf`.
 
 == Pool size and maximum database connections
 

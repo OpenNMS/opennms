@@ -24,6 +24,10 @@ package org.opennms.netmgt.poller.client.rpc;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.opennms.core.rpc.xml.AbstractXmlRpcModule;
@@ -46,6 +50,20 @@ public class PollerClientRpcModule extends AbstractXmlRpcModule<PollerRequestDTO
 
     public PollerClientRpcModule() {
         super(PollerRequestDTO.class, PollerResponseDTO.class);
+    }
+
+    /**
+     * Same pool as {@link Executors#newCachedThreadPool()}, with threads named Poller-RPC-N.
+     * Used by both the Spring and the Blueprint wiring.
+     */
+    public static ExecutorService newExecutor() {
+        final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
+        final AtomicInteger threadNumber = new AtomicInteger();
+        return Executors.newCachedThreadPool(r -> {
+            final Thread t = defaultFactory.newThread(r);
+            t.setName("Poller-RPC-" + threadNumber.incrementAndGet());
+            return t;
+        });
     }
 
     @Override

@@ -6,7 +6,8 @@
                 "build-debian",
                 "build-rpm",
                 "integration-test",
-                "oci"
+                "oci",
+                "select-tests"
             ]
         },
         "smoke": {
@@ -19,7 +20,8 @@
                 "integration-test",
                 "smoke-test-core",
                 "smoke-test-minion",
-                "smoke-test-sentinel"
+                "smoke-test-sentinel",
+                "select-tests"
             ]
         },
         "rpms": {
@@ -447,17 +449,7 @@
                 "smoke-test-minion",
                 "smoke-test-sentinel"
             ],
-            "filters": {
-                "branches": {
-                    "ignore": [
-                        "develop"
-                    ],
-                    "only": [
-                        "<< pipeline.parameters.main_branch >>"
-                    ]
-                },
-                "user_overridable": false
-            }
+            "filters": "pipeline.git.branch == pipeline.parameters.main_branch and pipeline.parameters.main_branch != \"develop\""
         },
         "merge-foundation-branch": {
             "context": [
@@ -559,6 +551,7 @@
             "filters": {
                 "branches": {
                     "only": [
+                        "develop",
                         "/^master-.*/"
                     ]
                 },
@@ -602,6 +595,24 @@
             "requires": [
                 "integration-test-with-coverage"
             ]
+        },
+        "select-tests": {
+            "context": [
+                "CircleCI",
+                "anthropic-api"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "develop",
+                        "/^master-.*/",
+                        "/^release-.*/",
+                        "/^foundation-.*/",
+                        "/^merge-.*/"
+                    ]
+                },
+                "user_overridable": false
+            }
         }
     }
 }

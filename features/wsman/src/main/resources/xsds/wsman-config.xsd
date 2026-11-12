@@ -142,6 +142,11 @@
       <attribute name="product-version" type="string" use="optional"/>
       <attribute name="gss-auth" type="boolean" use="optional" />
       <attribute name="kerberos-encryption" type="boolean" use="optional" />
+      <attribute name="requisition" type="string" use="optional">
+        <annotation>
+          <documentation>Requisition (foreign source) the servers this definition names are provisioned into.</documentation>
+        </annotation>
+      </attribute>
     </complexType>
   </element>
   <element name="ip-match">

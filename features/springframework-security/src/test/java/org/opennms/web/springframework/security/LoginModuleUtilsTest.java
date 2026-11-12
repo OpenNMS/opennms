@@ -44,6 +44,17 @@ public class LoginModuleUtilsTest {
     }
 
     @Test
+    public void testImageFontAndSourceMapUrlsAreInvalid() {
+        // NMS-20178: older clients without Fetch Metadata headers can be saved with "Accept: */*",
+        // which their image and font requests send too
+        for (final String url : new String[] { "/graph/graph.png", "/images/a.jpg", "/images/a.jpeg", "/images/a.gif",
+                "/images/a.svg", "/favicon.ico", "/assets/fonts/a.woff", "/assets/fonts/a.woff2", "/ui/assets/index.js.map" }) {
+            assertTrue(url, LoginModuleUtils.isInvalidSavedRequestUrl(url));
+        }
+        assertFalse(LoginModuleUtils.isInvalidSavedRequestUrl("/graph/index.jsp"));
+    }
+
+    @Test
     public void testRestAndApiUrlsAreInvalid() {
         // NMS-20174: a REST XHR captured in the request cache must never become
         // the post-login redirect target (navigating there downloads a file).

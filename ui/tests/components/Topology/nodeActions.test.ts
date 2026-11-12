@@ -25,8 +25,8 @@ import { nodeActionLinks } from '@/components/Topology/nodeActions'
 
 describe('nodeActionLinks', () => {
   it('builds the node-data cross-links for a node id', () => {
-    expect(nodeActionLinks(42)).toEqual([
-      { label: 'Node Details', url: '/opennms/element/node.jsp?node=42' },
+    expect(nodeActionLinks(42, '/opennms/ui#/node/42')).toEqual([
+      { label: 'Node Details', url: '/opennms/ui#/node/42' },
       { label: 'Resource Graphs', url: '/opennms/graph/chooseresource.jsp?node=42' },
       { label: 'Events', url: '/opennms/event/list?filter=node%3D42' },
       { label: 'Alarms', url: '/opennms/alarm/list.htm?filter=node%3D42' }
@@ -34,7 +34,7 @@ describe('nodeActionLinks', () => {
   })
 
   it('encodes the node filter so it is a single query value', () => {
-    const events = nodeActionLinks(7).find(l => l.label === 'Events')!
+    const events = nodeActionLinks(7, '/opennms/ui#/node/7').find(l => l.label === 'Events')!
     expect(events.url).toContain('filter=node%3D7')
   })
 })

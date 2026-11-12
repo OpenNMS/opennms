@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class GroupsTest extends XmlTestNoCastor<Groupinfo> {
+public class GroupsTest extends XmlTest<Groupinfo> {
 
     public GroupsTest(final Groupinfo sampleObject, final Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/groups.xsd");

@@ -26,6 +26,9 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 @XmlJavaTypeAdapter(FilterOperatorAdapter.class)
 @XmlRootElement(name="filterOperator")
 @XmlEnum
@@ -37,5 +40,19 @@ public enum FilterOperator {
 
     public String getEnumName() {
         return this.toString().toLowerCase();
+    }
+
+    /**
+     * Configuration manager JSON uses the same representation as {@link FilterOperatorAdapter}: written as the
+     * constant name, read case-insensitively (configurations imported from XML hold "and"/"or").
+     */
+    @JsonValue
+    String toJson() {
+        return name();
+    }
+
+    @JsonCreator
+    static FilterOperator fromJson(final String value) {
+        return value == null ? null : FilterOperator.valueOf(value.toUpperCase());
     }
 }

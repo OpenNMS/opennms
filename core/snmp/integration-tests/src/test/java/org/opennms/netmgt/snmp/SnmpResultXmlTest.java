@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValueFactory;
 
 /**
@@ -35,7 +35,7 @@ import org.opennms.netmgt.snmp.snmp4j.Snmp4JValueFactory;
  *
  * @author jwhite
  */
-public class SnmpResultXmlTest extends XmlTestNoCastor<SnmpResult> {
+public class SnmpResultXmlTest extends XmlTest<SnmpResult> {
 
     public SnmpResultXmlTest(SnmpResult sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, null);

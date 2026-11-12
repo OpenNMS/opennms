@@ -90,7 +90,7 @@ public class DroolsNorthbounderManager implements Northbounder, InitializingBean
      */
     private void registerNorthbounders() throws Exception {
         if (! m_configDao.getConfig().isEnabled()) {
-            LOG.warn("The Drools NBI is globally disabled, the destinations won't be registered which means all the alarms will be rejected.");
+            LOG.info("The Drools NBI is globally disabled, the destinations won't be registered which means all the alarms will be rejected.");
             return;
         }
         for (DroolsEngine engine : m_configDao.getConfig().getEngines()) {

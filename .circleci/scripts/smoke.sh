@@ -7,6 +7,11 @@ if [ -z "$SUITE" ]; then
   SUITE="core"
 fi
 
+retry()
+{
+	"$@" || "$@"
+}
+
 find_tests()
 {
     # Generate failsafe test list filtered to match the active suite's category
@@ -89,7 +94,12 @@ else
   IT_TESTS="$(< /tmp/this_node_it_tests paste -s -d, -)"
 fi
 
-sudo apt update && sudo apt -y install openjdk-21-jdk-headless
+# bound each attempt so a hung mirror fails fast instead of stalling the job
+# (--foreground: sudo needs the tty's foreground process group or it gets stopped)
+retry timeout --foreground -k 30s 5m sudo apt-get -y update </dev/null \
+  && retry timeout --foreground -k 30s 5m sudo env DEBIAN_FRONTEND=noninteractive \
+       apt-get -y install openjdk-25-jdk-headless </dev/null \
+  || exit 1
 
 # When retries are enabled, use --fail-at-end so all tests run before retrying
 FAILURE_MODE="--fail-fast"

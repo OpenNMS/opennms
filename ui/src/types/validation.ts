@@ -24,6 +24,8 @@ export interface ValidationResult {
   success: boolean
   message: string
   errors?: string[]
+  /** HTTP status of a failed request, when there was a response. */
+  status?: number
 }
 
 export interface ValidationResultWithPayload<T> extends ValidationResult {
@@ -43,6 +45,12 @@ export const createFailureResult = (message: string): ValidationResult => {
     message
   } as ValidationResult
 }
+
+/** True when a write was refused with a 412 because the copy it was made on is stale. */
+export const isPreconditionFailed = (result: ValidationResult): boolean => result.status === 412
+
+/** Appended to the message of a 412 after the store has reloaded the stale copy. */
+export const RELOADED_AFTER_PRECONDITION_FAILED = 'The current version has been loaded.'
 
 export const createResultWithPayload = <T>(success: boolean, message: string, payload?: T): ValidationResultWithPayload<T> => {
   return {

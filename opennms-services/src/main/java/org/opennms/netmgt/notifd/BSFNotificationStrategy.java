@@ -65,8 +65,9 @@ import org.opennms.netmgt.model.notifd.NotificationStrategy;
  * things from the BSF era no longer exist: the implicit {@code bsf} helper
  * object BSF injected into engines, and the {@code bsf-engine} /
  * {@code file-extensions} switches (ignored with a warning). Script engines
- * are discovered from the classpath; BeanShell and Groovy ship with
- * OpenNMS.</p>
+ * are discovered from the classpath; Groovy ships with OpenNMS. BeanShell
+ * was removed along with BSF, so {@code .bsh} scripts no longer resolve to
+ * an engine and must be rewritten in Groovy.</p>
  *
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
  * @author <A HREF="mailto:dschlenk@converge-one.com</A>
@@ -134,7 +135,8 @@ public class BSFNotificationStrategy implements NotificationStrategy {
             Bindings bindings = buildBindings(results);
             ScriptContext context = new SimpleScriptContext();
             context.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
-            // some engines (BeanShell) enumerate every scope unconditionally
+            // some engines enumerate every scope unconditionally, so make sure
+            // the global scope is present rather than null
             context.setBindings(new SimpleBindings(), ScriptContext.GLOBAL_SCOPE);
 
             // Execute the script
@@ -143,21 +145,16 @@ public class BSFNotificationStrategy implements NotificationStrategy {
             if (compiled != null) {
                 returnValue = compiled.eval(context);
             } else {
-                // fresh engine per invocation: BeanShell's engine holds a
-                // mutable Interpreter, so sharing one across notifications
-                // would race; this path must stay per-invocation
+                // a fresh engine per invocation, since an engine may hold
+                // mutable per-script state that would race across notifications
                 final ScriptEngine engine = resolveEngine(getLangClass(), fileName);
                 if (engine == null) {
-                    LOG.error("No JSR-223 script engine found for script '{}' (lang-class '{}'). BeanShell and Groovy are available by default; other engines must be on the classpath.",
+                    LOG.error("No JSR-223 script engine found for script '{}' (lang-class '{}'). Groovy ships with OpenNMS; other engines must be on the classpath.",
                             fileName, getLangClass());
                     return -1;
                 }
                 final String source = Files.readString(scriptFile.toPath(), StandardCharsets.UTF_8);
-                if (engine.getClass().getName().startsWith("bsh.")) {
-                    returnValue = evalWithBeanShellInterpreter(source, bindings);
-                } else {
-                    returnValue = engine.eval(source, context);
-                }
+                returnValue = engine.eval(source, context);
             }
             if ("eval".equals(runType)) {
                 results.put("status", String.valueOf(returnValue));
@@ -188,7 +185,7 @@ public class BSFNotificationStrategy implements NotificationStrategy {
 
     /**
      * Resolution order: an explicit lang-class is looked up as a JSR-223
-     * engine name (the BSF names "beanshell" and "groovy" match), then as an
+     * engine name (the BSF name "groovy" still matches), then as an
      * extension; otherwise the file extension decides, with BSF's ".gy" alias
      * mapped to Groovy since the Groovy engine does not register it.
      */
@@ -249,43 +246,14 @@ public class BSFNotificationStrategy implements NotificationStrategy {
                     // fixed script compiles again; the fallback eval surfaces it
                     LOG.debug("Script '{}' failed to compile ({}); evaluating from source instead", scriptFile, e.toString());
                 } catch (Throwable t) {
-                    // BeanShell declares Compilable but its compile() throws
-                    // java.lang.Error("unimplemented"); latch engines like that
+                    // an engine may declare Compilable but not implement it
+                    // (throwing rather than returning); latch engines like that
                     LOG.debug("Script engine '{}' cannot compile '{}' ({}); evaluating from source instead",
                             engine.getFactory().getEngineName(), scriptFile, t.toString());
                     state.compileUnsupported = true;
                 }
             }
             return state.compiled;
-        }
-    }
-
-    /**
-     * BeanShell's JSR-223 engine cannot represent null variables: its
-     * external namespace treats a null map value as an undefined variable,
-     * breaking scripts that test node fields against null (which worked
-     * under BSF). Drive bsh.Interpreter directly like BSF did -
-     * Interpreter.set defines nulls properly. Reflective because this class
-     * compiles against javax.script only; bsh is a runtime dependency.
-     */
-    private static Object evalWithBeanShellInterpreter(String source, Bindings bindings) throws ScriptException {
-        try {
-            final Class<?> interpreterClass = Class.forName("bsh.Interpreter");
-            final Object interpreter = interpreterClass.getDeclaredConstructor().newInstance();
-            final java.lang.reflect.Method set = interpreterClass.getMethod("set", String.class, Object.class);
-            for (Map.Entry<String, Object> entry : bindings.entrySet()) {
-                set.invoke(interpreter, entry.getKey(), entry.getValue());
-            }
-            return interpreterClass.getMethod("eval", String.class).invoke(interpreter, source);
-        } catch (java.lang.reflect.InvocationTargetException e) {
-            final Throwable cause = e.getCause() != null ? e.getCause() : e;
-            final ScriptException scriptException = new ScriptException(cause.getMessage());
-            scriptException.initCause(cause);
-            throw scriptException;
-        } catch (ReflectiveOperationException e) {
-            final ScriptException scriptException = new ScriptException("BeanShell interpreter not available: " + e);
-            scriptException.initCause(e);
-            throw scriptException;
         }
     }
 

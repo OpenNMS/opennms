@@ -47,9 +47,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.awaitility.core.ConditionTimeoutException;
 import org.opennms.smoketest.stacks.InternetProtocol;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.NetworkProtocol;
@@ -155,9 +157,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         this.overlay = writeOverlay();
 
         String containerCommand = "-s";
-        if (TimeSeriesStrategy.NEWTS.equals(model.getTimeSeriesStrategy())) {
-            this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase());
-        }
+        this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase(Locale.ROOT));
 
         final Integer[] exposedPorts = networkProtocolMap.entrySet().stream()
                 .filter(e -> InternetProtocol.TCP.equals(e.getKey().getIpProtocol()))
@@ -188,6 +188,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     // The framework doesn't support exposing UDP ports directly, so we use this hook to map some of the exposed ports to UDP
                     TestContainerUtils.exposePortsAsUdp(createCmd, exposedUdpPorts);
+                    // Telemetry listeners and the Karaf RMI server
+                    TestContainerUtils.reserveEphemeralPorts(createCmd, "44444,50000-50002");
                     // Use the generated UID and known GID when simulating OpenShift
                     if (model.isSimulateRestricedOpenShiftEnvironment()) {
                         createCmd.withUser(generatedUserId + ":" + TestContainerUtils.OPENSHIFT_CONTAINER_GID);
@@ -203,16 +205,22 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 .withEnv("OPENNMS_DBPASS", "opennms")
                 // These are expected to be set when using Newts
                 // We also set the corresponding properties explicitly in our overlay
-                .withEnv("OPENNMS_CASSANDRA_HOSTNAMES", CASSANDRA_ALIAS)
+                .withEnv("OPENNMS_CASSANDRA_HOSTNAME", CASSANDRA_ALIAS)
                 .withEnv("OPENNMS_CASSANDRA_KEYSPACE", "newts")
                 .withEnv("OPENNMS_CASSANDRA_PORT", Integer.toString(CassandraContainer.CQL_PORT))
                 .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
-                .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
+                // ServiceConfigFactory reads CORE_SERVICE_* from the environment; Syslogd is off by default
+                // Mixed case also exercises the case-insensitive boolean parsing
+                .withEnv("CORE_SERVICE_SYSLOGD_ENABLED", "True")
+                // SnmpPoller is off by default; smoke tests run with it enabled
+                .withEnv("CORE_SERVICE_SNMPPOLLER_ENABLED", "true")
                 .withEnv("JAVA_OPTS", javaOpts)
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand(containerCommand)
                 .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this));
+
+        disableServices();
 
         addFileSystemBind(overlay.toString(),
                         "/opt/opennms-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
@@ -316,6 +324,29 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                             .put("compression.type", model.getKafkaCompressionStrategy().getCodec())
                             .build());
         }
+    }
+
+    /**
+     * Disables the services from {@link OpenNMSProfile#getDisabledServices()}. The stock
+     * service-configuration.xml resolves each service's enabled flag from a CORE_SERVICE_*_ENABLED
+     * environment variable, so we set that variable instead of patching the file.
+     */
+    private void disableServices() {
+        for (final String serviceName : profile.getDisabledServices()) {
+            withEnv(getServiceEnabledEnvVar(serviceName), Boolean.FALSE.toString());
+        }
+    }
+
+    /**
+     * @param serviceName the service name as found in service-configuration.xml, i.e. "OpenNMS:Name=Pollerd"
+     * @return the environment variable controlling whether the service is enabled, i.e. "CORE_SERVICE_POLLERD_ENABLED"
+     */
+    public static String getServiceEnabledEnvVar(final String serviceName) {
+        final String prefix = "OpenNMS:Name=";
+        if (!serviceName.startsWith(prefix)) {
+            throw new IllegalArgumentException("Unexpected service name: " + serviceName);
+        }
+        return "CORE_SERVICE_" + serviceName.substring(prefix.length()).toUpperCase(Locale.ROOT) + "_ENABLED";
     }
 
     /**
@@ -488,23 +519,6 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
         @Override
         protected void waitUntilReady() {
-            try {
-                waitUntilReadyWrapped();
-            } catch (Exception e) {
-                var logs =
-                        "\n\t\t----------------------------------------------------------\n"
-                                + container.getLogs()
-                                .replaceFirst(
-                                        "(?ms).*?(^An error occurred while attempting to start the .*?)\\s*^\\[INFO\\].*",
-                                        "$1\n")
-                                .replaceAll("(?m)^", "\t\t")
-                                + "\t\t----------------------------------------------------------";
-
-                throw e;
-            }
-        }
-
-        protected void waitUntilReadyWrapped() {
             LOG.info("Waiting for startup to begin.");
             final Path managerLog = CONTAINER_LOG_DIR.resolve("manager.log");
             await("waiting for startup to begin")
@@ -542,12 +556,18 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
             // in order to give all the health checks a chance to load.
             LOG.info("Waiting for OpenNMS health check...");
             RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
-            await("waiting for good health check probe")
-                    .atMost(5, MINUTES)
-                    .pollInterval(10, SECONDS)
-                    .failFast("container is no longer running", () -> !container.isRunning())
-                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
-                    .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
+            try {
+                await("waiting for good health check probe")
+                        .atMost(5, MINUTES)
+                        .pollInterval(10, SECONDS)
+                        .failFast("container is no longer running", () -> !container.isRunning())
+                        .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
+                        .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
+            } catch (ConditionTimeoutException e) {
+                // The probe only says "Oh no, something is wrong"; log which check failed and why.
+                LOG.error("OpenNMS health check never passed. Health detail:\n{}", client.getHealthDetail());
+                throw e;
+            }
             LOG.info("Health check passed.");
 
             container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "logs", "karaf.log"));

@@ -28,6 +28,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -54,6 +55,7 @@ public class OpenNMSProfile {
     private final List<OverlayFile> files;
     private final Function<OpenNMSContainer, WaitStrategy> waitStrategy;
     private final HashMap<String, Path> installFeatures;
+    private final Set<String> disabledServices;
 
     private OpenNMSProfile(Builder builder) {
         jvmDebuggingEnabled = builder.jvmDebuggingEnabled;
@@ -61,6 +63,7 @@ public class OpenNMSProfile {
         files = Collections.unmodifiableList(builder.files);
         waitStrategy = Objects.requireNonNull(builder.waitStrategy);
         installFeatures = Objects.requireNonNull(builder.installFeatures);
+        disabledServices = Collections.unmodifiableSet(new LinkedHashSet<>(builder.disabledServices));
     }
 
     public static Builder newBuilder() {
@@ -73,6 +76,7 @@ public class OpenNMSProfile {
         private List<OverlayFile> files = new LinkedList<>();
         private Function<OpenNMSContainer, WaitStrategy> waitStrategy = OpenNMSContainer.WaitForOpenNMS::new;
         private HashMap<String, Path> installFeatures = new LinkedHashMap<>();
+        private Set<String> disabledServices = new LinkedHashSet<>();
 
         /**
          * Enable/disable JVM debugging.
@@ -189,6 +193,17 @@ public class OpenNMSProfile {
         }
 
         /**
+         * Disable a daemon by setting its CORE_SERVICE_*_ENABLED environment variable to false.
+         *
+         * @param serviceName the service name as found in the XML, i.e. "OpenNMS:Name=Pollerd"
+         * @return this builder
+         */
+        public Builder withDisabledService(final String serviceName) {
+            disabledServices.add(Objects.requireNonNull(serviceName));
+            return this;
+        }
+
+        /**
          * Build the profile.
          *
          * @return an immutable profile
@@ -217,5 +232,9 @@ public class OpenNMSProfile {
 
     public HashMap<String, Path> getInstallFeatures() {
         return installFeatures;
+    }
+
+    public Set<String> getDisabledServices() {
+        return disabledServices;
     }
 }

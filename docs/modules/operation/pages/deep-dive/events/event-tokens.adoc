@@ -167,3 +167,5 @@ The following elements in event definitions accept replacement tokens:
 * `operaction` (`/menu`)
 * `tticket`
 * `alarm-data`
+
+NOTE: `autoaction`, `operaction`, and `tticket` are legacy event fields that are not used by other services.

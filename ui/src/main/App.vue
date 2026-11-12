@@ -13,6 +13,7 @@
     <div class="main-content" :class="{ 'main-content-fill': fillsLayoutCell }">
       <Spinner />
       <OnmsToastHost />
+      <SessionExpiredDialog />
       <router-view v-slot="{ Component }">
         <keep-alive include="MapKeepAlive">
           <component :is="Component" />
@@ -31,13 +32,17 @@
 >
 import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { whenever } from '@vueuse/core'
 
 import { OnmsToastHost, useOnmsChromelessHost } from '@opennms/onms-ui'
+import startBrowserNotifications from '@/composables/useBrowserNotifications'
 import OnmsAppLayout from '@/components/Layout/OnmsAppLayout.vue'
 import Footer from '@/components/Layout/Footer.vue'
 import Menubar from '@/components/Menu/Menubar.vue'
 import SideMenu from '@/components/Menu/SideMenu.vue'
 import Spinner from '@/components/Common/Spinner.vue'
+import SessionExpiredDialog from '@/components/Common/SessionExpiredDialog.vue'
+import { hidesMenuInFrame } from '@/lib/framing'
 import { useAuthStore } from '@/stores/authStore'
 import { useInfoStore } from '@/stores/infoStore'
 import { usePluginStore } from '@/stores/pluginStore'
@@ -55,8 +60,10 @@ const fillsLayoutCell = computed<boolean>(() =>
   FILL_LAYOUT_CELL_ROUTES.has(String(route.name ?? '')))
 
 // Full-screen pages such as wall displays: a route's meta.chromeless, or enterChromeless() from
-// useOnmsChromeless in a page or plugin. Either lasts until the next route change.
-const { isChromeless: chromeless } = useOnmsChromelessHost(() => route.meta.chromeless === true, () => route.path)
+// useOnmsChromeless in a page or plugin. Either lasts until the next route change. Inside an
+// iframe the chrome is always hidden, and Escape cannot bring it back, unless the frame's name
+// asks for the menu (see hidesMenuInFrame).
+const { isChromeless: chromeless } = useOnmsChromelessHost(() => route.meta.chromeless === true, () => route.path, { isForced: hidesMenuInFrame })
 
 const authStore = useAuthStore()
 const infoStore = useInfoStore()
@@ -64,6 +71,10 @@ const menuStore = useMenuStore()
 const monitoringSystemStore = useMonitoringSystemStore()
 const nodeListStore = useNodeListStore()
 const pluginStore = usePluginStore()
+
+// notifd 'browser' method delivery for /ui pages; needs baseHref from the menu
+const baseHref = computed<string>(() => menuStore.mainMenu?.baseHref ?? '')
+whenever(() => !!baseHref.value, () => startBrowserNotifications(baseHref.value), { once: true })
 
 onMounted(() => {
   authStore.getWhoAmI()

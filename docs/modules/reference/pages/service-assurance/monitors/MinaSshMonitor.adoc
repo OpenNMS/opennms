@@ -51,7 +51,7 @@ The output is ignored, and any execution errors will mark the service as down.
 | 22
 
 | retry
-| Number of attempts to establish the SSH connection.
+| Number of retries after the first failed attempt to establish the SSH connection.
 | 0
 |===
 

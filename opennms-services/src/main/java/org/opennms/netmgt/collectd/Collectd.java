@@ -98,6 +98,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 
 /**
@@ -174,6 +175,8 @@ public class Collectd extends AbstractServiceDaemon implements
 
     @Autowired(required = false)
     private volatile List<CollectorAdaptor> m_collectorAdaptors = Collections.emptyList();
+
+    private volatile MetricRegistry m_metricRegistry = new MetricRegistry();
 
     static class SchedulingCompletedFlag {
         volatile boolean m_schedulingCompleted = false;
@@ -483,7 +486,8 @@ public class Collectd extends AbstractServiceDaemon implements
                     m_schedulingCompletedFlag,
                     m_transTemplate.getTransactionManager(),
                     m_persisterFactory,
-                    m_thresholdingService
+                    m_thresholdingService,
+                    m_metricRegistry
                 );
 
                 // Add new collectable service to the collectable service list.
@@ -968,6 +972,23 @@ public class Collectd extends AbstractServiceDaemon implements
         scheduleNode(nodeId.intValue());
     }
 
+    /**
+     * Applies the {@code threads} setting from the reloaded collectd configuration to the
+     * running scheduler, so that a changed thread count takes effect without a restart.
+     */
+    private void resizeScheduler() {
+        // Read the field directly: getScheduler() would create a scheduler if there is none yet
+        final Scheduler scheduler = m_scheduler;
+        if (scheduler == null) {
+            LOG.debug("resizeScheduler: no scheduler yet, nothing to resize.");
+        } else if (scheduler instanceof LegacyScheduler) {
+            ((LegacyScheduler) scheduler).setThreads(m_collectdConfigFactory.getThreads());
+        } else {
+            LOG.warn("resizeScheduler: scheduler is a {}, the configured thread count cannot be applied without a restart.",
+                    scheduler.getClass().getName());
+        }
+    }
+
     private void rebuildScheduler() {
         //Remove all collectable services
         Collection<Integer> nodeIds = m_nodeDao.getNodeIds();
@@ -989,6 +1010,12 @@ public class Collectd extends AbstractServiceDaemon implements
                 liter.remove();
             }
         }
+
+        // Remove the timers of services no longer configured
+        CollectableService.removeUnconfiguredTimers(m_metricRegistry, m_collectdConfigFactory.getPackages().stream()
+                .flatMap(pkg -> pkg.getServices().stream())
+                .map(org.opennms.netmgt.config.collectd.Service::getName)
+                .collect(Collectors.toSet()));
 
         //Re-instantiate collectors
         instantiateCollectors();
@@ -1090,6 +1117,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 final String cfgFile = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
                 try {
                     m_collectdConfigFactory.reload();
+                    resizeScheduler();
                     rebuildScheduler();
                     ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
                     ebldr.addParam(EventConstants.PARM_DAEMON_NAME, collectionDaemonName);
@@ -1485,6 +1513,10 @@ public class Collectd extends AbstractServiceDaemon implements
 
     public void setPersisterFactory(PersisterFactory persisterFactory) {
         m_persisterFactory = persisterFactory;
+    }
+
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        m_metricRegistry = Objects.requireNonNull(metricRegistry);
     }
 
     /**

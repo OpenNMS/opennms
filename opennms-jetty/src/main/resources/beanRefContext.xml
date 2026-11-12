@@ -17,8 +17,7 @@
                 <!-- Empty configuration list - context serves as a bridge to parent context -->
             </list>
         </constructor-arg>
-        <!-- Use thresholdingContext as the parent so the thresholding and poll outages config DAOs are exposed  -->
-        <constructor-arg ref="thresholdingContext" />
+        <constructor-arg ref="daoContext" />
     </bean>
 
 </beans>

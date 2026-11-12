@@ -24,8 +24,10 @@ package org.opennms.netmgt.dao.hibernate;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -165,5 +167,18 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 						 "from OnmsApplication as application " +
 						 "inner join application.monitoredServices as service " +
 						 "inner join application.perspectiveLocations as perspectiveLocation");
+	}
+
+	@Override
+	public Map<Integer, Long> getMonitoredServiceCounts() {
+		final Map<Integer, Long> counts = new HashMap<>();
+		for (final Object[] row : findObjects(Object[].class,
+						   "select application.id, count(service.id) " +
+						   "from OnmsApplication as application " +
+						   "left join application.monitoredServices as service " +
+						   "group by application.id")) {
+			counts.put((Integer) row[0], (Long) row[1]);
+		}
+		return counts;
 	}
 }

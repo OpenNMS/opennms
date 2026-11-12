@@ -10,6 +10,7 @@
               http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
   
   <http pattern="/rest/alarms/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+    <request-cache ref="nullRequestCache"/>
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
@@ -40,8 +41,52 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
+  <!--
+    Acknowledging a notification is a read-write action a normal ROLE_USER may
+    perform (as the legacy /notification/acknowledge did), but a ROLE_READONLY user
+    may not. Notice config editing lives under /api/v2/notification-config and is
+    pinned to ROLE_ADMIN by its own rules below. Kept in its own
+    use-expressions block so ROLE_READONLY can be excluded, mirroring the alarms rules.
+  -->
+  <http pattern="/rest/notifications/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+    <request-cache ref="nullRequestCache"/>
+    <csrf disabled="true" />
+    <headers defaults-disabled="true" />
+
+    <!-- OPTIONS pre-flight requests should always be accepted -->
+    <intercept-url pattern="/rest/notifications/**" method="OPTIONS" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_REST','ROLE_ADMIN','ROLE_USER','ROLE_MOBILE','ROLE_FILESYSTEM_EDITOR')"/>
+
+    <!-- the trailing-slash form of the collection PUT, which /rest/notifications/* also
+         matches; JAX-RS routes it to the criteria-based mass ack/unack, so pin it to
+         REST/ADMIN ahead of the narrow single-resource rule below -->
+    <intercept-url pattern="/rest/notifications/" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <!-- one notification: a normal user may ack, a read-only user may not -->
+    <intercept-url pattern="/rest/notifications/*" method="PUT" access="hasAnyRole('ROLE_USER','ROLE_MOBILE','ROLE_REST','ROLE_ADMIN') and !hasRole('ROLE_READONLY')" />
+    <!-- the collection PUT acks/unacks by arbitrary criteria (an empty body matches every
+         notification), so keep it REST/ADMIN; also required so no PUT falls through unauthorized -->
+    <intercept-url pattern="/rest/notifications/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+
+    <!-- read-only calls should be allowed for any user -->
+    <intercept-url pattern="/rest/notifications/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/rest/notifications/**" method="HEAD" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+
+    <!-- read-write calls should be allowed for the REST and ADMIN roles -->
+    <intercept-url pattern="/rest/notifications/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/notifications/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+
+    <!-- NMS-20462: fail closed. Deny all requests that match no rule above, such as a request with a lowercase HTTP method. -->
+    <intercept-url pattern="/**" access="denyAll"/>
+
+    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
+
+    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
+    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
+    <custom-filter position="LAST" ref="authFilterEnabler"/>
+  </http>
+
   <!-- Only use BASIC auth for the RESTful APIs -->
   <http pattern="/rest/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+    <request-cache ref="nullRequestCache"/>
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
@@ -58,6 +103,15 @@
       <intercept-url pattern="/rest/cm/provisiond/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
       <intercept-url pattern="/rest/cm/provisiond/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
       <intercept-url pattern="/rest/cm/provisiond/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+
+    <!-- The snmp-config and trapd-config CM configurations contain SNMP communities and SNMPv3 passphrases.
+         Only the provision and admin roles can read or change them, the same as /api/v2/snmp-config and /api/v2/trapd.
+         The v1 REST API maps the .xml, .json and .atom suffixes to the same resource, so each "<root>.*" pattern
+         applies the rule of its "<root>/**" pattern to these paths. These rules must come before the general /rest/** rules. -->
+    <intercept-url pattern="/rest/cm/snmp-config/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/cm/snmp-config.*" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/cm/trapd-config/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/cm/trapd-config.*" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
 
 
     <!-- Calls to health/overview are always accepted -->
@@ -93,8 +147,7 @@
     <!-- Allow users to POST to the Measurements API, which is read-only -->
     <intercept-url pattern="/rest/measurements" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER')"/>
 
-    <!-- Allow Minions to access the configuration endpoints -->
-    <intercept-url pattern="/rest/config/**" method="GET" access="hasAnyRole('ROLE_MINION','ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/config/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
     <!-- NMS-20382: configuration writes are administrative. Writing NBI/config files can persist
          expressions that are later evaluated and run on the server, so require ROLE_ADMIN. Must
          precede the generic /rest/** write rules below (first-match-wins). -->
@@ -102,8 +155,7 @@
     <intercept-url pattern="/rest/config/**" method="PUT"    access="hasAnyRole('ROLE_ADMIN')"/>
     <intercept-url pattern="/rest/config/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')"/>
     <intercept-url pattern="/rest/config/**" method="PATCH"  access="hasAnyRole('ROLE_ADMIN')"/>
-    <!-- Allow Minions to access the server info -->
-    <intercept-url pattern="/rest/info" method="GET" access="hasAnyRole('ROLE_MINION','ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/rest/info" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
 
     <!-- Allow certain actions for the REPORT_DESIGNER role -->
     <intercept-url pattern="/rest/reports/scheduled/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_REPORT_DESIGNER')"/>
@@ -154,6 +206,11 @@
     <!-- Allow certain actions for the ROLE_USER role -->
     <intercept-url pattern="/rest/resources/generateId" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER')" />
 
+    <!-- Scheduled-outage "applies to" enumerates poller/collectd/threshd package
+         names; keep it admin-only, matching the admin-gated Scheduled Outages page. -->
+    <intercept-url pattern="/rest/sched-outages/applies-to/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/sched-outages/*/applies-to/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+
     <!-- read-only calls should be allowed for any user -->
     <intercept-url pattern="/rest/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
     <intercept-url pattern="/rest/**" method="HEAD" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
@@ -175,6 +232,7 @@
   </http>
 
   <http pattern="/nrt/**" realm="OpenNMS Realm" use-expressions="true">
+    <request-cache ref="nullRequestCache"/>
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
@@ -195,10 +253,48 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
-  <!-- Only use BASIC auth for the RESTful API v2 -->
-  <http pattern="/api/v2/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+  <!--
+    Graph Collections (NMS-20420): any authenticated user may create, edit and delete
+    collections, as the legacy KSC pages allowed, but a ROLE_READONLY user may not.
+    Kept in its own use-expressions block so ROLE_READONLY can be excluded, mirroring
+    the alarms and notifications rules; it must precede the generic /api/v2/** block.
+  -->
+  <http pattern="/api/v2/graph-collections/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+    <request-cache ref="nullRequestCache"/>
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
+
+    <!-- OPTIONS pre-flight requests should always be accepted -->
+    <intercept-url pattern="/api/v2/graph-collections/**" method="OPTIONS" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_REST','ROLE_ADMIN','ROLE_USER','ROLE_MOBILE')"/>
+
+    <!-- read-only calls should be allowed for any user -->
+    <intercept-url pattern="/api/v2/graph-collections/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/api/v2/graph-collections/**" method="HEAD" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+
+    <!-- writes: any user except read-only ones -->
+    <intercept-url pattern="/api/v2/graph-collections/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER') and !hasRole('ROLE_READONLY')"/>
+    <intercept-url pattern="/api/v2/graph-collections/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER') and !hasRole('ROLE_READONLY')"/>
+    <intercept-url pattern="/api/v2/graph-collections/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER') and !hasRole('ROLE_READONLY')"/>
+
+    <!-- nothing else falls through -->
+    <intercept-url pattern="/api/v2/graph-collections/**" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+
+    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
+
+    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
+    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
+    <custom-filter position="LAST" ref="authFilterEnabler"/>
+  </http>
+
+  <!-- Only use BASIC auth for the RESTful API v2 -->
+  <http pattern="/api/v2/**" realm="OpenNMS Realm" create-session="never" use-expressions="true">
+    <request-cache ref="nullRequestCache"/>
+    <csrf disabled="true" />
+    <headers defaults-disabled="true" />
+
+    <!-- The v2 REST API maps the .xml, .json and .atom suffixes to the same resource, so "/api/v2/snmp-config.json"
+         is the snmp-config root. Each "<root>.*" rule below applies the rule of its "<root>/**" rule to these paths.
+         Each restricted "<root>/**" rule must have a "<root>.*" rule with the same method and access. -->
 
     <!-- Allow users to POST to the Geolocation API, which is read-only -->
     <intercept-url pattern="/api/v2/geolocation" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER')"/>
@@ -209,57 +305,166 @@
 
     <!-- Only allow privileged users to access geocoding API -->
     <intercept-url pattern="/api/v2/geocoding/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/geocoding.*" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/geocoding/**" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/geocoding.*" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/geocoding/**" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/geocoding.*" method="DELETE" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/geocoding/**" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/geocoding.*" method="PUT" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')" />
 
     <!-- SNMP Config should be provision or admin-only -->
     <intercept-url pattern="/api/v2/snmp-config/**" method="GET" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/snmp-config.*" method="GET" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/snmp-config/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/snmp-config.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/snmp-config/**" method="POST" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/snmp-config.*" method="POST" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/snmp-config/**" method="PUT" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/snmp-config.*" method="PUT" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/snmp-config/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/snmp-config.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+
+    <!-- wsman-config.xml carries agent credentials: admin-only for every method -->
+    <intercept-url pattern="/api/v2/wsman-config/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/wsman-config.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/wsman-config/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/wsman-config.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/wsman-config/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/wsman-config.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/wsman-config/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/wsman-config.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/wsman-config/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/wsman-config.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- Trapd Config exposes SNMPv3 credentials; restrict to admin or provision -->
     <intercept-url pattern="/api/v2/trapd/**" method="GET" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/trapd.*" method="GET" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/trapd/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/trapd.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/trapd/**" method="POST" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/trapd.*" method="POST" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/trapd/**" method="PUT" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/trapd.*" method="PUT" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
     <intercept-url pattern="/api/v2/trapd/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
+    <intercept-url pattern="/api/v2/trapd.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN','ROLE_PROVISION')" />
 
     <!-- Event configuration mutates event/alarm generation; mutation is admin-only.
          Reads are not secret-bearing, so GET/HEAD fall through to the generic read rule below. -->
     <intercept-url pattern="/api/v2/eventconf/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/eventconf.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/eventconf/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/eventconf.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/eventconf/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/eventconf.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/eventconf/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/eventconf.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- Data-collection configuration controls metric collection/thresholding; mutation is admin-only.
          Reads are not secret-bearing, so GET/HEAD fall through to the generic read rule below. -->
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/datacollectionconf.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/datacollectionconf.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/datacollectionconf.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/datacollectionconf.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- MIB compiler manages files on the server filesystem; admin-only like the Vaadin MIB compiler UI -->
     <intercept-url pattern="/api/v2/mibs/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/mibs.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/mibs/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/mibs.*" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/mibs/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/mibs.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/mibs/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/mibs.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/mibs/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/mibs.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/mibs/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/mibs.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+
+    <!-- Dashboard layout is system-wide: reads fall through to the /api/v2/** GET
+         catch-all (every reader role); only admins may save it, so override just
+         the write. Order matters — this must precede the /api/v2/** PUT rule. -->
+    <intercept-url pattern="/api/v2/dashboard/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/dashboard.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+
+    <!-- Threshold configuration drives alarm generation and can create event definitions; mutation is
+         admin-only. Reads are not secret-bearing, so GET/HEAD fall through to the generic read rule below. -->
+    <intercept-url pattern="/api/v2/thresholding/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/thresholding.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/thresholding/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/thresholding.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/thresholding/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/thresholding.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/thresholding/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/thresholding.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+
+    <!-- Threshd daemon configuration selects what gets thresholded; mutation is admin-only.
+         Reads are not secret-bearing, so GET/HEAD fall through to the generic read rule below. -->
+    <intercept-url pattern="/api/v2/threshd/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/threshd.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/threshd/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/threshd.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/threshd/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/threshd.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/threshd/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/threshd.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- Discovery is a provisioning operation (its include/exclude URLs can read local files or fetch URLs);
          restrict it to provisioning/admin roles rather than the generic ROLE_REST catch-all below -->
     <intercept-url pattern="/api/v2/discovery" method="POST" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
     <intercept-url pattern="/api/v2/discovery/**" method="POST" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <intercept-url pattern="/api/v2/discovery.*" method="POST" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+
+    <!-- User management exposes contact details and account controls; admin-only in every method -->
+    <intercept-url pattern="/api/v2/users/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/users.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/users/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/users.*" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/users/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/users.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/users/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/users.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/users/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/users.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- The system report drives an admin-only page and bundles logs/config, so keep
          even its plugin/formatter metadata to admins rather than the GET catch-all below;
          generation (POST) is likewise admin-only -->
-    <intercept-url pattern="/api/v2/system-report/**" method="GET" access="hasRole('ROLE_ADMIN')" />
-    <intercept-url pattern="/api/v2/system-report/**" method="POST" access="hasRole('ROLE_ADMIN')" />
-    <intercept-url pattern="/api/v2/system-report/**" method="HEAD" access="hasRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/system-report/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/system-report.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/system-report/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/system-report.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/system-report/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/system-report.*" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+
+    <!-- Group membership drives notification routing; admin-only in every method -->
+    <intercept-url pattern="/api/v2/groups/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/groups.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/groups/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/groups.*" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/groups/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/groups.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/groups/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/groups.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/groups/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/groups.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+
+    <!-- Notification config (event notifications, destination paths, path outages)
+         is admin surface; pin every method rather than relying on the in-code check -->
+    <intercept-url pattern="/api/v2/notification-config/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/notification-config.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/notification-config/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/notification-config.*" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/notification-config/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/notification-config.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/notification-config/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/notification-config.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/notification-config/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/notification-config.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- The About page's server details were only ever shown to web UI users, not to REST- or mobile-only accounts.
          CXF serves the same resource at "/about", "/about/" (both matched by "/about/**") and "/about.json" (extension mapping). -->
@@ -293,6 +498,7 @@
 
   <!-- Only use BASIC auth for the RSS URL -->
   <http pattern="/rss.jsp*" realm="OpenNMS Realm" use-expressions="false">
+    <request-cache ref="nullRequestCache"/>
     <csrf disabled="true" />
     <headers defaults-disabled="true" />
 
@@ -306,9 +512,54 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
   
+  <!-- Static files of the Vue SPA (/ui/assets) and of the Vue menu bundle (/ui-components/assets).
+       Logged-in users only. An unauthenticated request gets a plain, uncacheable 401 and not a redirect
+       to login.jsp: rendering the login page for a script or stylesheet creates a session, which can
+       replace the session of a login page that is open at the same time, so that login fails; and a
+       browser can cache the redirect as the asset (NMS-20174). Pages that are open to anonymous users
+       load only anonymous-pages.css (see bootstrap.jsp). /ui/index.html and /ui-components/index.html stay in
+       the main block (NMS-20180). The pre-auth filters are the same as in the main block, so that the
+       same logins work here. -->
+  <http request-matcher-ref="staticAssetsMatcher" create-session="never" use-expressions="true" entry-point-ref="noStoreUnauthorizedEntryPoint">
+    <request-cache ref="nullRequestCache"/>
+    <csrf disabled="true" />
+    <headers defaults-disabled="true" />
+
+    <!-- Base styles for the pages open to anonymous users (login.jsp, logoff.jsp, accessDenied.jsp, error
+         pages); bootstrap.jsp links it only without login. No code, no data: reset, typography, theme tokens. -->
+    <intercept-url pattern="/ui-components/assets/anonymous-pages.css" access="permitAll" />
+    <!-- Any logged-in user: bootstrap.jsp loads the menu on every page for a logged-in user (LoginState),
+         whatever the roles, e.g. a ROLE_REST-only user on accessDenied.jsp. -->
+    <intercept-url pattern="/ui-components/assets/**" access="isAuthenticated()" />
+    <intercept-url pattern="/ui/assets/**" access="hasAnyRole('ROLE_USER')" />
+    <intercept-url pattern="/**" access="denyAll"/>
+
+    <!-- Basic auth, as in the main block. Bad credentials also get the plain 401. -->
+    <http-basic entry-point-ref="noStoreUnauthorizedEntryPoint" />
+
+    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
+    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
+  </http>
+
+  <beans:bean id="staticAssetsMatcher" class="org.springframework.security.web.util.matcher.OrRequestMatcher">
+    <beans:constructor-arg>
+      <util:list value-type="org.springframework.security.web.util.matcher.RequestMatcher">
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg value="/ui/assets/**"/>
+        </beans:bean>
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg value="/ui-components/assets/**"/>
+        </beans:bean>
+      </util:list>
+    </beans:constructor-arg>
+  </beans:bean>
+
+  <beans:bean id="noStoreUnauthorizedEntryPoint" class="org.opennms.web.springframework.security.NoStoreUnauthorizedEntryPoint" />
+
   <http pattern="/admin/userGroupView/**" use-expressions="true" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
     <!-- see NMS-13124 -->
     <csrf request-matcher-ref="csrfMatcher"/>
+    <request-cache ref="requestCache"/>
 
     <access-denied-handler error-page="/accessDenied.jsp" />
     <intercept-url pattern="/admin/userGroupView/**" access="hasAnyRole('ROLE_ADMIN')" />
@@ -343,11 +594,11 @@
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>
         <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
-          <beans:constructor-arg name="pattern" value="/admin/account/selfService/newPasswordAction"/>
+          <beans:constructor-arg name="pattern" value="/account/selfService/newPasswordAction"/>
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>
         <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
-          <beans:constructor-arg name="pattern" value="/admin/account/selfService/passwordGateAction"/>
+          <beans:constructor-arg name="pattern" value="/account/selfService/passwordGateAction"/>
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>
         <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
@@ -405,6 +656,7 @@
   <http pattern="/**" use-expressions="true" realm="OpenNMS Realm" auto-config="false" entry-point-ref="loginUrlAuthenticationEntryPoint">
     <access-denied-handler error-page="/accessDenied.jsp" />
     <csrf request-matcher-ref="csrfMatcher"/>
+    <request-cache ref="requestCache"/>
     <headers defaults-disabled="true" />
 
     <intercept-url pattern="/" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
@@ -425,17 +677,14 @@
     <intercept-url pattern="/images/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/assets/load-assets.jsp*" access="denyAll" /><!-- only used as include, shouldn't be accessible directly -->
     <intercept-url pattern="/assets/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
-    <!-- Vue menu bundle (static js/css/fonts). Must be anonymous: bootstrap.jsp preloads it from the
-         login page, and an auth redirect there gets cached by Safari/Firefox as text/html for the
-         asset URL, breaking the menu on all JSP pages after login (NMS-20174). Deliberately limited
-         to assets/**: the unpacked dist-menu artifact also ships an index.html (the Vite build
-         input) at /ui-components/, which nothing links to and which must not be anonymously
-         reachable (NMS-20180). -->
-    <intercept-url pattern="/ui-components/assets/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <!-- /ui/assets/** and /ui-components/assets/** (the Vue SPA and menu bundles) have their own
+         <http> block above: logged in only, with a plain 401 instead of a redirect to login.jsp. -->
 
     <intercept-url pattern="/admin/ng-requisitions/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
     <intercept-url pattern="/admin/classification/index.jsp" access="hasAnyRole('ROLE_FLOW_MANAGER','ROLE_ADMIN')" />
     <intercept-url pattern="/admin/**" access="hasAnyRole('ROLE_ADMIN')" />
+    <!-- the MIB compiler Vaadin servlet serves every path below /mib-compiler, such as UIDL and HEARTBEAT -->
+    <intercept-url pattern="/mib-compiler/**" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/**/mib-compiler" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/**/admin-*" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/rtc/post/**" access="hasAnyRole('ROLE_RTC')" />
@@ -503,6 +752,17 @@
     <beans:property name="authenticationSuccessHandler" ref="successHandler"/>
     <beans:property name="postOnly" value="false"/>
   </beans:bean>
+
+  <!-- Saves the page an unauthenticated user asked for, so login can return there. Only browser page
+       navigations are saved: an asset or XHR GET must not replace the saved page. -->
+  <beans:bean id="requestCache" class="org.springframework.security.web.savedrequest.HttpSessionRequestCache">
+    <beans:property name="requestMatcher">
+      <beans:bean class="org.opennms.web.springframework.security.PageNavigationRequestMatcher" />
+    </beans:property>
+  </beans:bean>
+
+  <!-- For the blocks that never redirect to login.jsp (REST, APIs, static assets): nothing to return to. -->
+  <beans:bean id="nullRequestCache" class="org.springframework.security.web.savedrequest.NullRequestCache" />
 
   <beans:bean id="successHandler" class="org.opennms.web.springframework.security.OpenNMSAuthSuccessHandler">
     <beans:property name="defaultTargetUrl" value="/index.jsp"/>

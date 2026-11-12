@@ -519,6 +519,13 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
                 throw new IllegalStateException("NotRestriction called, but no criterions exist to negate!");
             }
             final Criterion criterion = m_criterions.remove(m_criterions.size() - 1);
+            if (restriction.getRestriction() instanceof IplikeRestriction) {
+                final Criterion negated = negatedIplikeCriterion((IplikeRestriction) restriction.getRestriction());
+                if (negated != null) {
+                    m_criterions.add(negated);
+                    return;
+                }
+            }
             m_criterions.add(org.hibernate.criterion.Restrictions.not(criterion));
         }
 
@@ -558,11 +565,46 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
             }
         }
 
+        private static String iplikeAttribute(final IplikeRestriction restriction) {
+            final String attribute = restriction.getAttribute();
+            return Strings.isNullOrEmpty(attribute) ? "ipAddr" : attribute;
+        }
+
+        /**
+         * The negated native form evaluates opennms_safe_inet() once per row
+         * instead of once per range comparison. Where it declines, NOT iplike()
+         * is cheaper than negating the positive native predicate.
+         */
+        private static Criterion negatedIplikeCriterion(final IplikeRestriction restriction) {
+            final String attribute = iplikeAttribute(restriction);
+            if (!IplikeRestriction.isValidAttribute(attribute) || !(restriction.getValue() instanceof String)) {
+                return null;
+            }
+            final String negated = org.opennms.core.utils.IplikeSqlTranslator
+                    .toNegatedSqlPredicate((String) restriction.getValue(), "{alias}." + attribute);
+            if (negated != null) {
+                return org.hibernate.criterion.Restrictions.sqlRestriction(negated);
+            }
+            return org.hibernate.criterion.Restrictions.sqlRestriction(
+                    String.format("not ipLike({alias}.%s, ?)", attribute), restriction.getValue(), STRING_TYPE);
+        }
+
         @Override
         public void visitIplike(final IplikeRestriction restriction) {
-            String attribute = restriction.getAttribute();
-            if (Strings.isNullOrEmpty(attribute)) {
-                attribute = "ipAddr";
+            final String attribute = iplikeAttribute(restriction);
+            // The attribute goes into the SQL text, thus reject all values that are not a plain column name.
+            if (!IplikeRestriction.isValidAttribute(attribute)) {
+                throw new IllegalArgumentException("Invalid attribute name for an iplike restriction");
+            }
+            if (restriction.getValue() instanceof String) {
+                // translatable match expressions become native-inet range
+                // predicates answered through an expression index
+                final String nativePredicate = org.opennms.core.utils.IplikeSqlTranslator
+                        .toSqlPredicate((String) restriction.getValue(), "{alias}." + attribute);
+                if (nativePredicate != null) {
+                    m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(nativePredicate));
+                    return;
+                }
             }
             final String sql = String.format("ipLike({alias}.%s, ?)", attribute);
             m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(sql, restriction.getValue(), STRING_TYPE));

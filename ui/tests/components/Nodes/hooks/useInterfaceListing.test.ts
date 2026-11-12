@@ -319,18 +319,25 @@ describe('useInterfaceListing', () => {
       expect(rows.map(r => r.key)).toEqual(['snmp-1'])
     })
 
-    test('% is a SQL LIKE wildcard translated to .*', () => {
-      const snmp = makeSnmp({ id: 1, ifName: 'GigabitEthernet0/1' })
-      const mode: InterfaceListMode = { mode: 'snmpParm', attr: 'ifName', value: 'Gigabit%0/1', matchType: 'contains' }
+    // The panel must use the same rules as the v2 REST search that selected the node:
+    // '*' is a wildcard; '%', '_' and '\' are literal (NMS-18294).
+    test.each([
+      ['* in the middle', 'Gi*1', 'GigabitEthernet0/1', true],
+      ['* that matches an empty run', 'Gi*0/1', 'Gi0/1', true],
+      ['leading and trailing *', '*Gi*', 'xGiy', true],
+      ['* with no match', 'Gi*9', 'GigabitEthernet0/1', false],
+      ['literal %', '50%', 'load 50% max', true],
+      ['% is not a wildcard', 'Gigabit%0/1', 'GigabitEthernet0/1', false],
+      ['literal _', 'Gi0_1', 'port Gi0_1', true],
+      ['_ is not a wildcard', 'Gi0_1', 'Gi0X1', false],
+      ['literal backslash', 'a\\b', 'xa\\by', true],
+      ['regex characters are literal', 'a+b(c)', 'a+b(c)', true],
+      ['FIQL characters are literal', 'core,dist;x', 'core,dist;x', true]
+    ])('contains: %s', (_title, value, ifName, expected) => {
+      const snmp = makeSnmp({ id: 1, ifName })
+      const mode: InterfaceListMode = { mode: 'snmpParm', attr: 'ifName', value, matchType: 'contains' }
       const rows = getInterfaceRowsForNode('1', mode, [], [snmp], baseHref)
-      expect(rows.map(r => r.key)).toEqual(['snmp-1'])
-    })
-
-    test('_ is a SQL LIKE wildcard translated to . (matches any single character)', () => {
-      const snmp = makeSnmp({ id: 1, ifDescr: 'upXlink' })
-      const mode: InterfaceListMode = { mode: 'snmpParm', attr: 'ifDescr', value: 'up_link', matchType: 'contains' }
-      const rows = getInterfaceRowsForNode('1', mode, [], [snmp], baseHref)
-      expect(rows.map(r => r.key)).toEqual(['snmp-1'])
+      expect(rows.map(r => r.key)).toEqual(expected ? ['snmp-1'] : [])
     })
 
     test('a literal "." in the search value is escaped and does not act as a wildcard', () => {
@@ -374,6 +381,22 @@ describe('useInterfaceListing', () => {
       const mode: InterfaceListMode = { mode: 'snmpParm', attr: 'ifName', value: 'ETH0', matchType: 'equals' }
       const rows = getInterfaceRowsForNode('1', mode, [], [exact, substring], baseHref)
       expect(rows.map(r => r.key)).toEqual(['snmp-1'])
+    })
+
+    test.each([
+      ['* is a wildcard', 'gi*1', 'GigabitEthernet0/1', true],
+      ['* must still match the full value', 'gi*1', 'GigabitEthernet0/10', false],
+      ['literal *', 'a*b', 'a*b', true],
+      ['literal %', '50%', '50%', true],
+      ['% is not a wildcard', 'Gi%1', 'Gi0/1', false],
+      ['literal _', 'Gi0_1', 'gi0_1', true],
+      ['_ is not a wildcard', 'Gi0_1', 'Gi0X1', false],
+      ['literal backslash', 'a\\b', 'A\\B', true]
+    ])('equals: %s', (_title, value, ifName, expected) => {
+      const snmp = makeSnmp({ id: 1, ifName })
+      const mode: InterfaceListMode = { mode: 'snmpParm', attr: 'ifName', value, matchType: 'equals' }
+      const rows = getInterfaceRowsForNode('1', mode, [], [snmp], baseHref)
+      expect(rows.map(r => r.key)).toEqual(expected ? ['snmp-1'] : [])
     })
   })
 

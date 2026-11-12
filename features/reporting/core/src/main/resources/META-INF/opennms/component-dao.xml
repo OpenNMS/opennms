@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+  <bean id="reportServiceLocator" class="org.opennms.reporting.core.svclayer.support.DefaultReportServiceLocator">
+    <property name="globalReportRepository" ref="defaultGlobalReportRepository" />
+  </bean>
+
+  <bean id="reportWrapperService" class="org.opennms.reporting.core.svclayer.support.DefaultReportWrapperService">
+    <property name="reportServiceLocator" ref="reportServiceLocator" />
+    <property name="reportStoreService" ref="reportStoreService" />
+  </bean>
+  <onmsgi:service interface="org.opennms.reporting.core.svclayer.ReportWrapperService" ref="reportWrapperService"/>
+
+  <bean id="reportStoreService" class="org.opennms.reporting.core.svclayer.support.DefaultReportStoreService">
+    <property name="reportCatalogDao" ref="reportCatalogDao" />
+    <property name="reportServiceLocator" ref="reportServiceLocator" />
+    <property name="globalReportRepository" ref="defaultGlobalReportRepository" />
+    <property name="sessionUtils" ref="sessionUtils" />
+  </bean>
+  <onmsgi:service interface="org.opennms.reporting.core.svclayer.ReportStoreService" ref="reportStoreService"/>
+
+  <bean id="parameterConversionService" class="org.opennms.reporting.core.svclayer.support.DefaultParameterConversionService" />
+
+</beans>

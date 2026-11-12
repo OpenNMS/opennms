@@ -22,15 +22,20 @@
 package org.opennms.core.test.db;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.schema.Migrator;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.IplikeSqlTranslator;
 
 public class IPLikeCoverageIT {
     private TemporaryDatabasePostgreSQL m_db;
@@ -153,9 +158,190 @@ public class IPLikeCoverageIT {
             rs.next();
             final boolean result = rs.getBoolean(1);
             assertEquals("SELECT iplike(" + value + "," + rule + ") === " + expected, expected, result);
+
+            // Where the rule translates to a native-inet predicate (what the
+            // SQL emitters produce instead of the iplike() call), the
+            // database must give the same answer for the same value — both
+            // directly and under NOT. The NOT check matters for values the
+            // predicate cannot parse: it must evaluate to FALSE there, not
+            // NULL, or negated filters would drop rows NOT iplike() keeps.
+            final String predicate = IplikeSqlTranslator.toSqlPredicate(rule, "v");
+            final String negatedPredicate = IplikeSqlTranslator.toNegatedSqlPredicate(rule, "v");
+            if (predicate == null) {
+                assertNull("negated form must not translate what the positive form rejects: " + rule,
+                        negatedPredicate);
+            }
+            if (predicate != null) {
+                final PreparedStatement nativeSt = c.prepareStatement(
+                        "SELECT " + predicate + ", NOT " + predicate + ", "
+                        + (negatedPredicate != null ? negatedPredicate : "NULL")
+                        + " FROM (VALUES (CAST(? AS TEXT))) AS t(v)");
+                util.watch(nativeSt);
+                nativeSt.setString(1, value);
+                nativeSt.execute();
+                final ResultSet nativeRs = nativeSt.getResultSet();
+                util.watch(nativeRs);
+                nativeRs.next();
+                assertEquals("native predicate for rule " + rule + " on value " + value
+                        + ": " + predicate, expected, nativeRs.getBoolean(1));
+                assertEquals("negated native predicate for rule " + rule + " on value " + value
+                        + ": " + predicate, !expected, nativeRs.getBoolean(2));
+                assertFalse("negated native predicate must never be NULL for rule " + rule
+                        + " on value " + value, nativeRs.wasNull());
+                if (negatedPredicate != null) {
+                    assertEquals("negated-form predicate for rule " + rule + " on value " + value
+                            + ": " + negatedPredicate, !expected, nativeRs.getBoolean(3));
+                    assertFalse("negated-form predicate must never be NULL for rule " + rule
+                            + " on value " + value, nativeRs.wasNull());
+                }
+            }
         } finally {
             util.cleanUp();
         }
+    }
+
+    /**
+     * A working PL/pgSQL iplike older than the shipped revision must be
+     * replaced in place on upgrade (its revision tag lives in the function
+     * comment), while any working non-PL/pgSQL implementation — the compiled
+     * C extension in real installs — is left untouched.
+     */
+    @Test
+    public void testUpdateIplikeReplacesStalePlpgsqlRevision() throws Exception {
+        final Migrator migrator = new Migrator();
+        migrator.setDataSource(m_db.getDataSource());
+        migrator.setAdminDataSource(m_db.getDataSource());
+
+        executeSql("DROP FUNCTION iplike(text,text)");
+        executeSql("CREATE FUNCTION iplike(text,text) RETURNS boolean AS "
+                + "$$ begin return 't'; end; $$ LANGUAGE plpgsql");
+        executeSql("COMMENT ON FUNCTION iplike(text,text) IS 'opennms-iplike-plpgsql-1'");
+
+        migrator.updateIplike();
+
+        assertEquals(Migrator.IPLIKE_PLPGSQL_REVISION, getIplikeComment());
+        // the always-true stub is gone and real matching is back
+        checkIplikeRule("1.2.3.4", "1.2.3.5", false);
+        checkIplikeRule("1.2.3.4", "1.2.3.4", true);
+    }
+
+    @Test
+    public void testUpdateIplikeLeavesForeignImplementationsAlone() throws Exception {
+        final Migrator migrator = new Migrator();
+        migrator.setDataSource(m_db.getDataSource());
+        migrator.setAdminDataSource(m_db.getDataSource());
+
+        // a working iplike that is not PL/pgSQL stands in for the compiled
+        // extension: the stale check only ever replaces plpgsql revisions
+        executeSql("DROP FUNCTION iplike(text,text)");
+        executeSql("CREATE FUNCTION iplike(text,text) RETURNS boolean AS "
+                + "$$ SELECT true $$ LANGUAGE sql");
+        executeSql("COMMENT ON FUNCTION iplike(text,text) IS 'custom-iplike'");
+
+        migrator.updateIplike();
+
+        assertEquals("custom-iplike", getIplikeComment());
+    }
+
+    private void executeSql(final String sql) throws Exception {
+        final DBUtils util = new DBUtils();
+        try {
+            final Connection c = m_db.getDataSource().getConnection();
+            util.watch(c);
+            final Statement st = c.createStatement();
+            util.watch(st);
+            st.execute(sql);
+        } finally {
+            util.cleanUp();
+        }
+    }
+
+    private String getIplikeComment() throws Exception {
+        final DBUtils util = new DBUtils();
+        try {
+            final Connection c = m_db.getDataSource().getConnection();
+            util.watch(c);
+            final Statement st = c.createStatement();
+            util.watch(st);
+            final ResultSet rs = st.executeQuery(
+                    "SELECT obj_description('iplike(text,text)'::regprocedure, 'pg_proc')");
+            util.watch(rs);
+            rs.next();
+            return rs.getString(1);
+        } finally {
+            util.cleanUp();
+        }
+    }
+
+    /**
+     * Values iplike() rejects but that can sit in text ipaddr columns (the
+     * events table in particular). The native predicate must agree with
+     * iplike() on them in both polarities.
+     */
+    @Test
+    public void testUnrepresentableValuesAgainstTranslatableRules() throws Exception {
+        for (final String garbage : new String[] {
+                "garbage",
+                "fe80::1",              // compressed IPv6: iplike needs 8 groups
+                "fe80::1:2:3:4:5:6",    // one-group compression still has 7 colons
+                "::1:2:3:4:5:6:7",
+                "1:2:3:4:5:6:7::",
+                "1.2.3.4%eth0",         // zone ids are IPv6-only
+                "10.0.0.999",
+                " 1.2.3.4",
+                ""}) {
+            checkIplikeRule(garbage, "1.2.3.*", false);
+            checkIplikeRule(garbage, "fe80:*:*:*:*:*:*:*", false);
+        }
+    }
+
+    /**
+     * Hex digits match case-insensitively (zone ids do not), and IPv4 octets
+     * are read by value, so iplike() and the native predicate agree.
+     */
+    @Test
+    public void testCaseAndLeadingZeros() throws Exception {
+        checkIplikeRule("FE80:0:0:0:0:0:0:1", "fe80:0:0:0:0:0:0:1", true);
+        checkIplikeRule("FE80:0:0:0:0:0:0:1", "fe80:fe80:fe80:fe80:fe80:fe80:fe80:fe80", false);
+        checkIplikeRule("fe80:0:0:0:0:0:0:1", "FE80:*:*:*:*:*:*:*", true);
+        checkIplikeRule("Fe80:0:0:0:0:0:0:1%eth0", "FE80:*:*:*:*:*:*:*%eth0", true);
+        checkIplikeRule("fe80:0:0:0:0:0:0:1%eth0", "fe80:*:*:*:*:*:*:*%ETH0", false);
+        checkIplikeRule("00fe80:0:0:0:0:0:0:1", "fe80:*:*:*:*:*:*:*", false);
+
+        checkIplikeRule("010.1.1.1", "10.1.1.1", true);
+        checkIplikeRule("0010.1.1.1", "10.1.1.1", true);
+        checkIplikeRule("0010.1.1.1", "1.*.*.*", false);
+        checkIplikeRule("10.001.1.1", "10.1.1.*", true);
+        checkIplikeRule("10.1.1.0256", "10.1.1.*", false);
+    }
+
+    /**
+     * A * element inside an IPv6 list matches anything, as in IPv4 lists,
+     * with or without a zone constraint (which forces the iplike() path).
+     * Hex components longer than four digits are not translated: iplike()
+     * reads them as bit(16), truncating the excess digits.
+     */
+    @Test
+    public void testHexListWildcardAndOverlongComponents() throws Exception {
+        checkIplikeRule("fe80:0:0:0:0:0:0:2", "fe80:0:0:0:0:0:0:1,*", true);
+        checkIplikeRule("fe80:0:0:0:0:0:0:2%eth0", "fe80:0:0:0:0:0:0:1,*%eth0", true);
+        checkIplikeRule("fe81:0:0:0:0:0:0:2", "fe80:0:0:0:0:0:0:1,*", false);
+
+        checkIplikeRule("0:0:0:0:0:0:0:1", "0:0:0:0:0:0:0:00001", false);
+        checkIplikeRule("0:0:0:0:0:0:0:1", "0:0:0:0:0:0:0:0001", true);
+    }
+
+    /**
+     * A middle one-group compression (seven colons, valid inet) must not
+     * enter the 8-group parsing loop: ltrim would swallow the '::' and
+     * shift every later field, so the shifted rule matched and the correct
+     * expansion did not.
+     */
+    @Test
+    public void testCompressedIpv6NeverParsesShifted() throws Exception {
+        checkIplikeRule("fe80::1:2:3:4:5:6", "fe80:1:2:3:4:5:6:0", false); // the shifted misparse
+        checkIplikeRule("fe80::1:2:3:4:5:6", "fe80:0:1:2:3:4:5:6", false); // the correct expansion (value is rejected, as revision 1 did)
+        checkIplikeRule("fe80::1:2:0:4:5:6", "*:*:*:0:*:*:*:*", false);    // untranslatable rule -> the iplike() fallback path
     }
 
 }

@@ -51,6 +51,7 @@ Occasionally `rm assets/*.*` in the target directories to clear stale hashed fil
 
 - **Main SPA** (`src/main/`, `vite.config.ts`) — full application served at `/opennms/ui`, built to `src/main/dist/`
 - **Menu app** (`src/menu/`, `vite.config.menu.ts`) — embeds into legacy JSP/Vaadin pages at `/opennms/ui-components`, built to `src/menu/dist-menu/`
+  - Its files are for logged-in users only (a plain 401 otherwise). `vite.config.anonymous.ts` (run by `build:menu`) also builds `assets/anonymous-pages.css` from the menu's global stylesheets (`onms-base`, `onms-theme`, `opennms-styles`). It is the one anonymous file, which `bootstrap.jsp` links on pages seen without login. A new global element style in those stylesheets reaches both.
 
 Both share `src/components/`, `src/services/`, `src/stores/`, and `src/composables/` but have separate entry points and build configs. The Java `SpaRoutingFilter` serves `index.html` for non-asset URLs; routing uses `createWebHashHistory('/opennms/ui')`.
 
@@ -104,6 +105,16 @@ Services in `src/services/` use pre-configured axios instances from `services/ax
 - `restFile` — multipart file uploads
 
 Each service exports individual functions; all are aggregated into the default export of `services/index.ts` — add new service methods there too.
+
+### UI feedback: components only, never services or stores
+
+Keep `useSpinner` / `useSnackbar` out of services and Pinia stores. Services make the API call and return a result, and stores pass results through. The component that started the user action decides what to show.
+
+- **Return results, not UI.** Reads return `ValidationResultWithPayload<T>` (`src/types/validation.ts`) so a failed load is distinguishable from an empty one. A mutation whose failure reason comes from the server returns a `ValidationResult` carrying that message. Other mutations can return a plain `boolean` and let the caller word the message. A store that refreshes a list after a successful mutation reports a failed refresh in the result's `errors`.
+- **Show feedback with `useActionFeedback`** (`src/composables/useActionFeedback.ts`). `withSpinner(action)` wraps a whole user action once: the spinner is a single on/off flag rather than a counter, so don't wrap each request inside the action. `report(result, successMsg?)` shows the failure message, or the success message followed by any follow-up `errors`, and returns `result.success`. Every error snackbar must set `error: true`; `report` and `showError` do that for you.
+- **Check `.success`, not truthiness.** Once a call returns a result object, `if (await store.save(...))` is always true, and the type-checker won't flag it.
+
+`notificationConfigService` / `notificationConfigStore` and `notificationService` / `notificationsStore` follow this pattern; older services still show snackbars themselves and should be migrated when touched.
 
 ### Auto-imports
 

@@ -125,8 +125,8 @@ export const useMapStore = defineStore('mapStore', () => {
     if (resp) {
       const nodes = resp.node.filter(
         node =>
-          !(node.assetRecord.latitude == null || node.assetRecord.latitude.length === 0) &&
-          !(node.assetRecord.longitude == null || node.assetRecord.longitude.length === 0)
+          !(node.assetRecord.latitude === undefined || node.assetRecord.latitude === null) &&
+          !(node.assetRecord.longitude === undefined || node.assetRecord.longitude === null)
       )
 
       nodesWithCoordinates.value = [...nodes]

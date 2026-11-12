@@ -346,24 +346,6 @@ var config = {
         }]
       },
       {
-        test: require.resolve('jquery-ui-treemap'),
-        use: [{
-          loader: 'imports-loader',
-          options: {
-            additionalCode: 'var define = false; /* Disable AMD for misbehaving libraries */',
-          },
-        }]
-      },
-      {
-        test: require.resolve('jquery-sparkline/dist/jquery.sparkline'),
-        use: [{
-          loader: 'imports-loader',
-          options: {
-            additionalCode: 'var define = false; /* Disable AMD for misbehaving libraries */',
-          },
-        }]
-      },
-      {
         test: require.resolve('leaflet'),
         use: [{
           loader: 'expose-loader',
@@ -572,7 +554,8 @@ function createConfig(options) {
     }
     myconf.optimization.minimizer.push(new TerserPlugin({
       cache: true,
-      parallel: true,
+      // CI containers report the host CPU count, so CI sets TERSER_WORKERS to limit the workers.
+      parallel: process.env.TERSER_WORKERS ? Number(process.env.TERSER_WORKERS) : true,
       sourceMap: true,
       terserOptions: {
         mangle: {

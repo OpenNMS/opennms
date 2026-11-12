@@ -23,7 +23,7 @@ if [ -f /etc/rc.d/init.d/functions ]; then
 fi
 
 if [ -z "$JAVA_HOME" ]; then
-	JAVA_HOME="$("$CONTAINER_HOME/bin/find-java.sh" 17.0 21.9999)"
+	JAVA_HOME="$("$CONTAINER_HOME/bin/find-java.sh" 25.0 25.9999)"
 fi
 
 if [ -r "$SYSCONFDIR/$NAME" ]; then
@@ -136,6 +136,13 @@ case "$COMMAND" in
 
 		if ! check_upgrade_files; then
 			exit $?
+		fi
+
+		# karaf.clean.cache removes data/cache but not data/kar, so the deployer would skip the .kar files
+		if [ -x "$CONTAINER_HOME/bin/_clean-kar-storage.sh" ]; then
+			"$CONTAINER_HOME/bin/_clean-kar-storage.sh" "$CONTAINER_HOME" || true
+		else
+			echo "WARNING: $CONTAINER_HOME/bin/_clean-kar-storage.sh not found, the .kar files in data/kar will not be installed again" >&2
 		fi
 
 		if [ ! -d "$CONTAINER_HOME/data/tmp" ]; then

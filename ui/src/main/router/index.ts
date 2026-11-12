@@ -35,6 +35,10 @@ import useSpinner from '@/composables/useSpinner'
 import { useMenuStore } from '@/stores/menuStore'
 import { ActiveTabs, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { requireCondition, requireRole } from './guards'
+import useRole from '@/composables/useRole'
+
+// any logged-in user may change graph collections except a read-only one, as on the legacy pages
+const READONLY_GRAPH_COLLECTIONS = 'Read-only users cannot change graph collections.'
 
 const { startSpinner, stopSpinner } = useSpinner()
 
@@ -66,6 +70,7 @@ const mainMenuLoaded = () => useMenuStore().mainMenuLoaded
 const zenithConnectEnabled = () => useMenuStore().mainMenu?.zenithConnectEnabled ?? false
 
 const snmpRoleMsg = 'Must have the proper SNMP role(s) to access SNMP Config.'
+const thresholdRoleMsg = 'Must have the admin role to access Threshold Configuration.'
 
 // SNMP Config auto-lookup mode. This sets the store to ensure the lookup tab is active and in lookup mode.
 // Then SnmpConfigLookupTab will get the 'ipAddress' and 'location' query params and perform the lookup.
@@ -84,6 +89,12 @@ const router = createRouter({
       component: Home
     },
     {
+      // configurable system-wide dashboard (NMS-19851); home route repoints here at cutover
+      path: '/dashboard',
+      name: 'Dashboard',
+      component: () => import('@/containers/Dashboard.vue')
+    },
+    {
       // for compatibility with legacy plugins
       // should be removed when all plugins have unique 'extensionId' and follow new pattern
       path: '/plugins/:extensionId/:resourceRootPath/:moduleFileName',
@@ -98,6 +109,27 @@ const router = createRouter({
       beforeEnter: requireRole('filesystemEditorRole', 'No role access to file editor.')
     },
     {
+      path: '/distributed-monitoring',
+      name: 'Manage Minions and Locations',
+      component: () => import('@/containers/DistributedMonitoring.vue'),
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage distributed monitoring.')
+    },
+    {
+      path: '/admin/applications',
+      name: 'Manage Applications',
+      component: () => import('@/containers/ManageApplications.vue'),
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage applications.')
+    },
+    // redirects from the old page routes
+    {
+      path: '/admin/minions',
+      redirect: { path: '/distributed-monitoring', query: { tab: 'minions' }}
+    },
+    {
+      path: '/admin/monitoring-locations',
+      redirect: { path: '/distributed-monitoring', query: { tab: 'locations' }}
+    },
+    {
       path: '/configuration',
       name: 'Configuration',
       component: () => import('@/containers/ProvisionDConfig.vue'),
@@ -108,6 +140,47 @@ const router = createRouter({
       name: 'Logs',
       component: () => import('@/containers/Logs.vue'),
       beforeEnter: requireRole('adminRole', 'No role access to logs.')
+    },
+    {
+      path: '/admin/users',
+      name: 'Manage Users',
+      component: () => import('@/containers/ManageUsers.vue'),
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage users.')
+    },
+    {
+      path: '/notifications',
+      name: 'Notifications',
+      component: () => import('@/containers/Notifications.vue')
+    },
+    {
+      path: '/notifications-config',
+      name: 'Notifications Configuration',
+      component: () => import('@/containers/NotificationsConfig.vue'),
+      beforeEnter: requireRole('adminRole', 'Must be admin to configure notifications.')
+    },
+    {
+      path: '/admin/groups',
+      name: 'Manage Groups',
+      component: () => import('@/containers/ManageGroups.vue'),
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage groups.')
+    },
+    {
+      path: '/admin/wsman-config',
+      name: 'Manage WS-Man',
+      component: () => import('@/containers/ManageWsman.vue'),
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage WS-Man configuration.')
+    },
+    {
+      path: '/scheduled-outages',
+      name: 'Scheduled Outages',
+      component: () => import('@/containers/ScheduledOutages.vue'),
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage scheduled outages.')
+    },
+    {
+      path: '/scheduled-outages/edit',
+      name: 'Edit Scheduled Outage',
+      component: () => import('@/containers/ScheduledOutageEditor.vue'),
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage scheduled outages.')
     },
     {
       path: '/map',
@@ -144,9 +217,10 @@ const router = createRouter({
       component: () => import('@/containers/Nodes.vue')
     },
     {
-      // Constrain :id to a positive integer (1+, no leading zeros). Non-matching
-      // paths (e.g. /node/abc, /node/0) fall through to the catch-all redirect.
-      path: '/node/:id([1-9]\\d*)',
+      // :id is a node id or foreignSource:foreignId, as the legacy element/node.jsp?node= took.
+      // NodeDetails parses it: a foreign id is resolved and replaced with the node id, and an
+      // invalid or unknown one shows its own message instead of falling through to the catch-all.
+      path: '/node/:id',
       name: 'Node Details',
       props: true,
       component: () => import('@/containers/NodeDetails.vue')
@@ -185,6 +259,51 @@ const router = createRouter({
           component: Graphs
         }
       ]
+    },
+    {
+      path: '/graph-collections',
+      name: 'GraphCollections',
+      component: () => import('@/containers/GraphCollections.vue')
+    },
+    {
+      path: '/graph-collections/new',
+      name: 'GraphCollectionNew',
+      component: () => import('@/containers/GraphCollectionEditor.vue'),
+      beforeEnter: requireCondition(() => useRole().rolesAreLoaded.value, () => !useRole().readOnlyRole.value, READONLY_GRAPH_COLLECTIONS)
+    },
+    {
+      path: '/graph-collections/:id(\\d+)/edit',
+      name: 'GraphCollectionEdit',
+      component: () => import('@/containers/GraphCollectionEditor.vue'),
+      props: true,
+      beforeEnter: requireCondition(() => useRole().rolesAreLoaded.value, () => !useRole().readOnlyRole.value, READONLY_GRAPH_COLLECTIONS)
+    },
+    {
+      // A collection built on the fly for a node (by id, by foreignSource:foreignId, or by domain),
+      // one graph per SNMP interface; nothing is stored. The static segment outranks :id below.
+      path: '/graph-collections/node/:nodeId([1-9]\\d*)',
+      name: 'GraphCollectionNode',
+      component: () => import('@/containers/GraphCollectionView.vue'),
+      props: route => ({ kind: 'node', source: route.params.nodeId })
+    },
+    {
+      path: '/graph-collections/nodeSource/:nodeSource',
+      name: 'GraphCollectionNodeSource',
+      component: () => import('@/containers/GraphCollectionView.vue'),
+      props: route => ({ kind: 'nodeSource', source: route.params.nodeSource })
+    },
+    {
+      path: '/graph-collections/domain/:domain',
+      name: 'GraphCollectionDomain',
+      component: () => import('@/containers/GraphCollectionView.vue'),
+      props: route => ({ kind: 'domain', source: route.params.domain })
+    },
+    {
+      // ids start at 0 in ksc-performance-reports.xml, so 0 is a real collection here
+      path: '/graph-collections/:id(\\d+)',
+      name: 'GraphCollectionView',
+      component: () => import('@/containers/GraphCollectionView.vue'),
+      props: true
     },
     {
       path: '/open-api',
@@ -305,6 +424,68 @@ const router = createRouter({
       path: '/trapd-config',
       name: 'Trapd Configuration',
       component: () => import('@/containers/TrapdConfiguration.vue')
+    },
+    {
+      path: '/threshold-config',
+      name: 'Threshold Configuration',
+      component: () => import('@/containers/ThresholdConfiguration.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      // Successor of the legacy '?groupName=X&editGroup' deep link, so runbooks can keep linking a group.
+      path: '/threshold-config/group/:name',
+      name: 'Threshold Group Detail',
+      component: () => import('@/containers/ThresholdGroupDetail.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/package/:name',
+      name: 'Threshold Package Detail',
+      component: () => import('@/containers/ThresholdPackageDetail.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      // Not '/threshold-config/group/create', so a group named 'create' stays reachable.
+      path: '/threshold-config/create-group',
+      name: 'Threshold Group Create',
+      component: () => import('@/containers/ThresholdGroupEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/group/:name/edit',
+      name: 'Threshold Group Edit',
+      component: () => import('@/containers/ThresholdGroupEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/group/:name/:kind(threshold|expression)/create',
+      name: 'Threshold Definition Create',
+      component: () => import('@/containers/ThresholdDefinitionEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/group/:name/:kind(threshold|expression)/:index(\\d+)/edit',
+      name: 'Threshold Definition Edit',
+      component: () => import('@/containers/ThresholdDefinitionEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/create-package',
+      name: 'Threshold Package Create',
+      component: () => import('@/containers/ThresholdPackageCreate.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/package/:name/service/create',
+      name: 'Threshold Service Create',
+      component: () => import('@/containers/ThresholdServiceEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/threshold-config/package/:name/service/:index(\\d+)/edit',
+      name: 'Threshold Service Edit',
+      component: () => import('@/containers/ThresholdServiceEdit.vue'),
+      beforeEnter: requireRole('adminRole', thresholdRoleMsg)
     },
     {
       path: '/mib-compiler',

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<wsman-datacollection-config rrd-repository="/opt/opennms/share/rrd/snmp/">
+    <collection name="default">
+        <!-- shipped default step is 300 (5 minutes); shortened to match the test-only
+             collectd-configuration.xml's 15s WS-Man interval, otherwise RRDtool won't
+             produce a non-unknown sample until a 5-minute step boundary has passed -->
+        <rrd step="15">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+
+        <!--
+             Include all of the available system definitions
+         -->
+        <include-all-system-definitions/>
+    </collection>
+</wsman-datacollection-config>

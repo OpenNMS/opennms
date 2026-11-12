@@ -1,6 +1,5 @@
-#
-# DON'T EDIT THIS FILE :: GENERATED WITH CONFD
-#
+# Default Prometheus JMX exporter configuration. Mount your own file at
+# PROM_JMX_EXPORTER_CONFIG (default /opt/prom-jmx-exporter/config.yaml) to customize it.
 startDelaySeconds: 10
 lowercaseOutputName: true
 lowercaseOutputLabelNames: true

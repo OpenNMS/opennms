@@ -22,11 +22,21 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,9 +44,16 @@ import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsOutageCollection;
+import org.opennms.web.rest.v2.model.NodeOutageTimelineDto;
+import org.opennms.web.rest.v2.model.NodeOutageTimelineEntryDto;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
@@ -77,6 +94,12 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
 
     @Autowired
     private OutageDao m_dao;
+
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    /** Window used by the timeline resource when the caller supplies neither bound. */
+    private static final long DEFAULT_TIMELINE_WINDOW_MS = 86_400_000L;
 
     @Override
     protected OutageDao getDao() {
@@ -169,6 +192,166 @@ public class OutageRestService extends AbstractDaoRestService<OnmsOutage,SearchB
     @Override
     protected OnmsOutage doGet(UriInfo uriInfo, Integer id) {
         return getDao().get(id);
+    }
+
+    /**
+     * Outage timeline for one node: every core-poller outage overlapping a window, across every
+     * monitored service on the node, in one request.
+     *
+     * The path is deliberately two segments. The inherited {@code @GET @Path("{id}")} of
+     * {@link AbstractDaoRestServiceWithDTO} matches exactly one segment, so {@code timeline/{nodeId}}
+     * cannot be dispatched to it. A single-segment literal would compete with that template and the
+     * winner would depend on the requested media type, which is the trap documented on
+     * {@code NodeRestService.getServiceTypes()}.
+     */
+    @GET
+    @Path("timeline/{nodeId}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    @Transactional(readOnly = true)
+    @Operation(summary = "Outage timeline for one node",
+            description = """
+                    Every core-poller outage overlapping a time window, for every monitored service on one
+                    node, in one call. This is the JSON replacement for the per-service PNG strips of
+                    `GET /rest/timeline/image/...`: the caller draws the strip.
+
+                    An outage overlaps the window when it was still open after `start` and had already begun
+                    by `end`, so an outage that began before `start` is included with its true, unclamped
+                    `ifLostService`. Outages recorded by a remote perspective are excluded, matching the v1 strip.
+
+                    Unlike the rest of the v2 API, every timestamp here is epoch milliseconds in both JSON
+                    and XML, so the values echo the `start` and `end` that were sent. An outage that is still
+                    open reports `ifRegainedService` as null in JSON; in XML the attribute is omitted.
+
+                    `truncated` is true when more outages matched than `limit` allowed, so a caller can say
+                    the strip is incomplete rather than draw a confidently wrong window. The outages returned
+                    are the most recent ones.
+
+                    `ifServiceId` and `ipInterfaceId` are the `id` fields of the service and interface objects
+                    in `GET /rest/availability/nodes/{nodeId}`, so the two documents join directly.""",
+            operationId = "outagesTimelineForNode")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The node's outages over the window.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = NodeOutageTimelineDto.class),
+                                    examples = @ExampleObject(value = """
+                                            {
+                                              "nodeId": 1,
+                                              "start": 1787641143996,
+                                              "end": 1787727543996,
+                                              "nodeCreateTime": 1436881400000,
+                                              "count": 2,
+                                              "truncated": false,
+                                              "outage": [
+                                                { "id": 3543, "ifServiceId": 3, "ipInterfaceId": 1,
+                                                  "ipAddress": "192.168.1.1", "serviceId": 3, "serviceName": "SNMP",
+                                                  "ifLostService": 1787700000000, "ifRegainedService": null },
+                                                { "id": 3542, "ifServiceId": 3, "ipInterfaceId": 1,
+                                                  "ipAddress": "192.168.1.1", "serviceId": 3, "serviceName": "SNMP",
+                                                  "ifLostService": 1787650000000, "ifRegainedService": 1787660000000 }
+                                              ]
+                                            }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = NodeOutageTimelineDto.class),
+                                    examples = @ExampleObject(value = """
+                                            <outage-timeline nodeId="1" start="1787641143996" end="1787727543996"
+                                                             nodeCreateTime="1436881400000" count="1">
+                                              <outage id="3543" ifServiceId="3" ipInterfaceId="1" ipAddress="192.168.1.1"
+                                                      serviceId="3" serviceName="SNMP" ifLostService="1787700000000"/>
+                                            </outage-timeline>"""))
+                    }),
+            @ApiResponse(responseCode = "400", description = "`start` is not strictly before `end`, or `limit` is negative.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "start must be strictly before end"))),
+            @ApiResponse(responseCode = "404", description = "No node has that identifier. The response has no body.")
+    })
+    public Response getNodeOutageTimeline(
+            @Parameter(description = "Database identifier of the node.", required = true, example = "1")
+            @PathParam("nodeId") final Integer nodeId,
+            @Parameter(description = "Window start, epoch milliseconds. Defaults to `end` minus 24 hours.",
+                    example = "1787641143996")
+            @QueryParam("start") final Long start,
+            @Parameter(description = "Window end, epoch milliseconds. Defaults to now.",
+                    example = "1787727543996")
+            @QueryParam("end") final Long end,
+            @Parameter(description = "Safety cap on the number of outages returned, most recent first. "
+                    + "Zero means no cap.", example = "10000")
+            @DefaultValue("10000") @QueryParam("limit") final Integer limit) {
+
+        final long endMs = (end != null) ? end : System.currentTimeMillis();
+        final long startMs = (start != null) ? start : endMs - DEFAULT_TIMELINE_WINDOW_MS;
+
+        if (startMs >= endMs) {
+            return Response.status(Status.BAD_REQUEST)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity("start must be strictly before end").build();
+        }
+
+        // CriteriaBuilder passes any non-zero limit straight through, so a negative one reaches the
+        // query and fails there as a 500. Zero is the documented way to ask for no cap.
+        if (limit == null || limit < 0) {
+            return Response.status(Status.BAD_REQUEST)
+                    .type(MediaType.TEXT_PLAIN)
+                    .entity("limit must not be negative; use 0 for no limit").build();
+        }
+
+        final OnmsNode node = m_nodeDao.get(nodeId);
+        if (node == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+
+        final Date startDate = new Date(startMs);
+        final Date endDate = new Date(endMs);
+
+        // The same aliases and the same overlap predicate as TimelineRestService.queryOutages(), so
+        // this document describes exactly the strip the PNG drew. The two-argument alias() form
+        // already defaults to a LEFT JOIN.
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
+        builder.alias("monitoredService", "monitoredService");
+        builder.alias("monitoredService.ipInterface", "ipInterface");
+        builder.alias("monitoredService.ipInterface.node", "node");
+        builder.alias("monitoredService.serviceType", "serviceType");
+
+        builder.eq("node.id", nodeId);
+        builder.isNull("perspective");
+        builder.le("ifLostService", endDate);
+        builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", startDate));
+
+        // One more row than asked for, so a full page can be told from a page that merely reached
+        // the cap. Without it a caller cannot know the strip is missing outages: it would render a
+        // confidently wrong picture of the window. CriteriaBuilder maps a limit of 0 to "no limit",
+        // so asking for one more in that case would be asking for exactly one.
+        builder.limit(limit == 0 ? 0 : limit + 1);
+        // Ordered by time rather than by id: a tripped limit should drop the oldest outages, which
+        // are the ones furthest from the right edge of the strip.
+        builder.orderBy("ifLostService").desc();
+
+        final List<OnmsOutage> found = getDao().findMatching(builder.toCriteria());
+        final boolean truncated = limit > 0 && found.size() > limit;
+
+        final List<NodeOutageTimelineEntryDto> rows =
+                (truncated ? found.subList(0, limit) : found).stream()
+                        .map(OutageRestService::toTimelineEntry)
+                        .collect(Collectors.toList());
+
+        return Response.ok(new NodeOutageTimelineDto(nodeId, startMs, endMs,
+                node.getCreateTime().getTime(), rows, truncated)).build();
+    }
+
+    private static NodeOutageTimelineEntryDto toTimelineEntry(final OnmsOutage outage) {
+        final OnmsMonitoredService svc = outage.getMonitoredService();
+        final NodeOutageTimelineEntryDto dto = new NodeOutageTimelineEntryDto();
+        dto.setId(outage.getId());
+        dto.setIfServiceId(svc.getId());
+        dto.setIpInterfaceId(svc.getIpInterfaceId());
+        dto.setIpAddress(InetAddressUtils.str(svc.getIpAddress()));
+        dto.setServiceId(svc.getServiceId());
+        dto.setServiceName(svc.getServiceName());
+        dto.setIfLostService(outage.getIfLostService().getTime());
+        dto.setIfRegainedService(outage.getIfRegainedService() == null
+                ? null : outage.getIfRegainedService().getTime());
+        return dto;
     }
 
     @Override

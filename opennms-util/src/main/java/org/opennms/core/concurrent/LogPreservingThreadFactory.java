@@ -30,7 +30,8 @@ import java.util.concurrent.ThreadFactory;
 public class LogPreservingThreadFactory implements ThreadFactory {
     private final BitSet m_slotNumbers;
     private final String m_name;
-    private final int m_poolSize;
+    private volatile int m_poolSize;
+    private volatile boolean m_resized = false;
     private Map<String,String> m_mdc = null;
     private int m_counter = 0;
 
@@ -45,11 +46,29 @@ public class LogPreservingThreadFactory implements ThreadFactory {
 
     }
 
+    /**
+     * Updates the pool size used when naming new threads, so that a pool resized after
+     * construction keeps producing accurate "n-of-size" names. This does not resize any
+     * executor; the executor's owner does that.
+     *
+     * @param poolSize the new number of threads in the pool this factory serves
+     */
+    public void setPoolSize(final int poolSize) {
+        m_poolSize = poolSize;
+        // Keep numbered names from here on, even at size one: older numbered workers may
+        // still be running, and the un-numbered single-thread name would not be unique.
+        m_resized = true;
+    }
+
+    public int getPoolSize() {
+        return m_poolSize;
+    }
+
     @Override
     public Thread newThread(final Runnable r) {
         if (m_poolSize == Integer.MAX_VALUE) {
             return getIncrementingThread(r);
-        } else if (m_poolSize > 1) {
+        } else if (m_poolSize > 1 || m_resized) {
             return getPooledThread(r);
         } else {
             return getSingleThread(r);
@@ -131,15 +150,12 @@ public class LogPreservingThreadFactory implements ThreadFactory {
 
     private static int getOpenThreadSlot(BitSet bs) {
         synchronized(bs) {
-            // Start at 1 so that we always return a positive integer
-            for (int i = 1; i < bs.size(); i++) {
-                if (!bs.get(i)) {
-                    bs.set(i, true);
-                    return i;
-                }
-            }
-            // We should never return zero
-            return 0;
+            // Start at 1 so that we always return a positive integer. The BitSet grows on
+            // demand, so a pool that has been enlarged past its original size still gets
+            // a unique slot rather than falling off the end.
+            final int slot = bs.nextClearBit(1);
+            bs.set(slot);
+            return slot;
         }
     }
 }

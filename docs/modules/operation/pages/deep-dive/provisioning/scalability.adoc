@@ -54,7 +54,6 @@ Example default foreign source file:
       <detector class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector" name="ICMP"/>
       <detector class="org.opennms.netmgt.provision.detector.simple.ImapDetector" name="IMAP"/>
       <detector class="org.opennms.netmgt.provision.detector.simple.LdapDetector" name="LDAP"/>
-      <detector class="org.opennms.netmgt.provision.detector.simple.NrpeDetector" name="NRPE"/>
       <detector class="org.opennms.netmgt.provision.detector.simple.Pop3Detector" name="POP3"/>
       <detector class="org.opennms.netmgt.provision.detector.radius.RadiusAuthDetector" name="Radius"/>
       <detector class="org.opennms.netmgt.provision.detector.simple.SmtpDetector" name="SMTP"/>

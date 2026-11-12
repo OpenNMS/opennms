@@ -28,6 +28,7 @@
 	import="org.opennms.web.element.*, org.opennms.web.utils.ExceptionUtils"
 %>
 <%@page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@page import="org.opennms.web.api.ElementConstants" %>
 
 <%
     ElementIdNotFoundException einfe = ExceptionUtils.getRootCause(exception, ElementIdNotFoundException.class);
@@ -46,14 +47,17 @@
 <h1><%=einfe.getElemType(true)%> ID Not Found</h1>
 
 <p>
-  The <%=einfe.getElemType()%> ID <%=einfe.getBadID()%> is invalid. <%=WebSecurityUtils.sanitizeString(einfe.getMessage())%>
+  The <%=einfe.getElemType()%> ID <%=WebSecurityUtils.sanitizeString(einfe.getBadID())%> is invalid. <%=WebSecurityUtils.sanitizeString(einfe.getMessage())%>
   <br/>
   <% if (einfe.getDetailUri() != null) { %>
   <p>
   To search again by <%=einfe.getElemType()%> ID, enter the ID here:
   </p>
 
-  <form role="form" method="get" action="<%=einfe.getDetailUri()%>" class="form">
+  <% final boolean nodeDetails = ElementConstants.NODE_DETAILS_URI.equals(einfe.getDetailUri()); %>
+  <form role="form" method="get" class="form"
+        action="<%= nodeDetails ? "#" : einfe.getDetailUri() %>"
+        <% if (nodeDetails) { %>onsubmit="return onmsGoToNodeDetails(this.elements['<%=einfe.getDetailParam()%>'])"<% } %>>
     <div class="row">
       <div class="form-group col-md-2">
         <label for="input_text">Get&nbsp;details&nbsp;for&nbsp;<%=einfe.getElemType()%>&nbsp;ID</label>
