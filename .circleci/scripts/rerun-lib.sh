@@ -63,6 +63,15 @@ rerun_save_evidence()
       cp -r "${logdir}/." "$dest/$(basename "$logdir")/" || true
     done || true
 
+    # A container startup failure keeps its logs in target/logs/startup-failures/<name>/.
+    # The reports of the class contain that path.
+    grep -o -h -E 'startup-failures/[A-Za-z0-9._-]+' "$dest"/*.xml "$dest"/*.txt 2>/dev/null | sort -u | while IFS= read -r logdir; do
+      if [ -d "${module}/target/logs/${logdir}" ]; then
+        mkdir -p "$dest/startup-failures"
+        cp -r "${module}/target/logs/${logdir}" "$dest/startup-failures/" || true
+      fi
+    done || true
+
     rm -f "$report"
   done
 }
