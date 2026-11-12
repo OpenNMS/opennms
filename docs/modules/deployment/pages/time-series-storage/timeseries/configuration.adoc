@@ -113,7 +113,12 @@ Defaults to the number of available cores.
 | true
 
 | cache.timeseriesSearcherCache.expireAfterRead
-| Expiry time for `TimeseriesSearcherCache`, in seconds.
+| Expiry time for `TimeseriesSearcherCache` entries that have not been read, in seconds.
+| 300
+
+| cache.timeseriesSearcherCache.expireAfterWrite
+| Maximum age of a `TimeseriesSearcherCache` entry, in seconds.
+Bounds how long newly collected resources can take to appear on a node that is read constantly.
 | 300
 
 | cache.timeseriesSearcherCache.maximumSize

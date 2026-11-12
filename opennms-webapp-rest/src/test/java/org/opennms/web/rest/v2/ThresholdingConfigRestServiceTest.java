@@ -179,6 +179,17 @@ public class ThresholdingConfigRestServiceTest {
     }
 
     @Test
+    public void encodesTheGroupNameInLocation() {
+        // The group is saved before Location is built, so a name that is not a valid URI must not fail the create.
+        try (Response response = restService.createThresholdGroup(groupDto("CPU Load"), adminContext())) {
+            assertEquals(201, response.getStatus());
+            assertEquals("thresholding/groups/CPU%20Load", response.getLocation().toString());
+        }
+
+        assertNotNull(thresholdingDao.getWriteableConfig().getGroup("CPU Load"));
+    }
+
+    @Test
     public void refusesToCreateAGroupThatAlreadyExists() {
         try (Response response = restService.createThresholdGroup(groupDto("mib2"), adminContext())) {
             assertEquals(409, response.getStatus());
