@@ -207,7 +207,8 @@ public class EventConfEventDaoIT implements InitializingBean {
         m_eventSourceDao.saveOrUpdate(other);
 
         final EventConfEvent duplicate = new EventConfEvent();
-        duplicate.setUei(sharedUei);
+        // stored with surrounding whitespace, which is compared and returned trimmed
+        duplicate.setUei(" \t" + sharedUei + "\r\n");
         duplicate.setEventLabel("Shared");
         duplicate.setXmlContent("<event><uei>" + sharedUei + "</uei></event>");
         duplicate.setSource(other);

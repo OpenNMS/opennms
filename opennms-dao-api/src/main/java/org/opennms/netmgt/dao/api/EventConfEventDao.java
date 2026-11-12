@@ -48,7 +48,8 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
     /**
      * Every event, in any source, whose UEI is in the given set, ordered by UEI, then source evaluation
      * order (first evaluated first). A source that defines a UEI more than once yields one entry per
-     * definition. An empty set yields an empty list.
+     * definition. An empty set yields an empty list. Stored UEIs are compared and returned trimmed, so
+     * pass trimmed UEIs.
      */
     List<UeiSource> findUeiSources(Collection<String> ueis);
 

@@ -85,7 +85,7 @@ Generated event definitions and data collection groups are stored in the databas
 When you generate event definitions, the page warns about UEIs that other event sources already define.
 Before it saves the events, it shows which existing definitions the new ones replace and asks you to confirm.
 A new event source is evaluated before all existing sources.
-The generated definitions do not contain alarm data, so traps that an existing definition turned into alarms no longer create or clear alarms.
+The generated definitions do not contain alarm data, so unless you add it before the save, traps that an existing definition turned into alarms no longer create or clear alarms.
 Graph templates are written to `etc/snmp-graph.properties.d/`.
 
 The legacy Vaadin MIB compiler (`admin/mibCompiler.jsp`) has been removed, together with the `vaadin-snmp-events-and-metrics` Karaf feature.

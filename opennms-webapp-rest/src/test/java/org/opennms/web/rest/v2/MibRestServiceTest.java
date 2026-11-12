@@ -143,25 +143,23 @@ public class MibRestServiceTest {
     }
 
     @Test
-    public void testFindExistingUeis() throws Exception {
-        compiledDir.mkdirs();
-        for (final String dep : new String[]{"SNMPv2-SMI.txt", "SNMPv2-TC.txt", "SNMPv2-CONF.txt", "SNMPv2-MIB.txt", "IANAifType-MIB.txt"}) {
-            Files.copy(new File(MIB_FIXTURES, dep).toPath(), new File(compiledDir, dep).toPath());
-        }
-        Files.copy(new File(MIB_FIXTURES, "IF-MIB.txt").toPath(), new File(compiledDir, "IF-MIB.mib").toPath());
-
-        // no other source defines the UEI
+    @SuppressWarnings("unchecked")
+    public void testFindExistingUeis() {
+        // no other source defines the UEI; no compiled MIB is needed
         final String eventsXml = "<events xmlns=\"http://xmlns.opennms.org/xsd/eventconf\"><event>"
                 + "<uei>uei.opennms.org/traps/IF-MIB/linkDown</uei><event-label>linkDown</event-label>"
                 + "<descr>d</descr><logmsg dest=\"logndisplay\">m</logmsg><severity>Indeterminate</severity>"
                 + "</event></events>";
-        final Response ok = restService.findExistingUeis("IF-MIB.mib", eventsXml);
+        final Response ok = restService.findExistingUeis("IF-MIB.events", eventsXml);
         assertEquals(200, ok.getStatus());
         assertEquals(Map.of(), ok.getEntity());
 
-        assertEquals(400, restService.findExistingUeis("IF-MIB.mib", null).getStatus());
-        assertEquals(400, restService.findExistingUeis("IF-MIB.mib", "not xml").getStatus());
-        assertEquals(404, restService.findExistingUeis("NO-SUCH.mib", eventsXml).getStatus());
+        assertEquals(400, restService.findExistingUeis(null, eventsXml).getStatus());
+        assertEquals(400, restService.findExistingUeis("IF-MIB.events", null).getStatus());
+        final Response invalid = restService.findExistingUeis("IF-MIB.events", "not xml");
+        assertEquals(400, invalid.getStatus());
+        // the body names the cause, which the UI shows
+        assertTrue(String.valueOf(((Map<String, Object>) invalid.getEntity()).get("error")).startsWith("The events XML is not valid"));
     }
 
     @Test

@@ -554,8 +554,10 @@ public class JsmiMibParser implements MibParser {
      * @return the trap event UEI
      */
     protected String getTrapEventUEI(Notification trap, String ueibase) {
-        final StringBuilder buf = new StringBuilder(ueibase);
-        if (! ueibase.endsWith("/")) {
+        // whitespace around the base would end up inside the UEI, and a UEI never contains it
+        final String base = ueibase.trim();
+        final StringBuilder buf = new StringBuilder(base);
+        if (! base.endsWith("/")) {
             buf.append("/");
         }
         buf.append(trap.getId());

@@ -128,11 +128,11 @@ describe('mibCompilerService', () => {
   it('findExistingUeis POSTs the events XML and returns the map', async () => {
     const existing = { 'uei.opennms.org/a': [{ name: 'acme.events', enabled: true }] }
     vi.mocked(v2.post).mockResolvedValue({ status: 200, data: existing })
-    const result = await findExistingUeis('IF MIB.mib', '<events/>')
+    const result = await findExistingUeis('IF-MIB.events', '<events/>')
     expect(v2.post).toHaveBeenCalledWith(
-      '/mibs/compiled/IF%20MIB.mib/events/existing-ueis',
+      '/mibs/events/existing-ueis',
       '<events/>',
-      { headers: { 'Content-Type': 'application/xml' }}
+      { params: { source: 'IF-MIB.events' }, headers: { 'Content-Type': 'application/xml' }}
     )
     expect(result).toEqual(existing)
   })

@@ -176,7 +176,8 @@ describe('GenerateEventsDialog', () => {
     const overridden = wrapper.find('[data-test="confirm-overridden-ueis"]')
     expect(overridden.text()).toContain('evaluated before all existing sources')
     expect(rowsOf(overridden)).toEqual([['uei.opennms.org/traps/IF-MIB/linkDown', 'acme.events vendor.events']])
-    expect(overridden.text()).toContain('do not contain alarm data')
+    expect(overridden.find('[data-test="confirm-no-alarm-data"]').text())
+      .toBe('The new definition does not contain alarm data. If an existing definition creates or clears alarms, that trap will no longer do that.')
     const confirmButton = wrapper.find('[data-test="confirm-save-button"]')
     expect(confirmButton.text()).toBe('Save Anyway')
 
@@ -184,6 +185,45 @@ describe('GenerateEventsDialog', () => {
     await flushPromises()
     expect(mockUploadEventConfigFiles).toHaveBeenCalledTimes(1)
     expect(wrapper.find('[data-test="events-saved"]').exists()).toBe(true)
+  })
+
+  it('leaves out the alarm-data warning when the edited definitions contain alarm data', async () => {
+    mockGenerateEvents.mockResolvedValue({
+      ...preview,
+      existingUeis: { 'uei.opennms.org/traps/IF-MIB/linkDown': enabled('acme.events') }
+    })
+    mockGetOrderedEventConfigSources.mockResolvedValue([{ name: 'acme.events' }])
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    await wrapper.find('[data-test="events-xml"]').setValue('<events><event><uei>uei.opennms.org/traps/IF-MIB/linkDown</uei>'
+      + '<alarm-data reduction-key="%uei%" alarm-type="1"/></event></events>')
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="confirm-overridden-ueis"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="confirm-no-alarm-data"]').exists()).toBe(false)
+  })
+
+  it('counts the overridden UEIs whose edited definitions lack alarm data', async () => {
+    const existingUeis = {
+      'uei.opennms.org/traps/IF-MIB/linkDown': enabled('acme.events'),
+      'uei.opennms.org/traps/IF-MIB/linkUp': enabled('acme.events')
+    }
+    mockGenerateEvents.mockResolvedValue({ ...preview, existingUeis })
+    mockGetOrderedEventConfigSources.mockResolvedValue([{ name: 'acme.events' }])
+    wrapper = await createWrapper()
+    await wrapper.find('[data-test="generate-button"]').trigger('click')
+    await flushPromises()
+    // linkDown gets alarm data; linkUp keeps none
+    await wrapper.find('[data-test="events-xml"]').setValue('<events>'
+      + '<event><uei>uei.opennms.org/traps/IF-MIB/linkDown</uei><alarm-data reduction-key="%uei%" alarm-type="1"/></event>'
+      + '<event><uei> uei.opennms.org/traps/IF-MIB/linkUp </uei></event></events>')
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="confirm-no-alarm-data"]').text())
+      .toContain('The new definition of 1 of these UEIs does not contain alarm data.')
   })
 
   it('returns to the preview from the duplicate confirmation', async () => {
@@ -337,7 +377,8 @@ describe('GenerateEventsDialog', () => {
     await wrapper.find('[data-test="save-button"]').trigger('click')
     await flushPromises()
 
-    expect(mockFindExistingUeis).toHaveBeenCalledWith('IF-MIB.mib',
+    // the check names the target source; it does not need the compiled MIB
+    expect(mockFindExistingUeis).toHaveBeenCalledWith('IF-MIB.events',
       '<events><event><uei>uei.opennms.org/vendor/acme/linkDown</uei></event></events>')
     expect(mockUploadEventConfigFiles).not.toHaveBeenCalled()
     expect(rowsOf(wrapper.find('[data-test="confirm-overridden-ueis"]')))

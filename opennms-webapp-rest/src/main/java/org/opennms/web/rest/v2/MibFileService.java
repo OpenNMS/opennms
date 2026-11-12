@@ -84,7 +84,7 @@ public class MibFileService {
     public static final String COMPILED = "compiled";
 
     private static final String MIB_FILE_EXTENSION = ".mib";
-    private static final long MAX_MIB_FILE_SIZE = 10L * 1024 * 1024;
+    static final long MAX_MIB_FILE_SIZE = 10L * 1024 * 1024;
     /** Far more than any MIB defines traps, and well below the bind-parameter limit of the lookup query. */
     public static final int MAX_UEIS_TO_CHECK = 10_000;
 
@@ -164,6 +164,12 @@ public class MibFileService {
         return buffer.toByteArray();
     }
 
+    /** Whether the text, encoded as UTF-8 as it is stored and sent, exceeds {@link #MAX_MIB_FILE_SIZE} bytes. */
+    private static boolean exceedsMaxSize(String text) {
+        // UTF-8 never takes fewer bytes than chars, so a long text needs no encoding to be refused
+        return text.length() > MAX_MIB_FILE_SIZE || text.getBytes(StandardCharsets.UTF_8).length > MAX_MIB_FILE_SIZE;
+    }
+
     /**
      * Vendor MIBs are frequently Latin-1 (e.g. a raw {@code ©} in the copyright banner) rather
      * than UTF-8, so decode leniently instead of failing the whole read on one bad byte.
@@ -182,7 +188,7 @@ public class MibFileService {
     }
 
     public void updatePendingMibFile(String name, String content) throws IOException {
-        if (content == null || content.getBytes(StandardCharsets.UTF_8).length > MAX_MIB_FILE_SIZE) {
+        if (content == null || exceedsMaxSize(content)) {
             throw new IllegalArgumentException("Content is missing or exceeds the maximum allowed size of " + MAX_MIB_FILE_SIZE + " bytes");
         }
         final File file = existingFile(PENDING, name);
@@ -255,9 +261,7 @@ public class MibFileService {
         result.setEventCount(events.getEvents().size());
         result.setSuggestedFileName(suggestedFileName);
         result.setEventsXml(JaxbUtils.marshal(events));
-        final Set<String> ueis = new LinkedHashSet<>();
-        events.getEvents().forEach(event -> ueis.add(event.getUei()));
-        result.setExistingUeis(findExistingUeis(ueis, eventsSourceName(mibName)));
+        result.setExistingUeis(findExistingUeis(ueisOf(events), eventsSourceName(mibName)));
         return result;
     }
 
@@ -267,20 +271,18 @@ public class MibFileService {
      * the preview was made. The source the events will be saved as is left out, as in the preview.
      * <p>
      * The whole document is taken, not only its UEIs, so that a later check of the trap masks can use the
-     * same request.
+     * same request. The compiled MIB is not needed, so a save still works after the MIB was deleted.
      *
-     * @param name the compiled MIB the events were generated from; it names the target source
-     * @param eventsXml the events document, at most {@link #MAX_MIB_FILE_SIZE} characters and
+     * @param sourceName the event source the events will be saved as; its own definitions are left out
+     * @param eventsXml the events document, at most {@link #MAX_MIB_FILE_SIZE} bytes in UTF-8 and
      *                  {@link #MAX_UEIS_TO_CHECK} distinct UEIs
      */
-    public Map<String, List<MibEventSourceDto>> findExistingUeis(String name, String eventsXml) throws IOException {
-        final Set<String> ueis = eventUeis(eventsXml);
-        final File mibFile = existingFile(COMPILED, name);
-        final MibParser parser = createParser();
-        if (!parser.parseMib(mibFile)) {
-            throw new IOException("Failed to parse compiled MIB " + name + ": " + parser.getFormattedErrors());
+    public Map<String, List<MibEventSourceDto>> findExistingUeis(String sourceName, String eventsXml) {
+        if (sourceName == null || sourceName.isBlank()) {
+            throw new IllegalArgumentException("The name of the target event source is required.");
         }
-        return findExistingUeis(ueis, eventsSourceName(parser.getMibName()));
+        final Set<String> ueis = eventUeis(eventsXml);
+        return findExistingUeis(ueis, sourceName);
     }
 
     /** The distinct, trimmed, non-blank UEIs of an events document; rejects a missing, oversized or invalid one. */
@@ -288,8 +290,8 @@ public class MibFileService {
         if (eventsXml == null || eventsXml.isBlank()) {
             throw new IllegalArgumentException("An events XML document is required.");
         }
-        if (eventsXml.length() > MAX_MIB_FILE_SIZE) {
-            throw new IllegalArgumentException("The events XML exceeds " + MAX_MIB_FILE_SIZE + " characters.");
+        if (exceedsMaxSize(eventsXml)) {
+            throw new IllegalArgumentException("The events XML exceeds the maximum allowed size of " + MAX_MIB_FILE_SIZE + " bytes.");
         }
         final Events events;
         try {
@@ -298,15 +300,24 @@ public class MibFileService {
         } catch (RuntimeException e) {
             throw new IllegalArgumentException("The events XML is not valid: " + e.getMessage(), e);
         }
+        final Set<String> ueis = ueisOf(events);
+        if (ueis.size() > MAX_UEIS_TO_CHECK) {
+            throw new IllegalArgumentException("At most " + MAX_UEIS_TO_CHECK + " UEIs can be checked at once.");
+        }
+        return ueis;
+    }
+
+    /**
+     * The distinct UEIs of the events, trimmed, without blank ones. Whitespace around a UEI is never part
+     * of it, so every comparison uses the trimmed value.
+     */
+    private static Set<String> ueisOf(Events events) {
         final Set<String> ueis = new LinkedHashSet<>();
         events.getEvents().stream()
                 .map(event -> event.getUei())
                 .filter(uei -> uei != null && !uei.isBlank())
                 .map(String::trim)
                 .forEach(ueis::add);
-        if (ueis.size() > MAX_UEIS_TO_CHECK) {
-            throw new IllegalArgumentException("At most " + MAX_UEIS_TO_CHECK + " UEIs can be checked at once.");
-        }
         return ueis;
     }
 

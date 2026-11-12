@@ -109,9 +109,11 @@
           <strong>{{ ueiCount(overriddenUeis.length) }}</strong> below:
         </p>
         <DuplicateUeiTable :items="overriddenUeis" />
-        <p>
-          The generated definitions have the severity Indeterminate and do not contain alarm data.
-          If an existing definition creates or clears alarms, these traps will no longer do that.
+        <p
+          v-if="noAlarmDataMessage"
+          data-test="confirm-no-alarm-data"
+        >
+          {{ noAlarmDataMessage }}
         </p>
       </div>
       <div
@@ -288,6 +290,41 @@ const classifiedDuplicates = computed(() => {
 const overriddenUeis = computed(() => classifiedDuplicates.value.overridden)
 const shadowedUeis = computed(() => classifiedDuplicates.value.shadowed)
 
+// The UEIs whose new definitions in the checked XML all contain alarm data. Generated definitions have
+// none, but the user can add it in the editor.
+const ueisWithAlarmData = computed(() => {
+  const withAlarmData = new Set<string>()
+  const withoutAlarmData = new Set<string>()
+  const parsed = new DOMParser().parseFromString(checkedXml.value, 'application/xml')
+  for (const event of Array.from(parsed.getElementsByTagName('event'))) {
+    const children = Array.from(event.children)
+    const uei = children.find(child => child.localName === 'uei')?.textContent?.trim()
+    if (uei) {
+      const target = children.some(child => child.localName === 'alarm-data') ? withAlarmData : withoutAlarmData
+      target.add(uei)
+    }
+  }
+  return new Set([...withAlarmData].filter(uei => !withoutAlarmData.has(uei)))
+})
+
+// Overriding a definition that creates or clears alarms with one that has no alarm data stops the trap
+// from doing that. Only shown for the overridden UEIs whose new definitions lack alarm data.
+const noAlarmDataMessage = computed(() => {
+  const total = overriddenUeis.value.length
+  const count = overriddenUeis.value.filter(item => !ueisWithAlarmData.value.has(item.uei)).length
+  if (count === 0) {
+    return ''
+  }
+  let subject
+  if (count === total) {
+    subject = count === 1 ? 'The new definition does' : 'The new definitions do'
+  } else {
+    subject = count === 1 ? 'The new definition of 1 of these UEIs does' : `The new definitions of ${count} of these UEIs do`
+  }
+  return `${subject} not contain alarm data. If an existing definition creates or clears alarms, `
+    + `${count === 1 ? 'that trap' : 'those traps'} will no longer do that.`
+})
+
 // a response that arrives after the dialog closed, or after it reopened for
 // another file, must not touch the current state
 const requestSeq = ref(0)
@@ -354,7 +391,7 @@ const save = async () => {
   try {
     const [sources, existing] = await Promise.all([
       getOrderedEventConfigSources(),
-      findExistingUeis(props.fileName, xml)
+      findExistingUeis(sourceName.value, xml)
     ])
     if (requestId !== requestSeq.value) {
       return

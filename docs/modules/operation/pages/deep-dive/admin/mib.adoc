@@ -98,7 +98,7 @@ If you enable a disabled definition again, these rules apply to it.
 Before the save, a confirmation lists the UEIs in each of these groups.
 The save checks the UEIs of the edited XML again, so the confirmation also shows duplicates that your edits add.
 
-NOTE: The check compares only UEIs.
+NOTE: The check compares only UEIs, without surrounding whitespace.
 Trap matching uses the mask (enterprise ID, generic type, and specific type), not the UEI.
 An existing definition for the same trap with a different UEI is not reported, for example from a vendor event source with its own UEI base.
 The new source still receives that trap if it is evaluated first.
@@ -109,6 +109,7 @@ To go back to the XML, click *Back*.
 IMPORTANT: The generated definitions have the severity `Indeterminate` and do not contain alarm data.
 If a replaced definition creates or clears alarms, the traps for that UEI no longer create or clear alarms after the save.
 To keep the existing behavior, remove those events from the XML before you save, or add the alarm data to them.
+The confirmation tells you how many of the replaced UEIs have new definitions without alarm data.
 You can also change the source order on the event configuration page after the save.
 
 [[mib-generate-data-collection]]
