@@ -76,13 +76,15 @@ RERUN_COUNT="${CCI_RERUN_FAILTEST:-0}"
 # Pass 0 runs the tests of this node. A later pass runs only the failed classes.
 run_tests()
 {
-  local pass="$1" its="$3"
+  local pass="$1" units="$2" its="$3"
   local args=()
 
   if [ "$pass" -eq 0 ]; then
-    args+=("-Dit.test=${IT_TESTS}")
+    args+=("-DskipITs=false" "-Dit.test=${IT_TESTS}")
   else
-    args+=("-Dit.test=${its}")
+    # An empty it.test value runs all the ITs, so skip the plugin that has no failed class.
+    if [ -n "$units" ]; then args+=("-Dtest=${units}"); else args+=("-Dskip.surefire.tests=true"); fi
+    if [ -n "$its" ]; then args+=("-DskipITs=false" "-Dit.test=${its}"); else args+=("-DskipITs=true"); fi
   fi
 
   if [ "$RERUN_COUNT" -gt 0 ]; then
@@ -92,9 +94,9 @@ run_tests()
   fi
 
   # When we are ready to collect coverge on smoke tests, add "-Pcoverage" below
-  ionice nice ../compile.pl "${args[@]}" \
+  ionice nice ../compile.pl \
     -DskipTests=false \
-    -DskipITs=false \
+    "${args[@]}" \
     -DfailIfNoTests=false \
     -Dtest.fork.count=1 \
     --batch-mode \
