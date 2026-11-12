@@ -448,8 +448,6 @@ public abstract class Bootstrap {
      * overriding system properties have not been set. Below are the default
      * values.
      * <ul>
-     * <li>opennms.library.jicmp:
-     * ClassLoader.getResource(System.mapLibraryName("jicmp"))</li>
      * <li>opennms.library.jrrd:
      * ClassLoader.getResource(System.mapLibraryName("jrrd"))</li>
      * <li>log4j.configuration: "log4j.properties"</li>
@@ -493,10 +491,6 @@ public abstract class Bootstrap {
         final Path toolsJar = Paths.get(System.getProperty("java.home"), "..", "lib", "tools.jar").toAbsolutePath();
         if (toolsJar.toFile().exists()) {
             dir += File.pathSeparator + toolsJar.toString();
-        }
-
-        if (System.getProperty("org.opennms.protocols.icmp.interfaceJar") != null) {
-            dir += File.pathSeparator + System.getProperty("org.opennms.protocols.icmp.interfaceJar");
         }
 
         if (System.getProperty("org.opennms.rrd.strategyClass", DEFAULT_RRD_STRATEGY_CLASS).equals(DEFAULT_RRD_STRATEGY_CLASS)) {

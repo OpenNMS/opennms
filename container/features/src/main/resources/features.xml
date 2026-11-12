@@ -171,13 +171,6 @@
         <feature>joda-time</feature>
         <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rateLimitedLoggerVersion}$Bundle-SymbolicName=com.swrve.rate-limited-logger&amp;Bundle-Version=${rateLimitedLoggerVersion}</bundle>
     </feature>
-    <feature name="jicmp" version="${jicmpVersion}" description="jicmp">
-        <feature version="${guavaOsgiVersion}">guava</feature>
-        <bundle>mvn:org.opennms/jicmp-api/${jicmpVersion}</bundle>
-    </feature>
-    <feature name="jicmp6" version="${jicmp6Version}" description="jicmp6">
-        <bundle>mvn:org.opennms/jicmp6-api/${jicmp6Version}</bundle>
-    </feature>
     <feature name="quartz" version="${quartzVersion}" description="quartz">
         <feature>c3p0</feature>
         <!-- Quartz needs HikariCP [2,3) - so we use the latest 2.x here -->
@@ -584,8 +577,6 @@
     <feature name="opennms-icmp-best" version="${project.version}" description="OpenNMS :: ICMP :: Best Match">
         <feature>opennms-icmp-api</feature>
         <feature>opennms-icmp-jna</feature>
-        <feature>opennms-icmp-jni</feature>
-        <feature>opennms-icmp-jni6</feature>
         <bundle>mvn:org.opennms/opennms-icmp-best/${project.version}</bundle>
     </feature>
     <feature name="opennms-icmp-jna" version="${project.version}" description="OpenNMS :: ICMP :: JNA">
@@ -593,17 +584,8 @@
         <feature>opennms-icmp-api</feature>
         <feature>java-native-access</feature>
         <bundle>mvn:org.opennms.core/org.opennms.core.icmp-jna/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.icmp-ffm/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-icmp-jna/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-icmp-jni" version="${project.version}" description="OpenNMS :: ICMP :: JNI">
-        <feature>opennms-icmp-api</feature>
-        <feature>jicmp</feature>
-        <bundle>mvn:org.opennms/opennms-icmp-jni/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-icmp-jni6" version="${project.version}" description="OpenNMS :: ICMP :: JNI (with IPv6 support)">
-        <feature>opennms-icmp-jni</feature>
-        <feature>jicmp6</feature>
-        <bundle>mvn:org.opennms/opennms-icmp-jni6/${project.version}</bundle>
     </feature>
     <feature name="opennms-javamail" version="${project.version}" description="OpenNMS :: Javamail">
         <feature>commons-lang</feature>
