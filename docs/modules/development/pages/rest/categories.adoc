@@ -69,6 +69,7 @@ Requires `ROLE_ADMIN`, like the other group writes.
 
 | /categories/\{category}
 | Delete the specified category.
+A category that has group authorizations requires `ROLE_ADMIN`, like the other group writes, and answers `403` without it.
 
 | /categories/\{category}/nodes/\{node}
 | Remove the given category from the given node (similar to `/nodes/\{node}/categories/\{category}`).

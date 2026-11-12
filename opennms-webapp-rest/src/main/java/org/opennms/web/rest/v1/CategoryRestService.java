@@ -487,7 +487,8 @@ public class CategoryRestService extends OnmsRestService {
             summary = "Delete a category",
             description = """
                     Deletes the category definition and, with it, its assignment to every node and its group ACL
-                    entries.
+                    entries. A category that has group authorizations (`authorizedGroups`) needs `ROLE_ADMIN`
+                    (403 without it), like the other group writes, because the delete removes them.
 
                     Nothing else is checked first. Requisitions, surveillance views, notification rules and
                     filter expressions that reference the name are not consulted and keep referring to a category
@@ -499,12 +500,21 @@ public class CategoryRestService extends OnmsRestService {
             @ApiResponse(responseCode = "400", description = "No category has that name.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "A category with name 'NoSuchCat' does not exist.")))
+                            examples = @ExampleObject(value = "A category with name 'NoSuchCat' does not exist."))),
+            @ApiResponse(responseCode = "403", description = "The category has group authorizations and the caller does not hold `ROLE_ADMIN`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Deleting a category that has group authorizations requires the admin role.")))
     })
-    public Response deleteCategory(@Parameter(description = "Category name.", example = "Core-Routers")
+    public Response deleteCategory(@Context final SecurityContext securityContext,
+                                   @Parameter(description = "Category name.", example = "Core-Routers")
                                    @PathParam("categoryName") final String categoryName) {
         OnmsCategory category = m_categoryDao.findByName(categoryName);
         if (category != null) {
+            // the delete removes the group authorizations (category_group cascades), a group ACL write
+            if (!category.getAuthorizedGroups().isEmpty()) {
+                m_support.assertAdmin(securityContext, "Deleting a category that has group authorizations");
+            }
             m_categoryDao.delete(category);
             return Response.noContent().build();
         }

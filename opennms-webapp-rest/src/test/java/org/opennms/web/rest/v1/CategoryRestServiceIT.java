@@ -290,6 +290,33 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertFalse(authorizedCategoryNames("Admin").contains("Routers"));
     }
 
+    /**
+     * Deleting a category removes its group authorizations (category_group cascades), so a category that has any needs
+     * the admin role. A ROLE_REST user could otherwise delete it and create it again without them.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testDeleteOfACategoryWithGroupAuthorizationsNeedsTheAdminRole() throws Exception {
+        setUser("admin", new String[]{ "ROLE_ADMIN" });
+        final OnmsCategory withGroups = new OnmsCategory("AclDelete");
+        withGroups.getAuthorizedGroups().add("Admin");
+        createCategory(withGroups);
+
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        assertEquals("Deleting a category that has group authorizations requires the admin role.",
+                sendData(DELETE, MediaType.APPLICATION_XML, "/categories/AclDelete", "", 403).getContentAsString());
+        assertEquals(Set.of("Admin"), JaxbUtils.unmarshal(OnmsCategory.class, sendRequest(GET, "/categories/AclDelete", 200)).getAuthorizedGroups());
+        // a category without group authorizations, ROLE_REST still deletes
+        createCategory("PlainDelete");
+        sendRequest(DELETE, "/categories/PlainDelete", 204);
+        sendRequest(GET, "/categories/PlainDelete", 404);
+
+        setUser("admin", new String[]{ "ROLE_ADMIN" });
+        sendRequest(DELETE, "/categories/AclDelete", 204);
+        sendRequest(GET, "/categories/AclDelete", 404);
+        assertFalse(authorizedCategoryNames("Admin").contains("AclDelete"));
+    }
+
     private List<String> authorizedCategoryNames(final String groupName) throws Exception {
         return JaxbUtils.unmarshal(OnmsCategoryCollection.class, sendRequest(GET, "/categories/groups/" + groupName, 200))
                 .getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toList());
