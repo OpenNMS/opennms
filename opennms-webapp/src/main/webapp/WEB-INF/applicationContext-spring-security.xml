@@ -368,6 +368,17 @@
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/datacollectionconf.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
 
+    <!-- JDBC data collection configuration holds the SQL the collector runs; mutation is admin-only.
+         Reads fall through to the generic read rule below; download and upload check the admin role themselves. -->
+    <intercept-url pattern="/api/v2/jdbc-datacollection/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+
     <!-- MIB compiler manages files on the server filesystem; admin-only like the Vaadin MIB compiler UI -->
     <intercept-url pattern="/api/v2/mibs/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/mibs.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />

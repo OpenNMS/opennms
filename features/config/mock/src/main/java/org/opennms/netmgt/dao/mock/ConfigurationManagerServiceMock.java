@@ -95,6 +95,11 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
                     "snmp-config", ConfigurationManagerService.BASE_PATH);
         }
 
+        if ("jdbc-datacollection-config".equals(configName)) {
+            def = XsdHelper.buildConfigDefinition("jdbc-datacollection-config", "jdbc-datacollection.xsd",
+                    "jdbc-datacollection-config", ConfigurationManagerService.BASE_PATH, true);
+        }
+
         return Optional.ofNullable(def);
     }
 

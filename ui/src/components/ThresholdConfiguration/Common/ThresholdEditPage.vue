@@ -2,12 +2,12 @@
   <div
     v-if="notFoundMessage"
     class="not-found-container"
-    data-test="threshold-edit-not-found"
+    :data-test="`${testIdPrefix}-not-found`"
   >
     <p>{{ notFoundMessage }}</p>
     <OnmsButton
       label="Go Back"
-      data-test="threshold-edit-not-found-back"
+      :data-test="`${testIdPrefix}-not-found-back`"
       @click="emit('back')"
     />
   </div>
@@ -20,7 +20,7 @@
         <div>
           <OnmsButton
             variant="text"
-            data-test="threshold-edit-back"
+            :data-test="`${testIdPrefix}-back`"
             @click="emit('back')"
           >
             <OnmsIcon :icon="ArrowBack" />
@@ -28,7 +28,7 @@
           </OnmsButton>
         </div>
         <div>
-          <h3 data-test="threshold-edit-title">{{ title }}</h3>
+          <h3 :data-test="`${testIdPrefix}-title`">{{ title }}</h3>
         </div>
       </div>
     </div>
@@ -49,13 +49,13 @@
           <OnmsButton
             variant="outlined"
             label="Cancel"
-            data-test="threshold-edit-cancel"
+            :data-test="`${testIdPrefix}-cancel`"
             @click="emit('cancel')"
           />
           <OnmsButton
             :label="saveLabel"
             :disabled="saveDisabled"
-            data-test="threshold-edit-save"
+            :data-test="`${testIdPrefix}-save`"
             @click="emit('save')"
           />
         </div>
@@ -68,15 +68,20 @@
 import { OnmsButton, OnmsIcon } from '@opennms/onms-ui'
 import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
 
-// Page shell shared by the threshold create/edit pages; mirrors the event configuration edit page.
-defineProps<{
+// Page shell shared by the threshold and JDBC data collection create/edit pages; mirrors the event
+// configuration edit page.
+withDefaults(defineProps<{
   title: string
   sectionTitle: string
   saveLabel: string
   saveDisabled?: boolean
   wide?: boolean
   notFoundMessage?: string
-}>()
+  /** Prefix of the data-test attributes, so tests of each page address their own shell. */
+  testIdPrefix?: string
+}>(), {
+  testIdPrefix: 'threshold-edit'
+})
 
 const emit = defineEmits<{
   back: []

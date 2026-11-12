@@ -120,6 +120,19 @@ import {
   uploadThresholdingConfiguration,
   uploadThreshdConfiguration
 } from './thresholdConfigurationService'
+import {
+  createJdbcCollection,
+  createJdbcSource,
+  deleteJdbcCollection,
+  deleteJdbcSource,
+  downloadJdbcSource,
+  getJdbcDataCollectionMetadata,
+  getJdbcSource,
+  getJdbcSources,
+  updateJdbcCollection,
+  updateJdbcSource,
+  uploadJdbcSource
+} from './jdbcDataCollectionService'
 import { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import { getAbout } from './aboutService'
@@ -181,6 +194,17 @@ import {
 } from './groupAdminService'
 
 export default {
+  createJdbcCollection,
+  createJdbcSource,
+  deleteJdbcCollection,
+  deleteJdbcSource,
+  downloadJdbcSource,
+  getJdbcDataCollectionMetadata,
+  getJdbcSource,
+  getJdbcSources,
+  updateJdbcCollection,
+  updateJdbcSource,
+  uploadJdbcSource,
   createThresholdGroup,
   createThreshdPackage,
   deleteThresholdGroup,

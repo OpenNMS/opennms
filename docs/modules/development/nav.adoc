@@ -52,6 +52,7 @@
 *** xref:rest/info.adoc[]
 *** xref:rest/ifservices.adoc[]
 *** xref:rest/ipinterfaces.adoc[]
+*** xref:rest/jdbc-datacollection-rest-api.adoc[]
 *** xref:rest/logs.adoc[]
 *** xref:rest/measurements.adoc[]
 *** xref:rest/menu.adoc[]
