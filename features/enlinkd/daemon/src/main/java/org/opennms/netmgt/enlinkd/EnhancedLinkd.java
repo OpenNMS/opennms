@@ -25,6 +25,8 @@ package org.opennms.netmgt.enlinkd;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
@@ -99,26 +101,37 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
     @Autowired
     private NodesOnmsTopologyUpdater m_nodesTopologyUpdater;
+    // the swapped-on-reload updaters are volatile so event and shell threads
+    // see the clone reload() installs
     @Autowired
-    private BridgeOnmsTopologyUpdater m_bridgeTopologyUpdater;
+    private volatile BridgeOnmsTopologyUpdater m_bridgeTopologyUpdater;
     @Autowired
-    private CdpOnmsTopologyUpdater m_cdpTopologyUpdater;
+    private volatile CdpOnmsTopologyUpdater m_cdpTopologyUpdater;
     @Autowired
-    private LldpOnmsTopologyUpdater m_lldpTopologyUpdater;
+    private volatile LldpOnmsTopologyUpdater m_lldpTopologyUpdater;
     @Autowired
-    private IsisOnmsTopologyUpdater m_isisTopologyUpdater;
+    private volatile IsisOnmsTopologyUpdater m_isisTopologyUpdater;
     @Autowired
-    private OspfOnmsTopologyUpdater m_ospfTopologyUpdater;
+    private volatile OspfOnmsTopologyUpdater m_ospfTopologyUpdater;
     @Autowired
-    private OspfAreaOnmsTopologyUpdater m_ospfAreaTopologyUpdater;
+    private volatile OspfAreaOnmsTopologyUpdater m_ospfAreaTopologyUpdater;
     @Autowired
-    private DiscoveryBridgeDomains m_discoveryBridgeDomains;
+    private volatile DiscoveryBridgeDomains m_discoveryBridgeDomains;
     @Autowired
     private UserDefinedLinkTopologyUpdater m_userDefinedLinkTopologyUpdater;
     @Autowired
     private NetworkRouterTopologyUpdater m_networkRouterTopologyUpdater;
 
-    private final List<SchedulableNodeCollectorGroup> m_groups = new ArrayList<>();
+    // immutable snapshot, swapped in one step so event and shell threads
+    // never see a partially rebuilt list during reload()
+    private volatile List<SchedulableNodeCollectorGroup> m_groups = List.of();
+    // owned by the daemon and shared with every group, so suspensions
+    // survive the groups being rebuilt on reload
+    private final Set<Integer> m_suspendedNodes = ConcurrentHashMap.newKeySet();
+    // not the daemon monitor: AbstractServiceDaemon uses that for start/stop
+    // and the status checks, which must not wait on a reload. Also held by
+    // the on-demand updater runs so reload() cannot swap an updater mid-call.
+    private final Object m_reloadLock = new Object();
     /**
      * <p>
      * Constructor for EnhancedLinkd.
@@ -159,6 +172,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     }
 
     private void schedule(boolean init) {
+        final List<SchedulableNodeCollectorGroup> groups = new ArrayList<>();
         if (init) {
             scheduleAndRegisterOnmsTopologyUpdater(m_nodesTopologyUpdater);
             scheduleAndRegisterOnmsTopologyUpdater(m_networkRouterTopologyUpdater);
@@ -167,9 +181,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
         if (m_linkdConfig.useCdpDiscovery()) {
             NodeCollectionGroupCdp nodeCollectionGroupCdp = new NodeCollectionGroupCdp(m_linkdConfig.getCdpRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getCdpPriority(), m_queryMgr, m_locationAwareSnmpClient, m_cdpTopologyService);
-            nodeCollectionGroupCdp.setScheduler(m_scheduler);
-            nodeCollectionGroupCdp.schedule();
-            m_groups.add(nodeCollectionGroupCdp);
+            scheduleGroup(nodeCollectionGroupCdp, groups);
             scheduleAndRegisterOnmsTopologyUpdater(m_cdpTopologyUpdater);
         } else {
             m_cdpTopologyService.deletePersistedData();
@@ -177,9 +189,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
         if (m_linkdConfig.useLldpDiscovery()) {
             NodeCollectionGroupLldp nodeCollectionGroupLldp = new NodeCollectionGroupLldp(m_linkdConfig.getLldpRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getLldpPriority(), m_queryMgr, m_locationAwareSnmpClient, m_lldpTopologyService);
-            nodeCollectionGroupLldp.setScheduler(m_scheduler);
-            nodeCollectionGroupLldp.schedule();
-            m_groups.add(nodeCollectionGroupLldp);
+            scheduleGroup(nodeCollectionGroupLldp, groups);
             scheduleAndRegisterOnmsTopologyUpdater(m_lldpTopologyUpdater);
        } else {
             m_lldpTopologyService.deletePersistedData();
@@ -187,9 +197,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
         if (m_linkdConfig.useIsisDiscovery()) {
             NodeCollectionGroupIsis nodeCollectionGroupIsis = new NodeCollectionGroupIsis(m_linkdConfig.getIsisRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getIsisPriority(), m_queryMgr, m_locationAwareSnmpClient, m_isisTopologyService);
-            nodeCollectionGroupIsis.setScheduler(m_scheduler);
-            nodeCollectionGroupIsis.schedule();
-            m_groups.add(nodeCollectionGroupIsis);
+            scheduleGroup(nodeCollectionGroupIsis, groups);
             scheduleAndRegisterOnmsTopologyUpdater(m_isisTopologyUpdater);
         } else {
             m_isisTopologyService.deletePersistedData();
@@ -197,9 +205,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         
         if (m_linkdConfig.useOspfDiscovery()) {
             NodeCollectionGroupOspf nodeCollectionGroupOspf = new NodeCollectionGroupOspf(m_linkdConfig.getOspfRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getOspfPriority(), m_queryMgr, m_locationAwareSnmpClient, m_ospfTopologyService);
-            nodeCollectionGroupOspf.setScheduler(m_scheduler);
-            nodeCollectionGroupOspf.schedule();
-            m_groups.add(nodeCollectionGroupOspf);
+            scheduleGroup(nodeCollectionGroupOspf, groups);
             scheduleAndRegisterOnmsTopologyUpdater(m_ospfTopologyUpdater);
             scheduleAndRegisterOnmsTopologyUpdater(m_ospfAreaTopologyUpdater);
         } else {
@@ -208,18 +214,22 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
         if (m_linkdConfig.useBridgeDiscovery()) {
             NodeCollectionGroupIpNetToMedia nodeCollectionGroupIpNetToMedia = new NodeCollectionGroupIpNetToMedia(m_linkdConfig.getBridgeRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getBridgePriority(), m_queryMgr, m_locationAwareSnmpClient, m_ipNetToMediaTopologyService);
-            nodeCollectionGroupIpNetToMedia.setScheduler(m_scheduler);
-            nodeCollectionGroupIpNetToMedia.schedule();
-            m_groups.add(nodeCollectionGroupIpNetToMedia);
+            scheduleGroup(nodeCollectionGroupIpNetToMedia, groups);
             NodeCollectionGroupBridge nodeCollectionGroupBridge = new NodeCollectionGroupBridge(m_linkdConfig.getBridgeRescanInterval(), m_linkdConfig.getInitialSleepTime(), m_executor, m_linkdConfig.getBridgePriority(), m_queryMgr, m_locationAwareSnmpClient, m_bridgeTopologyService, m_linkdConfig.getMaxBft(), m_linkdConfig.disableBridgeVlanDiscovery());
-            nodeCollectionGroupBridge.setScheduler(m_scheduler);
-            nodeCollectionGroupBridge.schedule();
-            m_groups.add(nodeCollectionGroupBridge);
+            scheduleGroup(nodeCollectionGroupBridge, groups);
             scheduleDiscoveryBridgeDomain();
             scheduleAndRegisterOnmsTopologyUpdater(m_bridgeTopologyUpdater);
         } else {
             m_bridgeTopologyService.deletePersistedData();
         }
+        m_groups = List.copyOf(groups);
+    }
+
+    private void scheduleGroup(SchedulableNodeCollectorGroup group, List<SchedulableNodeCollectorGroup> groups) {
+        group.setSuspendedNodes(m_suspendedNodes);
+        group.setScheduler(m_scheduler);
+        group.schedule();
+        groups.add(group);
     }
 
     public void scheduleAndRegisterOnmsTopologyUpdater(TopologyUpdater onmsTopologyUpdater) {
@@ -327,10 +337,18 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     }
 
     public void runDiscoveryBridgeDomains() {
+        synchronized (m_reloadLock) {
             m_discoveryBridgeDomains.runSchedulable();
+        }
     }
 
     public void forceTopologyUpdaterRun(ProtocolSupported proto) {
+        synchronized (m_reloadLock) {
+            doForceTopologyUpdaterRun(proto);
+        }
+    }
+
+    private void doForceTopologyUpdaterRun(ProtocolSupported proto) {
         switch (proto) {
         case CDP:
             if (m_linkdConfig.useCdpDiscovery()) {
@@ -388,6 +406,12 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     }
 
     public void runTopologyUpdater(ProtocolSupported proto) {
+        synchronized (m_reloadLock) {
+            doRunTopologyUpdater(proto);
+        }
+    }
+
+    private void doRunTopologyUpdater(ProtocolSupported proto) {
         switch (proto) {
             case CDP:
                 if (m_linkdConfig.useCdpDiscovery()) {
@@ -463,13 +487,13 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     void suspendNodeCollection(final int nodeid) {
         LOG.info("suspendNodeCollection: suspend collection LinkableNode for node {}",
                         nodeid);
-        m_groups.forEach(g -> g.suspend(nodeid));
+        m_suspendedNodes.add(nodeid);
     }
 
     void wakeUpNodeCollection(int nodeid) {
         LOG.info("wakeUpNodeCollection: wakeUp collection LinkableNode for node {}",
                 nodeid);
-        m_groups.forEach(g -> g.wakeUp(nodeid));
+        m_suspendedNodes.remove(nodeid);
     }
 
     public NodeTopologyService getQueryManager() {
@@ -564,10 +588,22 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
     @Override
     public void reload() {
+        synchronized (m_reloadLock) {
+            doReload();
+        }
+    }
+
+    private void doReload() {
         LOG.info("reload: reload enlinkd daemon service");
 
+        // the old groups stay visible until schedule() swaps in the new ones
         m_groups.forEach(Schedulable::unschedule);
-        m_groups.clear();
+
+        // these three are scheduled only at init and re-read the interval on
+        // every reschedule, so a changed topology_interval applies here too
+        m_nodesTopologyUpdater.setPollInterval(m_linkdConfig.getTopologyInterval());
+        m_networkRouterTopologyUpdater.setPollInterval(m_linkdConfig.getTopologyInterval());
+        m_userDefinedLinkTopologyUpdater.setPollInterval(m_linkdConfig.getTopologyInterval());
 
         if (m_ospfTopologyUpdater.isRegistered()) {
             m_ospfTopologyUpdater.unschedule();
@@ -616,7 +652,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         try {
             m_linkdConfig.reload();
         } catch (IOException e) {
-            LOG.error("reloadConfig: cannot reload config: {}", e.getMessage());
+            LOG.error("reloadConfig: cannot reload config: {}", e.getMessage(), e);
+            return false;
+        } catch (RuntimeException e) {
+            // JaxbUtils reports a malformed config as a runtime DataAccessException
+            LOG.error("reloadConfig: cannot reload config: {}", e.getMessage(), e);
             return false;
         }
         reload();
