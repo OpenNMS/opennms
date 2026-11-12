@@ -53,11 +53,9 @@
 
     <bean id="notifdConfigFactory" class="org.opennms.netmgt.config.NotifdConfigFactory" depends-on="notifdConfigFactory-init" factory-method="getInstance"/>
 
-    <bean id="groupFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
-    </bean>
-
-    <bean id="groupFactory" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupFactory-init" factory-method="getInstance"/>
+    <!-- Karaf has its own copy of the static GroupFactory/UserFactory: use the services of the main context -->
+    <reference id="groupConfig" interface="org.opennms.netmgt.config.api.GroupConfig" availability="mandatory"/>
+    <reference id="userConfig" interface="org.opennms.netmgt.config.api.UserConfig" availability="mandatory"/>
 
     <!-- The state manager will manually pull properties from the configuration file -->
     <bean id="stateManager" class="org.opennms.features.datachoices.internal.StateManager">
@@ -89,7 +87,8 @@
         <property name="serviceConfigurationFactory" ref="serviceConfigurationFactory"/>
         <property name="destinationPathFactory" ref="destinationPathFactory"/>
         <property name="notifdConfigFactory" ref="notifdConfigFactory"/>
-        <property name="groupFactory" ref="groupFactory"/>
+        <property name="groupConfig" ref="groupConfig"/>
+        <property name="userConfig" ref="userConfig"/>
         <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository"/>
         <property name="dataSourceFactoryBean" ref="dataSourceFactoryBean"/>
         <property name="usageAnalyticDao" ref="usageAnalyticDao"/>

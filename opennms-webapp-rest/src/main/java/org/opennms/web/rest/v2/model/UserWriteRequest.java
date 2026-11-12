@@ -24,7 +24,7 @@ package org.opennms.web.rest.v2.model;
 
 /**
  * Create request for the v2 user management API: the UserDto fields plus the
- * initial password, which is hashed (salted) before it reaches users.xml.
+ * initial password, which is hashed (salted) before it is stored.
  * Password changes on existing users go through the dedicated password
  * endpoint instead.
  */

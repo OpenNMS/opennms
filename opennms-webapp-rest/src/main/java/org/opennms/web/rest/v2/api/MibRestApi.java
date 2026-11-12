@@ -155,6 +155,27 @@ public interface MibRestApi {
     Response generateEvents(@PathParam("name") String name, @QueryParam("ueiBase") String ueiBase);
 
     @POST
+    @Path("/events/existing-ueis")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.TEXT_PLAIN})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Find UEIs that other event sources define",
+            description = "Check an events XML document, typically the edited one right before it is saved, "
+                    + "against the event configuration. Returns the same map as existingUeis in the "
+                    + "generate-events response: each UEI that another source defines, mapped to those sources "
+                    + "in evaluation order, each with an enabled flag. The source the events are saved as "
+                    + "(the source query parameter, for example IF-MIB.events) is left out. The compiled MIB is not needed. "
+                    + "UEIs are compared without surrounding whitespace, and only UEIs are compared, not trap masks. "
+                    + "At most 10 MB and 10000 distinct UEIs per request.",
+            operationId = "findMibExistingUeis"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "UEIs that other event sources define", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Missing source or events XML, an oversized or invalid events XML, or too many UEIs", content = @Content)
+    })
+    Response findExistingUeis(@QueryParam("source") String source, String eventsXml);
+
+    @POST
     @Path("/compiled/{name}/datacollection")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(

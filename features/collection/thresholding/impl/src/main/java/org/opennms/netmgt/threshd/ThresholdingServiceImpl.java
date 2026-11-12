@@ -29,7 +29,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
+import org.opennms.core.soa.Registration;
+import org.opennms.core.soa.RegistrationListener;
 import org.opennms.core.soa.lookup.ServiceLookup;
 import org.opennms.core.soa.lookup.ServiceLookupBuilder;
 import org.opennms.core.soa.lookup.ServiceRegistryLookup;
@@ -101,11 +104,48 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
 
     private boolean isDistributed = false;
     
+    private boolean subscribed = false;
+
+    private final RegistrationListener<EventIpcManager> eventIpcManagerListener = new RegistrationListener<>() {
+        @Override
+        public void providerRegistered(Registration registration, EventIpcManager provider) {
+            subscribe();
+        }
+
+        @Override
+        public void providerUnregistered(Registration registration, EventIpcManager provider) {
+            if (DefaultServiceRegistry.INSTANCE.findProviders(EventIpcManager.class).isEmpty()) {
+                unsubscribe();
+            }
+        }
+    };
+
     // Spring init entry point
     @PostConstruct
     private void init() {
-        // When we are on OpenNMS we will have been wired an event manager and can listen for events
-        eventIpcManager.addEventListener(this, UEI_LIST);
+        // Eventd can register the event manager after this bean is created, so subscribe when it is available
+        DefaultServiceRegistry.INSTANCE.addListener(EventIpcManager.class, eventIpcManagerListener, true);
+    }
+
+    @PreDestroy
+    private void destroy() {
+        DefaultServiceRegistry.INSTANCE.removeListener(EventIpcManager.class, eventIpcManagerListener);
+        unsubscribe();
+        reInitializeTimer.cancel();
+    }
+
+    private synchronized void subscribe() {
+        if (!subscribed) {
+            eventIpcManager.addEventListener(this, UEI_LIST);
+            subscribed = true;
+        }
+    }
+
+    private synchronized void unsubscribe() {
+        if (subscribed) {
+            eventIpcManager.removeEventListener(this, UEI_LIST);
+            subscribed = false;
+        }
     }
 
     // OSGi init entry point

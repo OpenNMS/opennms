@@ -6,7 +6,7 @@
 Collecting performance data is only good if you can view the metrics that have been persisted.
 {page-component-title} can display resource graphs that have been defined using link:https://oss.oetiker.ch/rrdtool/doc/rrdgraph.en.html[RRDTool] graphing syntax.
 
-NOTE: When using the xref:deep-dive/admin/mib.adoc[MIB Compiler] to generate collection definitions, the compiler will also create graph definitions for all the numeric values found in the MIB.
+NOTE: The xref:deep-dive/admin/mib.adoc#mib-generate-graphs[MIB Compiler] can generate graph definitions for all the numeric values found in a MIB.
 
 As an alternative to creating graphs within {page-component-title}, you can also utilize our link:https://docs.opennms.com/grafana-plugin/latest/index.html[OpenNMS Plugin for Grafana] to create dashboards displaying various resource graphs.
 

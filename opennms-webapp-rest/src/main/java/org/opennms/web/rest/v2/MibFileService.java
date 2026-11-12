@@ -31,12 +31,14 @@ import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.model.mibcompiler.MibCompileResultDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibDataCollectionPreviewDto;
+import org.opennms.web.rest.v2.model.mibcompiler.MibEventSourceDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibEventsPreviewDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibFileDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibGraphTemplatesDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibParseResultDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
@@ -60,14 +62,18 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Filesystem and parser operations behind the MIB compiler REST API.
  *
- * MIB files live on the local filesystem under $OPENNMS_HOME/share/mibs/{pending,compiled},
- * the same layout the Vaadin MIB compiler uses. A fresh {@link JsmiMibParser} is created per
- * operation because the parser is stateful; the blueprint-published singleton must not be shared.
+ * MIB files live on the local filesystem under $OPENNMS_HOME/share/mibs/{pending,compiled}.
+ * A fresh {@link JsmiMibParser} is created per operation because the parser is stateful
+ * and must not be shared between requests.
  */
 @Component
 public class MibFileService {
@@ -78,12 +84,17 @@ public class MibFileService {
     public static final String COMPILED = "compiled";
 
     private static final String MIB_FILE_EXTENSION = ".mib";
-    private static final long MAX_MIB_FILE_SIZE = 10L * 1024 * 1024;
+    static final long MAX_MIB_FILE_SIZE = 10L * 1024 * 1024;
+    /** Far more than any MIB defines traps, and well below the bind-parameter limit of the lookup query. */
+    public static final int MAX_UEIS_TO_CHECK = 10_000;
 
     private final Object compileLock = new Object();
 
     private File mibsRootDir = new File(ConfigFileConstants.getHome(), "share" + File.separatorChar + "mibs");
     private File graphTemplatesDir = new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + "snmp-graph.properties.d");
+
+    @Autowired
+    private EventConfPersistenceService eventConfPersistenceService;
 
     /** Thrown when a generated file with the same name already exists and overwrite was not requested. */
     public static class MibExistsException extends RuntimeException {
@@ -153,6 +164,12 @@ public class MibFileService {
         return buffer.toByteArray();
     }
 
+    /** Whether the text, encoded as UTF-8 as it is stored and sent, exceeds {@link #MAX_MIB_FILE_SIZE} bytes. */
+    private static boolean exceedsMaxSize(String text) {
+        // UTF-8 never takes fewer bytes than chars, so a long text needs no encoding to be refused
+        return text.length() > MAX_MIB_FILE_SIZE || text.getBytes(StandardCharsets.UTF_8).length > MAX_MIB_FILE_SIZE;
+    }
+
     /**
      * Vendor MIBs are frequently Latin-1 (e.g. a raw {@code ©} in the copyright banner) rather
      * than UTF-8, so decode leniently instead of failing the whole read on one bad byte.
@@ -171,7 +188,7 @@ public class MibFileService {
     }
 
     public void updatePendingMibFile(String name, String content) throws IOException {
-        if (content == null || content.getBytes(StandardCharsets.UTF_8).length > MAX_MIB_FILE_SIZE) {
+        if (content == null || exceedsMaxSize(content)) {
             throw new IllegalArgumentException("Content is missing or exceeds the maximum allowed size of " + MAX_MIB_FILE_SIZE + " bytes");
         }
         final File file = existingFile(PENDING, name);
@@ -237,13 +254,99 @@ public class MibFileService {
             populateFailure(result, parser);
             return result;
         }
+        final String suggestedFileName = mibName + ".events.xml";
         result.setSuccess(true);
         result.setMibName(mibName);
         result.setUeiBase(effectiveUeiBase);
         result.setEventCount(events.getEvents().size());
-        result.setSuggestedFileName(mibName + ".events.xml");
+        result.setSuggestedFileName(suggestedFileName);
         result.setEventsXml(JaxbUtils.marshal(events));
+        result.setExistingUeis(findExistingUeis(ueisOf(events), eventsSourceName(mibName)));
         return result;
+    }
+
+    /**
+     * Checks the events XML, typically the edited XML right before it is saved, against the event
+     * configuration: the preview's {@code existingUeis} only covers the generated events as they were when
+     * the preview was made. The source the events will be saved as is left out, as in the preview.
+     * <p>
+     * The whole document is taken, not only its UEIs, so that a later check of the trap masks can use the
+     * same request. The compiled MIB is not needed, so a save still works after the MIB was deleted.
+     *
+     * @param sourceName the event source the events will be saved as; its own definitions are left out
+     * @param eventsXml the events document, at most {@link #MAX_MIB_FILE_SIZE} bytes in UTF-8 and
+     *                  {@link #MAX_UEIS_TO_CHECK} distinct UEIs
+     */
+    public Map<String, List<MibEventSourceDto>> findExistingUeis(String sourceName, String eventsXml) {
+        if (sourceName == null || sourceName.isBlank()) {
+            throw new IllegalArgumentException("The name of the target event source is required.");
+        }
+        final Set<String> ueis = eventUeis(eventsXml);
+        return findExistingUeis(ueis, sourceName);
+    }
+
+    /** The distinct, trimmed, non-blank UEIs of an events document; rejects a missing, oversized or invalid one. */
+    private static Set<String> eventUeis(String eventsXml) {
+        if (eventsXml == null || eventsXml.isBlank()) {
+            throw new IllegalArgumentException("An events XML document is required.");
+        }
+        if (exceedsMaxSize(eventsXml)) {
+            throw new IllegalArgumentException("The events XML exceeds the maximum allowed size of " + MAX_MIB_FILE_SIZE + " bytes.");
+        }
+        final Events events;
+        try {
+            // no DOCTYPE: an events document does not need one, and it blocks entity expansion
+            events = JaxbUtils.unmarshal(Events.class, eventsXml, false, true);
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("The events XML is not valid: " + e.getMessage(), e);
+        }
+        final Set<String> ueis = ueisOf(events);
+        if (ueis.size() > MAX_UEIS_TO_CHECK) {
+            throw new IllegalArgumentException("At most " + MAX_UEIS_TO_CHECK + " UEIs can be checked at once.");
+        }
+        return ueis;
+    }
+
+    /**
+     * The distinct UEIs of the events, trimmed, without blank ones. Whitespace around a UEI is never part
+     * of it, so every comparison uses the trimmed value.
+     */
+    private static Set<String> ueisOf(Events events) {
+        final Set<String> ueis = new LinkedHashSet<>();
+        events.getEvents().stream()
+                .map(event -> event.getUei())
+                .filter(uei -> uei != null && !uei.isBlank())
+                .map(String::trim)
+                .forEach(ueis::add);
+        return ueis;
+    }
+
+    /** The source the UI saves a MIB's events as: the suggested file name without its .xml suffix. */
+    private static String eventsSourceName(String mibName) {
+        return mibName + ".events";
+    }
+
+    /**
+     * Looks up which of the UEIs other event sources already define. The target source is left out:
+     * saving replaces it wholesale, and the UI asks for consent to that separately.
+     */
+    private Map<String, List<MibEventSourceDto>> findExistingUeis(Set<String> ueis, String targetSourceName) {
+        final Map<String, List<MibEventSourceDto>> existing = new LinkedHashMap<>();
+        if (ueis.isEmpty()) {
+            return existing;
+        }
+        eventConfPersistenceService.findSourcesByUei(ueis).forEach((uei, sources) -> {
+            final List<MibEventSourceDto> others = new ArrayList<>();
+            sources.forEach((name, enabled) -> {
+                if (!name.equals(targetSourceName)) {
+                    others.add(new MibEventSourceDto(name, enabled));
+                }
+            });
+            if (!others.isEmpty()) {
+                existing.put(uei, others);
+            }
+        });
+        return existing;
     }
 
     public MibDataCollectionPreviewDto generateDataCollection(String name) throws IOException {
@@ -407,5 +510,9 @@ public class MibFileService {
 
     public void setGraphTemplatesDir(File graphTemplatesDir) {
         this.graphTemplatesDir = graphTemplatesDir;
+    }
+
+    public void setEventConfPersistenceService(EventConfPersistenceService eventConfPersistenceService) {
+        this.eventConfPersistenceService = eventConfPersistenceService;
     }
 }

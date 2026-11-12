@@ -250,7 +250,7 @@
 
       <td>
         <% if (sentTo.getContactInfo()!=null && !"".equals(sentTo.getContactInfo().trim())) { %>
-          <%=sentTo.getContactInfo()%>
+          <%=WebSecurityUtils.sanitizeString(sentTo.getContactInfo())%>
         <% } else { %>
           &nbsp;
         <% } %>

@@ -30,6 +30,7 @@ import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.model.mibcompiler.MibCompileResultDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibDataCollectionPreviewDto;
+import org.opennms.web.rest.v2.model.mibcompiler.MibEventSourceDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibEventsPreviewDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibFileDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibGraphTemplatesDto;
@@ -41,7 +42,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -49,6 +55,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class MibFileServiceTest {
 
@@ -74,6 +84,8 @@ public class MibFileServiceTest {
         service = new MibFileService();
         service.setMibsRootDir(mibsRoot);
         service.setGraphTemplatesDir(graphDir);
+        // a Mockito mock returns an empty map: no other source defines any UEI
+        service.setEventConfPersistenceService(mock(EventConfPersistenceService.class));
         // seed the compiled directory with the standard MIBs IF-MIB depends on
         compiledDir.mkdirs();
         for (final String mib : DEPENDENCY_MIBS) {
@@ -233,6 +245,35 @@ public class MibFileServiceTest {
         final Events events = JaxbUtils.unmarshal(Events.class, result.getEventsXml());
         assertEquals(2, events.getEvents().size());
         assertTrue(events.getEvents().get(0).getUei().startsWith("uei.opennms.org/traps/IF-MIB/"));
+        // no other source defines the generated UEIs
+        assertTrue(result.getExistingUeis().isEmpty());
+    }
+
+    @Test
+    public void testGenerateEventsReportsUeisDefinedByOtherSources() throws Exception {
+        compileIfMib();
+        final EventConfPersistenceService persistence = mock(EventConfPersistenceService.class);
+        // the first generated UEI is defined by the target source and two others, one of them disabled;
+        // the second only by the target
+        when(persistence.findSourcesByUei(anyCollection())).thenAnswer(invocation -> {
+            final List<String> ueis = List.copyOf(invocation.<Collection<String>>getArgument(0));
+            final Map<String, Boolean> firstSources = new LinkedHashMap<>();
+            firstSources.put("IF-MIB.events", true);
+            firstSources.put("acme.events", true);
+            firstSources.put("old.events", false);
+            final Map<String, Map<String, Boolean>> found = new LinkedHashMap<>();
+            found.put(ueis.get(0), firstSources);
+            found.put(ueis.get(1), Map.of("IF-MIB.events", true));
+            return found;
+        });
+        service.setEventConfPersistenceService(persistence);
+
+        final MibEventsPreviewDto result = service.generateEvents("IF-MIB.mib", null);
+        assertTrue(result.isSuccess());
+        final Events events = JaxbUtils.unmarshal(Events.class, result.getEventsXml());
+        final String firstUei = events.getEvents().get(0).getUei();
+        assertEquals(Map.of(firstUei, List.of(new MibEventSourceDto("acme.events", true), new MibEventSourceDto("old.events", false))),
+                result.getExistingUeis());
     }
 
     @Test
@@ -289,6 +330,68 @@ public class MibFileServiceTest {
         final MibGraphTemplatesDto overwritten = service.generateGraphTemplates("IF-MIB.mib", false, true);
         assertTrue(overwritten.isWritten());
         assertTrue(Files.readString(target.toPath()).contains("reports="));
+    }
+
+    @Test
+    public void testFindExistingUeisChecksTheGivenUeis() throws Exception {
+        // no compiled MIB: the check only needs the target source name
+        final EventConfPersistenceService persistence = mock(EventConfPersistenceService.class);
+        final Map<String, Boolean> editedSources = new LinkedHashMap<>();
+        editedSources.put("IF-MIB.events", true);
+        editedSources.put("acme.events", false);
+        final Map<String, Map<String, Boolean>> found = new LinkedHashMap<>();
+        found.put("uei.opennms.org/edited", editedSources);
+        found.put("uei.opennms.org/own", Map.of("IF-MIB.events", true));
+        when(persistence.findSourcesByUei(anyCollection())).thenReturn(found);
+        service.setEventConfPersistenceService(persistence);
+
+        // blank UEIs are dropped, the rest is trimmed and de-duplicated
+        final Map<String, List<MibEventSourceDto>> result = service.findExistingUeis("IF-MIB.events",
+                eventsXml(" uei.opennms.org/edited ", "uei.opennms.org/own", " ", "uei.opennms.org/edited"));
+
+        // the target source is left out
+        assertEquals(Map.of("uei.opennms.org/edited", List.of(new MibEventSourceDto("acme.events", false))), result);
+        verify(persistence).findSourcesByUei(Set.of("uei.opennms.org/edited", "uei.opennms.org/own"));
+    }
+
+    @Test
+    public void testFindExistingUeisRejectsInvalidRequests() throws Exception {
+        assertThrows(IllegalArgumentException.class, () -> service.findExistingUeis(null, eventsXml("uei.opennms.org/x")));
+        assertThrows(IllegalArgumentException.class, () -> service.findExistingUeis(" ", eventsXml("uei.opennms.org/x")));
+        assertThrows(IllegalArgumentException.class, () -> service.findExistingUeis("IF-MIB.events", null));
+        assertThrows(IllegalArgumentException.class, () -> service.findExistingUeis("IF-MIB.events", " "));
+        assertThrows(IllegalArgumentException.class, () -> service.findExistingUeis("IF-MIB.events", "<events><event>"));
+        // an events document never needs a DOCTYPE, so one is refused (no entity expansion)
+        assertThrows(IllegalArgumentException.class, () -> service.findExistingUeis("IF-MIB.events",
+                "<!DOCTYPE events [<!ENTITY x \"uei.opennms.org/x\">]><events xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">"
+                        + "<event><uei>&x;</uei></event></events>"));
+        final List<String> tooMany = new ArrayList<>();
+        for (int i = 0; i <= MibFileService.MAX_UEIS_TO_CHECK; i++) {
+            tooMany.add("uei.opennms.org/" + i);
+        }
+        assertThrows(IllegalArgumentException.class,
+                () -> service.findExistingUeis("IF-MIB.events", eventsXml(tooMany.toArray(new String[0]))));
+        // the limit counts UTF-8 bytes: a 2-byte character counts twice
+        final String oversized = eventsXml("uei.opennms.org/x").replace("</events>",
+                "<!--" + "\u00e9".repeat((int) (MibFileService.MAX_MIB_FILE_SIZE / 2)) + "--></events>");
+        assertTrue(oversized.length() < MibFileService.MAX_MIB_FILE_SIZE);
+        assertThrows(IllegalArgumentException.class, () -> service.findExistingUeis("IF-MIB.events", oversized));
+    }
+
+    private static String eventsXml(String... ueis) {
+        final Events events = new Events();
+        for (final String uei : ueis) {
+            final org.opennms.netmgt.xml.eventconf.Event event = new org.opennms.netmgt.xml.eventconf.Event();
+            event.setUei(uei);
+            event.setEventLabel("label");
+            event.setDescr("descr");
+            event.setSeverity("Indeterminate");
+            final org.opennms.netmgt.xml.eventconf.Logmsg logmsg = new org.opennms.netmgt.xml.eventconf.Logmsg();
+            logmsg.setContent("msg");
+            event.setLogmsg(logmsg);
+            events.addEvent(event);
+        }
+        return JaxbUtils.marshal(events);
     }
 
     @Test

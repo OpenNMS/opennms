@@ -205,17 +205,45 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    public void testGroupUsersHidePasswordHashesFromNonAdmins() throws Exception {
+        createGroup("hashes");
+        createUser("foo");
+        sendRequest(PUT, "/groups/hashes/users/admin", 204);
+        sendRequest(PUT, "/groups/hashes/users/foo", 204);
+
+        final String fooHash = JaxbUtils.unmarshal(OnmsUser.class, sendRequest(GET, "/users/foo", 200)).getPassword();
+        setUser("foo", new String[] { "ROLE_USER" });
+        try {
+            final OnmsUserList users = JaxbUtils.unmarshal(OnmsUserList.class, sendRequest(GET, "/groups/hashes/users", 200));
+            assertEquals(2, users.size());
+            for (final OnmsUser user : users) {
+                assertEquals(user.getUsername(), "foo".equals(user.getUsername()) ? fooHash : "xxxxxxxx", user.getPassword());
+            }
+            assertEquals("xxxxxxxx", JaxbUtils.unmarshal(OnmsUser.class, sendRequest(GET, "/groups/hashes/users/admin", 200)).getPassword());
+            assertEquals(fooHash, JaxbUtils.unmarshal(OnmsUser.class, sendRequest(GET, "/groups/hashes/users/foo", 200)).getPassword());
+        } finally {
+            setUser("admin", new String[] { "ROLE_ADMIN" });
+        }
+
+        // an admin sees them all
+        for (final OnmsUser user : JaxbUtils.unmarshal(OnmsUserList.class, sendRequest(GET, "/groups/hashes/users", 200))) {
+            assertFalse(user.getUsername(), "xxxxxxxx".equals(user.getPassword()));
+        }
+        assertEquals(fooHash, JaxbUtils.unmarshal(OnmsUser.class, sendRequest(GET, "/groups/hashes/users/foo", 200)).getPassword());
+    }
+
+    @Test
     public void testAddGroup() throws Exception {
         OnmsGroupList groups = JaxbUtils.unmarshal(OnmsGroupList.class, sendRequest(GET, "/groups", 200));
         assertNotNull(groups);
         assertTrue(groups.size() > 0);
         int initialGroupSize = groups.size();
 
-        createGroup("My little Test group");         // add group
+        createGroup("My_little_Test_group");         // add group
         String xml = sendRequest(GET, "/groups", 200);
         groups = JaxbUtils.unmarshal(OnmsGroupList.class, xml);
         assertEquals(initialGroupSize+1, groups.size());
-        assertTrue(xml.contains(">My little Test group<"));
+        assertTrue(xml.contains(">My_little_Test_group<"));
     }
 
     @Test
@@ -262,7 +290,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         OnmsUser user = new OnmsUser();
         user.setUsername(userName);
         user.setPassword("blah");
-        sendPost("/users", JaxbUtils.marshal(user), 201, "/users/" + userName);
+        sendPost("/users?hashPassword=true", JaxbUtils.marshal(user), 201, null);
     }
     
     protected void createGroup(final String groupname) throws Exception {
