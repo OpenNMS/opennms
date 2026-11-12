@@ -76,6 +76,12 @@ commands:
               )
               echo "#### Flaky tests detected (passed only after retry):"
               find /tmp/flaky-evidence -name '*.xml' | sed 's|.*/TEST-||;s|\.xml||' | sort -u
+              # Add the failed reports to the test results. Test Insights then shows a class that passed in the rerun as flaky.
+              mkdir -p ~/test-results/junit
+              find /tmp/flaky-evidence -name 'TEST-*.xml' | while read -r REPORT; do
+                ATTEMPT="$(basename "$(dirname "$(dirname "$REPORT")")")"
+                cp "$REPORT" ~/test-results/junit/"$(basename "$REPORT" .xml).${ATTEMPT}.xml"
+              done
             else
               echo "No flaky tests detected."
             fi
