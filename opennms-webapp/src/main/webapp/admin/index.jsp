@@ -115,7 +115,9 @@
       <div class="card-body">
         <ul class="list-unstyled mb-0">
             <li><a href="admin/sysconfig.jsp">System Configuration</a></li>
-            <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and On-Call Roles</a></li>
+            <li><a href="ui/index.html#/admin/users">Configure Users</a></li>
+            <li><a href="ui/index.html#/admin/groups">Configure Groups</a></li>
+            <li><a href="ui/index.html#/admin/oncall-roles">Configure On-Call Roles</a></li>
 
             <% String showZenithConnectLink = System.getProperty("opennms.zenithConnect.enabled", "false");
                 if (Boolean.parseBoolean(showZenithConnectLink)) { %>
@@ -215,7 +217,7 @@
         <ul class="list-unstyled mb-0">
             <li><a href="ui/index.html#/snmp-data-collection">Manage SNMP Data Collection Config</a></li>
             <li><a href="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
-            <li><a href="admin/thresholds/index.htm">Configure Thresholds</a></li>
+            <li><a href="ui/index.html#/threshold-config">Configure Thresholds</a></li>
         </ul>
       </div> <!-- card-body -->
     </div> <!-- panel -->
@@ -241,6 +243,7 @@
         <ul class="list-unstyled mb-0">
             <li><a href="admin/endpoint/index.jsp">Configure Grafana Endpoints (Reports only)</a></li>
             <li><a href="admin/nodemanagement/instrumentationLogReader.jsp">Instrumentation Log Reader</a></li>
+            <li><a href="ui/index.html#/mib-compiler">SNMP MIB Compiler</a></li>
             <%=getAdminPageNavEntries("operations")%>
         </ul>
       </div> <!-- card-body -->
@@ -254,12 +257,19 @@
         <span>Descriptions</span>
       </div>
       <div class="card-body">
+        <p><b>Configure Users</b>: Add, modify or delete existing users, and assign
+            them security roles.
+            (User: A person)
         </p>
 
-        <p><b>Configure Users, Groups and On-Call Roles</b>: Add, modify or delete
-            existing users. Groups contain users. Roles are built from groups and provide
+        <p><b>Configure Groups</b>: Groups contain users and are the recipients of
+            notifications.
+            (Group: Administrators)
+        </p>
+
+        <p><b>Configure On-Call Roles</b>: Roles are built from groups and provide
             a mechanism to implement calendar-based on-call staff rotations.
-            (User: A person, Group: Administrators, Role: On Duty Staff)
+            (Role: On Duty Staff)
         </p>
 
 
@@ -336,14 +346,15 @@
         </p>
 
 
-        <p><b>Manage SNMP Collections and Data Collection Groups</b>: Manage SNMP Collections and the content
-            of the files for data collection groups.</p>
+        <p><b>Manage SNMP Data Collection Config</b>: Manage the SNMP collection sources, which hold the data
+            collection groups, and the collection profiles that use them.</p>
 
         <p><b>Configure SNMP Data Collection per Interface</b>: This interface will allow you
             to configure which IP and non-IP interfaces are used in SNMP Data Collection.
         </p>
 
-        <p><b>Configure thresholds</b>: Allows you to add, remove, or modify thresholds.</p>
+        <p><b>Configure thresholds</b>: Allows you to add, remove, or modify threshold groups,
+        thresholds, and the threshd packages that apply them.</p>
 
         <p><b>Manage Applications</b>: Configure and administer 
         the operation of perspective pollers that report back to this OpenNMS server to provide distributed

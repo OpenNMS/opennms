@@ -29,7 +29,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +43,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.api.ElementConstants;
 import org.opennms.web.api.Util;
 import org.opennms.web.element.NetworkElementFactory;
 import org.slf4j.Logger;
@@ -128,10 +128,8 @@ public class SnmpManageNodesServlet extends HttpServlet {
             sendSNMPRestartEvent(currNodeId, primeInt);
         }
 
-        // forward the request for proper display
-        // TODO This will redirect to the node page, but the URL will be admin/changeCollectStatus. Needs fixed.
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/element/node.jsp?node=" + currNodeId);
-        dispatcher.forward(request, response);
+        // Show the node's Vue detail page.
+        response.sendRedirect(Util.calculateUrlBase(request, ElementConstants.NODE_DETAILS_URI + currNodeId));
     }
 
     @SuppressWarnings("unchecked")

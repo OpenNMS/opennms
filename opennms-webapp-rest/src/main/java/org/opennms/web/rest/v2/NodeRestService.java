@@ -66,6 +66,7 @@ import org.apache.cxf.jaxrs.ext.search.SearchContext;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.IplikeSqlTranslator;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -128,6 +129,23 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         "ifName",   "snmpifname",
         "physAddr", "snmpphysaddr"
     );
+
+    /**
+     * Prepare a FIQL value for an {@code ilike ?} SQL parameter. When the value has a FIQL '*'
+     * wildcard ({@code wildcard == true}), CXF has already escaped '\', '%' and '_' and changed
+     * '*' to '%', so the value is used as it is. Without a wildcard, CXF does not escape the value,
+     * so escape the LIKE characters here: an exact search for "Gi0_1" must not also match "Gi0X1".
+     */
+    private static Object toIlikeParameter(final Object value, final boolean wildcard) {
+        if (wildcard || !(value instanceof String)) {
+            return value;
+        }
+        return escapeLikeCharacters((String)value);
+    }
+
+    private static String escapeLikeCharacters(final String value) {
+        return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
+    }
 
     @Autowired
     private MonitoringLocationDao m_locationDao;
@@ -274,12 +292,13 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
                 // alias is never joined, so the default Hibernate property restriction must not be added
                 // (it would cause a QueryException: could not resolve property: snmpInterface).
                 CriteriaBehavior<?> snmpStringBehavior = new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
+                    final Object pattern = toIlikeParameter(v, w);
                     switch (c) {
                     case EQUALS:
-                        b.sql(String.format("{alias}.nodeid in (select snmpinterface.nodeid from snmpinterface where snmpinterface.snmpcollect != 'D' and snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
+                        b.sql(String.format("{alias}.nodeid in (select snmpinterface.nodeid from snmpinterface where snmpinterface.snmpcollect != 'D' and snmpinterface.%s ilike ?)", dbCol), pattern, Type.STRING);
                         break;
                     case NOT_EQUALS:
-                        b.sql(String.format("{alias}.nodeid not in (select snmpinterface.nodeid from snmpinterface where snmpinterface.snmpcollect != 'D' and snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
+                        b.sql(String.format("{alias}.nodeid not in (select snmpinterface.nodeid from snmpinterface where snmpinterface.snmpcollect != 'D' and snmpinterface.%s ilike ?)", dbCol), pattern, Type.STRING);
                         break;
                     default:
                         throw new IllegalArgumentException("Illegal condition type when filtering snmpInterface." + key + ": " + c);
@@ -309,9 +328,10 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             "union select nodeId from cdpelement where cdpglobaldeviceid ilike ? " +
             "union select nodeId from lldplink where lldpportid ilike ? or lldpportdescr ilike ? " +
             "union select nodeId from lldpelement where lldpsysname ilike ?)";
-        CriteriaBehavior<?> topologyBehavior = new CriteriaBehavior<>((String)null, String::new, (b,v,c,w) ->
-            b.sql(topologySql, new Object[]{v, v, v, v, v}, new Type[]{Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING})
-        );
+        CriteriaBehavior<?> topologyBehavior = new CriteriaBehavior<>((String)null, String::new, (b,v,c,w) -> {
+            final Object pattern = toIlikeParameter(v, w);
+            b.sql(topologySql, new Object[]{pattern, pattern, pattern, pattern, pattern}, new Type[]{Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING});
+        });
         topologyBehavior.setSkipPropertyByDefault(true);
         map.put("topology", topologyBehavior);
 
@@ -326,12 +346,24 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
                 return;
             }
             final String pattern = ((String)v).replaceAll("%", "*");
+            // translatable patterns become native-inet range predicates the
+            // database answers through an expression index; the rest keep iplike()
+            final String nativePredicate = IplikeSqlTranslator.toSqlPredicate(pattern, "ipaddr");
+            final String match = nativePredicate != null ? nativePredicate : "iplike(ipaddr, ?)";
             switch (c) {
             case EQUALS:
-                b.sql("{alias}.nodeid in (select nodeid from ipinterface where iplike(ipaddr, ?))", pattern, Type.STRING);
+                if (nativePredicate != null) {
+                    b.sql("{alias}.nodeid in (select nodeid from ipinterface where " + match + ")");
+                } else {
+                    b.sql("{alias}.nodeid in (select nodeid from ipinterface where " + match + ")", pattern, Type.STRING);
+                }
                 break;
             case NOT_EQUALS:
-                b.sql("{alias}.nodeid not in (select nodeid from ipinterface where iplike(ipaddr, ?))", pattern, Type.STRING);
+                if (nativePredicate != null) {
+                    b.sql("{alias}.nodeid not in (select nodeid from ipinterface where " + match + ")");
+                } else {
+                    b.sql("{alias}.nodeid not in (select nodeid from ipinterface where " + match + ")", pattern, Type.STRING);
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Illegal condition type for iplike expression: " + c);
@@ -344,6 +376,8 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         // Mirrors the legacy node-list MAC-like search — colons and dashes are stripped,
         // then an ANYWHERE ilike is applied. Uses a SQL subquery because snmpinterface is a child
         // association and cannot be aliased against the root criteria here.
+        // As in the legacy search, a value without a FIQL '*' is not escaped: '%' and '_' are SQL
+        // LIKE wildcards. (With a '*', CXF escapes '%' and '_' and they are literals.)
         CriteriaBehavior<?> maclikeBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
             if (v == null) {
                 return;
@@ -1090,7 +1124,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         }
         final int nodeId = node.getId();
 
-        // As includes/nodeStatus-box.jsp, which loaded every alarm and counted them; here the database counts.
+        // As the legacy node page's status box, which loaded every alarm and counted them; here the database counts.
         final List<OnmsAlarm> worstUnacknowledged = m_alarmDao.findMatching(problemAlarms(nodeId)
                 .isNull("alarmAckTime")
                 .orderBy("severity").desc()

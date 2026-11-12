@@ -88,8 +88,8 @@ public class NodeListIT extends OpenNMSSeleniumIT {
         // find the node row in the table
         findElementByXpath("//div[contains(@class, 'node-table')]//table/tbody/tr/td/a[text()='Test_Node1']");
 
-        // find the node link
-        String nodeLinkXpath = String.format("//div[contains(@class, 'node-table')]//table/tbody/tr/td/a[contains(@href, 'element/node.jsp?node=%d')]", savedNodeId);
+        // find the node link: a router link to the Vue Node Details page
+        String nodeLinkXpath = String.format("//div[contains(@class, 'node-table')]//table/tbody/tr/td/a[contains(@href, '#/node/%d')]", savedNodeId);
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(nodeLinkXpath)));
 
@@ -100,11 +100,11 @@ public class NodeListIT extends OpenNMSSeleniumIT {
         // Sleep for 500ms before clicking, otherwise link may be obscured
         sleepQuietly(500);
 
-        // Click on the node link and navigate to the "classic" Node page for that node
+        // Click on the node link and navigate to the Vue Node Details page for that node
         nodeLink.click();
 
-        // Ensure we are on the "classic" node page for that link
-        wait.until(pageContainsText("Node: Test_Node1"));
+        wait.until(ExpectedConditions.urlContains("#/node/" + savedNodeId));
+        wait.until(pageContainsText("Node Details for Test_Node1"));
     }
 
     @Test

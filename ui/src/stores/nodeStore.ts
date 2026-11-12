@@ -43,7 +43,8 @@ export const useNodeStore = defineStore('nodeStore', () => {
 
   // Whether the last attempt to fetch a node failed, as distinct from not having finished:
   // a page mid-fetch has nothing to say yet, a failed one has nothing to show at all.
-  const nodeLoadFailed = ref(false)
+  // notFound: the server answered 404. failed: it could not be asked or answered otherwise.
+  const nodeLoadError = ref<'notFound' | 'failed' | null>(null)
 
   // Address of the node's SNMP-primary interface, which the node payload does not carry
   // (OnmsNode.getPrimaryInterface is @Transient @JsonIgnore). Undefined when the node has none.
@@ -52,6 +53,9 @@ export const useNodeStore = defineStore('nodeStore', () => {
   // Whether the node is in its requisition, for the Edit in Requisition action. False until
   // known: offering the link and having it 404 is worse than leaving it out.
   const existsInRequisition = ref(false)
+  // The node the requisition check last answered for (yes, no, or could not tell). Undefined
+  // while a check is pending, so the page can tell an answer from a check still in flight.
+  const existsInRequisitionNodeId = ref<string | undefined>(undefined)
 
   // The node's own critical path, for the Path Outage panel; undefined when it has none, or until
   // known.
@@ -132,22 +136,22 @@ export const useNodeStore = defineStore('nodeStore', () => {
     // user navigated away from.
     node.value = {} as Node
     nodeLoaded.value = false
-    nodeLoadFailed.value = false
+    nodeLoadError.value = null
 
-    const resp = await API.getNodeById(n.id)
+    const resp = await API.lookupNodeById(String(n.id))
 
     if (requestId !== nodeRequestId) {
       return
     }
 
-    if (resp) {
-      node.value = resp
+    if (resp.success && resp.payload) {
+      node.value = resp.payload
       nodeLoaded.value = true
 
       return
     }
 
-    nodeLoadFailed.value = true
+    nodeLoadError.value = resp.success ? 'notFound' : 'failed'
 
     // Every panel fetches by node id on its own and only replaces its rows on a successful
     // response, so without this the previous node's data stays on screen under an id that has
@@ -159,6 +163,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
     snmpInterfacesTotalCount.value = 0
     snmpPrimaryIpAddress.value = undefined
     existsInRequisition.value = false
+    existsInRequisitionNodeId.value = undefined
     criticalPath.value = undefined
     linkServices.value = []
   }
@@ -237,12 +242,15 @@ export const useNodeStore = defineStore('nodeStore', () => {
    * above, so a slow answer for the node the user left cannot offer this one a link it does not
    * have.
    */
-  const getNodeExistsInRequisition = async (n: Pick<Node, 'foreignSource' | 'foreignId'>) => {
+  const getNodeExistsInRequisition = async (n: Pick<Node, 'id' | 'foreignSource' | 'foreignId'>) => {
     const requestId = ++existsInRequisitionRequestId
 
     existsInRequisition.value = false
+    existsInRequisitionNodeId.value = undefined
 
     if (!n.foreignSource || !n.foreignId) {
+      existsInRequisitionNodeId.value = n.id
+
       return
     }
 
@@ -250,6 +258,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
 
     if (requestId === existsInRequisitionRequestId) {
       existsInRequisition.value = exists === true
+      existsInRequisitionNodeId.value = n.id
     }
   }
 
@@ -408,9 +417,10 @@ export const useNodeStore = defineStore('nodeStore', () => {
     totalCount,
     node,
     nodeLoaded,
-    nodeLoadFailed,
+    nodeLoadError,
     snmpPrimaryIpAddress,
     existsInRequisition,
+    existsInRequisitionNodeId,
     criticalPath,
     linkServices,
     snmpInterfaces,

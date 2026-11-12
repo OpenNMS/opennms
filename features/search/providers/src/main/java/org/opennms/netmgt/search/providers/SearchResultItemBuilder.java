@@ -28,6 +28,7 @@ import org.opennms.core.mate.api.Interpolator;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.search.api.Match;
 import org.opennms.netmgt.search.api.SearchResultItem;
+import org.opennms.web.api.ElementConstants;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -41,7 +42,7 @@ public class SearchResultItemBuilder {
         Objects.requireNonNull(node);
 
         searchResultItem.setIdentifier(node.getNodeId());
-        searchResultItem.setUrl("element/node.jsp?node=" + node.getId());
+        searchResultItem.setUrl(ElementConstants.NODE_DETAILS_URI + node.getId());
         searchResultItem.setLabel(node.getLabel());
         searchResultItem.setInfo(Interpolator.interpolate(CUSTOM_INFO, entityScopeProvider.getScopeForNode(node.getId())).output);
 

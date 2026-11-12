@@ -279,7 +279,7 @@ public abstract class Bootstrap {
      * @param opennmsHome the OpenNMS home directory
      * @return a list of property files
      */
-    protected static List<File> getPropertiesFiles(File opennmsHome) {
+    public static List<File> getPropertiesFiles(File opennmsHome) {
         final File etc = new File(opennmsHome, "etc");
         final List<File> propertiesFiles = new ArrayList<>();
         propertiesFiles.add(opennmsHome.toPath().resolve(VERSION_PROPERTIES).toFile());

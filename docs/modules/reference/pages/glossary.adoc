@@ -60,7 +60,7 @@ discovery:: A process that uses ICMP to find network devices and services in you
 https://docs.docker.com/[Docker]:: An open-source container virtualization service that lets you deploy application-level services without worrying about operating system maintenance.
 {page-component-title} components may optionally be deployed as Docker containers.
 
-Dominion:: The service on a {page-component-title} instance that controls Minion operations (see xref:reference:configuration/minion-confd/minion-confd.adoc[]).
+Dominion:: The service on a {page-component-title} instance that controls Minion operations (see xref:reference:configuration/minion-docker.adoc#minion-docker[Minion Docker]).
 
 https://www.drools.org/[Drools]:: A system to manage business rules that supports the Java Rules Engine API standard.
 It helps provide a more robust infrastructure for workflow and problem state management in alarmd (see xref:operation:deep-dive/alarms/introduction.adoc[]).

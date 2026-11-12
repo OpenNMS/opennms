@@ -23,10 +23,10 @@
 import { rest } from './axiosInstances'
 
 /**
- * Whether a node is in its requisition, as the legacy node page's `existsInRequisition` decides
- * it (NetworkElementFactory.nodeExistsInRequisition): the pending requisition for the foreign
- * source, or the deployed one when there is none pending, lists the foreign id. v1 answers that
- * lookup with 200 or 404; there is no v2 requisitions API.
+ * Whether a node is in its requisition, as the legacy node page's `existsInRequisition` decided
+ * it: the pending requisition for the foreign source, or the deployed one when there is none
+ * pending, lists the foreign id. v1 answers that lookup with 200 or 404; there is no v2
+ * requisitions API.
  *
  * null when the check itself failed, so a caller can tell "not in a requisition" from "could not
  * tell".

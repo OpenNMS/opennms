@@ -96,13 +96,6 @@ describe('EventsTable.vue', () => {
               // no-op stub for v-date in tests
             }
           }
-        },
-        stubs: {
-          RouterLink: {
-            name: 'RouterLink',
-            props: ['to'],
-            template: '<a :href="to"><slot /></a>'
-          }
         }
       }
     })
@@ -143,13 +136,14 @@ describe('EventsTable.vue', () => {
       expect(rows.length).toBe(1)
     })
 
-    it('Id cell renders a router-link to /event/{id}', async () => {
+    it('Id cell links to the legacy event detail page', async () => {
+      useMenuStore().mainMenu = { baseHref: '/opennms/' } as any
       setNodeEvents([mockEvent], 1)
       await nextTick()
 
       const link = wrapper.find('tbody tr td a')
       expect(link.exists()).toBe(true)
-      expect(link.attributes('href')).toContain(`/event/${mockEvent.id}`)
+      expect(link.attributes('href')).toBe(`/opennms/event/detail.jsp?id=${mockEvent.id}`)
       expect(link.text()).toBe(String(mockEvent.id))
     })
 

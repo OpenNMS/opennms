@@ -189,6 +189,51 @@ public class EventConfEventDaoIT implements InitializingBean {
 
     @Test
     @Transactional
+    public void testFindUeiSources() {
+        final String sharedUei = "uei.opennms.org/test/findUeiSources/shared";
+        final String singleUei = "uei.opennms.org/test/findUeiSources/single";
+        insertEvent(sharedUei, "Shared", "Defined by two sources", "Normal");
+        insertEvent(singleUei, "Single", "Defined by one source", "Normal");
+
+        // allocated after test-source, so it has the higher fileOrder and is evaluated first
+        final EventConfSource other = new EventConfSource();
+        other.setName("other-source");
+        other.setEnabled(true);
+        other.setCreatedTime(new Date());
+        other.setFileOrder(m_eventSourceDao.nextFileOrder());
+        other.setUploadedBy("JUnitTest");
+        other.setEventCount(0);
+        other.setLastModified(new Date());
+        m_eventSourceDao.saveOrUpdate(other);
+
+        final EventConfEvent duplicate = new EventConfEvent();
+        // stored with surrounding whitespace, which is compared and returned trimmed
+        duplicate.setUei(" \t" + sharedUei + "\r\n");
+        duplicate.setEventLabel("Shared");
+        duplicate.setXmlContent("<event><uei>" + sharedUei + "</uei></event>");
+        duplicate.setSource(other);
+        duplicate.setSeverity("Normal");
+        duplicate.setEventOrder(1);
+        // the event's own flag is reported, not the source's
+        duplicate.setEnabled(false);
+        duplicate.setCreatedTime(new Date());
+        duplicate.setLastModified(new Date());
+        duplicate.setModifiedBy("JUnitTest");
+        m_eventDao.saveOrUpdate(duplicate);
+        m_eventDao.flush();
+
+        final List<EventConfEventDao.UeiSource> rows = m_eventDao.findUeiSources(
+                List.of(sharedUei, singleUei, "uei.opennms.org/test/findUeiSources/missing"));
+        assertEquals(List.of(
+                new EventConfEventDao.UeiSource(sharedUei, "other-source", false),
+                new EventConfEventDao.UeiSource(sharedUei, "test-source", true),
+                new EventConfEventDao.UeiSource(singleUei, "test-source", true)), rows);
+
+        assertTrue(m_eventDao.findUeiSources(List.of()).isEmpty());
+    }
+
+    @Test
+    @Transactional
     public void testFindEnabledEvents() {
         List<EventConfEvent> enabledEvents = m_eventDao.findEnabledEvents();
         int enabledEventsSize = enabledEvents.size() - defaultEventConfEventCount;

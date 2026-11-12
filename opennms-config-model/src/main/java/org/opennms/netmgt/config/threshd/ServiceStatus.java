@@ -25,11 +25,15 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @XmlRootElement(name="status")
 @XmlEnum
 public enum ServiceStatus {
     @XmlEnumValue("on")
+    @JsonProperty("on")
     ON,
     @XmlEnumValue("off")
+    @JsonProperty("off")
     OFF
 }

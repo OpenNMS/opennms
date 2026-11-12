@@ -29,8 +29,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
         description = """
                 Form-encoded body for updating a user. Field names are the `OnmsUser` bean property names, not the
                 XML element names the read endpoints emit, so `fullName` and `comments` are the keys, not
-                `full-name` and `user-comments`. Keys that are not writable properties are skipped, and a request in
-                which nothing was written comes back as 304.""")
+                `full-name` and `user-comments`. Only the keys below are accepted, spelled exactly; any other key
+                answers 400. A request without any of them comes back as 304.""")
 public class UserUpdateForm {
 
     @Schema(description = "Display name.", example = "Jane Roe")
@@ -42,11 +42,12 @@ public class UserUpdateForm {
     @Schema(description = "Email contact address.", example = "jane.roe@example.org")
     public String email;
 
-    @Schema(description = "New password. Stored verbatim unless `hashPassword` is `true`.", example = "s3cret")
+    @Schema(description = "New password, in plain text. Needs `hashPassword=true`: it is stored hashed and salted, "
+            + "and a password without it answers 400.", example = "s3cret")
     public String password;
 
-    @Schema(description = "`true` hashes and salts `password` before storing it. Only consulted when `password` "
-            + "is also present in the same request.",
+    @Schema(description = "Must be `true` when `password` is sent. Only consulted when `password` is also present "
+            + "in the same request.",
             example = "true")
     public Boolean hashPassword;
 

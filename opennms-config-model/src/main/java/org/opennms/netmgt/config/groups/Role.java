@@ -49,7 +49,8 @@ public class Role implements Serializable {
     @XmlAttribute(name = "membership-group", required = true)
     private String m_membershipGroup;
 
-    @XmlAttribute(name = "supervisor", required = true)
+    /** The user notified when nobody is scheduled; null when the role has none. */
+    @XmlAttribute(name = "supervisor")
     private String m_supervisor;
 
     @XmlAttribute(name = "description")
@@ -77,12 +78,14 @@ public class Role implements Serializable {
         m_membershipGroup = ConfigUtils.assertNotEmpty(membershipGroup, "membership-group");
     }
 
+    /** @return the supervisor, or null when the role has none */
     public String getSupervisor() {
         return m_supervisor;
     }
 
+    /** @param supervisor the supervisor; null or empty for none */
     public void setSupervisor(final String supervisor) {
-        m_supervisor = ConfigUtils.assertNotEmpty(supervisor, "supervisor");
+        m_supervisor = ConfigUtils.normalizeString(supervisor);
     }
 
     public Optional<String> getDescription() {

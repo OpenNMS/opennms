@@ -47,9 +47,10 @@ import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.awaitility.Awaitility;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.features.elastic.client.model.BulkRequest;
 import org.opennms.features.elastic.client.model.BulkResponse;
@@ -72,11 +73,20 @@ public class ElasticRestClientIT {
 
     private ExecutorService executor;
 
-    @ClassRule
     public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer(ELASTICSEARCH_IMAGE)
             .withEnv("xpack.security.enabled", "false")
             .withEnv("discovery.type", "single-node")
             .withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m");
+
+    @BeforeClass
+    public static void startElasticsearch() {
+        elasticsearch.start();
+    }
+
+    @AfterClass
+    public static void stopElasticsearch() {
+        elasticsearch.stop();
+    }
 
     private DefaultElasticRestClient client;
 

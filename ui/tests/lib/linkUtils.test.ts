@@ -23,6 +23,7 @@
 import { describe, expect, test } from 'vitest'
 import {
   alarmDetailLink,
+  eventDetailLink,
   nodeAlarmListLink,
   INTERFACE_PATH,
   OUTAGE_DETAIL_PATH,
@@ -32,7 +33,6 @@ import {
   SNMP_INTERFACE_PATH,
   interfaceByIdLink,
   interfaceLink,
-  nodeLink,
   nodeAndInterfaceQuery,
   nodeOutageListLink,
   outageDetailLink,
@@ -50,25 +50,6 @@ const IPV6 = '2001:db8::1'
 const IPV6_ZONE = 'fe80::1%eth0'
 
 describe('linkUtils', () => {
-  // The only link here whose path is not a constant: baseNodeUrl comes from the menu config and
-  // already ends in its own separator, so the id is appended directly.
-  describe('nodeLink', () => {
-    const BASE_NODE_URL = 'element/node.jsp?node='
-
-    test('appends the node id to the configured node url', () => {
-      expect(nodeLink(BASE, BASE_NODE_URL, 42)).toBe('/opennms/element/node.jsp?node=42')
-    })
-
-    test('takes the node id as a string or a number', () => {
-      expect(nodeLink(BASE, BASE_NODE_URL, '42')).toBe(nodeLink(BASE, BASE_NODE_URL, 42))
-    })
-
-    // baseNodeUrl is configuration, so it need not be a query string at all.
-    test('works with a path-style node url', () => {
-      expect(nodeLink(BASE, 'node/', 42)).toBe('/opennms/node/42')
-    })
-  })
-
   describe('nodeAndInterfaceQuery', () => {
     test('leaves an IPv4 address as-is', () => {
       expect(nodeAndInterfaceQuery(42, IPV4)).toBe('?node=42&intf=10.0.0.44')
@@ -172,5 +153,11 @@ describe('alarm links', () => {
 
   test('links a node to the legacy alarm list filtered to it', () => {
     expect(nodeAlarmListLink('/opennms/', '144')).toBe('/opennms/alarm/list.htm?filter=node%3D144')
+  })
+})
+
+describe('event links', () => {
+  test('links an event to its legacy detail page', () => {
+    expect(eventDetailLink('/opennms/', 42)).toBe('/opennms/event/detail.jsp?id=42')
   })
 })

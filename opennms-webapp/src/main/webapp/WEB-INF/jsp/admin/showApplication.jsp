@@ -26,6 +26,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Application")
           .breadcrumb("Admin", "admin/index.jsp")
@@ -61,7 +62,7 @@
             </tr>
             <c:forEach items="${model.memberServices}" var="service">
               <tr>
-                <td><a href="element/node.jsp?node=${service.ipInterface.node.id}">${fn:escapeXml(service.ipInterface.node.label)}</a></td>
+                <td><a href="${ElementConstants.NODE_DETAILS_URI}${service.ipInterface.node.id}">${fn:escapeXml(service.ipInterface.node.label)}</a></td>
                 <td><a href="element/interface.jsp?ipinterfaceid=${service.ipInterface.id}">${service.ipInterface.ipAddress.hostAddress}</a></td>
                 <td><a href="element/service.jsp?ifserviceid=${service.id}">${fn:escapeXml(service.serviceName)}</a></td>
               </tr>

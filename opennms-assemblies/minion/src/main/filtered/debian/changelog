@@ -1,3 +1,10 @@
+opennms-minion (36.0.6-1) stable; urgency=low
+
+  * For details on what has changed, see:
+    https://docs.opennms.com/horizon/36.0.6/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Nov 2026 11:55:01 -0500
+
 opennms-minion (36.0.5-1) stable; urgency=low
 
   * For details on what has changed, see:

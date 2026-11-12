@@ -277,7 +277,7 @@ public class GraphRestService extends OnmsRestService {
                         "id": "node[loopback-lab:lb-004]",
                         "label": "loopback-004",
                         "name": "loopback-lab:lb-004",
-                        "link": "element/node.jsp?node=loopback-lab:lb-004",
+                        "link": "ui/index.html#/node/loopback-lab:lb-004",
                         "typeLabel": "Node",
                         "parentId": null,
                         "graphNames": [],

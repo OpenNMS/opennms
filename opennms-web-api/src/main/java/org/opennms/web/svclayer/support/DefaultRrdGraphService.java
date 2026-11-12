@@ -66,6 +66,10 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
 //    private static final String s_missingParamsPath = "/images/rrd/missingparams.png";
     private static final String s_rrdError = "/images/rrd/error.png";
 
+    private static final Pattern ADHOC_AGGREGATE_FUNCTION = Pattern.compile("AVERAGE|MIN|MAX|LAST");
+    private static final Pattern ADHOC_STYLE = Pattern.compile("LINE[123]|AREA|STACK");
+    private static final Pattern ADHOC_COLOR = Pattern.compile("[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?");
+
     private GraphDao m_graphDao;
 
     private ResourceDao m_resourceDao;
@@ -86,6 +90,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         Assert.notNull(dataSourceTitles, "dataSourceTitles argument cannot be null");
         Assert.notNull(styles, "styles argument cannot be null");
         Assert.isTrue(end > start, "end time must be after start time");
+        validateAdhocParameters(title, dataSources, aggregateFunctions, colors, dataSourceTitles, styles);
 
         AdhocGraphType t = m_graphDao.findAdhocGraphTypeByName("performance");
 
@@ -103,6 +108,51 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                                   styles);
 
         return getInputStreamForCommand(command);
+    }
+
+    /*
+     * The ad-hoc command is built as one string, and then split again on
+     * whitespace and quotes before rrdtool runs. Each value must stay in its
+     * own argument. The error messages do not include the request values.
+     */
+    static void validateAdhocParameters(String title, String[] dataSources,
+            String[] aggregateFunctions, String[] colors,
+            String[] dataSourceTitles, String[] styles) {
+        // The ad-hoc wizard sends values for all four data source slots, but
+        // sends a data source name only for each selected slot. Only the
+        // first entries are used, so do not check the unused entries.
+        int count = dataSources.length;
+        Assert.isTrue(aggregateFunctions.length >= count
+                && colors.length >= count
+                && dataSourceTitles.length >= count
+                && styles.length >= count,
+                "each data source must have an aggregate function, color, title and style");
+
+        Assert.isTrue(isSafeTitle(title), "graph title contains a character that is not permitted");
+        for (int i = 0; i < count; i++) {
+            Assert.isTrue(isMatch(ADHOC_AGGREGATE_FUNCTION, aggregateFunctions[i]), "aggregate function is not valid");
+            Assert.isTrue(isMatch(ADHOC_STYLE, styles[i]), "graph style is not valid");
+            Assert.isTrue(isMatch(ADHOC_COLOR, colors[i]), "color is not valid");
+            Assert.isTrue(isSafeTitle(dataSourceTitles[i]), "data source title contains a character that is not permitted");
+        }
+    }
+
+    private static boolean isMatch(Pattern pattern, String value) {
+        return value != null && pattern.matcher(value).matches();
+    }
+
+    private static boolean isSafeTitle(String value) {
+        if (value == null) {
+            return false;
+        }
+        for (char c : value.toCharArray()) {
+            // A quote ends the quoted argument. A control character, such as a
+            // tab or a newline, also splits the argument, even inside quotes.
+            if (c == '"' || Character.isISOControl(c)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private InputStream getInputStreamForCommand(String command) {
@@ -203,10 +253,10 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         String starttime = Long.toString(start / 1000);
         String endtime = Long.toString(end / 1000);
 
+        // Format the command prefix and the title template only one time.
+        // The DEF and graph lines contain values from the request and the RRD path, so do not format them again.
         final StringBuilder buf = new StringBuilder();
-        buf.append(commandPrefix);
-        buf.append(" ");
-        buf.append(title);
+        buf.append(MessageFormat.format(commandPrefix + " " + title, "bogus-rrd", starttime, endtime, graphtitle));
 
         String[] rrdFiles = getRrdNames(resource, dsNames);
 
@@ -243,8 +293,8 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             buf.append(line);
         }
 
-        LOG.debug("formatting: {}, bogus-rrd, {}, {}, {}", buf, starttime, endtime, graphtitle);
-        return MessageFormat.format(buf.toString(), "bogus-rrd", starttime, endtime, graphtitle);
+        LOG.debug("ad-hoc graph command: {}", buf);
+        return buf.toString();
     }
 
     private static String[] getRrdNames(OnmsResource resource, String[] dsNames) {

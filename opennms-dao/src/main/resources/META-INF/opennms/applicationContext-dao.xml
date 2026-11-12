@@ -24,6 +24,8 @@
   <import resource="applicationContext-shared.xml"/>
   <import resource="applicationContext-jceks-scv.xml"/>
   <import resource="applicationContext-encrypt-util.xml"/>
+  <!-- users, groups and on-call roles, from the database -->
+  <import resource="classpath*:/META-INF/opennms/applicationContext-usermgmt.xml"/>
 
   <!-- NOTE: FROM HERE ON, only contains OpenNMS Runtime Environment-specific beans -->
 

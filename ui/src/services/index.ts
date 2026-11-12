@@ -24,6 +24,8 @@ import {
   getNodes,
   getNodesByFilterRule,
   getNodeById,
+  lookupNodeById,
+  resolveNodeId,
   getNodeAlarmStatus,
   getNodeCriticalPath,
   getNodeIpInterfaces,
@@ -99,6 +101,25 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import {
+  createThresholdGroup,
+  createThreshdPackage,
+  deleteThresholdGroup,
+  deleteThreshdPackage,
+  downloadThresholdingConfiguration,
+  downloadThreshdConfiguration,
+  getThresholdGroup,
+  getThresholdGroups,
+  getThresholdingMetadata,
+  getThreshdConfiguration,
+  getThreshdPackage,
+  getThreshdPackages,
+  updateThresholdGroup,
+  updateThreshdConfiguration,
+  updateThreshdPackage,
+  uploadThresholdingConfiguration,
+  uploadThreshdConfiguration
+} from './thresholdConfigurationService'
 import { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import { getAbout } from './aboutService'
@@ -107,6 +128,7 @@ import {
   createManagedUser,
   deleteManagedUser,
   getAvailableUserRoles,
+  getManagedUserSummaries,
   getManagedUsers,
   renameManagedUser,
   setManagedUserPassword,
@@ -153,13 +175,40 @@ import {
 import {
   createManagedGroup,
   deleteManagedGroup,
+  getAvailableGroupCategories,
   getGroupMemberCandidates,
   getManagedGroups,
   renameManagedGroup,
   updateManagedGroup
 } from './groupAdminService'
+import {
+  createManagedOnCallRole,
+  deleteManagedOnCallRole,
+  getManagedOnCallRoles,
+  getOnCallScheduleSettings,
+  previewOnCallCalendar,
+  renameManagedOnCallRole,
+  updateManagedOnCallRole
+} from './onCallRoleAdminService'
 
 export default {
+  createThresholdGroup,
+  createThreshdPackage,
+  deleteThresholdGroup,
+  deleteThreshdPackage,
+  downloadThresholdingConfiguration,
+  downloadThreshdConfiguration,
+  getThresholdGroup,
+  getThresholdGroups,
+  getThresholdingMetadata,
+  getThreshdConfiguration,
+  getThreshdPackage,
+  getThreshdPackages,
+  updateThresholdGroup,
+  updateThreshdConfiguration,
+  updateThreshdPackage,
+  uploadThresholdingConfiguration,
+  uploadThreshdConfiguration,
   getMinionNodeIds,
   getCoreVersion,
   listMinions,
@@ -177,6 +226,8 @@ export default {
   getEvents,
   modifyAlarm,
   getNodeById,
+  lookupNodeById,
+  resolveNodeId,
   getNodeAlarmStatus,
   getNodeCriticalPath,
   getNodeOutages,
@@ -257,6 +308,7 @@ export default {
   createManagedUser,
   deleteManagedUser,
   getAvailableUserRoles,
+  getManagedUserSummaries,
   getManagedUsers,
   renameManagedUser,
   setManagedUserPassword,
@@ -288,10 +340,18 @@ export default {
   validateNotificationRule,
   createManagedGroup,
   deleteManagedGroup,
+  getAvailableGroupCategories,
   getGroupMemberCandidates,
   getManagedGroups,
   renameManagedGroup,
   updateManagedGroup,
+  createManagedOnCallRole,
+  deleteManagedOnCallRole,
+  getManagedOnCallRoles,
+  getOnCallScheduleSettings,
+  previewOnCallCalendar,
+  renameManagedOnCallRole,
+  updateManagedOnCallRole,
   getWsmanConfig,
   getWsmanDataCollection,
   getWsmanStatus,

@@ -68,7 +68,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,8 +86,8 @@ import com.google.common.collect.ImmutableSet;
 
         Every operation requires `ROLE_FILESYSTEM_EDITOR`. That is enforced twice, by the servlet security
         configuration and again in each handler, so a caller without the role gets 403 from the container
-        before the handler runs. `ROLE_ADMIN` on its own is not enough. `users.xml` is further restricted and
-        needs `ROLE_ADMIN` as well.
+        before the handler runs. `ROLE_ADMIN` on its own is not enough. `users.xml` and `users.xml.rpmsave`
+        are further restricted and need `ROLE_ADMIN` as well.
 
         Only files whose extension is one of the supported set are reachable, and only inside `etc`, up to
         four levels deep. A name that resolves outside `etc`, or whose extension is not supported, is
@@ -109,22 +108,16 @@ public class FilesystemRestService {
             "groovy",
             "bsh",
             "dcb");
-    private final java.nio.file.Path usersXml;
-
-    public FilesystemRestService() {
-        try {
-            this.usersXml = ConfigFileConstants.getFile(ConfigFileConstants.USERS_CONF_FILE_NAME).toPath();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    FilesystemRestService(final java.nio.file.Path usersXml) {
-        this.usersXml = usersXml;
-    }
-
     private final java.nio.file.Path etcFolder = Paths.get(System.getProperty("opennms.home"), "etc");
     private final java.nio.file.Path etcPristineFolder = Paths.get(System.getProperty("opennms.home"), "share", "etc-pristine");
+
+    /**
+     * Files with password hashes, which only an admin may read or write: users.xml, and the copy that an RPM upgrade
+     * leaves when it removes a changed users.xml. Neither has to exist.
+     */
+    private final Set<java.nio.file.Path> adminOnlyFiles = ImmutableSet.of(
+            etcFolder.resolve("users.xml").normalize(),
+            etcFolder.resolve("users.xml.rpmsave").normalize());
 
     @GET
     @Path("/")
@@ -166,7 +159,7 @@ public class FilesystemRestService {
 
         try {
             return Files.find(etcFolder, 4, (path, basicFileAttributes) -> isSupportedExtension(path), FileVisitOption.FOLLOW_LINKS)
-                    .filter(p -> !p.equals(usersXml) || securityContext.isUserInRole(Authentication.ROLE_ADMIN))
+                    .filter(p -> !adminOnlyFiles.contains(p.normalize()) || securityContext.isUserInRole(Authentication.ROLE_ADMIN))
                     .map(p -> etcFolder.relativize(p).toString())
                     .filter(p -> !changedFilesOnly || !doesFileExistAndMatchContentsWithEtcPristine(p, securityContext))
                     .sorted()
@@ -209,7 +202,7 @@ public class FilesystemRestService {
                     content = @Content(mediaType = "text/markdown",
                             schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "400", description = "The name resolves outside `etc`, or its extension is not supported. The body is empty: the message-only exception is mapped without its message."),
-            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` and the caller is not an admin.")
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` or `users.xml.rpmsave` and the caller is not an admin.")
     })
     public InputStream getFileHelp(
             @Parameter(description = "File path relative to `etc`, as listed by `GET /filesystem`.",
@@ -276,7 +269,7 @@ public class FilesystemRestService {
                     content = @Content(schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "204", description = "The file does not exist. No body."),
             @ApiResponse(responseCode = "400", description = "The name resolves outside `etc`, or its extension is not supported. The body is empty: the message-only exception is mapped without its message."),
-            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` and the caller is not an admin.")
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` or `users.xml.rpmsave` and the caller is not an admin.")
     })
     public Response getFileContents(
             @Parameter(description = "File path relative to `etc`, as listed by `GET /filesystem`.",
@@ -324,7 +317,7 @@ public class FilesystemRestService {
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Validation failed: XML document structures must start and end within the same entity."))),
-            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` and the caller is not an admin.")
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` or `users.xml.rpmsave` and the caller is not an admin.")
     })
     public String uploadFile(
             @Parameter(description = "File path relative to `etc` to write. Created if it does not exist, overwritten if it does.",
@@ -377,7 +370,7 @@ public class FilesystemRestService {
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Successfully deleted to '/opt/opennms/etc/example.xml'."))),
             @ApiResponse(responseCode = "400", description = "The name resolves outside `etc`, or its extension is not supported. The body is empty: the message-only exception is mapped without its message."),
-            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` and the caller is not an admin."),
+            @ApiResponse(responseCode = "403", description = "The caller does not hold `ROLE_FILESYSTEM_EDITOR`, or the file is `users.xml` or `users.xml.rpmsave` and the caller is not an admin."),
             @ApiResponse(responseCode = "500", description = "The file does not exist, or could not be removed.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string")))
@@ -418,8 +411,8 @@ public class FilesystemRestService {
         final java.nio.file.Path etcFolderNormalized = etcFolder.normalize();
         final java.nio.file.Path fileNormalized = etcFolder.resolve(fileName).normalize();
 
-        if (fileNormalized.equals(usersXml) && !securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
-            throw new ForbiddenException("ADMIN role is required for accessing users.xml file contents.");
+        if (adminOnlyFiles.contains(fileNormalized) && !securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            throw new ForbiddenException("ADMIN role is required for accessing " + fileNormalized.getFileName() + " file contents.");
         }
 
         if (!(fileNormalized.getNameCount() > etcFolderNormalized.getNameCount() && fileNormalized.startsWith(etcFolderNormalized))) {
@@ -436,7 +429,8 @@ public class FilesystemRestService {
             return;
         }
 
-        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        // Use the JDK parser, not the Xerces parser in lib/. The JDK parser limits entity expansion by default.
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newDefaultInstance();
         factory.setValidating(false);
         factory.setNamespaceAware(true);
 

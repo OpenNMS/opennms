@@ -3,7 +3,7 @@
 
 The `/filesystem` endpoint exposes a restricted view of editable configuration files under `$OPENNMS_HOME/etc`.
 
-All operations require the `FILESYSTEM EDITOR` role; editing `users.xml` additionally requires the `ADMIN` role.
+All operations require the `FILESYSTEM EDITOR` role; editing `users.xml` or `users.xml.rpmsave` additionally requires the `ADMIN` role.
 Only files with one of the following extensions are accessible: `xml`, `properties`, `boot`, `cfg`, `drl`, `groovy`, `bsh`, `dcb`, and a file must reside within `etc` (search depth 4).
 
 == GETs (reading data)

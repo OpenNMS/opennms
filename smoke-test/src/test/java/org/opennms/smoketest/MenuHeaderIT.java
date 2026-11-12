@@ -168,7 +168,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage Groups']")));
 
         clickMenuItem("User Management", "Manage On-call Roles");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Role List')]")));
+        // now the Vue page (ui/index.html)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Manage On-Call Roles']")));
 
         // Integrations Menu
         clickMenuItem("Integrations", "Geocoding Services");
@@ -180,8 +181,9 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // Omitting Zenith Connect for now
 
         // Tools Menu
+        // the Vue MIB Compiler page (ui/index.html#/mib-compiler)
         clickMenuItem("Tools", "SNMP MIB Compiler");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'SNMP MIB Compiler')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[@class='mib-compiler-container']//div[@class='heading']/p[text()='SNMP MIB Compiler']")));
 
         clickMenuItem("Tools", "JMX Metric Configuration Generator");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'JMX Configuration Generator')]")));
@@ -199,7 +201,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Surveillance Categories']")));
 
         clickMenuItem("Administration", "Configure Thresholds");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Threshold Configuration']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h1[text()='Threshold Configuration']")));
 
         clickMenuItem("Administration", "Flow Classification");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Flow Classification')]")));
@@ -440,11 +442,12 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
             // Select last element from the now loaded elements
             contextSearchResult.getItem("Configure Users").click();
-            getDriver().getCurrentUrl().endsWith("/opennms/admin/userGroupView/users/list.jsp");
+            wait.until(ExpectedConditions.urlMatches(".*" + java.util.regex.Pattern.quote("/opennms/ui/index.html#/admin/users") + "$"));
 
             // Go back to start page
             new CentralSearch(getDriver()).search("Home").getSingleItem().click();
-            getDriver().getCurrentUrl().endsWith("/opennms/index.jsp");
+            // the start page action opens "/", which the webapp serves as /opennms/ or /opennms/index.jsp
+            wait.until(ExpectedConditions.urlMatches(".*/opennms/(index\\.jsp)?$"));
         }
     }
 

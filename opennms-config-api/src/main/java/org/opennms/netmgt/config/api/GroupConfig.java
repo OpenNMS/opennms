@@ -76,12 +76,22 @@ public interface GroupConfig {
 	OnmsGroup getOnmsGroup(final String groupName) throws IOException;
 	
 	/**
-	 * <p>save</p>
-	 * 
-	 * @param an OnmsGroup
-	 * @throws Exception
+	 * The version of the groups, after a check for changes. Read it before the group that a later
+	 * {@link #save(OnmsGroup, long)} writes back.
+	 *
+	 * @throws IOException if the groups cannot be checked
 	 */
-	void save(final OnmsGroup group) throws Exception;
+	long getVersion() throws IOException;
+
+	/**
+	 * Saves the name, comments and members of a group that was read after {@link #getVersion()} returned
+	 * readVersion. Fails if the groups changed since, so that an older copy does not overwrite a newer change.
+	 *
+	 * @param group the name, comments and members
+	 * @param readVersion what {@link #getVersion()} returned before the group was read
+	 * @throws Exception if the group cannot be saved
+	 */
+	void save(final OnmsGroup group, final long readVersion) throws Exception;
 	
 	/**
 	 * <p>hasGroup</p>

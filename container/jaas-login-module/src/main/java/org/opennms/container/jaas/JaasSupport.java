@@ -21,9 +21,13 @@
  */
 package org.opennms.container.jaas;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.opennms.netmgt.config.api.UserConfig;
+import org.opennms.netmgt.dao.api.SecurityRoleDao;
+import org.opennms.web.api.Authentication;
+import org.opennms.web.api.DatabaseSecurityRoles;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
@@ -35,6 +39,7 @@ public final class JaasSupport {
 
 	private static AtomicReference<BundleContext> m_context = new AtomicReference<>();
 	private static AtomicReference<UserConfig> m_userConfig = new AtomicReference<>();
+	private static final AtomicBoolean m_roleSourceInstalled = new AtomicBoolean(false);
 
 	private JaasSupport() {}
 
@@ -61,6 +66,25 @@ public final class JaasSupport {
 		return m_userConfig.get();
 	}
 
+	/**
+	 * Makes Authentication read the security_roles table. Karaf usually wires
+	 * org.opennms.web.api to the class of the main JVM (etc/custom.properties), where the webapp's
+	 * DatabaseSecurityRoles has already set the role source; only a separate copy of the class needs one here.
+	 */
+	public static void installRoleSource() {
+		if (m_roleSourceInstalled.get() || Authentication.hasRoleSource()) {
+			return;
+		}
+		getContext();
+		final SecurityRoleDao dao = getFromRegistry(SecurityRoleDao.class);
+		if (dao == null) {
+			LOG.warn("No SecurityRoleDao in the registry. Only the built-in roles are valid.");
+			return;
+		}
+		Authentication.setRoleSource(() -> DatabaseSecurityRoles.roleNames(dao));
+		m_roleSourceInstalled.set(true);
+	}
+
 	private static <T> T getFromRegistry(final Class<T> clazz) {
 	    final var context = m_context.get();
 		if (context == null) {
@@ -68,6 +92,6 @@ public final class JaasSupport {
 			return null;
 		}
 		final ServiceReference<T> ref = context.getServiceReference(clazz);
-		return context.getService(ref);
+		return ref == null ? null : context.getService(ref);
 	}
 }

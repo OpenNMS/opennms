@@ -25,8 +25,9 @@ package org.opennms.web.svclayer.support;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.GroupDao;
@@ -98,8 +99,15 @@ public class DefaultGroupService implements InitializingBean, GroupService {
     }
 
     @Override
-    public void saveGroup(OnmsGroup group) {
-        saveGroup(onmsGroupMapper.map(group));
+    public long getVersion() {
+        return m_groupDao.getVersion();
+    }
+
+    @Override
+    public void saveGroup(OnmsGroup group, long readVersion) {
+        // an OnmsGroup carries only the name, comments and members: the manager keeps the rest of the stored group,
+        // read under its own lock, and refuses members read before a change made elsewhere
+        m_groupDao.saveGroup(group, readVersion);
     }
 
     @Override
@@ -116,15 +124,25 @@ public class DefaultGroupService implements InitializingBean, GroupService {
     @Override
     public void deleteGroup(String groupName) {
         m_groupDao.deleteGroup(groupName);
-        setAuthorizedCategories(groupName, Collections.<String>emptyList());
+        clearCategoryAuthorizations(groupName);
     }
 
     @Override
-    public void renameGroup(String oldName, String newName) {
-        m_groupDao.renameGroup(oldName, newName);
-        List<String> categories = getAuthorizedCategoriesAsString(oldName);
-        setAuthorizedCategories(oldName, Collections.<String>emptyList());
-        setAuthorizedCategories(newName, categories);
+    public void moveCategoryAuthorizations(String oldName, String newName) {
+        // the categories of the old name replace whatever the new name was authorized on before
+        final List<OnmsCategory> oldCategories = new ArrayList<>(m_categoryDao.getCategoriesWithAuthorizedGroup(oldName));
+        clearCategoryAuthorizations(newName);
+        for (OnmsCategory category : oldCategories) {
+            category.getAuthorizedGroups().remove(oldName);
+            category.getAuthorizedGroups().add(newName);
+        }
+    }
+
+    @Override
+    public void clearCategoryAuthorizations(String name) {
+        for (OnmsCategory category : m_categoryDao.getCategoriesWithAuthorizedGroup(name)) {
+            category.getAuthorizedGroups().remove(name);
+        }
     }
 
     @Override
@@ -133,7 +151,9 @@ public class DefaultGroupService implements InitializingBean, GroupService {
         List<String> categoryNames = getAuthorizedCategoriesAsString(groupName);
         if (!categoryNames.contains(categoryName)) {
             categoryNames.add(categoryName);
-            saveGroup(getGroup(groupName), categoryNames);
+            // the authorizations live in category_group, not in the group, whose version a trigger moves: the group
+            // itself is not saved, so that a stale cached copy of it cannot overwrite a newer change
+            setAuthorizedCategories(groupName, categoryNames);
             return true; // added successfully
         }
         return false; // can't be added, already added
@@ -144,7 +164,8 @@ public class DefaultGroupService implements InitializingBean, GroupService {
         List<String> categoryNames = getAuthorizedCategoriesAsString(groupName);
         if (categoryNames.contains(categoryName)) {
             categoryNames.remove(categoryName);
-            saveGroup(getGroup(groupName), categoryNames);
+            // see addCategory: the group itself is not saved
+            setAuthorizedCategories(groupName, categoryNames);
             return true; // removed categoryName from categories successfully
         }
         return false; // categoryName does not exist, removing not possible
@@ -195,14 +216,15 @@ public class DefaultGroupService implements InitializingBean, GroupService {
 
     @Override
     public boolean addUser(String groupName, String userName) {
-        Group group = getGroup(groupName);
+        // a copy of the cached group, read after the version: the save fails if the groups changed since
+        final long version = getVersion();
+        final OnmsGroup group = getOnmsGroup(groupName);
         if (group != null && hasUser(userName)) {
-            if (getUserForGroup(groupName, userName) != null) {
+            if (group.getUsers().contains(userName)) {
                 return false; // user is already added
             }
-            // user is not added to group, add
             group.addUser(userName);
-            saveGroup(group);
+            saveGroup(group, version);
             return true;
         }
         return false; // group or user does not exist.
@@ -224,17 +246,21 @@ public class DefaultGroupService implements InitializingBean, GroupService {
         return false;
     }
 
-    private void setAuthorizedCategories(String groupName, List<String> categoryNames) {
-        List<OnmsCategory> categories = m_categoryDao.getCategoriesWithAuthorizedGroup(groupName);
-        for(OnmsCategory category : categories) {
-            category.getAuthorizedGroups().remove(groupName);
-        }
-        for(String categoryName : categoryNames) {
-            OnmsCategory category = m_categoryDao.findByName(categoryName, false);
-            if (category != null) {
-                category.getAuthorizedGroups().add(groupName);
+    @Override
+    public void setAuthorizedCategories(String groupName, Collection<String> categoryNames) {
+        final Set<String> wanted = new HashSet<>(categoryNames);
+        final Set<String> current = new HashSet<>();
+        for (OnmsCategory category : m_categoryDao.getCategoriesWithAuthorizedGroup(groupName)) {
+            if (wanted.contains(category.getName())) {
+                current.add(category.getName());
+            } else {
+                category.getAuthorizedGroups().remove(groupName);
             }
         }
-
+        wanted.removeAll(current);
+        // one query for all the new ones; a name of no category is left out
+        for (OnmsCategory category : m_categoryDao.findByNames(wanted)) {
+            category.getAuthorizedGroups().add(groupName);
+        }
     }
 }
