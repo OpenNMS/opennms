@@ -102,6 +102,13 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- Same reason: JdbcDataCollectionConfigRestService's config model and DAO. -->
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.jdbc-collector</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.features.distributed</groupId>
       <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
