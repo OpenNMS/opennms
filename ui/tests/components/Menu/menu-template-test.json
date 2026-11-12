@@ -129,7 +129,7 @@
         {
           "id": "snmpMibCompiler",
           "name": "SNMP MIB Compiler",
-          "url": "admin/mibCompiler.jsp",
+          "url": "ui/index.html#/mib-compiler",
           "roles": null
         },
         {

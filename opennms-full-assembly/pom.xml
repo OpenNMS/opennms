@@ -503,7 +503,6 @@
                 <feature>opennms-enlinkd-shell</feature>
                 <feature>vaadin</feature>
                 <feature>vaadin-jmxconfiggenerator</feature>
-                <feature>vaadin-snmp-events-and-metrics</feature>
                 <feature>vaadin-surveillance-views</feature>
                 <feature>jira-troubleticketer</feature>
                 <feature>tsrm-troubleticketer</feature>

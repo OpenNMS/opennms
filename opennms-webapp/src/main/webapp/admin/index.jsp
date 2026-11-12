@@ -241,6 +241,7 @@
         <ul class="list-unstyled mb-0">
             <li><a href="admin/endpoint/index.jsp">Configure Grafana Endpoints (Reports only)</a></li>
             <li><a href="admin/nodemanagement/instrumentationLogReader.jsp">Instrumentation Log Reader</a></li>
+            <li><a href="ui/index.html#/mib-compiler">SNMP MIB Compiler</a></li>
             <%=getAdminPageNavEntries("operations")%>
         </ul>
       </div> <!-- card-body -->
@@ -336,8 +337,8 @@
         </p>
 
 
-        <p><b>Manage SNMP Collections and Data Collection Groups</b>: Manage SNMP Collections and the content
-            of the files for data collection groups.</p>
+        <p><b>Manage SNMP Data Collection Config</b>: Manage the SNMP collection sources, which hold the data
+            collection groups, and the collection profiles that use them.</p>
 
         <p><b>Configure SNMP Data Collection per Interface</b>: This interface will allow you
             to configure which IP and non-IP interfaces are used in SNMP Data Collection.

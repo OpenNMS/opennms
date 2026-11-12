@@ -180,8 +180,9 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // Omitting Zenith Connect for now
 
         // Tools Menu
+        // the Vue MIB Compiler page (ui/index.html#/mib-compiler)
         clickMenuItem("Tools", "SNMP MIB Compiler");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'SNMP MIB Compiler')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[@class='mib-compiler-container']//div[@class='heading']/p[text()='SNMP MIB Compiler']")));
 
         clickMenuItem("Tools", "JMX Metric Configuration Generator");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'JMX Configuration Generator')]")));
