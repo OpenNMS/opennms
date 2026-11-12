@@ -21,108 +21,96 @@
  */
 package org.opennms.smoketest.health;
 
-import static io.restassured.RestAssured.preemptive;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD;
-import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME;
 
-import java.nio.file.Paths;
+import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
 
-import org.junit.Before;
+import javax.ws.rs.core.Response;
+
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.smoketest.containers.OpenNMSContainer;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.resource.ResourceDTO;
+import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.stacks.OpenNMSStack;
-import org.opennms.smoketest.utils.KarafShellUtils;
-import org.opennms.smoketest.utils.TestContainerUtils;
-
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
+import org.opennms.smoketest.telemetry.Packet;
+import org.opennms.smoketest.telemetry.Packets;
+import org.opennms.smoketest.telemetry.Sender;
+import org.opennms.smoketest.utils.RestClient;
 
 /**
- * Verifies that the health check succeeds when daemons that publish OSGi services used by
- * other Karaf features are disabled (NMS-20470).
+ * Verifies that Telemetryd runs, the health check succeeds and telemetry data is persisted
+ * when Pollerd, Collectd and Provisiond are disabled.
  */
-public class DisabledServicesHealthCheckIT {
+public class DisabledServicesHealthCheckIT extends AbstractDisabledServicesHealthCheckIT {
 
-    private static final List<String> DISABLED_SERVICES = List.of(
-            "OpenNMS:Name=Pollerd",
-            "OpenNMS:Name=Collectd",
-            "OpenNMS:Name=Provisiond");
+    private static final List<String> DISABLED_DAEMONS = List.of("Pollerd", "Collectd", "Provisiond");
 
-    // The default wait strategy already requires a successful health probe before the tests run
+    private static final String FOREIGN_SOURCE = "telemetry-test";
+
+    // The system ID in the JTI payload
+    private static final String JTI_SYSTEM_ID = "192.168.1.1";
+
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.minimal(b -> DISABLED_SERVICES.forEach(b::withDisabledService));
+    public static final OpenNMSStack stack = stackWithDisabledServices(DISABLED_DAEMONS);
 
-    @Before
-    public void before() {
-        RestAssured.reset();
-        RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
-        RestAssured.port = stack.opennms().getWebPort();
-        RestAssured.basePath = "/opennms/rest/health";
+    @Override
+    protected OpenNMSStack stack() {
+        return stack;
+    }
+
+    @Override
+    protected List<String> disabledDaemons() {
+        return DISABLED_DAEMONS;
+    }
+
+    @Override
+    protected List<String> requiredDaemons() {
+        return List.of("Telemetryd");
     }
 
     @Test
-    public void verifyServicesAreDisabled() throws Exception {
-        final String xml = TestContainerUtils.getFileFromContainerAsString(stack.opennms(),
-                Paths.get("/opt/opennms/etc/service-configuration.xml"));
-        for (final String serviceName : DISABLED_SERVICES) {
-            final String envVar = OpenNMSContainer.getServiceEnabledEnvVar(serviceName);
-            assertThat("service-configuration.xml should resolve " + serviceName + " from " + envVar,
-                    Pattern.compile("<service enabled=\"\\$\\{env:" + Pattern.quote(envVar) + "\\|[^}]*\\}\">\\s*<name>" + Pattern.quote(serviceName) + "</name>")
-                            .matcher(xml).find(), is(true));
-            assertThat(envVar + " should be set in the container",
-                    stack.opennms().execInContainer("printenv", envVar).getStdout().trim(), is("false"));
-        }
-    }
+    public void verifyTelemetryIsPersisted() {
+        final RestClient restClient = stack.opennms().getRestClient();
+        final String nodeCriteria = FOREIGN_SOURCE + ":" + JTI_SYSTEM_ID;
 
-    @Test
-    public void verifyProbeHealth() {
-        RestAssured.get("probe")
-                .then().assertThat()
-                .statusCode(200)
-                .contentType(ContentType.TEXT)
-                .header("Health", "Everything is awesome");
-    }
+        // Provisiond is disabled, so create the node through the REST API
+        OnmsNode node = new OnmsNode();
+        node.setLabel(JTI_SYSTEM_ID);
+        node.setType(OnmsNode.NodeType.ACTIVE);
+        node.setForeignSource(FOREIGN_SOURCE);
+        node.setForeignId(JTI_SYSTEM_ID);
+        Response response = restClient.addNode(node);
+        assertThat(response.getStatus(), is(201));
+        node = restClient.getNode(nodeCriteria);
 
-    @Test
-    public void verifyRestHealth() {
-        RestAssured.authentication = preemptive().basic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
-        final Response response = RestAssured.get();
-        final String body = response.asString();
-        assertThat(body, response.getStatusCode(), is(200));
-        assertThat(body, response.jsonPath().getBoolean("healthy"), is(true));
-        final List<String> statuses = response.jsonPath().getList("responses.status");
-        assertThat(body, statuses, not(empty()));
-        assertThat(body, statuses, everyItem(is("Success")));
-    }
+        final OnmsIpInterface ipInterface = new OnmsIpInterface();
+        ipInterface.setNode(node);
+        ipInterface.setIpAddress(InetAddressUtils.getInetAddress(JTI_SYSTEM_ID));
+        ipInterface.setIpHostName(JTI_SYSTEM_ID);
+        response = restClient.addInterface(nodeCriteria, ipInterface);
+        assertThat(response.getStatus(), is(201));
 
-    @Test
-    public void verifyEnabledDaemonsAreRunning() {
-        final Map<String, String> statuses = stack.opennms().getRestClient().getServiceStatuses();
-        assertThat(statuses.toString(), statuses.get("Telemetryd"), is("running"));
-        assertThat(statuses.toString(), statuses.values(), everyItem(is("running")));
-    }
-
-    @Test
-    public void verifyKarafHealthCheck() {
-        await().atMost(5, MINUTES)
-                .pollInterval(5, SECONDS)
+        final InetSocketAddress jtiAddress = stack.opennms().getNetworkProtocolAddress(NetworkProtocol.JTI);
+        final String nodeId = Integer.toString(node.getId());
+        await().atMost(2, MINUTES).pollDelay(0, SECONDS).pollInterval(5, SECONDS)
                 .ignoreExceptions()
-                .untilAsserted(() -> {
-                    final var result = KarafShellUtils.executeHealthCheck(stack.opennms().getSshAddress());
-                    assertThat("health check result: " + result, result.isSuccess(), is(true));
+                .until(() -> {
+                    new Packet(Packets.JTI.getPayload()).send(Sender.udp(jtiAddress));
+                    return hasInterfaceMetrics(restClient.getResourcesForNode(nodeId));
                 });
+    }
+
+    private static boolean hasInterfaceMetrics(final ResourceDTO resources) {
+        return resources.getChildren().getObjects().stream()
+                .flatMap(r -> r.getRrdGraphAttributes().values().stream())
+                .anyMatch(a -> a.getRrdFile().startsWith("ifOutOctets"));
     }
 }
