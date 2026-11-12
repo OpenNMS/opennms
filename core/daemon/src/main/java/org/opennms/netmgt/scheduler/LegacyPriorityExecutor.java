@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.scheduler;
 
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,6 +43,10 @@ public class LegacyPriorityExecutor implements PausableFiber {
     private final String m_parent;
     private final ExecutorService priorityJobPoolExecutor;
     private final DelayQueue<PriorityReadyRunnable> priorityQueue;
+    // jobs queued or handed to the pool that have not started running; an
+    // equal job is not accepted again, which bounds the backlog when a cycle
+    // outlasts its interval
+    private final Set<PriorityReadyRunnable> m_pending = ConcurrentHashMap.newKeySet();
     private final ExecutorService m_worker = Executors.newSingleThreadExecutor();
     private volatile int m_status;
     public LegacyPriorityExecutor(String parent, Integer poolSize, Integer queueSize) {
@@ -51,6 +57,10 @@ public class LegacyPriorityExecutor implements PausableFiber {
     }
 
     public synchronized void addPriorityReadyRunnable(PriorityReadyRunnable job) {
+        if (!m_pending.add(job)) {
+            LOG.debug("addPriorityReadyRunnable: Skipped {}, an equal job is still pending", job.getInfo());
+            return;
+        }
         priorityQueue.add(job);
         if (LOG.isInfoEnabled()) {
             LOG.info("addPriorityReadyRunnable: Added {}, total in queue: {}", job.getInfo(), priorityQueue.size());
@@ -140,11 +150,16 @@ public class LegacyPriorityExecutor implements PausableFiber {
                     if (executable.isReady()) {
                         executable.setPriority(0);
                         executable.setDelayUntil(0);
-                        priorityJobPoolExecutor.execute(executable);
+                        final PriorityReadyRunnable job = executable;
+                        priorityJobPoolExecutor.execute(() -> {
+                            m_pending.remove(job);
+                            job.run();
+                        });
                     } else {
                         executable.setPriority(executable.getPriority() + 1);
                         executable.applyBackoffDelay(BASE_DELAY_MS, MAX_DELAY_MS);
-                        addPriorityReadyRunnable(executable);
+                        // still pending, so requeue directly past the duplicate check
+                        priorityQueue.add(executable);
                     }
                 } catch (InterruptedException e) {
                     break;

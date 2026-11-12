@@ -110,10 +110,13 @@ public abstract class NodeCollector extends Executable {
     }
 
 
+    // value semantics on (collector class, node), priority excluded: the
+    // executor uses equality to skip a collector whose equal is still pending
+    // from an earlier cycle, and the pending one keeps its priority.
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = super.hashCode();
+        int result = getClass().hashCode();
         result = prime * result + ((m_node == null) ? 0 : m_node.hashCode());
         return result;
     }
@@ -123,9 +126,7 @@ public abstract class NodeCollector extends Executable {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
+        if (obj == null || getClass() != obj.getClass())
             return false;
         NodeCollector other = (NodeCollector) obj;
         if (m_node == null) {
