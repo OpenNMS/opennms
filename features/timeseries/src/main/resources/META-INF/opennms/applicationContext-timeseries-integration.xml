@@ -107,6 +107,7 @@
   <bean id="timeseriesSearcherCache" class="org.opennms.core.cache.CacheConfig">
     <constructor-arg index="0" value="timeseriesSearcherCache" />
     <property name="expireAfterRead" value="${cache.timeseriesSearcherCache.expireAfterRead:300}" />
+    <property name="expireAfterWrite" value="${cache.timeseriesSearcherCache.expireAfterWrite:300}" />
     <property name="maximumSize" value="${cache.timeseriesSearcherCache.maximumSize:8192}" />
     <property name="recordStats" value="${cache.timeseriesSearcherCache.recordStats:true}" />
     <property name="metricRegistry" ref="timeseriesMetricRegistry" />
