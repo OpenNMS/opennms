@@ -22,8 +22,10 @@
 package org.opennms.netmgt.dao.jaxb;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -35,10 +37,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.EventType;
@@ -102,6 +106,23 @@ public class DefaultHttpCollectionConfigDaoTest {
         dao.updateConfig(config("/rrd/", "first"));
 
         verify(cm).updateConfiguration(eq(CONFIG_NAME), eq(DEFAULT_CONFIG_ID), any(JsonAsString.class), eq(false));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void validationRejectsUnsupportedAttributeTypes() {
+        dao.postConstruct();
+        final ArgumentCaptor<Consumer<ConfigUpdateInfo>> callback = ArgumentCaptor.forClass(Consumer.class);
+        verify(cm).registerEventHandler(eq(EventType.VALIDATE), eq(new ConfigUpdateInfo(CONFIG_NAME)), callback.capture());
+
+        // a valid config passes
+        callback.getValue().accept(new ConfigUpdateInfo(CONFIG_NAME, DEFAULT_CONFIG_ID, new JSONObject(json(config("/rrd/", "first")))));
+
+        // the schema allows timeticks, but the collector doesn't support it
+        final JSONObject invalid = new JSONObject(json(config("/rrd/", "first")).replace("\"type\":\"gauge\"", "\"type\":\"timeticks\""));
+        final ValidationException e = assertThrows(ValidationException.class,
+                () -> callback.getValue().accept(new ConfigUpdateInfo(CONFIG_NAME, DEFAULT_CONFIG_ID, invalid)));
+        assertThat(e.getMessage(), containsString("Unsupported attribute type 'timeticks'"));
     }
 
     private static String json(final HttpDatacollectionConfig config) {

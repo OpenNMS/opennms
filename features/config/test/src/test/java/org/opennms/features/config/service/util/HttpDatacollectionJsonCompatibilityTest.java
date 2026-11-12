@@ -22,9 +22,11 @@
 package org.opennms.features.config.service.util;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -33,6 +35,7 @@ import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -117,6 +120,44 @@ public class HttpDatacollectionJsonCompatibilityTest {
 
         JSONAssert.assertEquals(stored, written, true);
         assertThat("stored JSON reads back to the same object", ConfigConvertUtil.jsonToObject(stored, HttpDatacollectionConfig.class), equalTo(config));
+    }
+
+    /**
+     * The schema allows type names (e.g. timeticks) that {@link AttributeType} doesn't know. Reading them
+     * must fail like the XML adapter does instead of leaving the type null for the collector to trip over.
+     */
+    @Test
+    public void unsupportedAttributeTypeIsRejected() {
+        final String storedJson = jsonWithAttributeType("timeticks");
+        DEFINITION.validate(storedJson);
+
+        final ConfigConversionException e = assertThrows(ConfigConversionException.class,
+                () -> ConfigConvertUtil.jsonToObject(storedJson, HttpDatacollectionConfig.class));
+
+        final Throwable rootCause = rootCause(e);
+        assertThat(rootCause, instanceOf(IllegalArgumentException.class));
+        assertThat(rootCause.getMessage(), containsString("Unsupported attribute type 'timeticks'"));
+    }
+
+    @Test
+    public void attributeTypeAliasesAreAccepted() {
+        final HttpDatacollectionConfig config = ConfigConvertUtil.jsonToObject(jsonWithAttributeType("gauge32"), HttpDatacollectionConfig.class);
+        assertThat(config.getHttpCollection().get(0).getUris().get(0).getAttributes().get(0).getType(), equalTo(AttributeType.GAUGE));
+    }
+
+    private static String jsonWithAttributeType(final String type) {
+        return "{\"rrdRepository\":\"/rrd/\",\"http-collection\":[{\"name\":\"c\","
+                + "\"rrd\":{\"step\":300,\"rra\":[\"RRA:AVERAGE:0.5:1:10\"]},"
+                + "\"uris\":{\"uri\":[{\"name\":\"u\",\"url\":{\"path\":\"/\"},"
+                + "\"attributes\":{\"attrib\":[{\"alias\":\"a\",\"match-group\":1,\"type\":\"" + type + "\"}]}}]}}]}";
+    }
+
+    private static Throwable rootCause(final Throwable t) {
+        Throwable cause = t;
+        while (cause.getCause() != null && cause.getCause() != cause) {
+            cause = cause.getCause();
+        }
+        return cause;
     }
 
     private static String resource(final String name) throws IOException {

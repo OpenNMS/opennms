@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.collection.adapters.AttributeTypeAdapter;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
@@ -70,6 +71,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Attrib implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    private static final AttributeTypeAdapter TYPE_ADAPTER = new AttributeTypeAdapter();
+
     @JsonProperty("alias")
     @XmlAttribute(name = "alias", required = true)
     protected String m_alias;
@@ -108,7 +111,14 @@ public class Attrib implements Serializable {
 
     @JsonProperty("type")
     private void setTypeJson(final String value) {
-        m_type = value == null ? null : AttributeType.parse(value);
+        // Fail like the XML adapter does: the schema allows type names that AttributeType doesn't know.
+        try {
+            m_type = TYPE_ADAPTER.unmarshal(value);
+        } catch (final IllegalArgumentException e) {
+            throw e;
+        } catch (final Exception e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        }
     }
 
     public AttributeType getType() {
