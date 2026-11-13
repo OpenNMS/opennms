@@ -42,8 +42,7 @@ export interface NodeStatus {
   severity: string
   // Headline: down, how many interfaces/services are down, or how severe its problem alarms are.
   message: string
-  // Whether there is anything unacknowledged to act on -- the JSP's maxSeverity > NORMAL, which
-  // is also what decides whether the acknowledged/unacknowledged counts are shown.
+  // Whether there is anything unacknowledged to act on -- the JSP's maxSeverity > NORMAL.
   hasProblems: boolean
   ackCount: number
   unackCount: number

@@ -23,8 +23,10 @@
 import NodeStatusBox from '@/components/Nodes/NodeStatusBox.vue'
 import { useAlarmStore } from '@/stores/alarmStore'
 import { useMenuStore } from '@/stores/menuStore'
+import { OnmsTag, OnmsTooltip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
+import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, KeepAlive, nextTick, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -42,6 +44,8 @@ const summary = (overrides: Record<string, unknown> = {}) => ({
 // One service down and unacknowledged, plus one minor problem someone has acknowledged.
 const major = summary({ severity: 'MAJOR', servicesDown: 1, unacknowledgedCount: 1, acknowledgedCount: 1 })
 const twoUnacked = summary({ severity: 'MAJOR', servicesDown: 2, unacknowledgedCount: 2 })
+// Everything acknowledged: no problem left to act on, but the acknowledged alarms still count.
+const allAcked = summary({ acknowledgedCount: 3 })
 
 // Every test moves the one shared route; a box left mounted from an earlier test would follow it.
 enableAutoUnmount(afterEach)
@@ -81,7 +85,16 @@ describe('NodeStatusBox.vue', () => {
   }
 
   const mountBox = (setup: () => void = () => answerWith(summary())) =>
-    mount(NodeStatusBox, { global: { plugins: [createPinia(setup)] }})
+    mount(NodeStatusBox, {
+      global: {
+        plugins: [PrimeVue, createPinia(setup)],
+        directives: { 'onms-tooltip': OnmsTooltip }
+      }
+    })
+
+  // Where the tooltip directive parks its resolved text; see OnmsTooltip.test.ts.
+  const tooltipOf = (wrapper: ReturnType<typeof mountBox>, selector: string) =>
+    (wrapper.find(selector).element as never as Record<string, unknown>).$_ptooltipValue
 
   beforeEach(() => {
     vi.useFakeTimers()
@@ -115,26 +128,59 @@ describe('NodeStatusBox.vue', () => {
     expect(wrapper.find('[data-test="node-status-message"]').text()).toBe('Node has no problem alarms.')
     expect(wrapper.find('[data-test="node-status"]').classes()).toContain('node-details-banner--normal')
     expect(wrapper.find('[data-test="node-status-unack-link"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="node-status-ack-link"]').exists()).toBe(false)
   })
 
-  it('shows the headline, severity and linked counts for a node with problems', async () => {
-    const wrapper = mountBox(() => answerWith(major))
-    await flushPromises()
+  describe('count tags', () => {
+    const unack = '[data-test="node-status-unack-link"]'
+    const ack = '[data-test="node-status-ack-link"]'
 
-    expect(wrapper.find('[data-test="node-status"]').classes()).toContain('node-details-banner--major')
-    expect(wrapper.find('[data-test="node-status-message"]').text()).toBe('Node has 1 service down.')
-    expect(wrapper.text().replace(/\s+/g, ' ')).toContain('There is 1 unacknowledged alarm, and 1 acknowledged alarm.')
-    expect(wrapper.find('[data-test="node-status-unack-link"]').attributes('href'))
-      .toBe('/opennms/alarm/list.htm?filter=node%3d42&acktype=unack')
-    expect(wrapper.find('[data-test="node-status-ack-link"]').attributes('href'))
-      .toBe('/opennms/alarm/list.htm?filter=node%3d42&acktype=ack')
-  })
+    it('shows the headline and severity, then a linked tag for each count', async () => {
+      const wrapper = mountBox(() => answerWith(major))
+      await flushPromises()
 
-  it('pluralises the counts', async () => {
-    const wrapper = mountBox(() => answerWith(twoUnacked))
-    await flushPromises()
+      expect(wrapper.find('[data-test="node-status"]').classes()).toContain('node-details-banner--major')
+      expect(wrapper.find('[data-test="node-status-message"]').text()).toBe('Node has 1 service down.')
+      expect(wrapper.find(unack).text()).toBe('1')
+      expect(wrapper.find(unack).attributes('href')).toBe('/opennms/alarm/list.htm?filter=node%3d42&acktype=unack')
+      expect(wrapper.find(ack).text()).toBe('1')
+      expect(wrapper.find(ack).attributes('href')).toBe('/opennms/alarm/list.htm?filter=node%3d42&acktype=ack')
+    })
 
-    expect(wrapper.text().replace(/\s+/g, ' ')).toContain('There are 2 unacknowledged alarms, and 0 acknowledged alarms.')
+    it('puts the unacknowledged tag first, as a warning, and the acknowledged one second, as a success', async () => {
+      const wrapper = mountBox(() => answerWith(major))
+      await flushPromises()
+
+      expect(wrapper.findAllComponents(OnmsTag).map(tag => tag.props('severity'))).toEqual(['warn', 'success'])
+    })
+
+    // The tag itself is a number and an icon; the words are in its name and its tooltip.
+    it('names each tag and gives it a tooltip, in the singular or plural', async () => {
+      const wrapper = mountBox(() => answerWith(summary({ severity: 'MAJOR', unacknowledgedCount: 2, acknowledgedCount: 1 })))
+      await flushPromises()
+
+      expect(wrapper.find(unack).attributes('aria-label')).toBe('2 unacknowledged alarms')
+      expect(tooltipOf(wrapper, unack)).toBe('2 unacknowledged alarms')
+      expect(wrapper.find(ack).attributes('aria-label')).toBe('1 acknowledged alarm')
+      expect(tooltipOf(wrapper, ack)).toBe('1 acknowledged alarm')
+    })
+
+    it('leaves out a tag whose count is 0', async () => {
+      const wrapper = mountBox(() => answerWith(twoUnacked))
+      await flushPromises()
+
+      expect(wrapper.find(unack).text()).toBe('2')
+      expect(wrapper.find(ack).exists()).toBe(false)
+    })
+
+    it('shows the acknowledged tag even when nothing is left unacknowledged', async () => {
+      const wrapper = mountBox(() => answerWith(allAcked))
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="node-status-message"]').text()).toBe('Node has no problem alarms.')
+      expect(wrapper.find(unack).exists()).toBe(false)
+      expect(wrapper.find(ack).text()).toBe('3')
+    })
   })
 
   it('says the status is unavailable when the first fetch fails', async () => {
