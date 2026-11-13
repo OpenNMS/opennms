@@ -55,6 +55,13 @@ A Statsd entry left in an existing `etc/service-configuration.xml` is ignored wi
 The "TOP 20 nodes by I/O Wait" database report and the response-time offenders section of the Response Time Summary report, which only Statsd could feed, are removed as well.
 Existing rows in the `statisticsreport` tables are left in place and continue to be purged by Vacuumd.
 
+=== ICMP pinger supports Linux, macOS and FreeBSD only
+The JNA-based ICMP socket implementation and its Windows and Solaris code paths have been removed.
+The pinger now uses the Java Foreign Function & Memory API exclusively, which is implemented for Linux, macOS and FreeBSD.
+OpenNMS no longer starts its ICMP pinger on any other operating system.
+On FreeBSD the pinger needs raw-socket privilege, so OpenNMS must run as root there.
+FreeBSD has no unprivileged ICMP datagram socket equivalent to the Linux `net.ipv4.ping_group_range` sysctl.
+
 === SNMP datacollection config moved to DB with new UI
 The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
 After upgrade, manage SNMP data collection through the *Administration -> Manage SNMP Data Collection Config* page (or the REST API under `/api/v2/datacollectionconf`).
