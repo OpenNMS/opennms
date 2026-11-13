@@ -59,7 +59,7 @@ describe('NodeDetails.vue', () => {
             template: '<div></div>',
             props: ['baseHref', 'node', 'snmpPrimaryIpAddress', 'existsInRequisition', 'services', 'triggerNodeInfo']
           },
-          NodeNotificationsPanel: true,
+          NodeNotificationsBox: true,
           NodeStatusBox: true,
           NodeScheduledOutagesBox: true,
           NodeCriticalPathPanel: true,
@@ -92,7 +92,6 @@ describe('NodeDetails.vue', () => {
 
     expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeDetailsLinks' }).exists()).toBe(false)
-    expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(false)
   })
 
@@ -267,12 +266,20 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'BreadCrumbs' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(true)
-    expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'NodeNotificationsBox' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'InterfacesTabs' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeStatusBox' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeScheduledOutagesBox' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeCriticalPathPanel' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'AlarmsTable' }).exists()).toBe(true)
+  })
+
+  // The condensed NodeNotificationsBox beside the status banner replaced it.
+  it('no longer shows the Notifications panel', async () => {
+    const { wrapper } = mountComponent('42', true)
+    await flushPromises()
+
+    expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(false)
   })
 
   describe('Monitoring / Events / Neighbors tabs', () => {
