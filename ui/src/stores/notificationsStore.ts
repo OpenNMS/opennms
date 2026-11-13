@@ -22,7 +22,7 @@
 
 import API from '@/services'
 import { useAuthStore } from '@/stores/authStore'
-import { NotificationBrowseResult, NotificationQueryPreset, OnmsNotification } from '@/types/notifications'
+import { NotificationAckType, NotificationBrowseResult, NotificationQueryPreset, OnmsNotification } from '@/types/notifications'
 import { createFailureResult, createResultWithPayload, createSuccessResponse, ValidationResult, ValidationResultWithPayload } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -41,7 +41,13 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
 
   const currentUser = computed<string>(() => authStore.whoAmI.id)
 
-  const acktype = computed<'unack' | 'ack'>(() => (preset.value === 'allAcknowledged' || preset.value === 'yourAcknowledged' ? 'ack' : 'unack'))
+  const acktype = computed<NotificationAckType>(() => {
+    if (preset.value === 'all') {
+      return 'all'
+    }
+
+    return preset.value === 'allAcknowledged' || preset.value === 'yourAcknowledged' ? 'ack' : 'unack'
+  })
 
   const effectiveUser = computed<string | null>(() => {
     if (preset.value === 'yourOutstanding' || preset.value === 'yourAcknowledged') {
@@ -72,6 +78,8 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
         return 'All Outstanding Notifications'
       case 'allAcknowledged':
         return 'All Acknowledged Notifications'
+      case 'all':
+        return 'All Notifications'
       case 'userSearch':
         return userFilter.value ? `Outstanding Notifications for '${userFilter.value}'` : 'Outstanding Notifications for User'
     }

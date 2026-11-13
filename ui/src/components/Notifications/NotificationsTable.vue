@@ -115,11 +115,12 @@
         </template>
       </OnmsColumn>
       <OnmsColumn
-        v-if="!showAckColumns && canAcknowledgeNotifications"
+        v-if="showActions"
         header="Actions"
       >
         <template #body="{ data }">
           <OnmsButton
+            v-if="!data.ackUser"
             variant="text"
             label="Acknowledge"
             :aria-label="`Acknowledge notification ${data.id}`"
@@ -169,12 +170,26 @@ const { withSpinner, report } = useActionFeedback()
 const EXPORT_LIMIT = 1000
 
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
-const showAckColumns = computed<boolean>(() => store.preset === 'allAcknowledged')
+// Acknowledged rows have a responder to show; outstanding ones can be acknowledged. The `all`
+// preset mixes the two, so it has both, and the Acknowledge button only on outstanding rows.
+const showAckColumns = computed<boolean>(() => store.preset === 'allAcknowledged' || store.preset === 'all')
+const showActions = computed<boolean>(() => store.preset !== 'allAcknowledged' && canAcknowledgeNotifications.value)
+
+const emptyMessage = computed<string>(() => {
+  switch (store.preset) {
+    case 'allAcknowledged':
+      return 'No acknowledged notifications found.'
+    case 'all':
+      return 'No notifications found.'
+  }
+
+  return 'No outstanding notifications found.'
+})
 
 const emptyListContent = computed(() => ({
   msg: store.awaitingUser
     ? 'Enter a user ID to see their outstanding notifications.'
-    : store.preset === 'allAcknowledged' ? 'No acknowledged notifications found.' : 'No outstanding notifications found.'
+    : emptyMessage.value
 }))
 
 const severityMap: Record<string, OnmsTagSeverity> = {

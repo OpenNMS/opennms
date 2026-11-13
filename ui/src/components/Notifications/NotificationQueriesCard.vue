@@ -142,11 +142,12 @@ const clearNodeFilter = async () => {
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
 
 const presetOptions: QueryModeOption[] = [
-  { label: 'Your outstanding notifications', value: 'yourOutstanding' },
-  { label: 'Your acknowledged notifications', value: 'yourAcknowledged' },
+  { label: 'Your outstanding', value: 'yourOutstanding' },
+  { label: 'Your acknowledged', value: 'yourAcknowledged' },
   { label: 'Outstanding for anyone but you', value: 'teamOutstanding' },
-  { label: 'All outstanding notifications', value: 'allOutstanding' },
-  { label: 'All acknowledged notifications', value: 'allAcknowledged' }
+  { label: 'All outstanding', value: 'allOutstanding' },
+  { label: 'All acknowledged', value: 'allAcknowledged' },
+  { label: 'All', value: 'all' }
 ]
 const userSearchOptions: QueryModeOption[] = [{ label: 'Notifications for user:', value: 'userSearch' }]
 

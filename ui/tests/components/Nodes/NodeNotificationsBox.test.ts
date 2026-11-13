@@ -64,24 +64,24 @@ describe('NodeNotificationsBox.vue', () => {
     expect(box.classes()).toContain('node-details-banner--no-strip')
   })
 
-  it('has a tag for each preset, in the panel\'s order, then View All Notifications', () => {
+  it('has a tag for each preset, in the panel\'s order, then one for all of the node\'s notifications', () => {
     const links = mountBox().findAllComponents(RouterLinkStub)
 
     expect(links.map(link => link.attributes('data-test')))
       .toEqual([...presets.map(([dataTest]) => dataTest), 'view-all-notifications-link'])
   })
 
-  // The panel's View Notifications button, as a tag: the Notifications page, not for this node.
+  // Every notification for the node, outstanding and acknowledged, whoever it was sent to.
   describe('view-all-notifications-link', () => {
     const link = () => mountBox().findComponent<typeof RouterLinkStub>('[data-test="view-all-notifications-link"]')
 
-    it('links to the Notifications page, as the panel\'s button does', () => {
-      expect(link().props('to')).toEqual({ name: 'Notifications', query: { preset: 'yourOutstanding' }})
+    it('links to all of this node\'s notifications', () => {
+      expect(link().props('to')).toEqual({ name: 'Notifications', query: { preset: 'all', node: '42' }})
     })
 
     it('says what it is in its name and tooltip', () => {
-      expect(link().attributes('aria-label')).toBe('View All Notifications')
-      expect(tooltipOf(link().element)).toBe('View All Notifications')
+      expect(link().attributes('aria-label')).toBe('All notifications for this node')
+      expect(tooltipOf(link().element)).toBe('All notifications for this node')
     })
 
     it('shows the one View Details icon', () => {

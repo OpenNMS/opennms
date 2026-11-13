@@ -53,8 +53,8 @@ import useActiveNodeId from './hooks/useActiveNodeId'
 // notifications have no severity of their own to signal -- so it has the panels' background.
 //
 // Each node tag is two icons: whose notifications (yours, or everyone's) and which (outstanding or
-// acknowledged). The last tag, the panel's View Notifications button, is the one icon. The tooltip
-// and accessible name say each in words.
+// acknowledged). The last tag, all of the node's notifications, is the one icon. The tooltip and
+// accessible name say each in words.
 
 interface NotificationsLink {
   dataTest: string
@@ -74,8 +74,8 @@ const links = computed<NotificationsLink[]>(() => [
   { dataTest: 'your-acknowledged-notifications-link', label: 'Your acknowledged notifications for this node', to: forNode('yourAcknowledged'), who: Person, state: CheckCircle },
   { dataTest: 'all-outstanding-notifications-link', label: 'All outstanding notifications for this node', to: forNode('allOutstanding'), who: Group, state: Cancel },
   { dataTest: 'all-acknowledged-notifications-link', label: 'All acknowledged notifications for this node', to: forNode('allAcknowledged'), who: Group, state: CheckCircle },
-  // Where the panel's View Notifications button went: the Notifications page, not for this node.
-  { dataTest: 'view-all-notifications-link', label: 'View All Notifications', to: { name: 'Notifications', query: { preset: 'yourOutstanding' }}, who: IconViewDetails }
+  // Every notification for this node, outstanding and acknowledged, whoever it was sent to.
+  { dataTest: 'view-all-notifications-link', label: 'All notifications for this node', to: forNode('all'), who: IconViewDetails }
 ])
 </script>
 

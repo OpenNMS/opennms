@@ -174,6 +174,28 @@ describe('useNotificationsStore', () => {
       expect(store.title).toBe('All Acknowledged Notifications')
     })
 
+    // Every notification, outstanding and acknowledged, whoever it was sent to.
+    it('all should query every notification, for no particular user', async () => {
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
+
+      await store.applyPreset('all')
+
+      expect(API.browseNotifications).toHaveBeenCalledWith(
+        expect.objectContaining({ acktype: 'all', user: null, excludeUser: null })
+      )
+      expect(store.title).toBe('All Notifications')
+    })
+
+    it('all narrowed to a node names the node in its title', async () => {
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
+      vi.mocked(API.getNodeById).mockResolvedValue({ id: 146, label: 'router-146' } as never)
+
+      await store.applyQuery('all', '146')
+
+      expect(API.browseNotifications).toHaveBeenCalledWith(expect.objectContaining({ acktype: 'all', nodeId: '146' }))
+      expect(store.title).toBe('All Notifications for Node router-146')
+    })
+
     it('userSearch should filter outstanding notifications by the given user', async () => {
       vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
 
@@ -243,6 +265,11 @@ describe('useNotificationsStore', () => {
 
       await store.applyPreset('teamOutstanding')
       expect(API.browseNotifications).not.toHaveBeenCalled()
+
+      // all is not user-scoped, so it needs no user
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
+      expect((await store.applyPreset('all')).success).toBe(true)
+      expect(API.browseNotifications).toHaveBeenCalledTimes(1)
     })
 
     it('should clamp to the last valid page when the ack empties the current page', async () => {
