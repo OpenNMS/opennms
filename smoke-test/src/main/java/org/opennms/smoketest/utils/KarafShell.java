@@ -156,7 +156,7 @@ public class KarafShell {
                 .atMost(wait)
                 .until(() ->
                         runCommandOnce("feature:list | grep " + feature,
-                                output -> output.matches("(?ms).*?\\|\\s*(" + regex + ")\\s*\\|.*"), false)
+                                output -> output.matches("(?ms).*?\\s(" + regex + ")\\s.*"), false)
                 );
     }
 }

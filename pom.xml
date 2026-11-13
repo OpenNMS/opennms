@@ -1965,6 +1965,7 @@
     <protobufVersion>3.25.5</protobufVersion>
     <postgresqlVersion>42.7.13</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
+    <prometheusRemoteWritePluginVersion>2.2.0</prometheusRemoteWritePluginVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
     <okhttp3Version>4.9.2</okhttp3Version>
