@@ -26,6 +26,14 @@ import { createTestingPinia } from '@pinia/testing'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { ref } from 'vue'
+
+// happy-dom does no layout, so the measured width of the full row of menus is set by each test.
+const fullRowWidth = ref(0)
+vi.mock('@vueuse/core', async importOriginal => ({
+  ...(await importOriginal<typeof import('@vueuse/core')>()),
+  useElementSize: () => ({ width: fullRowWidth, height: ref(0) })
+}))
 
 const node = { id: 42, label: 'srv-42', foreignSource: 'fs', foreignId: 'fid', assetRecord: {}} as any
 
@@ -63,6 +71,36 @@ describe('NodeDetailsLinks.vue', () => {
 
     expect(wrapper.find('nav[aria-label="Node links"]').exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'Menubar' }).exists()).toBe(true)
+  })
+
+  describe('collapsing to the hamburger button', () => {
+    const bars = (wrapper: ReturnType<typeof mountLinks>) => wrapper.findAllComponents({ name: 'OnmsMenubar' })
+
+    beforeEach(() => {
+      fullRowWidth.value = 400
+    })
+
+    it('leaves it to the viewport when the page gives no width', () => {
+      expect(bars(mountLinks())[0].props('collapsed')).toBeUndefined()
+    })
+
+    it('shows the full row while the menus fit, and collapses once they do not', async () => {
+      const wrapper = mountLinks({ availableWidth: 400 })
+      expect(bars(wrapper)[0].props('collapsed')).toBe(false)
+
+      await wrapper.setProps({ availableWidth: 399 })
+      expect(bars(wrapper)[0].props('collapsed')).toBe(true)
+    })
+
+    // The second bar is the one measured: it has to stay a full row, and out of reach.
+    it('measures a full row that is hidden from assistive technology and input', () => {
+      const wrapper = mountLinks({ availableWidth: 100 })
+      const measure = wrapper.find('.node-details-links-measure')
+
+      expect(bars(wrapper)[1].props('collapsed')).toBe(false)
+      expect(measure.attributes('aria-hidden')).toBe('true')
+      expect(measure.attributes()).toHaveProperty('inert')
+    })
   })
 
   it('groups the links under Inventory, Monitoring, Graphs and Admin', () => {

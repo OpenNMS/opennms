@@ -1,87 +1,102 @@
 <template>
   <div class="onms-node-details">
-    <div class="onms-row">
-      <div class="onms-col-12">
-        <BreadCrumbs :items="items" />
-      </div>
-    </div>
-    <div class="header">
-      <div class="heading">
-        <h2>{{ heading }}</h2>
-      </div>
-      <div
-        v-if="pageState === 'node'"
-        class="header-controls"
-      >
-        <OnmsSelectButton
-          v-model="activeTab"
-          :options="tabOptions"
-          option-label="label"
-          option-value="value"
-          aria-label="Node details view"
-          data-test="node-details-tab-select"
-        />
-      </div>
-    </div>
-    <p
-      v-if="pageState === 'resolving'"
-      data-test="node-details-resolving"
-    >
-      Looking up node {{ lookupValue }}…
-    </p>
-    <NodeLookupMessage
-      v-else-if="pageState === 'invalid' || pageState === 'notFound' || pageState === 'error'"
-      :state="pageState"
-      :value="lookupValue"
-      @retry="followRoute"
-    />
-    <template v-else>
-      <div
-        v-if="nodeLoaded"
-        class="onms-row"
-      >
+    <!--
+      Below this width the badges, menus and panels start to wrap into each other, so the page
+      keeps it and scrolls sideways instead.
+    -->
+    <div class="node-details-content">
+      <div class="onms-row">
         <div class="onms-col-12">
-          <NodeDetailsHeader :node="nodeStore.node" />
-          <NodeDetailsLinks
-            :baseHref="baseHref"
-            :node="nodeStore.node"
-            :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
-            :existsInRequisition="nodeStore.existsInRequisition"
-            :services="nodeStore.linkServices"
-            :triggerNodeInfo="onNodeInfo"
-            :data-requisition-checked="requisitionChecked || undefined"
+          <BreadCrumbs :items="items" />
+        </div>
+      </div>
+      <div class="header">
+        <div class="heading">
+          <h2>{{ heading }}</h2>
+        </div>
+        <div
+          v-if="pageState === 'node'"
+          class="header-controls"
+        >
+          <OnmsSelectButton
+            v-model="activeTab"
+            :options="tabOptions"
+            option-label="label"
+            option-value="value"
+            aria-label="Node details view"
+            data-test="node-details-tab-select"
           />
         </div>
       </div>
-
-      <!--
-        KeepAlive so a tab mounts -- and its tables fetch -- only when first shown, then keeps its
-        paging and sorting when the user switches away and back. A hidden tab does not follow the
-        route (see useActiveNodeId): it refreshes for the node on screen when it is shown again.
-      -->
-      <KeepAlive>
-        <NodeDetailsMonitoringTab
-          v-if="activeTab === 'monitoring'"
-          :node="nodeStore.node"
-          :nodeLoaded="nodeLoaded"
-          :baseHref="baseHref"
-        />
-        <NodeDetailsEventsTab v-else-if="activeTab === 'events'" />
-        <NodeDetailsNeighborsTab v-else />
-      </KeepAlive>
-
-      <NodeDetailsDialog
-        :visible="dialogVisible"
-        :node="nodeStore.node"
-        @close="dialogVisible = false"
+      <p
+        v-if="pageState === 'resolving'"
+        data-test="node-details-resolving"
+      >
+        Looking up node {{ lookupValue }}…
+      </p>
+      <NodeLookupMessage
+        v-else-if="pageState === 'invalid' || pageState === 'notFound' || pageState === 'error'"
+        :state="pageState"
+        :value="lookupValue"
+        @retry="followRoute"
       />
-    </template>
+      <template v-else>
+        <div
+          v-if="nodeLoaded"
+          class="onms-row"
+        >
+          <div
+            ref="summaryRow"
+            class="onms-col-12 node-summary"
+          >
+            <NodeDetailsHeader
+              ref="summaryHeader"
+              :node="nodeStore.node"
+            />
+            <NodeDetailsLinks
+              class="node-summary-links"
+              :availableWidth="linksAvailableWidth"
+              :baseHref="baseHref"
+              :node="nodeStore.node"
+              :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
+              :existsInRequisition="nodeStore.existsInRequisition"
+              :services="nodeStore.linkServices"
+              :triggerNodeInfo="onNodeInfo"
+              :data-requisition-checked="requisitionChecked || undefined"
+            />
+          </div>
+        </div>
+
+        <!--
+          KeepAlive so a tab mounts -- and its tables fetch -- only when first shown, then keeps its
+          paging and sorting when the user switches away and back. A hidden tab does not follow the
+          route (see useActiveNodeId): it refreshes for the node on screen when it is shown again.
+        -->
+        <KeepAlive>
+          <NodeDetailsMonitoringTab
+            v-if="activeTab === 'monitoring'"
+            :node="nodeStore.node"
+            :nodeLoaded="nodeLoaded"
+            :baseHref="baseHref"
+          />
+          <NodeDetailsEventsTab v-else-if="activeTab === 'events'" />
+          <NodeDetailsNeighborsTab v-else />
+        </KeepAlive>
+
+        <NodeDetailsDialog
+          :visible="dialogVisible"
+          :node="nodeStore.node"
+          @close="dialogVisible = false"
+        />
+      </template>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, useTemplateRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useElementSize } from '@vueuse/core'
 import { OnmsSelectButton } from '@opennms/onms-ui'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
@@ -140,6 +155,23 @@ const nodeLoaded = computed<boolean>(() => nodeStore.nodeLoaded)
 // Fetched alongside the node: the node payload carries no interfaces, and the IP Interfaces
 // table holds only whatever page it is showing.
 const snmpPrimaryIpAddress = computed<string | undefined>(() => nodeStore.snmpPrimaryIpAddress)
+
+// What the summary row leaves for the link menus once the badges have their natural width. The
+// badges are not squeezed while there is room for both, so their width is the width they need;
+// when there is not, the menus collapse to the hamburger button.
+const summaryRow = useTemplateRef<HTMLElement>('summaryRow')
+const { width: summaryRowWidth } = useElementSize(summaryRow)
+const { width: summaryHeaderWidth } = useElementSize(useTemplateRef('summaryHeader'), undefined, { box: 'border-box' })
+
+const linksAvailableWidth = computed<number | undefined>(() => {
+  if (!summaryRow.value || summaryRowWidth.value === 0) {
+    return undefined
+  }
+
+  const gap = parseFloat(getComputedStyle(summaryRow.value).columnGap) || 0
+
+  return summaryRowWidth.value - summaryHeaderWidth.value - gap
+})
 
 type PageState = 'node' | 'resolving' | 'invalid' | 'notFound' | 'error'
 
@@ -250,7 +282,18 @@ watch(
 
 <style lang="scss" scoped>
 .onms-node-details {
-  padding: 1.5em;
+  // Scrolls sideways below the content's minimum width (the page itself cannot: <html> hides its
+  // horizontal overflow). A scroll container clips in both directions, though, and the link menus'
+  // dropdowns are not teleported out of it, so a short tab (an empty Neighbors tab, say) leaves
+  // room for the deepest of them -- the hamburger list with one submenu open -- below the header.
+  overflow-x: auto;
+  min-height: 36rem;
+
+  .node-details-content {
+    box-sizing: border-box;
+    min-width: 1200px;
+    padding: 1.5em;
+  }
 
   .header {
     display: flex;
@@ -264,6 +307,22 @@ watch(
       align-items: center;
       gap: 0.75em;
     }
+  }
+
+  // The badges on the left and the link menus on the right of one row. When the two do not fit
+  // side by side, the menus collapse to the hamburger button (see linksAvailableWidth), which wraps
+  // onto a row of its own, still on the right, only if the badges fill the row by themselves.
+  .node-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .node-summary-links {
+    margin-left: auto;
   }
 }
 </style>

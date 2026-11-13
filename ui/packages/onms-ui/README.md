@@ -169,7 +169,10 @@ Where these diverge from PrimeVue, deliberately:
   top-level items in a row, each opening its nested `items` as a dropdown. It
   takes the same `OnmsMenuItem` model, forwards `#item`, and adds `#start` and
   `#end` for content around the items. An item with `target: '_blank'` gets
-  `rel="noopener noreferrer"`, which PrimeVue does not add.
+  `rel="noopener noreferrer"`, which PrimeVue does not add. `collapsed` forces
+  the hamburger button (`true`) or the full row (`false`) for a bar whose room
+  depends on its row rather than on the viewport; left out, PrimeVue switches at
+  its 960px viewport breakpoint.
 - **`OnmsPaginator`** (added later, NMS-20303) is paging controls on their own,
   for content that is not an `OnmsTable` (which has its own). `page` emits the
   same `OnmsTablePageEvent` as `OnmsTable`, rather than PrimeVue's

@@ -104,9 +104,8 @@ const nodeSeverity = computed<OnmsTagSeverity>(() => SEVERITY_BY_STATUS[nodeStat
 </script>
 
 <style lang="scss" scoped>
+// No margin of its own: the page lays it out beside the node's link menus.
 .card {
-  margin-bottom: 1rem;
-
   .node-badge-wrapper {
     display: inline-block;
     margin-right: 0.5rem;

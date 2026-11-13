@@ -4,7 +4,25 @@
     aria-label="Node links"
     data-test="node-details-links"
   >
-    <OnmsMenubar :items="items" />
+    <OnmsMenubar
+      :items="items"
+      :collapsed="collapsed"
+    />
+    <!--
+      The full row, never collapsed and never seen, so its width can be measured even while the
+      bar above is showing its hamburger button.
+    -->
+    <div
+      ref="fullRow"
+      class="node-details-links-measure"
+      aria-hidden="true"
+      inert
+    >
+      <OnmsMenubar
+        :items="items"
+        :collapsed="false"
+      />
+    </div>
     <AssetEditConfirmDialog
       :visible="!!pendingAssetHref"
       :foreignSource="node.foreignSource"
@@ -15,7 +33,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref } from 'vue'
+import { computed, PropType, ref, useTemplateRef } from 'vue'
+import { useElementSize } from '@vueuse/core'
 import { OnmsMenubar, OnmsMenuItem } from '@opennms/onms-ui'
 import useRole from '@/composables/useRole'
 import { Node } from '@/types'
@@ -55,6 +74,13 @@ const props = defineProps({
   triggerNodeInfo: {
     required: false,
     type: Function as PropType<() => void>,
+    default: undefined
+  },
+  // The room, in pixels, the page has for the menus. Narrower than they need, they collapse to the
+  // hamburger button. Left out, the menubar decides by the viewport width instead.
+  availableWidth: {
+    required: false,
+    type: Number,
     default: undefined
   }
 })
@@ -126,18 +152,46 @@ const items = computed<OnmsMenuItem[]>(() => {
   return menus
 })
 
+const { width: fullRowWidth } = useElementSize(useTemplateRef<HTMLElement>('fullRow'), undefined, { box: 'border-box' })
+
+const collapsed = computed<boolean | undefined>(() =>
+  props.availableWidth === undefined ? undefined : fullRowWidth.value > props.availableWidth)
+
 defineExpose({ items })
 </script>
 
 <style lang="scss" scoped>
-// A plain row of menus under the header chips, not PrimeVue's bordered, filled strip.
+// A plain row of menus beside the header chips, not PrimeVue's bordered, filled strip.
 .node-details-links {
-  margin-bottom: 1rem;
+  // The measuring copy hangs from the right edge, inside the page's scroll area, so it can never
+  // widen what the page scrolls.
+  position: relative;
 
   :deep(.p-menubar) {
     background: transparent;
     border: none;
     padding: 0;
   }
+
+  // Collapsed to the hamburger, the menubar is only as wide as its button, and PrimeVue sizes the
+  // dropdown to the menubar and hangs it from the left edge. The page puts the button at the right,
+  // so hang the dropdown from the right edge instead and give it a width of its own.
+  :deep(.p-menubar-mobile .p-menubar-root-list) {
+    left: auto;
+    right: 0;
+    width: max-content;
+    min-width: 12.5rem;
+  }
+}
+
+.node-details-links-measure {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: max-content;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
 }
 </style>
