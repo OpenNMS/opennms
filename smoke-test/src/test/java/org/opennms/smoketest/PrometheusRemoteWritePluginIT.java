@@ -28,12 +28,18 @@ import static org.hamcrest.Matchers.not;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
+import org.opennms.netmgt.measurements.model.QueryRequest;
+import org.opennms.netmgt.measurements.model.QueryResponse;
+import org.opennms.netmgt.measurements.model.Source;
+import org.opennms.netmgt.model.resource.ResourceDTO;
 import org.opennms.smoketest.containers.VictoriaMetricsContainer;
 import org.opennms.smoketest.junit.ContainerRule;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
@@ -93,6 +99,14 @@ public class PrometheusRemoteWritePluginIT {
         await().atMost(Duration.ofMinutes(1)).pollInterval(Duration.ofSeconds(5))
                 .ignoreExceptions()
                 .until(PrometheusRemoteWritePluginIT::countGraphAttributes, count -> count > 0);
+
+        // More collections make sure that the query window contains samples
+        await().atMost(Duration.ofMinutes(3)).pollInterval(Duration.ofSeconds(10))
+                .ignoreExceptions()
+                .until(() -> {
+                    karafShell.runCommandOnce(COLLECT_AND_PERSIST, output -> output.contains("Persisted collection"), false);
+                    return hasFiniteSample();
+                });
     }
 
     private static List<Object> getSeriesInStore() {
@@ -103,6 +117,28 @@ public class PrometheusRemoteWritePluginIT {
                 .then()
                 .statusCode(200)
                 .extract().jsonPath().getList("data");
+    }
+
+    private static boolean hasFiniteSample() {
+        final ResourceDTO resource = stack.opennms().getRestClient().getResourcesForNode(LOCALHOST_NODE)
+                .getChildren().getObjects().stream()
+                .filter(child -> !child.getRrdGraphAttributes().isEmpty())
+                .findFirst()
+                .orElseThrow();
+
+        final long now = System.currentTimeMillis();
+        final QueryRequest request = new QueryRequest();
+        request.setStart(now - Duration.ofMinutes(30).toMillis());
+        request.setEnd(now);
+        request.setStep(Duration.ofMinutes(1).toMillis());
+        request.setSources(resource.getRrdGraphAttributes().keySet().stream()
+                .map(attribute -> new Source(attribute, resource.getId(), attribute, null, false))
+                .collect(Collectors.toList()));
+
+        final QueryResponse response = stack.opennms().getRestClient().getMeasurements(request);
+        return Arrays.stream(response.getColumns())
+                .flatMapToDouble(column -> Arrays.stream(column.getList()))
+                .anyMatch(Double::isFinite);
     }
 
     private static long countGraphAttributes() {
