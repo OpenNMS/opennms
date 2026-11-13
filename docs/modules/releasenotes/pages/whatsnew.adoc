@@ -19,6 +19,12 @@ Most installations require no action, but there are behavior and compatibility c
 custom Spring Security configuration (SSO, LDAP), custom Camel routes, or plugins that use the OpenNMS persistence APIs.
 See xref:spring-hibernate-upgrade.adoc[Spring, Hibernate, and Camel Platform Upgrade] for details.
 
+=== Elasticsearch Drift plugin no longer required for flows
+Flow series and total queries now compute proportional per-bucket sums with inline Painless scripts instead of the `proportional_sum` aggregation from the https://github.com/OpenNMS/elasticsearch-drift-plugin[Elasticsearch Drift plugin].
+This removes the need to install a plugin build that exactly matches the Elasticsearch version, and allows flow data to be stored on stock Elasticsearch or OpenSearch clusters.
+Flow totals and series values may increase after upgrading, because the plugin undercounts traffic when a query window does not align with the graph resolution.
+See xref:operation:deep-dive/flows/basic.adoc#flows-drift-plugin[Elasticsearch Drift plugin] for details, including how to keep using the plugin.
+
 === Faster IP address filtering (IPLIKE)
 
 Filter expressions that use IPLIKE are now translated to native PostgreSQL `inet` comparisons where possible, and new expression indexes on the `ipinterface`, `events`, `alarms`, and `notifications` tables let the database answer them without scanning every row.

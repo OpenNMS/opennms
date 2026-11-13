@@ -55,6 +55,7 @@ import org.opennms.netmgt.flows.elastic.AggregationUtils;
 import org.opennms.netmgt.flows.elastic.ElasticFlowQueryService;
 import org.opennms.netmgt.flows.elastic.GPath;
 import org.opennms.netmgt.flows.elastic.ProportionalSumAggregation;
+import org.opennms.netmgt.flows.elastic.ProportionalSumQuery;
 import org.opennms.netmgt.flows.filter.api.DscpFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
@@ -81,10 +82,15 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
     public static final String INDEX_NAME = "netflow_agg";
     public static final String OTHER_NAME = "Other";
 
-    private final AggregatedSearchQueryProvider searchQueryProvider = new AggregatedSearchQueryProvider();
+    private final AggregatedSearchQueryProvider searchQueryProvider;
 
     public AggregatedFlowQueryService(ElasticRestClient client, IndexSelector indexSelector) {
+        this(client, indexSelector, null);
+    }
+
+    public AggregatedFlowQueryService(ElasticRestClient client, IndexSelector indexSelector, String proportionalSumStrategy) {
         super(client, indexSelector);
+        this.searchQueryProvider = new AggregatedSearchQueryProvider(ProportionalSumQuery.Strategy.parse(proportionalSumStrategy));
     }
 
     private boolean hasTosFilter(List<Filter> filters) {
@@ -293,7 +299,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
         return seriesFuture.thenApply(ignored -> builder.build());
     }
 
-    /** use the convert the results of the proportional_sum aggregation (provided by our ES plugin) to a table */
+    /** Converts the per-key proportional sum aggregation results to a table */
     private static <T> CompletableFuture<Void> toTableFromBuckets(ImmutableTable.Builder<Directional<T>, Long, Double> builder, Function<String, CompletableFuture<T>> keyToEntity, SearchResponse res) {
         final JsonObject aggs = res.getAggregations();
         if (aggs == null) {
@@ -329,7 +335,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
                 });
     }
 
-    /** use the convert the results of the proportional_sum aggregation (provided by our ES plugin) to a table */
+    /** Converts the totals proportional sum aggregation results to a table */
     private static <T> void toTableFromTotals(ImmutableTable.Builder<Directional<T>, Long, Double> builder, T otherEntity, SearchResponse res) {
         final JsonObject aggs = res.getAggregations();
         if (aggs == null) {

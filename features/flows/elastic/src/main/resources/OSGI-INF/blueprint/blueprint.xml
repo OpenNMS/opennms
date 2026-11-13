@@ -55,6 +55,10 @@
             <!-- Intelligent query settings -->
             <cm:property name="alwaysUseAggForQueries" value="false" />
             <cm:property name="alwaysUseRawForQueries" value="true" />
+            <!-- How proportional (per-time-bucket) sums are computed: "painless" uses inline
+                 Painless scripts and works against stock Elasticsearch/OpenSearch; "plugin"
+                 requires the elasticsearch-drift-plugin to be installed on the cluster. -->
+            <cm:property name="proportionalSumStrategy" value="painless" />
             <cm:property name="timeRangeDurationAggregateThresholdMs" value="120000" /> <!-- 2 minutes -->
             <cm:property name="timeRangeEndpointAggregateThresholdMs" value="604800000" /> <!-- 7 days -->
 
@@ -157,6 +161,7 @@
     <bean id="rawFlowQueryService" class="org.opennms.netmgt.flows.elastic.RawFlowQueryService">
         <argument ref="elasticRestClientWithCB"/>
         <argument ref="rawIndexSelector"/>
+        <argument value="${proportionalSumStrategy}"/>
     </bean>
 
     <bean id="aggIndexSelector" class="org.opennms.features.jest.client.index.IndexSelector">
@@ -168,6 +173,7 @@
     <bean id="aggFlowQueryService" class="org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService">
         <argument ref="elasticRestClientWithCB"/>
         <argument ref="aggIndexSelector"/>
+        <argument value="${proportionalSumStrategy}"/>
     </bean>
 
     <bean id="smartQueryService" class="org.opennms.netmgt.flows.elastic.SmartQueryService">

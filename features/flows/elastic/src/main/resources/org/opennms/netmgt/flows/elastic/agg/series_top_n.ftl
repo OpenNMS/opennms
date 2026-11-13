@@ -28,6 +28,8 @@
         "terms": {
           "field": "${key?json_string}",
           "size": ${N?long?c},
+          <#-- Defer the per-key proportional sums to the top keys; depth_first would run them for every key. -->
+          "collect_mode": "breadth_first",
           "order": [
             {
               "bytes_total": "desc"
@@ -38,30 +40,8 @@
           ]
         },
       "aggregations": {
-        "bytes_in": {
-          "proportional_sum": {
-            "fields": [
-              "range_start",
-              "range_end",
-              "bytes_ingress"
-            ],
-            "interval": "${step?long?c}ms",
-            "start": ${start?long?c},
-            "end": ${end?long?c}
-          }
-        },
-        "bytes_out": {
-          "proportional_sum": {
-            "fields": [
-              "range_start",
-              "range_end",
-              "bytes_egress"
-            ],
-            "interval": "${step?long?c}ms",
-            "start": ${start?long?c},
-            "end": ${end?long?c}
-          }
-        },
+        "bytes_in": ${proportionalSumIngress},
+        "bytes_out": ${proportionalSumEgress},
         "bytes_total": {
           "sum": {
             "field": "bytes_total"

@@ -66,10 +66,15 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
     public static final String OTHER_NAME = "Other";
     public static final String UNKNOWN_APPLICATION_NAME = "Unknown";
 
-    private final SearchQueryProvider searchQueryProvider = new SearchQueryProvider();
+    private final SearchQueryProvider searchQueryProvider;
 
     public RawFlowQueryService(ElasticRestClient client, IndexSelector indexSelector) {
+        this(client, indexSelector, null);
+    }
+
+    public RawFlowQueryService(ElasticRestClient client, IndexSelector indexSelector, String proportionalSumStrategy) {
         super(client, indexSelector);
+        this.searchQueryProvider = new SearchQueryProvider(ProportionalSumQuery.Strategy.parse(proportionalSumStrategy));
     }
 
     @Override
@@ -481,11 +486,12 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                     final boolean isIngress = isIngress(directionBucket);
                     final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
                     final List<ProportionalSumAggregation.DateHistogram> sumBuckets = sumAgg.getBuckets();
-                    // There should only be a single bucket here
-                    if (sumBuckets.size() != 1) {
-                        throw new IllegalStateException("Expected 1 bucket, but got: " + sumBuckets);
+                    // A single bucket, or none when the script skipped every document (missing
+                    // fields); unrecognized result shapes already failed in ProportionalSumAggregation
+                    if (sumBuckets.size() > 1) {
+                        throw new IllegalStateException("Expected at most 1 bucket, but got: " + sumBuckets);
                     }
-                    final Double sum = sumBuckets.iterator().next().getValue();
+                    final Double sum = sumBuckets.isEmpty() ? 0d : sumBuckets.get(0).getValue();
                     if (!isIngress) {
                         trafficSummary.withBytesOut(sum.longValue());
                     } else {
@@ -630,11 +636,12 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 final boolean isIngress = isIngress(directionBucket);
                 final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
                 final List<ProportionalSumAggregation.DateHistogram> sumBuckets = sumAgg.getBuckets();
-                // There should only be a single bucket here
-                if (sumBuckets.size() != 1) {
-                    throw new IllegalStateException("Expected 1 bucket, but got: " + sumBuckets);
+                // A single bucket, or none when the script skipped every document (missing
+                // fields); unrecognized result shapes already failed in ProportionalSumAggregation
+                if (sumBuckets.size() > 1) {
+                    throw new IllegalStateException("Expected at most 1 bucket, but got: " + sumBuckets);
                 }
-                final Double sum = sumBuckets.iterator().next().getValue();
+                final Double sum = sumBuckets.isEmpty() ? 0d : sumBuckets.get(0).getValue();
                 if (!isIngress) {
                     trafficSummary.withBytesOut(sum.longValue());
                 } else {
