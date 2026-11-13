@@ -40,6 +40,7 @@ find_tests()
 }
 
 . ./.circleci/scripts/lib.sh
+. ./.circleci/scripts/rerun-lib.sh
  
 REFERENCE_BRANCH="$(get_reference_branch || echo "develop")"
 
@@ -113,35 +114,30 @@ export MAVEN_OPTS="$MAVEN_OPTS -Xmx4g -XX:ReservedCodeCacheSize=1g"
 # shellcheck disable=SC3045
 ulimit -n 65536
 
-MAVEN_ARGS=()
+BUILD_ARGS=()
 
 case "${CIRCLE_BRANCH}" in
   "master"*|"release-"*|develop)
-    MAVEN_ARGS+=("-Dbuild.type=production")
+    BUILD_ARGS+=("-Dbuild.type=production")
   ;;
 esac
 
+SKIP_ARGS=()
+
 # if node tests does not exist or is empty, skip surefire
 if [ ! -s /tmp/this_node_tests ]; then
-  MAVEN_ARGS+=("-DskipSurefire=true")
-fi
- 
-# if node ITs does not exist or is empty, skip surefire
-if [ ! -s /tmp/this_node_it_tests ]; then
-  MAVEN_ARGS+=("-DskipFailsafe=true")
+  SKIP_ARGS+=("-DskipSurefire=true")
 fi
 
-# When retries are enabled, use --fail-at-end so all tests run before retrying
-if [ "${CCI_RERUN_FAILTEST:-0}" -gt 0 ]; then
-  CCI_FAILURE_OPTION="--fail-at-end"
-else
-  if [ "${CCI_FAILURE_OPTION:--fail-fast}" = "--fail-fast" ]; then
-    MAVEN_ARGS+=("-Dfailsafe.skipAfterFailureCount=1")
-  fi
+# if node ITs does not exist or is empty, skip failsafe
+if [ ! -s /tmp/this_node_it_tests ]; then
+  SKIP_ARGS+=("-DskipFailsafe=true")
 fi
+
+RERUN_COUNT="${CCI_RERUN_FAILTEST:-0}"
 
 echo "#### Node $NODE_INDEX/$NODE_TOTAL: Building Assembly Dependencies"
-./compile.pl "${MAVEN_ARGS[@]}" \
+./compile.pl "${BUILD_ARGS[@]}" "${SKIP_ARGS[@]}" \
            -P'!checkstyle' \
            -P'!production' \
            -Pbuild-bamboo \
@@ -155,9 +151,33 @@ echo "#### Node $NODE_INDEX/$NODE_TOTAL: Building Assembly Dependencies"
            --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
            install
 
-echo "#### Executing tests"
-set +e
-ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
+# Pass 0 runs the tests of this node. A later pass runs only the failed classes in their modules.
+run_tests()
+{
+  local pass="$1" units="$2" its="$3" modules="$4"
+  local args=("${BUILD_ARGS[@]}")
+
+  if [ "$pass" -eq 0 ]; then
+    args+=("${SKIP_ARGS[@]}")
+    args+=("-Dtest=$(< /tmp/this_node_tests paste -s -d, -)")
+    args+=("-Dit.test=$(< /tmp/this_node_it_tests paste -s -d, -)")
+    args+=(--projects "$(< /tmp/this_node_projects paste -s -d, -)")
+  else
+    if [ -n "$units" ]; then args+=("-Dtest=${units}"); else args+=("-DskipSurefire=true"); fi
+    if [ -n "$its" ]; then args+=("-Dit.test=${its}"); else args+=("-DskipFailsafe=true"); fi
+    args+=(--projects "$modules")
+  fi
+
+  if [ "$RERUN_COUNT" -gt 0 ]; then
+    args+=("${RERUN_MAVEN_ARGS[@]}")
+  else
+    args+=("${CCI_FAILURE_OPTION:--fail-fast}")
+    if [ "${CCI_FAILURE_OPTION:--fail-fast}" = "--fail-fast" ]; then
+      args+=("-Dfailsafe.skipAfterFailureCount=1")
+    fi
+  fi
+
+  ionice nice ./compile.pl "${args[@]}" \
            -P'!checkstyle' \
            -P'!production' \
            -Pbuild-bamboo \
@@ -169,136 +189,10 @@ ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
            -DrunPingTests=false \
            -DskipITs=false \
            --batch-mode \
-           "${CCI_FAILURE_OPTION:--fail-fast}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=8 \
            -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
-           -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
-           -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
-           --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
            install
-TEST_EXIT=$?
-set -e
+}
 
-# Retry failed tests if configured
-RETRIES_LEFT="${CCI_RERUN_FAILTEST:-0}"
-MAX_RETRIES="$RETRIES_LEFT"
-RETRIED_TESTS=""
-while [ "$TEST_EXIT" -ne 0 ] && [ "$RETRIES_LEFT" -gt 0 ]; do
-    ATTEMPT=$((MAX_RETRIES - RETRIES_LEFT + 1))
-    echo "#### Finding failed tests for re-run (attempt $ATTEMPT of $MAX_RETRIES)"
-
-    set +e +o pipefail
-    FAILED_TESTS=$(find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
-      -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
-      | sed 's|.*/TEST-||;s|\.xml||' \
-      | sort -u)
-    set -e -o pipefail
-
-    if [ -z "$FAILED_TESTS" ]; then
-        echo "#### No failed tests found in reports, skipping retry"
-        break
-    fi
-
-    echo "#### Failed tests: $FAILED_TESTS"
-    RETRIED_TESTS="$FAILED_TESTS"
-
-    # Preserve failing test evidence as flaky evidence before overwriting with retry results.
-    # The XML alone is often not enough to diagnose testcontainers-based IT failures (e.g. a
-    # ContainerLaunchException just shows up as errors="1"), so also grab the plain-text
-    # surefire/failsafe reports (captured stdout/stderr) and, for smoke-test ITs, the
-    # per-container logs/thread dumps under target/logs/<test>/<container>/ that
-    # DevDebugUtils.clearLogs() will otherwise wipe as soon as the retry's teardown runs.
-    FLAKY_EVIDENCE_DIR="/tmp/flaky-evidence/attempt-${ATTEMPT}"
-    mkdir -p "${FLAKY_EVIDENCE_DIR}"
-    set +e +o pipefail
-
-    # Group all evidence for a given failing test class under its own directory, so
-    # the XML/text reports and the container logs for that test sit together instead
-    # of being split between a flat root and a path mirroring the Maven build tree.
-    echo "$FAILED_TESTS" | while IFS= read -r TEST_CLASS; do
-      [ -z "$TEST_CLASS" ] && continue
-
-      TEST_EVIDENCE_DIR="${FLAKY_EVIDENCE_DIR}/${TEST_CLASS}"
-      mkdir -p "$TEST_EVIDENCE_DIR"
-
-      find . \( -path "*/failsafe-reports/TEST-${TEST_CLASS}.xml" -o -path "*/surefire-reports/TEST-${TEST_CLASS}.xml" \) \
-        -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
-        | xargs -I{} cp {} "$TEST_EVIDENCE_DIR/"
-
-      find . \( -path "*/surefire-reports/${TEST_CLASS}.txt" -o -path "*/failsafe-reports/${TEST_CLASS}.txt" \) \
-        | xargs -I{} cp {} "$TEST_EVIDENCE_DIR/"
-
-      # A class can have more than one failing method, and each gets its own
-      # target/logs/<class>-<method>/ directory, so nest by that method-level name
-      # (rather than flattening containers directly under the class) to avoid two
-      # methods' same-named container folders (e.g. "opennms") overwriting each other.
-      find . -type d -path "*/target/logs/${TEST_CLASS}-*" | while IFS= read -r LOGDIR; do
-        [ "$(basename "$(dirname "$LOGDIR")")" = "logs" ] || continue
-        DEST="$TEST_EVIDENCE_DIR/$(basename "$LOGDIR")"
-        mkdir -p "$DEST"
-        cp -r "${LOGDIR}/." "$DEST/"
-      done
-    done
-
-    # Now delete originals so fresh results are written by the retry
-    find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
-      -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
-      | xargs rm -f
-    set -e -o pipefail
-
-    # Split into ITs vs unit tests
-    FAILED_ITS=$(echo "$FAILED_TESTS" | grep -E 'IT$' | paste -s -d, - || true)
-    FAILED_UNITS=$(echo "$FAILED_TESTS" | grep -vE 'IT$' | paste -s -d, - || true)
-
-    RERUN_ARGS=("${MAVEN_ARGS[@]}")
-    if [ -n "$FAILED_UNITS" ]; then
-      RERUN_ARGS+=("-Dtest=$FAILED_UNITS")
-    else
-      RERUN_ARGS+=("-DskipSurefire=true")
-    fi
-    if [ -n "$FAILED_ITS" ]; then
-      RERUN_ARGS+=("-Dit.test=$FAILED_ITS")
-    else
-      RERUN_ARGS+=("-DskipFailsafe=true")
-    fi
-
-    echo "#### Re-running failed tests (unit: ${FAILED_UNITS:-none}, IT: ${FAILED_ITS:-none})"
-    set +e
-    ionice nice ./compile.pl "${RERUN_ARGS[@]}" \
-               -P'!checkstyle' \
-               -P'!production' \
-               -Pbuild-bamboo \
-               -Pcoverage \
-               -Dbuild.skip.tarball=true \
-               -DfailIfNoTests=false \
-               -Dsurefire.failIfNoSpecifiedTests=false \
-               -Dfailsafe.failIfNoSpecifiedTests=false \
-               -DrunPingTests=false \
-               -DskipITs=false \
-               --batch-mode \
-               --fail-at-end \
-               -Dorg.opennms.core.test-api.dbCreateThreads=8 \
-               -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
-               --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
-               install
-    TEST_EXIT=$?
-    set -e
-
-    RETRIES_LEFT=$((RETRIES_LEFT - 1))
-done
-
-# Print retry summary
-if [ -n "$RETRIED_TESTS" ]; then
-    echo ""
-    echo "========================================"
-    echo "#### Retry Summary"
-    echo "#### Retried tests: $(echo "$RETRIED_TESTS" | paste -s -d, -)"
-    if [ "$TEST_EXIT" -eq 0 ]; then
-        echo "#### Result: PASSED on retry (attempt $ATTEMPT)"
-    else
-        echo "#### Result: FAILED after $MAX_RETRIES retry attempt(s)"
-    fi
-    echo "========================================"
-fi
-
-exit $TEST_EXIT
+echo "#### Executing tests"
+run_tests_with_rerun "$RERUN_COUNT" "${CCI_RERUN_MAX_FAILED:-10}" run_tests
