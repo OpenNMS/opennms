@@ -21,14 +21,9 @@
  */
 package org.opennms.jicmp.standalone;
 
-import java.net.InetAddress;
 
-import org.opennms.jicmp.ipv6.ICMPv6EchoPacket;
-import org.opennms.jicmp.ipv6.ICMPv6Packet.Type;
 import org.opennms.jicmp.jna.NativeDatagramPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
-
-import com.sun.jna.Platform;
 
 /**
  * Dumper
@@ -39,15 +34,6 @@ public class Dumper {
     
     public void dump() throws Exception {
         NativeDatagramSocket m_pingSocket =  NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6, 1234);
-        
-        if (Platform.isWindows()) {
-            ICMPv6EchoPacket packet = new ICMPv6EchoPacket(64);
-            packet.setCode(0);
-            packet.setType(Type.EchoRequest);
-            packet.getContentBuffer().putLong(System.nanoTime());
-            packet.getContentBuffer().putLong(System.nanoTime());
-            m_pingSocket.send(packet.toDatagramPacket(InetAddress.getByName("::1")));
-        }
 
         try {
             NativeDatagramPacket datagram = new NativeDatagramPacket(65535);

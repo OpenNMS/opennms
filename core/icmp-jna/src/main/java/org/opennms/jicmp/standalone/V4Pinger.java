@@ -22,18 +22,14 @@
 package org.opennms.jicmp.standalone;
 
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.jicmp.ip.ICMPEchoPacket;
 import org.opennms.jicmp.ip.ICMPPacket;
 import org.opennms.jicmp.ip.ICMPPacket.Type;
 import org.opennms.jicmp.ip.IPPacket;
 import org.opennms.jicmp.jna.NativeDatagramPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
-
-import com.sun.jna.Platform;
 
 /**
  * PingListener
@@ -44,18 +40,6 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
 
     public V4Pinger(final int id) throws Exception {
         super(NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, NativeDatagramSocket.IPPROTO_ICMP, id));
-        
-        // Windows requires at least one packet sent before a receive call can be made without error
-        // so we send a packet here to make sure...  This one should not match the normal ping requests
-        // since it does not contain the cookie so it won't interface.
-        if (Platform.isWindows()) {
-            final ICMPEchoPacket packet = new ICMPEchoPacket(64);
-            packet.setCode(0);
-            packet.setType(Type.EchoRequest);
-            packet.getContentBuffer().putLong(System.nanoTime());
-            packet.getContentBuffer().putLong(System.nanoTime());
-            getPingSocket().send(packet.toDatagramPacket(InetAddress.getLocalHost()));
-        }
     }
     
     @Override
