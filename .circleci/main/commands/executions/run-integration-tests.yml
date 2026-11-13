@@ -69,12 +69,10 @@ commands:
             if [ -d /tmp/flaky-evidence ] && [ "$(find /tmp/flaky-evidence -name '*.xml' | wc -l)" -gt 0 ]; then
               (
                 cd /tmp/flaky-evidence &&
-                # Preserve the real attempt-N/... path (XML and .txt reports alike), so it
-                # stays out of ~/test-results (which store_test_results parses as JUnit
-                # output) while still making it obvious which test case each file belongs to.
+                # Keep the attempt-N/<class> path. It shows the attempt and the test class of each file.
                 find . -type f -exec cp --parents {} ~/flaky-evidence/ \;
               )
-              echo "#### Flaky tests detected (passed only after retry):"
+              echo "#### Test classes that failed and ran again:"
               find /tmp/flaky-evidence -name '*.xml' | sed 's|.*/TEST-||;s|\.xml||' | sort -u
               # Add the failed reports to the test results. Test Insights then shows a class that passed in the rerun as flaky.
               mkdir -p ~/test-results/junit

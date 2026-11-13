@@ -179,7 +179,7 @@ run_tests_with_rerun()
     units="$(rerun_failed_classes surefire "$reports")"
     its="$(rerun_failed_classes failsafe "$reports")"
     modules="$(rerun_failed_modules "$reports")"
-    echo "#### Failed tests (unit: ${units:-none}, IT: ${its:-none})"
+    echo "#### Failed test classes: ${units}${units:+${its:+,}}${its}"
 
     if [ "$pass" -ge "$max_reruns" ]; then
       echo "#### Rerun result: FAILED after ${pass} rerun(s)"
