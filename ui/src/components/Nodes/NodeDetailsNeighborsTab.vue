@@ -1,5 +1,5 @@
 <template>
-  <div data-test="node-network-tab">
+  <div data-test="node-neighbors-tab">
     <p
       v-if="state === 'loading'"
       class="network-message"
@@ -86,7 +86,7 @@ import useActiveNodeId from './hooks/useActiveNodeId'
 
 // The legacy node page's Enlinkd boxes (LLDP, CDP, OSPF, IS-IS, bridge), each a panel shown only
 // when Enlinkd found something for it. Fetched when the tab is first opened, and again as the
-// page moves between nodes: like the Additional tab's tables, this follows the route id -- but
+// page moves between nodes: like the Events tab's tables, this follows the route id -- but
 // only while the tab is showing (see useActiveNodeId).
 const enlinkdStore = useEnlinkdStore()
 

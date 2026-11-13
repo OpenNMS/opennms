@@ -28,7 +28,7 @@ import { ref } from 'vue'
 
 /**
  * Enlinkd discovery data. For now one node's elements (LLDP, CDP, OSPF, IS-IS, bridge) for the
- * Node Details Network tab, stamped with the node they belong to, as the other stores' node
+ * Node Details Neighbors tab, stamped with the node they belong to, as the other stores' node
  * slices are; neighbor links can join it when something needs them.
  */
 export const useEnlinkdStore = defineStore('enlinkdStore', () => {

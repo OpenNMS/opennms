@@ -26,7 +26,7 @@ vi.mock('@/composables/useRole', () => ({
 }))
 
 describe('NodeDetails.vue', () => {
-  const mountComponent = (id = '42', loaded = false, tab: NodeDetailsTab = 'main') => {
+  const mountComponent = (id = '42', loaded = false, tab: NodeDetailsTab = 'monitoring') => {
     const pinia = createTestingPinia({ stubActions: false })
     setActivePinia(pinia)
 
@@ -68,7 +68,7 @@ describe('NodeDetails.vue', () => {
           NodeLookupMessage: true,
           EventsTable: true,
           OutagesTable: true,
-          NodeDetailsNetworkTab: true,
+          NodeDetailsNeighborsTab: true,
           InterfacesTabs: true
         }
       }
@@ -104,7 +104,7 @@ describe('NodeDetails.vue', () => {
     const message = wrapper.findComponent({ name: 'NodeLookupMessage' })
     expect(message.exists()).toBe(true)
     expect(message.props()).toEqual({ state: 'notFound', value: '42' })
-    expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).exists()).toBe(false)
+    expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).exists()).toBe(false)
   })
 
   it('shows Node Lookup Failed, and no tabs, when the node could not be loaded for another reason', async () => {
@@ -115,7 +115,7 @@ describe('NodeDetails.vue', () => {
     const message = wrapper.findComponent({ name: 'NodeLookupMessage' })
     expect(message.exists()).toBe(true)
     expect(message.props()).toEqual({ state: 'error', value: '42' })
-    expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).exists()).toBe(false)
+    expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).exists()).toBe(false)
   })
 
   it('fetches the node again when the lookup message asks to retry after a failed load', async () => {
@@ -137,7 +137,7 @@ describe('NodeDetails.vue', () => {
 
     expect(wrapper.findComponent({ name: 'NodeLookupMessage' }).props()).toEqual({ state: 'invalid', value: 'abc' })
     expect(nodeStore.getNodeById).not.toHaveBeenCalled()
-    expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).exists()).toBe(false)
+    expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).exists()).toBe(false)
   })
 
   it('replaces a non-canonical numeric id with the canonical one before fetching', async () => {
@@ -153,7 +153,7 @@ describe('NodeDetails.vue', () => {
     const { wrapper, nodeStore } = mountComponent('req3:1757365364177')
 
     expect(wrapper.find('[data-test="node-details-resolving"]').exists()).toBe(true)
-    expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).exists()).toBe(false)
+    expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).exists()).toBe(false)
     await flushPromises()
 
     expect(API.resolveNodeId).toHaveBeenCalledWith('req3:1757365364177')
@@ -214,7 +214,7 @@ describe('NodeDetails.vue', () => {
           NodeDetailsLinks: true,
           NodeDetailsDialog: true,
           NodeLookupMessage: true,
-          NodeDetailsMainTab: true
+          NodeDetailsMonitoringTab: true
         }
       }
     })
@@ -275,28 +275,28 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'AlarmsTable' }).exists()).toBe(true)
   })
 
-  describe('Main / Additional tabs', () => {
+  describe('Monitoring / Events / Neighbors tabs', () => {
     const selectTab = async (wrapper: any, tab: NodeDetailsTab) => {
       wrapper.findComponent({ name: 'OnmsSelectButton' }).vm.$emit('update:modelValue', tab)
       await flushPromises()
     }
 
-    it('opens on Main, without mounting the Additional tables', async () => {
+    it('opens on Monitoring, without mounting the Events tables', async () => {
       const { wrapper } = mountComponent('42', true)
       await flushPromises()
 
-      expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).exists()).toBe(true)
-      expect(wrapper.findComponent({ name: 'NodeDetailsAdditionalTab' }).exists()).toBe(false)
+      expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'NodeDetailsEventsTab' }).exists()).toBe(false)
       expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(false)
       expect(wrapper.findComponent({ name: 'OutagesTable' }).exists()).toBe(false)
     })
 
-    it('shows events and outages on Additional, and keeps the header in view', async () => {
+    it('shows events and outages on Events, and keeps the header in view', async () => {
       const { wrapper, nodeStore } = mountComponent('42', true)
       await flushPromises()
-      await selectTab(wrapper, 'additional')
+      await selectTab(wrapper, 'events')
 
-      expect(nodeStore.nodeDetailsTab).toBe('additional')
+      expect(nodeStore.nodeDetailsTab).toBe('events')
       expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(true)
       expect(wrapper.findComponent({ name: 'OutagesTable' }).exists()).toBe(true)
       expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(false)
@@ -306,42 +306,42 @@ describe('NodeDetails.vue', () => {
       expect(wrapper.findComponent({ name: 'NodeDetailsLinks' }).exists()).toBe(true)
     })
 
-    // KeepAlive: going back to Main reuses the mounted tab rather than rebuilding it.
+    // KeepAlive: going back to Monitoring reuses the mounted tab rather than rebuilding it.
     it('keeps a tab mounted after switching away and back', async () => {
       const { wrapper } = mountComponent('42', true)
       await flushPromises()
-      const mainTabUid = wrapper.findComponent({ name: 'NodeDetailsMainTab' }).vm.$.uid
+      const mainTabUid = wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).vm.$.uid
 
-      await selectTab(wrapper, 'additional')
-      await selectTab(wrapper, 'main')
+      await selectTab(wrapper, 'events')
+      await selectTab(wrapper, 'monitoring')
 
-      expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).vm.$.uid).toBe(mainTabUid)
+      expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).vm.$.uid).toBe(mainTabUid)
     })
 
     it('opens on the tab last chosen, which the store keeps', async () => {
-      const { wrapper } = mountComponent('42', true, 'additional')
+      const { wrapper } = mountComponent('42', true, 'events')
       await flushPromises()
 
-      expect(wrapper.findComponent({ name: 'OnmsSelectButton' }).props('modelValue')).toBe('additional')
+      expect(wrapper.findComponent({ name: 'OnmsSelectButton' }).props('modelValue')).toBe('events')
       expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(true)
     })
 
-    it('shows the Network tab when chosen', async () => {
+    it('shows the Neighbors tab when chosen', async () => {
       const { wrapper } = mountComponent('42', true)
       await flushPromises()
-      await selectTab(wrapper, 'network')
+      await selectTab(wrapper, 'neighbors')
 
-      expect(wrapper.findComponent({ name: 'NodeDetailsNetworkTab' }).exists()).toBe(true)
-      expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).exists()).toBe(false)
+      expect(wrapper.findComponent({ name: 'NodeDetailsNeighborsTab' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).exists()).toBe(false)
       expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(false)
     })
 
-    it('offers Main, Additional and Network, in that order', async () => {
+    it('offers Monitoring, Events and Neighbors, in that order', async () => {
       const { wrapper } = mountComponent('42', true)
       await flushPromises()
 
       const options = wrapper.findComponent({ name: 'OnmsSelectButton' }).props('options') as Array<{ label: string }>
-      expect(options.map(o => o.label)).toEqual(['Main', 'Additional', 'Network'])
+      expect(options.map(o => o.label)).toEqual(['Monitoring', 'Events', 'Neighbors'])
     })
 
     it('puts the tab switch on the title row', async () => {

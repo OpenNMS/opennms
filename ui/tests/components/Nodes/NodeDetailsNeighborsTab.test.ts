@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import NodeDetailsNetworkTab from '@/components/Nodes/NodeDetailsNetworkTab.vue'
+import NodeDetailsNeighborsTab from '@/components/Nodes/NodeDetailsNeighborsTab.vue'
 import { useEnlinkdStore } from '@/stores/enlinkdStore'
 import { createTestingPinia } from '@pinia/testing'
 import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
@@ -45,7 +45,7 @@ const all = {
   bridges: [{ baseBridgeAddress: 'aa', baseType: 'srt', baseNumPorts: 2, vlan: 1, vlanname: 'default' }, { baseNumPorts: 1 }]
 }
 
-describe('NodeDetailsNetworkTab.vue', () => {
+describe('NodeDetailsNeighborsTab.vue', () => {
   let store: ReturnType<typeof useEnlinkdStore>
 
   // Resolves as the store would: the slice replaced and stamped with the node id.
@@ -64,7 +64,7 @@ describe('NodeDetailsNetworkTab.vue', () => {
     store = useEnlinkdStore(pinia)
     setup()
 
-    return mount(NodeDetailsNetworkTab, { global: { plugins: [pinia, PrimeVue] }})
+    return mount(NodeDetailsNeighborsTab, { global: { plugins: [pinia, PrimeVue] }})
   }
 
   beforeEach(() => {

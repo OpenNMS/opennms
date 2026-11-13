@@ -87,7 +87,7 @@ import { severityTag } from './utils'
 import useActiveNodeId from './hooks/useActiveNodeId'
 import useNodeTablePaging from './hooks/useNodeTablePaging'
 
-// The node's alarms, most recent first, a few at a time to fit the Main tab's column. Each page is
+// The node's alarms, most recent first, a few at a time to fit the Monitoring tab's column. Each page is
 // fetched from the server -- the status banner above has its own summary -- and refreshed on the
 // banner's cycle, since alarms come and go while the page is open.
 const PAGE_SIZE = 5

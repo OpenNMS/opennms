@@ -22,7 +22,7 @@
 
 import { BridgeElement, CdpElement, IsisElement, LldpElement, OspfElement } from '@/types/enlinkd'
 
-// What the Network tab's panels show for each Enlinkd element: the legacy node page's rows, with
+// What the Neighbors tab's panels show for each Enlinkd element: the legacy node page's rows, with
 // tidied labels. Kept apart from the components so the rules can be tested on their own.
 
 export interface NodeDetailsField {

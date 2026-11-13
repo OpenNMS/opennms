@@ -60,14 +60,14 @@
         route (see useActiveNodeId): it refreshes for the node on screen when it is shown again.
       -->
       <KeepAlive>
-        <NodeDetailsMainTab
-          v-if="activeTab === 'main'"
+        <NodeDetailsMonitoringTab
+          v-if="activeTab === 'monitoring'"
           :node="nodeStore.node"
           :nodeLoaded="nodeLoaded"
           :baseHref="baseHref"
         />
-        <NodeDetailsAdditionalTab v-else-if="activeTab === 'additional'" />
-        <NodeDetailsNetworkTab v-else />
+        <NodeDetailsEventsTab v-else-if="activeTab === 'events'" />
+        <NodeDetailsNeighborsTab v-else />
       </KeepAlive>
 
       <NodeDetailsDialog
@@ -84,12 +84,12 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { OnmsSelectButton } from '@opennms/onms-ui'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import NodeDetailsAdditionalTab from '@/components/Nodes/NodeDetailsAdditionalTab.vue'
 import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
+import NodeDetailsEventsTab from '@/components/Nodes/NodeDetailsEventsTab.vue'
 import NodeDetailsHeader from '@/components/Nodes/NodeDetailsHeader.vue'
 import NodeDetailsLinks from '@/components/Nodes/NodeDetailsLinks.vue'
-import NodeDetailsMainTab from '@/components/Nodes/NodeDetailsMainTab.vue'
-import NodeDetailsNetworkTab from '@/components/Nodes/NodeDetailsNetworkTab.vue'
+import NodeDetailsMonitoringTab from '@/components/Nodes/NodeDetailsMonitoringTab.vue'
+import NodeDetailsNeighborsTab from '@/components/Nodes/NodeDetailsNeighborsTab.vue'
 import NodeLookupMessage from '@/components/Nodes/NodeLookupMessage.vue'
 import { nodeDetailsRoute, parseNodeRouteId } from '@/components/Nodes/nodeDetailsRoute'
 import API from '@/services'
@@ -113,9 +113,9 @@ const props = defineProps({
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
 
 const tabOptions: { label: string, value: NodeDetailsTab }[] = [
-  { label: 'Main', value: 'main' },
-  { label: 'Additional', value: 'additional' },
-  { label: 'Network', value: 'network' }
+  { label: 'Monitoring', value: 'monitoring' },
+  { label: 'Events', value: 'events' },
+  { label: 'Neighbors', value: 'neighbors' }
 ]
 
 const activeTab = computed<NodeDetailsTab>({

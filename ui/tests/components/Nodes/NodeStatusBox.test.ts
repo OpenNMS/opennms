@@ -231,7 +231,7 @@ describe('NodeStatusBox.vue', () => {
       expect(alarmStore.getNodeAlarmStatus).not.toHaveBeenCalled()
     })
 
-    // The Main tab sits in a KeepAlive: switched away, it is alive but not on screen.
+    // The Monitoring tab sits in a KeepAlive: switched away, it is alive but not on screen.
     it('pauses while its tab is switched away, and refreshes at once on return', async () => {
       const showBox = ref(true)
       const Host = defineComponent({

@@ -29,7 +29,7 @@ import { getNodeIpInterfaceQuery } from '@/services/ipInterfaceService'
 import { getNodeSnmpInterfaceQuery } from '@/services/snmpInterfaceService'
 import { ref } from 'vue'
 
-export type NodeDetailsTab = 'main' | 'additional' | 'network'
+export type NodeDetailsTab = 'monitoring' | 'events' | 'neighbors'
 
 export const useNodeStore = defineStore('nodeStore', () => {
   const nodes = ref([] as Node[])
@@ -89,7 +89,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
    * reason as availabilityRange: it is how the user chose to look at nodes, so it carries over
    * from one node to the next instead of resetting each time the page is rebuilt.
    */
-  const nodeDetailsTab = ref<NodeDetailsTab>('main')
+  const nodeDetailsTab = ref<NodeDetailsTab>('monitoring')
 
   const setNodeDetailsTab = (tab: NodeDetailsTab) => {
     nodeDetailsTab.value = tab
