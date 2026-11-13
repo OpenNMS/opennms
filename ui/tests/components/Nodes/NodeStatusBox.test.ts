@@ -112,7 +112,7 @@ describe('NodeStatusBox.vue', () => {
     const wrapper = mountBox()
     await flushPromises()
 
-    expect(wrapper.find('[data-test="node-status-message"]').text()).toBe('Node has no problems.')
+    expect(wrapper.find('[data-test="node-status-message"]').text()).toBe('Node has no problem alarms.')
     expect(wrapper.find('[data-test="node-status"]').classes()).toContain('node-details-banner--normal')
     expect(wrapper.find('[data-test="node-status-unack-link"]').exists()).toBe(false)
   })
@@ -123,7 +123,7 @@ describe('NodeStatusBox.vue', () => {
 
     expect(wrapper.find('[data-test="node-status"]').classes()).toContain('node-details-banner--major')
     expect(wrapper.find('[data-test="node-status-message"]').text()).toBe('Node has 1 service down.')
-    expect(wrapper.text().replace(/\s+/g, ' ')).toContain('There is 1 unacknowledged problem, and 1 acknowledged problem.')
+    expect(wrapper.text().replace(/\s+/g, ' ')).toContain('There is 1 unacknowledged alarm, and 1 acknowledged alarm.')
     expect(wrapper.find('[data-test="node-status-unack-link"]').attributes('href'))
       .toBe('/opennms/alarm/list.htm?filter=node%3d42&acktype=unack')
     expect(wrapper.find('[data-test="node-status-ack-link"]').attributes('href'))
@@ -134,7 +134,7 @@ describe('NodeStatusBox.vue', () => {
     const wrapper = mountBox(() => answerWith(twoUnacked))
     await flushPromises()
 
-    expect(wrapper.text().replace(/\s+/g, ' ')).toContain('There are 2 unacknowledged problems, and 0 acknowledged problems.')
+    expect(wrapper.text().replace(/\s+/g, ' ')).toContain('There are 2 unacknowledged alarms, and 0 acknowledged alarms.')
   })
 
   it('says the status is unavailable when the first fetch fails', async () => {

@@ -39,7 +39,7 @@ describe('computeNodeStatus', () => {
   it('reports no problems for a node without problem alarms', () => {
     expect(computeNodeStatus(summary())).toEqual({
       severity: 'NORMAL',
-      message: 'Node has no problems.',
+      message: 'Node has no problem alarms.',
       hasProblems: false,
       ackCount: 0,
       unackCount: 0
@@ -50,9 +50,18 @@ describe('computeNodeStatus', () => {
     const status = computeNodeStatus(summary({ severity: 'MAJOR', unacknowledgedCount: 3 }))
 
     expect(status.severity).toBe('MAJOR')
-    expect(status.message).toBe('Node has major problems.')
+    expect(status.message).toBe('Node has major alarms.')
     expect(status.hasProblems).toBe(true)
     expect(status.unackCount).toBe(3)
+  })
+
+  it.each([
+    ['WARNING', 'Node has warnings.'],
+    ['warning', 'Node has warnings.'],
+    ['MINOR', 'Node has minor alarms.'],
+    ['CRITICAL', 'Node has critical alarms.']
+  ])('words the headline for %s', (severity, message) => {
+    expect(computeNodeStatus(summary({ severity })).message).toBe(message)
   })
 
   it('matches severity names regardless of case', () => {
@@ -69,7 +78,10 @@ describe('computeNodeStatus', () => {
   })
 
   it.each(['INDETERMINATE', 'CLEARED', 'NORMAL'])('treats %s as no problem', (severity) => {
-    expect(computeNodeStatus(summary({ severity })).hasProblems).toBe(false)
+    const status = computeNodeStatus(summary({ severity }))
+
+    expect(status.hasProblems).toBe(false)
+    expect(status.message).toBe('Node has no problem alarms.')
   })
 
   describe('headline', () => {

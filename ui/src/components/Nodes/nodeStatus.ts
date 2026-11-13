@@ -40,7 +40,7 @@ export interface NodeStatus {
   // Highest severity among the node's unacknowledged problem alarms, as an upper-case
   // OnmsSeverity name; NORMAL when there are none.
   severity: string
-  // Headline: down, how many interfaces/services are down, or how bad its problems are.
+  // Headline: down, how many interfaces/services are down, or how severe its problem alarms are.
   message: string
   // Whether there is anything unacknowledged to act on -- the JSP's maxSeverity > NORMAL, which
   // is also what decides whether the acknowledged/unacknowledged counts are shown.
@@ -54,17 +54,27 @@ const PROBLEM_SEVERITIES = ['WARNING', 'MINOR', 'MAJOR', 'CRITICAL']
 
 const plural = (count: number, singular: string, pluralForm = `${singular}s`) => `${count} ${count === 1 ? singular : pluralForm}`
 
+// The headline when nothing is down: how severe the worst unacknowledged problem alarm is.
+// "Warning alarms" reads awkwardly, so a warning gets its own wording.
+const severityMessage = (severity: string, hasProblems: boolean) => {
+  if (!hasProblems) {
+    return 'Node has no problem alarms.'
+  }
+
+  return severity === 'WARNING' ? 'Node has warnings.' : `Node has ${severity.toLowerCase()} alarms.`
+}
+
 /**
  * The status box's headline and counts from the server's summary of the node's problem alarms
  * (GET /api/v2/nodes/{id}/alarmStatus). The server does the counting, as the JSP did over every
- * alarm the node had; this keeps the JSP's wording.
+ * alarm the node had. The wording follows the JSP's, but says alarms where the JSP said problems.
  */
 export const computeNodeStatus = (summary: NodeAlarmStatus): NodeStatus => {
   const severity = (summary.severity ?? 'NORMAL').toUpperCase()
   const hasProblems = PROBLEM_SEVERITIES.includes(severity)
   const { nodeDown, interfacesDown: intfDown, servicesDown: servDown } = summary
 
-  let message = `Node has ${hasProblems ? severity.toLowerCase() : 'no'} problems.`
+  let message = severityMessage(severity, hasProblems)
 
   if (nodeDown) {
     message = 'Node is currently down.'

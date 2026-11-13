@@ -12,12 +12,12 @@
           :href="alarmListHref('unack')"
           data-test="node-status-unack-link"
         ><strong>{{ status.unackCount }}</strong> unacknowledged</a>
-        {{ problems(status.unackCount) }}, and
+        {{ alarms(status.unackCount) }}, and
         <a
           :href="alarmListHref('ack')"
           data-test="node-status-ack-link"
         ><strong>{{ status.ackCount }}</strong> acknowledged</a>
-        {{ problems(status.ackCount) }}.
+        {{ alarms(status.ackCount) }}.
       </template>
     </template>
     <span
@@ -61,7 +61,7 @@ const loadFailed = computed<boolean>(() => !isThisNode.value && alarmStore.nodeA
 // Before the first answer there is no severity to show, so the banner stays neutral.
 const severity = computed<BannerSeverity>(() => bannerSeverity(status.value?.severity))
 
-const problems = (count: number) => (count === 1 ? 'problem' : 'problems')
+const alarms = (count: number) => (count === 1 ? 'alarm' : 'alarms')
 
 // The legacy alarm list, filtered to this node. Will need to point at the Vue Alarms page once
 // it's implemented.
