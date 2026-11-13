@@ -1,0 +1,25 @@
+# Start a CircleCI pipeline when a pull request opens.
+# CircleCI starts a pipeline only on a push. A branch with no pull request gets the build job only.
+name: CircleCI-On-PR
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  trigger:
+    # A pull request from a fork has no access to the token.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    permissions: {}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start the CircleCI pipeline
+        env:
+          CIRCLECI_TOKEN: ${{ secrets.CIRCLECI_TOKEN }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          jq -n --arg branch "$BRANCH" '{branch: $branch}' > body.json
+          curl --fail-with-body -sS -X POST \
+            -H "Circle-Token: ${CIRCLECI_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d @body.json \
+            "https://circleci.com/api/v2/project/gh/${GITHUB_REPOSITORY}/pipeline"

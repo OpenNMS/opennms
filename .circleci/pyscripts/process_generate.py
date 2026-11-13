@@ -398,6 +398,33 @@ if (
 if "ui" in git_keywords or "ui" in What_to_build:
     build_mappings["ui"] = True
 
+# A branch that has no pull request gets the build job only.
+# The override file or a keyword in the last commit keeps the selected workflows.
+is_protected_branch = (
+    "develop" in branch_name
+    or "master" in branch_name
+    or "release-" in branch_name
+    or "foundation-" in branch_name
+)
+build_mappings["build-only"] = False
+if (
+    not os.environ.get("CIRCLE_PULL_REQUEST")
+    and not is_protected_branch
+    and not build_trigger_override_found
+    and not git_keywords
+    and (
+        build_mappings["build-deploy"]
+        or build_mappings["integration"]
+        or build_mappings["smoke"]
+    )
+):
+    print("No pull request for this branch, will run the build job only")
+    print()
+    build_mappings["build-deploy"] = False
+    build_mappings["integration"] = False
+    build_mappings["smoke"] = False
+    build_mappings["build-only"] = True
+
 with open(output_path, "w", encoding="UTF-8") as file_handler:
     file_handler.write(json.dumps(mappings))
 

@@ -235,6 +235,11 @@ for e in main_yml_content:
                     workflow_path, level, filters_enabled, "build-deploy"
                 )
 
+            if build_components.get("build-only"):
+                workflow_path = print_add(
+                    workflow_path, level, filters_enabled, "build"
+                )
+
             if build_components["docs"]:
                 workflow_path = print_add(workflow_path, level, filters_enabled, "docs")
 
