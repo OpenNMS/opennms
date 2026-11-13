@@ -225,6 +225,11 @@ Failed polls and collections are timed as well, often at their full timeout incl
 The average, minimum, and maximum are weighted toward recent values, but a single slow poll can remain the maximum for up to about half a day.
 OpenNMS collects them about itself and graphs them under the *Pollerd Poll Stats* and *Collectd Collection Stats* resources.
 
+=== EnhancedLinkd executor graphs
+OpenNMS now collects EnhancedLinkd's discovery executor statistics about itself over JMX and graphs its threads, task rates, and queue.
+If you customized `etc/jmx-datacollection-config.xml`, the upgrade keeps your copy and these graphs do not appear.
+To add them, copy the `OpenNMS:Name=EnhancedLinkd` `mbean` element from `share/etc-pristine/jmx-datacollection-config.xml` into your file.
+
 == Breaking changes
 
 === Kafka SASL/OAUTHBEARER endpoint URLs are blocked by default

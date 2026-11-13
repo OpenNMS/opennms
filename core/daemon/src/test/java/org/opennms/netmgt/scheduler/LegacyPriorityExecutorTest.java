@@ -23,6 +23,7 @@ package org.opennms.netmgt.scheduler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.awaitility.Awaitility.await;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -366,5 +367,66 @@ public class LegacyPriorityExecutorTest {
         assertEquals(1, executor.getThreads());
 
         executor.stop();
+    }
+
+    @Test
+    public void testPoolAndQueueStatistics() throws InterruptedException {
+        final LegacyPriorityExecutor executor = new LegacyPriorityExecutor("StatsTest", 1, 5);
+        final CountDownLatch release = new CountDownLatch(1);
+        try {
+            for (int i = 0; i < 3; i++) {
+                executor.addPriorityReadyRunnable(new BlockingExecutable("blocking" + i, release));
+            }
+            final ExecutableTest later = new ExecutableTest("later", 0);
+            later.setDelayUntil(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10));
+            executor.addPriorityReadyRunnable(later);
+
+            executor.start();
+
+            // One task runs on the single thread, two wait for it, one is not due yet.
+            await().atMost(10, TimeUnit.SECONDS).until(() -> executor.getActiveThreads() == 1 && executor.getReadyQueueSize() == 2);
+            assertEquals(1, executor.getDelayedQueueSize());
+            assertEquals(1, executor.getPoolThreads());
+            assertEquals(3, executor.getTaskCount());
+            assertEquals(0, executor.getCompletedTaskCount());
+
+            release.countDown();
+            await().atMost(10, TimeUnit.SECONDS).until(() -> executor.getCompletedTaskCount() == 3);
+            assertEquals(0, executor.getReadyQueueSize());
+            assertEquals(1, executor.getDelayedQueueSize());
+        } finally {
+            release.countDown();
+            executor.stop();
+        }
+    }
+
+    private static class BlockingExecutable extends Executable {
+        private final String m_name;
+        private final CountDownLatch m_release;
+
+        BlockingExecutable(final String name, final CountDownLatch release) {
+            super(0);
+            m_name = name;
+            m_release = release;
+        }
+
+        @Override
+        public String getName() {
+            return m_name;
+        }
+
+        @Override
+        public void runExecutable() {
+            try {
+                m_release.await();
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        @Override
+        public boolean isReady() {
+            return true;
+        }
     }
 }
