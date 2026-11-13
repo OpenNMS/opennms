@@ -270,7 +270,7 @@ The following {page-component-title} components allow the use of the Metadata DS
 * <<deep-dive/service-assurance/configuration.adoc#ga-pollerd-configuration-meta-data, Service assurance>>.
 * <<deep-dive/performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services-meta-data, Performance management>>.
 * <<reference:configuration/ttl-rpc.adoc#metadata-ttls, Using metadata for TTLs>>.
-* <<deep-dive/thresholds/thresholding.adoc#ga-threshold-metadata, Expression-Based Thresholds>>.
+* <<deep-dive/thresholds/datasource.adoc#ga-threshold-metadata, Expression-Based Thresholds>>.
 * <<deep-dive/notifications/introduction.adoc#ga-notifications, Notifications>>.
 * <<deep-dive/alarms/alarm-handling.adoc#ga-advanced-alarm-handling, Alarmd Drools rules>>.
 * <<deep-dive/admin/configuration/system-properties.adoc#system-properties, System Properties>>.

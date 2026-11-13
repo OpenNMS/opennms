@@ -15,9 +15,11 @@ A threshold group associates a set of thresholds to a service (for example, thre
 * netsnmp-memory-nonlinux
 * opennms-jvm-jvx
 
-Threshold groups are stored in the database and are created and edited through the web UI.
+Threshold groups are stored in the database and are created and edited through the web UI (see xref:deep-dive/thresholds/thresholding.adoc#threshold-configuration[Threshold configuration]).
 Editing `$\{OPENNMS_HOME}/etc/thresholds.xml` has no effect: the file's contents are migrated into the database during the upgrade and the file is no longer read.
 You can also manage groups over the xref:development:rest/thresholds-rest-api.adoc[Thresholds REST API].
+
+== Create a group
 
 This procedure creates a threshold group called "demo_group":
 
@@ -25,11 +27,39 @@ This procedure creates a threshold group called "demo_group":
 . Click menu:Administration[Configure Thresholds] in the side menu.
 . Or, click menu:Administration[Configure OpenNMS] in the side menu, then click menu:Performance Measurement[Configure Thresholds].
 . On the *Groups* tab, click *New group*.
-. Enter `demo_group` as the name and `/opt/opennms/share/rrd/snmp/` as the RRD repository, then click *Save*.
+. Enter `demo_group` as the name and `/opt/opennms/share/rrd/snmp/` as the RRD repository, then click *Create Threshold Group*.
 +
 The group opens, ready for you to add thresholds.
+. In the *Basic thresholds* area, click *Create new threshold*, or in the *Expression-based thresholds* area, click *Create new expression-based threshold*.
+See xref:quick-start/thresholding.adoc[] for a description of the fields.
 
-A group with an expression threshold corresponds to the following configuration:
+The group has no effect until a threshd package applies it to a set of interfaces.
+See xref:deep-dive/thresholds/thresh-package.adoc[].
+
+== Edit, rename, or delete a group
+
+Click a group's name on the *Groups* tab to open it.
+
+* To change a threshold, click its *Edit* icon in the *Basic thresholds* or *Expression-based thresholds* table, change its settings, and click *Save Changes*.
+* To remove a threshold, click its *Delete* icon.
+* To rename a group or change its RRD repository, click *Edit group*.
+* To delete a group, click *Delete group*.
+
+Saving a change applies it immediately.
+
+Groups provided by an OSGi extension are marked *Read only* and cannot be changed in the UI.
+
+== Custom UEIs and notifications
+
+A threshold can declare its own *Triggered UEI* or *Re-armed UEI* instead of the standard threshold events.
+If {page-component-title} does not have an event definition for that UEI yet, saving the threshold creates one, based on the standard threshold event for the threshold's type.
+The generated definitions are stored in the `opennms.programmatic.events` event configuration source.
+
+In the threshold tables, a custom UEI links to the notification wizard, so you can set up a notification for it directly.
+
+== Example configuration
+
+A group with an expression threshold corresponds to the following configuration, as it appears when you download the threshold groups as XML on the *Upload / download* tab:
 
 [source, xml]
 -----
