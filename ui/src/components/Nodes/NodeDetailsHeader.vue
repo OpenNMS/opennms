@@ -4,12 +4,6 @@
         <OnmsTag class="node-chip" :value="`Status: ${nodeStatus}`" :severity="nodeSeverity" />
       </div>
       <div class="node-badge-wrapper">
-        <OnmsTag class="node-chip" :value="`Label: ${props.node?.label}`" severity="info" />
-      </div>
-      <div class="node-badge-wrapper">
-        <OnmsTag class="node-chip" :value="`ID: ${props.node?.id}`" severity="info" />
-      </div>
-      <div class="node-badge-wrapper">
         <OnmsTag class="node-chip" :value="`Monitoring Location: ${props.node?.location}`" severity="info" />
       </div>
       <div v-if="foreignSourceLabel" class="node-badge-wrapper">

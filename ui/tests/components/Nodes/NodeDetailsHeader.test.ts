@@ -20,12 +20,13 @@ const mountHeader = () =>
 const category = (id: number, name: string) => ({ id, name, authorizedGroups: [] })
 
 describe('NodeDetailsHeader.vue', () => {
-  it('renders the node status, label, id and location badges', () => {
+  // Label and id live in the page heading, not in a badge.
+  it('renders the node status and location badges', () => {
     const text = mountHeader().text()
 
     expect(text).toContain('Status:')
-    expect(text).toContain('Label: srv-42')
-    expect(text).toContain('ID: 42')
+    expect(text).not.toContain('Label:')
+    expect(text).not.toContain('ID:')
     expect(text).toContain('Monitoring Location: Default')
   })
 

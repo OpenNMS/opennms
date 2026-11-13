@@ -163,8 +163,16 @@ const pageState = computed<PageState>(() => {
   return nodeStore.nodeLoadError === 'failed' ? 'error' : 'node'
 })
 
-const heading = computed<string>(() =>
-  pageState.value === 'node' ? `Node Details for ${nodeStore.node?.label ?? ''}`.trimEnd() : 'Node Details')
+const heading = computed<string>(() => {
+  if (pageState.value !== 'node') {
+    return 'Node Details'
+  }
+
+  // The store starts with an empty node object, so the label is what says the fetch has landed.
+  const node = nodeStore.node
+
+  return node?.label ? `Node Details for ${node.label} (id: ${node.id})` : 'Node Details for'
+})
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 

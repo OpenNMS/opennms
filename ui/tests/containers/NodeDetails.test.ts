@@ -229,6 +229,13 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.find('h2').text()).toBe('Node Details for')
   })
 
+  it('names the node by label and id in the title once it is loaded', async () => {
+    const { wrapper } = mountComponent('42', true)
+    await flushPromises()
+
+    expect(wrapper.find('h2').text()).toBe('Node Details for srv-42 (id: 42)')
+  })
+
   // The Update SNMP action needs the SNMP-primary address, which the node payload does not
   // carry and the IP Interfaces table only holds a page of, so the page asks for it directly.
   it('asks for the node SNMP-primary address and hands it to the links row', async () => {
