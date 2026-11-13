@@ -225,7 +225,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   height: var(--onms-header-height, 3.75rem);
-  padding: 0 1rem;
+  padding: 0 0 0 1rem;
   background-color: var(--onms-surface-dark);
   color: var(--onms-state-text-color-on-surface-dark);
 }
