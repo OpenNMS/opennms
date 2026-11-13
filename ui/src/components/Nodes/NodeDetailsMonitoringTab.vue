@@ -1,6 +1,15 @@
 <template>
   <NodeScheduledOutagesBox />
-  <NodeStatusBox />
+
+  <!-- The node's status on the left, a condensed view of its notifications on the right. -->
+  <div class="onms-row node-summary-boxes">
+    <div class="onms-col-6">
+      <NodeStatusBox />
+    </div>
+    <div class="onms-col-6">
+      <NodeNotificationsBox />
+    </div>
+  </div>
 
   <!--
     One row of two columns, each stacking its own panels, rather than a row per pair of panels.
@@ -37,6 +46,7 @@ import AlarmsTable from '@/components/Nodes/AlarmsTable.vue'
 import InterfacesTabs from '@/components/Nodes/InterfacesTabs.vue'
 import NodeCriticalPathPanel from '@/components/Nodes/NodeCriticalPathPanel.vue'
 import NodeAvailabilityGraph from '@/components/Nodes/NodeAvailabilityGraph.vue'
+import NodeNotificationsBox from '@/components/Nodes/NodeNotificationsBox.vue'
 import NodeNotificationsPanel from '@/components/Nodes/NodeNotificationsPanel.vue'
 import NodeScheduledOutagesBox from '@/components/Nodes/NodeScheduledOutagesBox.vue'
 import NodeStatusBox from '@/components/Nodes/NodeStatusBox.vue'
@@ -50,3 +60,16 @@ defineProps<{
   baseHref: string
 }>()
 </script>
+
+<style lang="scss" scoped>
+// The two boxes are as tall as each other, whichever has more to say: each fills its column, and
+// the row's columns are as tall as the taller one.
+.node-summary-boxes > .onms-col-6 {
+  display: flex;
+  flex-direction: column;
+
+  > * {
+    flex: 1;
+  }
+}
+</style>

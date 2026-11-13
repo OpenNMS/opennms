@@ -1,7 +1,7 @@
 <template>
   <div
     class="node-details-banner"
-    :class="`node-details-banner--${severity}`"
+    :class="[`node-details-banner--${severity}`, { 'node-details-banner--no-strip': !strip }]"
   >
     <slot />
   </div>
@@ -13,11 +13,16 @@ import { BannerSeverity } from './nodeStatus'
 // A full-width strip for node-wide notices at the top of the details page -- the node's status,
 // scheduled outages in effect -- tinted by severity, as the legacy page's severity rows were.
 // `none` is the neutral, untinted look, for while there is nothing to say yet.
+//
+// `strip` is the thick, severity-coloured left edge. A box that only borrows the banner's look,
+// with no severity of its own to signal, turns it off and keeps just the tint.
 
 withDefaults(defineProps<{
   severity?: BannerSeverity
+  strip?: boolean
 }>(), {
-  severity: 'none'
+  severity: 'none',
+  strip: true
 })
 </script>
 
@@ -53,5 +58,11 @@ $severity-tokens: (
     border-left-color: var(#{$token});
     background: utils.alpha($token, 0.2);
   }
+}
+
+// After the tints, so it wins over their border-left-color at the same specificity.
+.node-details-banner--no-strip {
+  border-left-width: 1px;
+  border-left-color: var(--p-content-border-color);
 }
 </style>

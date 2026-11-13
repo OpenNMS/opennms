@@ -39,6 +39,11 @@ describe('NodeDetailsBanner.vue', () => {
     expect(mount(NodeDetailsBanner, { props: { severity }}).classes()).toContain(`node-details-banner--${severity}`)
   })
 
+  it('has the severity strip unless told otherwise', () => {
+    expect(mount(NodeDetailsBanner).classes()).not.toContain('node-details-banner--no-strip')
+    expect(mount(NodeDetailsBanner, { props: { strip: false }}).classes()).toContain('node-details-banner--no-strip')
+  })
+
   it('passes attributes through to its root', () => {
     const wrapper = mount(NodeDetailsBanner, { attrs: { role: 'status', 'data-test': 'x' }})
 
