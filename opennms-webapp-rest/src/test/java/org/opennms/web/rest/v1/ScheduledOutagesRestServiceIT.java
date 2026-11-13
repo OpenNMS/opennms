@@ -34,6 +34,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
@@ -47,6 +48,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.core.test.Level;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -335,6 +337,14 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         Assert.assertFalse(appliedFor(applies, "thresholders", "example1"));
     }
 
+    // The suffixed paths reach the same resources, package names included, which is why the
+    // security rules gate "applies-to.*" as well as "applies-to/**".
+    @Test
+    public void testGetApplicabilityWithASuffix() throws Exception {
+        Assert.assertNotNull(packageFor(getApplicability("/sched-outages/my-junit-test/applies-to.json"), "pollers", "example1"));
+        Assert.assertNotNull(packageFor(getApplicability("/sched-outages/applies-to.json"), "pollers", "example1"));
+    }
+
     @Test
     public void testApplicabilityReflectsMembership() throws Exception {
         sendRequest(PUT, "/sched-outages/my-junit-test/pollerd/example1", 204);
@@ -360,6 +370,45 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         JSONObject applies = getApplicability("/sched-outages/applies-to");
         Assert.assertFalse(applies.getBoolean("notifications"));
         Assert.assertFalse(appliedFor(applies, "pollers", "example1"));
+    }
+
+    @Test
+    public void testApplicabilitySummary() throws Exception {
+        JSONObject summary = getApplicability("/sched-outages/my-junit-test/applies-to/summary");
+        assertSummary(summary, "my-junit-test", false, false, false, false);
+
+        sendRequest(PUT, "/sched-outages/my-junit-test/pollerd/example1", 204);
+        sendRequest(PUT, "/sched-outages/my-junit-test/threshd/example1", 204);
+        sendRequest(PUT, "/sched-outages/my-junit-test/notifd", 204);
+
+        summary = getApplicability("/sched-outages/my-junit-test/applies-to/summary");
+        assertSummary(summary, "my-junit-test", true, false, true, true);
+        // the v1 API also serves the suffixed form, which the security rules allow as well
+        assertSummary(getApplicability("/sched-outages/my-junit-test/applies-to/summary.json"), "my-junit-test", true, false, true, true);
+        verify(m_filterDao, atLeastOnce()).validateRule(anyString());
+    }
+
+    // Collectd memberships are not asserted: here the collectd factory saves to the test etc
+    // directory but reloads from the file it was built with, so a PUT does not show up in a read.
+    @Test
+    public void testApplicabilitySummaries() throws Exception {
+        postOutage("other", PAST, "<node id='1' />");
+        sendRequest(PUT, "/sched-outages/my-junit-test/pollerd/example1", 204);
+        sendRequest(PUT, "/sched-outages/other/threshd/example1", 204);
+        sendRequest(PUT, "/sched-outages/other/notifd", 204);
+
+        final JSONArray outages = getApplicability("/sched-outages/applies-to/summary").getJSONArray("outage");
+        Assert.assertEquals(2, outages.length());
+        assertSummary(outages.getJSONObject(0), "my-junit-test", true, false, false, false);
+        assertSummary(outages.getJSONObject(1), "other", false, false, true, true);
+        verify(m_filterDao, atLeastOnce()).validateRule(anyString());
+    }
+
+    @Test
+    public void testApplicabilitySummaryForUnknownOutage() throws Exception {
+        sendRequest(GET, "/sched-outages/no-such-outage/applies-to/summary", 404);
+        MockLogAppender.assertLogMatched(Level.ERROR, "Scheduled outage no-such-outage was not found.");
+        MockLogAppender.resetState();
     }
 
     @Test
@@ -447,6 +496,17 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         MockHttpServletRequest request = createRequest(m_servletContext, GET, url);
         request.addHeader("Accept", MediaType.APPLICATION_JSON);
         return new JSONObject(sendRequest(request, 200));
+    }
+
+    // Exactly these keys: a package name in the summary would defeat the reason it is open to ROLE_USER.
+    private static void assertSummary(JSONObject summary, String name, boolean pollers, boolean collectors,
+                                      boolean thresholders, boolean notifications) {
+        Assert.assertEquals(Set.of("name", "pollers", "collectors", "thresholders", "notifications"), summary.keySet());
+        Assert.assertEquals(name, summary.getString("name"));
+        Assert.assertEquals(pollers, summary.getBoolean("pollers"));
+        Assert.assertEquals(collectors, summary.getBoolean("collectors"));
+        Assert.assertEquals(thresholders, summary.getBoolean("thresholders"));
+        Assert.assertEquals(notifications, summary.getBoolean("notifications"));
     }
 
     private static boolean appliedFor(JSONObject root, String subsystem, String packageName) {
