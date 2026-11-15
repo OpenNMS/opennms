@@ -153,6 +153,15 @@ defineProps<{
     color: var(--timeline-axis-text);
   }
 
+  // No side padding, so the interface lines up with its services beneath it (their rows have none:
+  // the th/td padding above is scoped to this component and does not reach AvailabilityTimelineRow).
+  // The header row keeps it.
+  .interface-row > th,
+  .interface-row > td {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
   .interface-row > th {
     font-weight: 600;
     overflow: hidden;
