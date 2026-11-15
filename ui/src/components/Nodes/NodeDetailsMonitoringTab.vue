@@ -28,10 +28,10 @@
         :node="node"
         :base-href="baseHref"
       />
-      <InterfacesTabs />
+      <AlarmsTable />
     </div>
     <div class="onms-col-6">
-      <AlarmsTable />
+      <InterfacesTabs />
       <NodeCriticalPathPanel v-if="nodeLoaded" />
     </div>
   </div>
