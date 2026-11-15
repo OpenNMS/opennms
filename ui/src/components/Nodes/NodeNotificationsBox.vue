@@ -48,8 +48,8 @@ import { NotificationQueryPreset } from '@/types/notifications'
 import NodeDetailsBanner from './NodeDetailsBanner.vue'
 import useActiveNodeId from './hooks/useActiveNodeId'
 
-// A condensed view of the node's notifications, beside the status banner: the Notifications
-// panel's links as tags. It borrows the banner's look with no tint and no severity strip --
+// A condensed view of the node's notifications, beside the status banner: a tag per link to the
+// Notifications page, filtered to this node. It borrows the banner's look with no tint and no severity strip --
 // notifications have no severity of their own to signal -- so it has the panels' background.
 //
 // Each node tag is two icons: whose notifications (yours, or everyone's) and which (outstanding or

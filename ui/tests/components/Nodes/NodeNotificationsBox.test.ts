@@ -64,7 +64,7 @@ describe('NodeNotificationsBox.vue', () => {
     expect(box.classes()).toContain('node-details-banner--no-strip')
   })
 
-  it('has a tag for each preset, in the panel\'s order, then one for all of the node\'s notifications', () => {
+  it('has a tag for each preset, yours before everyone\'s, then one for all of the node\'s notifications', () => {
     const links = mountBox().findAllComponents(RouterLinkStub)
 
     expect(links.map(link => link.attributes('data-test')))

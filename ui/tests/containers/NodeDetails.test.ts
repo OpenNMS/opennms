@@ -274,14 +274,6 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'AlarmsTable' }).exists()).toBe(true)
   })
 
-  // The condensed NodeNotificationsBox beside the status banner replaced it.
-  it('no longer shows the Notifications panel', async () => {
-    const { wrapper } = mountComponent('42', true)
-    await flushPromises()
-
-    expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(false)
-  })
-
   describe('Monitoring / Events / Neighbors tabs', () => {
     const selectTab = async (wrapper: any, tab: NodeDetailsTab) => {
       wrapper.findComponent({ name: 'OnmsSelectButton' }).vm.$emit('update:modelValue', tab)
