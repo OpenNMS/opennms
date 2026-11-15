@@ -131,6 +131,7 @@ Vitest + Happy-DOM + `@vue/test-utils` + `@pinia/testing`. Tests live in `tests/
 ### Key directories
 
 - `src/components/` — reusable components (organized by feature)
+  - `src/components/Nodes/` has one subfolder per page (`NodeDetails/`, `NodeList/`; later `Availability/`, `IpInterfaces/`, `SnmpInterfaces/`). A file goes in a page folder only when that page is its only user; files used by more than one page (or by `nodeStore`, which the Map also uses) stay in the `Nodes/` root. The root and each page folder have their own `hooks/`. Imports within a folder are relative; imports across folders use `@/components/Nodes/...`.
 - `src/containers/` — top-level page components (route targets)
 - `src/composables/` — shared reactive logic
 - `src/stores/` — Pinia stores
