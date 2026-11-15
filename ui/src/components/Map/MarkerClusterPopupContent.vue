@@ -50,7 +50,7 @@ import { useMenuStore } from '@/stores/menuStore'
 import { IpInterface, Node } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
 import { useRouter } from 'vue-router'
-import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
+import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 
 interface ClusterInfo {
   description: string

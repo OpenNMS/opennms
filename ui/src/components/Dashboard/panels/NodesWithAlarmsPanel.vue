@@ -71,7 +71,7 @@ License.
 import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getNodeAlarmSummaries } from '@/services/alarmService'
-import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
+import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 import { resolveFilterToNodeIdSet } from '../filter'
 import { isActionableSeverity, severityColor, severityLabel, severityTint } from '../severity'
 

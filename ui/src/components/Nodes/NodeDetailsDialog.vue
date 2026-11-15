@@ -30,7 +30,7 @@ import { useIpInterfaceQuery } from '@/components/Nodes/hooks/useIpInterfaceQuer
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { interfaceLink } from '@/lib/linkUtils'
-import { nodeDetailsRoute } from './nodeDetailsRoute'
+import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 import { Node } from '@/types'
 
 const props = defineProps({

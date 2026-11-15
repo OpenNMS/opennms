@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { useNodeQuery } from '@/components/Nodes/NodeList/hooks/useNodeQuery'
 import { defaultColumns } from '@/components/Nodes/utils'
 import { hasNonEmptyProperty } from '@/lib/utils'
 import API from '@/services'

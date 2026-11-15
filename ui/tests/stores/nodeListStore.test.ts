@@ -26,7 +26,7 @@ import { useNodeListStore } from '@/stores/nodeListStore'
 import { defaultColumns } from '@/components/Nodes/utils'
 import API from '@/services'
 import { SetOperator } from '@/types'
-import { categories, monitoringLocations } from '../components/Nodes/hooks/utils'
+import { categories, monitoringLocations } from '../components/Nodes/NodeList/hooks/utils'
 
 vi.mock('@/services', () => ({
   default: {
