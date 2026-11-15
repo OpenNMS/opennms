@@ -21,7 +21,7 @@
         >
           <OnmsIcon
             :icon="link.who"
-            class="node-notifications-tag-icon"
+            class="node-notifications-tag-icon node-notifications-tag-icon--who"
           />
           <OnmsIcon
             v-if="link.state"
@@ -114,6 +114,10 @@ const links = computed<NotificationsLink[]>(() => [
 
 .node-notifications-tag-icon {
   font-size: 1.5rem;
+}
+
+.node-notifications-tag-icon--who {
+  color: var(--p-button-text-primary-color);
 }
 
 .node-notifications-tag-icon--outstanding {
