@@ -138,17 +138,23 @@
         </div>
       </div>
       <div class="spacer-large"></div>
-      <FormField label="Flows" data-test="flows-multiselect">
-        <OnmsMultiSelect
-          v-model="selectedFilters.flows"
-          :options="flowOptions"
-          optionLabel="_text"
-          dataKey="_value"
-          filter
-          display="chip"
-          placeholder="Select flows"
-          @update:modelValue="(items) => updateFilter('flows', items as IAutocompleteItemType[])"
-        />
+      <FormField label="Flows" data-test="flows-filter">
+        <div
+          class="flow-toggles"
+          role="group"
+          aria-label="Flows"
+        >
+          <OnmsToggleButton
+            v-for="option in FLOW_FILTERS"
+            :key="option.value"
+            :modelValue="selectedFilters.flows.includes(option.value)"
+            :label="option.label"
+            :onIcon="CheckCircleIcon"
+            :offIcon="RemoveIcon"
+            :data-test="`flow-toggle-${option.value}`"
+            @update:modelValue="(on: boolean) => selectedFilters.flows = toggleFlowFilter(selectedFilters.flows, option.value, on)"
+          />
+        </div>
       </FormField>
       <div class="spacer-medium"></div>
       <div class="onms-row">
@@ -238,7 +244,7 @@
             <p>Searching by Topology allows you to find nodes which have CDP or LLDP neighbors matching the search string. This is a case-insensitive partial string match against the neighbor's system name, system description, and interface name.</p>
             <br />
             <p><strong>Flows</strong></p>
-            <p>Filtering by Flows allows you to find nodes which have ingress flows, egress flows or no flows.</p>
+            <p>Filtering by Flows allows you to find nodes by the flow data they have. Ingress finds nodes with ingress flows, and Egress finds nodes with egress flows. Turn on both to find nodes with either kind. Ingress + Egress finds nodes with both kinds, and No Flow Data finds nodes with neither. With none of them on, flows do not filter the list.</p>
             <br />
             <p><strong>Down nodes only</strong></p>
             <p>Limits results to nodes with a down aggregate status, i.e. nodes that have at least one active monitored service currently in outage.</p>
@@ -291,13 +297,16 @@ import { computed, reactive, ref, watch, watchEffect } from 'vue'
 import { isIP } from 'is-ip'
 import { isIplikePattern } from '@/components/Nodes/NodeList/hooks/queryStringParser'
 import { IAutocompleteItemType } from '@/types/index'
-import { OnmsButton, OnmsDrawer, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMessageDialog, OnmsMultiSelect, OnmsToggleSwitch } from '@opennms/onms-ui'
+import { OnmsButton, OnmsDrawer, OnmsIcon, OnmsIconButton, OnmsInputText, OnmsMessageDialog, OnmsMultiSelect, OnmsToggleButton, OnmsToggleSwitch } from '@opennms/onms-ui'
 import AddIcon from '@opennms/onms-ui/icons/action/Add.vue'
+import CheckCircleIcon from '@opennms/onms-ui/icons/action/CheckCircle.vue'
 import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
+import RemoveIcon from '@opennms/onms-ui/icons/action/Remove.vue'
 import FormField from '@/components/Common/FormField.vue'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
 import AssetFilterPanel from './AssetFilterPanel.vue'
+import { FLOW_FILTERS, FlowFilter, normalizeFlowFilters, toggleFlowFilter } from './flowFilter'
 import { useNodeListStore } from '@/stores/nodeListStore'
 
 interface DrawerErrors {
@@ -318,7 +327,7 @@ const showSecondCategories = ref(false)
 const selectedFilters = reactive({
   categories: [] as IAutocompleteItemType[],
   categories2: [] as IAutocompleteItemType[],
-  flows: [] as IAutocompleteItemType[],
+  flows: [] as FlowFilter[],
   locations: [] as IAutocompleteItemType[],
   services: [] as IAutocompleteItemType[],
   ipAddress: '',
@@ -359,14 +368,8 @@ const serviceOptions = computed<IAutocompleteItemType[]>(() =>
   nodeListStore.allServiceTypes.map(s => ({ _value: s.id, _text: s.name } as IAutocompleteItemType))
 )
 
-const flowOptions = computed<IAutocompleteItemType[]>(() => [
-  { _text: 'Egress', _value: 'lastEgressFlow' } as IAutocompleteItemType,
-  { _text: 'Ingress', _value: 'lastIngressFlow' } as IAutocompleteItemType,
-  { _text: 'No Flows', _value: 'noFlows' } as IAutocompleteItemType
-])
-
 const updateFilter = (key: keyof typeof selectedFilters, items: IAutocompleteItemType[]) => {
-  selectedFilters[key as 'categories' | 'categories2' | 'flows' | 'locations' | 'services'] = items
+  selectedFilters[key as 'categories' | 'categories2' | 'locations' | 'services'] = items
 }
 
 const removeSecondCategories = () => {
@@ -428,7 +431,7 @@ watch(() => nodeListStore.drawerState.visible, (visible) => {
     selectedFilters.categories = [...nodeListStore.selectedCategories]
     selectedFilters.categories2 = [...nodeListStore.selectedCategories2]
     showSecondCategories.value = nodeListStore.selectedCategories2.length > 0
-    selectedFilters.flows = [...nodeListStore.selectedFlows]
+    selectedFilters.flows = normalizeFlowFilters(nodeListStore.queryFilter.selectedFlows)
     selectedFilters.locations = [...nodeListStore.selectedMonitoringLocations]
     selectedFilters.services = [...nodeListStore.selectedServices]
     selectedFilters.ipAddress = nodeListStore.queryFilter.ipAddress ?? ''
@@ -485,6 +488,23 @@ defineExpose({
 .filter-input {
   display: block;
   width: 100%;
+}
+
+// One button per flow choice, in a row that wraps on a narrow drawer.
+.flow-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  // Off: the same gray as the button's text. On: the green that marks an
+  // acknowledged count in the Node Details notifications box.
+  :deep(.onms-toggle-button-icon--off) {
+    color: var(--p-togglebutton-color);
+  }
+
+  :deep(.onms-toggle-button-icon--on) {
+    color: var(--onms-success);
+  }
 }
 
 // Label on the left, ToggleSwitch pushed to the right edge. Both rows are

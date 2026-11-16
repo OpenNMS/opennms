@@ -487,9 +487,16 @@ const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOpe
   return ''
 }
 
-const buildFlowsQuery = (selectedFlows: string[]) => {
+// Ingress and Egress together match either kind; Both matches nodes with both kinds.
+export const buildFlowsQuery = (selectedFlows: string[]) => {
+  const and = getFiqlSetOperator(SetOperator.Intersection)
+
   if (selectedFlows.some(f => f === 'No Flows')) {
-    return 'lastIngressFlow==null;lastEgressFlow==null'
+    return `lastIngressFlow==null${and}lastEgressFlow==null`
+  }
+
+  if (selectedFlows.some(f => f === 'Both')) {
+    return `lastIngressFlow=gt=0${and}lastEgressFlow=gt=0`
   }
 
   const hasIngress = selectedFlows.some(f => f === 'Ingress')

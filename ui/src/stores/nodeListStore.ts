@@ -20,6 +20,7 @@
 /// License.
 ///
 
+import { FlowFilter, flowFilterLabel, normalizeFlowFilters } from '@/components/Nodes/NodeList/flowFilter'
 import { useNodeQuery } from '@/components/Nodes/NodeList/hooks/useNodeQuery'
 import { defaultColumns } from '@/components/Nodes/utils'
 import { hasNonEmptyProperty } from '@/lib/utils'
@@ -47,6 +48,10 @@ const {
   getDefaultNodeQuerySnmpParams,
   getDefaultNodeQuerySysParams
 } = useNodeQuery()
+
+// Filter chips show a flow choice by its button label.
+const toFlowChips = (values: readonly string[]) =>
+  values.map(value => ({ _value: value, _text: flowFilterLabel(value) } as IAutocompleteItemType))
 
 const getDefaultDrawerState = (): DrawerState => {
   return {
@@ -317,9 +322,8 @@ export const useNodeListStore = defineStore('nodeListStore', () => {
       }
 
       if (prefs.nodeFilter.selectedFlows?.length) {
-        filter.selectedFlows = [...prefs.nodeFilter.selectedFlows]
-        selectedFlows.value = prefs.nodeFilter.selectedFlows
-          .map(name => ({ _text: name, _value: name } as IAutocompleteItemType))
+        filter.selectedFlows = normalizeFlowFilters(prefs.nodeFilter.selectedFlows)
+        selectedFlows.value = toFlowChips(filter.selectedFlows)
       }
 
       if (prefs.nodeFilter.selectedMonitoringLocations?.length) {
@@ -406,8 +410,8 @@ export const useNodeListStore = defineStore('nodeListStore', () => {
   }
 
   const removeFlow = (item: IAutocompleteItemType) => {
-    selectedFlows.value = selectedFlows.value.filter(i => i._text !== item._text)
-    queryFilter.value.selectedFlows = queryFilter.value.selectedFlows.filter(f => f !== item._text)
+    selectedFlows.value = selectedFlows.value.filter(i => i._value !== item._value)
+    queryFilter.value.selectedFlows = queryFilter.value.selectedFlows.filter(f => f !== item._value)
   }
 
   const removeMonitoringLocation = (item: IAutocompleteItemType) => {
@@ -491,9 +495,9 @@ export const useNodeListStore = defineStore('nodeListStore', () => {
     }))
   }
 
-  const updateSelectedFlows = (items: IAutocompleteItemType[]) => {
-    selectedFlows.value = items
-    queryFilter.value.selectedFlows = items.map(item => item._text as string)
+  const updateSelectedFlows = (values: FlowFilter[]) => {
+    selectedFlows.value = toFlowChips(values)
+    queryFilter.value.selectedFlows = [...values]
   }
 
   const updateSelectedServices = (items: IAutocompleteItemType[]) => {

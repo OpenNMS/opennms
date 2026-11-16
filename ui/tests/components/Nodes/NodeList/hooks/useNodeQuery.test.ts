@@ -22,7 +22,7 @@
 
 import { describe, expect, test } from 'vitest'
 import { categories, monitoringLocations, serviceTypes } from './utils'
-import { parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/NodeList/hooks/useNodeQuery'
+import { buildFlowsQuery, parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/NodeList/hooks/useNodeQuery'
 import { MatchType, NodeQueryFilter, SetOperator } from '@/types/index'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
@@ -92,6 +92,7 @@ describe('Nodes useNodeQuery test', () => {
       [ 'true', { flows: 'true' }, SetOperator.Union, ['Ingress', 'Egress']],
       [ 'ingress', { flows: 'ingress' }, SetOperator.Union, ['Ingress']],
       [ 'egress', { flows: 'egress' }, SetOperator.Union, ['Egress']],
+      [ 'both', { flows: 'both' }, SetOperator.Union, ['Both']],
       [ 'false', { flows: 'false' }, SetOperator.Union, ['No Flows']],
       [ 'invalid', { flows: 'whatever' }, SetOperator.Union, []],
       [ 'empty', { flows: '' }, SetOperator.Union, []]
@@ -1114,6 +1115,19 @@ describe('Nodes useNodeQuery test', () => {
       ])('%s -> %s', (_title, query, expected) => {
         expect(parseNodeIdQueryParam(query as any)).toBe(expected)
       })
+    })
+  })
+
+  describe('buildFlowsQuery', () => {
+    test.each([
+      ['no choice', [], ''],
+      ['Ingress', ['Ingress'], 'lastIngressFlow=gt=0'],
+      ['Egress', ['Egress'], 'lastEgressFlow=gt=0'],
+      ['Ingress and Egress: either kind', ['Ingress', 'Egress'], '(lastIngressFlow=gt=0,lastEgressFlow=gt=0)'],
+      ['Both: both kinds', ['Both'], 'lastIngressFlow=gt=0;lastEgressFlow=gt=0'],
+      ['No Flows: neither kind', ['No Flows'], 'lastIngressFlow==null;lastEgressFlow==null']
+    ])('%s', (_title, selected, expected) => {
+      expect(buildFlowsQuery(selected)).toBe(expected)
     })
   })
 })

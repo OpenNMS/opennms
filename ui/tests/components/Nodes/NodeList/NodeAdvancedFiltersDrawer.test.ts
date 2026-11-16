@@ -179,9 +179,9 @@ describe('NodeAdvancedFiltersDrawer.vue', () => {
   })
 
   describe('MultiSelects', () => {
-    it('renders at least 4 MultiSelects bound to store option lists', () => {
+    it('renders at least 3 MultiSelects bound to store option lists', () => {
       const multiselects = wrapper.findAllComponents({ name: 'MultiSelect' })
-      expect(multiselects.length).toBeGreaterThanOrEqual(4)
+      expect(multiselects.length).toBeGreaterThanOrEqual(3)
     })
 
     it('passes the store category list as options to the categories MultiSelect', () => {
@@ -197,6 +197,59 @@ describe('NodeAdvancedFiltersDrawer.vue', () => {
       ms.vm.$emit('update:modelValue', selection)
       await nextTick()
       expect(wrapper.vm.selectedFilters.categories).toEqual(selection)
+    })
+  })
+
+  describe('Flows', () => {
+    const flowButton = (value: string) => wrapper.find(`[data-test="flow-toggle-${value}"]`)
+    const pressed = () => ['Ingress', 'Egress', 'Both', 'No Flows'].filter(v => flowButton(v).attributes('aria-pressed') === 'true')
+
+    it('shows the four choices, none on', () => {
+      expect(['Ingress', 'Egress', 'Both', 'No Flows'].map(v => flowButton(v).text())).toEqual(['Ingress', 'Egress', 'Ingress + Egress', 'No Flow Data'])
+      expect(pressed()).toEqual([])
+    })
+
+    it('keeps Ingress and Egress on together', async () => {
+      await flowButton('Ingress').trigger('click')
+      await flowButton('Egress').trigger('click')
+      expect(pressed()).toEqual(['Ingress', 'Egress'])
+    })
+
+    it('turns the others off for Ingress + Egress, and for No Flow Data', async () => {
+      await flowButton('Ingress').trigger('click')
+      await flowButton('Egress').trigger('click')
+      await flowButton('Both').trigger('click')
+      expect(pressed()).toEqual(['Both'])
+
+      await flowButton('No Flows').trigger('click')
+      expect(pressed()).toEqual(['No Flows'])
+
+      await flowButton('Ingress').trigger('click')
+      expect(pressed()).toEqual(['Ingress'])
+    })
+
+    it('turns the filter off when the last choice is clicked again', async () => {
+      await flowButton('Both').trigger('click')
+      await flowButton('Both').trigger('click')
+      expect(pressed()).toEqual([])
+    })
+
+    it('shows the store\'s flow choices when the drawer opens', async () => {
+      store.drawerState = { visible: false } as any
+      await nextTick()
+      store.queryFilter.selectedFlows = ['Egress', 'Ingress']
+      store.drawerState = { visible: true } as any
+      await nextTick()
+      await nextTick()
+      expect(pressed()).toEqual(['Ingress', 'Egress'])
+    })
+
+    it('applies the flow choices to the store', async () => {
+      await flowButton('No Flows').trigger('click')
+      const applyBtn = wrapper.findAll('button').find(b => b.text().includes('Apply Filters'))
+      await applyBtn!.trigger('click')
+      await flushPromises()
+      expect(store.updateSelectedFlows).toHaveBeenCalledWith(['No Flows'])
     })
   })
 

@@ -114,6 +114,7 @@ describe('Nodes queryStringParser test', () => {
       ['true', { flows: 'true' }, ['Ingress', 'Egress']],
       ['ingress', { flows: 'ingress' }, ['Ingress']],
       ['egress', { flows: 'egress' }, ['Egress']],
+      ['both', { flows: 'both' }, ['Both']],
       ['false', { flows: 'false' }, ['No Flows']]
     ]) (
       'parseFlows: %s',

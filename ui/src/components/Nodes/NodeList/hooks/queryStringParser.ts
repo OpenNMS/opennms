@@ -32,6 +32,7 @@ import {
   SetOperator
 } from '@/types/index'
 import { isIP } from 'is-ip'
+import { FlowFilter } from '../flowFilter'
 
 /** Parse node label from a vue-router route.query object */
 export const parseNodeLabel = (queryObject: any) => {
@@ -123,7 +124,11 @@ export const parseMonitoringLocation = (queryObject: any, monitoringLocations: M
   return null
 }
 
-export const parseFlows = (queryObject: any) => {
+/**
+ * flows=true is either kind (Ingress and Egress both on), flows=both is both kinds,
+ * flows=false is neither. Values are the FlowFilter names in ../flowFilter.ts.
+ */
+export const parseFlows = (queryObject: any): FlowFilter[] => {
   const flows = (queryObject.flows as string || '').toLowerCase()
 
   if (flows === 'true') {
@@ -132,6 +137,8 @@ export const parseFlows = (queryObject: any) => {
     return ['Ingress']
   } else if (flows === 'egress') {
     return ['Egress']
+  } else if (flows === 'both') {
+    return ['Both']
   } else if (flows === 'false') {
     return ['No Flows']
   }

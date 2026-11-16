@@ -431,14 +431,21 @@ describe('useNodeListStore', () => {
 
   describe('removeFlow', () => {
     it('removes from selectedFlows and queryFilter', () => {
-      store.selectedFlows = [{ _text: 'Ingress' }, { _text: 'Egress' }]
-      store.queryFilter.selectedFlows = ['Ingress', 'Egress']
+      store.updateSelectedFlows(['Ingress', 'Egress'])
 
-      store.removeFlow({ _text: 'Ingress' })
+      store.removeFlow({ _value: 'Ingress', _text: 'Ingress' })
 
-      expect(store.selectedFlows).toHaveLength(1)
-      expect(store.selectedFlows[0]._text).toBe('Egress')
+      expect(store.selectedFlows).toEqual([{ _value: 'Egress', _text: 'Egress' }])
       expect(store.queryFilter.selectedFlows).toEqual(['Egress'])
+    })
+
+    it('removes a choice whose chip label differs from its value', () => {
+      store.updateSelectedFlows(['No Flows'])
+
+      store.removeFlow(store.selectedFlows[0])
+
+      expect(store.selectedFlows).toEqual([])
+      expect(store.queryFilter.selectedFlows).toEqual([])
     })
   })
 
@@ -491,10 +498,18 @@ describe('useNodeListStore', () => {
 
   describe('updateSelectedFlows', () => {
     it('syncs selectedFlows and queryFilter.selectedFlows', () => {
-      store.updateSelectedFlows([{ _text: 'Ingress' }, { _text: 'Egress' }])
+      store.updateSelectedFlows(['Ingress', 'Egress'])
 
       expect(store.selectedFlows).toHaveLength(2)
       expect(store.queryFilter.selectedFlows).toEqual(['Ingress', 'Egress'])
+    })
+
+    it('labels the chips as the drawer labels its buttons', () => {
+      store.updateSelectedFlows(['Both'])
+      expect(store.selectedFlows).toEqual([{ _value: 'Both', _text: 'Ingress + Egress' }])
+
+      store.updateSelectedFlows(['No Flows'])
+      expect(store.selectedFlows).toEqual([{ _value: 'No Flows', _text: 'No Flow Data' }])
     })
   })
 
@@ -572,6 +587,21 @@ describe('useNodeListStore', () => {
       })
 
       expect(store.queryFilter.nodesWithOutages).toBe(true)
+    })
+
+    it.each([
+      ['a flow choice', ['Both'], ['Both'], ['Ingress + Egress']],
+      ['Ingress and Egress', ['Egress', 'Ingress'], ['Ingress', 'Egress'], ['Ingress', 'Egress']],
+      // The earlier multiselect allowed any combination; No Flows decided its query.
+      ['a combination the buttons cannot show', ['Ingress', 'No Flows'], ['No Flows'], ['No Flow Data']]
+    ])('applies selectedFlows from filter: %s', async (_title, saved, expected, chips) => {
+      await store.setFromNodePreferences({
+        nodeColumns: [],
+        nodeFilter: { searchTerm: '', selectedCategories: [], selectedFlows: saved, selectedMonitoringLocations: [], categoryMode: SetOperator.Union, extendedSearch: { foreignSourceParams: null as any, snmpParams: null as any, sysParams: null as any }}
+      })
+
+      expect(store.queryFilter.selectedFlows).toEqual(expected)
+      expect(store.selectedFlows.map(chip => chip._text)).toEqual(chips)
     })
   })
 
