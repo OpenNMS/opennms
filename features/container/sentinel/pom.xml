@@ -339,6 +339,7 @@
                         <feature>scv-jceks-impl</feature>
                         <feature>scv-shell</feature>
                         <feature>wrapper</feature>
+                        <feature>opennms-health-rest-service</feature>
                     </bootFeatures>
                     <installedFeatures>
                         <!-- OPENNMS: Add Spring features that we need in the base container -->
