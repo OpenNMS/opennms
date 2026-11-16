@@ -1,0 +1,14 @@
+version: 1
+groups:
+  - name: oc-if-counters
+    match: /interfaces/interface/state/counters
+    resource-type: interface
+    instance: "{interface.name}"
+    attributes:
+      in-octets: { type: counter }
+  - name: oc-if-description
+    match: /interfaces/interface/state
+    resource-type: interface
+    instance: "{interface.name}"
+    attributes:
+      description: { type: string }

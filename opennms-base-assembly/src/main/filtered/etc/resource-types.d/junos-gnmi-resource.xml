@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!--
+  Disclaimer: This configuration is a proof of concept. It evaluates how usable it is
+  to configure gNMI streaming telemetry metric processing. These files are not covered
+  by commercial service agreements.
+-->
+<resource-types>
+   <resourceType name="junosFpcSensor" label="Junos Line Card Sensor" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+</resource-types>
