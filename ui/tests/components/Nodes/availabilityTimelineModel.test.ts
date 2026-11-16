@@ -507,6 +507,17 @@ describe('limitTimelineRows', () => {
     expect(shape(limitTimelineRows(model(...services), 8))).toEqual(expected)
   })
 
+  // The cut interface's heading keeps the figure for all its services, though only some show.
+  it('keeps the heading figure of an interface whose services are cut', () => {
+    const input = model(5, 5)
+    input.interfaces[1].availability = 87.5
+    const limited = limitTimelineRows(input, 8)
+
+    expect(shape(limited)).toEqual([5, 1])
+    expect(limited.interfaces[1].availability).toBe(87.5)
+    expect(limited.interfaces[1].services.map(s => s.serviceName)).toEqual(['SVC0'])
+  })
+
   it('keeps the node\'s own figures', () => {
     const limited = limitTimelineRows(model(12), 8)
 
