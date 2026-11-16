@@ -55,6 +55,12 @@ EXTRA_JAVA_OPTS="$EXTRA_JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStack
 # work around a karaf zip bug
 EXTRA_JAVA_OPTS="$EXTRA_JAVA_OPTS -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
 
+# JVM module flags (--add-opens, --enable-native-access, ...) come from one
+# place, shared with bin/opennms and the container entrypoints
+if [ -x "$CONTAINER_HOME/bin/_module_opts.sh" ]; then
+	EXTRA_JAVA_OPTS="$EXTRA_JAVA_OPTS $("$CONTAINER_HOME/bin/_module_opts.sh")"
+fi
+
 # export any default configurable variables from sysconf
 export RUNAS JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA_HOME JAVA JAVA_DEBUG_OPTS JAVA_DEBUG_PORT EXTRA_JAVA_OPTS CLASSPATH KARAF_DEBUG LD_LIBRARY_PATH
 
