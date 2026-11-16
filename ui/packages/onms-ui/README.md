@@ -189,6 +189,15 @@ Where these diverge from PrimeVue, deliberately:
   (`OnmsTable`'s `virtualScrollItemSize` remains the table case). Its `#item`
   slot exposes `{ item, index }` rather than forwarding PrimeVue's internal
   `options` bookkeeping.
+- **`OnmsToggleButton`** (added later, NMS-20449) is one on/off button that
+  stays pressed, for a set of choices where more than one can be on (several
+  of them side by side) or none at all. `label` is the text for both states;
+  `onLabel` / `offLabel` override it per state. Without any of them the
+  button has no text, where PrimeVue would show "Yes" / "No". `onIcon` /
+  `offIcon` take an icon component rather than PrimeVue's CSS class string.
+  The icon gets `onms-toggle-button-icon` plus `--on` / `--off`, and the
+  wrapper leaves its color to the consumer. `change` emits the new value, not
+  the DOM event, matching `OnmsSelectButton`.
 
 ## Icons
 
