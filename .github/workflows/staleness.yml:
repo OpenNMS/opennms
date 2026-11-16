@@ -1,0 +1,29 @@
+name: branch-staleness
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  merge_group:
+
+jobs:
+  staleness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fail if behind base for more than 7 days
+        run: |
+          BASE="origin/${{ github.base_ref || github.event.merge_group.base_ref }}"
+          BASE="${BASE#origin/refs/heads/}"; BASE="origin/${BASE#origin/}"
+          # Oldest base-branch commit that this PR does not contain yet
+          OLDEST=$(git log --reverse --format=%ct HEAD.."$BASE" | head -1)
+          if [ -z "$OLDEST" ]; then
+            echo "Up to date with $BASE"; exit 0
+          fi
+          AGE_DAYS=$(( ( $(date +%s) - OLDEST ) / 86400 ))
+          echo "Branch has been behind $BASE for $AGE_DAYS day(s)"
+          if [ "$AGE_DAYS" -ge 7 ]; then
+            echo "::error::Branch is more than 7 days behind $BASE. Please merge or rebase."
+            exit 1
+          fi
+
