@@ -143,7 +143,7 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
 
     private synchronized void unsubscribe() {
         if (subscribed) {
-            eventIpcManager.removeEventListener(this, UEI_LIST);
+            eventIpcManager.removeEventListener(this);
             subscribed = false;
         }
     }
