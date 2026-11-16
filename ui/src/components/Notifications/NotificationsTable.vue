@@ -170,14 +170,15 @@ const { withSpinner, report } = useActionFeedback()
 const EXPORT_LIMIT = 1000
 
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
+// From the ack type, not the preset name, so every preset of a kind gets the same columns.
 // Acknowledged rows have a responder to show; outstanding ones can be acknowledged. The `all`
-// preset mixes the two, so it has both, and the Acknowledge button only on outstanding rows.
-const showAckColumns = computed<boolean>(() => store.preset === 'allAcknowledged' || store.preset === 'all')
-const showActions = computed<boolean>(() => store.preset !== 'allAcknowledged' && canAcknowledgeNotifications.value)
+// type mixes the two, so it has both, and the Acknowledge button only on outstanding rows.
+const showAckColumns = computed<boolean>(() => store.acktype !== 'unack')
+const showActions = computed<boolean>(() => store.acktype !== 'ack' && canAcknowledgeNotifications.value)
 
 const emptyMessage = computed<string>(() => {
-  switch (store.preset) {
-    case 'allAcknowledged':
+  switch (store.acktype) {
+    case 'ack':
       return 'No acknowledged notifications found.'
     case 'all':
       return 'No notifications found.'

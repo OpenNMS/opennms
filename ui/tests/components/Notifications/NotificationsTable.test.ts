@@ -74,15 +74,17 @@ describe('NotificationsTable.vue', () => {
     })
   })
 
-  it('shows the responder but no actions for acknowledged notifications', () => {
-    const wrapper = mountTable('allAcknowledged', [acknowledged])
+  // Columns follow the ack type, so every acknowledged preset (and every outstanding one) matches.
+  it.each(['allAcknowledged', 'yourAcknowledged'] as const)('shows the responder but no actions for %s', (preset) => {
+    const wrapper = mountTable(preset, [acknowledged])
 
     expect(headers(wrapper)).toEqual(expect.arrayContaining(['Responder', 'Respond Time']))
     expect(headers(wrapper)).not.toContain('Actions')
+    expect(wrapper.find('[data-test="ack-button-2"]').exists()).toBe(false)
   })
 
-  it('shows the actions but no responder for outstanding notifications', () => {
-    const wrapper = mountTable('allOutstanding', [outstanding])
+  it.each(['allOutstanding', 'yourOutstanding', 'teamOutstanding'] as const)('shows the actions but no responder for %s', (preset) => {
+    const wrapper = mountTable(preset, [outstanding])
 
     expect(headers(wrapper)).toContain('Actions')
     expect(headers(wrapper)).not.toContain('Responder')
@@ -91,7 +93,8 @@ describe('NotificationsTable.vue', () => {
 
   it.each([
     ['allOutstanding', 'No outstanding notifications found.'],
-    ['allAcknowledged', 'No acknowledged notifications found.']
+    ['allAcknowledged', 'No acknowledged notifications found.'],
+    ['yourAcknowledged', 'No acknowledged notifications found.']
   ] as const)('words the empty %s page for what it shows', (preset, message) => {
     expect(mountTable(preset, []).text()).toContain(message)
   })

@@ -238,6 +238,7 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
     first,
     loading,
     currentUser,
+    acktype,
     title,
     load,
     applyPreset,
