@@ -83,7 +83,7 @@ public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
         try {
             final SyslogTcpConfig tcpConfig = m_config.getTcpConfig();
             if (tcpConfig != null && tcpConfig.isEnabled()) {
-                m_tcpListener = new SyslogTcpListener(tcpConfig, m_config.getListenAddress(), m_dispatcher);
+                m_tcpListener = new SyslogTcpListener(tcpConfig, m_config.getListenAddress(), m_dispatcher, m_packetsReceived);
                 m_tcpListener.start();
             }
         } catch (Throwable e) {

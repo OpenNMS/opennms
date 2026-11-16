@@ -72,7 +72,7 @@ Comparing the two counts below can confirm that every syslog packet a Minion rec
 | Minion
 | Syslog Listener (`org.opennms.netmgt.syslogd.listener`)
 | packetsReceived
-| Syslog packets received by the listener, one per UDP datagram.
+| Syslog packets received by the listener: one per UDP datagram, and one per framed message on the TCP listener.
 
 | {page-component-title}
 | Syslogd (`org.opennms.netmgt.syslogd`)
@@ -82,7 +82,7 @@ Comparing the two counts below can confirm that every syslog packet a Minion rec
 | {page-component-title}
 | Syslogd (`org.opennms.netmgt.syslogd`)
 | packetsReceived
-| Syslog packets received by the {page-component-title} listener itself.
+| Syslog packets received by the {page-component-title} listener itself, counted the same way.
 |===
 
 `consumer.messagesReceived` on {page-component-title} adds up the messages from every Minion and from the {page-component-title} listener itself, so compare it with the sum of the `packetsReceived` counters.

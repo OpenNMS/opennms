@@ -45,6 +45,8 @@ import org.opennms.netmgt.syslogd.api.SyslogConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Meter;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -83,6 +85,9 @@ public class SyslogTcpListener {
     private final SyslogTcpConfig m_config;
 
     private final AsyncDispatcher<SyslogConnection> m_dispatcher;
+
+    /** The receiver's packetsReceived, marked once per framed message, as UDP marks it once per datagram. */
+    private final Meter m_packetsReceived;
 
     /**
      * The interface the UDP listener was given, used when the tcp element names none. TCP
@@ -125,9 +130,15 @@ public class SyslogTcpListener {
 
     public SyslogTcpListener(final SyslogTcpConfig config, final String fallbackListenAddress,
             final AsyncDispatcher<SyslogConnection> dispatcher) {
+        this(config, fallbackListenAddress, dispatcher, new Meter());
+    }
+
+    public SyslogTcpListener(final SyslogTcpConfig config, final String fallbackListenAddress,
+            final AsyncDispatcher<SyslogConnection> dispatcher, final Meter packetsReceived) {
         m_config = Objects.requireNonNull(config);
         m_fallbackListenAddress = fallbackListenAddress;
         m_dispatcher = Objects.requireNonNull(dispatcher);
+        m_packetsReceived = Objects.requireNonNull(packetsReceived);
         m_dispatchTimeoutMs = TimeUnit.SECONDS.toMillis(config.getDispatchTimeoutSeconds());
     }
 
@@ -320,6 +331,7 @@ public class SyslogTcpListener {
 
         @Override
         protected void channelRead0(final ChannelHandlerContext ctx, final SyslogConnection connection) {
+            m_packetsReceived.mark();
             pending.add(connection);
             setAutoRead(ctx, false);
             dispatchNext(ctx);

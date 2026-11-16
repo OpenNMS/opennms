@@ -51,6 +51,8 @@ import org.opennms.netmgt.config.syslogd.SyslogTcpConfig;
 import org.opennms.netmgt.config.syslogd.SyslogTcpTlsConfig;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
 
+import com.codahale.metrics.Meter;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -82,6 +84,7 @@ public class SyslogTcpListenerDispatchIT {
 
     private SyslogTcpListener m_listener;
     private EventLoopGroup m_clientGroup;
+    private final Meter m_packetsReceived = new Meter();
 
     @BeforeClass
     public static void generateCertificate() throws Exception {
@@ -311,6 +314,20 @@ public class SyslogTcpListenerDispatchIT {
     }
 
     @Test(timeout = 60 * 1000)
+    public void countsEachFramedMessageAsAPacketReceived() throws Exception {
+        // Several messages in one write, so the count is per framed message, not per read or per connection.
+        final RecordingDispatcher dispatcher = new RecordingDispatcher(0);
+        final int port = start(dispatcher);
+
+        sendBurst(port, 40);
+        for (int i = 0; i < 40; i++) {
+            assertNotNull(dispatcher.nextMessage());
+        }
+
+        assertEquals(40, m_packetsReceived.getCount());
+    }
+
+    @Test(timeout = 60 * 1000)
     public void theDefaultModeDoesNotDependOnTheDispatchFutureAtAll() throws Exception {
         // Unordered reads on as soon as the sink takes the message, so a sink that never
         // confirms anything cannot slow it down and no timeout has to rescue it.
@@ -491,7 +508,7 @@ public class SyslogTcpListenerDispatchIT {
             config.setIdleTimeoutSeconds(idleSeconds);
         }
 
-        m_listener = new SyslogTcpListener(config, dispatcher);
+        m_listener = new SyslogTcpListener(config, null, dispatcher, m_packetsReceived);
         if (dispatchTimeoutMs > 0) {
             m_listener.setDispatchTimeoutMs(dispatchTimeoutMs);
         }
