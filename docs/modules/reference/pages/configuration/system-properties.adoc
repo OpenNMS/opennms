@@ -390,6 +390,7 @@ Many of the properties here are documented with much greater detail in their rel
 | `org.opennms.netmgt.icmp.pingerClass`
 | "org.opennms.netmgt.icmp.best.BestMatchPinger"
 | The default ICMP implementation class.
+The JICMP and JICMP6 pingers (`org.opennms.netmgt.icmp.jni.JniPinger`, `org.opennms.netmgt.icmp.jni6.Jni6Pinger`) are deprecated and will be removed in the next release; use `org.opennms.netmgt.icmp.jna.JnaPinger` or leave the property unset.
 
 | `org.opennms.netmgt.icmp.requireV4`
 | "detect"
