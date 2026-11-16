@@ -44,6 +44,9 @@ import org.slf4j.LoggerFactory;
  */
 public class KarafShell {
 
+    // Karaf prints the table border as a pipe or as a box-drawing line
+    private static final String COLUMN_BORDER = "[|\\u2502]";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final InetSocketAddress sshAddress;
     private final String username;
@@ -151,12 +154,15 @@ public class KarafShell {
         return this;
     }
 
+    /**
+     * Checks the State column of the feature list.
+     */
     public void checkFeature(String feature, String regex, Duration wait) {
         await(String.format("waiting for feature %s state to match regex '%s'", feature, regex))
                 .atMost(wait)
                 .until(() ->
                         runCommandOnce("feature:list | grep " + feature,
-                                output -> output.matches("(?ms).*?\\s(" + regex + ")\\s.*"), false)
+                                output -> output.matches("(?ms).*?" + COLUMN_BORDER + "\\s*(" + regex + ")\\s*" + COLUMN_BORDER + ".*"), false)
                 );
     }
 }

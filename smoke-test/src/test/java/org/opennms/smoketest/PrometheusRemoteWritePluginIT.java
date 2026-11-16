@@ -91,6 +91,7 @@ public class PrometheusRemoteWritePluginIT {
     public void writesAndReadsSamples() {
         // An ad hoc collection supplies samples without a wait for the collectd schedule
         await().atMost(Duration.ofMinutes(2)).pollInterval(Duration.ofSeconds(5))
+                .ignoreExceptions()
                 .until(() -> {
                     karafShell.runCommandOnce(COLLECT_AND_PERSIST, output -> output.contains("Persisted collection"), false);
                     return getSeriesInStore();

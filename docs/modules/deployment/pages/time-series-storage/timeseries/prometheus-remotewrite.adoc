@@ -93,6 +93,19 @@ opennms-plugins-prometheus-remotewrite
 
 . Restart the {page-component-title} service.
 
+[[prometheus-remotewrite-upgrade]]
+=== Upgrade from a manual installation
+
+Earlier releases did not include the plugin.
+If you copied the plugin's `.kar` file into `$\{OPENNMS_HOME}/deploy`, do these steps after the upgrade:
+
+. Remove the plugin's `.kar` file from `$\{OPENNMS_HOME}/deploy`.
+. Remove `wait-for-kar=opennms-prometheus-remotewrite-plugin` from `$\{OPENNMS_HOME}/etc/featuresBoot.d/prometheus-remotewrite.boot`.
+. Restart the {page-component-title} service.
+
+If you do not remove the `.kar` file, {page-component-title} starts the plugin version from the release.
+The version from the `.kar` file stays in the feature list and is not in use.
+
 == Validation
 
 After the first collection cycle (five minutes by default), query the time series store to confirm that metrics are arriving:
