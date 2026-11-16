@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -44,8 +45,9 @@ import org.slf4j.LoggerFactory;
  */
 public class KarafShell {
 
-    // Karaf prints the table border as a pipe or as a box-drawing line
-    private static final String COLUMN_BORDER = "[|\\u2502]";
+    private static final Pattern TERMINAL_ESCAPE = Pattern.compile("\\u001B(?:\\[[0-9;?]*[A-Za-z]|.)");
+    private static final int FEATURE_NAME_COLUMN = 0;
+    private static final int FEATURE_STATE_COLUMN = 3;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final InetSocketAddress sshAddress;
@@ -154,15 +156,21 @@ public class KarafShell {
         return this;
     }
 
-    /**
-     * Checks the State column of the feature list.
-     */
     public void checkFeature(String feature, String regex, Duration wait) {
         await(String.format("waiting for feature %s state to match regex '%s'", feature, regex))
                 .atMost(wait)
                 .until(() ->
-                        runCommandOnce("feature:list | grep " + feature,
-                                output -> output.matches("(?ms).*?" + COLUMN_BORDER + "\\s*(" + regex + ")\\s*" + COLUMN_BORDER + ".*"), false)
+                        // Without format, Karaf separates the columns with tabs and prints no borders
+                        runCommandOnce("feature:list --no-format | grep " + feature,
+                                output -> hasFeatureState(output, feature, regex), false)
                 );
+    }
+
+    static boolean hasFeatureState(String output, String feature, String regex) {
+        return output.lines()
+                .map(line -> TERMINAL_ESCAPE.matcher(line).replaceAll("").split("\t"))
+                .filter(cells -> cells.length > FEATURE_STATE_COLUMN)
+                .filter(cells -> cells[FEATURE_NAME_COLUMN].trim().equals(feature))
+                .anyMatch(cells -> cells[FEATURE_STATE_COLUMN].trim().matches(regex));
     }
 }
