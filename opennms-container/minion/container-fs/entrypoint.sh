@@ -419,8 +419,10 @@ configure() {
     # cacerts is a symlink to a file, so *do not* put /. on the target
     rsync --out-format="%n %C" "$JAVA_HOME/lib/security/cacerts" "$CACERTS"
     export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=$CACERTS -Djavax.net.ssl.trustStorePassword=changeit"
-    while read certid; do
-      [[ $certid =~ ^#.* ]] && continue
+    # Also read a last line without a trailing newline (e.g. kubectl create configmap --from-literal)
+    while read -r certid || [[ -n "$certid" ]]; do
+      certid="${certid%$'\r'}"
+      [[ -z $certid || $certid =~ ^#.* ]] && continue
       # check if CA cert already exists and remove so re-adding doesn't error
       if keytool -list -alias "$certid" -keystore "$CACERTS" -storepass changeit; then
         keytool -delete -alias "$certid" -keystore "$CACERTS" -storepass changeit
