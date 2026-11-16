@@ -1,15 +1,27 @@
 <template>
-  <nav
+  <div
     class="node-details-links"
-    aria-label="Node links"
-    data-test="node-details-links"
+    :class="$attrs.class"
+    :style="$attrs.style as StyleValue"
   >
-    <!-- Not shown until there is an answer for it, so it does not mount once more when one comes. -->
-    <OnmsMenubar
-      v-if="showBar"
-      :items="items"
-      :collapsed="collapsed"
-    />
+    <!--
+      class and style go on this wrapper, which the page lays out; every other attribute (data-*,
+      aria-*) goes on the nav. The measuring copy is outside the nav, so a query for the links, such
+      as the smoke tests' "//nav[@data-test='node-details-links']//...", finds each menu only once.
+      (A single root element: a comment above it would make the template a fragment in dev builds.)
+    -->
+    <nav
+      v-bind="navAttrs($attrs)"
+      aria-label="Node links"
+      data-test="node-details-links"
+    >
+      <!-- Not shown until there is an answer for it, so it does not mount once more when one comes. -->
+      <OnmsMenubar
+        v-if="showBar"
+        :items="items"
+        :collapsed="collapsed"
+      />
+    </nav>
     <!--
       The full row, never collapsed and never seen, so its width can be measured even while the
       bar above is showing its hamburger button.
@@ -31,11 +43,11 @@
       @ok="onAssetEditConfirmed"
       @cancel="pendingAssetHref = undefined"
     />
-  </nav>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref, useTemplateRef, watchEffect } from 'vue'
+import { computed, PropType, ref, StyleValue, useTemplateRef, watchEffect } from 'vue'
 import { useElementSize } from '@vueuse/core'
 import { OnmsMenubar, OnmsMenuItem } from '@opennms/onms-ui'
 import useRole from '@/composables/useRole'
@@ -43,6 +55,15 @@ import { Node } from '@/types/index'
 import AssetEditConfirmDialog from '@/components/Nodes/AssetEditConfirmDialog.vue'
 import { createLinkGroups, INFO_ITEM, needsAssetEditConfirm } from '@/components/Nodes/nodeActionLinks'
 import { buildServiceLinks, NodeLinkService } from '@/components/Nodes/nodeServiceLinks'
+
+defineOptions({ inheritAttrs: false })
+
+// Every attribute but class and style, for the nav (see the template).
+const navAttrs = (attrs: Record<string, unknown>) => {
+  const { class: _class, style: _style, ...rest } = attrs
+
+  return rest
+}
 
 // The node's links, grouped under top-level menus in a row beneath the header. The same links as
 // the title row's actions menu (NodeActionsDropdown), from the same nodeActionLinks, so the two

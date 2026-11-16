@@ -131,6 +131,29 @@ describe('NodeDetailsLinks.vue', () => {
       expect(shownBar(wrapper)!.vm.$.uid).toBe(bar.vm.$.uid)
     })
 
+    // Queries for the links (the smoke tests use //nav[@data-test='node-details-links']//...) must
+    // find each menu once, not again in the copy.
+    it('keeps the measured copy out of the nav', () => {
+      const wrapper = mountLinks({ availableWidth: 500 })
+      const nav = wrapper.get('nav[data-test="node-details-links"]')
+
+      expect(nav.find('.node-details-links-measure').exists()).toBe(false)
+      expect(nav.findAll('.p-menubar')).toHaveLength(1)
+      expect(wrapper.find('.node-details-links-measure .p-menubar').exists()).toBe(true)
+    })
+
+    // The page lays out the wrapper; the smoke tests read data-* from the nav.
+    it('puts class and style on the wrapper, and other attributes on the nav', () => {
+      const wrapper = mountLinks({ class: 'node-summary-links', style: 'margin-left: auto', 'data-requisition-checked': 'true' })
+      const nav = wrapper.get('nav')
+
+      expect(wrapper.classes()).toEqual(expect.arrayContaining(['node-details-links', 'node-summary-links']))
+      expect(wrapper.attributes('style')).toContain('margin-left: auto')
+      expect(wrapper.attributes('data-requisition-checked')).toBeUndefined()
+      expect(nav.attributes('data-requisition-checked')).toBe('true')
+      expect(nav.classes()).not.toContain('node-summary-links')
+    })
+
     // The second bar is the one measured: it has to stay a full row, and out of reach.
     it('measures a full row that is hidden from assistive technology and input', () => {
       const wrapper = mountLinks({ availableWidth: 100 })
