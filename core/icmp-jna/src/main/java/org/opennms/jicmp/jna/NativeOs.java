@@ -25,7 +25,7 @@ import java.util.Locale;
 
 /**
  * Operating system detection for the native socket implementations,
- * equivalent to the checks previously done with {@code com.sun.jna.Platform}.
+ * covering the platforms the FFM socket supports: Linux, macOS and FreeBSD.
  */
 public final class NativeOs {
     private static final String OS_NAME = System.getProperty("os.name", "");
@@ -41,25 +41,13 @@ public final class NativeOs {
         return OS.startsWith("mac") || OS.startsWith("darwin");
     }
 
-    public static boolean isWindows() {
-        return OS.startsWith("windows");
-    }
-
     public static boolean isFreeBSD() {
         return OS.startsWith("freebsd") || OS.startsWith("gnu/kfreebsd");
     }
 
-    public static boolean isOpenBSD() {
-        return OS.startsWith("openbsd");
-    }
-
-    public static boolean isSolaris() {
-        return OS.startsWith("solaris") || OS.startsWith("sunos");
-    }
-
-    /** BSD-style {@code sockaddr} layout (leading length byte): macOS and the BSDs. */
+    /** BSD-style {@code sockaddr} layout (leading length byte): macOS and FreeBSD. */
     public static boolean isBsdFamily() {
-        return isMac() || isFreeBSD() || isOpenBSD();
+        return isMac() || isFreeBSD();
     }
 
     public static String name() {
