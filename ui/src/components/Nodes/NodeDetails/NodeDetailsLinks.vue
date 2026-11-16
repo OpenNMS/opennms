@@ -4,7 +4,9 @@
     aria-label="Node links"
     data-test="node-details-links"
   >
+    <!-- Not shown until there is an answer for it, so it does not mount once more when one comes. -->
     <OnmsMenubar
+      v-if="showBar"
       :items="items"
       :collapsed="collapsed"
     />
@@ -33,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref, useTemplateRef } from 'vue'
+import { computed, PropType, ref, useTemplateRef, watchEffect } from 'vue'
 import { useElementSize } from '@vueuse/core'
 import { OnmsMenubar, OnmsMenuItem } from '@opennms/onms-ui'
 import useRole from '@/composables/useRole'
@@ -77,10 +79,11 @@ const props = defineProps({
     default: undefined
   },
   // The room, in pixels, the page has for the menus. Narrower than they need, they collapse to the
-  // hamburger button. Left out, the menubar decides by the viewport width instead.
+  // hamburger button. null: the page has not measured it yet, so the menus wait for it. Left out,
+  // the menubar decides by the viewport width instead.
   availableWidth: {
     required: false,
-    type: Number,
+    type: Number as PropType<number | null>,
     default: undefined
   }
 })
@@ -154,8 +157,23 @@ const items = computed<OnmsMenuItem[]>(() => {
 
 const { width: fullRowWidth } = useElementSize(useTemplateRef<HTMLElement>('fullRow'), undefined, { box: 'border-box' })
 
-const collapsed = computed<boolean | undefined>(() =>
-  props.availableWidth === undefined ? undefined : fullRowWidth.value > props.availableWidth)
+/**
+ * Whether the menus fit, decided once both widths are known and then held. OnmsMenubar mounts again
+ * each time `collapsed` changes, so a guess made before the measurements (a width of 0 for the full
+ * row fits anywhere) would mount it once for the guess and again for the answer. A width that goes
+ * away (null, as while the page is hidden) keeps the last answer.
+ */
+const fits = ref<boolean>()
+
+watchEffect(() => {
+  if (typeof props.availableWidth === 'number' && fullRowWidth.value > 0) {
+    fits.value = fullRowWidth.value <= props.availableWidth
+  }
+})
+
+// Left to the viewport only for a page that gives no width and never has.
+const collapsed = computed<boolean | undefined>(() => (fits.value === undefined ? undefined : !fits.value))
+const showBar = computed<boolean>(() => fits.value !== undefined || props.availableWidth === undefined)
 
 defineExpose({ items })
 </script>

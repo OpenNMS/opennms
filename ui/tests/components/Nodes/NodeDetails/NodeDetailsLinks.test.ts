@@ -92,6 +92,45 @@ describe('NodeDetailsLinks.vue', () => {
       expect(bars(wrapper)[0].props('collapsed')).toBe(true)
     })
 
+    // The bar shown, not the measured copy.
+    const shownBar = (wrapper: ReturnType<typeof mountLinks>) =>
+      bars(wrapper).find(bar => !bar.element.closest?.('.node-details-links-measure'))
+
+    it('collapses when the badges leave no room at all', () => {
+      expect(shownBar(mountLinks({ availableWidth: 0 }))!.props('collapsed')).toBe(true)
+    })
+
+    // OnmsMenubar mounts again for each change of `collapsed`, so a guess shown before the
+    // measurements would mean a mount for the guess and another for the answer.
+    it('shows no bar until the page has measured its room', async () => {
+      const wrapper = mountLinks({ availableWidth: null })
+      expect(shownBar(wrapper)).toBeUndefined()
+      expect(wrapper.find('.node-details-links-measure').exists()).toBe(true)
+
+      await wrapper.setProps({ availableWidth: 300 })
+      expect(shownBar(wrapper)!.props('collapsed')).toBe(true)
+    })
+
+    it('shows no bar until the full row has been measured', async () => {
+      fullRowWidth.value = 0
+      const wrapper = mountLinks({ availableWidth: 300 })
+      expect(shownBar(wrapper)).toBeUndefined()
+
+      fullRowWidth.value = 400
+      await wrapper.vm.$nextTick()
+      expect(shownBar(wrapper)!.props('collapsed')).toBe(true)
+    })
+
+    it('keeps its answer while the page has no measurement', async () => {
+      const wrapper = mountLinks({ availableWidth: 300 })
+      const bar = shownBar(wrapper)!
+
+      await wrapper.setProps({ availableWidth: null })
+      expect(shownBar(wrapper)!.props('collapsed')).toBe(true)
+      // The same bar, not one mounted again.
+      expect(shownBar(wrapper)!.vm.$.uid).toBe(bar.vm.$.uid)
+    })
+
     // The second bar is the one measured: it has to stay a full row, and out of reach.
     it('measures a full row that is hidden from assistive technology and input', () => {
       const wrapper = mountLinks({ availableWidth: 100 })

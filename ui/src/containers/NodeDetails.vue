@@ -158,14 +158,15 @@ const snmpPrimaryIpAddress = computed<string | undefined>(() => nodeStore.snmpPr
 
 // What the summary row leaves for the link menus once the badges have their natural width. The
 // badges are not squeezed while there is room for both, so their width is the width they need;
-// when there is not, the menus collapse to the hamburger button.
+// when there is not, the menus collapse to the hamburger button. null until the row is measured,
+// so the menus wait for it rather than guess.
 const summaryRow = useTemplateRef<HTMLElement>('summaryRow')
 const { width: summaryRowWidth } = useElementSize(summaryRow)
 const { width: summaryHeaderWidth } = useElementSize(useTemplateRef('summaryHeader'), undefined, { box: 'border-box' })
 
-const linksAvailableWidth = computed<number | undefined>(() => {
+const linksAvailableWidth = computed<number | null>(() => {
   if (!summaryRow.value || summaryRowWidth.value === 0) {
-    return undefined
+    return null
   }
 
   const gap = parseFloat(getComputedStyle(summaryRow.value).columnGap) || 0
