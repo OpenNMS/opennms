@@ -366,6 +366,15 @@ The last release of the BeanShell interpreter was in 2016.
 As such, we are deprecating support for BeanShell and will remove it in Horizon 37.
 Groovy support remains available everywhere BeanShell was implemented.
 
+=== JICMP and JICMP6 pingers deprecated
+
+The JICMP and JICMP6 pingers, which use JNI and the separately installed `jicmp` and `jicmp6` packages, are deprecated and will be removed in the next release.
+The JNA pinger, which supports IPv4 and IPv6 without a separate native library, is now preferred: when `org.opennms.netmgt.icmp.pingerClass` is not set, {page-component-title} chooses it whenever it works, and falls back to JICMP or JICMP6 only if it does not.
+On Linux, macOS and the BSDs its sockets now use the Java Foreign Function & Memory API (see `org.opennms.netmgt.icmp.socket` in xref:reference:configuration/system-properties.adoc[System Properties]).
+
+If you set `org.opennms.netmgt.icmp.pingerClass` to `org.opennms.netmgt.icmp.jni.JniPinger` or `org.opennms.netmgt.icmp.jni6.Jni6Pinger`, a deprecation warning is logged at startup.
+Remove the setting, or set it to `org.opennms.netmgt.icmp.jna.JnaPinger`, before upgrading to the next release.
+
 === RT Ticketer plugin (plugin-ticketer-rt) removed
 The deprecated RT Ticketer plugin was removed in this release.
 
