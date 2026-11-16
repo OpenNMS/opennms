@@ -569,57 +569,104 @@ describe('NodeAvailabilityGraph.vue', () => {
     expect(hrefs).not.toContain('/opennms/outage/detail.htm?id=3543')
   })
 
-  // The roster's figures are a query each, so the server computes one page of interfaces at a time.
-  describe('interface paging', () => {
-    // A roster page answering for `count` interfaces in all, of which this page holds `onPage`.
-    const page = (count: number, onPage = Math.min(count, 10)) => availabilityDoc({
-      ipinterfaceCount: count,
-      ipinterfaces: Array.from({ length: onPage }, (_, i) => ({
+  // The panel shows at most 8 rows: a heading per interface plus one per service.
+  describe('row limit', () => {
+    // A roster for a node with `interfaces` interfaces of `services` services each, of which the
+    // server sends `sent` interfaces.
+    const roster = (interfaces: number, services: number, sent = Math.min(interfaces, 4)) => availabilityDoc({
+      ipinterfaceCount: interfaces,
+      'service-count': interfaces * services,
+      ipinterfaces: Array.from({ length: sent }, (_, i) => ({
         address: `10.0.0.${i + 1}`,
         availability: 100,
         id: i + 1,
-        services: [{ id: 100 + i, name: 'ICMP', serviceId: 1, availability: 100 }]
+        services: Array.from({ length: services }, (_, j) => ({
+          id: 100 * (i + 1) + j,
+          name: `SVC${j}`,
+          serviceId: j + 1,
+          availability: 100
+        }))
       }))
     })
 
-    it('asks for the first page of 10 interfaces', async () => {
+    const rowCount = () => wrapper.findAll('.interface-row').length + wrapper.findAll('[data-test="timeline-service-row"]').length
+
+    // Each interface takes at least two rows, so no more than 4 can show.
+    it('asks for no more interfaces than can show, leaving out those without services', async () => {
       wrapper = mountPanel()
       await flushPromises()
 
-      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 0, withServices: true })
+      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 4, offset: 0, withServices: true })
     })
 
-    // The timeline drops interfaces with no monitored services, so the server must page over the
-    // others only -- or a page of unmonitored interfaces comes back empty.
-    it('asks the server to page over monitored interfaces only', async () => {
+    it.each([
+      ['1 interface with 7 services', 1, 7],
+      ['2 interfaces with 3 services each', 2, 3],
+      ['4 interfaces with 1 service each', 4, 1]
+    ])('shows every row, and no message, for %s (8 rows)', async (_title, interfaces, services) => {
+      getAvailability.mockResolvedValue(roster(interfaces, services))
       wrapper = mountPanel()
       await flushPromises()
 
-      expect(getAvailability.mock.calls[0][3]).toEqual(expect.objectContaining({ withServices: true }))
+      expect(rowCount()).toBe(8)
+      expect(wrapper.find('[data-test="availability-partial"]').exists()).toBe(false)
     })
 
-    // An empty page is not a node with nothing monitored, and must not strand the user on it.
-    it('keeps the paginator, and makes no empty claim, on a page that comes back empty', async () => {
-      getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaceCount: 23, ipinterfaces: [] }))
+    it.each([
+      ['1 interface with 8 services', 1, 8, 8],
+      ['2 interfaces with 4 services each', 2, 4, 8],
+      ['3 interfaces with 3 services each', 3, 3, 8],
+      // After 7 rows a second heading would fit, but none of its services: it is left out.
+      ['2 interfaces with 6 services each', 2, 6, 7]
+    ])('shows the first rows and a message for %s', async (_title, interfaces, services, shown) => {
+      getAvailability.mockResolvedValue(roster(interfaces, services))
       wrapper = mountPanel()
       await flushPromises()
 
-      expect(wrapper.find('[data-test="availability-empty"]').exists()).toBe(false)
-      expect(wrapper.findComponent({ name: 'OnmsPaginator' }).exists()).toBe(true)
+      expect(rowCount()).toBe(shown)
+      expect(wrapper.find('[data-test="availability-partial"]').exists()).toBe(true)
+    })
+
+    it('names the node\'s totals in the message and links to the Availability page', async () => {
+      getAvailability.mockResolvedValue(roster(4, 6))
+      wrapper = mountPanel()
+      await flushPromises()
+
+      const message = wrapper.get('[data-test="availability-partial"]')
+      expect(message.text()).toBe('Node has 4 interfaces and 24 services, only some shown here. View them all on the Availability page.')
+      expect(message.get('[data-test="availability-page-link"]').attributes('href')).toBe('/opennms/element/availability.jsp?node=101')
+    })
+
+    it('words one interface and one service in the singular', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaceCount: 1, 'service-count': 9 }))
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(wrapper.get('[data-test="availability-partial"]').text()).toContain('Node has 1 interface and 9 services')
+    })
+
+    // Only the rows are cut: the figure is the node's.
+    it('keeps the node\'s availability figure', async () => {
+      getAvailability.mockResolvedValue({ ...roster(4, 6), availability: 91.25 })
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(wrapper.get('[data-test="node-availability"]').text()).toBe('91.25%')
     })
 
     it('says the node has no monitored services only when its total is 0', async () => {
-      getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaceCount: 0, ipinterfaces: [] }))
+      getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaceCount: 0, 'service-count': 0, ipinterfaces: [] }))
       wrapper = mountPanel()
       await flushPromises()
 
       expect(wrapper.find('[data-test="availability-empty"]').exists()).toBe(true)
-      expect(wrapper.findComponent({ name: 'OnmsPaginator' }).exists()).toBe(false)
+      expect(wrapper.find('[data-test="availability-partial"]').exists()).toBe(false)
     })
 
     // Without ipinterfaceCount the panel counts what it would show itself.
     it('without a count from the server, counts only interfaces with services', async () => {
       getAvailability.mockResolvedValue(availabilityDoc({
+        'service-count': 0,
         ipinterfaces: [{ address: '10.0.0.1', availability: 100, id: 1, services: [] }]
       }))
       wrapper = mountPanel()
@@ -628,80 +675,12 @@ describe('NodeAvailabilityGraph.vue', () => {
       expect(wrapper.find('[data-test="availability-empty"]').exists()).toBe(true)
     })
 
-    it('hides the paginator when the load fails', async () => {
+    it('shows no message when the load fails', async () => {
       getAvailability.mockResolvedValue(false)
       wrapper = mountPanel()
       await flushPromises()
 
-      expect(wrapper.findComponent({ name: 'OnmsPaginator' }).exists()).toBe(false)
-    })
-
-    it('shows no paginator when the node has 10 interfaces or fewer', async () => {
-      getAvailability.mockResolvedValue(page(10))
-      wrapper = mountPanel()
-      await flushPromises()
-
-      expect(wrapper.findComponent({ name: 'OnmsPaginator' }).exists()).toBe(false)
-    })
-
-    it('shows a paginator over the node\'s total when it has more', async () => {
-      getAvailability.mockResolvedValue(page(23))
-      wrapper = mountPanel()
-      await flushPromises()
-
-      const paginator = wrapper.findComponent({ name: 'OnmsPaginator' })
-      expect(paginator.exists()).toBe(true)
-      expect(paginator.props('totalRecords')).toBe(23)
-      expect(paginator.props('rows')).toBe(10)
-    })
-
-    it('fetches the chosen page, with the timeline for the same window', async () => {
-      getAvailability.mockResolvedValue(page(23))
-      wrapper = mountPanel()
-      await flushPromises()
-      vi.clearAllMocks()
-      getAvailability.mockResolvedValue(page(23, 3))
-      getTimeline.mockResolvedValue(timelineDoc())
-
-      wrapper.findComponent({ name: 'OnmsPaginator' }).vm.$emit('page', { page: 2, first: 20, rows: 10, pageCount: 3 })
-      await flushPromises()
-
-      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 20, withServices: true })
-      expect(getTimeline).toHaveBeenCalledTimes(1)
-      expect(getAvailability.mock.calls[0][1]).toBe(getTimeline.mock.calls[0][1])
-      expect(wrapper.findComponent({ name: 'OnmsPaginator' }).props('first')).toBe(20)
-    })
-
-    it('keeps the page when the range changes', async () => {
-      getAvailability.mockResolvedValue(page(23))
-      wrapper = mountPanel('101', { TimeControls: TimeControlsStub })
-      await flushPromises()
-      wrapper.findComponent({ name: 'OnmsPaginator' }).vm.$emit('page', { page: 1, first: 10, rows: 10, pageCount: 3 })
-      await flushPromises()
-      vi.clearAllMocks()
-      getAvailability.mockResolvedValue(page(23))
-      getTimeline.mockResolvedValue(timelineDoc())
-
-      await wrapper.find('button').trigger('click')
-      await flushPromises()
-
-      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 10, withServices: true })
-    })
-
-    it('starts a new node on its first page', async () => {
-      getAvailability.mockResolvedValue(page(23))
-      wrapper = mountPanel()
-      await flushPromises()
-      wrapper.findComponent({ name: 'OnmsPaginator' }).vm.$emit('page', { page: 1, first: 10, rows: 10, pageCount: 3 })
-      await flushPromises()
-      vi.clearAllMocks()
-      getAvailability.mockResolvedValue(page(23))
-      getTimeline.mockResolvedValue(timelineDoc())
-
-      await wrapper.setProps({ node: { id: '202' } as any })
-      await flushPromises()
-
-      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 10, offset: 0, withServices: true })
+      expect(wrapper.find('[data-test="availability-partial"]').exists()).toBe(false)
     })
   })
 

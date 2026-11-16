@@ -40,7 +40,7 @@
         :content="errorContent"
         data-test="availability-error"
       />
-      <!-- From the node's total, not this page: an empty page is not a node with nothing monitored. -->
+      <!-- From the node's total, not from the interfaces fetched. -->
       <EmptyList
         v-else-if="hasLoaded && totalInterfaces === 0"
         :content="emptyContent"
@@ -61,23 +61,25 @@
           :node-id="node.id"
           :range-label="rangeLabel"
         />
+        <p
+          v-if="isPartial"
+          class="availability-partial"
+          data-test="availability-partial"
+        >
+          Node has {{ countText }}, only some shown here. View them all on the
+          <a
+            :href="availabilityPageHref"
+            data-test="availability-page-link"
+          >Availability page</a>.
+        </p>
       </template>
-      <!-- Outside the branch above, so a page that comes back empty can still be paged away from. -->
-      <OnmsPaginator
-        v-if="!loadFailed && totalInterfaces > PAGE_SIZE"
-        :first="first"
-        :rows="PAGE_SIZE"
-        :totalRecords="totalInterfaces"
-        data-test="availability-paginator"
-        @page="onPage"
-      />
     </template>
   </NodeDetailsPanel>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { OnmsIconButton, OnmsPaginator, OnmsSpinner, type OnmsTablePageEvent } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsSpinner } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import NodeDetailsPanel from './NodeDetailsPanel.vue'
 import AvailabilityTimeline from './AvailabilityTimeline.vue'
@@ -91,6 +93,7 @@ import { Node, NodeAvailability, StartEndTime } from '@/types/index'
 import { NodeOutageTimeline } from '@/types/nodeAvailabilityTimeline'
 import {
   buildTimelineModel,
+  limitTimelineRows,
   nodeAvailabilityText,
   TimelineWindow
 } from '@/components/Nodes/availabilityTimelineModel'
@@ -145,24 +148,41 @@ const errorContent = {
 const emptyContent = { msg: 'No monitored services on this node.' }
 
 /**
- * Interfaces per page. The roster's figures are a database query each -- per interface and per
- * service -- so the server computes only the page asked for, rather than every interface on a node
- * that may have hundreds. The legacy node page dropped its availability box altogether past 10
- * interfaces; this pages through them instead. (The full Availability page can use larger pages.)
+ * The most rows the timeline shows: a heading per interface plus one per service. More would take
+ * too much of the page, so a bigger node shows its first rows and a link to the Availability page,
+ * which lists them all.
  */
-const PAGE_SIZE = 10
+const MAX_ROWS = 8
 
-// Index of the first interface on the page shown, and the node's total, from the last answer.
-const first = ref(0)
+/**
+ * Interfaces to ask for. Each takes at least two rows (its heading and a service), so no more than
+ * this can show. The roster's figures are a database query each -- per interface and per service --
+ * so the server computes only these, rather than every interface on a node that may have hundreds.
+ */
+const FETCH_INTERFACES = MAX_ROWS / 2
+
+// The node's totals, from the last answer: not only the interfaces fetched.
 const totalInterfaces = ref(0)
+const totalServices = ref(0)
 
-// The legacy page lists every interface and service; it is where the button below goes.
+const isPartial = computed(() => totalInterfaces.value + totalServices.value > MAX_ROWS)
+
+const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ? '' : 's'}`
+
+const countText = computed(() => `${plural(totalInterfaces.value, 'interface')} and ${plural(totalServices.value, 'service')}`)
+
+// The legacy page lists every interface and service. The message and the button both go there.
+const availabilityPageHref = computed(() => `${props.baseHref}element/availability.jsp?node=${props.node.id}`)
+
 const onViewDetailsClick = () => {
-  window.location.assign(`${props.baseHref}element/availability.jsp?node=${props.node.id}`)
+  window.location.assign(availabilityPageHref.value)
 }
 
+// The node's figure comes from the whole roster; only the rows are cut.
 const model = computed(() =>
-  availability.value ? buildTimelineModel(availability.value, timeline.value, activeWindow.value) : undefined)
+  availability.value
+    ? limitTimelineRows(buildTimelineModel(availability.value, timeline.value, activeWindow.value), MAX_ROWS)
+    : undefined)
 
 const ticks = computed(() => buildTicks(activeWindow.value))
 
@@ -188,9 +208,9 @@ const fetchAll = async () => {
 
   try {
     const [avail, outages] = await Promise.all([
-      // withServices: the timeline drops interfaces with no monitored services, so the server pages
-      // over the others only -- otherwise a page of unmonitored interfaces would show as empty.
-      API.getNodeAvailabilityPercentage(String(id), start, end, { limit: PAGE_SIZE, offset: first.value, withServices: true }),
+      // withServices: the timeline drops interfaces with no monitored services, so the server leaves
+      // them out before counting and limiting -- otherwise they could take the places of shown ones.
+      API.getNodeAvailabilityPercentage(String(id), start, end, { limit: FETCH_INTERFACES, offset: 0, withServices: true }),
       API.getNodeOutageTimeline(id, start, end)
     ])
 
@@ -217,16 +237,10 @@ const fetchAll = async () => {
     timeline.value = outages
     // A server without the count sends every interface: count the ones the timeline would show.
     totalInterfaces.value = avail.ipinterfaceCount ?? avail.ipinterfaces.filter(iface => (iface.services ?? []).length > 0).length
+    totalServices.value = avail['service-count'] ?? 0
   } finally {
     stopLoading()
   }
-}
-
-// A page of the roster. The timeline is fetched again with it -- one cheap query -- so the bars and
-// the percentages always describe the same window.
-const onPage = (event: OnmsTablePageEvent) => {
-  first.value = event.first
-  fetchAll()
 }
 
 const onUpdateTime = (time: StartEndTime) => {
@@ -241,12 +255,7 @@ const onUpdateTime = (time: StartEndTime) => {
 // immediate is what actually fetches. The page rebuilds this panel for each node rather than
 // feeding a new id to the existing one, so props.node.id never changes during an instance's life
 // and a change-only watch would never fire at all.
-watch([() => props.node?.id, selection], ([id], [previousId]) => {
-  // A new node starts on its first page; a new range keeps the page the user was on.
-  if (id !== previousId) {
-    first.value = 0
-  }
-
+watch([() => props.node?.id, selection], () => {
   fetchAll()
 }, { immediate: true })
 </script>
@@ -261,6 +270,12 @@ watch([() => props.node?.id, selection], ([id], [previousId]) => {
 
 .availability-truncated {
   margin: 0 0 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--onms-secondary-text-on-surface);
+}
+
+.availability-partial {
+  margin: 0.5rem 0 0;
   font-size: 0.8125rem;
   color: var(--onms-secondary-text-on-surface);
 }

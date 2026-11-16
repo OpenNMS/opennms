@@ -27,10 +27,13 @@ import {
   formatCompactDuration,
   interfaceAvailabilityText,
   isMonitored,
+  limitTimelineRows,
   nodeAvailabilityText,
   segmentDescription,
   segmentFor,
   unmonitoredPercent,
+  TimelineInterfaceGroup,
+  TimelineModel,
   TimelineServiceRow,
   TimelineWindow
 } from '@/components/Nodes/availabilityTimelineModel'
@@ -462,5 +465,52 @@ describe('buildTimelineModel monitored flags', () => {
 
   it('marks a node with no interfaces left unmonitored', () => {
     expect(buildTimelineModel(doc([]), null, WINDOW).monitored).toBe(false)
+  })
+})
+
+describe('limitTimelineRows', () => {
+  const group = (id: number, services: number): TimelineInterfaceGroup => ({
+    ipInterfaceId: id,
+    ipAddress: `10.0.0.${id}`,
+    availability: 100,
+    monitored: true,
+    services: Array.from({ length: services }, (_, i) => ({
+      ifServiceId: id * 100 + i,
+      serviceId: i,
+      serviceName: `SVC${i}`,
+      ipAddress: `10.0.0.${id}`,
+      availability: 100,
+      segments: []
+    }))
+  })
+
+  const model = (...services: number[]): TimelineModel => ({
+    window: { start: 0, end: 1 },
+    availability: 99,
+    monitored: true,
+    interfaces: services.map((count, i) => group(i + 1, count)),
+    unmonitoredPct: 0
+  })
+
+  // Services kept per interface.
+  const shape = (m: TimelineModel) => m.interfaces.map(g => g.services.length)
+
+  it.each([
+    ['keeps a model that fits', [2, 3], [2, 3]],
+    ['keeps exactly 8 rows', [3, 3], [3, 3]],
+    ['cuts the services of the interface that runs over', [3, 5], [3, 3]],
+    ['cuts one interface with too many services', [12], [7]],
+    ['leaves out an interface that would fit only its heading', [2, 3, 2], [2, 3]],
+    ['shows a heading with the one service that fits', [2, 2, 2], [2, 2, 1]],
+    ['leaves out every interface after the limit', [1, 1, 1, 1, 1], [1, 1, 1, 1]]
+  ])('%s', (_title, services, expected) => {
+    expect(shape(limitTimelineRows(model(...services), 8))).toEqual(expected)
+  })
+
+  it('keeps the node\'s own figures', () => {
+    const limited = limitTimelineRows(model(12), 8)
+
+    expect(limited.availability).toBe(99)
+    expect(limited.monitored).toBe(true)
   })
 })
