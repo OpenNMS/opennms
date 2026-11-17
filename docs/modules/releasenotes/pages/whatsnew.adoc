@@ -83,6 +83,11 @@ The TL1 autonomous message daemon (Tl1d) has been removed, together with `etc/tl
 It could no longer be enabled in `etc/service-configuration.xml`, so running systems are not affected; a leftover `etc/tl1d-configuration.xml` is no longer read and can be deleted.
 The `uei.opennms.org/api/tl1d/message/autonomous` event definition is kept.
 
+=== Reportd removed
+The Reportd daemon, which ran the reports listed in `etc/reportd-configuration.xml` on a schedule, has been removed together with that file, its configuration model and the `opennms-reportd` module.
+It could no longer be enabled in `etc/service-configuration.xml`, so running systems are not affected; a leftover `etc/reportd-configuration.xml` is no longer read and can be deleted.
+On-demand and scheduled database reports from the web UI are not affected, and reports Reportd persisted earlier stay listed with their stored format.
+
 === SNMP datacollection config moved to DB with new UI
 The contents of `etc/datacollection-config.xml` and `etc/datacollection/\*.xml` are migrated into the database during the upgrade process, and the original files are moved to `etc_archive/`.
 After upgrade, manage SNMP data collection through the *Administration -> Manage SNMP Data Collection Config* page (or the REST API under `/api/v2/datacollectionconf`).

@@ -75,7 +75,6 @@
                             org.opennms.netmgt.config.api,
                             org.opennms.netmgt.config.javamail,
                             org.opennms.netmgt.config.provisiond,
-                            org.opennms.netmgt.config.reportd,
                             org.opennms.netmgt.config.reporting,
                             org.opennms.netmgt.config.siteStatusViews,
                             org.opennms.netmgt.config.surveillanceViews,

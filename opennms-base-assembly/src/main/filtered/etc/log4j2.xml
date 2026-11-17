@@ -335,7 +335,6 @@
         <KeyValuePair key="poller"               value="DEBUG" />
         <KeyValuePair key="provisiond"           value="DEBUG" />
         <KeyValuePair key="queued"               value="DEBUG" />
-        <KeyValuePair key="reportd"              value="DEBUG" />
         <KeyValuePair key="reports"              value="DEBUG" />
         <KeyValuePair key="rtc"                  value="DEBUG" />
         <KeyValuePair key="scriptd"              value="DEBUG" />

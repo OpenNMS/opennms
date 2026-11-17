@@ -319,11 +319,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testReportdConfiguration() {
-        testConfigFile("reportd-configuration.xml");
-    }
-
-    @Test
     public void testResponseAdhocGraph() {
         testConfigFile("response-adhoc-graph.properties");
     }
