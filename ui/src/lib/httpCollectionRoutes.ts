@@ -20,7 +20,7 @@
 /// License.
 ///
 
-/** Paths of the HTTP collection configuration pages; names are encoded the same way the pages decode them. */
+/** Paths of the HTTP collection configuration pages; names are encoded once, which Vue Router undoes when it reads the params. */
 const encode = (name: string) => encodeURIComponent(name)
 
 export const HTTP_COLLECTION_ROOT = '/http-collection-config'
@@ -32,8 +32,11 @@ export const collectionEditPath = (name: string) => `${collectionPath(name)}/edi
 export const uriCreatePath = (name: string) => `${collectionPath(name)}/uri/create`
 export const uriEditPath = (name: string, index: number) => `${collectionPath(name)}/uri/${index}/edit`
 
-/** Reads a collection name from a route param. */
-export const nameFromParam = (param: unknown) => decodeURIComponent(String(param ?? ''))
+/**
+ * Reads a collection name from a route param. Vue Router has already decoded it; decoding it again would
+ * throw on a name like 'CPU 90%' and turn the name 'CPU%20load' into another one.
+ */
+export const nameFromParam = (param: unknown) => String(param ?? '')
 
 /** Reads an index from a route param; -1 for a create route. */
 export const indexFromParam = (param: unknown) => (param === undefined || param === '' ? -1 : Number(param))

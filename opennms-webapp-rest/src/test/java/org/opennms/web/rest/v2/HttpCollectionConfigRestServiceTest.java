@@ -215,6 +215,24 @@ public class HttpCollectionConfigRestServiceTest {
     }
 
     @Test
+    public void createsACollectionWhoseNameNeedsEncoding() {
+        try (Response response = restService.createCollection(collection("my collection 90%"), adminContext())) {
+            assertEquals(201, response.getStatus());
+            assertEquals("httpcollection/collections/my%20collection%2090%25", response.getLocation().toString());
+        }
+        assertEquals(3, dao.config.getHttpCollection().size());
+        assertEquals("my collection 90%", dao.config.getHttpCollection().get(2).getName());
+    }
+
+    @Test
+    public void refusesASlashInTheCollectionName() {
+        try (Response response = restService.createCollection(collection("a/b"), adminContext())) {
+            assertEquals(400, response.getStatus());
+        }
+        assertEquals(0, dao.writes);
+    }
+
+    @Test
     public void refusesToCreateACollectionWhoseNameDiffersOnlyInCase() {
         try (Response response = restService.createCollection(collection("Doc-Count"), adminContext())) {
             assertEquals(409, response.getStatus());

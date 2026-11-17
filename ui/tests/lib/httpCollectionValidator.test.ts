@@ -41,6 +41,11 @@ describe('httpCollectionValidator', () => {
     expect(sameCollectionName(' Doc ', 'doc')).toBe(true)
   })
 
+  test('refuses a slash in the name, but not other characters that need encoding', () => {
+    expect(validateCollection(collection({ name: 'a/b' })).name).toBe('Name must not contain \'/\'.')
+    expect(validateCollection(collection({ name: 'CPU 90%' })).name).toBeUndefined()
+  })
+
   test('checks the rrd', () => {
     expect(validateCollection(collection({ rrd: { step: 0, rras: ['RRA:AVERAGE:0.5:1:10'] }})).step).toBeTruthy()
     expect(validateCollection(collection({ rrd: { step: 300, rras: [] }})).rras).toBe('At least one RRA is required.')

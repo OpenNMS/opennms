@@ -13,6 +13,7 @@ The same applies to the generic configuration management endpoint `/rest/cm/http
 An HTTP collection lists the URIs the HTTP collector requests and, for each, the attributes it extracts from the response body with the groups of a regular expression.
 A collectd package service collected by the `HttpCollector` selects a collection through its `collection` parameter.
 The collector looks collections up ignoring case, so two collection names that differ only in case are refused.
+A collection name must not contain `/`, because it is a path segment of the URLs below.
 
 The collector reads the configuration on every collection, so a change applies from the next collection on; no reload is needed.
 

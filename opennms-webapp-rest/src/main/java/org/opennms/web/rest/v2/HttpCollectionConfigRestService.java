@@ -22,7 +22,6 @@
 package org.opennms.web.rest.v2;
 
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +36,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -241,7 +241,8 @@ public class HttpCollectionConfigRestService implements HttpCollectionConfigRest
             LOG.error("Failed to create HTTP collection {}.", name, e);
             return serverError(PERSIST_FAILED_MESSAGE);
         }
-        return Response.created(URI.create("httpcollection/collections/" + name)).build();
+        // Built with UriBuilder: the name is user input and may contain characters that need encoding.
+        return Response.created(UriBuilder.fromPath("httpcollection/collections/{name}").build(name)).build();
     }
 
     @Override

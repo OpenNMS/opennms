@@ -77,6 +77,8 @@ export const validateCollection = (collection: HttpCollection, existingNames: st
 
   if (isBlank(collection.name)) {
     errors.name = 'Name is required.'
+  } else if (collection.name.includes('/')) {
+    errors.name = 'Name must not contain \'/\'.'
   } else if (existingNames.some(name => sameCollectionName(name, collection.name))) {
     errors.name = 'A collection with this name already exists.'
   }
