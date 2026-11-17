@@ -161,7 +161,9 @@
               </artifactItems>
             </configuration>
           </execution>
-          <!-- Unpack hawtio, excluding vulnerable versions of org.json and jackson-core bundled by hawtio -->
+          <!-- Unpack hawtio, excluding vulnerable versions of org.json and jackson-core bundled by hawtio.
+               Guava (and its failureaccess/listenablefuture companions) is dropped entirely: nothing in the
+               hawtio webapp references com.google.common, and the bundled guava-30.1-jre is vulnerable. -->
           <execution>
             <id>unpack-hawtio</id>
             <phase>process-resources</phase>
@@ -176,7 +178,7 @@
                   <artifactId>hawtio-default</artifactId>
                   <version>${hawtio.version}</version>
                   <type>war</type>
-                  <excludes>WEB-INF/lib/json-2*.jar,WEB-INF/lib/jackson-*.jar</excludes>
+                  <excludes>WEB-INF/lib/json-2*.jar,WEB-INF/lib/jackson-*.jar,WEB-INF/lib/guava-*.jar,WEB-INF/lib/failureaccess-*.jar,WEB-INF/lib/listenablefuture-*.jar</excludes>
                 </artifactItem>
               </artifactItems>
             </configuration>
