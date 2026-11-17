@@ -1,0 +1,122 @@
+[[minion-ipc]]
+= Communication Patterns
+:description: Learn how OpenNMS Core, Minion, and Sentinel exchange messages through the Sink, RPC, and Twin inter-process communication (IPC) patterns.
+
+{page-component-title} Core, Minions, and Sentinels exchange messages through a message broker using a small set of inter-process communication (IPC) patterns.
+Each pattern is an API with interchangeable transport implementations, so the features that use it do not depend on the broker you deploy.
+This page describes the patterns, which transports implement them, and how {page-component-title} selects a transport.
+
+== Sink
+
+The Sink pattern sends messages in one direction, from a producer to a consumer.
+A Minion uses it to forward unsolicited messages that it receives from devices in its location to {page-component-title} Core or to a Sentinel.
+
+Examples of Sink messages include the following:
+
+* Syslog messages and SNMP traps that the Minion receives.
+* Flow and streaming telemetry packets that the Minion forwards for processing by Core or Sentinel.
+* Heartbeat messages that a Minion sends to show that it is running.
+
+Each feature that uses the Sink pattern defines a module with a unique ID.
+The module ID is part of the queue or topic name, so the messages of each module travel on their own channel.
+A module can also define the following policies:
+
+* An aggregation policy combines several messages into a single message before dispatch.
+The aggregated message is sent when it reaches a maximum number of messages or when a maximum time has elapsed, whichever happens first.
+* An asynchronous policy defines the size of the dispatch queue, the number of threads that send messages, and whether a caller blocks or is rejected when the queue is full.
+
+When the broker is unreachable, a Minion queues Sink messages until connectivity is restored, and can extend that queue with off-heap storage.
+For more information, see xref:minion/off-heap-storage.adoc[].
+
+== Remote procedure calls (RPC)
+
+The RPC pattern sends a request to a location and waits for a response.
+{page-component-title} Core uses it to run operations on a Minion in the location of the target node.
+
+Examples of RPC requests include the following:
+
+* Service monitor polls and detector runs.
+* SNMP requests for provisioning and data collection.
+* Requests from other collectors, and ping requests.
+
+Each request names a location, and the broker delivers the request to a Minion at that location.
+A request can also name a specific Minion by its system ID, for example when {page-component-title} monitors the Minion itself.
+When more than one Minion runs at a location, any one of them can process a request, which provides load balancing and failover.
+
+A request has a time to live.
+If no response arrives before the time to live expires, the request fails with a timeout.
+
+By default, requests for nodes in the `Default` location do not use the broker; {page-component-title} Core runs them locally.
+
+[[minion-ipc-twin]]
+== Twin
+
+The Twin pattern replicates configuration objects from {page-component-title} Core to Minions.
+A feature on {page-component-title} Core publishes an object under a unique key, and the matching feature on each Minion subscribes to that key.
+Twin delivers these objects over the same message broker that the Minion uses for RPC and Sink.
+
+The pattern works as follows:
+
+. When a Minion feature subscribes to a key, the Minion sends a request to {page-component-title} Core and receives the current version of the object.
+. When the object changes on {page-component-title} Core, Core pushes the update to the subscribed Minions.
+When possible, the update contains only a JSON patch with the differences from the previous version.
+. A publisher can target a single location, so Minions at different locations can receive different versions of the same object.
+
+The following table lists the keys that {page-component-title} publishes:
+
+[options="header", cols="2,3"]
+|===
+| Key
+| Object
+
+| `trapd.listener.config`
+| The SNMPv3 users from the trapd configuration, which the Minion uses to authenticate and decrypt SNMPv3 traps.
+
+| `telemetry.connector.config`
+| The telemetry connector configuration for the Minion's location, which the Minion uses to start streaming telemetry connectors.
+
+| `ipfix-dot-d.config`
+| The vendor-specific IPFIX information element definitions from `$\{OPENNMS_HOME}/etc/ipfix.d`, which the Minion uses to parse IPFIX flows.
+|===
+
+Twin uses the same transport as Sink and RPC.
+With Apache Kafka, Twin uses dedicated request and response topics; see xref:core/message-broker/kafka-topics.adoc[].
+
+To check that Twin works, run the `opennms:twin-subscribe` command in the Minion's Karaf shell with `trapd.listener.config` or `ipfix-dot-d.config`.
+The command prints the current object, or `Timeout` if no object arrives within 15 seconds:
+
+[source, karaf]
+----
+admin@minion()> opennms:twin-subscribe trapd.listener.config
+----
+
+== Transports
+
+The following table lists the Sink and RPC transport implementations:
+
+[options="header", cols="1,2,2"]
+|===
+| Broker
+| Sink
+| RPC
+
+| ActiveMQ (default)
+| ActiveMQ queues through Apache Camel, one queue per module.
+| ActiveMQ request and response queues through JMS.
+
+| Apache Kafka
+| Kafka topics, one topic per module.
+| Kafka request and response topics.
+
+| gRPC
+| A gRPC stream from the Minion to the gRPC server on {page-component-title} Core.
+| A gRPC stream between {page-component-title} Core and the Minion.
+|===
+
+{page-component-title} Core and every Minion must use the same transport.
+On {page-component-title} Core, the `org.opennms.core.ipc.strategy` system property selects the transport for all patterns: `kafka` for Apache Kafka or `osgi` for gRPC.
+When the property is not set, {page-component-title} Core uses ActiveMQ.
+On Minion, the Karaf features that you install at startup select the transport: `opennms-core-ipc-jms` for ActiveMQ (installed by default), `opennms-core-ipc-kafka` for Apache Kafka, or `opennms-core-ipc-grpc-client` for gRPC.
+
+For the steps to configure each broker, see xref:core/setup-message-broker.adoc[] for {page-component-title} Core and xref:minion/install.adoc[] for Minion.
+For broker-specific tuning, see xref:reference:configuration/tuning-activemq.adoc[] and xref:reference:configuration/tuning-kafka.adoc[].

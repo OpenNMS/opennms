@@ -4,7 +4,10 @@
       <div class="title-container">
         <!-- <span class="title"> SNMP Interfaces </span> -->
       </div>
-      <div class="header-content-container">
+      <div
+        class="header-content-container"
+        v-if="!store.sourcesReorderMode"
+      >
         <div class="search-container">
           <FormField class="search-field">
             <OnmsSearchInput
@@ -28,8 +31,55 @@
       </div>
     </div>
 
+    <StagedReorderList
+      v-if="store.sourcesReorderMode"
+      ref="reorderList"
+      :items="store.orderedSources"
+      :item-label="sourceLabel"
+      :item-search-text="sourceSearchText"
+      item-noun="source"
+      intro="Sources at the top are evaluated first when matching events. Drag rows or use the arrows; nothing changes until you save."
+      filter-placeholder="Filter by name or vendor — several terms match any"
+      :saving="store.isSavingSourceOrder"
+      :save="store.saveSourcesOrder"
+      :refetch="store.fetchOrderedSources"
+      @close="store.stopSourcesReorder()"
+    >
+      <template #item="{ item }">
+        <div class="reorder-item-info">
+          <span class="reorder-item-title">{{ item.name }}</span>
+          <span class="reorder-item-meta">{{ item.vendor }} &middot; {{ item.eventCount }} events</span>
+        </div>
+        <OnmsTag
+          :class="item.enabled ? 'enabled-tag' : 'disabled-tag'"
+          :value="item.enabled ? 'Enabled' : 'Disabled'"
+        />
+      </template>
+      <template #pinned>
+        <div
+          v-if="store.catchAllSource"
+          class="catch-all-row"
+          data-test="catch-all-row"
+        >
+          <OnmsIcon
+            :icon="Lock"
+            aria-hidden="true"
+            focusable="false"
+          />
+          <div class="reorder-item-info">
+            <span class="reorder-item-title">{{ store.catchAllSource.name }}</span>
+            <span class="reorder-item-meta">Always evaluated last (pinned)</span>
+          </div>
+          <OnmsTag
+            :class="store.catchAllSource.enabled ? 'enabled-tag' : 'disabled-tag'"
+            :value="store.catchAllSource.enabled ? 'Enabled' : 'Disabled'"
+          />
+        </div>
+      </template>
+    </StagedReorderList>
+
     <OnmsTable
-      v-if="store.sources.length"
+      v-else-if="store.sources.length"
       :value="store.sources"
       lazy
       paginator
@@ -52,9 +102,19 @@
       >
         <template #header>
           <span
-            title="Order in which sources are evaluated when matching events: 1 is evaluated first. The catch-all source is always evaluated last."
+            class="order-header"
             data-test="order-header"
-          >Order</span>
+            v-onms-tooltip="'Order 1 is evaluated first when matching events; the catch-all source is always last.'"
+          >
+            Order
+            <OnmsIcon
+              :icon="Info"
+              class="order-info-icon"
+              data-test="order-info"
+              aria-label="Order 1 is evaluated first when matching events; the catch-all source is always last."
+              focusable="false"
+            />
+          </span>
         </template>
       </OnmsColumn>
       <OnmsColumn
@@ -115,7 +175,7 @@
       :items="rowMenuItems"
     />
 
-    <div v-if="!store.sources.length">
+    <div v-if="!store.sourcesReorderMode && !store.sources.length">
       <EmptyList
         :content="emptyListContent"
         data-test="empty-list"
@@ -128,7 +188,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref, useId } from 'vue'
-import { useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
@@ -136,6 +196,7 @@ import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
 import {
   OnmsColumn,
+  OnmsIcon,
   OnmsIconButton,
   OnmsMenu,
   OnmsMenuItem,
@@ -146,12 +207,15 @@ import {
   type OnmsTableSortEvent
 } from '@opennms/onms-ui'
 import Download from '@opennms/onms-ui/icons/action/DownloadFile.vue'
+import Info from '@opennms/onms-ui/icons/action/Info.vue'
+import Lock from '@opennms/onms-ui/icons/action/Lock.vue'
 import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import MenuIcon from '@opennms/onms-ui/icons/navigation/MoreHoriz.vue'
 import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
+import StagedReorderList from '@/components/Common/StagedReorderList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigSourceStatusDialog from './Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'
@@ -162,6 +226,24 @@ const searchId = useId()
 const emptyListContent = {
   msg: 'No results found.'
 }
+
+const sourceLabel = (source: EventConfigSource) => source.name
+const sourceSearchText = (source: EventConfigSource) => `${source.name} ${source.vendor}`
+
+// Leaving the page (source detail link, breadcrumbs, menu) with unsaved reorder edits asks
+// first, the same way the Cancel button does. An allowed leave also ends the reorder mode:
+// the store outlives the page, so the mode must not still be on when the page is reopened.
+const reorderList = ref<{ confirmLeave: () => Promise<boolean> } | null>(null)
+onBeforeRouteLeave(async () => {
+  if (store.sourcesReorderMode && reorderList.value) {
+    const leave = await reorderList.value.confirmLeave()
+    if (leave) {
+      store.stopSourcesReorder()
+    }
+    return leave
+  }
+  return true
+})
 
 const rowMenu = ref()
 const rowMenuTarget = ref<EventConfigSource | null>(null)
@@ -233,8 +315,20 @@ onMounted(async () => {
   margin-top: 10px;
   padding: 25px;
 
+  .order-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: help;
+  }
+
+  .order-info-icon {
+    color: var(--p-text-muted-color);
+  }
+
   .header {
     display: flex;
+    justify-content: flex-end;
     margin-bottom: 20px;
 
     .title-container {
@@ -247,7 +341,7 @@ onMounted(async () => {
       align-items: center;
       justify-content: flex-start;
       gap: 5px;
-      width: 30%;
+      flex: 0 0 auto;
 
       .search-container {
         // width: 80%;
@@ -270,6 +364,36 @@ onMounted(async () => {
     display: flex;
     align-items: center;
     gap: 5px;
+  }
+
+  .reorder-item-info {
+    flex-grow: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+
+    .reorder-item-title {
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .reorder-item-meta {
+      font-size: 0.8rem;
+      color: var(--p-text-muted-color);
+    }
+  }
+
+  .catch-all-row {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+    border: 1px dashed var(--p-content-border-color);
+    padding: 4px 10px;
+    border-radius: 5px;
+    align-items: center;
+    background: var(--p-content-hover-background);
   }
 
   .enabled-tag {

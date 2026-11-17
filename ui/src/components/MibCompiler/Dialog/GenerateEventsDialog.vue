@@ -1,0 +1,486 @@
+<template>
+  <OnmsDialog
+    :visible="visible"
+    :header="`Generate Events from ${fileName}`"
+    width="70em"
+    data-test="generate-events-dialog"
+    @update:visible="(value: boolean) => !value && close()"
+  >
+    <!-- Step 1: choose the UEI base -->
+    <div
+      v-if="step === 'input'"
+      class="uei-step"
+    >
+      <p>
+        Event UEIs are built as <code>&lt;UEI base&gt;/&lt;trap name&gt;</code>.
+        Adjust the base if needed, then generate a preview.
+      </p>
+      <FormField>
+        <label :for="ueiInputId">UEI Base</label>
+        <OnmsInputText
+          :id="ueiInputId"
+          v-model="ueiBase"
+          class="uei-input"
+          data-test="uei-base-input"
+        />
+      </FormField>
+    </div>
+
+    <!-- Step 2: review/edit the generated events XML -->
+    <div
+      v-if="step === 'preview'"
+      class="preview-step"
+    >
+      <p data-test="event-count">
+        Generated <strong>{{ preview?.eventCount }}</strong> event definition(s) from
+        <strong>{{ preview?.mibName }}</strong>. Review and edit the XML below before saving.
+        Saving stores the events in the database as source
+        <strong>{{ sourceName }}</strong>.
+      </p>
+      <p
+        v-if="preview?.eventCount === 0"
+        class="no-traps"
+        data-test="no-traps-message"
+      >
+        The MIB does not contain any notification or trap definitions, so there is nothing to save.
+      </p>
+      <div
+        v-if="duplicateUeis.length > 0"
+        class="duplicate-ueis"
+        data-test="duplicate-ueis"
+      >
+        <p>
+          <strong>{{ ueiCount(duplicateUeis.length) }}</strong> {{ duplicateUeis.length === 1 ? 'is' : 'are' }}
+          already defined in other event sources.
+          OpenNMS uses only the definition from the source that it evaluates first.
+          Before the save, the dialog shows which definitions OpenNMS will use.
+        </p>
+        <p
+          v-if="hasDisabledDuplicates"
+          data-test="disabled-duplicates-hint"
+        >
+          OpenNMS does not use disabled definitions. If you enable one again, it competes with the new definition.
+        </p>
+        <DuplicateUeiTable :items="duplicateUeis" />
+      </div>
+      <OnmsTextarea
+        v-if="(preview?.eventCount ?? 0) > 0"
+        v-model="eventsXml"
+        :rows="20"
+        class="xml-editor"
+        data-test="events-xml"
+        aria-label="Generated events XML"
+      />
+      <p
+        v-if="validationError"
+        class="validation-error"
+        data-test="validation-error"
+      >
+        {{ validationError }}
+      </p>
+    </div>
+
+    <!-- Step 3 (conditional): confirm the replacement of the source and the effect on duplicate UEIs -->
+    <div
+      v-if="step === 'confirm'"
+      class="confirm-step"
+      data-test="confirm-save"
+    >
+      <p
+        v-if="targetExists"
+        data-test="confirm-replace"
+      >
+        An event source named <strong>{{ sourceName }}</strong> already exists in the database.
+        Saving replaces all of its event definitions, including changes made after the source was created.
+      </p>
+      <div
+        v-if="overriddenUeis.length > 0"
+        class="duplicate-ueis"
+        data-test="confirm-overridden-ueis"
+      >
+        <p>
+          <template v-if="targetExists">
+            <strong>{{ sourceName }}</strong> is evaluated before the listed sources,
+          </template>
+          <template v-else>
+            A new event source is evaluated before all existing sources,
+          </template>
+          so OpenNMS will no longer use their definitions of the
+          <strong>{{ ueiCount(overriddenUeis.length) }}</strong> below:
+        </p>
+        <DuplicateUeiTable :items="overriddenUeis" />
+        <p
+          v-if="noAlarmDataMessage"
+          data-test="confirm-no-alarm-data"
+        >
+          {{ noAlarmDataMessage }}
+        </p>
+      </div>
+      <div
+        v-if="shadowedUeis.length > 0"
+        class="duplicate-ueis"
+        data-test="confirm-shadowed-ueis"
+      >
+        <p>
+          Sources that are evaluated before <strong>{{ sourceName }}</strong> also define the
+          <strong>{{ ueiCount(shadowedUeis.length) }}</strong> below. OpenNMS will continue to use their definitions
+          and will not use the new ones:
+        </p>
+        <DuplicateUeiTable :items="shadowedUeis" />
+      </div>
+      <p>
+        To change the evaluation order, use the Event Configuration page after the save.
+      </p>
+    </div>
+
+    <!-- Step 4: saved -->
+    <div
+      v-if="step === 'done'"
+      class="done-step"
+      data-test="events-saved"
+    >
+      <p>
+        Event definitions saved to the database as source <strong>{{ sourceName }}</strong>.
+        You can fine-tune them in the Event Configuration page.
+      </p>
+    </div>
+
+    <template #footer>
+      <OnmsButton
+        v-if="step === 'input'"
+        label="Generate Preview"
+        :disabled="isLoading || !ueiBase.trim()"
+        data-test="generate-button"
+        @click="generatePreview"
+      />
+      <OnmsButton
+        v-if="step === 'preview' && (preview?.eventCount ?? 0) > 0"
+        label="Save Events"
+        :disabled="isLoading"
+        data-test="save-button"
+        @click="save"
+      />
+      <OnmsButton
+        v-if="step === 'confirm'"
+        :label="overriddenUeis.length > 0 ? 'Save Anyway' : 'Replace Events'"
+        :disabled="isLoading"
+        data-test="confirm-save-button"
+        @click="doSave"
+      />
+      <OnmsButton
+        v-if="step === 'confirm'"
+        label="Back"
+        variant="outlined"
+        :disabled="isLoading"
+        data-test="back-button"
+        @click="step = 'preview'"
+      />
+      <OnmsButton
+        v-if="step === 'done'"
+        label="Go to Event Configuration"
+        data-test="go-to-event-config-button"
+        @click="goToEventConfig"
+      />
+      <OnmsButton
+        :label="step === 'done' ? 'Close' : 'Cancel'"
+        variant="outlined"
+        data-test="cancel-button"
+        @click="close"
+      />
+    </template>
+  </OnmsDialog>
+</template>
+
+<script lang="ts" setup>
+import { computed, ref, useId, watch } from 'vue'
+import { refDebounced } from '@vueuse/core'
+import { useRouter } from 'vue-router'
+import { OnmsButton, OnmsDialog, OnmsInputText, OnmsTextarea } from '@opennms/onms-ui'
+import FormField from '@/components/Common/FormField.vue'
+import useSnackbar from '@/composables/useSnackbar'
+import { getOrderedEventConfigSources, uploadEventConfigFiles } from '@/services/eventConfigService'
+import { findExistingUeis, generateEvents } from '@/services/mibCompilerService'
+import { EventConfigSource } from '@/types/eventConfig'
+import { MibDuplicateUei, MibEventSource, MibEventsPreview } from '@/types/mibCompiler'
+import { getGeneralErrorMessage, isWellFormedXml } from '../mibFilesValidator'
+import DuplicateUeiTable from './DuplicateUeiTable.vue'
+
+const props = defineProps<{
+  visible: boolean
+  fileName: string
+}>()
+
+const emit = defineEmits<{
+  close: []
+  failed: [result: MibEventsPreview]
+}>()
+
+const router = useRouter()
+const snackbar = useSnackbar()
+const ueiInputId = useId()
+
+const step = ref<'input' | 'preview' | 'confirm' | 'done'>('input')
+const isLoading = ref(false)
+const ueiBase = ref('')
+const preview = ref<MibEventsPreview | null>(null)
+const eventsXml = ref('')
+const validationError = ref('')
+// the sources in evaluation order (first entry evaluated first), read when the user saves
+const orderedSources = ref<EventConfigSource[]>([])
+// UEIs that other sources define: from the preview, then checked again for the edited XML on each save
+const existingUeis = ref<Record<string, MibEventSource[]>>({})
+// the (trimmed) XML that existingUeis was computed for
+const checkedXml = ref('')
+// parsing a large events document on every keystroke lags the editor
+const debouncedXml = refDebounced(eventsXml, 300)
+
+const ueiCount = (count: number) => count === 1 ? '1 UEI' : `${count} UEIs`
+
+const baseName = computed(() => props.fileName.replace(/\.[^.]+$/, ''))
+const sourceName = computed(() => (preview.value?.suggestedFileName ?? `${baseName.value}.events.xml`).replace(/\.xml$/, ''))
+
+// The UEIs in the edited XML, to drop duplicates whose UEI an edit removed. null keeps every duplicate:
+// when there are none, when the XML is still the one that was checked, or when it does not parse.
+// The live XML decides whether it was edited, so a save right after an edit never filters its fresh
+// result with the UEIs of the older, debounced XML.
+const currentUeis = computed(() => {
+  if (Object.keys(existingUeis.value).length === 0 || eventsXml.value.trim() === checkedXml.value) {
+    return null
+  }
+  const parsed = new DOMParser().parseFromString(debouncedXml.value, 'application/xml')
+  if (parsed.querySelector('parsererror') !== null) {
+    return null
+  }
+  return new Set(Array.from(parsed.getElementsByTagName('uei')).map(element => element.textContent?.trim() ?? ''))
+})
+
+// An edit that changes a UEI drops its duplicate at once. An edit that adds a duplicate, or a change in
+// the event configuration since the preview, shows up when the save checks the edited XML again.
+const duplicateUeis = computed<MibDuplicateUei[]>(() =>
+  Object.entries(existingUeis.value)
+    .filter(([uei]) => currentUeis.value === null || currentUeis.value.has(uei))
+    .map(([uei, sources]) => ({ uei, sources })))
+
+const hasDisabledDuplicates = computed(() => duplicateUeis.value.some(item => item.sources.some(source => !source.enabled)))
+
+const targetExists = computed(() => orderedSources.value.some(source => source.name === sourceName.value))
+
+// Splits the duplicates by evaluation order. A new source is evaluated before all existing ones; an
+// existing source keeps its position. Sources evaluated after the target lose their definition of the
+// UEI (overridden). If a source evaluated before the target defines it, that definition stays in use and the
+// new one is ignored (shadowed). Disabled definitions are not loaded, so they take part in neither.
+const classifiedDuplicates = computed(() => {
+  const position = new Map(orderedSources.value.map((source, index) => [source.name, index]))
+  const targetPosition = position.get(sourceName.value) ?? -1
+  const overridden: MibDuplicateUei[] = []
+  const shadowed: MibDuplicateUei[] = []
+  for (const { uei, sources } of duplicateUeis.value) {
+    // a source that is not in the list any more (deleted after the preview) is no duplicate
+    const known = sources.filter(source => source.enabled && position.has(source.name))
+    const before = known.filter(source => (position.get(source.name) ?? 0) < targetPosition)
+    if (before.length > 0) {
+      shadowed.push({ uei, sources: before })
+    } else if (known.length > 0) {
+      overridden.push({ uei, sources: known })
+    }
+  }
+  return { overridden, shadowed }
+})
+
+const overriddenUeis = computed(() => classifiedDuplicates.value.overridden)
+const shadowedUeis = computed(() => classifiedDuplicates.value.shadowed)
+
+// The UEIs whose new definitions in the checked XML all contain alarm data. Generated definitions have
+// none, but the user can add it in the editor.
+const ueisWithAlarmData = computed(() => {
+  const withAlarmData = new Set<string>()
+  const withoutAlarmData = new Set<string>()
+  const parsed = new DOMParser().parseFromString(checkedXml.value, 'application/xml')
+  for (const event of Array.from(parsed.getElementsByTagName('event'))) {
+    const children = Array.from(event.children)
+    const uei = children.find(child => child.localName === 'uei')?.textContent?.trim()
+    if (uei) {
+      const target = children.some(child => child.localName === 'alarm-data') ? withAlarmData : withoutAlarmData
+      target.add(uei)
+    }
+  }
+  return new Set([...withAlarmData].filter(uei => !withoutAlarmData.has(uei)))
+})
+
+// Overriding a definition that creates or clears alarms with one that has no alarm data stops the trap
+// from doing that. Only shown for the overridden UEIs whose new definitions lack alarm data.
+const noAlarmDataMessage = computed(() => {
+  const total = overriddenUeis.value.length
+  const count = overriddenUeis.value.filter(item => !ueisWithAlarmData.value.has(item.uei)).length
+  if (count === 0) {
+    return ''
+  }
+  let subject
+  if (count === total) {
+    subject = count === 1 ? 'The new definition does' : 'The new definitions do'
+  } else {
+    subject = count === 1 ? 'The new definition of 1 of these UEIs does' : `The new definitions of ${count} of these UEIs do`
+  }
+  return `${subject} not contain alarm data. If an existing definition creates or clears alarms, `
+    + `${count === 1 ? 'that trap' : 'those traps'} will no longer do that.`
+})
+
+// a response that arrives after the dialog closed, or after it reopened for
+// another file, must not touch the current state
+const requestSeq = ref(0)
+
+watch(() => props.visible, (visible) => {
+  requestSeq.value++
+  if (visible) {
+    step.value = 'input'
+    isLoading.value = false
+    preview.value = null
+    eventsXml.value = ''
+    validationError.value = ''
+    orderedSources.value = []
+    existingUeis.value = {}
+    checkedXml.value = ''
+    ueiBase.value = `uei.opennms.org/traps/${baseName.value}`
+  }
+})
+
+const generatePreview = async () => {
+  const requestId = requestSeq.value
+  isLoading.value = true
+  try {
+    const result = await generateEvents(props.fileName, ueiBase.value.trim())
+    if (requestId !== requestSeq.value) {
+      return
+    }
+    if (!result.success) {
+      emit('failed', result)
+      return
+    }
+    preview.value = result
+    existingUeis.value = result.existingUeis ?? {}
+    checkedXml.value = (result.eventsXml ?? '').trim()
+    eventsXml.value = result.eventsXml ?? ''
+    step.value = 'preview'
+  } catch (error: unknown) {
+    if (requestId !== requestSeq.value) {
+      return
+    }
+    snackbar.showSnackBar({
+      msg: getGeneralErrorMessage(error, `Failed to generate events from '${props.fileName}'.`),
+      error: true
+    })
+  } finally {
+    if (requestId === requestSeq.value) {
+      isLoading.value = false
+    }
+  }
+}
+
+const save = async () => {
+  validationError.value = ''
+  const xml = eventsXml.value.trim()
+  if (!isWellFormedXml(xml)) {
+    validationError.value = 'The events XML is not well-formed. Fix it before saving.'
+    return
+  }
+  // The upload replaces an existing source wholesale, and the new definitions can override the
+  // definitions of other sources for the same UEIs. Both need the user's explicit consent first,
+  // so the duplicates are checked again for the UEIs of the edited XML.
+  const requestId = requestSeq.value
+  isLoading.value = true
+  try {
+    const [sources, existing] = await Promise.all([
+      getOrderedEventConfigSources(),
+      findExistingUeis(sourceName.value, xml)
+    ])
+    if (requestId !== requestSeq.value) {
+      return
+    }
+    orderedSources.value = sources
+    existingUeis.value = existing
+    checkedXml.value = xml
+    // shadowed UEIs need an existing target, so they always come with targetExists
+    if (targetExists.value || overriddenUeis.value.length > 0) {
+      isLoading.value = false
+      step.value = 'confirm'
+      return
+    }
+  } catch (error: unknown) {
+    if (requestId !== requestSeq.value) {
+      return
+    }
+    isLoading.value = false
+    validationError.value = getGeneralErrorMessage(error, 'Failed to check for an existing event source or duplicate UEIs. Try again.')
+    return
+  }
+  await doSave()
+}
+
+const doSave = async () => {
+  const xml = eventsXml.value.trim()
+  const requestId = requestSeq.value
+  isLoading.value = true
+  try {
+    const file = new File([xml], `${sourceName.value}.xml`, { type: 'application/xml' })
+    const response = await uploadEventConfigFiles([file])
+    if (requestId !== requestSeq.value) {
+      return
+    }
+    if (response.errors?.length) {
+      step.value = 'preview'
+      validationError.value = response.errors.map(item => `${item.file}: ${item.error}`).join('; ')
+      return
+    }
+    snackbar.showSnackBar({ msg: `Event definitions from '${preview.value?.mibName}' saved successfully.` })
+    step.value = 'done'
+  } catch (error: unknown) {
+    if (requestId !== requestSeq.value) {
+      return
+    }
+    step.value = 'preview'
+    validationError.value = getGeneralErrorMessage(error, 'Failed to save the event definitions.')
+  } finally {
+    if (requestId === requestSeq.value) {
+      isLoading.value = false
+    }
+  }
+}
+
+const goToEventConfig = () => {
+  close()
+  router.push('/event-config')
+}
+
+const close = () => {
+  emit('close')
+}
+</script>
+
+<style lang="scss" scoped>
+.uei-step {
+  .uei-input {
+    width: 100%;
+  }
+}
+
+.preview-step {
+  .xml-editor {
+    width: 100%;
+    font-family: monospace;
+    font-size: 13px;
+  }
+
+  .validation-error {
+    color: var(--p-red-600);
+  }
+
+  .no-traps {
+    color: var(--p-orange-600);
+  }
+}
+
+// shared by the preview warning and the confirmation step
+.duplicate-ueis > p {
+  color: var(--p-orange-600);
+}
+</style>

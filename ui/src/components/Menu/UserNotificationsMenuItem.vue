@@ -69,11 +69,7 @@
             <i :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase() ?? 'indeterminate'}`" />
             <div class="full-width-left">
               <div>
-                <span class="font-weight-bold">
-                  {{ new Date(item.pageTime).toLocaleDateString() }} {{ new
-                  Date(item.pageTime).toLocaleTimeString()
-                  }}
-                </span>
+                <span class="font-weight-bold">{{ formatPageTime(item.pageTime) }}</span>
               </div>
               <div class="dropdown-info-bar">
                 <span>{{ item.notificationName }}</span>
@@ -137,13 +133,14 @@ import IconGroup from '@opennms/onms-ui/icons/action/Group.vue'
 import IconNotificationsOff from '@opennms/onms-ui/icons/notification/NotificationsOff.vue'
 import IconNotificationSelected from '@opennms/onms-ui/icons/notification/NotificationSelected.vue'
 import IconPerson from '@opennms/onms-ui/icons/action/Person.vue'
+import { navigateTo } from '@/lib/navigation'
 import { useMenuStore } from '@/stores/menuStore'
 import {
   MainMenu,
   NoticeStatusDisplay,
-  NotificationSummary,
-  OnmsNotification
+  NotificationSummary
 } from '@/types/mainMenu'
+import { OnmsNotification } from '@/types/notifications'
 
 const menuStore = useMenuStore()
 const maxNotifications = 2
@@ -262,14 +259,23 @@ const computeLink = (url: string) => {
 }
 
 const onMenuItemClick = (url: string) => {
-  const link = computeLink(url)
-  window.location.assign(link)
+  // re-clicking the link for the page already open (e.g. a preset of the
+  // Notifications page) refreshes that page instead of doing nothing
+  navigateTo(computeLink(url))
+}
+
+const formatPageTime = (pageTime: OnmsNotification['pageTime']) => {
+  if (pageTime === null || pageTime === undefined) {
+    return ''
+  }
+  const date = new Date(pageTime)
+  return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
 }
 
 const onNotificationItemClick = (_item: OnmsNotification) => {
   // open the new Notifications page filtered to the user's outstanding notices
   // (which include this one) instead of the legacy per-notice detail page
-  onMenuItemClick('ui/index.html#/admin/notifications?preset=yourOutstanding')
+  onMenuItemClick('ui/index.html#/notifications?preset=yourOutstanding')
 }
 </script>
 

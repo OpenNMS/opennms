@@ -1,6 +1,5 @@
 import {
   isDuplicateFile,
-  MAX_FILES_UPLOAD,
   validateEventConfigFile,
   validateEventElement
 } from '@/components/EventConfiguration/eventConfigXmlValidator'
@@ -23,12 +22,6 @@ describe('eventConfigXmlValidator', () => {
   afterEach(() => {
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
-  })
-
-  describe('MAX_FILES_UPLOAD', () => {
-    it('has correct value', () => {
-      expect(MAX_FILES_UPLOAD).toBe(10)
-    })
   })
 
   describe('validateEventConfigFile', () => {

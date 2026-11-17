@@ -33,9 +33,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.apache.cxf.message.Message;
+import org.apache.cxf.phase.PhaseInterceptorChain;
+import org.apache.cxf.security.SecurityContext;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.IplikeRestriction;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.InetAddressTypeEditor;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -43,10 +47,12 @@ import org.opennms.netmgt.model.OnmsSeverityEditor;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.PrimaryTypeEditor;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
+import org.opennms.web.api.Authentication;
 import org.opennms.web.api.ISO8601DateEditor;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
+import org.opennms.web.rest.support.WriteOnlyPropertyGuard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
@@ -120,8 +126,10 @@ public class OnmsRestService {
     	}
 
 	    if(params.containsKey("orderBy")) {
+	    	final String orderBy = WebSecurityUtils.sanitizeString(params.getFirst("orderBy"));
+	    	WriteOnlyPropertyGuard.check(orderBy);
 	    	builder.clearOrder();
-	    	builder.orderBy(WebSecurityUtils.sanitizeString(params.getFirst("orderBy")));
+	    	builder.orderBy(orderBy);
 			params.remove("orderBy");
 			
 			if(params.containsKey("order")) {
@@ -136,7 +144,13 @@ public class OnmsRestService {
 
 		if (Boolean.getBoolean("org.opennms.web.rest.enableQuery")) {
 			final String query = removeParameter(params, "query");
-			if (query != null) builder.sql(query);
+			if (query != null) {
+				// Raw SQL can read any column, asset credentials too. Only an administrator can use it.
+				if (!isCurrentUserAdmin()) {
+					throw getException(Status.FORBIDDEN, "The 'query' parameter requires the ROLE_ADMIN role.");
+				}
+				builder.sql(query);
+			}
 		}
 
 		final String matchType;
@@ -155,6 +169,11 @@ public class OnmsRestService {
 		final Criteria currentCriteria = builder.toCriteria();
 
 		for (final String key : params.keySet()) {
+			WriteOnlyPropertyGuard.check(key);
+			// The iplike comparator puts the parameter name into the SQL text as a column name.
+			if (comparatorParam.equals("iplike") && !IplikeRestriction.isValidAttribute(key)) {
+				throw getException(Status.BAD_REQUEST, "The parameter name is not a valid column name for the 'iplike' comparator.");
+			}
 			for (final String paramValue : params.get(key)) { // NOSONAR
                         // NOSONAR the interface of MultivaluedMap.class declares List<String> as return value, 
                         // the actual implementation com.sun.jersey.core.util.MultivaluedMapImpl returns a String, so this is fine in some way ...
@@ -197,6 +216,12 @@ public class OnmsRestService {
 			}
 		}
     }
+
+	private static boolean isCurrentUserAdmin() {
+		final Message message = PhaseInterceptorChain.getCurrentMessage();
+		final SecurityContext securityContext = message == null ? null : message.get(SecurityContext.class);
+		return securityContext != null && securityContext.isUserInRole(Authentication.ROLE_ADMIN);
+	}
 
 	protected static BeanWrapper getBeanWrapperForClass(final Class<?> criteriaClass) {
 		final BeanWrapper wrapper = new BeanWrapperImpl(criteriaClass);

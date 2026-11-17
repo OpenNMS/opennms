@@ -79,6 +79,15 @@ describe('dashboardService', () => {
     expect(result.panels.map(p => p.id)).toEqual(['ok', 'bad-type'])
   })
 
+  it('drops removed panel types from a stored layout', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { panels: [
+      { id: 'ok', type: 'notes', x: 0, y: 0, w: 3, h: 100 },
+      { id: 'html', type: 'html-content', x: 3, y: 0, w: 4, h: 5, options: { url: '/opennms/' }}
+    ] }})
+    const result = await getSystemDashboard()
+    expect(result.panels.map(p => p.id)).toEqual(['ok'])
+  })
+
   it('falls back to the default on 404 (nothing saved yet)', async () => {
     vi.mocked(v2.get).mockRejectedValue(axios404())
     const result = await getSystemDashboard()

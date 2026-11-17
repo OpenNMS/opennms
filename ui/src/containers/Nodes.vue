@@ -17,7 +17,8 @@
 import { computed, onMounted, ref, watch } from 'vue'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import { buildNodeDetailUrl, parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
 import NodesTable from '@/components/Nodes/NodesTable.vue'
 import { loadNodePreferences, saveNodeQueryFilter } from '@/services/localStorageService'
 import { useMenuStore } from '@/stores/menuStore'
@@ -44,46 +45,18 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 // Cleared once the deferred filter is applied.
 const pendingRouteQuery = ref<LocationQuery | null>(null)
 
-// Holds a legacy `?nodeId=<n>` id that arrived before menuStore.mainMenu (source of
-// baseHref/baseNodeUrl) had loaded. Cleared once the deferred redirect fires.
-const pendingNodeIdRedirect = ref<number | null>(null)
-
-// Legacy bookmarks like `#/nodes?nodeId=42` should land on the node detail page — the same
-// place the node-label column links to (see computeNodeLink in NodesTable.vue) — rather than
-// being treated as a node-list filter. Returns true if the query was handled here (either
-// redirected immediately or deferred), meaning normal query handling should be skipped.
+// Legacy bookmarks like `#/nodes?nodeId=42` land on Node Details -- where the node-label column
+// links -- rather than being read as a node-list filter. Returns true when it redirected, so normal
+// query handling is skipped. replace, not push: Back should not return to the bookmark URL and
+// redirect again.
 const handleNodeIdRedirect = (query: LocationQuery): boolean => {
   const id = parseNodeIdQueryParam(query)
   if (id === null) {
     return false
   }
-
-  const url = buildNodeDetailUrl(menuStore.mainMenu, id)
-  if (url) {
-    // replace (not assign): this is a redirect away from a legacy bookmark, not real in-app
-    // navigation — using replace keeps the ?nodeId=<n> URL out of history so Back doesn't return
-    // to it and immediately re-redirect.
-    window.location.replace(url)
-  } else {
-    // mainMenu hasn't loaded yet — defer until the watch below sees it arrive.
-    pendingNodeIdRedirect.value = id
-  }
+  router.replace(nodeDetailsRoute(id))
   return true
 }
-
-// Completes a deferred nodeId redirect once menuStore.mainMenu (baseHref/baseNodeUrl) loads.
-watch(
-  () => menuStore.mainMenu?.baseHref,
-  () => {
-    if (pendingNodeIdRedirect.value !== null) {
-      const url = buildNodeDetailUrl(menuStore.mainMenu, pendingNodeIdRedirect.value)
-      if (url) {
-        pendingNodeIdRedirect.value = null
-        window.location.replace(url)
-      }
-    }
-  }
-)
 
 const applyQueryFilter = (query: LocationQuery, prefs: NodePreferences | null) => {
   const nodeFilter = buildNodeQueryFilterFromQueryString(

@@ -20,9 +20,9 @@
 /// License.
 ///
 
-import { OnmsColorPicker } from '@opennms/onms-ui'
+import { OnmsColorPicker, OnmsToggleSwitch } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
-import { flushPromises, mount } from '@vue/test-utils'
+import { flushPromises, mount, RouterLinkStub } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import TopologyInspector from '@/components/Topology/TopologyInspector.vue'
@@ -56,7 +56,7 @@ const shapeB = { id: 'shape-b', type: 'rect', x: 20, y: 0, w: 10, h: 10, stroke:
 
 const mountInspector = async () => {
   const wrapper = mount(TopologyInspector, {
-    props: { canvas: null, variant: 'props' },
+    props: { canvas: null },
     global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })] }
   })
   const store = useTopologyStore()
@@ -84,7 +84,7 @@ const picker = (wrapper: Awaited<ReturnType<typeof mountInspector>>['wrapper'], 
 describe('TopologyInspector discovered vertices', () => {
   const mountFull = async (nodes: unknown[], selected: string) => {
     const wrapper = mount(TopologyInspector, {
-      props: { canvas: null, variant: 'full' },
+      props: { canvas: null },
       global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })] }
     })
     const store = useTopologyStore()
@@ -203,12 +203,13 @@ describe('TopologyInspector node details', () => {
   const mountWithNode = async (node: Record<string, unknown>) => {
     vi.mocked(getNodeById).mockResolvedValue(node as never)
     const wrapper = mount(TopologyInspector, {
-      props: { canvas: null, variant: 'full' },
+      props: { canvas: null },
       global: {
         plugins: [PrimeVue, createTestingPinia({ stubActions: false })],
         // Leaflet needs real layout, which happy-dom has none of; the props it
         // is handed are what matters here.
         stubs: {
+          RouterLink: RouterLinkStub,
           TopologyLocationMap: {
             name: 'TopologyLocationMap',
             props: ['lat', 'lon'],
@@ -245,6 +246,16 @@ describe('TopologyInspector node details', () => {
   it('omits the Enterprise OID row when the node has none', async () => {
     const { wrapper } = await mountWithNode({ id: 7, label: 'core-sw1' })
     expect(wrapper.text()).not.toContain('Enterprise OID')
+  })
+
+  // Like the node context menu's Node Details action, it opens in a new tab so the
+  // topology stays put.
+  it('links the node id to the Vue Node Details page in a new tab', async () => {
+    const { wrapper } = await mountWithNode({ id: 7, label: 'core-sw1' })
+    const link = wrapper.findComponent(RouterLinkStub)
+    expect(link.props('to')).toEqual({ name: 'Node Details', params: { id: '7' }})
+    expect(link.attributes('target')).toBe('_blank')
+    expect(link.text()).toBe('7')
   })
 })
 
@@ -303,10 +314,11 @@ describe('TopologyInspector geographic location', () => {
   const mountWithNode = async (node: Record<string, unknown>) => {
     vi.mocked(getNodeById).mockResolvedValue(node as never)
     const wrapper = mount(TopologyInspector, {
-      props: { canvas: null, variant: 'full' },
+      props: { canvas: null },
       global: {
         plugins: [PrimeVue, createTestingPinia({ stubActions: false })],
         stubs: {
+          RouterLink: RouterLinkStub,
           TopologyLocationMap: {
             name: 'TopologyLocationMap',
             props: ['lat', 'lon'],
@@ -413,7 +425,7 @@ describe('TopologyInspector link interface state', () => {
       setNodeIconOverride: vi.fn()
     }
     const wrapper = mount(TopologyInspector, {
-      props: { canvas: canvas as never, variant: 'full' },
+      props: { canvas: canvas as never },
       global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })] }
     })
     const store = useTopologyStore()
@@ -452,5 +464,45 @@ describe('TopologyInspector link interface state', () => {
   it('asks for the interface enlinkd named, on the link\'s source node', async () => {
     await mountWithLink({ ifIndex: 2, ifOperStatus: 1 })
     expect(vi.mocked(getInterfaceState)).toHaveBeenCalledWith(1, 2)
+  })
+})
+
+describe('TopologyInspector geomap background', () => {
+  const mountBackground = async (background: Record<string, unknown>) => {
+    const wrapper = mount(TopologyInspector, {
+      props: { canvas: null },
+      global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })] }
+    })
+    const store = useTopologyStore()
+    store.currentView = {
+      id: 'v1', name: 'v1', nodes: [], links: [], labels: [],
+      viewport: { zoom: 1, panX: 0, panY: 0 }, background
+    } as never
+    store.isEditMode = true as never
+    store.selectedIds = [] as never
+    store.setBackgroundAdjustMode(true)
+    await flushPromises()
+    const toggle = wrapper.findAllComponents(OnmsToggleSwitch).find(t => t.props('inputId') === 'ti-geomap')
+    expect(toggle, 'no geomap toggle rendered').toBeTruthy()
+    return { store, toggle: toggle! }
+  }
+
+  it('keeps the Background tool open when the map is turned off', async () => {
+    const { store, toggle } = await mountBackground({ type: 'geomap' })
+    toggle.vm.$emit('update:modelValue', false)
+    await flushPromises()
+    expect(store.background).toBeUndefined()
+    expect(store.isBackgroundAdjustMode).toBe(true)
+  })
+
+  it('brings the image back when the map is turned off', async () => {
+    const image = { type: 'image', ref: 'asset:a1', x: -300, y: 200, width: 600, height: 400, opacity: 0.5 }
+    const { store, toggle } = await mountBackground(image)
+    toggle.vm.$emit('update:modelValue', true)
+    await flushPromises()
+    expect(store.background).toEqual({ ...image, type: 'geomap' })
+    toggle.vm.$emit('update:modelValue', false)
+    await flushPromises()
+    expect(store.background).toEqual(image)
   })
 })

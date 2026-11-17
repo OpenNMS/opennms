@@ -23,6 +23,7 @@ package org.opennms.netmgt.scheduler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.awaitility.Awaitility.await;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -128,6 +129,87 @@ public class LegacyPriorityExecutorTest {
         queue.add(1);
         queue.add(2);
         queue.add(3);
+    }
+
+    private static class KeyedJob extends Executable {
+        private final String m_key;
+        private final CountDownLatch m_started;
+        private final CountDownLatch m_release;
+        private final AtomicInteger m_runs;
+
+        KeyedJob(String key, CountDownLatch started, CountDownLatch release, AtomicInteger runs) {
+            m_key = key;
+            m_started = started;
+            m_release = release;
+            m_runs = runs;
+        }
+
+        @Override
+        public String getName() {
+            return m_key;
+        }
+
+        @Override
+        public void runExecutable() {
+            m_runs.incrementAndGet();
+            m_started.countDown();
+            try {
+                m_release.await(10, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        @Override
+        public boolean isReady() {
+            return true;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof KeyedJob && m_key.equals(((KeyedJob) o).m_key);
+        }
+
+        @Override
+        public int hashCode() {
+            return m_key.hashCode();
+        }
+    }
+
+    /**
+     * A job equal to one that has not started yet is skipped, so a cycle that
+     * outlasts its interval cannot grow the backlog. Once the job starts, an
+     * equal one is accepted again.
+     */
+    @Test
+    public void testEqualPendingJobIsNotQueuedTwice() throws InterruptedException {
+        final LegacyPriorityExecutor executor = new LegacyPriorityExecutor("DedupeTest", 1, 5);
+        final AtomicInteger runs = new AtomicInteger();
+        final CountDownLatch blockerStarted = new CountDownLatch(1);
+        final CountDownLatch release = new CountDownLatch(1);
+        final CountDownLatch nodeStarted = new CountDownLatch(1);
+        final CountDownLatch open = new CountDownLatch(0);
+
+        // the single pool thread is held by the blocker, so "node" stays pending
+        executor.addPriorityReadyRunnable(new KeyedJob("blocker", blockerStarted, release, runs));
+        executor.start();
+        assertTrue(blockerStarted.await(5, TimeUnit.SECONDS));
+
+        executor.addPriorityReadyRunnable(new KeyedJob("node", nodeStarted, open, runs));
+        executor.addPriorityReadyRunnable(new KeyedJob("node", nodeStarted, open, runs));
+        executor.addPriorityReadyRunnable(new KeyedJob("node", nodeStarted, open, runs));
+
+        release.countDown();
+        assertTrue(nodeStarted.await(5, TimeUnit.SECONDS));
+        Thread.sleep(500);
+        assertEquals(2, runs.get());
+
+        // no longer pending: the next cycle's job is accepted
+        final CountDownLatch again = new CountDownLatch(1);
+        executor.addPriorityReadyRunnable(new KeyedJob("node", again, open, runs));
+        assertTrue(again.await(5, TimeUnit.SECONDS));
+        assertEquals(3, runs.get());
+        executor.stop();
     }
 
     @Test
@@ -271,5 +353,80 @@ public class LegacyPriorityExecutorTest {
         
         assertTrue("Task should have been executed after backoff delays", completed);
         assertTrue("Task should have been checked for readiness multiple times", readyCallCount.get() >= readyAfterCalls);
+    }
+
+    @Test
+    public void testSetThreads() {
+        LegacyPriorityExecutor executor = new LegacyPriorityExecutor("ResizeTest", 2, 5);
+        assertEquals(2, executor.getThreads());
+
+        executor.setThreads(3);
+        assertEquals(3, executor.getThreads());
+
+        executor.setThreads(0);
+        assertEquals(1, executor.getThreads());
+
+        executor.stop();
+    }
+
+    @Test
+    public void testPoolAndQueueStatistics() throws InterruptedException {
+        final LegacyPriorityExecutor executor = new LegacyPriorityExecutor("StatsTest", 1, 5);
+        final CountDownLatch release = new CountDownLatch(1);
+        try {
+            for (int i = 0; i < 3; i++) {
+                executor.addPriorityReadyRunnable(new BlockingExecutable("blocking" + i, release));
+            }
+            final ExecutableTest later = new ExecutableTest("later", 0);
+            later.setDelayUntil(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10));
+            executor.addPriorityReadyRunnable(later);
+
+            executor.start();
+
+            // One task runs on the single thread, two wait for it, one is not due yet.
+            await().atMost(10, TimeUnit.SECONDS).until(() -> executor.getActiveThreads() == 1 && executor.getReadyQueueSize() == 2);
+            assertEquals(1, executor.getDelayedQueueSize());
+            assertEquals(1, executor.getPoolThreads());
+            assertEquals(3, executor.getTaskCount());
+            assertEquals(0, executor.getCompletedTaskCount());
+
+            release.countDown();
+            await().atMost(10, TimeUnit.SECONDS).until(() -> executor.getCompletedTaskCount() == 3);
+            assertEquals(0, executor.getReadyQueueSize());
+            assertEquals(1, executor.getDelayedQueueSize());
+        } finally {
+            release.countDown();
+            executor.stop();
+        }
+    }
+
+    private static class BlockingExecutable extends Executable {
+        private final String m_name;
+        private final CountDownLatch m_release;
+
+        BlockingExecutable(final String name, final CountDownLatch release) {
+            super(0);
+            m_name = name;
+            m_release = release;
+        }
+
+        @Override
+        public String getName() {
+            return m_name;
+        }
+
+        @Override
+        public void runExecutable() {
+            try {
+                m_release.await();
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        @Override
+        public boolean isReady() {
+            return true;
+        }
     }
 }

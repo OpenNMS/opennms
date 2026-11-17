@@ -6,6 +6,9 @@ on:
       - develop
       - 'foundation-**'
       - 'release-**'
+permissions:
+  contents: read
+  pull-requests: write
 jobs:
   assign_reviewer:
     if: github.event.pull_request.draft == false

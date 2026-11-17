@@ -32,6 +32,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import org.opennms.core.concurrent.FixedThreadPools;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
 import org.slf4j.Logger;
@@ -75,6 +76,16 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
     private final ExecutorService m_runner;
 
     /**
+     * The factory behind {@link #m_runner}, kept so that its thread names can follow a resize.
+     */
+    private final LogPreservingThreadFactory m_threadFactory;
+
+    /**
+     * The name of the owning daemon, used in log messages.
+     */
+    private final String m_parent;
+
+    /**
      * The status for this fiber.
      */
     private volatile int m_status;
@@ -102,7 +113,9 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      */
     public LegacyScheduler(final String parent, final int maxSize) {
         m_status = START_PENDING;
-        m_runner = Executors.newFixedThreadPool(maxSize, new LogPreservingThreadFactory(parent, maxSize));
+        m_parent = parent;
+        m_threadFactory = new LogPreservingThreadFactory(parent, maxSize);
+        m_runner = Executors.newFixedThreadPool(maxSize, m_threadFactory);
         m_queues = new ConcurrentSkipListMap<Long, BlockingQueue<ReadyRunnable>>();
         m_scheduled = 0;
         m_worker = null;
@@ -329,6 +342,25 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      */
     public ExecutorService getRunner() {
         return m_runner;
+    }
+
+    /**
+     * Resizes the thread pool that runs the scheduled work, so that a changed
+     * {@code threads} setting can be applied on a configuration reload without
+     * recreating the scheduler. Workers busy with a task finish it before a smaller
+     * pool lets them go, and nothing queued is lost.
+     *
+     * @param threads the wanted pool size; values below one are applied as one
+     */
+    public synchronized void setThreads(final int threads) {
+        FixedThreadPools.resize((ThreadPoolExecutor) m_runner, m_threadFactory, m_parent + " scheduler", threads);
+    }
+
+    /**
+     * @return the current size of the thread pool that runs the scheduled work
+     */
+    public int getThreads() {
+        return ((ThreadPoolExecutor) m_runner).getCorePoolSize();
     }
 
     /**

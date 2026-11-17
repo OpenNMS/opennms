@@ -16,18 +16,35 @@
       @update:modelValue="onFilter"
     />
 
+    <p
+      v-if="note"
+      class="column-note"
+      :data-test="`${dataTest}-note`"
+    >{{ note }}</p>
+
+    <!--
+      An error with items still listed (selected nodes survive a rule the engine
+      rejects) is a note above them, not a replacement for them: the list is what
+      lets the user change the selection that is still driving the graph.
+    -->
+    <p
+      v-if="errorMessage && options.length && !loading"
+      class="column-note column-error"
+      :data-test="`${dataTest}-error`"
+    >{{ errorMessage }}</p>
+
     <div class="column-actions">
       <OnmsButton
         variant="ghost"
-        :disabled="!visibleOptions.length"
+        :disabled="!options.length"
         :data-test="`${dataTest}-select-all`"
-        @click="selectAllVisible"
+        @click="selectAll"
       >Select all</OnmsButton>
       <OnmsButton
         variant="ghost"
-        :disabled="!modelValue.length"
+        :disabled="!modelValue.length && !setAsideCount && !excludedCount"
         :data-test="`${dataTest}-clear`"
-        @click="emit('update:modelValue', [])"
+        @click="emit('clear')"
       >Clear</OnmsButton>
     </div>
 
@@ -39,7 +56,12 @@
       <OnmsSpinner size="1.75rem" />
     </div>
     <p
-      v-else-if="!visibleOptions.length"
+      v-else-if="errorMessage && !options.length"
+      class="column-status column-error"
+      :data-test="`${dataTest}-error`"
+    >{{ errorMessage }}</p>
+    <p
+      v-else-if="!options.length"
       class="column-status column-empty"
       :data-test="`${dataTest}-empty`"
     >{{ emptyMessage }}</p>
@@ -47,7 +69,7 @@
       v-else
       multiple
       checkmark
-      :options="visibleOptions"
+      :options="options"
       :modelValue="modelValue"
       :dataKey="dataKey"
       :optionLabel="optionLabel"
@@ -69,22 +91,22 @@
 
 <script setup lang="ts">
 import { OnmsButton, OnmsListbox, OnmsSearchInput, OnmsSpinner } from '@opennms/onms-ui'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 /**
- * One filterable, multi-select column of the ad-hoc picker. Used three times over
- * three different shapes, so options are opaque here and the parent supplies the
- * key/label/description accessors.
+ * One column of the ad-hoc picker: a filter box, and the list of what it matches.
+ * Used three times over three different shapes, so options are opaque here and the
+ * parent supplies the key/label/description accessors.
  *
- * Filtering is either local (`serverFilter` false — the whole option set is already
- * in memory) or delegated upward via the `filter` event, which is how the node
- * column searches server-side instead of downloading every node.
+ * The column does no matching of its own. The box's text goes up through the
+ * `filter` event and the parent (the store) decides what it means: a filter rule
+ * for nodes, a wildcard pattern for resources and datasources. `options` is
+ * whatever that produced, with any selected items pinned on top. Selecting is
+ * optional: with nothing selected, everything the filter matches is in the graph,
+ * which is what the count label says ("all 12 matching"); selecting narrows it.
  *
- * The list itself is `OnmsListbox` in multiple mode, windowed by its virtual
- * scroller — a switch with 400 interfaces would otherwise put 400 rows in the DOM.
- * The filter field stays a separate `OnmsSearchInput` rather than the listbox's own
- * `filter` prop, both because it is the search control the rest of the app uses and
- * because the node column's filter has to reach the server.
+ * The list is `OnmsListbox` in multiple mode, windowed by its virtual scroller: a
+ * switch with 400 interfaces would otherwise put 400 rows in the DOM.
  */
 interface Props {
   title: string
@@ -98,22 +120,40 @@ interface Props {
   keyOf: (option: unknown) => string
   labelOf: (option: unknown) => string
   descriptionOf?: (option: unknown) => string
+  /** The box's text; the parent owns it so a restored link can put it back. */
+  filterTerm: string
+  /** Whether the filter is non-empty, which is what makes "no picks" mean "all". */
+  filterActive?: boolean
   loading?: boolean
   emptyMessage?: string
+  /** A server-side problem with the filter; replaces an empty list, sits above a non-empty one. */
+  errorMessage?: string
+  /** A quiet line under the box, such as "showing the first 100 of 2310". */
+  note?: string
+  /** Selected items the parent's filters cannot reach right now. */
+  setAsideCount?: number
+  /** Matching items the user removed one by one; the filter still applies to the rest. */
+  excludedCount?: number
   filterPlaceholder?: string
-  serverFilter?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   descriptionOf: undefined,
+  filterActive: false,
   loading: false,
   emptyMessage: 'Nothing to show yet.',
-  filterPlaceholder: 'Filter',
-  serverFilter: false
+  errorMessage: '',
+  note: '',
+  setAsideCount: 0,
+  excludedCount: 0,
+  filterPlaceholder: 'Filter'
 })
 
 const emit = defineEmits<{
+  /** The listed items' selection changed; says nothing about items not listed. */
   'update:modelValue': [value: unknown[]]
+  /** The Clear button: the whole selection, listed or not, and anything else the column narrows by. */
+  clear: []
   filter: [term: string]
 }>()
 
@@ -123,42 +163,54 @@ const emit = defineEmits<{
 const ROW_HEIGHT = 52
 const SCROLL_HEIGHT = '22rem'
 
-const filterTerm = ref('')
+// Typed text is echoed locally so the box never lags the keyboard while the
+// parent decides what to do with it; the parent's value wins whenever it changes.
+const filterTerm = ref(props.filterTerm)
+
+watch(() => props.filterTerm, (value) => {
+  filterTerm.value = value
+})
 
 /** Secondary line for an option; optional, so columns without one get ''. */
 const describe = (option: unknown): string => props.descriptionOf?.(option) ?? ''
 
-const matchesFilter = (option: unknown): boolean => {
-  const term = filterTerm.value.trim().toLowerCase()
-
-  if (!term) {
-    return true
-  }
-
-  return `${props.labelOf(option)} ${describe(option)}`.toLowerCase().includes(term)
-}
-
-const visibleOptions = computed<unknown[]>(() =>
-  (props.serverFilter ? props.options : props.options.filter(matchesFilter)))
-
 const selectedKeys = computed<Set<string>>(() => new Set(props.modelValue.map(props.keyOf)))
 
-const countLabel = computed<string>(() => `${props.modelValue.length} of ${props.options.length} selected`)
+/**
+ * How many of what are in the graph. "Matching" counts what the filter produced,
+ * excluding pinned picks the filter no longer matches, so the number means the
+ * same thing whether or not anything is picked.
+ */
+const countLabel = computed<string>(() => {
+  const matching = props.options.filter(option => !selectedKeys.value.has(props.keyOf(option))).length +
+    props.modelValue.length
+
+  const setAside = props.setAsideCount ? `, ${props.setAsideCount} set aside` : ''
+
+  if (props.modelValue.length) {
+    return `${props.modelValue.length} of ${matching} selected${setAside}`
+  }
+
+  if (props.filterActive) {
+    const removed = props.excludedCount ? `, ${props.excludedCount} removed` : ''
+    return `all ${matching} matching${removed}${setAside}`
+  }
+
+  return `${matching} available${setAside}`
+})
 
 const onFilter = (value: string | undefined) => {
   filterTerm.value = value ?? ''
-
-  if (props.serverFilter) {
-    emit('filter', filterTerm.value)
-  }
+  emit('filter', filterTerm.value)
 }
 
 /**
- * Adds what is currently visible to the selection rather than replacing it, so
- * "filter, select all, refine filter, select all" accumulates the way it reads.
+ * Add everything listed to the selection, so individual items can then be
+ * deselected. Additive, as it always was: what is already selected stays, and
+ * anything selected but not currently listed is the parent's to keep.
  */
-const selectAllVisible = () => {
-  const additions = visibleOptions.value.filter(option => !selectedKeys.value.has(props.keyOf(option)))
+const selectAll = () => {
+  const additions = props.options.filter(option => !selectedKeys.value.has(props.keyOf(option)))
   emit('update:modelValue', [...props.modelValue, ...additions])
 }
 </script>
@@ -193,6 +245,12 @@ const selectAllVisible = () => {
   }
 }
 
+.column-note {
+  @include onms-body-small;
+  color: var(--p-text-muted-color);
+  margin: -0.25rem 0 0;
+}
+
 .column-actions {
   display: flex;
   gap: 0.25rem;
@@ -211,6 +269,10 @@ const selectAllVisible = () => {
 
 .column-empty {
   color: var(--p-text-muted-color);
+}
+
+.column-error {
+  color: var(--onms-error);
 }
 
 .option-body {

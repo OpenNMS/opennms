@@ -4,16 +4,19 @@ executors:
       - image: cimg/base:2026.04
   build-executor:
     docker:
-      - image: opennms/build-environment:21.0-20-3.9.6
+      - image: opennms/build-environment:25.0-24-3.9.6
   coverage-executor:
     docker:
-      - image: opennms/build-environment:21.0-20-3.9.6
+      - image: opennms/build-environment:25.0-24-3.9.6
   docs-executor:
     docker:
       - image: opennms/antora:3.1.4-b10433
   integration-test-executor:
     machine:
       image: ubuntu-2204:2025.09.1
+  select-tests-executor:
+    docker:
+      - image: cimg/python:3.12.7
   smoke-test-executor:
     machine:
       image: ubuntu-2204:2025.09.1

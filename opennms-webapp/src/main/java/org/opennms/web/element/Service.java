@@ -40,6 +40,10 @@ public class Service {
 
     private String m_lastFail;
 
+    private String m_collectLastGood;
+
+    private String m_collectLastFail;
+
     private String m_notify;
 
     private char m_status;
@@ -56,6 +60,12 @@ public class Service {
         }
         if(monSvc.getLastFail() != null) {
             setLastFail(StringUtils.toStringEfficiently(monSvc.getLastFail()));
+        }
+        if(monSvc.getCollectLastGood() != null) {
+            setCollectLastGood(StringUtils.toStringEfficiently(monSvc.getCollectLastGood()));
+        }
+        if(monSvc.getCollectLastFail() != null) {
+            setCollectLastFail(StringUtils.toStringEfficiently(monSvc.getCollectLastFail()));
         }
         setNotify(monSvc.getNotify());
         if(monSvc.getStatus() != null) {
@@ -127,6 +137,20 @@ public class Service {
     }
 
     /**
+     * Completion time of the most recent successful data collection, or null if none.
+     */
+    public String getCollectLastGood() {
+        return m_collectLastGood;
+    }
+
+    /**
+     * Completion time of the most recent failed data collection, or null if none.
+     */
+    public String getCollectLastFail() {
+        return m_collectLastFail;
+    }
+
+    /**
      * <p>getNotify</p>
      *
      * @return a {@link java.lang.String} object.
@@ -166,6 +190,8 @@ public class Service {
         str.append("Service name = " + getServiceName() + "\n");
         str.append("Last Good = " + getLastGood() + "\n");
         str.append("Last Fail  = " + getLastFail() + "\n");
+        str.append("Collect Last Good = " + getCollectLastGood() + "\n");
+        str.append("Collect Last Fail = " + getCollectLastFail() + "\n");
         str.append("Status = " + getStatus() + "\n");
         return str.toString();
     }
@@ -196,6 +222,14 @@ public class Service {
 
     void setLastFail(String lastFail) {
         m_lastFail = lastFail;
+    }
+
+    void setCollectLastGood(String collectLastGood) {
+        m_collectLastGood = collectLastGood;
+    }
+
+    void setCollectLastFail(String collectLastFail) {
+        m_collectLastFail = collectLastFail;
     }
 
     void setNotify(String notify) {

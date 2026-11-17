@@ -1,4 +1,4 @@
-<threshd-configuration xmlns="http://xmlns.opennms.org/xsd/config/thresholding" threads="5">
+<threshd-configuration xmlns="http://xmlns.opennms.org/xsd/config/thresholding">
     <!-- For polling -->
     <package name="ttest-latency">
         <filter>catincThresholdingTest</filter>

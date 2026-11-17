@@ -32,8 +32,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.IntervalTestCase;
 import org.opennms.core.utils.OwnedInterval;
@@ -46,6 +49,30 @@ import org.opennms.netmgt.config.groups.Time;
 import org.opennms.netmgt.config.poller.outages.Outage;
 
 public class BasicScheduleUtilsTest extends IntervalTestCase {
+
+    private Locale m_locale;
+
+    @Before
+    public void pinLocale() {
+        m_locale = Locale.getDefault();
+        Locale.setDefault(Locale.ENGLISH);
+    }
+
+    @After
+    public void restoreLocale() {
+        Locale.setDefault(m_locale);
+    }
+
+    @Test
+    public void testIsValidTime() {
+        assertTrue(BasicScheduleUtils.isValidTime("21-Oct-2026 08:00:00", BasicScheduleUtils.FORMAT1));
+        assertTrue(BasicScheduleUtils.isValidTime("08:00:00", BasicScheduleUtils.FORMAT2));
+        assertFalse(BasicScheduleUtils.isValidTime("8:00:00", BasicScheduleUtils.FORMAT2));
+        assertFalse(BasicScheduleUtils.isValidTime("25:00:00", BasicScheduleUtils.FORMAT2));
+        assertFalse(BasicScheduleUtils.isValidTime("08:00:00", BasicScheduleUtils.FORMAT1));
+        assertFalse(BasicScheduleUtils.isValidTime("32-Oct-2026 08:00:00", BasicScheduleUtils.FORMAT1));
+        assertFalse(BasicScheduleUtils.isValidTime(null, BasicScheduleUtils.FORMAT2));
+    }
 
     @Test
     public void testSimpleScheduleExcluded() throws Exception {
@@ -119,6 +146,22 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
 
     }
     
+    @Test
+    public void testSpecificTimesAreEnglishWhateverTheDefaultLocale() {
+        Locale.setDefault(Locale.GERMANY);
+        // seeded with another date, so that a parse that does nothing is detected
+        final Calendar cal = new GregorianCalendar(2000, Calendar.JANUARY, 1, 1, 2, 3);
+        BasicScheduleUtils.setOutCalTime(cal, "15-Mar-2093 09:30:00");
+        assertEquals(2093, cal.get(Calendar.YEAR));
+        assertEquals(Calendar.MARCH, cal.get(Calendar.MONTH));
+        assertEquals(15, cal.get(Calendar.DAY_OF_MONTH));
+        assertEquals(9, cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(30, cal.get(Calendar.MINUTE));
+        assertEquals(0, cal.get(Calendar.SECOND));
+        assertTrue(BasicScheduleUtils.isValidTime("15-Mar-2093 09:30:00", BasicScheduleUtils.FORMAT1));
+        assertFalse(BasicScheduleUtils.isValidTime("15-M\u00e4r-2093 09:30:00", BasicScheduleUtils.FORMAT1));
+    }
+
     @Test
     public void testSpecificInterval() throws Exception {
         String schedSpec = 

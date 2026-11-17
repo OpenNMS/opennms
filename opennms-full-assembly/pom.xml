@@ -14,6 +14,7 @@
     <build.profile>default</build.profile>
     <build.assembly.type>default</build.assembly.type>
     <build.assembly.format>tar.gz</build.assembly.format>
+    <build.skip.coretar>false</build.skip.coretar>
   </properties>
   <profiles>
     <profile>
@@ -330,7 +331,6 @@
                 <feature>kar</feature>
                 <feature>log</feature>
                 <feature>management</feature>
-                <feature>minimal</feature>
                 <feature>obr</feature>
                 <feature>package</feature>
                 <!-- Replaced by opennms-bridge-http-service -->
@@ -344,7 +344,6 @@
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
                 <feature>ssh/${karafSshdVersion}</feature>
-                <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
                 <feature>wrap</feature>
@@ -392,7 +391,6 @@
                 <feature>kar</feature>
                 <feature>log</feature>
                 <feature>management</feature>
-                <feature>minimal</feature>
                 <feature>obr</feature>
                 <feature>opennms-bridge-http-service</feature>
                 <feature>package</feature>
@@ -404,7 +402,6 @@
                 <feature>service-wrapper</feature>
                 <feature>shell-compat</feature>
                 <feature>shell</feature>
-                <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
                 <feature>wrap</feature>
@@ -490,9 +487,6 @@
                 <feature>postgresql</feature>
                 <feature>opennms-jaas-login-module</feature>
                 <feature>nrtg</feature>
-                <feature>opennms-amqp-event-forwarder</feature>
-                <feature>opennms-amqp-event-receiver</feature>
-                <feature>opennms-amqp-alarm-northbounder</feature>
                 <feature>opennms-graphml</feature>
                 <feature>opennms-graphs</feature>
                 <feature>opennms-graph-provider-persistence-test</feature>
@@ -509,7 +503,6 @@
                 <feature>opennms-enlinkd-shell</feature>
                 <feature>vaadin</feature>
                 <feature>vaadin-jmxconfiggenerator</feature>
-                <feature>vaadin-snmp-events-and-metrics</feature>
                 <feature>vaadin-surveillance-views</feature>
                 <feature>jira-troubleticketer</feature>
                 <feature>tsrm-troubleticketer</feature>
@@ -662,6 +655,8 @@
               <goal>single</goal>
             </goals>
             <configuration>
+              <!-- Only CI and the container build use the core and optional tarballs. Local builds can skip them. -->
+              <skipAssembly>${build.skip.coretar}</skipAssembly>
               <descriptors>
                 <descriptor>src/assembly/core.xml</descriptor>
                 <descriptor>src/assembly/optional.xml</descriptor>
@@ -892,6 +887,10 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>etc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>com.github.mwiede</groupId>
+      <artifactId>jsch</artifactId>
     </dependency>
     <dependency>
       <groupId>com.ximpleware</groupId>

@@ -22,6 +22,13 @@
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
+                        <Import-Package>
+                            org.opennms.features.config.dao.api;resolution:=optional,
+                            org.opennms.features.config.service.api;resolution:=optional,
+                            org.opennms.features.config.service.util;resolution:=optional,
+                            org.opennms.core.spring;resolution:=optional,
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -42,6 +49,26 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>org.opennms.config-dao.common-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.config.service</groupId>
+            <artifactId>org.opennms.features.config.service.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.config.service</groupId>
+            <artifactId>org.opennms.features.config.service.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.config.dao</groupId>
+            <artifactId>org.opennms.features.config.dao.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.spring</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

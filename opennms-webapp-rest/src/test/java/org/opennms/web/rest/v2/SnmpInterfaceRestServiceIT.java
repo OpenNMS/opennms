@@ -252,4 +252,65 @@ public class SnmpInterfaceRestServiceIT extends AbstractSpringJerseyRestTestCase
         JSONObject response = new JSONObject(jsonResponse);
         assertEquals(1, response.getInt("count"));
     }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testWildcardStringSearchIsCaseInsensitive() throws Exception {
+        // The Vue node list fetches the interfaces that its case-insensitive SNMP and MAC searches
+        // found with an "(ids);(attr==*value*)" query (see buildSnmpNarrowing). The /nodes search
+        // uses ilike, so these wildcard searches must also be case-insensitive. Otherwise a node
+        // that the /nodes search found shows "No interfaces".
+        sendPost("/monitoringLocations", "<location location-name=\"location1\" monitoring-area=\"location1\" priority=\"1\"/>", 201);
+        String node = "<node type=\"A\" label=\"TestMachine1\" foreignSource=\"JUnit\" foreignId=\"TestMachine1\">" +
+                "<location>location1</location>" +
+                "<labelSource>H</labelSource>" +
+                "</node>";
+        sendPost("/nodes", node, 201);
+        String snmpInterface = "<snmpInterface ifIndex=\"6\">" +
+                "<ifAlias>Uplink to Core</ifAlias>" +
+                "<ifDescr>GigabitEthernet0/1</ifDescr>" +
+                "<ifName>Gi0/1</ifName>" +
+                "<ifType>6</ifType>" +
+                "<physAddr>001E5271136D</physAddr>" +
+                "</snmpInterface>";
+        sendPost("/nodes/1/snmpinterfaces", snmpInterface, 201, "/nodes/1/snmpinterfaces/6");
+
+        // Wildcard searches match in any case
+        for (final String query : new String[] {
+                "ifAlias==*uplink*", "ifAlias==*UPLINK TO*", "ifDescr==*gigabitethernet*",
+                "ifName==*gi0/1*", "physAddr==*001e52*", "(node.id==1);(ifAlias==*uplink*)" }) {
+            final String json = sendRequest(GET, "/snmpinterfaces", parseParamData("_s=" + query), 200);
+            assertEquals(query, 1, new JSONObject(json).getInt("count"));
+        }
+
+        // A NOT_EQUALS wildcard is case-insensitive too
+        sendRequest(GET, "/snmpinterfaces", parseParamData("_s=ifAlias!=*UPLINK*"), 204);
+
+        // A search without a wildcard stays an exact, case-sensitive match
+        sendRequest(GET, "/snmpinterfaces", parseParamData("_s=ifName==Gi0/1"), 200);
+        sendRequest(GET, "/snmpinterfaces", parseParamData("_s=ifName==gi0/1"), 204);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testWildcardStringSearchLikeCharactersAreLiteral() throws Exception {
+        // The Vue node list sends '%' and '_' in its "(ids);(attr==*value*)" narrowing. They must
+        // be literals, the same as in the /nodes search and in the client-side match.
+        sendPost("/monitoringLocations", "<location location-name=\"location1\" monitoring-area=\"location1\" priority=\"1\"/>", 201);
+        String node = "<node type=\"A\" label=\"TestMachine1\" foreignSource=\"JUnit\" foreignId=\"TestMachine1\">" +
+                "<location>location1</location>" +
+                "<labelSource>H</labelSource>" +
+                "</node>";
+        sendPost("/nodes", node, 201);
+        sendPost("/nodes/1/snmpinterfaces", "<snmpInterface ifIndex=\"1\"><ifAlias>50% load</ifAlias><ifName>Gi0_1</ifName><ifType>6</ifType></snmpInterface>", 201, "/nodes/1/snmpinterfaces/1");
+        sendPost("/nodes/1/snmpinterfaces", "<snmpInterface ifIndex=\"2\"><ifAlias>50 load</ifAlias><ifName>Gi0X1</ifName><ifType>6</ifType></snmpInterface>", 201, "/nodes/1/snmpinterfaces/2");
+
+        // '%' is double-encoded, as the UI sends it
+        for (final String query : new String[] { "ifName==*gi0_1*", "ifAlias==*50%2525*", "(node.id==1);(ifName==*Gi0_*)" }) {
+            final String json = sendRequest(GET, "/snmpinterfaces", parseParamData("_s=" + query), 200);
+            final JSONObject result = new JSONObject(json);
+            assertEquals(query, 1, result.getInt("count"));
+            assertEquals(query, 1, result.getJSONArray("snmpInterface").getJSONObject(0).getInt("ifIndex"));
+        }
+    }
 }

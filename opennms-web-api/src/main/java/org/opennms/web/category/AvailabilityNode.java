@@ -53,6 +53,13 @@ public class AvailabilityNode {
     @XmlAttribute(name="service-down-count")
     private Long m_serviceDownCount;
 
+    /**
+     * How many IP interfaces the node has in all (after the {@code withServices} filter), for a caller
+     * that pages {@link #getIpInterfaces()}. Set on every response, paged or not.
+     */
+    @XmlAttribute(name="ipinterfaceCount")
+    private Long m_ipInterfaceCount;
+
     @XmlElementWrapper(name="ipinterfaces")
     @XmlElement(name="ipinterface")
     private final List<AvailabilityIpInterface> m_ipInterfaces = new ArrayList<>();
@@ -110,6 +117,14 @@ public class AvailabilityNode {
         return m_serviceDownCount;
     }
 
+    public Long getIpInterfaceCount() {
+        return m_ipInterfaceCount;
+    }
+
+    public void setIpInterfaceCount(final Long ipInterfaceCount) {
+        m_ipInterfaceCount = ipInterfaceCount;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -117,6 +132,7 @@ public class AvailabilityNode {
             .append("availability", this.getAvailability())
             .append("serviceCount", this.getServiceCount())
             .append("serviceDownCount", this.getServiceDownCount())
+            .append("ipInterfaceCount", this.getIpInterfaceCount())
             .append("ipInterfaces", this.getIpInterfaces())
             .toString();
     }
@@ -130,6 +146,7 @@ public class AvailabilityNode {
             .append(this.getAvailability(), that.getAvailability())
             .append(this.getServiceCount(), that.getServiceCount())
             .append(this.getServiceDownCount(), that.getServiceDownCount())
+            .append(this.getIpInterfaceCount(), that.getIpInterfaceCount())
             .append(this.getIpInterfaces(), that.getIpInterfaces())
             .isEquals();
     }

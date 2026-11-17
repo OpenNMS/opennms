@@ -474,7 +474,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         List<EventConfEvent> allEvents = m_eventDao.findAll();
         assertEquals("Total event count mismatch across all files", totalExpectedEventCount, allEvents.size() - defaultEventSize);
 
-        m_dao.updateEnabledFlag(allSourceIds, false, false);
+        m_dao.updateEnabledFlag(allSourceIds, false, false, "JUnitTest");
         sessionFactory.getCurrentSession().clear();
         for (Long sourceId : allSourceIds) {
             final var source = m_dao.get(sourceId);
@@ -484,7 +484,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
             assertFalse("Events should still be enabled when cascade=false", events.isEmpty() && events.stream().anyMatch(EventConfEvent::getEnabled));
         }
 
-        m_dao.updateEnabledFlag(allSourceIds, true, true);
+        m_dao.updateEnabledFlag(allSourceIds, true, true, "JUnitTest");
         sessionFactory.getCurrentSession().clear();
         for (final var sourceId : allSourceIds) {
             final var source = m_dao.get(sourceId);

@@ -31,7 +31,8 @@ import type {
   TopologyView,
   TopologyViewBackground,
   TopologyViewStyle,
-  TopologyViewSummary
+  TopologyViewSummary,
+  LabelPlacement
 } from '@/types/topology'
 import {
   listViews,
@@ -40,15 +41,18 @@ import {
   deleteView,
   getNodeSeverities,
   getNodeIconIds,
+  getNodeIconsAndLocations,
   getNodeCategories,
   getNodeNeighbors,
   loadDiscoveredGraph,
-  listGraphContainers
+  listGraphContainers,
+  type NodeIconsAndLocations
 } from '@/services/topologyService'
 import type { GraphContainerMeta } from '@/services/topologyService'
 import { buildSources, type TopologySourceOption } from '@/components/Topology/sources'
 import { focusSubgraph } from '@/components/Topology/focus'
 import type { DeviceIconId } from '@/components/Topology/deviceIcons'
+import type { GeoPoint } from '@/components/Topology/geo'
 
 /**
  * The live canvas geometry the canvas component hands back on save:
@@ -56,6 +60,8 @@ import type { DeviceIconId } from '@/components/Topology/deviceIcons'
  * Labels are not included here -- they already live in the store.
  */
 type CanvasSnapshot = Pick<TopologyView, 'nodes' | 'links' | 'viewport'>
+
+export type SidePanelPage = 'details' | 'palette'
 
 const emptyView = (): TopologyView => ({
   name: 'Untitled view',
@@ -181,11 +187,39 @@ export const useTopologyStore = defineStore('topologyStore', () => {
    * the canvas: drag to move, corner handle to resize. Off by default so the
    * image never swallows node/stage clicks during normal composing.
    */
+  /**
+   * The one side panel: what it shows, or null when collapsed to the rail.
+   * Entering Edit opens it on the palette when it was collapsed; leaving
+   * Edit moves a palette page to details, since View has no palette.
+   */
+  const sidePanel = ref<SidePanelPage | null>('details')
+
+  const setSidePanel = (page: SidePanelPage | null) => {
+    sidePanel.value = page
+  }
+
+  /** The rail's click: open on a page, or collapse if it is already showing. */
+  const toggleSidePanel = (page: SidePanelPage) => {
+    sidePanel.value = sidePanel.value === page ? null : page
+  }
+
   const isBackgroundAdjustMode = ref<boolean>(false)
 
+  // The background controls and a selection share the Details page, so the tool
+  // and a selection exclude each other: turning it on deselects, selecting turns it off.
   const setBackgroundAdjustMode = (on: boolean) => {
     isBackgroundAdjustMode.value = on
+    if (on) {
+      selectedIds.value = []
+      sidePanel.value = 'details'
+    }
   }
+
+  watch(selectedIds, (ids) => {
+    if (ids.length > 0) {
+      isBackgroundAdjustMode.value = false
+    }
+  }, { flush: 'sync' })
 
   /**
    * Whether the canvas stats overlay (Nodes/Links/Labels/Selected) shows.
@@ -363,6 +397,110 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     nodeIconIds.value = ids.length === 0 ? {} : await getNodeIconIds(ids)
   }
 
+  /** True while the open custom view draws a geographic map behind its nodes. */
+  const isGeomap = computed<boolean>(() =>
+    discoveredGraph.value === null && currentView.value?.background?.type === 'geomap'
+  )
+
+  /**
+   * Asset location per placed node while the geomap is on: a point, or null once
+   * looked up and found to have none. Absent means not looked up yet, so the
+   * canvas can tell a node still loading from one it has to park.
+   */
+  const nodeLocations = ref<Record<number, GeoPoint | null>>({})
+
+  // The lookup in flight, so the same set is not asked for twice at once: opening
+  // a geomap view both changes the visible nodes and turns the map on.
+  let lookupInFlight: { key: string, promise: Promise<NodeIconsAndLocations> } | null = null
+
+  const lookUpIconsAndLocations = (ids: number[]): Promise<NodeIconsAndLocations> => {
+    const key = ids.join(',')
+    if (lookupInFlight?.key === key) {
+      return lookupInFlight.promise
+    }
+    const promise = getNodeIconsAndLocations(ids)
+    lookupInFlight = { key, promise }
+    void promise.finally(() => {
+      if (lookupInFlight?.promise === promise) {
+        lookupInFlight = null
+      }
+    })
+    return promise
+  }
+
+  /**
+   * Look up the nodes not looked up yet, or with `all`, every placed node again
+   * (done when the map is turned on, so asset edits are picked up). Reading every
+   * node also refreshes the device icons, which come off the same payload.
+   */
+  const refreshNodeLocations = async (all = false): Promise<void> => {
+    if (!isGeomap.value) {
+      return
+    }
+    const ids = visibleNodeIds.value.filter(id => all || !(id in nodeLocations.value))
+    if (ids.length === 0) {
+      return
+    }
+    const { locations, icons, failed } = await lookUpIconsAndLocations(ids)
+    if (all) {
+      nodeIconIds.value = icons
+    }
+    const next = { ...nodeLocations.value }
+    const failures = new Set(nodeLocationFailures.value)
+    const retry = new Set(failed)
+    for (const id of ids) {
+      if (retry.has(id)) {
+        // Not looked up after all, so the next refresh asks again.
+        delete next[id]
+        failures.add(id)
+      } else {
+        next[id] = locations[id] ?? null
+        failures.delete(id)
+      }
+    }
+    nodeLocationFailures.value = failures
+    nodeLocations.value = next
+    scheduleLocationRetry()
+  }
+
+  /**
+   * Nodes whose last lookup failed. The canvas parks them rather than waiting on
+   * them, and they are asked for again on a backoff until a lookup answers.
+   */
+  const nodeLocationFailures = ref<Set<number>>(new Set())
+  let locationRetryTimer: ReturnType<typeof setTimeout> | undefined
+  let locationRetryDelay = 0
+
+  const scheduleLocationRetry = () => {
+    clearTimeout(locationRetryTimer)
+    locationRetryTimer = undefined
+    if (nodeLocationFailures.value.size === 0 || !isGeomap.value) {
+      locationRetryDelay = 0
+      return
+    }
+    locationRetryDelay = Math.min(Math.max(locationRetryDelay * 2, 2000), 60000)
+    locationRetryTimer = setTimeout(() => {
+      locationRetryTimer = undefined
+      void refreshNodeLocations()
+    }, locationRetryDelay)
+  }
+
+  /**
+   * Whether the canvas is drawing the map. Unlike isGeomap, false while the
+   * canvas still holds another graph, as it does mid-switch between views.
+   */
+  const isGeomapShown = ref<boolean>(false)
+
+  /**
+   * Id of the view the last Save or Save As wrote from the canvas. The canvas
+   * graph is unchanged by a save, so it adopts this id as its own.
+   */
+  const lastSavedViewId = ref<string>()
+
+  const setGeomapShown = (shown: boolean) => {
+    isGeomapShown.value = shown
+  }
+
   // Whenever the set of nodes on screen changes -- a view load, a discovered
   // load, a palette drop, or a change of focus or zoom level -- refresh the icon
   // map AND severities. This followed placedNodeIds, which does not change when
@@ -371,7 +509,12 @@ export const useTopologyStore = defineStore('topologyStore', () => {
   // where the poll is stopped. Fetching here rather than only on the poll is
   // also what colors nodes on the initial load.
   watch(visibleNodeIds, () => {
-    void refreshDeviceIcons()
+    // On a geomap view one /nodes read serves both the icons and the locations.
+    if (isGeomap.value) {
+      void refreshNodeLocations(true)
+    } else {
+      void refreshDeviceIcons()
+    }
     void refreshStatus()
     // Ghost links / neighbor tray only matter while composing a custom view.
     if (isEditMode.value && discoveredGraph.value === null) {
@@ -388,7 +531,8 @@ export const useTopologyStore = defineStore('topologyStore', () => {
    */
   const NODE_SIZE_MIN = 6
   const NODE_SIZE_MAX = 28
-  const nodeSize = ref<number>(20)
+  const DEFAULT_NODE_SIZE = 20
+  const nodeSize = ref<number>(DEFAULT_NODE_SIZE)
 
   // Density curve: <=10 nodes -> 20, >=100 -> 9, linear between.
   const autoNodeSizeForCount = (count: number): number =>
@@ -396,13 +540,51 @@ export const useTopologyStore = defineStore('topologyStore', () => {
 
   const setNodeSize = (n: number) => {
     nodeSize.value = Math.max(NODE_SIZE_MIN, Math.min(NODE_SIZE_MAX, Math.round(n)))
+    rememberAppearance()
   }
   const setNodeSizeForCount = (count: number) => {
     nodeSize.value = autoNodeSizeForCount(count)
   }
 
+  /** The density default for a view being opened, unless it saved a size of its own. */
+  const sizeNodesForView = (count: number) => {
+    if (currentView.value?.style?.nodeSize === undefined) {
+      setNodeSizeForCount(count)
+    }
+  }
+
+  const LINK_WIDTH_MIN = 1
+  const LINK_WIDTH_MAX = 8
+  const DEFAULT_LINK_WIDTH = 3
+  const linkWidth = ref<number>(DEFAULT_LINK_WIDTH)
+  const setLinkWidth = (n: number) => {
+    linkWidth.value = Math.max(LINK_WIDTH_MIN, Math.min(LINK_WIDTH_MAX, Math.round(n)))
+    rememberAppearance()
+  }
+
+  // Node size and link width are part of how a custom view reads, so they
+  // save with it; a discovered graph sizes itself and keeps nothing.
+  const DEFAULT_LABEL_PLACEMENT: LabelPlacement = 'right'
+  const labelPlacement = ref<LabelPlacement>(DEFAULT_LABEL_PLACEMENT)
+  const setLabelPlacement = (placement: LabelPlacement) => {
+    labelPlacement.value = placement
+    rememberAppearance()
+  }
+
+  const rememberAppearance = () => {
+    if (currentView.value && discoveredGraph.value === null) {
+      setViewStyle({ nodeSize: nodeSize.value, linkWidth: linkWidth.value, labelPlacement: labelPlacement.value })
+    }
+  }
+  const applyAppearance = (style: TopologyViewStyle | undefined) => {
+    nodeSize.value = style?.nodeSize ?? DEFAULT_NODE_SIZE
+    linkWidth.value = style?.linkWidth ?? DEFAULT_LINK_WIDTH
+    labelPlacement.value = style?.labelPlacement ?? DEFAULT_LABEL_PLACEMENT
+  }
+
   const newView = () => {
     currentView.value = emptyView()
+    applyAppearance(undefined)
     selectedIds.value = []
     labels.value = []
     shapes.value = []
@@ -447,6 +629,9 @@ export const useTopologyStore = defineStore('topologyStore', () => {
 
   /** Clear discovered state when switching back to a custom source. */
   const clearDiscovered = () => {
+    // The discovered graph seeded these; left in place they would count as a
+    // custom view's nodes until the next view loads (and be looked up for the map).
+    placedNodeIds.value = new Set()
     discoveredGraph.value = null
     discoveredError.value = false
     focusNodeId.value = null
@@ -499,6 +684,7 @@ export const useTopologyStore = defineStore('topologyStore', () => {
       if (saved === false) {
         return false
       }
+      lastSavedViewId.value = saved.id
       currentView.value = saved
       await refreshCatalog()
       return true
@@ -516,6 +702,44 @@ export const useTopologyStore = defineStore('topologyStore', () => {
    * view untouched, rather than detaching it (losing its id) and renaming it
    * to the conflicting name.
    */
+  /**
+   * Keep a discovered graph as a custom view: the nodes and links as they are
+   * laid out right now, under a new name.
+   *
+   * Not saveCurrentViewAs, which spreads the open view. On a discovered source
+   * currentView still names whichever custom view was open last, so spreading
+   * it would carry that view's background and style onto this one.
+   *
+   * The links keep the bindings discovery gave them, which is what lets the
+   * copy still color and report counters; nothing else in a custom view could
+   * have supplied them.
+   */
+  const saveDiscoveredAsView = async (name: string, snapshot: CanvasSnapshot): Promise<boolean> => {
+    isSaving.value = true
+    try {
+      const candidate: TopologyView = {
+        name,
+        nodes: snapshot.nodes,
+        links: snapshot.links,
+        labels: [],
+        viewport: snapshot.viewport,
+        // The copy should open looking as the graph did on screen.
+        style: { nodeSize: nodeSize.value, linkWidth: linkWidth.value }
+      }
+      const saved = await saveView(candidate)
+      if (saved === false) {
+        return false
+      }
+      currentView.value = saved
+      setLabels([])
+      setShapes([])
+      await refreshCatalog()
+      return true
+    } finally {
+      isSaving.value = false
+    }
+  }
+
   const saveCurrentViewAs = async (name: string, snapshot: CanvasSnapshot): Promise<boolean> => {
     if (!currentView.value) {
       return false
@@ -536,6 +760,7 @@ export const useTopologyStore = defineStore('topologyStore', () => {
       if (saved === false) {
         return false
       }
+      lastSavedViewId.value = saved.id
       currentView.value = saved
       await refreshCatalog()
       return true
@@ -555,6 +780,7 @@ export const useTopologyStore = defineStore('topologyStore', () => {
       return false
     }
     currentView.value = view
+    applyAppearance(view.style)
     isBackgroundAdjustMode.value = false
     return view
   }
@@ -598,7 +824,13 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     if (!value) {
       isBackgroundAdjustMode.value = false
       isShapeDrawMode.value = false
+      if (sidePanel.value === 'palette') {
+        sidePanel.value = 'details'
+      }
     } else if (discoveredGraph.value === null) {
+      if (sidePanel.value === null) {
+        sidePanel.value = 'palette'
+      }
       void refreshNeighbors()
     }
   }
@@ -740,11 +972,15 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     setViewStyle,
     isBackgroundAdjustMode,
     setBackgroundAdjustMode,
+    sidePanel,
+    setSidePanel,
+    toggleSidePanel,
     newView,
     refreshCatalog,
     renameCurrent,
     saveCurrentView,
     saveCurrentViewAs,
+    saveDiscoveredAsView,
     openView,
     removeView,
     renameView,
@@ -767,11 +1003,25 @@ export const useTopologyStore = defineStore('topologyStore', () => {
     refreshStatus,
     nodeIconIds,
     refreshDeviceIcons,
+    isGeomap,
+    isGeomapShown,
+    setGeomapShown,
+    nodeLocations,
+    nodeLocationFailures,
+    lastSavedViewId,
+    refreshNodeLocations,
     nodeSize,
     setNodeSize,
     setNodeSizeForCount,
+    sizeNodesForView,
     NODE_SIZE_MIN,
     NODE_SIZE_MAX,
+    linkWidth,
+    setLinkWidth,
+    LINK_WIDTH_MIN,
+    LINK_WIDTH_MAX,
+    labelPlacement,
+    setLabelPlacement,
     setEditMode,
     setLinkDrawMode,
     selectOnly,

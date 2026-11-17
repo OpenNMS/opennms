@@ -35,8 +35,12 @@ import org.opennms.web.rest.v2.model.EventConfSourcePageResponse;
 import org.opennms.web.rest.v2.model.EventConfUploadResponse;
 import org.opennms.web.rest.v2.model.SourceNameDto;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.model.events.EventConfEventOrderPayload;
+import org.opennms.netmgt.model.events.EventConfSourceOrderPayload;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
+import org.opennms.web.rest.v2.model.EventConfEventMoveRequest;
+import org.opennms.web.rest.v2.model.EventConfEventSummaryDto;
 
 
 import javax.ws.rs.QueryParam;
@@ -225,7 +229,7 @@ public interface EventConfRestApi {
         - `eventSortBy`: sort field `eventOrder`, `uei`, `eventLabel`, `description`, `severity`, `enabled`;
           defaults to `eventOrder` (the evaluation position within the source, 1 = evaluated first) if missing or invalid.
         - `eventOrder`: `asc` or `desc` (default: `desc`, or `asc` when falling back to `eventOrder`).
-        - `offset` and `limit`: for pagination.
+        - `offset` and `limit`: for pagination; omitting `limit` (or passing 0) returns every match in one page.
 
         The response wraps the page in `eventConfSourceList`; the entries are events, not sources.
         `createdTime` and `lastModified` come back as epoch milliseconds, not as the date-time strings the schema shows.""",
@@ -279,9 +283,9 @@ public interface EventConfRestApi {
             @Parameter(description = "Total matching records as already known to the caller. When present, the count query is not run.",
                     example = "132")
             @QueryParam("totalRecords") Integer totalRecords,
-            @Parameter(description = "Zero-based index of the first record to return.", example = "0")
+            @Parameter(description = "Zero-based index of the first record to return (default 0).", example = "0")
             @QueryParam("offset") Integer offset,
-            @Parameter(description = "Maximum number of records to return.", example = "20")
+            @Parameter(description = "Maximum number of records to return; omit or pass 0 for every match in one page.", example = "20")
             @QueryParam("limit") Integer limit,
             @Context SecurityContext securityContext );
 
@@ -588,22 +592,24 @@ public interface EventConfRestApi {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Delete Events for a Source",
-            description = "Delete one or more events belonging to the specified eventConf source.",
+            description = """
+        Delete one or more events belonging to the specified eventConf source. Events of the stock
+        (opennms-vendor) sources, including the catch-all, cannot be deleted - disable them instead.""",
             operationId = "deleteEventsForSource"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Events deleted successfully",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "EventConf events deleted successfully."))),
-            @ApiResponse(responseCode = "500", description = "Missing or empty event ids. The IllegalArgumentException from the handler is mapped by the generic provider as 500 text/plain, not 400.",
-                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Event IDs to delete must not be null or empty"))),
+                            schema = @Schema(implementation = Object.class),
+                            examples = @ExampleObject(value = "{\"message\": \"EventConf events deleted successfully.\"}"))),
+            @ApiResponse(responseCode = "400", description = "Missing or empty event ids, or a stock source",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = Object.class),
+                            examples = @ExampleObject(value = "{\"error\": \"Events of the stock source 'opennms.catch-all.events' cannot be deleted; disable them instead\"}"))),
             @ApiResponse(responseCode = "404", description = "Source or one or more events not found",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "One or more eventIds were not found: 9999")))
+                            schema = @Schema(implementation = Object.class),
+                            examples = @ExampleObject(value = "{\"error\": \"One or more eventIds were not found: 9999\"}")))
     })
     Response deleteEventsForSource(
             @Parameter(description = "Identifier of the source owning the events.", example = "17", required = true)
@@ -798,6 +804,290 @@ public interface EventConfRestApi {
                       "vendor": "Cisco"
                     }""")))
             final AddEventConfSourceRequest request,
+            @Context SecurityContext securityContext) throws Exception;
+
+    @GET
+    @Path("/sources/ordered")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Get all EventConf sources in evaluation order",
+            description = """
+        Returns every source, unpaged, in the order they are evaluated when matching events:
+        the first entry is evaluated first, `opennms.catch-all.events` comes last. This is the list
+        the reorder UI edits; `evaluationOrder` on each entry equals its 1-based position here.""",
+            operationId = "getOrderedEventConfSources"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sources in evaluation order (first evaluated first)",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(implementation = EventConfSourceDto.class)),
+                            examples = @ExampleObject(value = """
+                    [
+                      {
+                        "id": 17,
+                        "name": "Cisco.syslog.events",
+                        "vendor": "Cisco",
+                        "fileOrder": 24,
+                        "evaluationOrder": 1,
+                        "enabled": true,
+                        "eventCount": 132
+                      },
+                      {
+                        "id": 3,
+                        "name": "opennms.catch-all.events",
+                        "vendor": "opennms",
+                        "fileOrder": 1,
+                        "evaluationOrder": 23,
+                        "enabled": true,
+                        "eventCount": 4
+                      }
+                    ]"""))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string")))
+    })
+    Response getOrderedEventConfSources(@Context SecurityContext securityContext);
+
+    @PUT
+    @Path("/sources/order")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Replace the evaluation order of all EventConf sources",
+            description = """
+        Sets the complete evaluation order: `sourceIds` lists every non-catch-all source exactly once,
+        first entry evaluated first. `opennms.catch-all.events` is pinned last and must not be listed.
+        A list with duplicates, a listed catch-all, or one that misses a source (for example one created
+        concurrently) is rejected with 400 naming the problem; an unknown id is a 404.
+        The event definitions are reloaded into memory once the update commits.""",
+            operationId = "updateEventConfSourcesOrder"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order applied",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = Object.class),
+                            examples = @ExampleObject(value = "{\"updated\": 5}"))),
+            @ApiResponse(responseCode = "400", description = "Missing body, duplicates, a listed catch-all, or missing sources",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "The order must list every source exactly once; missing: Cisco.airespace"))),
+            @ApiResponse(responseCode = "404", description = "An id matches no source",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "EventConfSource not found for id: 999"))),
+            @ApiResponse(responseCode = "500", description = "Update failed",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string")))
+    })
+    Response updateEventConfSourcesOrder(
+            @RequestBody(required = true,
+                    description = "Every non-catch-all source id exactly once, evaluation order top-down.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = EventConfSourceOrderPayload.class),
+                            examples = @ExampleObject(value = "{\"sourceIds\": [17, 18, 4, 12, 9]}")))
+            EventConfSourceOrderPayload payload,
+            @Context SecurityContext securityContext) throws Exception;
+
+    @PATCH
+    @Path("/sources/{sourceId}/events/{eventId}/order")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Move an event within its source's evaluation order",
+            description = """
+        Moves one event within its source (1 = evaluated first). `mode` is `top`, `bottom`, `up`,
+        `down` or `position`; `position` carries the 1-based target for mode `position`.
+        Moving an edge event further in the same direction is a no-op that still returns 200.
+        The event definitions are reloaded into memory once the update commits.""",
+            operationId = "moveEventConfSourceEvent"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The event's resulting position",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = Object.class),
+                            examples = @ExampleObject(value = "{\"id\": 4211, \"eventOrder\": 1}"))),
+            @ApiResponse(responseCode = "400", description = "Missing body, unknown mode, or out-of-range position",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "position must be between 1 and 132"))),
+            @ApiResponse(responseCode = "404", description = "Source or event not found",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "EventConfEvent not found for sourceId=17, eventId=9999"))),
+            @ApiResponse(responseCode = "500", description = "Move failed",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string")))
+    })
+    Response moveEventConfSourceEvent(
+            @Parameter(description = "Identifier of the source owning the event.", example = "17", required = true)
+            @PathParam("sourceId") Long sourceId,
+            @Parameter(description = "Identifier of the event to move.", example = "4211", required = true)
+            @PathParam("eventId") Long eventId,
+            @RequestBody(required = true,
+                    description = "The move to perform.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = EventConfEventMoveRequest.class),
+                            examples = @ExampleObject(value = "{\"mode\": \"position\", \"position\": 1}")))
+            EventConfEventMoveRequest request,
+            @Context SecurityContext securityContext) throws Exception;
+
+    @GET
+    @Path("/sources/{sourceId}/events/ordered")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Get one source's events in evaluation order, without their XML payloads",
+            description = """
+        Returns every event of the source, unpaged, in the order they are evaluated (1 = evaluated
+        first). Each entry carries the identifying fields only - no XML definition - so the list
+        stays small for sources with thousands of events. This is the list the reorder UI edits.""",
+            operationId = "getOrderedEventConfSourceEvents"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Events in evaluation order (first evaluated first)",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            array = @ArraySchema(schema = @Schema(implementation = EventConfEventSummaryDto.class)),
+                            examples = @ExampleObject(value = """
+                    [
+                      {
+                        "id": 4211,
+                        "uei": "uei.opennms.org/vendor/cisco/syslog/LINK-3-UPDOWN",
+                        "eventLabel": "Cisco Syslog: LINK-3-UPDOWN",
+                        "severity": "Warning",
+                        "enabled": true,
+                        "eventOrder": 1
+                      }
+                    ]"""))),
+            @ApiResponse(responseCode = "404", description = "Source not found",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "EventConfSource not found for id: 999"))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string")))
+    })
+    Response getOrderedEventConfSourceEvents(
+            @Parameter(description = "Identifier of the source whose events are listed.", example = "17", required = true)
+            @PathParam("sourceId") Long sourceId,
+            @Context SecurityContext securityContext);
+
+    @PUT
+    @Path("/sources/{sourceId}/events/order")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Replace the evaluation order of one source's events",
+            description = """
+        Sets the complete evaluation order within the source: `eventIds` lists every event of the
+        source exactly once, first entry evaluated first (`eventOrder` 1). A list with duplicates or
+        one that misses an event (for example one created concurrently) is rejected with 400 naming
+        the problem; an unknown source or event id is a 404.
+        The event definitions are reloaded into memory once the update commits.""",
+            operationId = "updateEventConfSourceEventsOrder"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order applied",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = Object.class),
+                            examples = @ExampleObject(value = "{\"updated\": 7}"))),
+            @ApiResponse(responseCode = "400", description = "Missing body, duplicates, or missing events",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "The order must list every event of the source exactly once; missing: Cisco Syslog: LINK-3-UPDOWN"))),
+            @ApiResponse(responseCode = "404", description = "Source or event not found",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "EventConfEvent not found for sourceId=17, eventId=9999"))),
+            @ApiResponse(responseCode = "500", description = "Update failed",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string")))
+    })
+    Response updateEventConfSourceEventsOrder(
+            @Parameter(description = "Identifier of the source whose events are reordered.", example = "17", required = true)
+            @PathParam("sourceId") Long sourceId,
+            @RequestBody(required = true,
+                    description = "Every event id of the source exactly once, evaluation order top-down.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = EventConfEventOrderPayload.class),
+                            examples = @ExampleObject(value = "{\"eventIds\": [4213, 4211, 4212]}")))
+            EventConfEventOrderPayload payload,
+            @Context SecurityContext securityContext) throws Exception;
+
+    @GET
+    @Path("/sources/{sourceId}/events")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Get a source's events with an exact UEI",
+            description = """
+        Returns the source's events whose UEI matches `uei` exactly (case-sensitive, no wildcards), in
+        evaluation order, as full records including `id` and `xmlContent`. This resolves an event's id
+        from its identity: pick among the results by comparing masks in `xmlContent`. For substring
+        search use `filter/{sourceId}/events`; for definitions without ids use `.../events/download`.""",
+            operationId = "getEventConfSourceEventsByUei"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Matching events, possibly an empty list",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = EventConfEventDto.class))),
+            @ApiResponse(responseCode = "400", description = "Missing uei parameter",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Query parameter 'uei' is required"))),
+            @ApiResponse(responseCode = "404", description = "Source not found",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "EventConfSource not found for id: 17")))
+    })
+    Response getEventConfSourceEventsByUei(
+            @Parameter(description = "Identifier of the source whose events are searched.", example = "17", required = true)
+            @PathParam("sourceId") Long sourceId,
+            @Parameter(description = "The exact UEI to match.",
+                    example = "uei.opennms.org/vendor/cisco/syslog/LINK-3-UPDOWN", required = true)
+            @QueryParam("uei") String uei,
+            @Context SecurityContext securityContext);
+
+    @PUT
+    @Path("/sources/{sourceId}/events")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Upsert one event in a source by its UEI and mask",
+            description = """
+        Creates or updates the event whose identity — the exact UEI plus an equal mask — matches the body.
+        The first event in evaluation order with that identity is rewritten in place, keeping its id,
+        position and enabled flag; if its stored definition is already identical the call changes nothing
+        (`outcome: unchanged`). Without a match the event is appended to the source, like the POST.
+        `uei`, `event-label` and `severity` are required. The same body can be sent repeatedly: the call
+        is idempotent, converging on `unchanged`. The event definitions are reloaded into memory after a
+        create or update.""",
+            operationId = "upsertEventConfSourceEvent"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "An existing event matched by UEI and mask",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = Object.class),
+                            examples = @ExampleObject(value = "{\"outcome\": \"updated\", \"id\": 4211, \"eventOrder\": 3}"))),
+            @ApiResponse(responseCode = "201", description = "No event matched; the definition was appended",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = Object.class),
+                            examples = @ExampleObject(value = "{\"outcome\": \"created\", \"id\": 4299, \"eventOrder\": 133}"))),
+            @ApiResponse(responseCode = "400", description = "Missing or invalid event payload",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Invalid event payload: Event 'uei' is required"))),
+            @ApiResponse(responseCode = "404", description = "Source not found",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Source with ID 17 not found")))
+    })
+    Response upsertEventConfSourceEvent(
+            @Parameter(description = "Identifier of the source holding the event.", example = "17", required = true)
+            @PathParam("sourceId") Long sourceId,
+            @RequestBody(required = true,
+                    description = """
+                            Event definition, using the same structure as an <event> element in an eventconf file.
+                            The UEI and mask identify the event to update; the rest is the desired content.""",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Event.class)))
+            Event event,
             @Context SecurityContext securityContext) throws Exception;
 
 }

@@ -32,15 +32,15 @@
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
 
-  <bean id="kscReportFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+  <bean id="graphCollectionConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod">
-      <value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.init</value>
+      <value>org.opennms.netmgt.config.GraphCollectionConfigFactory.init</value>
     </property>
   </bean>
-  <bean id="kscReportFactory" class="org.opennms.netmgt.config.KSC_PerformanceReportFactory" depends-on="kscReportFactory-init" factory-method="getInstance"/>
-  <bean id="kscReportService" class="org.opennms.web.svclayer.support.DefaultKscReportService">
+  <bean id="graphCollectionConfigFactory" class="org.opennms.netmgt.config.GraphCollectionConfigFactory" depends-on="graphCollectionConfigFactory-init" factory-method="getInstance"/>
+  <bean id="graphCollectionService" class="org.opennms.web.svclayer.support.DefaultGraphCollectionService">
     <property name="resourceService" ref="resourceService"/>
-    <property name="kscReportFactory" ref="kscReportFactory"/>
+    <property name="graphCollectionConfigFactory" ref="graphCollectionConfigFactory"/>
   </bean>
   <bean id="groupDao" class="org.opennms.netmgt.config.GroupManagerGroupDao">
     <property name="groupManager" ref="groupManager"/>

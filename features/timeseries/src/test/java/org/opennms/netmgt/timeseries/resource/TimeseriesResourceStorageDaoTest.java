@@ -28,13 +28,19 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toSearchRegex;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,16 +49,19 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.integration.api.v1.timeseries.TimeSeriesStorage;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.opennms.netmgt.timeseries.TimeseriesStorageManager;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 
 import com.google.common.collect.Maps;
@@ -211,6 +220,36 @@ public class TimeseriesResourceStorageDaoTest {
         assertEquals("strafeping", attributes.iterator().next().getName());
 
         verify(searcher, atLeastOnce()).search(any(ResourcePath.class), anyInt());
+    }
+
+    @Test
+    public void deleteShouldRemoveTheDeletedMetricsFromTheSearcherCache() throws StorageException {
+        final TimeSeriesStorage storage = mock(TimeSeriesStorage.class);
+        final TimeseriesStorageManager storageManager = mock(TimeseriesStorageManager.class);
+        when(storageManager.get()).thenReturn(storage);
+        resourceStorageDao.setStorageManager(storageManager);
+        final ResourcePath eth0 = ResourcePath.get("snmp", "1", "eth0");
+
+        // Nothing under the path: nothing is deleted and the cache is left alone
+        replay();
+        assertFalse(resourceStorageDao.delete(eth0));
+        verify(searcher).search(eth0, 0);
+        verify(searcher, never()).removeFromCache(any(ResourcePath.class), any());
+
+        // The metrics directly under the path are deleted from storage and hidden in the cache,
+        // except for the one storage refused to delete
+        index(ResourcePath.get("snmp", "1", "eth0", "mib2-stats"), Sets.newHashSet("ifInOctets", "ifOutOctets"));
+        replay();
+        doThrow(new StorageException("refused")).when(storage)
+                .delete(org.mockito.ArgumentMatchers.argThat(m -> "ifOutOctets".equals(m.getFirstTagByKey(IntrinsicTagNames.name).getValue())));
+        assertTrue(resourceStorageDao.delete(eth0));
+        verify(searcher, times(2)).search(eth0, 0);
+        verify(storage, times(2)).delete(any(Metric.class));
+        @SuppressWarnings("unchecked")
+        final ArgumentCaptor<Collection<Metric>> removed = ArgumentCaptor.forClass(Collection.class);
+        verify(searcher).removeFromCache(eq(eth0), removed.capture());
+        assertEquals(1, removed.getValue().size());
+        assertEquals("ifInOctets", removed.getValue().iterator().next().getFirstTagByKey(IntrinsicTagNames.name).getValue());
     }
 
     private void index(ResourcePath path) {

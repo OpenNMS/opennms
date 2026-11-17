@@ -4,7 +4,10 @@ import { OnmsMenu, OnmsTag } from '@opennms/onms-ui'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { OnmsTooltip } from '@opennms/onms-ui'
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+// Shows which value was formatted without depending on the display zone or format.
+vi.mock('@/lib/displayTimeZone', () => ({ formatInDisplayZone: (value: number) => `fmt:${value}` }))
 
 const node = { id: 42, label: 'srv-42', location: 'Default', assetRecord: {}} as any
 
@@ -144,6 +147,80 @@ describe('NodeDetailsHeader.vue', () => {
       expect(badge([category(1, 'Routers'), category(2, 'S'), category(3, 'P')]).classes())
         .toContain('tooltip-target')
       expect(badge([category(1, 'Routers')]).classes()).not.toContain('tooltip-target')
+    })
+  })
+
+  // The legacy page shows the requisition and foreign id only for nodes that have them.
+  describe('FS:FID badge', () => {
+    const fsTag = (extra: object) =>
+      mount(NodeDetailsHeader, { props: { node: { ...node, ...extra }}, global: { plugins: [PrimeVue] }})
+        .find('[data-test="foreign-source-tag"]')
+
+    it('shows foreign source and foreign id for a requisitioned node', () => {
+      expect(fsTag({ foreignSource: 'DcbRequisition', foreignId: '1783366455117' }).text())
+        .toBe('FS:FID: DcbRequisition:1783366455117')
+    })
+
+    it('is left out for a node with no foreign source', () => {
+      expect(fsTag({ foreignSource: null, foreignId: null }).exists()).toBe(false)
+    })
+
+    it('comes right after the location badge', () => {
+      const values = mount(NodeDetailsHeader, {
+        props: { node: { ...node, foreignSource: 'fs', foreignId: 'fid' }},
+        global: { plugins: [PrimeVue] }
+      }).findAllComponents(OnmsTag).map(tag => tag.props('value'))
+
+      expect(values.indexOf('FS:FID: fs:fid')).toBe(values.indexOf('Monitoring Location: Default') + 1)
+    })
+  })
+
+  describe('flow data badge', () => {
+    const NOW = Date.UTC(2026, 9, 5, 12, 0, 0)
+    const DAY = 24 * 60 * 60 * 1000
+    const tooltipOf = (el: Element) => (el as never as Record<string, unknown>).$_ptooltipValue
+
+    beforeEach(() => {
+      vi.useFakeTimers()
+      vi.setSystemTime(NOW)
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    const flowsTag = (extra: object) =>
+      mount(NodeDetailsHeader, {
+        props: { node: { ...node, ...extra }},
+        global: { plugins: [PrimeVue], directives: { 'onms-tooltip': OnmsTooltip }}
+      }).find('[data-test="flows-tag"]')
+
+    it('shows a success badge when the node had a flow in the last week', () => {
+      const tag = flowsTag({ lastIngressFlow: NOW - DAY })
+
+      expect(tag.text()).toBe('Flow data available')
+      expect(tag.classes().join(' ')).toContain('success')
+    })
+
+    it('counts either direction', () => {
+      expect(flowsTag({ lastEgressFlow: NOW - DAY }).exists()).toBe(true)
+    })
+
+    it('is left out when the node has never had flows', () => {
+      expect(flowsTag({}).exists()).toBe(false)
+    })
+
+    // OnmsNode.getHasFlows ages flows out after maxFlowAgeSeconds (7 days by default).
+    it('is left out when the last flow is more than a week old', () => {
+      expect(flowsTag({ lastIngressFlow: NOW - 8 * DAY, lastEgressFlow: NOW - 8 * DAY }).exists()).toBe(false)
+    })
+
+    it('gives the last ingress and egress flow times in its tooltip, each on its own line', () => {
+      const el = flowsTag({ lastIngressFlow: NOW - DAY }).element
+
+      expect(tooltipOf(el)).toBe(`Last ingress flow:\nfmt:${NOW - DAY}\nLast egress flow:\nNone`)
+      // Keeps each timestamp on one line; see the component's unscoped style.
+      expect((el as never as Record<string, unknown>).$_ptooltipClass).toBe('node-flows-tooltip')
     })
   })
 })

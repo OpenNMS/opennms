@@ -22,6 +22,7 @@
 package org.opennms.netmgt.config;
 
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,6 +31,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -168,7 +170,8 @@ public abstract class BasicScheduleUtils {
      */
     public static void setOutCalTime(final Calendar outCal, final String timeStr) {
         if (timeStr.length() == BasicScheduleUtils.FORMAT1.length()) {
-            SimpleDateFormat format = new SimpleDateFormat(BasicScheduleUtils.FORMAT1);
+            // Locale.ROOT: the month names are the English ones the Vue editors and WebSchedEntry write, whatever the JVM locale
+            SimpleDateFormat format = new SimpleDateFormat(BasicScheduleUtils.FORMAT1, Locale.ROOT);
     
             // parse the date string passed
             Date tempDate = null;
@@ -192,7 +195,7 @@ public abstract class BasicScheduleUtils {
             outCal.set(Calendar.SECOND, tempCal.get(Calendar.SECOND));
             outCal.set(Calendar.MILLISECOND, 0);
         } else if (timeStr.length() == BasicScheduleUtils.FORMAT2.length()) {
-            SimpleDateFormat format = new SimpleDateFormat(BasicScheduleUtils.FORMAT2);
+            SimpleDateFormat format = new SimpleDateFormat(BasicScheduleUtils.FORMAT2, Locale.ROOT);
     
             // parse the date string passed
             Date tempDate = null;
@@ -215,6 +218,25 @@ public abstract class BasicScheduleUtils {
         }
     }
     
+    /**
+     * Checks a schedule time the way {@link #setOutCalTime(Calendar, String)} reads it: the text must be exactly as
+     * long as the format, and a non-lenient {@link SimpleDateFormat} in {@link Locale#ROOT} (English month names, as notifd
+     * reads them) must parse all of it.
+     *
+     * @param timeStr the time text, e.g. {@code 08:00:00}
+     * @param format {@link #FORMAT1} or {@link #FORMAT2}
+     * @return true if notifd can evaluate the time
+     */
+    public static boolean isValidTime(final String timeStr, final String format) {
+        if (timeStr == null || format == null || timeStr.length() != format.length()) {
+            return false;
+        }
+        final SimpleDateFormat parser = new SimpleDateFormat(format, Locale.ROOT);
+        parser.setLenient(false);
+        final ParsePosition position = new ParsePosition(0);
+        return parser.parse(timeStr, position) != null && position.getIndex() == timeStr.length();
+    }
+
     /**
      * <p>getDayOfWeekIndex</p>
      *

@@ -40,6 +40,7 @@
           <OnmsTab :value="0">Data Collection Sources</OnmsTab>
           <OnmsTab :value="1">Import Data Collection Sources</OnmsTab>
           <OnmsTab :value="2">Profiles</OnmsTab>
+          <OnmsTab :value="3">Find by Name</OnmsTab>
         </OnmsTabList>
         <OnmsTabPanels>
           <OnmsTabPanel :value="0">
@@ -51,6 +52,9 @@
           <OnmsTabPanel :value="2">
             <SnmpDataCollectionProfilesTable />
           </OnmsTabPanel>
+          <OnmsTabPanel :value="3">
+            <SnmpDataCollectionDefinitionSearch />
+          </OnmsTabPanel>
         </OnmsTabPanels>
       </OnmsTabs>
     </div>
@@ -61,6 +65,7 @@
 import { computed, ref } from 'vue'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import SnmpDataCollectionDefinitionSearch from '@/components/SnmpDataCollection/SnmpDataCollectionDefinitionSearch.vue'
 import SnmpDataCollectionProfilesTable from '@/components/SnmpDataCollection/SnmpDataCollectionProfilesTable.vue'
 import SnmpDataCollectionSourceImport from '@/components/SnmpDataCollection/SnmpDataCollectionSourceImport.vue'
 import SnmpDataCollectionSourcesTable from '@/components/SnmpDataCollection/SnmpDataCollectionSourcesTable.vue'

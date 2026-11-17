@@ -118,7 +118,7 @@ The following globals will be passed to the script:
 |===
 
 === Steps to Increase Log Character Size
-By default, the log message size is limited to 500 characters with karaf logs. However, in some cases, such as when viewing detailed proto object logs, you may need to increase the character size to capture the full log details.
+By default, the log message size is limited to 500 characters with Karaf logs. However, in some cases, such as when viewing detailed proto object logs, you may need to increase the character size to capture the full log details.
 
 Locate file `org.ops4j.pax.logging.cfg`  in the `$\{OPENNMS_HOME}/etc/` directory.
 

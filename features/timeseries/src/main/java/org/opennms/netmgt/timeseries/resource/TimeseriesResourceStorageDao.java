@@ -74,7 +74,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
     @Override
     public boolean exists(ResourcePath path, int depth) {
         Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
-        return searchFor(path, depth).size() > 0;
+        return !searchFor(path, depth).isEmpty();
     }
 
     @Override
@@ -86,7 +86,7 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         // additional indices to avoid this, but it's not worth the additional
         // writes, since the specified depth should be relatively small.
         return IntStream.rangeClosed(0, depth)
-            .anyMatch(i -> searchFor(path, i).size() > 0);
+            .anyMatch(i -> !searchFor(path, i).isEmpty());
     }
 
     @Override
@@ -117,13 +117,17 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
             return false;
         }
 
+        final Set<Metric> deleted = new HashSet<>();
         for (final Metric metric : results) {
                 try {
                     storageManager.get().delete(metric);
+                    deleted.add(metric);
                 } catch (StorageException e) {
                     LOG.error("Could not delete {}, will ignore problem and continue ", metric, e);
                 }
         }
+        // stop answering with the deleted metrics until the cache entry expires
+        searcher.removeFromCache(path, deleted);
 
         return true;
     }
@@ -234,6 +238,10 @@ public class TimeseriesResourceStorageDao implements ResourceStorageDao {
         }
 
         return ResourcePath.get(els);
+    }
+
+    public void setStorageManager(TimeseriesStorageManager storageManager) {
+        this.storageManager = storageManager;
     }
 
     public void setSearcher(TimeseriesSearcher searcher) {

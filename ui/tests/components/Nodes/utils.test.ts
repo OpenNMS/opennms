@@ -23,6 +23,9 @@
 import { describe, expect, test } from 'vitest'
 import { mock } from 'vitest-mock-extended'
 import {
+  severityTag,
+  hasRecentFlows,
+  MAX_FLOW_AGE_MS,
   buildSnmpNarrowing,
   formatIfSpeed,
   getTableCssClasses,
@@ -106,11 +109,30 @@ describe('Nodes utils test', () => {
         .toBe('ifAlias==*core*')
     })
 
-    // The narrowing sent to the server has to stay a superset of the client-side match, so a
-    // value carrying LIKE wildcards or FIQL operators drops the attribute term entirely.
-    test.each(['up%', 'up_link', 'a,b', 'a;b', 'a(b', 'a)b'])('omits narrowing for %s', (value) => {
+    // '%' and '_' are literal on the server and in the client-side match, so they no longer drop
+    // the narrowing. '*' stays a wildcard on both sides.
+    test.each([
+      ['up%', 'ifName==*up%2525*'],
+      ['up_link', 'ifName==*up_link*'],
+      ['Gi*1', 'ifName==*Gi*1*']
+    ])('narrows for %s', (value, expected) => {
       expect(buildSnmpNarrowing({ mode: 'snmpParm', attr: 'ifName', value, matchType: 'contains' }))
-        .toBeUndefined()
+        .toBe(expected)
+    })
+
+    // FIQL operators and URL-structural characters are double-encoded, so they reach the server
+    // as literals.
+    test.each([
+      ['a,b', 'ifName==*a%252Cb*'],
+      ['a;b', 'ifName==*a%253Bb*'],
+      ['a(b', 'ifName==*a%2528b*'],
+      ['a)b', 'ifName==*a%2529b*'],
+      ['R&D', 'ifName==*R%2526D*'],
+      ['a#b', 'ifName==*a%2523b*'],
+      ['a+b c', 'ifName==*a%252Bb%2520c*']
+    ])('encodes the narrowing value %s', (value, expected) => {
+      expect(buildSnmpNarrowing({ mode: 'snmpParm', attr: 'ifName', value, matchType: 'contains' }))
+        .toBe(expected)
     })
 
     test('narrows nothing in the default mode', () => {
@@ -367,4 +389,44 @@ describe('Nodes utils test', () => {
     })
   })
 
+})
+
+describe('hasRecentFlows', () => {
+  const NOW = Date.UTC(2026, 9, 5, 12, 0, 0)
+  const flows = (lastIngressFlow?: unknown, lastEgressFlow?: unknown) => ({ lastIngressFlow, lastEgressFlow }) as unknown as Node
+
+  test('a flow in either direction within the window counts', () => {
+    expect(hasRecentFlows(flows(NOW - 1000), NOW)).toBe(true)
+    expect(hasRecentFlows(flows(undefined, NOW - 1000), NOW)).toBe(true)
+  })
+
+  test('flows exactly at or past the maximum age do not', () => {
+    expect(hasRecentFlows(flows(NOW - MAX_FLOW_AGE_MS, NOW - MAX_FLOW_AGE_MS - 1), NOW)).toBe(false)
+  })
+
+  test('a recent flow in one direction is enough when the other is old', () => {
+    expect(hasRecentFlows(flows(NOW - MAX_FLOW_AGE_MS - 1, NOW - 1), NOW)).toBe(true)
+  })
+
+  test('no flow timestamps, or ones that are not numbers, are no flows', () => {
+    expect(hasRecentFlows(flows(), NOW)).toBe(false)
+    expect(hasRecentFlows(flows(null, 0), NOW)).toBe(false)
+    expect(hasRecentFlows(flows('yesterday'), NOW)).toBe(false)
+  })
+})
+
+describe('severityTag', () => {
+  test.each([
+    ['CRITICAL', 'danger'],
+    ['Major', 'danger'],
+    ['minor', 'warn'],
+    ['WARNING', 'warn'],
+    ['NORMAL', 'success'],
+    ['CLEARED', 'success'],
+    ['INDETERMINATE', 'secondary'],
+    ['bogus', 'secondary'],
+    [undefined, 'secondary']
+  ])('%s -> %s', (severity, tag) => {
+    expect(severityTag(severity)).toBe(tag)
+  })
 })

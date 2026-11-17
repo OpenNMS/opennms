@@ -32,6 +32,7 @@
 	"
 %>
 <%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
@@ -318,11 +319,11 @@
              for (String key : pathsMap.keySet()) {
                  if (key.equals(currentPath))
                  {
-                    buffer.append("<option SELECTED VALUE=" + key + ">" + key + "</option>");
+                    buffer.append("<option SELECTED VALUE=\"" + Encode.forHtmlAttribute(key) + "\">" + Encode.forHtml(key) + "</option>");
                  }
                  else
                  {
-                    buffer.append("<option VALUE=" + key + ">" + key + "</option>");
+                    buffer.append("<option VALUE=\"" + Encode.forHtmlAttribute(key) + "\">" + Encode.forHtml(key) + "</option>");
                  }
              }
          } catch (Throwable e)

@@ -53,7 +53,6 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import { OnmsColumn, OnmsSearchInput, OnmsTable, OnmsTag, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import { useMenuStore } from '@/stores/menuStore'
@@ -62,6 +61,7 @@ import { interfaceLink } from '@/lib/linkUtils'
 import { useDebouncedSearch } from './hooks/useDebouncedSearch'
 import { useDelayedLoading } from './hooks/useDelayedLoading'
 import { ipInterfaceStatus, matchesSearchTerm } from './utils'
+import useActiveNodeId from './hooks/useActiveNodeId'
 
 const props = withDefaults(defineProps<{
   // Whether this table's tab is the one showing. Default true so the table still works mounted
@@ -71,9 +71,8 @@ const props = withDefaults(defineProps<{
 
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
-const route = useRoute()
 
-const nodeId = computed(() => route.params.id as string)
+const nodeId = useActiveNodeId()
 const baseHref = computed(() => menuStore.mainMenu.baseHref)
 
 const DEFAULT_PAGE_SIZE = 5

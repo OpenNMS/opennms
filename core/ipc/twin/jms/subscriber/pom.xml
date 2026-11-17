@@ -30,6 +30,10 @@
         </plugins>
     </build>
     <dependencies>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.camel.hardening</artifactId>
+    </dependency>
         <dependency>
             <!-- OSGi-aware CamelContext for the hand-built context (factory discovery across bundles) -->
             <groupId>org.apache.camel.karaf</groupId>

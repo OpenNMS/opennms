@@ -11,8 +11,9 @@
         <OnmsIconButton
           variant="text"
           :icon="InfoIcon"
-          title="About Notices and Escalation"
-          aria-label="About Notices and Escalation"
+          title="About Notifications and Escalation"
+          tooltip="About Notifications and Escalation"
+          aria-label="About Notifications and Escalation"
           data-test="notifications-about-button"
           @click="showAboutDialog = true"
         />
@@ -21,52 +22,49 @@
         v-if="adminRole"
         variant="outlined"
         label="Configure Notifications"
-        icon="pi pi-plus"
         data-test="configure-notifications-button"
-        @click="showConfigDialog = true"
+        @click="router.push('/notifications-config')"
       />
     </div>
 
     <NotificationQueriesCard />
-    <NoticesTable />
+    <NotificationsTable />
 
-    <NotificationExplanationsCard v-model:visible="showAboutDialog" />
-
-    <ConfigureNotificationsDialog
-      v-if="adminRole"
-      v-model:visible="showConfigDialog"
-    />
+    <NotificationsHelpDialog v-model:visible="showAboutDialog" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import { OnmsButton, OnmsIconButton } from '@opennms/onms-ui'
 
-import { whenever } from '@vueuse/core'
+import { useEventListener, whenever } from '@vueuse/core'
 
-import ConfigureNotificationsDialog from '@/components/AdminNotifications/ConfigureNotificationsDialog.vue'
-import NoticesTable from '@/components/AdminNotifications/NoticesTable.vue'
-import NotificationExplanationsCard from '@/components/AdminNotifications/NotificationExplanationsCard.vue'
-import NotificationQueriesCard from '@/components/AdminNotifications/NotificationQueriesCard.vue'
+import NotificationsTable from '@/components/Notifications/NotificationsTable.vue'
+import NotificationsHelpDialog from '@/components/Notifications/NotificationsHelpDialog.vue'
+import NotificationQueriesCard from '@/components/Notifications/NotificationQueriesCard.vue'
 import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import useRole from '@/composables/useRole'
+import { parsePositiveIntegerId } from '@/lib/ids'
+import { SAME_PAGE_NAVIGATION_EVENT } from '@/lib/navigation'
 import { useAuthStore } from '@/stores/authStore'
 import { useMenuStore } from '@/stores/menuStore'
-import { useNoticesStore } from '@/stores/noticesStore'
+import { useNotificationsStore } from '@/stores/notificationsStore'
 import { BreadCrumb } from '@/types'
-import { NoticeQueryPreset } from '@/types/notices'
+import { NotificationQueryPreset } from '@/types/notifications'
 
 const authStore = useAuthStore()
 const route = useRoute()
+const router = useRouter()
 const menuStore = useMenuStore()
-const noticesStore = useNoticesStore()
+const notificationsStore = useNotificationsStore()
 const { adminRole } = useRole()
+const { withSpinner, report } = useActionFeedback()
 
-const showConfigDialog = ref(false)
 const showAboutDialog = ref(false)
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
@@ -80,33 +78,98 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 
 // The default preset filters by the logged-in user; whoAmI is fetched
 // fire-and-forget at app startup, so wait for it or the first query would
-// silently drop the user filter and show every user's notices.
+// silently drop the user filter and show every user's notifications.
 const authLoaded = computed<boolean>(() => authStore.loaded)
 
-// the top-bar bell deep-links here with a preset (NMS-20124)
-const PRESETS = ['yourOutstanding', 'teamOutstanding', 'allOutstanding', 'allAcknowledged'] as const
-const initialLoad = () => {
+// Presets a URL can name: the top-bar bell (NMS-20124), Node Details and the dashboard link here.
+// userSearch is not one of them; it is typed on the page.
+const LINKABLE_PRESETS: readonly NotificationQueryPreset[] = ['yourOutstanding', 'yourAcknowledged', 'teamOutstanding', 'allOutstanding', 'allAcknowledged']
+
+const queryFor = (preset: NotificationQueryPreset, nodeId: string | null | undefined): Record<string, string> => ({
+  ...(preset !== 'userSearch' ? { preset } : {}),
+  ...(nodeId ? { node: nodeId } : {})
+})
+
+const sameQuery = (a: Record<string, unknown>, b: Record<string, unknown>) =>
+  JSON.stringify(Object.entries(a).sort()) === JSON.stringify(Object.entries(b).sort())
+
+// preset is null when the URL names no valid preset, so the page can keep the view it has.
+const readRoute = () => {
   const preset = route.query.preset as string
-  if ((PRESETS as readonly string[]).includes(preset)) {
-    noticesStore.applyPreset(preset as NoticeQueryPreset)
+  const node = route.query.node as string
+  return {
+    preset: (LINKABLE_PRESETS as readonly string[]).includes(preset) ? preset as NotificationQueryPreset : null,
+    nodeId: parsePositiveIntegerId(node)
+  }
+}
+
+// A link with a preset applies exactly what it says. Without one (a bare #/notifications, a menu
+// re-click) the current view stays: a user search is never in the URL, so applying the default
+// preset would silently drop it.
+const loadFromRoute = async () => {
+  const { preset, nodeId } = readRoute()
+  const bare = !preset && !nodeId
+  let result
+  if (preset) {
+    result = await withSpinner(() => notificationsStore.applyQuery(preset, nodeId))
+  } else if (nodeId) {
+    result = await withSpinner(() => notificationsStore.setNodeFilter(nodeId))
   } else {
-    noticesStore.load()
+    result = await withSpinner(() => notificationsStore.load())
+  }
+
+  // The user left while this loaded: the route now belongs to another page, so its URL and
+  // snackbar are not ours to touch.
+  if (route.name !== 'Notifications') {
+    return
+  }
+  report(result)
+
+  if (bare) {
+    // The view kept may not be what the URL says (a bare link over a node filter, a bookmark that
+    // lost it), and the store watcher below only fires on a store change.
+    const query = queryFor(notificationsStore.preset, notificationsStore.nodeFilter?.id)
+    if (!sameQuery(route.query, query)) {
+      router.replace({ query })
+    }
   }
 }
 
 onMounted(() => {
   if (authLoaded.value) {
-    initialLoad()
+    loadFromRoute()
   } else {
-    whenever(authLoaded, () => initialLoad(), { once: true })
+    whenever(authLoaded, () => loadFromRoute(), { once: true })
   }
 })
 
-// Clicking a bell link while already on this page only changes the hash query,
-// so the component is not remounted — re-apply the preset when it changes.
-watch(() => route.query.preset, () => {
+// Another link changing the hash query does not remount the page. The page's own router.replace
+// (below) also lands here; its query already matches the store, so it is skipped rather than
+// loaded a second time.
+watch(() => route.query, (query) => {
+  if (!authLoaded.value) {
+    return
+  }
+  if (sameQuery(query, queryFor(notificationsStore.preset, notificationsStore.nodeFilter?.id))) {
+    return
+  }
+  loadFromRoute()
+})
+
+// Presets chosen and the node chip removed on the page go into the URL, so refresh and bookmarks
+// keep the view.
+watch(() => [notificationsStore.preset, notificationsStore.nodeFilter?.id] as const, ([preset, nodeId]) => {
+  const query = queryFor(preset, nodeId)
+  if (!sameQuery(route.query, query)) {
+    router.replace({ query })
+  }
+})
+
+// ...and re-clicking the link for the view already showing leaves the hash unchanged, so neither
+// watch fires; the menu signals it instead.
+useEventListener(window, SAME_PAGE_NAVIGATION_EVENT, () => {
   if (authLoaded.value) {
-    initialLoad()
+    loadFromRoute()
   }
 })
 </script>

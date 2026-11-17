@@ -314,7 +314,7 @@ public class EventConfPersistenceServiceIT {
                 .stream().map(EventConfSource::getId).toList();
         // Disable eventConfSources and eventConfEvents.
         EventConfSrcEnableDisablePayload eventConfSrcDisablePayload = new EventConfSrcEnableDisablePayload(false, true, sourcesIds);
-        eventConfPersistenceService.updateSourceAndEventEnabled(eventConfSrcDisablePayload);
+        eventConfPersistenceService.updateSourceAndEventEnabled(eventConfSrcDisablePayload, "JUnitTest");
         List<EventConfSource> eventConfSources = eventConfSourceDao.findAll();
         assertTrue(eventConfSources.stream().noneMatch(EventConfSource::getEnabled));
         List<EventConfEvent> eventConfEvents = eventConfEventDao.findAll();
@@ -322,7 +322,7 @@ public class EventConfPersistenceServiceIT {
 
         // Enable eventConfSources and eventConfEvents.
         EventConfSrcEnableDisablePayload eventConfSrcEnablePayload = new EventConfSrcEnableDisablePayload(true, true, sourcesIds);
-        eventConfPersistenceService.updateSourceAndEventEnabled(eventConfSrcEnablePayload);
+        eventConfPersistenceService.updateSourceAndEventEnabled(eventConfSrcEnablePayload, "JUnitTest");
         List<EventConfSource> enableEventConfSources = eventConfSourceDao.findAll();
         assertFalse(enableEventConfSources.stream().noneMatch(EventConfSource::getEnabled));
         List<EventConfEvent> enableEventConfEvents = eventConfEventDao.findAll();
@@ -498,14 +498,17 @@ public class EventConfPersistenceServiceIT {
 
         eventConfPersistenceService.persistEventConfFile(events2, metadata2);
 
+        // delete the two sources created above and their events; the seeded stock
+        // (opennms-vendor) sources are protected and must not be in the request
         List<Long> sourcesIds = eventConfSourceDao.findAll()
-                .stream().map(EventConfSource::getId).toList();
-        // delete eventConfSources and its related events
+                .stream()
+                .filter(s -> s.getVendor() != null && s.getVendor().startsWith("vendor-"))
+                .map(EventConfSource::getId).toList();
         EventConfSourceDeletePayload eventConfSrcDisablePayload = new EventConfSourceDeletePayload();
         eventConfSrcDisablePayload.setSourceIds(sourcesIds);
         eventConfPersistenceService.deleteEventConfSources(eventConfSrcDisablePayload);
-        List<EventConfSource> eventConfSources = eventConfSourceDao.findAll();
-        assertTrue(eventConfSources.isEmpty());
+        assertTrue(eventConfSourceDao.findAll().stream()
+                .noneMatch(s -> s.getVendor() != null && s.getVendor().startsWith("vendor-")));
 
     }
 
@@ -567,7 +570,7 @@ public class EventConfPersistenceServiceIT {
         disablePayload.setEventsIds(List.of(triggerEvent.getId()));
         disablePayload.setEnable(false);
 
-        eventConfPersistenceService.enableDisableConfSourcesEvents(sourceId, disablePayload);
+        eventConfPersistenceService.enableDisableConfSourcesEvents(sourceId, disablePayload, "JUnitTest");
 
         // Verify disabled state
         EventConfEvent disabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/test/trigger/1");
@@ -579,7 +582,7 @@ public class EventConfPersistenceServiceIT {
         enablePayload.setEventsIds(List.of(triggerEvent.getId()));
         enablePayload.setEnable(true);
 
-        eventConfPersistenceService.enableDisableConfSourcesEvents(sourceId, enablePayload);
+        eventConfPersistenceService.enableDisableConfSourcesEvents(sourceId, enablePayload, "JUnitTest");
 
         // Verify enabled state
         EventConfEvent enabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/test/trigger/1");
@@ -673,7 +676,7 @@ public class EventConfPersistenceServiceIT {
         payload.setEvent(event);
         payload.setEnabled(true);
 
-        eventConfPersistenceService.updateEventConfEvent(source.getId(), clearEvent.getId(), payload);
+        eventConfPersistenceService.updateEventConfEvent(source.getId(), clearEvent.getId(), payload, "JUnitTest");
 
         EventConfEvent updatedClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
         assertEquals("Clear label changed.", updatedClearEvent.getEventLabel());
@@ -726,7 +729,7 @@ public class EventConfPersistenceServiceIT {
         ObjectMapper mapper = new ObjectMapper();
         EventConfEventEditRequest payload = mapper.readValue(jsonPayload, EventConfEventEditRequest.class);
 
-        eventConfPersistenceService.updateEventConfEvent(source.getId(),clearEvent.getId(), payload);
+        eventConfPersistenceService.updateEventConfEvent(source.getId(), clearEvent.getId(), payload, "JUnitTest");
 
         EventConfEvent updatedClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
         assertEquals("Clear label changed.", updatedClearEvent.getEventLabel());
