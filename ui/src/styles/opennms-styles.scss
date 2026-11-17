@@ -113,6 +113,12 @@ footer#footer,
   z-index: 2000; // matches .onms-side-menu in SideMenu.vue
 }
 
+// Inside an iframe the menu is not mounted (ui/src/menu/main.ts), so don't paint
+// the skeleton either. .onms-embedded is set on <html> by bootstrap.jsp.
+.onms-embedded #opennms-sidemenu-container {
+  display: none;
+}
+
 // Vaadin pages (topology) get no #content div — bootstrap.jsp emits that only on
 // its non-Vaadin branch — so SideMenu's applyPush has nothing to offset and the
 // expanded rail painted straight over the map. vaadin-theme.scss already clears

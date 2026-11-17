@@ -1,0 +1,10 @@
+/var/log/opennms/output.log {
+	su opennms opennms
+	size 100M
+	rotate 4
+	compress
+	delaycompress
+	missingok
+	notifempty
+	copytruncate
+}

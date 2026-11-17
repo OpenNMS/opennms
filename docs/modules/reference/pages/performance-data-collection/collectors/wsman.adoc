@@ -361,3 +361,23 @@ Use this to threshold on the number of results returned by an enumeration.
     <attrib name="##ElementCount##" alias="elementCount" type="Gauge"/>
 </group>
 ----
+
+== Service configuration example
+
+To schedule the collection, add a service to a package in `$\{OPENNMS_HOME}/etc/collectd-configuration.xml` and a matching `collector` entry.
+Collectd collects only from IP interfaces that are in the package and have a monitored service with the same name, for example one added through a requisition or a detector.
+
+The following `WS-Man` service is simplified from the `example1` package in the default configuration and uses the `default` collection shown above:
+
+[source, xml]
+----
+<service name="WS-Man" interval="300000" user-defined="false" status="on">
+  <parameter key="collection" value="default"/>
+  <parameter key="thresholding-enabled" value="true"/>
+</service>
+
+<collector service="WS-Man" class-name="org.opennms.netmgt.collectd.WsManCollector"/>
+----
+
+The default configuration sets the `collection` value with a xref:operation:deep-dive/meta-data.adoc[metadata] expression, `${requisition:collection|detector:collection|default}`, so you can override it per node.
+The connection settings for each agent come from `etc/wsman-config.xml` (see <<ga-performance-mgmt-collectors-wsman-agent-config, WS-Management agent configuration>>).

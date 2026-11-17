@@ -23,7 +23,7 @@
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi10-3.6.8.b379-jre-25"
+ARG BASE_IMAGE="opennms/deploy-base:ubi10-3.7.0.b380-jre-25"
 
 FROM ${BASE_IMAGE} AS sentinel-tarball
 
@@ -98,9 +98,9 @@ COPY container-fs/health.sh /
 # Install a default JMX Prometheus configuration
 COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yaml
 
-# Install confd.io configuration files and scripts and ensure they are executable
-COPY ./container-fs/confd/ /opt/sentinel/confd/
-RUN chmod +x /opt/sentinel/confd/scripts/*
+# Container-specific etc files (config files and featuresBoot templates). Kept outside the
+# /opt/sentinel/etc volume so they are available on upgrades; the entrypoint installs them from here.
+COPY --chown=10001:0 container-fs/etc/ /opt/sentinel/container-fs/etc/
 
 VOLUME [ "/opt/sentinel/deploy", "/opt/sentinel/etc", "/opt/sentinel/data" ]
 
@@ -139,7 +139,6 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
 
 ### Runtime information and not relevant at build time
 
-# TODO MVR SENTINEL_LOCATION is not used at the moment
 ENV SENTINEL_HOME="/opt/sentinel" \
     SENTINEL_ID="" \
     SENTINEL_LOCATION="SENTINEL" \

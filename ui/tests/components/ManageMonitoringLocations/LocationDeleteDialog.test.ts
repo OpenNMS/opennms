@@ -3,7 +3,7 @@ import API from '@/services'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
 import { useMonitoringLocationAdminStore } from '@/stores/monitoringLocationAdminStore'
 import { createTestingPinia } from '@pinia/testing'
-import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
+import { RouterLinkStub, VueWrapper, flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -58,7 +58,7 @@ const mountDialog = async ({ nodes = 0, minions = [], apps = [], outages = 0 }: 
   vi.mocked(store.deleteLocation).mockResolvedValue({ success: true, message: '' })
   const wrapper = mount(LocationDeleteDialog, {
     props: { visible: false, location: loc('Raleigh') as any },
-    global: { plugins: [PrimeVue, pinia], stubs: { Dialog: DialogStub, transition: false }}
+    global: { plugins: [PrimeVue, pinia], stubs: { Dialog: DialogStub, transition: false, RouterLink: RouterLinkStub }}
   })
   await wrapper.setProps({ visible: true })
   await flushPromises()
@@ -96,7 +96,7 @@ describe('LocationDeleteDialog.vue', () => {
     vi.mocked(API.getPerspectiveOutageCount).mockResolvedValue(0)
     const wrapper = mount(LocationDeleteDialog, {
       props: { visible: false, location: loc('Raleigh') as any },
-      global: { plugins: [PrimeVue, pinia], stubs: { Dialog: DialogStub, transition: false }}
+      global: { plugins: [PrimeVue, pinia], stubs: { Dialog: DialogStub, transition: false, RouterLink: RouterLinkStub }}
     })
     await wrapper.setProps({ visible: true })
     await flushPromises()
@@ -118,7 +118,7 @@ describe('LocationDeleteDialog.vue', () => {
     vi.mocked(store.getPerspectiveOutageCount).mockResolvedValue(0)
     const wrapper = mount(LocationDeleteDialog, {
       props: { visible: false, location: loc('Raleigh') as any },
-      global: { plugins: [PrimeVue, pinia], stubs: { Dialog: DialogStub, transition: false }}
+      global: { plugins: [PrimeVue, pinia], stubs: { Dialog: DialogStub, transition: false, RouterLink: RouterLinkStub }}
     })
     await wrapper.setProps({ visible: true })
     await flushPromises()
@@ -177,10 +177,9 @@ describe('LocationDeleteDialog.vue', () => {
     const perspective = callout(wrapper, 'perspective')
     expect(perspective.classes()).toContain('p-message-warn')
     expect(perspective.text()).toContain('Removed from 2 applications as a perspective — Web Shop, VPN stop being polled from this monitoring location, and nothing asks you to replace it.')
-    const link = perspective.find('[data-test="applications-link"]')
+    const link = perspective.findComponent(RouterLinkStub)
     expect(link.text()).toBe('Open Manage Applications')
-    expect(link.attributes('href')).toMatch(/admin\/applications\.htm$/)
-    expect(link.attributes('target')).toBe('_self')
+    expect(link.props('to')).toBe('/admin/applications')
   })
 
   it('omits the perspective callout when no application uses the location, and explains when it could not be checked', async () => {

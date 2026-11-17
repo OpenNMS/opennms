@@ -22,10 +22,9 @@
 
 import { describe, expect, test } from 'vitest'
 import { categories, monitoringLocations, serviceTypes } from './utils'
-import { buildNodeDetailUrl, parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { MatchType, NodeQueryFilter, SetOperator } from '@/types'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
-import { MainMenu } from '@/types/mainMenu'
 
 const {
   buildNodeQueryFilterFromQueryString,
@@ -661,6 +660,115 @@ describe('Nodes useNodeQuery test', () => {
     })
   })
 
+  describe('buildUpdatedNodeListQueryParameters: FIQL set operators in values (NMS-18294)', () => {
+    // ',' (OR) and ';' (AND) used to be replaced with spaces in the search term, so the term no
+    // longer matched the label. Now they are double-encoded like every other reserved character
+    // and reach the backend as literals (see NodeRestServiceIT 'search.decode.values').
+    test.each([
+      ['a comma', 'ABC Systems., Inc.', 'label==*ABC%2520Systems.%252C%2520Inc.*'],
+      ['a semicolon', 'a;b', 'label==*a%253Bb*'],
+      ['both', 'a,b;c', 'label==*a%252Cb%253Bc*']
+    ])('double-encodes a search term containing %s', (_title, searchTerm, expectedLabelClause) => {
+      const filter = { ...getDefaultNodeQueryFilter(), searchTerm }
+      const params = buildUpdatedNodeListQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe(`(${expectedLabelClause});node.type!=D`)
+    })
+
+    test('a search term with a comma is not treated as an IP address', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), searchTerm: '10.0.0.1,10.0.0.2' }
+      const params = buildUpdatedNodeListQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(label==*10.0.0.1%252C10.0.0.2*);node.type!=D')
+    })
+
+    test('sysParams Contains double-encodes the value and keeps the wildcards raw', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.extendedSearch.sysParams = {
+        sysContact: '',
+        sysDescription: 'Cisco IOS, C2960 (rev;2)',
+        sysLocation: '',
+        sysName: '',
+        sysObjectId: '',
+        sysMatchType: MatchType.Contains
+      }
+      const params = buildUpdatedNodeListQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(node.sysDescription==*Cisco%2520IOS%252C%2520C2960%2520%2528rev%253B2%2529*);node.type!=D')
+    })
+
+    test('sysParams Equals double-encodes the value without adding wildcards', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.extendedSearch.sysParams = {
+        sysContact: '',
+        sysDescription: '',
+        sysLocation: 'Bldg 3, Floor 2',
+        sysName: '',
+        sysObjectId: '',
+        sysMatchType: MatchType.Equals
+      }
+      const params = buildUpdatedNodeListQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(node.sysLocation==Bldg%25203%252C%2520Floor%25202);node.type!=D')
+    })
+
+    test('snmpParams Contains and Equals double-encode the value', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.extendedSearch.snmpParams = {
+        ...getDefaultNodeQuerySnmpParams(),
+        snmpIfAlias: 'uplink,core',
+        snmpMatchType: MatchType.Contains
+      }
+      expect(buildUpdatedNodeListQueryParameters({ limit: 10 }, filter)._s)
+        .toBe('(snmpInterface.ifAlias==*uplink%252Ccore*);node.type!=D')
+
+      filter.extendedSearch.snmpParams = { ...filter.extendedSearch.snmpParams, snmpMatchType: MatchType.Equals }
+      expect(buildUpdatedNodeListQueryParameters({ limit: 10 }, filter)._s)
+        .toBe('(snmpInterface.ifAlias==uplink%252Ccore);node.type!=D')
+    })
+
+    test('a contains value already wrapped in stars gets no extra stars, and an inner star stays a wildcard', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.extendedSearch.sysParams = {
+        sysContact: '',
+        sysDescription: '*Linux*',
+        sysLocation: '',
+        sysName: 'core*sw',
+        sysObjectId: '',
+        sysMatchType: MatchType.Contains
+      }
+      const params = buildUpdatedNodeListQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(node.sysDescription==*Linux*;node.sysName==*core*sw*);node.type!=D')
+    })
+
+    test('foreignSource, foreignId and foreignSource:foreignId double-encode their values', () => {
+      const filter = getDefaultNodeQueryFilter()
+      filter.extendedSearch.foreignSourceParams = { foreignSource: 'East, DC', foreignId: '', foreignSourceId: '' }
+      expect(buildUpdatedNodeListQueryParameters({ limit: 10 }, filter)._s)
+        .toBe('(node.foreignSource==East%252C%2520DC);node.type!=D')
+
+      filter.extendedSearch.foreignSourceParams = { foreignSource: '', foreignId: 'a;b', foreignSourceId: '' }
+      expect(buildUpdatedNodeListQueryParameters({ limit: 10 }, filter)._s)
+        .toBe('(node.foreignId==a%253Bb);node.type!=D')
+
+      filter.extendedSearch.foreignSourceParams = { foreignSource: '', foreignId: '', foreignSourceId: 'East,DC:a;b' }
+      expect(buildUpdatedNodeListQueryParameters({ limit: 10 }, filter)._s)
+        .toBe('((node.foreignSource==East%252CDC;node.foreignId==a%253Bb));node.type!=D')
+    })
+
+    test('topology double-encodes the value', () => {
+      const filter = { ...getDefaultNodeQueryFilter(), topology: 'ring,east' }
+      const params = buildUpdatedNodeListQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(topology==*ring%252Ceast*);node.type!=D')
+    })
+
+    test('monitoring location and service names double-encode their values', () => {
+      const filter = {
+        ...getDefaultNodeQueryFilter(),
+        selectedMonitoringLocations: [{ ...monitoringLocations[0], name: 'Data Center, East' }],
+        selectedServices: ['My;Service']
+      }
+      const params = buildUpdatedNodeListQueryParameters({ limit: 10 }, filter)
+      expect(params._s).toBe('(node.location.locationName==Data%2520Center%252C%2520East;serviceType.name==My%253BService);node.type!=D')
+    })
+  })
+
   describe('buildUpdatedNodeListQueryParameters: nodesWithDownAggregateStatus', () => {
     test('emits nodesWithDownAggregateStatus==true when set', () => {
       const filter = { ...getDefaultNodeQueryFilter(), nodesWithDownAggregateStatus: true }
@@ -771,14 +879,15 @@ describe('Nodes useNodeQuery test', () => {
 
     // Asset values are free text; FIQL/URL-structural characters are double-encoded so they survive
     // the two URL-decodes (servlet container + CXF search.decode.values) and reach the backend as the
-    // exact literal, without corrupting the FIQL expression. See encodeFiqlValue.
+    // exact literal, without corrupting the FIQL expression. The exception is '*': the server has no
+    // escape for it, so it stays raw and is a wildcard. See encodeFiqlValue / encodeFiqlPattern.
     test.each([
       ['comma', 'A,B', '(assetRecord.building==A%252CB);node.type!=D'],
       ['semicolon', 'A;B', '(assetRecord.building==A%253BB);node.type!=D'],
       ['parentheses', '(A)', '(assetRecord.building==%2528A%2529);node.type!=D'],
       ['ampersand', 'A&B', '(assetRecord.building==A%2526B);node.type!=D'],
       ['percent', '50%', '(assetRecord.building==50%2525);node.type!=D'],
-      ['asterisk (literal, not wildcard)', 'A*', '(assetRecord.building==A%252A);node.type!=D'],
+      ['asterisk (raw: a wildcard on the server)', 'A*', '(assetRecord.building==A*);node.type!=D'],
       ['space', 'Data Center', '(assetRecord.building==Data%2520Center);node.type!=D'],
       ['mixed', 'Bldg 1, Floor (2)', '(assetRecord.building==Bldg%25201%252C%2520Floor%2520%25282%2529);node.type!=D']
     ])('double-encodes a value with %s', (title, value, expected) => {
@@ -984,8 +1093,6 @@ describe('Nodes useNodeQuery test', () => {
   })
 
   describe('legacy nodeId redirect', () => {
-    const loadedMainMenu = { baseHref: '/opennms/', baseNodeUrl: 'element/node.jsp?node=' } as MainMenu
-
     describe('parseNodeIdQueryParam', () => {
       test.each([
         [ 'positive integer string', { nodeId: '42' }, 42 ],
@@ -997,25 +1104,15 @@ describe('Nodes useNodeQuery test', () => {
         [ 'decimal', { nodeId: '3.5' }, null ],
         [ 'empty string', { nodeId: '' }, null ],
         [ 'array value', { nodeId: [ '1', '2' ] }, null ],
-        [ 'whitespace', { nodeId: '  ' }, null ]
+        [ 'whitespace', { nodeId: '  ' }, null ],
+        [ 'leading zeros', { nodeId: '007' }, 7 ],
+        [ 'hexadecimal', { nodeId: '0x10' }, null ],
+        [ 'exponent', { nodeId: '5e2' }, null ],
+        [ 'plus sign', { nodeId: '+5' }, null ],
+        [ 'exponent too large to be exact', { nodeId: '1e21' }, null ],
+        [ 'digits too many to be exact', { nodeId: '99999999999999999999' }, null ]
       ])('%s -> %s', (_title, query, expected) => {
         expect(parseNodeIdQueryParam(query as any)).toBe(expected)
-      })
-    })
-
-    describe('buildNodeDetailUrl', () => {
-      test('builds the node detail url when mainMenu has loaded', () => {
-        expect(buildNodeDetailUrl(loadedMainMenu, 42)).toBe('/opennms/element/node.jsp?node=42')
-      })
-
-      test.each([
-        [ 'undefined mainMenu', undefined ],
-        [ 'null mainMenu', null ],
-        [ 'empty mainMenu', {} as MainMenu ],
-        [ 'missing baseNodeUrl', { baseHref: '/opennms/' } as MainMenu ],
-        [ 'missing baseHref', { baseNodeUrl: 'element/node.jsp?node=' } as MainMenu ]
-      ])('returns null when mainMenu is not loaded: %s', (_title, mainMenu) => {
-        expect(buildNodeDetailUrl(mainMenu, 42)).toBe(null)
       })
     })
   })

@@ -47,7 +47,7 @@ jobs:
       - run:
           name: Collect Artifacts
           command: |
-            mkdir -p target/{artifacts,config-schema,tarballs}
+            mkdir -p target/{artifacts,tarballs}
             OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-full-assembly/target -name "*-core.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}-core.tar.gz" \;

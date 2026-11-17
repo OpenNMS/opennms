@@ -47,7 +47,7 @@ An additional preliminary message and response regular expression pair is availa
 3+|*Optional*
 
 | retry
-| Number of attempts to get the certificate state.
+| Number of retries after the first failed attempt to get the certificate state.
 | 0
 
 | days

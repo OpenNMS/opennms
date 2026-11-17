@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 SCRIPT_PATH="$(cd "$(dirname "$0")" && pwd)"
 KEYSTORE_PATH="$SCRIPT_PATH/../etc"
 OPENNMS_HOME="$SCRIPT_PATH/.."

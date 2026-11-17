@@ -67,6 +67,8 @@ public class SnmpPollInterfaceMonitor {
 
     private long m_interval;
 
+    private Integer m_nodeId;
+
     public SnmpPollInterfaceMonitor(LocationAwareSnmpClient locationAwareSnmpClient) {
         this.m_client = locationAwareSnmpClient;
     }
@@ -118,7 +120,7 @@ public class SnmpPollInterfaceMonitor {
             adminSnmpValues = adminValuesFuture.get();
             operationalSnmpValues = operationalValesFuture.get();
             if (adminSnmpValues.size() != mifaces.size()) {
-                LOG.warn("Snmp Interface Admin statuses collection failed for interfaces in '{}' at location ", ipAddress, m_location);
+                LOG.warn("Snmp Interface Admin statuses collection failed for interfaces in '{}' at location {}", ipAddress, m_location);
                 return mifaces;
             }
             if (operationalSnmpValues.size() != mifaces.size()) {
@@ -141,14 +143,14 @@ public class SnmpPollInterfaceMonitor {
                     miface.setAdminstatus(SnmpInterfaceStatus.statusFromMibValue(adminSnmpValue.toInt()));
                     miface.setOperstatus(SnmpInterfaceStatus.statusFromMibValue(operationalSnmpValue.toInt()));
                     miface.setStatus(PollStatus.up());
-                    LOG.debug("SNMP Value is {} for oid: {}", adminSnmpValue.toInt(), adminoids[i]);
-                    LOG.debug("SNMP Value is {} for oid: {}", operationalSnmpValue.toInt(), operooids[i]);
+                    LOG.debug("SNMP Value is {} for oid: {} (nodeId={}, ip={}, ifIndex={})", adminSnmpValue.toInt(), adminoids[i], m_nodeId, ipAddress, miface.getIfindex());
+                    LOG.debug("SNMP Value is {} for oid: {} (nodeId={}, ip={}, ifIndex={})", operationalSnmpValue.toInt(), operooids[i], m_nodeId, ipAddress, miface.getIfindex());
                 } catch (Exception e) {
-                    LOG.warn("SNMP Value is {} for oid: {}", adminSnmpValue.toDisplayString(), adminoids[i]);
-                    LOG.warn("SNMP Value is {} for oid: {}", operationalSnmpValue.toDisplayString(), operooids[i]);
+                    LOG.warn("SNMP Value is {} for oid: {} (nodeId={}, ip={}, ifIndex={})", adminSnmpValue.toDisplayString(), adminoids[i], m_nodeId, ipAddress, miface.getIfindex());
+                    LOG.warn("SNMP Value is {} for oid: {} (nodeId={}, ip={}, ifIndex={})", operationalSnmpValue.toDisplayString(), operooids[i], m_nodeId, ipAddress, miface.getIfindex());
                 }
             } else {
-                LOG.info("SNMP Value is null for oid: {}/{}", adminoids[i], operooids[i]);
+                LOG.info("SNMP Value is null for oid: {}/{} (nodeId={}, ip={}, ifIndex={})", adminoids[i], operooids[i], m_nodeId, ipAddress, miface.getIfindex());
             }
         }
 
@@ -161,6 +163,14 @@ public class SnmpPollInterfaceMonitor {
 
     public void setLocation(String location) {
         this.m_location = location;
+    }
+
+    public Integer getNodeId() {
+        return m_nodeId;
+    }
+
+    public void setNodeId(Integer nodeId) {
+        this.m_nodeId = nodeId;
     }
 
     public long getInterval() {

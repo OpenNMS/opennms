@@ -39,6 +39,7 @@ import org.apache.cxf.security.SecurityContext;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.IplikeRestriction;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.InetAddressTypeEditor;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -169,6 +170,10 @@ public class OnmsRestService {
 
 		for (final String key : params.keySet()) {
 			WriteOnlyPropertyGuard.check(key);
+			// The iplike comparator puts the parameter name into the SQL text as a column name.
+			if (comparatorParam.equals("iplike") && !IplikeRestriction.isValidAttribute(key)) {
+				throw getException(Status.BAD_REQUEST, "The parameter name is not a valid column name for the 'iplike' comparator.");
+			}
 			for (final String paramValue : params.get(key)) { // NOSONAR
                         // NOSONAR the interface of MultivaluedMap.class declares List<String> as return value, 
                         // the actual implementation com.sun.jersey.core.util.MultivaluedMapImpl returns a String, so this is fine in some way ...

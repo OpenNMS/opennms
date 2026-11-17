@@ -1,44 +1,146 @@
-
 = SNMP MIB Compiler
-:description: Learn how to import a MIB file and create event definitions in {page-component-title}.
+:description: Learn how to import a MIB file and generate event definitions, data collection, and graph templates in {page-component-title}.
 
 Management Information Base (MIB) files are text files written in https://en.wikipedia.org/wiki/ASN.1[Abstract Syntax Notation].
 They describe Simple Network Management Protocol (SNMP) elements for specific devices.
 By default, {page-component-title} includes an extensive list of MIB definitions from a number of vendors.
 You will only need to import MIB files for unformatted events as part of configuring SNMP traps and collection.
 
-You can parse SNMP MIB definitions and create {page-component-title} event definitions from any `TRAP-TYPE` or `NOTIFICATION-TYPE` macros that they contain through the UI.
-You can also generate data collection definitions from `OBJECT-TYPE` symbols defined in a MIB file.
+The SNMP MIB compiler parses MIB files and generates the following from them:
+
+* Event definitions from any `TRAP-TYPE` or `NOTIFICATION-TYPE` macros.
+* An SNMP data collection group from the `OBJECT-TYPE` symbols.
+* Graph templates for the numeric values that the data collection group collects.
 
 You can use the `mib2opennms` command line utility to help create event definitions from MIB definitions.
-Using the UI editor achieves similar results to using `mib2events`.
+The MIB compiler achieves similar results.
 
 NOTE: We do not recommend using `mib2opennms`, as it produces more bus errors than event definitions.
 
-[[mib-import]]
-== Import MIB and create event definitions
+[[mib-open]]
+== Open the MIB compiler
 
-To import a MIB file and create event definitions, follow these steps:
+You need the `ROLE_ADMIN` role to use the MIB compiler.
 
-. Save the vendor MIB file to a location available to your local workstation.
-The MIB file does not need to be accessible by the server.
 . Go to the web UI.
 . Click menu:Tools[SNMP MIB Compiler] in the side menu.
 . Or, click menu:Administration[Configure OpenNMS] in the side menu, then under *Additional Tools*, click *SNMP MIB Compiler*.
-. Click *Upload MIB*.
-. Select the MIB file and click *Open*.
-. Right-click the file and choose *Compile MIB*.
-. If the log area displays an error (usually a missing dependency), you must correct the error to compile the MIB file successfully.
-** Determine the type of error (dependency, file syntax).
-** Search the internet for the name of the missing content, save it as a text file, upload it, and compile again.
-+
-OR
 
-** Right-click the file and choose *Edit MIB*.
-** Edit the file to address the error, click *Save*, and compile it again.
-. Continue to edit the file until it compiles successfully.
-. Right-click the MIB from which you want to generate an event and choose *Generate Events* or *Generate Data Collection*, as appropriate.
-. If desired, modify the name of the UEI base with the vendor name for easier troubleshooting and click *Configure*.
-. Click *Save Events File* to save them to the `event.conf` file.
+The page has two tabs:
+
+View:: Lists the *Pending MIB Files*, which are uploaded but not compiled yet, and the *Compiled MIB Files*.
+Click a file name to view its content.
+Upload MIB Files:: Uploads MIB files from your workstation and shows the result of each upload.
+
+The MIB files are stored on the server in `$\{OPENNMS_HOME}/share/mibs/pending` and `$\{OPENNMS_HOME}/share/mibs/compiled`.
+The compiler resolves the dependencies of a MIB against the compiled directory only.
+
+[[mib-import]]
+== Import and compile a MIB file
+
+To import a MIB file, follow these steps:
+
+. Save the vendor MIB file to a location available to your local workstation.
+The MIB file does not need to be accessible by the server.
+. On the *Upload MIB Files* tab, click *Upload MIB Files*.
+. Select one or more MIB files and click *Open*.
++
+The accepted file extensions are `.txt`, `.mib`, and `.my`, and each file can be up to 10 MB.
+A file is rejected if a file with the same name already exists in the pending or compiled directory.
+. On the *View* tab, find the file in *Pending MIB Files* and click the *Compile* icon.
++
+When the MIB compiles successfully, it moves to *Compiled MIB Files* and is renamed to `<MIB module name>.mib`.
+If a compiled copy of the same MIB module already exists, you are asked to confirm that you want to overwrite it.
+. If the compilation fails, a dialog lists the problems:
+** *Missing dependencies* are MIBs that the file imports but that are not in the compiled directory.
+A dependency marked *(in Pending)* is already uploaded.
+Upload and compile the dependencies first, then compile the MIB again.
+** The *parser output* shows syntax errors.
+To fix them, click the *Edit* icon next to the pending file, correct the content, click *Save*, and compile the MIB again.
+
+[[mib-generate-events]]
+== Generate event definitions
+
+To create event definitions from a compiled MIB, follow these steps:
+
+. In *Compiled MIB Files*, click the menu icon next to the MIB and choose *Generate Events*.
+. If desired, change the UEI base, for example to include the vendor name for easier troubleshooting.
+The default is `uei.opennms.org/traps/<MIB module name>`.
+. Click *Generate Preview*.
+. Review the generated event definitions and edit the XML if needed.
++
+If other event sources already define some of the generated UEIs, a warning lists those UEIs and the sources that define them.
+A source with only disabled definitions of a UEI is marked *disabled*.
+. Click *Save Events*.
++
+The events are stored in the database as the event source `<MIB module name>.events`.
+If that source already exists, you are asked to confirm that you want to replace all of its event definitions.
+If other event sources define some of the UEIs, you are asked to confirm the effect on their definitions (see <<mib-duplicate-ueis>>).
+. To fine-tune the events, click *Go to Event Configuration*.
 
 If you were getting unformatted events, they will now be formatted.
+
+[[mib-duplicate-ueis]]
+=== UEIs that other event sources define
+
+{page-component-title} uses only the definition from the event source that it evaluates first.
+The xref:deep-dive/events/event-configuration.adoc[event configuration] page sets the source order.
+
+* A new event source is evaluated before all existing sources.
+The new definitions replace the existing definitions of the same UEIs, and {page-component-title} no longer uses the existing ones.
+* An existing `<MIB module name>.events` source keeps its position when you replace it.
+The new definitions replace only the definitions of sources that are evaluated after it.
+Sources that are evaluated before it keep their definitions, and {page-component-title} does not use the new ones.
+
+{page-component-title} does not load disabled event definitions, so they are not in these groups.
+If you enable a disabled definition again, these rules apply to it.
+
+Before the save, a confirmation lists the UEIs in each of these groups.
+The save checks the UEIs of the edited XML again, so the confirmation also shows duplicates that your edits add.
+
+NOTE: The check compares only UEIs, without surrounding whitespace.
+Trap matching uses the mask (enterprise ID, generic type, and specific type), not the UEI.
+An existing definition for the same trap with a different UEI is not reported, for example from a vendor event source with its own UEI base.
+The new source still receives that trap if it is evaluated first.
+If a vendor event source already covers the MIB, review its definitions on the xref:deep-dive/events/event-configuration.adoc[event configuration] page before you save.
+To continue, click *Save Anyway* or *Replace Events*.
+To go back to the XML, click *Back*.
+
+IMPORTANT: The generated definitions have the severity `Indeterminate` and do not contain alarm data.
+If a replaced definition creates or clears alarms, the traps for that UEI no longer create or clear alarms after the save.
+To keep the existing behavior, remove those events from the XML before you save, or add the alarm data to them.
+The confirmation tells you how many of the replaced UEIs have new definitions without alarm data.
+You can also change the source order on the event configuration page after the save.
+
+[[mib-generate-data-collection]]
+== Generate data collection
+
+To create an SNMP data collection group from a compiled MIB, follow these steps:
+
+. In *Compiled MIB Files*, click the menu icon next to the MIB and choose *Generate Data Collection*.
+. Review the generated `datacollection-group` and edit the XML if needed.
+. Select the SNMP collection profiles to add the group to.
+A new data collection source must be added to at least one profile.
+. Click *Save Data Collection*.
++
+The group is stored in the database as a data collection source named after the `datacollection-group` (by default, the MIB module name).
+. To fine-tune the data collection, click *Go to SNMP Data Collection*.
+
+[[mib-generate-graphs]]
+== Generate graph templates
+
+To create graph templates for the numeric values in a compiled MIB, follow these steps:
+
+. In *Compiled MIB Files*, click the menu icon next to the MIB and choose *Generate Graph Templates*.
+. Review the generated templates.
+. Click *Write Graph Templates*.
++
+The templates are written to `$\{OPENNMS_HOME}/etc/snmp-graph.properties.d/<MIB module name>-graph.properties`.
+If that file already exists, you are asked to confirm that you want to overwrite it.
+
+The xref:reference:configuration/system-properties.adoc[system property] `org.opennms.snmp.mib-compiler.default-graph-template.color` sets the color of the generated graphs.
+
+[[mib-rest-api]]
+== REST API
+
+The MIB compiler is also available as a REST API under `/api/v2/mibs`, which requires the `ROLE_ADMIN` role.

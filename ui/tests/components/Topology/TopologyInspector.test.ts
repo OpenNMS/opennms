@@ -22,7 +22,7 @@
 
 import { OnmsColorPicker, OnmsToggleSwitch } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
-import { flushPromises, mount } from '@vue/test-utils'
+import { flushPromises, mount, RouterLinkStub } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import TopologyInspector from '@/components/Topology/TopologyInspector.vue'
@@ -209,6 +209,7 @@ describe('TopologyInspector node details', () => {
         // Leaflet needs real layout, which happy-dom has none of; the props it
         // is handed are what matters here.
         stubs: {
+          RouterLink: RouterLinkStub,
           TopologyLocationMap: {
             name: 'TopologyLocationMap',
             props: ['lat', 'lon'],
@@ -245,6 +246,16 @@ describe('TopologyInspector node details', () => {
   it('omits the Enterprise OID row when the node has none', async () => {
     const { wrapper } = await mountWithNode({ id: 7, label: 'core-sw1' })
     expect(wrapper.text()).not.toContain('Enterprise OID')
+  })
+
+  // Like the node context menu's Node Details action, it opens in a new tab so the
+  // topology stays put.
+  it('links the node id to the Vue Node Details page in a new tab', async () => {
+    const { wrapper } = await mountWithNode({ id: 7, label: 'core-sw1' })
+    const link = wrapper.findComponent(RouterLinkStub)
+    expect(link.props('to')).toEqual({ name: 'Node Details', params: { id: '7' }})
+    expect(link.attributes('target')).toBe('_blank')
+    expect(link.text()).toBe('7')
   })
 })
 
@@ -307,6 +318,7 @@ describe('TopologyInspector geographic location', () => {
       global: {
         plugins: [PrimeVue, createTestingPinia({ stubActions: false })],
         stubs: {
+          RouterLink: RouterLinkStub,
           TopologyLocationMap: {
             name: 'TopologyLocationMap',
             props: ['lat', 'lon'],

@@ -29,6 +29,7 @@ import javax.servlet.http.HttpSession;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.web.api.Util;
 
 /**
  * A servlet that handles changing a user's password
@@ -39,12 +40,18 @@ public class NewPasswordActionServlet extends AbstractBasePasswordChangeActionSe
     /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        initUserFactory("NewPasswordActionServlet");
-
         HttpSession userSession = request.getSession(false);
+        User user = userSession == null ? null : (User) userSession.getAttribute("user.newPassword.jsp");
+
+        // the entry servlet puts the user in the session; without it, start there again
+        if (user == null) {
+            response.sendRedirect(Util.calculateUrlBase(request, "account/selfService/newPasswordEntry"));
+            return;
+        }
+
+        initUserFactory("NewPasswordActionServlet");
         UserManager userFactory = UserFactory.getInstance();
 
-        User user = (User) userSession.getAttribute("user.newPassword.jsp");
         String currentPassword = request.getParameter("currentPassword");
         String newPassword = request.getParameter("newPassword");
 

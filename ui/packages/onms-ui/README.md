@@ -366,6 +366,20 @@ call site holding its bounds in a nullable ref. `TimeControls` relies on this:
 it cross-wires its two pickers (`:maxDate="endDateRef"` / `:minDate="startDateRef"`)
 so a range cannot invert, and both refs start out null.
 
+### Time-only values and daylight saving (NMS-20534)
+
+A time-only value is a `Date` whose date part means nothing, but PrimeVue builds
+a typed time, and a spinner step on an empty picker, on **today's** date. On the
+day the browser's clocks go forward, 02:30 does not exist and became 03:30. In
+time-only mode the wrapper (a subclass of PrimeVue's DatePicker, still named
+`DatePicker`) puts those values on a fixed day instead: 10 January 2000, on which
+no time zone changed its clocks.
+
+A spinner step on a picker that already has a value keeps that value's date, so
+a consumer should start its time-only values on the same day. The barrel exports
+the rule as `toTimeOnlyDate(hours, minutes, seconds = 0)`: use it rather than
+`new Date()` or a day of your own.
+
 ## Runtime exposure for plugins
 
 This package's barrel export (`packages/onms-ui/src/index.ts`) **is** the
@@ -401,6 +415,24 @@ second-to-last path segment), the version handshake, and the dev harness
 [`packages/onms-ui-example-plugin`](../onms-ui-example-plugin/README.md), a
 real externalized plugin built with the toolchain a third-party author would
 use.
+
+## Chromeless app shell
+
+`useOnmsChromeless()` lets a page or plugin hide the host's menu bar, side
+menu and footer, e.g. for a wall display. `enterChromeless()` turns it on until
+the next route change, `exitChromeless()` or Escape, so a page that wants it
+calls `enterChromeless()` when it mounts (in `onActivated` if it is kept
+alive). `isChromeless` is a readonly ref for a toggle's state. Escape is
+ignored while a dialog, drawer, popover or popup menu is open, and while focus
+is in a text field. The state is module-level, like `useOnmsToast`, so host
+and plugins share it through `window.OnmsUI`.
+
+`useOnmsChromelessHost()` is for the host only: `App.vue` calls it once to
+sync routes marked `meta.chromeless` and install the Escape handler. Its optional
+third argument, `{ isForced: () => boolean }`, is for embedding the app in an
+iframe: it is re-read on each route change, and while it returns true the app
+is always chromeless and both Escape and `exitChromeless()` are ignored.
+Without it, behavior is unchanged.
 
 ## Sanctioned direct-PrimeVue exceptions
 

@@ -375,10 +375,6 @@
       <artifactId>org.opennms.icmp.proxy.rpc-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-reportd</artifactId>
-    </dependency>
     <!-- just here to be able to unpack it into the assembly tarball -->
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -1228,6 +1224,13 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>org.opennms.features.topology-views</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Surveillance view definitions (kv-store persistence) + the
+         status/drill-down data services behind /api/v2/surveillance/views. -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.features.surveillance-views</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- Postgres BlobStore for topology-asset image bytes (only the no-op

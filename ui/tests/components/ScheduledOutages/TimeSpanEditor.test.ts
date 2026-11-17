@@ -23,7 +23,8 @@
 import TimeSpanEditor from '@/components/ScheduledOutages/TimeSpanEditor.vue'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { toTimeOnlyDate } from '@opennms/onms-ui'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mountEditor = (props: any) => mount(TimeSpanEditor, {
   props,
@@ -137,5 +138,70 @@ describe('TimeSpanEditor.vue', () => {
     vm.fields.start = null
     vm.addSpan()
     expect(wrapper.emitted('add')).toBeUndefined()
+  })
+
+  // On 2026-03-08 New York's clocks skip 02:00-02:59
+  describe('on the browser\'s daylight-saving day', () => {
+    const zone = process.env.TZ
+    beforeEach(() => {
+      process.env.TZ = 'America/New_York'
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date('2026-03-08T15:00:00Z'))
+    })
+    afterEach(() => {
+      process.env.TZ = zone
+      vi.useRealTimers()
+    })
+
+    type PickerInternals = { currentHour: number, currentMinute: number, currentSecond: number, pm: boolean, updateModelTime: () => void }
+    const startPicker = (wrapper: ReturnType<typeof mountEditor>) =>
+      wrapper.findAllComponents({ name: 'DatePicker' })[0].vm as unknown as PickerInternals
+
+    it('keeps a daily start of 02:30 AM set with the spinners', async () => {
+      const wrapper = mountEditor({ type: 'daily', times: [] })
+      const picker = startPicker(wrapper)
+      picker.currentHour = 2
+      picker.currentMinute = 30
+      picker.currentSecond = 0
+      picker.pm = false
+      picker.updateModelTime()
+      await wrapper.find('[data-test="add-time"]').trigger('click')
+      expect(wrapper.emitted('add')![0][0]).toEqual({ begins: '02:30:00', ends: '23:59:59' })
+    })
+
+    it('starts a recurring span on the time-only pickers\' fixed day', () => {
+      const wrapper = mountEditor({ type: 'weekly', times: [] })
+      const vm = wrapper.vm as any
+      expect(vm.fields.start).toEqual(toTimeOnlyDate(0, 0, 0))
+      expect(vm.fields.end).toEqual(toTimeOnlyDate(23, 59, 59))
+    })
+  })
+
+  describe('a change of type', () => {
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('moves a time typed under Daily to today when the type changes to Specific', async () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date(2026, 9, 12, 10, 27, 18))
+      const wrapper = mountEditor({ type: 'daily', times: [] })
+      await wrapper.get('[data-test="span-start"] input').setValue('09:15:00 am')
+      await wrapper.setProps({ type: 'specific' })
+      await wrapper.find('[data-test="add-time"]').trigger('click')
+      expect(wrapper.emitted('add')![0][0]).toEqual({ begins: '12-Oct-2026 09:15:00', ends: '12-Oct-2026 23:59:59' })
+    })
+
+    it('moves a specific span\'s times to the fixed day when the type changes to a recurring one', async () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date(2026, 9, 12, 10, 27, 18))
+      const wrapper = mountEditor({ type: 'specific', times: [] })
+      const vm = wrapper.vm as any
+      vm.fields.start = new Date(2026, 10, 3, 8, 30, 0)
+      await wrapper.setProps({ type: 'monthly' })
+      expect(vm.fields.start).toEqual(toTimeOnlyDate(8, 30, 0))
+      await wrapper.find('[data-test="add-time"]').trigger('click')
+      expect(wrapper.emitted('add')![0][0]).toEqual({ begins: '08:30:00', ends: '23:59:59', day: '1' })
+    })
   })
 })

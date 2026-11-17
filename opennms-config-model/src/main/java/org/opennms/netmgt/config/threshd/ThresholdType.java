@@ -25,18 +25,25 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @XmlRootElement(name="type")
 @XmlEnum
 public enum ThresholdType {
     @XmlEnumValue("high")
+    @JsonProperty("high")
     HIGH("high"),
     @XmlEnumValue("low")
+    @JsonProperty("low")
     LOW("low"),
     @XmlEnumValue("relativeChange")
+    @JsonProperty("relativeChange")
     RELATIVE_CHANGE("relativeChange"),
     @XmlEnumValue("absoluteChange")
+    @JsonProperty("absoluteChange")
     ABSOLUTE_CHANGE("absoluteChange"),
     @XmlEnumValue("rearmingAbsoluteChange")
+    @JsonProperty("rearmingAbsoluteChange")
     REARMING_ABSOLUTE_CHANGE("rearmingAbsoluteChange");
     
     private String m_enumName;

@@ -199,6 +199,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.features.surveillance-views</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
       <scope>provided</scope>
     </dependency>

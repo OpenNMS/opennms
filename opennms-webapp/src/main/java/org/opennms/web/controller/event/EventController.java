@@ -95,7 +95,6 @@ public class EventController extends OnmsMultiActionController implements Initia
     // Anything else falls back to the default view.
     private final RedirectRestricter redirectRestricter = RedirectRestricter.builder()
             .allowRedirect("detail.jsp")
-            .allowRedirect("/element/node.jsp")
             .allowRedirect("/element/interface.jsp")
             .allowRedirect("/element/snmpinterface.jsp")
             .allowRedirect("/element/service.jsp")
@@ -329,7 +328,9 @@ public class EventController extends OnmsMultiActionController implements Initia
     }
 
     private String getDisplay(HttpServletRequest request) {
-    	return getQueryParameter(request, "display");
+        // The display value is written into links on the list page. Accept only the known values.
+        final String display = getQueryParameter(request, "display");
+        return "long".equals(display) || "short".equals(display) ? display : null;
     }
 
     private int getLimit(HttpServletRequest request) {

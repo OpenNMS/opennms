@@ -46,19 +46,12 @@ vi.mock('@/services', () => ({
   }
 }))
 
-const downloadFile = vi.fn()
-vi.mock('@/composables/useDownload', () => ({ default: () => ({ downloadFile }) }))
-
 const showSnackBar = vi.fn()
 vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
 
 // the page is admin-only; tests exercise it as an admin
 vi.mock('@/composables/useRole', () => ({ default: () => ({ adminRole: { value: true }}) }))
 
-const okResponse = {
-  data: new Blob(['report']),
-  headers: { 'content-disposition': 'attachment; filename="opennms-system-report.txt"' }
-}
 
 const mountPage = () =>
   mount(SystemReport, {
@@ -73,10 +66,10 @@ describe('SystemReport', () => {
     vi.clearAllMocks()
     getSystemReportPlugins.mockResolvedValue([...plugins])
     getSystemReportFormatters.mockResolvedValue([...formatters])
-    generateSystemReport.mockResolvedValue({ ...okResponse })
+    generateSystemReport.mockResolvedValue({ success: true })
   })
 
-  it('generates with every plugin enabled and the text formatter by default, then downloads', async () => {
+  it('generates with every plugin enabled and the text formatter by default', async () => {
     const wrapper = mountPage()
     await flushPromises()
 
@@ -87,12 +80,41 @@ describe('SystemReport', () => {
     expect(generateSystemReport).toHaveBeenCalledWith({
       formatter: 'text',
       plugins: ['Java', 'OS'],
+      // an empty field leaves the name to the server's default
       output: undefined
     })
-    // the response is handed to useDownload as-is (force-blob)
-    expect(downloadFile).toHaveBeenCalledWith(expect.objectContaining({ data: expect.any(Blob) }), true)
     // the user gets told generation is under way
     expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ msg: expect.stringMatching(/generating/i) }))
+  })
+
+  it('offers a format choice only when more than one format is available', async () => {
+    const wrapper = mountPage()
+    await flushPromises()
+    expect(wrapper.find('[data-test=formatter-field]').exists()).toBe(true)
+  })
+
+  it('hides the format choice and uses the only format when just one is available', async () => {
+    getSystemReportFormatters.mockResolvedValue([formatters[1]])
+    const wrapper = mountPage()
+    await flushPromises()
+    expect(wrapper.find('[data-test=formatter-field]').exists()).toBe(false)
+
+    await wrapper.get('[data-test=generate-btn]').trigger('click')
+    await flushPromises()
+    expect(generateSystemReport).toHaveBeenCalledWith(expect.objectContaining({ formatter: 'zip' }))
+  })
+
+  it('shows the default file name for the format as a placeholder, leaving the field empty', async () => {
+    const wrapper = mountPage()
+    await flushPromises()
+    const input = wrapper.get('[data-test=filename]').element as HTMLInputElement
+    expect(input.value).toBe('')
+    expect(input.placeholder).toBe('opennms-system-report.txt')
+
+    const vm = wrapper.vm as unknown as { selectedFormatter: string }
+    vm.selectedFormatter = 'zip'
+    await flushPromises()
+    expect(input.placeholder).toBe('opennms-system-report.zip')
   })
 
   it('sanitizes the filename to word characters, mirroring the server', async () => {
@@ -117,16 +139,45 @@ describe('SystemReport', () => {
     expect(generateSystemReport).toHaveBeenCalledWith(expect.objectContaining({ output: undefined }))
   })
 
-  it('reports an error and does not download when generation fails', async () => {
-    generateSystemReport.mockResolvedValue(false)
+  it('reports an error when generation fails', async () => {
+    generateSystemReport.mockResolvedValue({ success: false })
     const wrapper = mountPage()
     await flushPromises()
 
     await wrapper.get('[data-test=generate-btn]').trigger('click')
     await flushPromises()
 
-    expect(downloadFile).not.toHaveBeenCalled()
     expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true, msg: expect.stringMatching(/could not be generated/i) }))
+  })
+
+  it('includes the server\'s reason when it rejects the request', async () => {
+    generateSystemReport.mockResolvedValue({ success: false, message: 'Select at least one report plugin.' })
+    const wrapper = mountPage()
+    await flushPromises()
+
+    await wrapper.get('[data-test=generate-btn]').trigger('click')
+    await flushPromises()
+
+    expect(showSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true, msg: expect.stringContaining('Select at least one report plugin.') }))
+  })
+
+  it('disables Generate until the download starts', async () => {
+    let started: (r: { success: boolean }) => void = () => {}
+    generateSystemReport.mockReturnValue(new Promise((resolve) => {
+      started = resolve
+    }))
+    const wrapper = mountPage()
+    await flushPromises()
+
+    await wrapper.get('[data-test=generate-btn]').trigger('click')
+    await flushPromises()
+    expect(wrapper.get('[data-test=generate-btn]').attributes('disabled')).toBeDefined()
+    await wrapper.get('[data-test=generate-btn]').trigger('click')
+    expect(generateSystemReport).toHaveBeenCalledTimes(1)
+
+    started({ success: true })
+    await flushPromises()
+    expect(wrapper.get('[data-test=generate-btn]').attributes('disabled')).toBeUndefined()
   })
 
   it('the All toggle clears every plugin and reselects them', async () => {

@@ -38,9 +38,16 @@ public class KarafStartupMonitor implements SpringServiceDaemon {
 
     public static final String NAME = "KarafStartupMonitor";
 
+    /**
+     * Poll interval for the service lookup. The default lookup delay is 5 s, which
+     * delays startup completion by up to 5 s after Karaf is ready. This daemon blocks
+     * the Manager start thread, so it uses a short interval instead.
+     */
+    static final long LOOKUP_DELAY_MS = 500;
+
     @SuppressWarnings("unchecked")
     private static final ServiceLookup<Class<?>, String> SERVICE_LOOKUP = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
-            .blocking()
+            .blocking(ServiceLookupBuilder.GRACE_PERIOD_MS, LOOKUP_DELAY_MS, ServiceLookupBuilder.BLOCKING_WAIT_PERIOD_MS)
             .build();
 
     @Override
@@ -62,7 +69,14 @@ public class KarafStartupMonitor implements SpringServiceDaemon {
         Class serviceClass = KarafHealthService.class;
         try {
             LOG.info("Waiting for loading of {}, will block startup until service is available.", serviceClass.getName());
+            final long startNanos = System.nanoTime();
             final KarafHealthService service = SERVICE_LOOKUP.lookup(serviceClass, null);
+            final long elapsedMs = (System.nanoTime() - startNanos) / 1_000_000;
+            if (service != null) {
+                LOG.info("Lookup of {} took {} ms (poll interval {} ms).", serviceClass.getName(), elapsedMs, LOOKUP_DELAY_MS);
+            } else {
+                LOG.warn("Lookup of {} timed out after {} ms.", serviceClass.getName(), elapsedMs);
+            }
             return service != null;
         } catch (Exception e) {
             LOG.error("Could not lookup {}, will fail.", serviceClass.getName(), e);
