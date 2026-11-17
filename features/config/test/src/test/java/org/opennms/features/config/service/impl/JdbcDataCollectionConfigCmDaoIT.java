@@ -26,6 +26,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +44,10 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.dao.api.ConfigStoreDao;
+import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -74,6 +79,9 @@ public class JdbcDataCollectionConfigCmDaoIT {
 
     @Autowired
     private ConfigurationManagerService cm;
+
+    @Autowired
+    private ConfigStoreDao<JSONObject> configStoreDao;
 
     private ConfigDefinition definition;
 
@@ -141,6 +149,44 @@ public class JdbcDataCollectionConfigCmDaoIT {
         cm.registerConfiguration(CONFIG_NAME, "zzz", new JsonAsString(ConfigConvertUtil.objectToJson(duplicate)));
 
         assertThat(dao.getDataCollectionByName("PostgreSQL").getJdbcRrd().getStep(), equalTo(300));
+    }
+
+    @Test
+    public void unknownColumnTypeIsRejected() {
+        final String json = withColumnType(ConfigConvertUtil.objectToJson(dao.getConfig("postgresql")), "timeticks");
+
+        // new configuration, not 'default': the validation must cover every configuration id
+        final ValidationException created = assertThrows(ValidationException.class,
+                () -> cm.registerConfiguration(CONFIG_NAME, "bad", new JsonAsString(json)));
+        assertThat(created.getMessage(), containsString("timeticks"));
+        assertThat(cm.getConfigIds(CONFIG_NAME).contains("bad"), equalTo(false));
+
+        assertThrows(ValidationException.class, () -> dao.updateConfig("postgresql", json, true));
+        assertThrows(ValidationException.class, () -> dao.updateConfig(ConfigDefinition.DEFAULT_CONFIG_ID, json, true));
+        assertThat(dao.getDataCollectionByName("PostgreSQL").getQueries().get(0).getJdbcColumns().get(0).getDataType(), notNullValue());
+    }
+
+    @Test
+    public void unreadableConfigurationIsSkipped() {
+        // stored without the validation of the configuration manager, like the upgrade does
+        final String json = withColumnType(ConfigConvertUtil.objectToJson(dao.getConfig("postgresql")), "timeticks");
+        final JSONObject bad = new JSONObject(json);
+        bad.getJSONArray("jdbc-collection").getJSONObject(0).put("name", "Unreadable");
+        configStoreDao.addConfig(CONFIG_NAME, "bad", bad);
+        // any change of the schema rebuilds the merged view
+        dao.updateConfig("mysql", ConfigConvertUtil.objectToJson(dao.getConfig("mysql")), true);
+
+        assertThat(collectionNames(dao.getConfig()), equalTo(Arrays.asList("default", "MySQL-Global-Stats", "PostgreSQL")));
+    }
+
+    /** sets the type of the first column of the first query of the first collection */
+    private static String withColumnType(final String json, final String type) {
+        final JSONObject config = new JSONObject(json);
+        config.getJSONArray("jdbc-collection").getJSONObject(0)
+                .getJSONObject("queries").getJSONArray("query").getJSONObject(0)
+                .getJSONObject("columns").getJSONArray("column").getJSONObject(0)
+                .put("type", type);
+        return config.toString();
     }
 
     private void importShipped(final String configId, final String file) throws IOException {

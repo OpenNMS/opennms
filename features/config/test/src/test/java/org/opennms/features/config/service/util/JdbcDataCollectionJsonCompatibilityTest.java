@@ -25,6 +25,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -40,6 +41,7 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.config.jdbc.JdbcColumn;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
@@ -115,6 +117,18 @@ public class JdbcDataCollectionJsonCompatibilityTest {
         assertThat(ConfigConvertUtil.objectToJson(column), containsString("\"type\":\"counter\""));
         assertThat(ConfigConvertUtil.jsonToObject("{\"name\":\"c\",\"alias\":\"a\",\"type\":\"gauge32\"}", JdbcColumn.class).getDataType(),
                 equalTo(AttributeType.GAUGE));
+    }
+
+    @Test
+    public void unknownTypeIsRejected() {
+        // the schema allows any string, AttributeType.parse() would return null and the collector would fail later
+        final ConfigConversionException e = assertThrows(ConfigConversionException.class,
+                () -> ConfigConvertUtil.jsonToObject("{\"name\":\"c\",\"alias\":\"a\",\"type\":\"timeticks\"}", JdbcColumn.class));
+        Throwable cause = e;
+        while (cause.getCause() != null) {
+            cause = cause.getCause();
+        }
+        assertThat(cause.getMessage(), containsString("timeticks"));
     }
 
     private String shippedXml() throws IOException {

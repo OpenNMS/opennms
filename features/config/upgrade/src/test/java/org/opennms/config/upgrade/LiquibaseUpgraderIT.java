@@ -293,6 +293,8 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     @Test
     public void shouldImportJdbcDataCollectionDirectory() throws Exception {
         try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
             final Path etcDir = Path.of(this.opennmsHome + "/etc");
             final Path includeDir = Files.createDirectories(etcDir.resolve("jdbc-datacollection.d"));
             Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection-config.xml"), etcDir.resolve("jdbc-datacollection-config.xml"));
@@ -330,11 +332,77 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     @Test
     public void shouldImportJdbcDataCollectionWithoutDirectory() throws Exception {
         try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
             Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection-config.xml"), Path.of(this.opennmsHome + "/etc/jdbc-datacollection-config.xml"));
 
             new LiquibaseUpgrader(cmSpy).runChangelog(JDBC_CHANGELOG, dataSource.getConnection());
 
             assertEquals(Set.of(DEFAULT_CONFIG_ID), this.cm.getConfigIds(SCHEMA_NAME_JDBC));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    /** a query without the required attributes name and ifType: the old DAO read it, the schema rejects it */
+    private static final String JDBC_INVALID_XML = "<?xml version=\"1.0\"?>\n"
+            + "<jdbc-datacollection-config rrdRepository=\"/opt/opennms/share/rrd/snmp/\" xmlns=\"http://xmlns.opennms.org/xsd/config/jdbc-datacollection\">\n"
+            + "  <jdbc-collection name=\"Broken\">\n"
+            + "    <queries>\n"
+            + "      <query recheckInterval=\"0\">\n"
+            + "        <statement><queryString>SELECT 1</queryString></statement>\n"
+            + "      </query>\n"
+            + "    </queries>\n"
+            + "  </jdbc-collection>\n"
+            + "</jdbc-datacollection-config>\n";
+
+    /**
+     * Files that don't obey the schema don't stop the upgrade: they are not imported and stay in etc/.
+     */
+    @Test
+    public void shouldSkipInvalidJdbcDataCollectionFiles() throws Exception {
+        try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
+            final Path etcDir = Path.of(this.opennmsHome + "/etc");
+            final Path includeDir = Files.createDirectories(etcDir.resolve("jdbc-datacollection.d"));
+            FileUtils.writeStringToFile(etcDir.resolve("jdbc-datacollection-config.xml").toFile(), JDBC_INVALID_XML, StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(includeDir.resolve("broken.xml").toFile(), JDBC_INVALID_XML, StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(includeDir.resolve("garbage.xml").toFile(), "<not-xml", StandardCharsets.UTF_8);
+            Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection.d/mysql.xml"), includeDir.resolve("mysql.xml"));
+
+            new LiquibaseUpgrader(cmSpy).runChangelog(JDBC_CHANGELOG, dataSource.getConnection());
+
+            assertEquals(Set.of("mysql"), this.cm.getConfigIds(SCHEMA_NAME_JDBC));
+            assertTrue(Files.exists(etcDir.resolve("jdbc-datacollection-config.xml")));
+            assertTrue(Files.exists(includeDir.resolve("broken.xml")));
+            assertTrue(Files.exists(includeDir.resolve("garbage.xml")));
+            assertFalse(Files.exists(includeDir.resolve("mysql.xml")));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    /**
+     * The id 'default' belongs to jdbc-datacollection-config.xml, so jdbc-datacollection.d/default.xml becomes 'default.d'.
+     */
+    @Test
+    public void shouldImportJdbcDefaultXmlUnderOtherId() throws Exception {
+        try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
+            final Path etcDir = Path.of(this.opennmsHome + "/etc");
+            final Path includeDir = Files.createDirectories(etcDir.resolve("jdbc-datacollection.d"));
+            Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection-config.xml"), etcDir.resolve("jdbc-datacollection-config.xml"));
+            Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection.d/postgresql.xml"), includeDir.resolve("default.xml"));
+
+            new LiquibaseUpgrader(cmSpy).runChangelog(JDBC_CHANGELOG, dataSource.getConnection());
+
+            assertEquals(Set.of(DEFAULT_CONFIG_ID, "default.d"), this.cm.getConfigIds(SCHEMA_NAME_JDBC));
+            assertEquals("PostgreSQL", this.cm.getJSONConfiguration(SCHEMA_NAME_JDBC, "default.d").get()
+                    .getJSONArray("jdbc-collection").getJSONObject(0).getString("name"));
+            assertFalse(Files.exists(includeDir.resolve("default.xml")));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive/jdbc-datacollection.d", "default.xml"));
         } finally {
             this.db.cleanUp();
         }

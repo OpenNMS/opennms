@@ -29,8 +29,11 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import liquibase.change.ChangeMetaData;
@@ -51,11 +54,20 @@ import liquibase.util.file.FilenameUtils;
  * {@code etc/<dir>/}, and only if neither has any file, the files archived by an earlier import in
  * {@code etc_archive/<dir>/}. Files imported from {@code etc/<dir>/} are moved to {@code etc_archive/<dir>/}.
  * An empty or missing directory imports nothing.</p>
+ *
+ * <p>A file named {@code default.xml} becomes the configuration {@code default.d}, because the id
+ * {@code default} belongs to the primary file of the schema. A file that can't be imported (e.g. it doesn't obey
+ * the schema) doesn't stop the upgrade: the error is logged and the file stays where it is.</p>
  */
 @DatabaseChange(name = "importConfigDir", description = "Imports all xml configurations of a directory.", priority = ChangeMetaData.PRIORITY_DATABASE)
 public class ImportConfigDirectory extends AbstractCmChange {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ImportConfigDirectory.class);
+
     private static final String EXTENSION = ".xml";
+
+    /** configId of a file named {@code default.xml}, sorts right after {@code default} */
+    static final String RENAMED_DEFAULT_CONFIG_ID = ConfigDefinition.DEFAULT_CONFIG_ID + ".d";
 
     private String schemaId;
     private String dirPath;
@@ -85,12 +97,28 @@ public class ImportConfigDirectory extends AbstractCmChange {
 
     /**
      * Finds the files to import, one per configuration id. Of several archived versions of a file, the newest is used.
+     * {@code default.xml} is mapped to {@code default.d}.
      */
     static Map<String, Resource> findConfigResources(final String dirPath) {
         final Map<String, Resource> resources = new TreeMap<>();
         for (Resource resource : findConfigFiles(stripTrailingSlash(dirPath) + "/*" + EXTENSION)) {
-            final String configId = toConfigId(resource.getFilename());
-            resources.merge(configId, resource, (a, b) -> a.getFilename().compareTo(b.getFilename()) >= 0 ? a : b);
+            String configId = toConfigId(resource.getFilename());
+            if (ConfigDefinition.DEFAULT_CONFIG_ID.equals(configId)) {
+                LOG.warn("The id '{}' is reserved for the primary configuration, {}/{} is imported as configuration '{}'.",
+                        ConfigDefinition.DEFAULT_CONFIG_ID, dirPath, resource.getFilename(), RENAMED_DEFAULT_CONFIG_ID);
+                configId = RENAMED_DEFAULT_CONFIG_ID;
+            }
+            resources.merge(configId, resource, (a, b) -> {
+                final boolean sameFile = toConfigId(a.getFilename()).equals(toConfigId(b.getFilename()));
+                final Resource winner = a.getFilename().compareTo(b.getFilename()) >= 0 ? a : b;
+                if (!sameFile) {
+                    final Resource loser = winner == a ? b : a;
+                    LOG.warn("{}/{} and {}/{} both map to configuration '{}'. {} is imported, {} is ignored.",
+                            dirPath, a.getFilename(), dirPath, b.getFilename(), RENAMED_DEFAULT_CONFIG_ID,
+                            winner.getFilename(), loser.getFilename());
+                }
+                return winner;
+            });
         }
         return resources;
     }
@@ -130,8 +158,15 @@ public class ImportConfigDirectory extends AbstractCmChange {
     private void importConfigs(ConfigurationManagerService cm) {
         final String dir = stripTrailingSlash(this.dirPath);
         for (Map.Entry<String, Resource> entry : this.configResources.entrySet()) {
-            importConfig(cm, entry.getValue(), new ConfigUpdateInfo(schemaId, entry.getKey()), archivePath,
-                    dir + "/" + entry.getValue().getFilename());
+            final String etcRelativePath = dir + "/" + entry.getValue().getFilename();
+            try {
+                importConfig(cm, entry.getValue(), new ConfigUpdateInfo(schemaId, entry.getKey()), archivePath, etcRelativePath);
+            } catch (RuntimeException e) {
+                // the old DAO did not validate the files, so a file the collector used to accept must not stop the upgrade
+                LOG.error("Configuration {} of schema {} was not imported from {}: {}. The file is left in place and ignored from now on: "
+                                + "fix it and store it with the configuration manager REST API.",
+                        entry.getKey(), schemaId, etcRelativePath, ImportConfigurationUtil.rootCauseMessage(e), e);
+            }
         }
     }
 

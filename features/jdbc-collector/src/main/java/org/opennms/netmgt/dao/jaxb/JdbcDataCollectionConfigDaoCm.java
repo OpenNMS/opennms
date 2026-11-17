@@ -31,11 +31,15 @@ import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 
+import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigDefinition;
+import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.features.config.exception.ConfigNotFoundException;
+import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.EventType;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollection;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
 import org.opennms.netmgt.dao.JdbcDataCollectionConfigDao;
@@ -72,16 +76,46 @@ public class JdbcDataCollectionConfigDaoCm extends AbstractCmJaxbConfigDao<JdbcD
 
     /**
      * Registers one handler for all configurations of the schema, so configurations created after startup are
-     * tracked too. Replaces the per-configuration handlers of the base class.
+     * tracked and validated too. Replaces the per-configuration handlers of the base class.
      */
     @Override
     @PostConstruct
     public void postConstruct() {
         final ConfigUpdateInfo allConfigs = new ConfigUpdateInfo(CONFIG_NAME, ConfigUpdateInfo.WILDCARD_ID);
+        // addValidationCallback() would only cover the configuration 'default'
+        configurationManagerService.registerEventHandler(EventType.VALIDATE, allConfigs, getValidationCallback());
         final Consumer<ConfigUpdateInfo> reload = this::onConfigChanged;
         configurationManagerService.registerEventHandler(EventType.CREATE, allConfigs, reload);
         configurationManagerService.registerEventHandler(EventType.UPDATE, allConfigs, reload);
         configurationManagerService.registerEventHandler(EventType.DELETE, allConfigs, info -> invalidate());
+    }
+
+    /**
+     * Rejects configurations that pass the schema but that the collector can't read, e.g. a column type such as
+     * {@code timeticks} that the schema allows but {@link org.opennms.netmgt.collection.api.AttributeType} doesn't know.
+     */
+    @Override
+    public Consumer<ConfigUpdateInfo> getValidationCallback() {
+        return configUpdateInfo -> {
+            final JSONObject json = configUpdateInfo.getConfigJson();
+            if (json == null) {
+                throw new ValidationException(String.format("%s config %s is empty.",
+                        configUpdateInfo.getConfigName(), configUpdateInfo.getConfigId()));
+            }
+            try {
+                ConfigConvertUtil.jsonToObject(json.toString(), JdbcDataCollectionConfig.class);
+            } catch (final ConfigConversionException e) {
+                throw new ValidationException(rootCauseMessage(e));
+            }
+        };
+    }
+
+    private static String rootCauseMessage(final Throwable t) {
+        Throwable cause = t;
+        while (cause.getCause() != null && cause.getCause() != cause) {
+            cause = cause.getCause();
+        }
+        return cause.getMessage() != null ? cause.getMessage() : t.getMessage();
     }
 
     private void onConfigChanged(final ConfigUpdateInfo info) {
@@ -90,6 +124,8 @@ public class JdbcDataCollectionConfigDaoCm extends AbstractCmJaxbConfigDao<JdbcD
             loadConfig(info.getConfigId());
         } catch (ConfigNotFoundException e) {
             LOG.debug("Configuration {} vanished while reloading it.", info.getConfigId());
+        } catch (ConfigConversionException e) {
+            LOG.error("Configuration {} of {} can not be read and is ignored: {}", info.getConfigId(), CONFIG_NAME, rootCauseMessage(e));
         }
         invalidate();
     }
@@ -150,6 +186,10 @@ public class JdbcDataCollectionConfigDaoCm extends AbstractCmJaxbConfigDao<JdbcD
                 config = getConfig(configId);
             } catch (ConfigNotFoundException e) {
                 LOG.debug("Configuration {} was deleted while merging.", configId);
+                continue;
+            } catch (ConfigConversionException e) {
+                // e.g. imported by the upgrade, which can't run the validation callback; don't let it break the others
+                LOG.error("Configuration {} of {} can not be read and is ignored: {}", configId, CONFIG_NAME, rootCauseMessage(e));
                 continue;
             }
             for (final JdbcDataCollection collection : config.getJdbcDataCollections()) {

@@ -14,8 +14,7 @@ Any other JDBC drivers must be manually loaded to collect from other types of da
 | Class Name            | `org.opennms.netmgt.collectd.JdbcCollector`
 | Package               | core
 | Supported on Minion   | Yes (see limitations)
-| Configuration Files   | $OPENNMS_HOME/etc/jdbc-datacollection-config.xml +
-                          $OPENNMS_HOME/etc/jdbc-datacollection.d/*
+| Configuration         | Stored in the database, configuration name `jdbc-datacollection-config` (see <<jdbc-collection-storage>>)
 |===
 
 === Limitations on Minion
@@ -69,9 +68,53 @@ Instead, you must use the service parameters to set the JDBC connection settings
 
 Understanding xref:operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
-JDBC collections are defined in `$\{OPENNMS_HOME}/etc/jdbc-datacollection.d/`.
+[[jdbc-collection-storage]]
+=== Storage
 
-This snippet provides a sample collection definition named `opennms-stats`:
+JDBC collections are stored in the database, as the configuration `jdbc-datacollection-config` of the xref:development:rest/config_management.adoc[Config Management REST API].
+This configuration can have several configuration IDs, each with a list of `jdbc-collection` entries.
+The collector merges all IDs into one list: `default` first, then the other IDs in alphabetical order.
+If a collection name appears more than once, the first one is used and the others are ignored with a warning in the log.
+
+A change takes effect with the next collection; no restart or reload event is needed.
+A configuration with a column `type` that {page-component-title} does not support (for example, `timeticks`) is rejected.
+
+To read and change the collections, use the Config Management REST API, for example:
+
+[source, console]
+----
+curl -u admin:admin https://opennms.example.com/opennms/rest/cm/jdbc-datacollection-config <1>
+curl -u admin:admin https://opennms.example.com/opennms/rest/cm/jdbc-datacollection-config/postgresql <2>
+curl -X PUT -u admin:admin 'https://opennms.example.com/opennms/rest/cm/jdbc-datacollection-config/postgresql?replace=true' \
+     -H 'Content-type: application/json' --data @postgresql.json <3>
+curl -X POST -u admin:admin https://opennms.example.com/opennms/rest/cm/jdbc-datacollection-config/my-collections \
+     -H 'Content-type: application/json' --data @my-collections.json <4>
+----
+<1> List the configuration IDs.
+<2> Read one configuration as JSON.
+<3> Replace a configuration.
+<4> Add a configuration with a new ID.
+
+=== Upgrade from XML files
+
+Earlier versions read the collections from `$\{OPENNMS_HOME}/etc/jdbc-datacollection-config.xml` and `$\{OPENNMS_HOME}/etc/jdbc-datacollection.d/*.xml`.
+The upgrade imports these files once:
+
+* `jdbc-datacollection-config.xml` becomes the configuration ID `default`.
+* Each `jdbc-datacollection.d/<name>.xml` becomes the configuration ID `<name>`, for example, `postgresql.xml` becomes `postgresql`.
+`jdbc-datacollection.d/default.xml` becomes `default.d`, because `default` belongs to `jdbc-datacollection-config.xml`.
+* Imported files are moved to `$\{OPENNMS_HOME}/etc_archive/`, with a timestamp appended to the file name.
+* A file that does not follow the schema `jdbc-datacollection.xsd` is not imported, and the upgrade continues.
+The log names the file and the error, and the file stays in `$\{OPENNMS_HOME}/etc/`.
+Correct the file and add it with the REST API.
+
+IMPORTANT: After the upgrade, {page-component-title} does not read `jdbc-datacollection-config.xml` and the files in `jdbc-datacollection.d/`.
+New or changed files in these locations have no effect.
+
+=== Collection definition
+
+The XML files and the JSON of the REST API share the same structure.
+This snippet provides a sample collection definition named `opennms-stats` in XML:
 
 [source, xml]
 ----
@@ -96,7 +139,7 @@ This snippet provides a sample collection definition named `opennms-stats`:
 </jdbc-collection>
 ----
 
-Once the definition is added to `$\{OPENNMS_HOME}/etc/jdbc-datacollection-config.xml`, you can test it using the `collect` command in the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell]:
+Once the definition is stored, you can test it using the `collect` command in the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell]:
 
 [source, console]
 ----
@@ -115,7 +158,7 @@ opennms:collect -l MINION org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 co
 To schedule the collection, add a service to a package in `$\{OPENNMS_HOME}/etc/collectd-configuration.xml` and a matching `collector` entry.
 Collectd collects only from IP interfaces that are in the package and have a monitored service with the same name, for example one added through a requisition or a detector.
 
-This example, based on the `PostgreSQL` service in the default configuration, collects the `PostgreSQL` collection from `$\{OPENNMS_HOME}/etc/jdbc-datacollection.d/postgresql.xml`:
+This example, based on the `PostgreSQL` service in the default configuration, collects the `PostgreSQL` collection from the configuration ID `postgresql`:
 
 [source, xml]
 ----

@@ -47,6 +47,17 @@ import liquibase.util.file.FilenameUtils;
 
 public class ImportConfigurationUtil {
 
+    /**
+     * @return the message of the innermost cause, which names what is wrong with a file
+     */
+    public static String rootCauseMessage(final Throwable t) {
+        Throwable cause = t;
+        while (cause.getCause() != null && cause.getCause() != cause) {
+            cause = cause.getCause();
+        }
+        return cause.getMessage() != null ? cause.getMessage() : t.toString();
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
 
     public static void importConfig(
