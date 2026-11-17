@@ -24,9 +24,7 @@ package org.opennms.netmgt.collectd;
 import static org.opennms.core.web.HttpClientWrapperConfigHelper.setSSLContextIfConfigured;
 import static org.opennms.core.web.HttpClientWrapperConfigHelper.setUseSystemProxyIfDefined;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -609,16 +607,8 @@ public class HttpCollector extends AbstractRemoteServiceCollector {
     }
 
     private static void initHttpCollectionConfig() {
-        try {
-            LOG.debug("initialize: Initializing collector: {}", HttpCollector.class.getSimpleName());
-            HttpCollectionConfigFactory.init();
-        } catch (FileNotFoundException e) {
-            LOG.error("initialize: Error locating configuration.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (IOException e) {
-            LOG.error("initialize: Error reading configuration", e);
-            throw new UndeclaredThrowableException(e);
-        }
+        LOG.debug("initialize: Initializing collector: {}", HttpCollector.class.getSimpleName());
+        HttpCollectionConfigFactory.init();
     }
 
 

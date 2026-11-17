@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlType;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 /**
  * <p>Java class for anonymous complex type.
@@ -59,8 +61,10 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 public class Post implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @JsonProperty("parm")
     @XmlAttribute(name = "parm", required = true)
     protected String m_parm;
+    @JsonProperty("value")
     @XmlAttribute(name = "value", required = true)
     protected String m_value;
 

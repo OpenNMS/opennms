@@ -194,7 +194,7 @@ public class ConfigTesterTest {
 
     @Test
     public void testHttpDatacollectionConfig() {
-        testConfigFile("http-datacollection-config.xml");
+        ignoreConfigFile("http-datacollection-config.xml");
     }
 
     @Test

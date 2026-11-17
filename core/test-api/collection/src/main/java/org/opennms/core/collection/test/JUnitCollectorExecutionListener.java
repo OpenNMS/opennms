@@ -101,6 +101,16 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
             return;
         }
 
+        try {
+            verifyAndCleanUpFiles(config, testContext);
+        } finally {
+            // the factory constructors install a static in-memory config DAO; don't leak it into later tests
+            HttpCollectionConfigFactory.setInstance(null);
+            HttpCollectionConfigFactory.setConfigDao(null);
+        }
+    }
+
+    private void verifyAndCleanUpFiles(final JUnitCollector config, final TestContext testContext) throws Exception {
         boolean shouldIgnoreNonExistent = testContext.getTestException() != null;
 
         /*
