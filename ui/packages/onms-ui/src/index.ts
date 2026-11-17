@@ -69,9 +69,12 @@ export { default as OnmsToggleSwitch } from './components/OnmsToggleSwitch.vue'
 export { default as OnmsVirtualScroller } from './components/OnmsVirtualScroller.vue'
 
 export { releaseActiveToast, useOnmsToast, ONMS_TOAST_GROUP_CENTER, ONMS_TOAST_GROUP_START } from './composables/useOnmsToast'
+export { useOnmsChromeless, useOnmsChromelessHost } from './composables/useOnmsChromeless'
 
 // Directives — register app-level; core does this in src/theme/primevue-setup.ts
 export { default as OnmsTooltip } from './directives/OnmsTooltip'
+
+export { toTimeOnlyDate } from './utils/timeOnlyDate'
 
 export type { OnmsHourFormat, OnmsMenuItem, OnmsTablePageEvent, OnmsTableRowClickEvent, OnmsTableRowEditSaveEvent, OnmsMessageSeverity, OnmsTableSortEvent, OnmsTagSeverity } from './types'
 export type { OnmsColumnProps, OnmsColumnSlots } from './components/OnmsColumn'

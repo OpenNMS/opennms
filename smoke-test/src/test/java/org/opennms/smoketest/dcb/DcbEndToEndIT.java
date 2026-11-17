@@ -67,6 +67,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMetaData;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.smoketest.junit.ContainerRule;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
@@ -102,7 +103,6 @@ public class DcbEndToEndIT {
                                                                               .withMinion()
                                                                               .build());
 
-    @ClassRule
     public static final GenericContainer<?> TARGET_CONTAINER = new GenericContainer<>(
             new ImageFromDockerfile().withDockerfileFromBuilder(builder -> builder.from("linuxserver/openssh-server")
                                                                  .run("apk add --update tftp-hpa")
@@ -117,6 +117,9 @@ public class DcbEndToEndIT {
             .withNetwork(Network.SHARED)
             .withNetworkAliases("target")
             .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits);
+
+    @ClassRule
+    public static final ContainerRule TARGET_RULE = ContainerRule.of(TARGET_CONTAINER);
 
     private static String targetAddress;
 

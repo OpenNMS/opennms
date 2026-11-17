@@ -35,6 +35,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Top-level element for the thresholds.xml configuration file.
  */
@@ -47,38 +50,41 @@ public class ThresholdingConfig implements Serializable {
     /**
      * Thresholding group element
      */
-    private List<Group> m_groups = new ArrayList<>();
+    @JsonProperty("group") // written from the field ...
+    private List<Group> groups = new ArrayList<>();
 
-    private final Map<String, Group> m_groupMap = new ConcurrentHashMap<>();
+    @JsonIgnore
+    private final Map<String, Group> groupMap = new ConcurrentHashMap<>();
 
     public ThresholdingConfig() {
     }
 
     @XmlElement(name = "group")
     public List<Group> getGroups() {
-        return m_groups;
+        return groups;
     }
 
+    @JsonProperty("group") // ... but read through this setter, so that groupMap (and getGroup()) is populated
     public void setGroups(final List<Group> groups) {
-        if (groups == m_groups) {
+        if (groups == this.groups) {
             // Cover the case where jax-b already set the field reflectively and is now calling our setter in which case
             // we just need to make sure the group map is populated
-            if (m_groupMap.isEmpty()) {
-                groups.forEach(g -> m_groupMap.put(g.getName(), g));
+            if (groupMap.isEmpty()) {
+                groups.forEach(g -> groupMap.put(g.getName(), g));
             }
         } else {
-            m_groups.clear();
-            m_groupMap.clear();
+            this.groups.clear();
+            groupMap.clear();
             if (groups != null) {
-                m_groups.addAll(groups);
-                groups.forEach(g -> m_groupMap.put(g.getName(), g));
+                this.groups.addAll(groups);
+                groups.forEach(g -> groupMap.put(g.getName(), g));
             }
         }
     }
     
     public Group getGroup(String groupName) {
         Objects.requireNonNull(groupName);
-        Group group = m_groupMap.get(groupName);
+        Group group = groupMap.get(groupName);
         if (group == null) {
             throw new IllegalArgumentException("Thresholding group " + groupName + " does not exist.");
         }
@@ -86,18 +92,18 @@ public class ThresholdingConfig implements Serializable {
     }
 
     public void addGroup(final Group group) {
-        m_groups.add(group);
-        m_groupMap.put(group.getName(), group);
+        groups.add(group);
+        groupMap.put(group.getName(), group);
     }
 
     public boolean removeGroup(final Group group) {
-        m_groupMap.remove(group.getName());
-        return m_groups.remove(group);
+        groupMap.remove(group.getName());
+        return groups.remove(group);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_groups);
+        return Objects.hash(groups);
     }
 
     @Override
@@ -108,7 +114,7 @@ public class ThresholdingConfig implements Serializable {
 
         if (obj instanceof ThresholdingConfig) {
             final ThresholdingConfig that = (ThresholdingConfig)obj;
-            return Objects.equals(this.m_groups, that.m_groups);
+            return Objects.equals(this.groups, that.groups);
         }
         return false;
     }

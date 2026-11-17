@@ -53,3 +53,10 @@ What can you do about this?
 ----
 
 TIP: If unexpected results occur when using Karaf, run `$\{OPENNMS_HOME}/bin/fix-karaf-setup.sh`.
+
+[[trap-audit.log]]
+== trap-audit.log
+
+`$\{OPENNMS_HOME}/logs/trap-audit.log` (core) and `/var/log/minion/trap-audit.log` (Minion, next to `minion.log`) record one line for every SNMP trap handed to the trap listener, with the sender address and the trap OID.
+The log is disabled by default and the file does not exist until it is enabled.
+See xref:reference:daemons/daemon-config-files/trapd.adoc#trap-audit-log[Trap audit log] for the format and how to enable it.

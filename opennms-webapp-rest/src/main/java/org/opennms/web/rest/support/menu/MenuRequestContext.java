@@ -27,7 +27,7 @@ import java.util.List;
  * Context that can be passed to a MenuProvider.
  * This can be used in unit or smoke tests to provide alternative implementations.
  */
-public interface MenuRequestContext {
+public interface MenuRequestContext extends MenuFilterContext {
     String getRemoteUser();
 
     String calculateUrlBase();

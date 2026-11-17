@@ -126,6 +126,19 @@ public abstract class TrapInformation {
 
     public abstract TrapIdentity getTrapIdentity();
 
+    /**
+     * The value of the snmpTrapOID.0 varbind exactly as received, for SNMPv2c and v3 traps.
+     * Unlike {@link TrapIdentity#getTrapOID()}, which substitutes the enterprise OID for
+     * standard traps that carry a trailing snmpTrapEnterprise.0 varbind, this is the OID
+     * the agent actually sent.
+     *
+     * @return the received trap OID, or null for SNMPv1 traps (which carry no such varbind)
+     *         and for PDUs that do not have an OID value in the snmpTrapOID.0 position
+     */
+    public SnmpObjId getSnmpTrapOid() {
+        return null;
+    }
+
     protected abstract Integer getRequestId();
 
     public abstract SnmpVarBindDTO getSnmpVarBindDTO(int i);

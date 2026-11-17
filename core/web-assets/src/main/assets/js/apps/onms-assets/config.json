@@ -184,8 +184,8 @@
                   "type": "text"
                 },
                 {
-                  "label": "ZIP",
-                  "tooltip": "Postal code (ZIP code)",
+                  "label": "Postal Code",
+                  "tooltip": "Postal code, such as a ZIP code",
                   "model": "zip",
                   "type": "text"
                 },

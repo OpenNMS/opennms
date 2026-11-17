@@ -38,6 +38,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Admin")
           .headTitle("Instrumentation Log Reader")
@@ -374,7 +375,7 @@ pageContext.setAttribute("showDeletedParam", showDeleted ? "&showDeleted=true" :
               <td>${nodeLabel}<br/>${svcCollector.serviceID}</td>
           </c:when>
           <c:otherwise>
-              <td><a href="element/node.jsp?node=${svcCollector.parsedServiceID}">${nodeLabel}<br/>${svcCollector.serviceID}</a></td>
+              <td><a href="${ElementConstants.NODE_DETAILS_URI}${svcCollector.parsedServiceID}">${nodeLabel}<br/>${svcCollector.serviceID}</a></td>
           </c:otherwise>
       </c:choose>
       <td class="text-right">${svcCollector.collectionCount}</td>

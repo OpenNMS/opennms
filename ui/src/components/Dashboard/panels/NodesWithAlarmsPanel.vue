@@ -54,10 +54,10 @@ License.
           :style="{ backgroundColor: severityColor(row.maxSeverity) }"
           :title="severityLabel(row.maxSeverity)"
         />
-        <a
+        <router-link
           class="nodes-alarms__node"
-          :href="`/opennms/element/node.jsp?node=${row.nodeId}`"
-        >{{ row.nodeLabel }}</a>
+          :to="nodeDetailsRoute(row.nodeId)"
+        >{{ row.nodeLabel }}</router-link>
         <a
           class="nodes-alarms__count"
           :href="`/opennms/alarm/list.htm?sortby=id&acktype=unack&limit=20&display=short&filter=node%3D${row.nodeId}`"
@@ -71,6 +71,7 @@ License.
 import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getNodeAlarmSummaries } from '@/services/alarmService'
+import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
 import { resolveFilterToNodeIdSet } from '../filter'
 import { isActionableSeverity, severityColor, severityLabel, severityTint } from '../severity'
 

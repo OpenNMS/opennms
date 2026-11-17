@@ -1,7 +1,0 @@
-[template]
-src = "newts.properties.tmpl"
-dest = "/opt/opennms/etc/opennms.properties.d/_confd.newts.properties"
-keys = [
-    "replication/factor",
-    "opennms/cassandra",
-]

@@ -24,6 +24,7 @@ package org.opennms.web.springframework.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.test.MockLogAppender.assertNoWarningsOrGreater;
 
@@ -39,6 +40,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.model.OnmsUser;
@@ -177,5 +179,12 @@ public class SpringSecurityUserDaoImplIT implements InitializingBean {
         }
 
         throw new AssertionError("role " + role + " was not found in " + authorities);
+    }
+
+    @Test
+    public void testUserFactoryKeepsTheManager() {
+        // setUsersConfigurationFile used to call UserFactory.setInstance(null), dropping the manager that the
+        // DAO context had installed
+        assertSame(m_userManager, UserFactory.getInstance());
     }
 }

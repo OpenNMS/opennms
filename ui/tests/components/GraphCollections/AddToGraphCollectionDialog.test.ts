@@ -24,6 +24,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import AddToGraphCollectionDialog from '@/components/GraphCollections/AddToGraphCollectionDialog.vue'
+import { GraphCollectionGraph } from '@/types/graphCollection'
 
 const { getGraphCollections, getGraphCollectionTimespans, addGraphToCollection, createGraphCollection, showSnackBar } = vi.hoisted(() => ({
   getGraphCollections: vi.fn(),
@@ -42,21 +43,28 @@ vi.mock(import('@/services/graphCollectionsService'), async importOriginal => ({
 vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
 vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() }) }))
 
-const graphProps = {
-  resourceId: 'node[1].interfaceSnmp[ge-0_0_0]',
-  resourceLabel: 'ge-0/0/0',
-  graphtype: 'mib2.bits',
-  graphTitle: 'Bits In/Out'
+interface DialogProps { graph: GraphCollectionGraph, details: { label: string, value: string }[] }
+const graphProps: DialogProps = {
+  graph: { kind: 'prefab', title: 'Bits In/Out', resourceId: 'node[1].interfaceSnmp[ge-0_0_0]', graphtype: 'mib2.bits', timespan: '1_day' },
+  details: [{ label: 'Resource', value: 'ge-0/0/0' }, { label: 'Graph', value: 'mib2.bits' }]
+}
+const STATE = 'nf=rtr&df=ifHCInOctets&n=2&title=Uplinks'
+const adhocProps: DialogProps = {
+  graph: { kind: 'adhoc', title: 'Uplinks', resourceId: null, graphtype: null, timespan: '1_day', adhocState: STATE },
+  details: [{ label: 'Graph', value: 'Uplinks' }, { label: 'Series', value: '2' }]
 }
 const collections = [
   { id: 0, title: 'Core', showTimespanButton: false, showGraphtypeButton: false, graphsPerLine: 0, graphs: [] },
   { id: 2, title: 'Edge', showTimespanButton: false, showGraphtypeButton: false, graphsPerLine: 0,
-    graphs: [{ kind: 'prefab', title: '', resourceId: 'node[1].interfaceSnmp[ge-0_0_0]', graphtype: 'mib2.bits', timespan: '7_day' }] }
+    graphs: [
+      { kind: 'prefab', title: '', resourceId: 'node[1].interfaceSnmp[ge-0_0_0]', graphtype: 'mib2.bits', timespan: '7_day' },
+      { kind: 'adhoc', title: '', resourceId: null, graphtype: null, timespan: '7_day', adhocState: STATE }
+    ] }
 ]
 
-const mountDialog = async () => {
+const mountDialog = async (props: DialogProps = graphProps) => {
   const wrapper = mount(AddToGraphCollectionDialog, {
-    props: { visible: true, ...graphProps },
+    props: { visible: true, ...props },
     global: { plugins: [PrimeVue], stubs: { OnmsDialog: { props: ['visible'], template: '<div v-if="visible"><slot /></div>' }}}
   })
   await flushPromises()
@@ -88,7 +96,7 @@ describe('AddToGraphCollectionDialog.vue', () => {
     await wrapper.find('[data-test="atc-save"]').trigger('click')
     await flushPromises()
     expect(addGraphToCollection).toHaveBeenCalledWith(0, {
-      kind: 'prefab', title: 'Bits In/Out', resourceId: graphProps.resourceId, graphtype: 'mib2.bits', timespan: '1_day'
+      kind: 'prefab', title: 'Bits In/Out', resourceId: graphProps.graph.resourceId, graphtype: 'mib2.bits', timespan: '1_day'
     })
     expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Added "Bits In/Out" to "Core".' })
     expect(wrapper.emitted('added')?.[0][0]).toEqual(collections[0])
@@ -114,7 +122,7 @@ describe('AddToGraphCollectionDialog.vue', () => {
     await flushPromises()
     expect(createGraphCollection).toHaveBeenCalledWith({
       title: 'Mine', showTimespanButton: false, showGraphtypeButton: false, graphsPerLine: 0,
-      graphs: [{ kind: 'prefab', title: '', resourceId: graphProps.resourceId, graphtype: 'mib2.bits', timespan: '7_day' }]
+      graphs: [{ kind: 'prefab', title: '', resourceId: graphProps.graph.resourceId, graphtype: 'mib2.bits', timespan: '7_day' }]
     })
     expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Added "mib2.bits" to "Mine".' })
   })
@@ -133,6 +141,29 @@ describe('AddToGraphCollectionDialog.vue', () => {
     await flushPromises()
     expect(wrapper.find('[data-test="atc-duplicate"]').text()).toContain('already in "Edge"')
     expect(wrapper.find('[data-test="atc-save"]').attributes('disabled')).toBeUndefined()
+  })
+
+  it('adds an ad-hoc graph as it was handed in, and knows when a collection already has it', async () => {
+    addGraphToCollection.mockResolvedValue({ success: true, message: '', payload: { collection: collections[0], etag: null }})
+    const wrapper = await mountDialog(adhocProps)
+    expect(wrapper.find('[data-test="atc-resource"]').text()).toContain('Series: 2')
+    expect((wrapper.find('[data-test="atc-title"]').element as HTMLInputElement).value).toBe('Uplinks')
+
+    // the same stored state, not the same resource, is what makes it a duplicate
+    selects(wrapper).target.vm.$emit('update:modelValue', '2')
+    await flushPromises()
+    expect(wrapper.find('[data-test="atc-duplicate"]').text()).toContain('already in "Edge"')
+
+    selects(wrapper).target.vm.$emit('update:modelValue', '0')
+    await flushPromises()
+    expect(wrapper.find('[data-test="atc-duplicate"]').exists()).toBe(false)
+    await wrapper.find('[data-test="atc-title"]').setValue('')
+    await wrapper.find('[data-test="atc-save"]').trigger('click')
+    await flushPromises()
+    expect(addGraphToCollection).toHaveBeenCalledWith(0, {
+      kind: 'adhoc', title: '', resourceId: null, graphtype: null, timespan: '1_day', adhocState: STATE
+    })
+    expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Added "the custom graph" to "Core".' })
   })
 
   it('lists the server problems and stays open', async () => {

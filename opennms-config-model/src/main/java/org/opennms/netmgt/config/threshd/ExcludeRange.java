@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Range of addresses to be excluded from this
  *  package
@@ -47,12 +49,14 @@ public class ExcludeRange implements Serializable {
      * Starting address of the range
      */
     @XmlAttribute(name = "begin", required = true)
+    @JsonProperty("begin")
     private String m_begin;
 
     /**
      * Ending address of the range
      */
     @XmlAttribute(name = "end", required = true)
+    @JsonProperty("end")
     private String m_end;
 
     public ExcludeRange() {

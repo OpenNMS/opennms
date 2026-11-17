@@ -91,7 +91,7 @@ curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/resources/node%5B1%5D"
 <resource id="node[1]"
           label="anode"
           name="1"
-          link="element/node.jsp?node=1"
+          link="ui/index.html#/node/1"
           typeLabel="Node">
   <children count="11" totalCount="11">
     <resource id="node[1].nodeSnmp[]"

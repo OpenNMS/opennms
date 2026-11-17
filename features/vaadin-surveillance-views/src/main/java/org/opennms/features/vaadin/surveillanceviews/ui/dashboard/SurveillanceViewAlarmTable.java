@@ -38,6 +38,7 @@ import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewSer
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.web.api.ElementConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -300,7 +301,7 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
                     public void buttonClick(Button.ClickEvent clickEvent) {
                         final URI currentLocation = getUI().getPage().getLocation();
                         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-                        final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + alarm.getNodeId();
+                        final String redirectFragment = contextRoot + "/" + ElementConstants.NODE_DETAILS_URI + alarm.getNodeId();
 
                         LOG.debug("node {} clicked, current location = {}, uri = {}", alarm.getNodeId(), currentLocation, redirectFragment);
 

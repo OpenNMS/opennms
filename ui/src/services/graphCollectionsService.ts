@@ -21,6 +21,7 @@
 ///
 
 import { rest, v2 } from './axiosInstances'
+import { serverMessage } from './serverMessage'
 import {
   GraphCollection,
   GraphCollectionGraph,
@@ -58,24 +59,8 @@ export const graphCollectionProblems = (err: any): string[] => {
   return explanation(err).split('\n').map((line: string) => line.trim()).filter(Boolean)
 }
 
-/**
- * The body of a failed call when it is the API's own explanation: plain text, or a string under the
- * JSON type (what the API sent before it declared its error bodies; axios leaves a body it cannot
- * parse as a string). An HTML error page from Jetty or from a proxy in front of it is not one,
- * whatever its status.
- */
-const explanation = (err: any): string => {
-  const detail = err?.response?.data
-  if (typeof detail !== 'string') {
-    return ''
-  }
-  const text = detail.trim()
-  const type = String(err?.response?.headers?.['content-type'] ?? '').toLowerCase()
-  if (text.startsWith('<') || (type && !type.startsWith('text/plain') && !type.startsWith('application/json'))) {
-    return ''
-  }
-  return text
-}
+// the API's own explanation of a failed call, or '' (see serverMessage)
+const explanation = (err: any): string => serverMessage(err, '')
 
 /** True when a write was refused because the collection changed since it was read (412). */
 export const isStaleWrite = (err: any): boolean => err?.response?.status === 412

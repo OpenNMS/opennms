@@ -34,16 +34,6 @@ Generates xref:operation:deep-dive/notifications/introduction.adoc[notifications
 | no
 | no
 
-| users.xml
-| Contains pager and address information for notification destination paths.
-| no
-| no
-
-| groups.xml
-| Groups can be used as target for notifications.
-| no
-| no
-
 | javamail-configuration.properties
 | Configuration to send notification emails via specific mail servers.
 Metadata expressions can be used for the authenticateUser and authenticatePassword fields in order to reference credentials stored in the secure credentials vault, or an OAuth2 access token via `${token:<name>}` for providers that require XOAUTH2 (see xref:operation:deep-dive/admin/configuration/token-authentication.adoc[token authentication] for a worked Microsoft 365 example).
