@@ -168,7 +168,9 @@ const totalServices = ref(0)
 
 const isPartial = computed(() => totalInterfaces.value + totalServices.value > MAX_ROWS)
 
-const countText = computed(() => `${plural(totalInterfaces.value, 'interface')} and ${plural(totalServices.value, 'service')}`)
+// "Monitored": the count is of the interfaces with monitored services only (withServices), which the
+// IP Interfaces table on the same tab may outnumber.
+const countText = computed(() => `${plural(totalInterfaces.value, 'monitored interface')} and ${plural(totalServices.value, 'service')}`)
 
 // The legacy page lists every interface and service. The message and the button both go there.
 const availabilityPageHref = computed(() => `${props.baseHref}element/availability.jsp?node=${props.node.id}`)

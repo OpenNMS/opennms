@@ -633,7 +633,7 @@ describe('NodeAvailabilityGraph.vue', () => {
       await flushPromises()
 
       const message = wrapper.get('[data-test="availability-partial"]')
-      expect(message.text()).toBe('Node has 4 interfaces and 24 services, only some shown here. View them all on the Availability page.')
+      expect(message.text()).toBe('Node has 4 monitored interfaces and 24 services, only some shown here. View them all on the Availability page.')
       expect(message.get('[data-test="availability-page-link"]').attributes('href')).toBe('/opennms/element/availability.jsp?node=101')
     })
 
@@ -642,7 +642,7 @@ describe('NodeAvailabilityGraph.vue', () => {
       wrapper = mountPanel()
       await flushPromises()
 
-      expect(wrapper.get('[data-test="availability-partial"]').text()).toContain('Node has 1 interface and 9 services')
+      expect(wrapper.get('[data-test="availability-partial"]').text()).toContain('Node has 1 monitored interface and 9 services')
     })
 
     // Only the rows are cut: the figure is the node's.
