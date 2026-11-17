@@ -1,5 +1,8 @@
 <template>
-  <div class="onms-node-details">
+  <div
+    class="onms-node-details"
+    :class="{ 'onms-node-details--node': pageState === 'node' }"
+  >
     <!--
       Below this width the badges, menus and panels start to wrap into each other, so the page
       keeps it and scrolls sideways instead.
@@ -284,11 +287,17 @@ watch(
 <style lang="scss" scoped>
 .onms-node-details {
   // Scrolls sideways below the content's minimum width (the page itself cannot: <html> hides its
-  // horizontal overflow). A scroll container clips in both directions, though, and the link menus'
-  // dropdowns are not teleported out of it, so a short tab (an empty Neighbors tab, say) leaves
-  // room for the deepest of them -- the hamburger list with one submenu open -- below the header.
+  // horizontal overflow).
   overflow-x: auto;
-  min-height: 36rem;
+
+  // A scroll container clips in both directions, though, and the link menus' dropdowns are not
+  // teleported out of it, so a short tab (an empty Neighbors tab, say) leaves room for the deepest
+  // of them -- the hamburger list with one submenu open -- below the header. Only while a node is
+  // shown: the lookup and error messages have no menus. Remove this if OnmsMenubar gets an
+  // appendTo (teleported dropdowns).
+  &.onms-node-details--node {
+    min-height: 36rem;
+  }
 
   .node-details-content {
     box-sizing: border-box;

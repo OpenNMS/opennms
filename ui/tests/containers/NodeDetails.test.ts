@@ -106,6 +106,19 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).exists()).toBe(false)
   })
 
+  // The room left for the link menus' dropdowns is for a node's page only; a short message is not
+  // put in a tall box.
+  it('keeps the tall minimum height for a node, not for a lookup message', async () => {
+    const notFound = mountComponent()
+    notFound.nodeStore.nodeLoadError = 'notFound'
+    await flushPromises()
+    expect(notFound.wrapper.classes()).not.toContain('onms-node-details--node')
+
+    const loaded = mountComponent('42', true)
+    await flushPromises()
+    expect(loaded.wrapper.classes()).toContain('onms-node-details--node')
+  })
+
   it('shows Node Lookup Failed, and no tabs, when the node could not be loaded for another reason', async () => {
     const { wrapper, nodeStore } = mountComponent()
     nodeStore.nodeLoadError = 'failed'
