@@ -194,7 +194,7 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAssetRecord.class, "vendorAssetNumber", "Vendor Asset Number", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "vendorFax", "Vendor Fax", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "vendorPhone", "Vendor Phone", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "geolocation.zip", "ZIP or Postal Code", STRING)
+		new SearchProperty(OnmsAssetRecord.class, "geolocation.zip", "Postal Code", STRING)
 	));
 
 	static final SortedSet<SearchProperty> CATEGORY_PROPERTIES = new TreeSet<>(Arrays.asList(

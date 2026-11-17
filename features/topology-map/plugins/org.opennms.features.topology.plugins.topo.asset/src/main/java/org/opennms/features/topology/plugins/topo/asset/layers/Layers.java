@@ -136,11 +136,11 @@ public enum Layers {
 
         @Override
         public String getLabel() {
-            return "Zip";
+            return "Postal Code";
         }
 
         public String getDescription() {
-            return "Displays all zips of the topology";
+            return "Displays all postal codes of the topology";
         }
 
         @Override
