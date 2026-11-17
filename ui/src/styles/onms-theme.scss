@@ -87,6 +87,8 @@
   --onms-shade-3: rgba(10, 12, 27, 0.24);
   --onms-success: #0b720c;
   --onms-error: #a5021f;
+  // An error icon on a tag or badge: a red that still reads as red. Same as --onms-error here.
+  --onms-error-icon: #a5021f;
   --onms-warning: #fbe947;
   --onms-major: #e35302;
   --onms-minor: #ffac26;
@@ -112,6 +114,8 @@
   --onms-shade-3: rgba(255, 255, 255, 0.24);
   --onms-success: #83ee7d;
   --onms-error: #ffa3b5;
+  // --onms-error is a pink in this theme, so an error icon would read as pink; PrimeVue's red instead.
+  --onms-error-icon: var(--p-red-500);
   --onms-warning: #fbe947;
   --onms-major: #e35302;
   --onms-minor: #ffac26;

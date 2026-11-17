@@ -6,31 +6,19 @@
   >
     <strong>Notifications</strong>
     <span class="node-notifications-tags">
-      <router-link
+      <NodeBannerTagLink
         v-for="link in links"
         :key="link.dataTest"
-        v-onms-tooltip.top="link.label"
+        :label="link.label"
         :to="link.to"
-        :aria-label="link.label"
-        class="node-notifications-tag-link"
+        :state="link.state"
         :data-test="link.dataTest"
       >
-        <OnmsTag
-          severity="secondary"
-          class="node-notifications-tag"
-        >
-          <OnmsIcon
-            :icon="link.who"
-            class="node-notifications-tag-icon node-notifications-tag-icon--who"
-          />
-          <OnmsIcon
-            v-if="link.state"
-            :icon="link.state"
-            class="node-notifications-tag-icon"
-            :class="link.state === Cancel ? 'node-notifications-tag-icon--outstanding' : 'node-notifications-tag-icon--acknowledged'"
-          />
-        </OnmsTag>
-      </router-link>
+        <OnmsIcon
+          :icon="WHO_ICONS[link.who]"
+          class="node-notifications-who-icon"
+        />
+      </NodeBannerTagLink>
     </span>
   </NodeDetailsBanner>
 </template>
@@ -38,13 +26,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
-import { OnmsIcon, OnmsTag } from '@opennms/onms-ui'
-import Cancel from '@opennms/onms-ui/icons/action/Cancel.vue'
-import CheckCircle from '@opennms/onms-ui/icons/action/CheckCircle.vue'
+import { OnmsIcon } from '@opennms/onms-ui'
 import Group from '@opennms/onms-ui/icons/action/Group.vue'
 import Person from '@opennms/onms-ui/icons/action/Person.vue'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import { NotificationQueryPreset } from '@/types/notifications'
+import NodeBannerTagLink, { NodeBannerTagState } from './NodeBannerTagLink.vue'
 import NodeDetailsBanner from './NodeDetailsBanner.vue'
 import useActiveNodeId from './hooks/useActiveNodeId'
 
@@ -56,12 +43,21 @@ import useActiveNodeId from './hooks/useActiveNodeId'
 // acknowledged). The last tag, all of the node's notifications, is the one icon. The tooltip and
 // accessible name say each in words.
 
+// Whose notifications a tag links to: yours, everyone's, or all of the node's whatever their state.
+type Who = 'you' | 'everyone' | 'all'
+
+const WHO_ICONS: Record<Who, object> = {
+  you: Person,
+  everyone: Group,
+  all: IconViewDetails
+}
+
 interface NotificationsLink {
   dataTest: string
   label: string
   to: RouteLocationRaw
-  who: unknown
-  state?: unknown
+  who: Who
+  state?: NodeBannerTagState
 }
 
 const nodeId = useActiveNodeId()
@@ -70,12 +66,12 @@ const nodeId = useActiveNodeId()
 const forNode = (preset: NotificationQueryPreset) => ({ name: 'Notifications', query: { preset, node: nodeId.value }})
 
 const links = computed<NotificationsLink[]>(() => [
-  { dataTest: 'your-outstanding-notifications-link', label: 'Your outstanding notifications for this node', to: forNode('yourOutstanding'), who: Person, state: Cancel },
-  { dataTest: 'your-acknowledged-notifications-link', label: 'Your acknowledged notifications for this node', to: forNode('yourAcknowledged'), who: Person, state: CheckCircle },
-  { dataTest: 'all-outstanding-notifications-link', label: 'All outstanding notifications for this node', to: forNode('allOutstanding'), who: Group, state: Cancel },
-  { dataTest: 'all-acknowledged-notifications-link', label: 'All acknowledged notifications for this node', to: forNode('allAcknowledged'), who: Group, state: CheckCircle },
+  { dataTest: 'your-outstanding-notifications-link', label: 'Your outstanding notifications for this node', to: forNode('yourOutstanding'), who: 'you', state: 'outstanding' },
+  { dataTest: 'your-acknowledged-notifications-link', label: 'Your acknowledged notifications for this node', to: forNode('yourAcknowledged'), who: 'you', state: 'acknowledged' },
+  { dataTest: 'all-outstanding-notifications-link', label: 'All outstanding notifications for this node', to: forNode('allOutstanding'), who: 'everyone', state: 'outstanding' },
+  { dataTest: 'all-acknowledged-notifications-link', label: 'All acknowledged notifications for this node', to: forNode('allAcknowledged'), who: 'everyone', state: 'acknowledged' },
   // Every notification for this node, outstanding and acknowledged, whoever it was sent to.
-  { dataTest: 'view-all-notifications-link', label: 'All notifications for this node', to: forNode('all'), who: IconViewDetails }
+  { dataTest: 'view-all-notifications-link', label: 'All notifications for this node', to: forNode('all'), who: 'all' }
 ])
 </script>
 
@@ -92,45 +88,7 @@ const links = computed<NotificationsLink[]>(() => [
   gap: 0.5rem;
 }
 
-// The banner underlines its links; here the tag is the link's whole face, so no underline. The
-// selector carries the banner's class to outrank its :deep(a) rule.
-.node-details-banner .node-notifications-tag-link {
-  text-decoration: none;
-  border-radius: 6px;
-
-  &:focus-visible {
-    outline: 2px solid var(--p-focus-ring-color, currentColor);
-    outline-offset: 2px;
-  }
-
-  &:hover .node-notifications-tag {
-    filter: brightness(1.1);
-  }
-}
-
-.node-notifications-tag {
-  gap: 0.25rem;
-}
-
-.node-notifications-tag-icon {
-  font-size: 1.5rem;
-}
-
-.node-notifications-tag-icon--who {
+.node-notifications-who-icon {
   color: var(--p-button-text-primary-color);
-}
-
-.node-notifications-tag-icon--outstanding {
-  color: var(--onms-error);
-}
-
-// Dark mode lightens --onms-error to a pink; PrimeVue's red still reads as red there. The whole
-// selector goes in :global(): Vue drops whatever follows a :global(...) prefix.
-:global(.open-dark .node-notifications-tag-icon--outstanding) {
-  color: var(--p-red-500);
-}
-
-.node-notifications-tag-icon--acknowledged {
-  color: var(--onms-success);
 }
 </style>

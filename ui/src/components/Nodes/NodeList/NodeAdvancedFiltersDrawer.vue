@@ -496,8 +496,7 @@ defineExpose({
   flex-wrap: wrap;
   gap: 0.5rem;
 
-  // Off: the same gray as the button's text. On: the green that marks an
-  // acknowledged count in the Node Details notifications box.
+  // Off: the same gray as the button's text. On: the success green.
   :deep(.onms-toggle-button-icon--off) {
     color: var(--p-togglebutton-color);
   }
