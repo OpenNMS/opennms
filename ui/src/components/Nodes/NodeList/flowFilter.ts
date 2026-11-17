@@ -27,7 +27,9 @@
 // The values are what the filter stores (queryFilter.selectedFlows, saved
 // preferences), so they keep the names the earlier multiselect used.
 
-export type FlowFilter = 'Ingress' | 'Egress' | 'Both' | 'No Flows'
+import { FlowFilter } from '@/types/index'
+
+export type { FlowFilter }
 
 export const FLOW_FILTERS: { value: FlowFilter, label: string }[] = [
   { value: 'Ingress', label: 'Ingress' },

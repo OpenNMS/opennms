@@ -778,6 +778,12 @@ export interface AssetFilter {
   value: string
 }
 
+/**
+ * A choice of the Node List's Flows filter. Ingress and Egress together mean either kind; Both and
+ * No Flows each stand alone (see components/Nodes/NodeList/flowFilter.ts).
+ */
+export type FlowFilter = 'Ingress' | 'Egress' | 'Both' | 'No Flows'
+
 /** All components of a node list query */
 export interface NodeQueryFilter {
   searchTerm: string
@@ -785,7 +791,7 @@ export interface NodeQueryFilter {
   selectedCategories: Category[]
   selectedCategories2?: Category[]
   selectedServices?: string[]
-  selectedFlows: string[]
+  selectedFlows: FlowFilter[]
   selectedMonitoringLocations: MonitoringLocation[]
   ipAddress?: string
   macAddress?: string

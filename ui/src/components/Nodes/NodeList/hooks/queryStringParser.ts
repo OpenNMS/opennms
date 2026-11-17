@@ -23,6 +23,7 @@
 import {
   AssetFilter,
   Category,
+  FlowFilter,
   MatchType,
   MonitoringLocation,
   NodeQueryForeignSourceParams,
@@ -32,7 +33,6 @@ import {
   SetOperator
 } from '@/types/index'
 import { isIP } from 'is-ip'
-import { FlowFilter } from '../flowFilter'
 
 /** Parse node label from a vue-router route.query object */
 export const parseNodeLabel = (queryObject: any) => {

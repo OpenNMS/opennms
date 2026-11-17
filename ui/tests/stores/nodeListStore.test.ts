@@ -25,7 +25,7 @@ import { setActivePinia, createPinia } from 'pinia'
 import { useNodeListStore } from '@/stores/nodeListStore'
 import { defaultColumns } from '@/components/Nodes/utils'
 import API from '@/services'
-import { SetOperator } from '@/types'
+import { FlowFilter, SetOperator } from '@/types'
 import { categories, monitoringLocations } from '../components/Nodes/NodeList/hooks/utils'
 
 vi.mock('@/services', () => ({
@@ -589,7 +589,7 @@ describe('useNodeListStore', () => {
       expect(store.queryFilter.nodesWithOutages).toBe(true)
     })
 
-    it.each([
+    it.each<[string, FlowFilter[], FlowFilter[], string[]]>([
       ['a flow choice', ['Both'], ['Both'], ['Ingress + Egress']],
       ['Ingress and Egress', ['Egress', 'Ingress'], ['Ingress', 'Egress'], ['Ingress', 'Egress']],
       // The earlier multiselect allowed any combination; No Flows decided its query.

@@ -29,6 +29,7 @@ import {
   AssetFilter,
   Category,
   ExtendedSearchValue,
+  FlowFilter,
   MatchType,
   MonitoringLocation,
   NodeQueryExtendedSearchParams,
@@ -107,7 +108,7 @@ export const useNodeQuery = () => {
       selectedCategories: [] as Category[],
       selectedCategories2: [] as Category[],
       selectedServices: [] as string[],
-      selectedFlows: [] as string[],
+      selectedFlows: [] as FlowFilter[],
       selectedMonitoringLocations: [] as MonitoringLocation[],
       ipAddress: '',
       macAddress: '',
@@ -488,7 +489,7 @@ const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOpe
 }
 
 // Ingress and Egress together match either kind; Both matches nodes with both kinds.
-export const buildFlowsQuery = (selectedFlows: string[]) => {
+export const buildFlowsQuery = (selectedFlows: readonly FlowFilter[]) => {
   const and = getFiqlSetOperator(SetOperator.Intersection)
 
   if (selectedFlows.some(f => f === 'No Flows')) {

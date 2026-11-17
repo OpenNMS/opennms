@@ -23,7 +23,7 @@
 import { describe, expect, test } from 'vitest'
 import { categories, monitoringLocations, serviceTypes } from './utils'
 import { buildFlowsQuery, parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/NodeList/hooks/useNodeQuery'
-import { MatchType, NodeQueryFilter, SetOperator } from '@/types/index'
+import { FlowFilter, MatchType, NodeQueryFilter, SetOperator } from '@/types/index'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
 const {
@@ -103,7 +103,7 @@ describe('Nodes useNodeQuery test', () => {
 
         const expected = getDefaultNodeQueryFilter()
         expected.categoryMode = expectedCategoryMode
-        expected.selectedFlows = expectedFlows
+        expected.selectedFlows = expectedFlows as FlowFilter[]
         expect(filter).toEqual(expected)
       }
     )
@@ -1119,7 +1119,7 @@ describe('Nodes useNodeQuery test', () => {
   })
 
   describe('buildFlowsQuery', () => {
-    test.each([
+    test.each<[string, FlowFilter[], string]>([
       ['no choice', [], ''],
       ['Ingress', ['Ingress'], 'lastIngressFlow=gt=0'],
       ['Egress', ['Egress'], 'lastEgressFlow=gt=0'],
