@@ -77,7 +77,7 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
         PollStatus status = null;
 
         try {
-            final MailTransportParameters mailParms = MailTransportParameters.get(parameters).forPoll();
+            final MailTransportParameters mailParms = MailTransportParameters.get(parameters);
 
             try {
                 if ("${ipaddr}".equals(mailParms.getReadTestHost())) {
