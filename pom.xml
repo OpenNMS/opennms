@@ -121,7 +121,6 @@
     <module>opennms-config</module>
     <module>opennms-config-model</module>
     <module>opennms-provision</module>
-    <module>opennms-enterprise-reporting</module>
     <module>opennms-services</module>
     <module>opennms-taglib</module>
     <module>opennms-jetty</module>
@@ -3575,11 +3574,6 @@
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.jstl-support</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-reportd</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

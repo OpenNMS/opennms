@@ -19,13 +19,35 @@
  * language governing permissions and limitations under the
  * License.
  */
-@XmlSchema(
-           namespace = "http://xmlns.opennms.org/xsd/config/tl1d-configuration",
-           elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
-           xmlns={
-                   @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/tl1d-configuration"),
-           }
-        )
-package org.opennms.netmgt.config.tl1d;
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlSchema;
+package org.opennms.smoketest.health;
+
+import java.util.List;
+
+import org.junit.ClassRule;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+
+/**
+ * Verifies that Collectd runs and the health check succeeds when Pollerd and Telemetryd are disabled.
+ */
+public class CollectdWithoutPollerdAndTelemetrydIT extends AbstractDisabledServicesHealthCheckIT {
+
+    private static final List<String> DISABLED_DAEMONS = List.of("Pollerd", "Telemetryd");
+
+    @ClassRule
+    public static final OpenNMSStack stack = stackWithDisabledServices(DISABLED_DAEMONS);
+
+    @Override
+    protected OpenNMSStack stack() {
+        return stack;
+    }
+
+    @Override
+    protected List<String> disabledDaemons() {
+        return DISABLED_DAEMONS;
+    }
+
+    @Override
+    protected List<String> requiredDaemons() {
+        return List.of("Collectd");
+    }
+}

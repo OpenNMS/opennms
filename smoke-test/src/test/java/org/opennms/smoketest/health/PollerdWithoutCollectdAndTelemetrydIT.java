@@ -19,26 +19,35 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.config.reportd;
+package org.opennms.smoketest.health;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.util.List;
 
-public class StupidBooleanAdapter extends XmlAdapter<String, Boolean> {
+import org.junit.ClassRule;
+import org.opennms.smoketest.stacks.OpenNMSStack;
+
+/**
+ * Verifies that Pollerd runs and the health check succeeds when Collectd and Telemetryd are disabled.
+ */
+public class PollerdWithoutCollectdAndTelemetrydIT extends AbstractDisabledServicesHealthCheckIT {
+
+    private static final List<String> DISABLED_DAEMONS = List.of("Collectd", "Telemetryd");
+
+    @ClassRule
+    public static final OpenNMSStack stack = stackWithDisabledServices(DISABLED_DAEMONS);
 
     @Override
-    public Boolean unmarshal(final String v) throws Exception {
-        if (v == null) return null;
-
-        if ("yes".equals(v) || "on".equals(v)) {
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
+    protected OpenNMSStack stack() {
+        return stack;
     }
 
     @Override
-    public String marshal(final Boolean v) throws Exception {
-        if (v == null) return null;
-        return v? "yes" : "no";
+    protected List<String> disabledDaemons() {
+        return DISABLED_DAEMONS;
     }
 
+    @Override
+    protected List<String> requiredDaemons() {
+        return List.of("Pollerd");
+    }
 }

@@ -108,7 +108,7 @@ public class LocationInfoPanelItemProvider implements InfoPanelItemProvider {
 
         if (addressInfo != null) {
             append(tooltip, "City", addressInfo.getCity());
-            append(tooltip, "Zip", addressInfo.getZip());
+            append(tooltip, "Postal Code", addressInfo.getZip());
             append(tooltip, "Address", addressInfo.getAddress1());
             append(tooltip, "", addressInfo.getAddress2());
             append(tooltip, "State", addressInfo.getState());
