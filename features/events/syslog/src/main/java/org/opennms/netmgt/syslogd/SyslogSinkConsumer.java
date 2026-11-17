@@ -87,12 +87,14 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
     private final Timer toEventTimer;
     private final Timer broadcastTimer;
     private final Meter messagesReceived;
+    private final Meter eventsBroadcast;
 
     public SyslogSinkConsumer(MetricRegistry registry) {
         consumerTimer = registry.timer("consumer");
         toEventTimer = registry.timer("consumer.toevent");
         broadcastTimer = registry.timer("consumer.broadcast");
         messagesReceived = registry.meter("consumer.messagesReceived");
+        eventsBroadcast = registry.meter("consumer.eventsBroadcast");
         String cacheConfig = System.getProperty(dnsCacheConfigProperty, defaultCacheConfig);
         dnsCache = CacheBuilder.from(cacheConfig).recordStats().build();
         registry.register("dnsCacheSize", (Gauge<Long>) () -> dnsCache.size());
@@ -178,6 +180,7 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
             }
         }
         eventForwarder.sendNowSync(eventLog);
+        eventsBroadcast.mark(eventLog.getEvents().getEventCollection().size());
 
         if (syslogdConfig.getNewSuspectOnMessage()) {
             eventLog.getEvents().getEventCollection().stream()

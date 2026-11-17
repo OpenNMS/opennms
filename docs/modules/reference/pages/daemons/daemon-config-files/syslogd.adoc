@@ -63,7 +63,7 @@ Files in this folder must be specified as an include directive in `syslog-config
 == Metrics
 
 Syslog metrics are shown by the `opennms:metrics-display` Karaf shell command and exported over JMX.
-Comparing the two counts below can confirm that every syslog packet a Minion received reached {page-component-title}.
+Comparing the counts below can confirm that every syslog packet a Minion received reached {page-component-title} and became an event.
 
 [cols="1,1,1,2"]
 |===
@@ -71,23 +71,42 @@ Comparing the two counts below can confirm that every syslog packet a Minion rec
 
 | Minion
 | Syslog Listener (`org.opennms.netmgt.syslogd.listener`)
-| packetsReceived
-| Syslog packets received by the listener: one per UDP datagram, and one per framed message on the TCP listener.
+| udp.packetsReceived
+| UDP datagrams received by the listener.
+
+| Minion
+| Syslog Listener (`org.opennms.netmgt.syslogd.listener`)
+| tcp.packetsReceived
+| Framed messages received by the TCP listener.
 
 | {page-component-title}
 | Syslogd (`org.opennms.netmgt.syslogd`)
 | consumer.messagesReceived
-| Syslog messages received through the Sink, counted individually rather than per batch.
+| Syslog messages delivered through the Sink, counted individually rather than per batch.
+A message counts when it arrives, before it is converted to an event.
 
 | {page-component-title}
 | Syslogd (`org.opennms.netmgt.syslogd`)
-| packetsReceived
+| consumer.eventsBroadcast
+| Events sent to the event bus.
+Messages that are discarded or fail conversion are not counted.
+
+| {page-component-title}
+| Syslogd (`org.opennms.netmgt.syslogd`)
+| udp.packetsReceived, tcp.packetsReceived
 | Syslog packets received by the {page-component-title} listener itself, counted the same way.
 |===
 
-`consumer.messagesReceived` on {page-component-title} adds up the messages from every Minion and from the {page-component-title} listener itself, so compare it with the sum of the `packetsReceived` counters.
-All of these counters start at zero when the process starts, so compare counts taken over the same interval, without a restart in between.
+`consumer.messagesReceived` on {page-component-title} adds up the messages from every Minion and from the {page-component-title} listener itself, so compare it with the sum of the `udp.packetsReceived` and `tcp.packetsReceived` counters.
+The difference between `consumer.messagesReceived` and `consumer.eventsBroadcast` is the number of messages that were discarded or could not be converted.
 
-A sender's count can be higher than `packetsReceived` even when nothing is lost inside {page-component-title}.
-Datagrams that the operating system drops because the listener's socket receive buffer is full never reach the listener, so `packetsReceived` does not count them.
+`consumer.messagesReceived` can be higher than the sum of the listener counters.
+The Kafka Sink delivers at least once, so a batch that is delivered again, for example after a consumer rebalance, is counted again.
+
+All of these counters start at zero when the process starts.
+On Minion, the listener counters also return to zero when the `org.opennms.netmgt.syslog` configuration changes, because the listener restarts.
+Compare counts taken over the same interval, without a restart or a configuration change in between.
+
+A sender's count can be higher than `udp.packetsReceived` even when nothing is lost inside {page-component-title}.
+Datagrams that the operating system drops because the listener's socket receive buffer is full never reach the listener, so `udp.packetsReceived` does not count them.
 On Linux, these drops appear as receive buffer errors (`RcvbufErrors`) in the output of `netstat -su` on the host that runs the listener.

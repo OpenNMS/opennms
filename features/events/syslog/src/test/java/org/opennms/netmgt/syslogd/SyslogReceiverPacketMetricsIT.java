@@ -27,6 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.net.DatagramSocket;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -48,17 +49,28 @@ public class SyslogReceiverPacketMetricsIT {
 
     @Test(timeout = 60000)
     public void camelNettyReceiverCountsPackets() throws Exception {
-        verifyPacketCount(new SyslogReceiverCamelNettyImpl(config()));
+        final int port = freeUdpPort();
+        final MetricRegistry metrics = new MetricRegistry();
+        verifyPacketCount(new SyslogReceiverCamelNettyImpl(config(port), metrics), metrics, port);
     }
 
     @Test(timeout = 60000)
     public void javaNetReceiverCountsPackets() throws Exception {
-        verifyPacketCount(new SyslogReceiverJavaNetImpl(config()));
+        final int port = freeUdpPort();
+        final MetricRegistry metrics = new MetricRegistry();
+        verifyPacketCount(new SyslogReceiverJavaNetImpl(config(port), metrics), metrics, port);
     }
 
-    private static SyslogdConfig config() {
+    // a port of its own per test, so a port still held by another test cannot stall the listener
+    private static int freeUdpPort() throws Exception {
+        try (DatagramSocket socket = new DatagramSocket(0)) {
+            return socket.getLocalPort();
+        }
+    }
+
+    private static SyslogdConfig config(final int port) {
         final SyslogdConfig config = mock(SyslogdConfig.class);
-        when(config.getSyslogPort()).thenReturn(SyslogClient.PORT);
+        when(config.getSyslogPort()).thenReturn(port);
         when(config.getListenAddress()).thenReturn("127.0.0.1");
         when(config.getNumThreads()).thenReturn(1);
         when(config.getQueueSize()).thenReturn(100);
@@ -66,7 +78,8 @@ public class SyslogReceiverPacketMetricsIT {
     }
 
     @SuppressWarnings("unchecked")
-    private static void verifyPacketCount(final SinkDispatchingSyslogReceiver receiver) throws Exception {
+    private static void verifyPacketCount(final SinkDispatchingSyslogReceiver receiver, final MetricRegistry metrics,
+            final int port) throws Exception {
         final AsyncDispatcher<SyslogConnection> dispatcher = mock(AsyncDispatcher.class);
         when(dispatcher.send(any())).thenReturn(CompletableFuture.completedFuture(AsyncDispatcher.DispatchStatus.DISPATCHED));
         final MessageDispatcherFactory dispatcherFactory = mock(MessageDispatcherFactory.class);
@@ -75,8 +88,6 @@ public class SyslogReceiverPacketMetricsIT {
         when(distPollerDao.whoami().getId()).thenReturn("");
         when(distPollerDao.whoami().getLocation()).thenReturn("");
 
-        final MetricRegistry metrics = new MetricRegistry();
-        receiver.setMetricRegistry(metrics);
         receiver.setMessageDispatcherFactory(dispatcherFactory);
         receiver.setDistPollerDao(distPollerDao);
 
@@ -84,24 +95,25 @@ public class SyslogReceiverPacketMetricsIT {
         thread.start();
         try {
             final SyslogClient client = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG, addr("127.0.0.1"));
+            client.syslogPort = port;
             // the listener binds asynchronously, so keep sending until the first packet is counted
             Awaitility.await().atMost(30, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS).until(() -> {
                 client.syslog(SyslogClient.LOG_DEBUG, "warm-up");
-                return metrics.meter(SinkDispatchingSyslogReceiver.PACKETS_RECEIVED).getCount() > 0;
+                return metrics.meter(SinkDispatchingSyslogReceiver.UDP_PACKETS_RECEIVED).getCount() > 0;
             });
             // take the baseline only once warm-up packets still in flight have all been counted
             final AtomicLong previous = new AtomicLong(-1);
             Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).until(() -> {
-                final long count = metrics.meter(SinkDispatchingSyslogReceiver.PACKETS_RECEIVED).getCount();
+                final long count = metrics.meter(SinkDispatchingSyslogReceiver.UDP_PACKETS_RECEIVED).getCount();
                 return count == previous.getAndSet(count);
             });
-            final long before = metrics.meter(SinkDispatchingSyslogReceiver.PACKETS_RECEIVED).getCount();
+            final long before = metrics.meter(SinkDispatchingSyslogReceiver.UDP_PACKETS_RECEIVED).getCount();
             for (int i = 0; i < PACKETS; i++) {
                 client.syslog(SyslogClient.LOG_DEBUG, "packet " + i);
             }
             Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() ->
-                    metrics.meter(SinkDispatchingSyslogReceiver.PACKETS_RECEIVED).getCount() >= before + PACKETS);
-            assertEquals(before + PACKETS, metrics.meter(SinkDispatchingSyslogReceiver.PACKETS_RECEIVED).getCount());
+                    metrics.meter(SinkDispatchingSyslogReceiver.UDP_PACKETS_RECEIVED).getCount() >= before + PACKETS);
+            assertEquals(before + PACKETS, metrics.meter(SinkDispatchingSyslogReceiver.UDP_PACKETS_RECEIVED).getCount());
         } finally {
             receiver.stop();
             thread.join(10000);

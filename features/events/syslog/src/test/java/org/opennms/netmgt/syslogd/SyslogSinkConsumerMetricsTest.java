@@ -29,6 +29,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -55,10 +56,39 @@ public class SyslogSinkConsumerMetricsTest {
         assertEquals(2, metrics.timer("consumer").getCount());
     }
 
+    @Test
+    public void countsOnlyBroadcastEventsForDiscardedMessages() {
+        final SyslogConfigBean config = new SyslogConfigBean();
+        config.setParser("org.opennms.netmgt.syslogd.CustomSyslogParser");
+        config.setForwardingRegexp("^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)");
+        config.setMatchingGroupHost(6);
+        config.setMatchingGroupMessage(8);
+        config.setDiscardUei("DISCARD-MATCHING-MESSAGES");
+
+        final MetricRegistry metrics = new MetricRegistry();
+        final SyslogSinkConsumer consumer = new SyslogSinkConsumer(metrics);
+        consumer.setSyslogdConfig(config);
+        consumer.setEventForwarder(mock(EventForwarder.class));
+
+        // the second message does not match the forwarding regexp, so it is discarded
+        consumer.handleMessage(new SyslogMessageLogDTO("Default", "00000000-0000-0000-0000-000000ddba11",
+                new InetSocketAddress(addr("127.0.0.1"), 514), Arrays.asList(
+                        message("<34>main: 2010-08-19 127.0.0.1 foo: kept 1"),
+                        message("<13>discarded"),
+                        message("<34>main: 2010-08-19 127.0.0.1 foo: kept 2"))));
+
+        assertEquals(3, metrics.meter("consumer.messagesReceived").getCount());
+        assertEquals(2, metrics.meter("consumer.eventsBroadcast").getCount());
+    }
+
+    private static SyslogMessageDTO message(final String text) {
+        return new SyslogMessageDTO(ByteBuffer.wrap(text.getBytes(StandardCharsets.US_ASCII)));
+    }
+
     private static SyslogMessageLogDTO batch(final int size) {
         final List<SyslogMessageDTO> messages = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            messages.add(new SyslogMessageDTO(ByteBuffer.wrap(("<13>test message " + i).getBytes(StandardCharsets.US_ASCII))));
+            messages.add(message("<13>test message " + i));
         }
         return new SyslogMessageLogDTO("Default", "00000000-0000-0000-0000-000000ddba11",
                 new InetSocketAddress(addr("127.0.0.1"), 514), messages);

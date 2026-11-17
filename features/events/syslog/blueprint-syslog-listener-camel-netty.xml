@@ -93,9 +93,9 @@
 
 	<bean id="syslogReceiverCamelNetty" class="org.opennms.netmgt.syslogd.SyslogReceiverCamelNettyImpl" destroy-method="stop">
 		<argument ref="syslogConfig" />
+		<argument ref="syslogListenerMetricRegistry" />
 		<property name="distPollerDao" ref="distPollerDao"/>
 		<property name="messageDispatcherFactory" ref="messageDispatcherFactory" />
-		<property name="metricRegistry" ref="syslogListenerMetricRegistry" />
 		<property name="bundleContext" ref="blueprintBundleContext" />
 	</bean>
 

@@ -63,6 +63,8 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     // Actual adapters implementing the logic
     private final Set<Adapter> adapters = Sets.newHashSet();
 
+    private final String messagesReceivedName;
+
     private Meter messagesReceived;
 
     public TelemetryMessageConsumer(QueueConfig queueConfig, TelemetrySinkModule sinkModule) throws Exception {
@@ -77,14 +79,12 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
         this.queueDef = Objects.requireNonNull(queueDef);
         this.sinkModule = Objects.requireNonNull(sinkModule);
         this.adapterDefs = new ArrayList(adapterDefs);
+        this.messagesReceivedName = MetricRegistry.name("consumers", queueDef.getName(), "messagesReceived");
     }
 
     @PostConstruct
     public void init() throws Exception {
-        final MetricRegistry metricRegistry = telemetryRegistry.getMetricRegistry();
-        if (metricRegistry != null) {
-            messagesReceived = metricRegistry.meter(MetricRegistry.name("consumers", queueDef.getName(), "messagesReceived"));
-        }
+        messagesReceived = telemetryRegistry.getMetricRegistry().meter(messagesReceivedName);
 
         // Pre-emptively instantiate the adapters
         for (AdapterDefinition adapterDef : adapterDefs) {
@@ -106,9 +106,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     public void handleMessage(TelemetryProtos.TelemetryMessageLog messageLog) {
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Telemetryd.LOG_PREFIX)) {
             LOG.trace("Received message log: {}", messageLog);
-            if (messagesReceived != null) {
-                messagesReceived.mark(messageLog.getMessageCount());
-            }
+            messagesReceived.mark(messageLog.getMessageCount());
             // Handle the message with all of the adapters
             for (Adapter adapter : adapters) {
                 try {
@@ -124,6 +122,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     @PreDestroy
     public void destroy() {
         adapters.forEach((adapter) -> adapter.destroy());
+        telemetryRegistry.getMetricRegistry().remove(messagesReceivedName);
     }
 
     @Override

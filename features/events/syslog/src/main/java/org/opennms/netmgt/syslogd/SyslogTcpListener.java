@@ -86,7 +86,7 @@ public class SyslogTcpListener {
 
     private final AsyncDispatcher<SyslogConnection> m_dispatcher;
 
-    /** The receiver's packetsReceived, marked once per framed message, as UDP marks it once per datagram. */
+    /** The receiver's tcp.packetsReceived, marked once per framed message. */
     private final Meter m_packetsReceived;
 
     /**

@@ -93,9 +93,9 @@
 
 	<bean id="syslogReceiverJavaNet" class="org.opennms.netmgt.syslogd.SyslogReceiverJavaNetImpl" destroy-method="stop">
 		<argument ref="syslogConfig" />
+		<argument ref="syslogListenerMetricRegistry" />
 		<property name="distPollerDao" ref="distPollerDao"/>
 		<property name="messageDispatcherFactory" ref="messageDispatcherFactory" />
-		<property name="metricRegistry" ref="syslogListenerMetricRegistry" />
 	</bean>
 
 	<bean class="java.lang.Thread" init-method="start">

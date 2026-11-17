@@ -52,7 +52,7 @@
   <!-- Listen for Syslog message and dispatch them to the Sink API -->
   <bean id="syslogReceiverCamelNetty" class="org.opennms.netmgt.syslogd.SyslogReceiverCamelNettyImpl" destroy-method="stop">
     <constructor-arg  ref="syslogdConfigFactory" />
-    <property name="metricRegistry" ref="syslogdMetricRegistry" />
+    <constructor-arg ref="syslogdMetricRegistry" />
   </bean>
 
   <bean id="daemon" class="org.opennms.netmgt.syslogd.Syslogd">

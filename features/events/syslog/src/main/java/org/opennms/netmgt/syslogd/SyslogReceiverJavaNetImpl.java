@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
 
 /**
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
@@ -65,7 +66,11 @@ public class SyslogReceiverJavaNetImpl extends SinkDispatchingSyslogReceiver {
     private final SyslogdConfig m_config;
 
     public SyslogReceiverJavaNetImpl(final SyslogdConfig config) {
-        super(config);
+        this(config, new MetricRegistry());
+    }
+
+    public SyslogReceiverJavaNetImpl(final SyslogdConfig config, final MetricRegistry metricRegistry) {
+        super(config, metricRegistry);
         m_config = config;
         m_stop = false;
         m_dgSock = null;
@@ -195,7 +200,7 @@ public class SyslogReceiverJavaNetImpl extends SinkDispatchingSyslogReceiver {
                 m_dgSock.receive(pkt);
 
                 // Increment the packet counter
-                m_packetsReceived.mark();
+                m_udpPacketsReceived.mark();
 
                 // Create a metric for the Syslog packet size
                 packetSizeHistogram.update(pkt.getLength());

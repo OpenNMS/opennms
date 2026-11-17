@@ -86,3 +86,7 @@ For flow protocols each message is one flow record, so compare it with the parse
 
 `consumers.<queue>.messagesReceived` adds up the messages from every Minion that sends to that queue, and from listeners on {page-component-title} or Sentinel itself, so compare it with the sum of the per-Minion counters.
 All of these counters start at zero when the process starts, so compare counts taken over the same interval, without a restart in between.
+
+`consumers.<queue>.messagesReceived` exists only while the queue has a consumer.
+{page-component-title} does not create a consumer for a queue that has no enabled adapter, so the counter is missing for such a queue.
+The counter is removed when the consumer stops, and starts at zero again if the queue is created again.

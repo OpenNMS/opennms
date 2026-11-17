@@ -22,6 +22,8 @@
 package org.opennms.netmgt.telemetry.daemon;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,6 +56,24 @@ public class TelemetryMessageConsumerMetricsTest {
         consumer.handleMessage(log(1));
 
         assertEquals(5, metrics.meter("consumers.Netflow-9.messagesReceived").getCount());
+    }
+
+    @Test
+    public void removesTheMeterWhenDestroyed() throws Exception {
+        final MetricRegistry metrics = new MetricRegistry();
+        final TelemetryRegistry registry = mock(TelemetryRegistry.class);
+        when(registry.getMetricRegistry()).thenReturn(metrics);
+        final QueueDefinition queue = mock(QueueDefinition.class);
+        when(queue.getName()).thenReturn("Netflow-9");
+
+        final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(queue, Collections.emptyList(), mock(TelemetrySinkModule.class));
+        consumer.setRegistry(registry);
+        consumer.init();
+        assertTrue(metrics.getMeters().containsKey("consumers.Netflow-9.messagesReceived"));
+
+        consumer.destroy();
+
+        assertFalse(metrics.getMeters().containsKey("consumers.Netflow-9.messagesReceived"));
     }
 
     private static TelemetryProtos.TelemetryMessageLog log(final int size) {
