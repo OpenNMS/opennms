@@ -21,142 +21,36 @@
  */
 package org.opennms.netmgt.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-
-import org.apache.commons.io.IOUtils;
-import org.opennms.core.utils.ConfigFileConstants;
-
 /**
- * <p>GroupFactory class.</p>
- *
- * @author ranger
- * @version $Id: $
+ * Holds the GroupManager for the static callers: the servlets, JSPs, reporting and other code without Spring
+ * injection. The user management context registers the database manager here (UserMgmtFactoryRegistration);
+ * tests may register a mock.
  */
-public class GroupFactory extends GroupManager {
-    /**
-     * The static singleton instance object
-     */
+public final class GroupFactory {
     private static GroupManager s_instance;
 
-    /**
-     * Boolean indicating if the init() method has been called
-     */
-    private static boolean s_initialized = false;
-
-    /**
-     * 
-     */
-    private File m_groupsConfFile;
-
-    /**
-     * 
-     */
-    private long m_lastModified;
-
-    /**
-     * Constructor which parses the file
-     *
-     * @throws java.io.IOException if any.
-     * @throws java.io.FileNotFoundException if any.
-     */
-    public GroupFactory() throws FileNotFoundException, IOException {
-        super();
-        reload();
+    private GroupFactory() {
     }
 
     /**
-     * <p>init</p>
+     * Checks that a group manager is registered. Kept for the callers that call it before
+     * {@link #getInstance()}; it never reads a file.
      *
-     * @throws java.io.IOException if any.
-     * @throws java.io.FileNotFoundException if any.
+     * @throws IllegalStateException if no manager is registered
      */
-    public static synchronized void init() throws IOException, FileNotFoundException {
-
-        if (s_instance == null || !s_initialized) {
-            s_instance = new GroupFactory();
-            s_initialized = true;
+    public static synchronized void init() {
+        if (s_instance == null) {
+            throw new IllegalStateException("No group manager is registered: the user management context is not loaded.");
         }
-
     }
 
-    /**
-     * Singleton static call to get the only instance that should exist for the
-     * GroupFactory
-     *
-     * @return the single group factory instance
-     */
+    /** @return the registered manager, or null if none is registered */
     public static synchronized GroupManager getInstance() {
         return s_instance;
     }
-    
-    /**
-     * <p>setInstance</p>
-     *
-     * @param mgr a {@link org.opennms.netmgt.config.GroupManager} object.
-     */
-    public static synchronized void setInstance(GroupManager mgr) {
-        s_initialized = true;
+
+    /** @param mgr the manager to hand out, or null to remove the registered one */
+    public static synchronized void setInstance(final GroupManager mgr) {
         s_instance = mgr;
-    }
-
-    /**
-     * Parses the groups.xml
-     *
-     * @throws java.io.IOException if any.
-     * @throws java.io.FileNotFoundException if any.
-     */
-    public synchronized void reload() throws IOException, FileNotFoundException {
-        File confFile = ConfigFileConstants.getFile(ConfigFileConstants.GROUPS_CONF_FILE_NAME);
-
-        reloadFromFile(confFile);
-    }
-
-    /**
-     * @param confFile
-     * @throws IOException
-     */
-    private void reloadFromFile(File confFile) throws IOException {
-        m_groupsConfFile = confFile;
-        InputStream configIn = null;
-        try {
-            configIn = new FileInputStream(m_groupsConfFile);
-            m_lastModified = m_groupsConfFile.lastModified();
-            parseXml(configIn);
-        } finally {
-            if (configIn != null) {
-                IOUtils.closeQuietly(configIn);
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void saveXml(String data) throws IOException {
-        if (data != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_groupsConfFile), StandardCharsets.UTF_8);
-            fileWriter.write(data);
-            fileWriter.flush();
-            fileWriter.close();
-        }
-    }
-
-    /**
-     * <p>update</p>
-     *
-     * @throws java.io.IOException if any.
-     */
-    @Override
-    public void update() throws IOException {
-        if (m_lastModified != m_groupsConfFile.lastModified()) {
-            reload();
-        }
     }
 }

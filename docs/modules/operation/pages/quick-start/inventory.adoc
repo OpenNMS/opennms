@@ -35,7 +35,7 @@ You can customize these values for your own network's needs, although the defaul
 ** Choose an SNMP version (`v2c` or `v1`) from the *Version* list.
 +
 NOTE: If you are using SNMPv3, you need to configure details for a User-Based Security Model (USM) user instead of a community string.
-{page-component-title} supports SNMPv3 and USM, but these topics are outside of the scope of this guide.
+For the SNMPv3 attributes and their defaults, see xref:deep-dive/provisioning/snmp-configuration.adoc[].
 
 ** (Optional) Define a range of IP addresses by typing the first and last address of the range into the *First IP Address* and *Last IP Address* boxes, respectively.
 ** In the v1/v2c Specific Parameters section, enter the new community string in the *Read Community String* box.
@@ -48,6 +48,7 @@ image::provisioning/SNMP_Config.png["SNMP community name configuration page with
 
 These settings are automatically optimized into `snmp-config.xml`.
 For an example of the resulting XML configuration, see <<deep-dive/provisioning/xml-samples.adoc#SNMP-community-xml, Configure SNMP community names>> in the Deep Dive section.
+For a description of every SNMP configuration attribute and how {page-component-title} matches IP addresses to definitions, see xref:deep-dive/provisioning/snmp-configuration.adoc[].
 
 NOTE: It is possible to use metadata expressions in the fields Security Name, Read Community, Write Community, Auth Passphrase, and Privacy Passphrase to reference credentials stored in the Secure Credentials Vault.
 Please note that only the global scope is available here.

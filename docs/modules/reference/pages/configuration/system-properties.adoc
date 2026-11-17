@@ -43,6 +43,18 @@ Many of the properties here are documented with much greater detail in their rel
 | 127.0.0.1
 | IP address of the DNS server to which the `DnsProvisioningAdapter` should send dynamic DNS updates
 
+| `importer.foreign-source.dir`
+| "${opennms.home}/etc/foreign-sources"
+| Directory where Provisiond stores foreign source definitions.
+
+| `importer.requisition.dir`
+| "${opennms.home}/etc/imports"
+| Directory where Provisiond stores requisitions.
+
+| `ksc.default.graphsPerLine`
+| 1
+| Default number of graphs per row on a graph collection view page.
+
 | `opennms.alarmlist.sound.enable`
 | false
 | If `true`, enable "alarm sounds" on Alarm List Pages
@@ -83,6 +95,10 @@ Many of the properties here are documented with much greater detail in their rel
 | false
 | Show or hide the Acknowledge event button
 
+| `opennms.eventlist.showCount`
+| false
+| If `true`, the event list in the web UI shows the total event count; enabling this can cause severe performance issues on larger installations.
+
 | `opennms.minion.provisioning`
 | true
 | Enable the automatic, heartbeat-based provisioning mechanism for Minions
@@ -103,9 +119,17 @@ Many of the properties here are documented with much greater detail in their rel
 | false
 | Enable or disable the status bar resume at the top of the node page in the OpenNMS web UI
 
+| `opennms.nodesWithOutages.count`
+| 12
+| Number of nodes with outages to display on the front page in the web UI.
+
 | `opennms.nodesWithOutages.show`
 | true
 | If `true` display the "Nodes with Outages" box on the front page in the OpenNMS web UI
+
+| `opennms.nodesWithProblems.count`
+| 16
+| Number of nodes with problems to display on the front page in the web UI.
 
 | `opennms.nodesWithProblems.show`
 | true
@@ -123,6 +147,38 @@ Many of the properties here are documented with much greater detail in their rel
 | "${install.share.dir}/reports"
 | The directory used for Database Reports
 
+| `opennms.report.scheduler.enabled`
+| true
+| If `false`, scheduled reports are no longer executed.
+
+| `opennms.rtc-client.http-post.base-url`
+| "http://localhost:8980/opennms/rtc/post"
+| Base of the URL that RTC clients use when creating an RTC subscription URL; update it if you change the Jetty port or bind address.
+
+| `opennms.rtc-client.http-post.password`
+| "rtc"
+| Password the RTC client uses to authenticate its HTTP POST requests.
+
+| `opennms.rtc-client.http-post.username`
+| "rtc"
+| User name the RTC client uses to authenticate its HTTP POST requests.
+
+| `opennms.rtc.event.proxy.host`
+| "127.0.0.1"
+| Host name or IP address of the {page-component-title} server to which the web UI sends events.
+
+| `opennms.rtc.event.proxy.port`
+| 5817
+| TCP port of the Eventd TCP receiver to which the web UI sends events.
+
+| `opennms.rtc.event.proxy.timeout`
+| 2000
+| Timeout, in milliseconds, that the event proxy waits to complete a TCP connection.
+
+| `opennms.situations.count`
+| 16
+| Number of situations to display on the front page in the web UI.
+
 | `opennms.situations.show`
 | true
 | Enable or disable the Situations box on the front page in the OpenNMS web UI
@@ -130,6 +186,62 @@ Many of the properties here are documented with much greater detail in their rel
 | `opennms.ticketer.plugin`
 | "org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin"
 | The ticket plugin implementation to use to create tickets via the Alarm details pages (if configured)
+
+| `opennms.ticketer.skipCloseWhenNotCleared`
+| true
+| If `true`, `uei.opennms.org/troubleTicket/close` events are ignored for alarms with a severity other than `Cleared`.
+
+| `opennms.ticketer.skipCreateWhenCleared`
+| true
+| If `true`, `uei.opennms.org/troubleTicket/create` events are ignored for alarms with a severity of `Cleared`.
+
+| `opennms.web.base-url`
+| `%s://%x%c/`
+| Overrides the URL used for the HTML `<base>` tag, for example when the web UI runs behind a reverse proxy; the URL must end with `/` and supports the substitutions `%s` (scheme), `%h` and `%p` (host and port from the `Host` header), `%x` (host and port from the `X-Forwarded-Host`, `X-Host`, or `Host` header), and `%c` (context path).
+
+| `org.apache.kafka.sasl.oauthbearer.allowed.urls`
+| ""
+| Comma-separated list of URLs the Kafka client may contact as SASL/OAUTHBEARER token or JWKS endpoints; an empty value blocks every URL.
+
+| `org.eclipse.jetty.server.Request.maxFormContentSize`
+| 200000
+| Maximum size, in bytes, of a form submission accepted by Jetty; `-1` disables the limit.
+
+| `org.eclipse.jetty.server.Request.maxFormKeys`
+| 2000
+| Maximum number of fields Jetty accepts in a web form, such as the forms in the provisioning web UI.
+
+| `org.opennms.activemq.broker.disable`
+| false
+| If `true`, the embedded ActiveMQ broker is not started.
+
+| `org.opennms.activemq.broker.password`
+| ""
+| Password used to connect to the ActiveMQ broker.
+
+| `org.opennms.activemq.broker.url`
+| "vm://localhost?create=false&jms.useAsyncSend=true"
+| URL of the ActiveMQ broker; the default points to the embedded broker.
+
+| `org.opennms.activemq.broker.username`
+| ""
+| User name used to connect to the ActiveMQ broker.
+
+| `org.opennms.activemq.client.concurrent-consumers`
+| 10
+| Number of concurrent consumers used by the ActiveMQ client.
+
+| `org.opennms.activemq.client.max-connections`
+| 8
+| Maximum number of connections in the ActiveMQ client connection pool.
+
+| `org.opennms.alarmd.legacyAlarmState`
+| false
+| If `true`, Alarmd uses the traditional dual alarm handling of alarm state for pairwise alarm correlation; this setting overrides `org.opennms.alarmd.newIfClearedAlarmExists`.
+
+| `org.opennms.alarmd.newIfClearedAlarmExists`
+| false
+| If `true`, Alarmd creates a new alarm when a problem reoccurs and the existing alarm is in a `Cleared` state.
 
 | `org.opennms.collectd.instrumentationClass`
 | "org.opennms.netmgt.collectd.DefaultCollectdInstrumentation"
@@ -143,6 +255,14 @@ Many of the properties here are documented with much greater detail in their rel
 | false
 | Controls whether users will be redirected to the dashboard page after a successful login
 
+| `org.opennms.evaluate.dump_cache_frequency`
+| 60
+| Frequency, in minutes, at which the `evaluate` time series strategy writes its cache content to the log file.
+
+| `org.opennms.evaluate.dump_stats_frequency`
+| 5
+| Frequency, in minutes, at which the `evaluate` time series strategy writes its statistics to the log file.
+
 | `org.opennms.eventd.eventTemplateCacheSize`
 | 1000
 | Defines the size of the event parsing cache
@@ -150,6 +270,14 @@ Many of the properties here are documented with much greater detail in their rel
 | `org.opennms.features.apilayer.mapping.nodeCacheSpec`
 | "maximumSize=10000,expireAfterWrite=15m"
 | Cache specification for node objects used in alarms 
+
+| `org.opennms.features.telemetry.ingressAndEgressRequired`
+| false
+| If `true`, an interface is marked as having flow data only if both ingress and egress flow data is available.
+
+| `org.opennms.features.telemetry.maxFlowAgeSeconds`
+| 604800
+| An interface is marked as having flow data if flow data was received within this number of seconds.
 
 | `org.opennms.geomap.defaultSeverity`
 | "Normal"
@@ -215,6 +343,10 @@ Many of the properties here are documented with much greater detail in their rel
 | `null`
 | Only display dashboards in the Grafana Box that match this tag
 
+| `org.opennms.interface-node-cache.refresh-timer`
+| 300000
+| Interval, in milliseconds, at which the interface-to-node cache is refreshed.
+
 | `org.opennms.interfaceAvailabilityBox.maxInterfaceCount`
 | 10
 | The maximum number of interfaces before the availability box is hidden in the node page
@@ -223,6 +355,18 @@ Many of the properties here are documented with much greater detail in their rel
 | Varies with OpenNMS version
 | Defines the Version of the Jasperreports library used for database reports
 
+| `org.opennms.jms.timeout`
+| 20000
+| Request timeout, in milliseconds, for messages exchanged over the message queue when no operation-specific timeout can be determined.
+
+| `org.opennms.mate.maxRecursionDepth`
+| 8
+| Maximum recursion depth when evaluating metadata (MATE) expressions.
+
+| `org.opennms.netmgt.collectd.DefaultCollectionAgent.loadSnmpDataOnInit`
+| false
+| Set to `true` if you change `org.opennms.dao.ipinterface.findByServiceType` to load SNMP interfaces along with the interface and node data.
+
 | `org.opennms.netmgt.collectd.disableCollectionTimestampTracking`
 | false
 | If true, collectd no longer records the completion time of each data collection in the `collectlastgood` and `collectlastfail` columns of the `ifservices` table, and the service page hides the corresponding rows
@@ -230,6 +374,14 @@ Many of the properties here are documented with much greater detail in their rel
 | `org.opennms.netmgt.collectd.SnmpCollector.forceRescan`
 | false
 | Enable or disable the SNMP Collector's ability to force rescans when the interface count changes
+
+| `org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances`
+| false
+| If `true`, the SNMP collector requests only the configured instances instead of walking the entire table; this can save time on systems with many interfaces but may be affected by instance changes.
+
+| `org.opennms.netmgt.collectd.strictInterval`
+| true
+| If true, collectd schedules each collection one interval after the previous collection was scheduled, regardless of how long the previous collection took; if false, one interval after the previous collection finished (see xref:operation:deep-dive/performance-data-collection/collectd/configuration.adoc#ga-collectd-strict-interval[Collection scheduling])
 
 | `org.opennms.netmgt.icmp.best.timeout`
 | 500
@@ -247,13 +399,90 @@ Many of the properties here are documented with much greater detail in their rel
 | "detect"
 | Used to force IPv6 ICMP support explicitly
 
+| `org.opennms.netmgt.jetty.host`
+| "0.0.0.0"
+| IP address the Jetty HTTP listener binds to; by default it listens on all interfaces. If you change it, you may also need to update `opennms.rtc-client.http-post.base-url`.
+
+| `org.opennms.netmgt.jetty.https-host`
+| "0.0.0.0"
+| IP address the Jetty HTTPS listener binds to; by default it listens on all interfaces.
+
+| `org.opennms.netmgt.jetty.https-keypassword`
+| "changeit"
+| Password for the Jetty SSL key stored in the keystore set by `org.opennms.netmgt.jetty.https-keystore`.
+
+| `org.opennms.netmgt.jetty.https-keystore`
+| `null`
+| Path to the keystore from which Jetty reads its SSL key, for example `${opennms.home}/etc/jetty.keystore`.
+
+| `org.opennms.netmgt.jetty.https-keystorepassword`
+| "changeit"
+| Password for the keystore set by `org.opennms.netmgt.jetty.https-keystore`.
+
+| `org.opennms.netmgt.jetty.https-port`
+| 8443
+| Port for the Jetty HTTPS listener; it takes effect only when the HTTPS connector is enabled in `jetty.xml`, and it does not disable the plain HTTP listener.
+Setting it also enables the HSTS header for `https://` requests.
+
+| `org.opennms.netmgt.jetty.port`
+| 8980
+| Port the Jetty HTTP listener listens on.
+
+| `org.opennms.netmgt.jetty.relativeRedirectAllowed`
+| true
+| Whether Jetty is allowed to send relative redirects.
+
+| `org.opennms.netmgt.jetty.requestHeaderSize`
+| 4000
+| Maximum request header size, in bytes, accepted by Jetty.
+
+| `org.opennms.netmgt.jetty.sendServerVersion`
+| false
+| Whether Jetty sends the `Server` header in responses.
+
+| `org.opennms.netmgt.perspectivepoller.trackerRefreshRateLimit`
+| 30000
+| Rate limit, in milliseconds, for refreshing perspective poller jobs.
+
+| `org.opennms.netmgt.provision.dns.client.rpc.threadCount`
+| 64
+| Size of the thread pool used for concurrent DNS lookups on Minions.
+
 | `org.opennms.netmgt.search.info`
 | `null`
 | By default the central search shows only the found nodes and the corresponding matched field. This property allows you to add an additional field where you can use a meta-data DSL expression
 
+| `org.opennms.netmgt.snmp.additionalPrintableCharacters`
+| ""
+| Comma-separated list of additional control characters treated as displayable in SNMP octet strings, such as `0x0a,0x11`; use `originalChar:mappedChar` to map a character, such as `0x45:0x58`.
+
 | `org.opennms.netmgt.vmmgr.emitStandardFileNotFoundWarnings`
 | true
 | Enable or disable display of standard "file not found" warnings during startup
+
+| `org.opennms.newts.config.cache.max_entries`
+| 8192
+| Maximum number of entries in the local in-memory resource metadata cache used by NewTS.
+
+| `org.opennms.newts.config.cache.priming.block_ms`
+| 120000
+| Maximum time, in milliseconds, to block while priming the NewTS resource metadata cache.
+
+| `org.opennms.newts.config.cache.priming.disable`
+| false
+| If `true`, the NewTS resource metadata cache is not primed at startup.
+
+| `org.opennms.newts.config.cache.redis_hostname`
+| "localhost"
+| Host name of the Redis server when NewTS uses the Redis resource metadata cache.
+
+| `org.opennms.newts.config.cache.redis_port`
+| 6379
+| Port of the Redis server when NewTS uses the Redis resource metadata cache.
+
+| `org.opennms.newts.config.cache.strategy`
+| "org.opennms.netmgt.newts.support.GuavaSearchableResourceMetadataCache"
+| Resource metadata cache implementation used by NewTS; set to `org.opennms.netmgt.newts.support.RedisResourceMetadataCache` to use an external Redis cache.
 
 | `org.opennms.newts.config.datacenter`
 | "datacenter1"
@@ -291,6 +520,10 @@ Many of the properties here are documented with much greater detail in their rel
 | 604800
 | Time (in seconds) that NewTS samples are stored at the same key
 
+| `org.opennms.newts.config.ring_buffer_size`
+| 8192
+| Size of the ring buffer used to queue samples before they are written to NewTS.
+
 | `org.opennms.newts.config.ttl`
 | 31540000
 | Number of seconds after which NewTS samples will automatically be deleted
@@ -303,13 +536,25 @@ Many of the properties here are documented with much greater detail in their rel
 | "ANY"
 | Consistency level for Cassandra write operations
 
+| `org.opennms.newts.nan_on_counter_wrap`
+| true
+| If `true`, NewTS replaces counter wraps with NaN values instead of processing them.
+
 | `org.opennms.protocols.icmp.interfaceJar`
 | `null`
 | This path is added to the `opennms.classpath` at startup
 
+| `org.opennms.protocols.vmware.housekeepingInterval`
+| 300000
+| Interval, in milliseconds, at which the VMware integration checks for and closes idle connections.
+
 | `org.opennms.provisiond.enableDiscovery`
 | true
 | Enable or disable the handling of new suspect events in provisiond and periodic scanning of discovered nodes
+
+| `org.opennms.provisiond.repositoryImplementation`
+| "file"
+| Strategy used to manage deployed and pending requisitions; `file` is the tested strategy, while `fastFile`, `fused`, `fastFused`, `queueing`, `fastQueueing`, `caching`, and `fastCaching` are experimental.
 
 | `org.opennms.provisiond.resolveMissingCoordinatesFromAddressString`
 | "true" 
@@ -318,6 +563,10 @@ Many of the properties here are documented with much greater detail in their rel
 | `org.opennms.provisiond.reverseResolveRequisitionIpInterfaceHostnames`
 | true
 | Whether or not to perform a reverse look up hostnames for a node's IP addresses during the provisioning's audit phase
+
+| `org.opennms.provisiond.scheduleRescanForExistingNodes`
+| true
+| If `false`, Provisiond does not schedule rescans of existing nodes when it starts, which may be needed when several {page-component-title} instances share one database.
 
 | `org.opennms.provisiond.scheduleRescanForUpdatedNodes`
 | true
@@ -334,6 +583,10 @@ Many of the properties here are documented with much greater detail in their rel
 | `org.opennms.rrd.storeByForeignSource`
 | false
 | Store RRDs by foreignSource/ForeignId rather than database nodeId
+
+| `org.opennms.rrd.storeByGroup`
+| false
+| If `true`, all data sources belonging to a single collection group are stored together in one RRD file instead of one file per data source.
 
 | `org.opennms.rrd.strategyClass`
 | "org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy"
@@ -352,9 +605,33 @@ Many of the properties here are documented with much greater detail in their rel
 | When enabled, REST API authentication successes are included in the `web-audit.log` audit log file.
   By default, only interactive web UI logins and all authentication failures are logged.
 
+| `org.opennms.snmp.dataCollectionConfig.reloadCheckInterval`
+| 30000
+| Interval, in milliseconds, at which `datacollection-config.xml` is checked for changes.
+
 | `org.opennms.snmp.mib-compiler.default-graph-template.color`
 | "#00ccff"
 | Sets the default color for graphs generated by the MIB Compiler
+
+| `org.opennms.snmp.snmp4j.allowSNMPv2InV1`
+| false
+| If `true`, SNMPv1 responses that contain Counter64 varbinds are accepted instead of being discarded as ill-formed.
+
+| `org.opennms.snmp.snmp4j.forwardRuntimeExceptions`
+| false
+| If `true`, runtime exceptions from SNMP4J are forwarded, which can help when debugging problems with SNMP agents.
+
+| `org.opennms.snmp.snmp4j.noGetBulk`
+| false
+| If `true`, GET-BULK requests are disabled globally for agents that handle them incorrectly; this reduces collection efficiency for agents that support GET-BULK properly.
+
+| `org.opennms.snmp.workarounds.allow64BitIpAddress`
+| true
+| Enables a workaround for Net-SNMP agents prior to 5.4.1 on 64-bit platforms that return 8-byte IP addresses, which can cause interface discovery to fail.
+
+| `org.opennms.snmp.workarounds.allowZeroLengthIpAddress`
+| true
+| If `true`, zero-length IP addresses returned by some agents (for example, DrayTek Vigor2820 devices) in the `ipAddrTable` are replaced with `0.0.0.0`.
 
 | `org.opennms.statusbox.elements`
 | "business-services,nodes-by-alarms,nodes-by-outages"
@@ -367,6 +644,38 @@ Many of the properties here are documented with much greater detail in their rel
 | `org.opennms.timeseries.strategy`
 | "rrd"
 | Sets the strategy used to persist and retrieve time series metrics
+
+| `org.opennms.ui.dateonlyformat`
+| "LLLL d, yyyy"
+| `DateTimeFormatter` pattern for the date line when the web UI displays date and time on separate lines.
+
+| `org.opennms.ui.datettimeformat`
+| `+"yyyy-MM-dd'T'HH:mm:ssxxx"+`
+| `DateTimeFormatter` pattern used to display dates in the web UI.
+
+| `org.opennms.ui.show_stacktrace`
+| false
+| If `true`, the web UI error page displays the full stack trace of an unexpected exception.
+
+| `org.opennms.ui.timeonlyformat`
+| `+"HH:mm:ss 'UTC'x"+`
+| `DateTimeFormatter` pattern for the time line when the web UI displays date and time on separate lines.
+
+| `org.opennms.ui.topology-entity-cache-duration`
+| 300
+| Interval, in seconds, at which the nodes and links displayed in the topology map are refreshed.
+
+| `org.opennms.users.allowUnsalted`
+| true
+| Set to `false` to disallow creating or storing old-style MD5-hashed passwords.
+
+| `org.opennms.utils.propertiesCache.cacheTimeout`
+| 3600
+| Time, in seconds, after which unused entries in the `strings.properties` cache expire.
+
+| `org.opennms.utils.propertiesCache.enableCheckFileModified`
+| false
+| If `true`, the last modification time of `strings.properties` files is checked on every access; this is mainly useful when the web UI runs on a different server.
 
 | `org.opennms.web.aclsEnabled`
 | false
@@ -387,6 +696,10 @@ Many of the properties here are documented with much greater detail in their rel
 | `org.opennms.web.defaultGraphPeriod`
 | "lastday"
 | Set the default time period when rendering graphs
+
+| `org.opennms.web.graphs.engine`
+| "backshift"
+| Graph rendering engine type; supported values are `backshift`, `png`, and `placeholder`.
 
 | `org.snmp4j.smisyntaxes`
 | "opennms-snmp4j-smisyntaxes.properties"

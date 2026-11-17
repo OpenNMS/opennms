@@ -256,7 +256,7 @@ export interface SnmpCollectionMibGroupPayload {
   ifType: string
   mibGroupNames: string
   mibObjects: string
-  mibObjProperties: string
+  mibObjProperties: string | null
   enabled: boolean
 }
 

@@ -37,3 +37,9 @@ export interface GenerateSystemReportRequest {
   // sanitized basename; omit to let the server pick a default name
   output?: string
 }
+
+export interface GenerateSystemReportResult {
+  success: boolean
+  // the server's plain-text reason, when it rejected the request
+  message?: string
+}

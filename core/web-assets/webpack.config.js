@@ -554,7 +554,8 @@ function createConfig(options) {
     }
     myconf.optimization.minimizer.push(new TerserPlugin({
       cache: true,
-      parallel: true,
+      // CI containers report the host CPU count, so CI sets TERSER_WORKERS to limit the workers.
+      parallel: process.env.TERSER_WORKERS ? Number(process.env.TERSER_WORKERS) : true,
       sourceMap: true,
       terserOptions: {
         mangle: {

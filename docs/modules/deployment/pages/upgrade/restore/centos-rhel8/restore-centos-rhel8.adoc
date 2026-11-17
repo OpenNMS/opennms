@@ -3,15 +3,15 @@
 
 [source, console]
 ----
-sudo cat /tmp/opennms-passwd.txt >> /etc/passwd && \
-sudo cat /tmp/opennms-group.txt >> /etc/group
+cat /tmp/opennms-passwd.txt | sudo tee -a /etc/passwd > /dev/null && \
+cat /tmp/opennms-group.txt | sudo tee -a /etc/group > /dev/null
 ----
 
 .Create log folder
 [source, console]
 ----
 sudo mkdir /var/log/opennms && \
-chown opennms. /var/log/opennms
+sudo chown opennms:opennms /var/log/opennms
 ----
 
 .Restore OpenNMS {page-component-title} binaries, RRD archives, configurations
@@ -28,24 +28,15 @@ sudo tar -xzf /tmp/opennms-var.tar.gz -C /
 sudo cp /opt/opennms/etc/opennms.service /lib/systemd/system/
 ----
 
-._Assign CAP_NET_RAW capabilities_
-
-See xref:deployment:core/centos/initialize-core.adoc#initialize-core-cap[Assign CAP_NET_RAW capabilities].
-
 .Install PostgreSQL database
-[source, console]
-----
-sudo dnf -y install postgresql-server postgresql
-----
 
-.Change the access policy for PostgreSQL
-
-See xref:deployment:core/centos-rhel8/postgresql.adoc#core-centos-rhel8-pg_hba[change the access policy for PostgreSQL].
+Install PostgreSQL as described in the CentOS/RHEL tabs of xref:deployment:core/install.adoc#setup-postgresql[Set up PostgreSQL].
+You do not need to create the `opennms` database user or the database, because the database backup restores them.
 
 .Restore OpenNMS database
 [source, console]
 ----
-sudo runuser -l postgres -c 'psql -f /tmp/opennms_postgres.dmp postgres'
+sudo runuser -l postgres -c 'psql -f /tmp/opennms-postgres.dmp postgres'
 ----
 
 .Install OpenJDK
@@ -66,7 +57,6 @@ sudo /opt/opennms/bin/install -dis
 Depending on where OpenNMS gets restored, you need to set the firewall settings again.
 
 See xref:deployment:core/centos/initialize-core.adoc#initialize-core-firewall[firewall settings] and xref:deployment:core/centos/firewall-core.adoc[firewall core].
-xref:deployment:core/centos/firewall-core.adoc[firewall].
 
 .Start OpenNMS service
 [source, console]

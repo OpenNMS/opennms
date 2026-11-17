@@ -68,8 +68,6 @@
   <text x="827" y="248" text-anchor="middle" font-size="13" fill="#222222">Actiond</text>
   <rect x="760" y="270" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
   <text x="827" y="292" text-anchor="middle" font-size="13" fill="#222222">Correlator</text>
-  <rect x="760" y="314" width="134" height="34" rx="6" fill="#ffffff" stroke="#8c8c8c" stroke-width="1.5"/>
-  <text x="827" y="336" text-anchor="middle" font-size="13" fill="#222222">Statsd</text>
 
   <!-- User Interface -->
   <rect x="940" y="20" width="220" height="415" rx="8" fill="#ffffff" stroke="#8c8c8c" stroke-width="2"/>

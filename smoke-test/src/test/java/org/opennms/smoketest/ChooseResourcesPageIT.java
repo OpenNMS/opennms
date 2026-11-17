@@ -25,6 +25,7 @@ import java.time.Duration;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.smoketest.ui.NodeDetailsPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -101,11 +102,9 @@ public class ChooseResourcesPageIT extends OpenNMSSeleniumIT {
                 LOG.debug("interface created!");
             }
 
-            driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestMachine1");
-
             // VERIFY
             // Go to the resources page
-            findElementByLink("Resource Graphs").click();
+            new NodeDetailsPage(this).open("SmokeTests:TestMachine1").clickLink("Graphs", "Resource Graphs");
 
             // Verify Title/Link
             WebElement title = findElementByXpath("//h4/strong/a[text()='TestMachine1']");

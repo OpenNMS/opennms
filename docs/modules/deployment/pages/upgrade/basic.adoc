@@ -7,6 +7,7 @@ This procedure describes how to do a basic {page-component-title} upgrade.
 You may need to complete additional steps to upgrade in a more complex setup (for example, if you run more than one {page-component-title} instance, have more complex database migration requirements, or depending on the age of the current version).
 
 If you use Git to track changes to your configuration files, see xref:deployment:upgrade/git-upgrade.adoc[Upgrade {page-component-title} with Git].
+If you run Minions or Sentinels, upgrade them after the core server as described in xref:deployment:upgrade/minion-sentinel.adoc[].
 
 IMPORTANT: Make sure you complete the tasks in the xref:deployment:upgrade/introduction.adoc#byb_upgrade[before you begin] section before starting.
 In addition, if the xref:releasenotes:whatsnew.adoc[system requirements] for the new version require you to <<posgresql-upgrade, upgrade your PostgreSQL database>>, you must do this before the {page-component-title} upgrade.

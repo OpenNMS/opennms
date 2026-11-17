@@ -157,7 +157,7 @@ public class KscReportsMigrator extends AbstractOnmsUpgrade {
                 log("Warning: can't save KSC Reports because %s\n", e.getMessage());
             }
             if (isOpennmsRunning()) {
-                log("In case the OpenNMS WebUI can't see the changes, go to Reports -> KSC Performance, Nodes, Domains and click on 'Request a Reload of KSC Reports Configuration'\n");
+                log("In case the OpenNMS WebUI can't see the changes, go to Reports -> Graph Collections and click 'Reload from file', or POST to /opennms/api/v2/graph-collections/reload\n");
             }
         } else {
             log("No incomplete interface names detected.\n");

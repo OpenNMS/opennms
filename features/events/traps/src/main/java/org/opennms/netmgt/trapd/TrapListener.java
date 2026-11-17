@@ -41,6 +41,7 @@ import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.snmp.SnmpException;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapListenerConfig;
@@ -51,6 +52,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class TrapListener implements TrapNotificationListener {
     private static final Logger LOG = LoggerFactory.getLogger(TrapListener.class);
+
+    /**
+     * Name of the dedicated audit logger that records one line for every trap
+     * handed to this listener. It is shipped disabled; see trap-audit in
+     * log4j2.xml (core) or org.ops4j.pax.logging.cfg (Minion) to enable it.
+     */
+    public static final String AUDIT_LOGGER_NAME = "trap-audit";
+
+    private static final Logger AUDIT = LoggerFactory.getLogger(AUDIT_LOGGER_NAME);
 
     // True if trap configuration has been received from the core instance
     private boolean m_configured = false;
@@ -92,11 +102,30 @@ public class TrapListener implements TrapNotificationListener {
         }
         TrapSinkConsumer.trapdInstrumentation.incRawTrapsReceivedCount();
 
+        // The wrapper constructor validates the PDU, so a trap that gets past it is decoded and well formed
+        final TrapInformationWrapper wrapper;
         try {
-            getMessageDispatcher().send(new TrapInformationWrapper(trapInformation))
+            wrapper = new TrapInformationWrapper(trapInformation);
+        } catch (final SnmpException | IllegalArgumentException ex) {
+            LOG.error("Received trap {} is not valid and cannot be processed. The trap will be dropped.", trapInformation, ex);
+            audit("REJECTED", trapInformation, ex);
+            // This trap will never reach the sink consumer
+            if (m_listenerMetrics != null) {
+                m_listenerMetrics.incErrorCount(trapAddress);
+            }
+            TrapSinkConsumer.trapdInstrumentation.incErrorCount();
+            return;
+        }
+
+        // RECEIVED means decoded and valid; a hand-off failure is reported separately as FORWARD_FAILED
+        audit("RECEIVED", trapInformation, null);
+
+        try {
+            getMessageDispatcher().send(wrapper)
                     .whenComplete((t,ex) -> {
                         if (ex != null) {
                             LOG.error("An error occurred while forwarding trap {} for further processing. The trap will be dropped.", trapInformation, ex);
+                            audit("FORWARD_FAILED", trapInformation, ex);
                             // This trap will never reach the sink consumer
                             if (m_listenerMetrics != null) {
                                 m_listenerMetrics.incErrorCount(trapAddress);
@@ -104,14 +133,102 @@ public class TrapListener implements TrapNotificationListener {
                             TrapSinkConsumer.trapdInstrumentation.incErrorCount();
                         }
                     });
-        } catch (final SnmpException | IllegalArgumentException ex) {
-            LOG.error("Received trap {} is not valid and cannot be processed. The trap will be dropped.", trapInformation, ex);
+        } catch (final RuntimeException ex) {
+            // Dispatcher could not be created or used, for example because it is not yet bound
+            LOG.error("An error occurred while forwarding trap {} for further processing. The trap will be dropped.", trapInformation, ex);
+            audit("FORWARD_FAILED", trapInformation, ex);
             // This trap will never reach the sink consumer
             if (m_listenerMetrics != null) {
                 m_listenerMetrics.incErrorCount(trapAddress);
             }
             TrapSinkConsumer.trapdInstrumentation.incErrorCount();
         }
+    }
+
+    /**
+     * Writes one line to the trap audit log. This runs on the SNMP receive thread,
+     * so it must be cheap when the logger is off and must never throw.
+     */
+    private void audit(final String outcome, final TrapInformation trapInformation, final Throwable cause) {
+        if (!AUDIT.isInfoEnabled()) {
+            return;
+        }
+        try {
+            if (cause == null) {
+                AUDIT.info("TRAP {} {}", outcome, describeForAudit(trapInformation));
+            } else {
+                AUDIT.info("TRAP {} {} reason={}", outcome, describeForAudit(trapInformation), auditReason(cause));
+            }
+        } catch (final RuntimeException e) {
+            LOG.warn("Failed to write trap audit entry for trap from {}", trapInformation.getAgentAddress(), e);
+        }
+    }
+
+    /**
+     * Builds the key=value description shared by every audit line:
+     * the UDP peer, the address the trap will be attributed to, the SNMP version,
+     * the security name for v3, the trap OID and the number of varbinds.
+     * Fields that cannot be derived from a malformed PDU are reported as "unknown".
+     */
+    private String describeForAudit(final TrapInformation trapInformation) {
+        final StringBuilder sb = new StringBuilder(160);
+        sb.append("src=").append(auditAddress(trapInformation.getAgentAddress()));
+        sb.append(" agent=").append(auditAddress(auditEffectiveTrapAddress(trapInformation)));
+        final String version = trapInformation.getVersion();
+        sb.append(" version=").append(version);
+        if ("v3".equals(version)) {
+            sb.append(" user=").append(auditText(trapInformation.getCommunity()));
+        }
+        sb.append(" oid=").append(auditTrapOid(trapInformation));
+        sb.append(" varbinds=").append(trapInformation.getPduLength());
+        return sb.toString();
+    }
+
+    private InetAddress auditEffectiveTrapAddress(final TrapInformation trapInformation) {
+        try {
+            return TrapUtils.getEffectiveTrapAddress(trapInformation, m_config.shouldUseAddressFromVarbind());
+        } catch (final RuntimeException e) {
+            return trapInformation.getTrapAddress();
+        }
+    }
+
+    /**
+     * The trap OID as sent: the snmpTrapOID.0 value for v2c/v3, and for v1 the OID derived
+     * from enterprise, generic and specific. {@link TrapIdentity#getTrapOID()} is deliberately
+     * not used for v2c/v3 because it replaces the OID of standard traps with the
+     * snmpTrapEnterprise.0 value when that varbind is present.
+     */
+    private static String auditTrapOid(final TrapInformation trapInformation) {
+        try {
+            final SnmpObjId received = trapInformation.getSnmpTrapOid();
+            if (received != null) {
+                return received.toString();
+            }
+            if ("v1".equals(trapInformation.getVersion())) {
+                final String derived = trapInformation.getTrapIdentity().getTrapOID();
+                return derived == null ? "unknown" : derived;
+            }
+        } catch (final RuntimeException e) {
+            // Malformed PDUs (for example fewer than two varbinds) cannot yield an identity
+        }
+        return "unknown";
+    }
+
+    private static String auditAddress(final InetAddress address) {
+        return address == null ? "unknown" : InetAddressUtils.str(address);
+    }
+
+    /**
+     * Every audit entry must stay on one physical line. Validation messages from the
+     * SNMP layer contain embedded newlines and tabs, so free text is collapsed to single spaces.
+     */
+    private static String auditText(final String text) {
+        return text == null ? "unknown" : text.replaceAll("\\s+", " ").trim();
+    }
+
+    private static String auditReason(final Throwable cause) {
+        final String message = cause.getMessage();
+        return auditText(message == null || message.isEmpty() ? cause.getClass().getSimpleName() : message);
     }
 
     @Override

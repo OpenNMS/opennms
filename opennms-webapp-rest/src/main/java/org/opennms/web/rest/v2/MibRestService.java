@@ -153,6 +153,15 @@ public class MibRestService implements MibRestApi {
     }
 
     @Override
+    public Response findExistingUeis(final String source, final String eventsXml) {
+        try {
+            return Response.ok(mibFileService.findExistingUeis(source, eventsXml)).build();
+        } catch (Exception e) {
+            return errorResponse(e);
+        }
+    }
+
+    @Override
     public Response generateDataCollection(final String name) {
         try {
             return Response.ok(mibFileService.generateDataCollection(name)).build();

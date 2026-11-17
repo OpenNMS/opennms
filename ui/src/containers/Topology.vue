@@ -342,6 +342,7 @@ import { focusSubgraph, highestDegreeVertexId } from '@/components/Topology/focu
 import { searchFieldLabel, searchTopology, type SearchMatch } from '@/components/Topology/search'
 import type { CanvasNode } from '@/types/topology'
 import { nodeActionLinks } from '@/components/Topology/nodeActions'
+import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
 
 const store = useTopologyStore()
 const { showToast } = useOnmsToast()
@@ -487,7 +488,7 @@ const onNodeContextMenu = (payload: { event: MouseEvent; nodeId: number | null; 
   const { event, nodeId, nodeKey } = payload
   const items: OnmsMenuItem[] = []
   if (nodeId != null) {
-    for (const link of nodeActionLinks(nodeId)) {
+    for (const link of nodeActionLinks(nodeId, router.resolve(nodeDetailsRoute(nodeId)).href)) {
       items.push({ label: link.label, command: () => window.open(link.url, '_blank', 'noopener') })
     }
   }

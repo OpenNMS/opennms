@@ -77,7 +77,6 @@ The SystemExecuteMonitor is the successor of the GpMonitor. The main differences
 
 * Variable replacement for the parameter args
 * There are no fixed arguments handed to the system-call
-* The _SystemExecuteMonitor_ supports _RemotePoller_ deployment
 
 To migrate services from the _GpMonitor_ to the _SystemExecuteMonitor_ it is required to alter the parameter args.
 To match the arguments called `hoption` for the `hostAddress` and `toption` for the `timeoutInSeconds`.

@@ -4,6 +4,7 @@
 
 The SnmpCollector collects performance data through SNMP.
 Configure credentials to access SNMP agents in the Web UI (*Admin>Configure SNMP Community Names by IP Address*).
+For the SNMP agent configuration attributes, and for help with timeouts and other collection problems, see xref:operation:deep-dive/provisioning/snmp-configuration.adoc#snmp-configuration-troubleshooting[Troubleshoot SNMP communication].
 
 == Collector facts
 
@@ -56,7 +57,7 @@ Understanding xref:operation:deep-dive/performance-data-collection/resource-type
 [source, xml]
 ----
 <?xml version="1.0"?>
-<datacollection-config rrd-repository="/var/lib/opennms/rrd/snmp/"><1>
+<datacollection-config rrdRepository="/var/lib/opennms/rrd/snmp/"><1>
     <snmp-collection name="default"<2>
                      snmpStorageFlag="select"><3>
         <rrd step="300"><4>
@@ -89,6 +90,78 @@ Ignored when using Newts as time-series storage.
 .Configuration overview for SNMP data collection
 image::performance-management/collectors/01_snmp-datacollection-configuration.png[]
 
+[[ref-collector-snmp-datacollection-groups]]
+=== Data collection groups
+
+Each data collection group, originally a file in `etc/datacollection/`, defines which MIB objects to collect and from which devices.
+An SNMP collection includes groups with `include-collection` elements.
+A data collection group contains the following elements:
+
+[options="header"]
+[cols="1,3"]
+|===
+| Element
+| Description
+
+| resourceType
+| Custom xref:operation:deep-dive/performance-data-collection/resource-types.adoc[resource type] for the rows of an SNMP table that is not indexed by `ifIndex`.
+
+| group
+| A named set of MIB objects (`mibObj`) that are collected together.
+A group can include other groups with `includeGroup`.
+
+| systemDef
+| A system definition that selects devices by their `sysObjectID`, and lists the groups to collect from them in its `collect` element.
+|===
+
+.Example data collection group
+[source, xml]
+----
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Example">
+  <group name="example-scalars" ifType="ignore"> <1>
+    <mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="1" alias="loadavg1" type="integer"/> <2>
+  </group>
+  <group name="example-interfaces" ifType="all"> <3>
+    <mibObj oid=".1.3.6.1.2.1.2.2.1.14" instance="ifIndex" alias="ifInErrors" type="counter"/>
+  </group>
+  <systemDef name="Example Devices">
+    <sysoidMask>.1.3.6.1.4.1.8072.3.</sysoidMask> <4>
+    <ipList> <5>
+      <ipAddrMask>10.1.</ipAddrMask>
+    </ipList>
+    <collect>
+      <includeGroup>example-scalars</includeGroup> <6>
+      <includeGroup>example-interfaces</includeGroup>
+    </collect>
+  </systemDef>
+</datacollection-group>
+----
+<1> `ifType="ignore"` marks node-level objects.
+<2> The `instance` is the instance to request for a scalar object, `ifIndex` for objects in interface tables, or the name of a resource type for other tables.
+The `alias` is the name under which the metric is stored, and `type` is the SNMP data type (for example, `counter`, `gauge`, `integer`, `string`, or `octetstring`).
+<3> `ifType` limits interface-level objects to interfaces of the listed types: `all`, or a comma-separated list of ifType numbers such as `6,22`.
+<4> A `systemDef` contains either `sysoid`, which must match the device's `sysObjectID` exactly, or `sysoidMask`, which matches every `sysObjectID` that starts with the given value.
+<5> Optional.
+When present, the system definition applies only to nodes whose collected SNMP interface has an IP address that is listed in an `ipAddr` element or starts with an `ipAddrMask` value.
+<6> Groups to collect from devices that match this system definition.
+
+An `include-collection` element in an SNMP collection references groups in one of two ways:
+
+* `dataCollectionGroup="<name>"` includes every system definition of the named data collection group.
+Add `exclude-filter` child elements with regular expressions to skip system definitions whose complete names match.
+* `systemDef="<name>"` includes a single system definition, wherever it is defined.
+
+[source, xml]
+----
+<include-collection dataCollectionGroup="Net-SNMP">
+  <exclude-filter>Net-SNMP \(UCD\)</exclude-filter>
+</include-collection>
+<include-collection systemDef="Example Devices"/>
+----
+
+For each device, the SnmpCollector collects the groups of every included system definition whose `sysoid` or `sysoidMask` matches the device.
+See the <<ref-collector-snmp-example, SNMP data collection example>> for how this works with multiple collections and packages.
+
 === Support for opaque data types
 
 OpenNMS can import SNMP MIB definitions with opaque data types, specifically the float data type.
@@ -109,6 +182,7 @@ To define the opaque type in a data collection, set the `mibObj` element's `type
 ----
 
 
+[[ref-collector-snmp-example]]
 === SNMP data collection example
 
 The following scenario steps through creating a new datacollection definition and assumes the following:

@@ -146,7 +146,7 @@ export const panelRegistry: Record<string, PanelDefinition> = {
   notifications: {
     type: 'notifications',
     title: 'Notifications',
-    titleHref: '/opennms/notification/index.jsp',
+    titleHref: '/opennms/ui/index.html#/notifications',
     category: 'info',
     component: defineAsyncComponent(() => import('./panels/NotificationsPanel.vue')),
     defaultSize: { w: 4, h: 3 },
@@ -208,17 +208,6 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     renamable: true,
     collapsible: true
   },
-  'html-content': {
-    type: 'html-content',
-    defaultHeightMode: 'fixed',
-    title: 'HTML Content',
-    category: 'info',
-    component: defineAsyncComponent(() => import('./panels/HtmlContentPanel.vue')),
-    defaultSize: { w: 4, h: 5 },
-    minSize: { w: 2, h: 3 },
-    renamable: true,
-    collapsible: true
-  },
   sample: {
     type: 'sample',
     hidden: true, // framework wiring check — keep for debugging, not for production
@@ -229,6 +218,29 @@ export const panelRegistry: Record<string, PanelDefinition> = {
     minSize: { w: 2, h: 2 },
     supportsTimeframe: true,
     supportedFilters: ['surveillanceCategories', 'ipMatch'],
+    renamable: true,
+    collapsible: true
+  },
+  topn: {
+    type: 'topn',
+    title: 'Top N',
+    category: 'status',
+    component: defineAsyncComponent(() => import('./panels/TopnPanel.vue')),
+    defaultSize: { w: 3, h: 4 },
+    minSize: { w: 2, h: 2 },
+    supportsTimeframe: true,
+    renamable: true,
+    collapsible: true
+  },
+  'metric-chart': {
+    type: 'metric-chart',
+    defaultHeightMode: 'fixed',
+    title: 'Metric Chart',
+    category: 'status',
+    component: defineAsyncComponent(() => import('./panels/MetricChartPanel.vue')),
+    defaultSize: { w: 6, h: 5 },
+    minSize: { w: 3, h: 3 },
+    supportsTimeframe: true,
     renamable: true,
     collapsible: true
   }

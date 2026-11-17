@@ -22,16 +22,26 @@
 
 // Graph Collections (formerly KSC reports): the shapes served by /api/v2/graph-collections.
 
-/** `prefab` is the only kind stored today; `adhoc` is reserved and rejected by the server. */
+/**
+ * `prefab` is a prefabricated graph of one resource; `adhoc` is a graph from the custom performance
+ * graph builder, carried as the query string of its share link and drawn by the client.
+ */
 export type GraphCollectionGraphKind = 'prefab' | 'adhoc'
 
 /** One stored graph entry, as it is read and written. */
 export interface GraphCollectionGraph {
   kind?: GraphCollectionGraphKind
   title: string
+  /** Prefab only. */
   resourceId: string | null
-  graphtype: string
+  /** Prefab only; null on an adhoc entry. */
+  graphtype: string | null
   timespan: string
+  /**
+   * Adhoc only: the builder's share link query string without its time window, which the entry's
+   * timespan supplies. Opaque to the server.
+   */
+  adhocState?: string | null
   extlink?: string | null
   // the pre-resourceId way of addressing a resource, found in older files; carried through unchanged
   nodeId?: string | null
@@ -73,12 +83,14 @@ export interface ResolvedGraphCollectionGraph {
   index: number
   kind: GraphCollectionGraphKind
   title: string
-  /** Effective values, after any override. */
+  /** Effective values, after any override. The graphtype override does not apply to an adhoc graph. */
   timespan: string
-  graphtype: string
+  graphtype: string | null
   resourceId: string | null
   resource?: GraphCollectionResource | null
   prefabGraphTitle?: string | null
+  /** Passed through for an adhoc graph; the client draws it from this. */
+  adhocState?: string | null
   /** False when the resource is gone, the graph is not available for it, or the entry would fail validation. */
   valid: boolean
   error?: string | null

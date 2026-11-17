@@ -243,6 +243,18 @@ public class Snmp4JTrapNotifier implements CommandResponder {
         }
 
         @Override
+        public SnmpObjId getSnmpTrapOid() {
+            if (getPduLength() <= SNMP_TRAP_OID_INDEX) {
+                return null;
+            }
+            final VariableBinding varBind = getVarBindAt(SNMP_TRAP_OID_INDEX);
+            if (varBind == null || !SNMP_TRAP_OID.equals(varBind.getOid()) || !(varBind.getVariable() instanceof OID)) {
+                return null;
+            }
+            return SnmpObjId.get(((OID) varBind.getVariable()).getValue());
+        }
+
+        @Override
         public TrapIdentity getTrapIdentity() {
             OID snmpTrapOid = (OID) getVarBindAt(SNMP_TRAP_OID_INDEX).getVariable();
             OID lastVarBindOid = getVarBindAt(getPduLength() - 1).getOid();

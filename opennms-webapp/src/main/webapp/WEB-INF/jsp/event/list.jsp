@@ -90,6 +90,7 @@
 
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("List")
           .headTitle("Events")
@@ -441,7 +442,7 @@
 	        <% if(events[i].getNodeId() != 0 && events[i].getNodeLabel()!= null ) { %>
               <% Filter nodeFilter = new NodeFilter(events[i].getNodeId(), pageContext.getServletContext()); %>
               <% String[] labels = this.getNodeLabels( events[i].getNodeLabel() ); %>
-              <a href="element/node.jsp?node=<%=events[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
+              <a href="<%= ElementConstants.NODE_DETAILS_URI %><%=events[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
                     
               <% if( !parms.getFilters().contains(nodeFilter) ) { %>
                 <nobr>

@@ -198,12 +198,10 @@
             :sortable="col.id !== 'ipaddress' && col.id !== 'flows'"
           >
             <template #body="{ data }">
-              <a
+              <router-link
                 v-if="col.id === 'id' || col.id === 'label'"
-                :href="computeNodeLink(data.id)"
-                target="_blank"
-                @click="onNodeLinkClick(data.id)"
-              >{{ col.id === 'id' ? data.id : data.label }}</a>
+                :to="nodeDetailsRoute(data.id)"
+              >{{ col.id === 'id' ? data.id : data.label }}</router-link>
               <ManagementIPTooltipCell
                 v-else-if="col.id === 'ipaddress'"
                 :node="data"
@@ -233,7 +231,7 @@
                   title="View Details"
                   data-test="view-details-button"
                   :icon="ViewDetails"
-                  @click="onNodeLinkClick(data.id)"
+                  @click="router.push(nodeDetailsRoute(data.id))"
                 />
                 <NodeActionsDropdown
                   :baseHref="mainMenu.baseHref"
@@ -305,6 +303,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   OnmsButton,
   OnmsChip,
@@ -343,7 +342,7 @@ import {
 import { useNodeExport } from './hooks/useNodeExport'
 import { useNodeQuery } from './hooks/useNodeQuery'
 import { getAssetColumnLabel } from './hooks/queryStringParser'
-import { nodeLink } from '@/lib/linkUtils'
+import { nodeDetailsRoute } from './nodeDetailsRoute'
 import { getSnmpPrimaryIpAddress } from './nodeActionLinks'
 import { buildSnmpNarrowing } from './utils'
 import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
@@ -359,6 +358,7 @@ import EmptyList from '../Common/EmptyList.vue'
 import FormField from '../Common/FormField.vue'
 
 const menuStore = useMenuStore()
+const router = useRouter()
 const nodeListStore = useNodeListStore()
 const nodeStore = useNodeStore()
 const { showSnackBar } = useSnackbar()
@@ -468,14 +468,6 @@ const onNodeInfo = (node: Node) => {
 // interfaces already fetched for the list.
 const snmpPrimaryIpAddressFor = (nodeId: string) =>
   getSnmpPrimaryIpAddress(nodeStore.nodeToIpInterfaceMap.get(nodeId) ?? [])
-
-const computeNodeLink = (nodeId: number | string) => {
-  return nodeLink(mainMenu.value.baseHref, mainMenu.value.baseNodeUrl, nodeId)
-}
-
-const onNodeLinkClick = (nodeId: number | string) => {
-  window.location.assign(computeNodeLink(nodeId))
-}
 
 const extendedSearchValues = computed(() => {
   return getExtendedSearchValues(nodeListStore.queryFilter.extendedSearch)

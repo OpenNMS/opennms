@@ -323,7 +323,7 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
                 for (final MibObj mibObj : g.getMibObjs()) {
                     final String instance = mibObj.getInstance();
                     if (instance == null || allResourceTypes.containsKey(instance)
-                            || MibObject.INSTANCE_IFINDEX.equals(instance) || isNumeric(instance)) {
+                            || MibObject.INSTANCE_IFINDEX.equals(instance) || MibObject.isInstanceId(instance)) {
                         continue;
                     }
                     final ResourceType rt = index.findResourceType(instance, attachedSourceIds);
@@ -333,14 +333,6 @@ public class SnmpDataCollectionConfigLoaderImpl implements SnmpDataCollectionCon
                     }
                 }
             }
-        }
-    }
-
-    private static boolean isNumeric(final String instance) {
-        try {
-            return Integer.parseInt(instance.trim()) >= 0;
-        } catch (final NumberFormatException e) {
-            return false;
         }
     }
 

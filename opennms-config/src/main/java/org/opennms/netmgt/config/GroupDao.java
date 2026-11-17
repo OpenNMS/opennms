@@ -31,6 +31,7 @@ import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
+import org.opennms.netmgt.model.OnmsGroup;
 
 
 /**
@@ -104,12 +105,29 @@ public interface GroupDao {
     long groupNextOnDuty(String group, Calendar time);
     
     /**
-     * Adds a new user and overwrites the "groups.xml"
+     * Adds a new user and stores it in the database
      *
      * @param name a {@link java.lang.String} object.
      * @param details a {@link org.opennms.netmgt.config.groups.Group} object.
      */
     void saveGroup(String name, Group details);
+
+    /**
+     * The version of the groups, after a check for changes. Read it before the group that a later
+     * {@link #saveGroup(OnmsGroup, long)} writes back.
+     */
+    long getVersion();
+
+    /**
+     * Adds the group, or replaces the comments and members of the stored group and keeps its other fields (duty
+     * schedules, default map), which an {@link OnmsGroup} does not carry. Fails with
+     * {@link UserDataChangedException} in the cause chain if the groups changed since {@link #getVersion()}
+     * returned readVersion.
+     *
+     * @param group the name, comments and members, read after readVersion
+     * @param readVersion what {@link #getVersion()} returned before the group was read
+     */
+    void saveGroup(OnmsGroup group, long readVersion);
     
     /**
      * <p>saveRole</p>
@@ -119,16 +137,16 @@ public interface GroupDao {
     void saveRole(Role role);
     
     /**
-     * Removes the user from the list of groups. Then overwrites to the
-     * "groups.xml"
+     * Removes the user from the list of groups. Then saves the change
+     * to the database
      *
      * @param name a {@link java.lang.String} object.
      */
     void deleteUser(String name);
     
     /**
-     * Removes the group from the list of groups. Then overwrites to the
-     * "groups.xml"
+     * Removes the group from the list of groups. Then saves the change
+     * to the database
      *
      * @param name a {@link java.lang.String} object.
      */
@@ -142,17 +160,8 @@ public interface GroupDao {
     void deleteRole(String name);
     
     /**
-     * Renames the group from the list of groups. Then overwrites to the
-     * "groups.xml"
-     *
-     * @param oldName a {@link java.lang.String} object.
-     * @param newName a {@link java.lang.String} object.
-     */
-    void renameGroup(String oldName, String newName);
-    
-    /**
      * When this method is called group name is changed, so also is the
-     * groupname belonging to the view. Also overwrites the "groups.xml" file
+     * groupname belonging to the view. Also saves the change to the database
      *
      * @param oldName a {@link java.lang.String} object.
      * @param newName a {@link java.lang.String} object.

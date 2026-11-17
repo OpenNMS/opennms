@@ -12,13 +12,21 @@
           <div class="card-title">Graph Collections</div>
           <div class="subtitle">Saved sets of performance graphs, each drawn for one resource over a named timespan.</div>
         </div>
-        <OnmsButton
-          v-if="canEdit"
-          icon="pi pi-plus"
-          label="Create collection"
-          data-test="create-collection"
-          @click="router.push('/graph-collections/new')"
-        />
+        <div v-if="canEdit" class="header-actions">
+          <OnmsButton
+            variant="outlined"
+            icon="pi pi-refresh"
+            label="Reload from file"
+            data-test="reload-collections"
+            @click="reloadFromFile"
+          />
+          <OnmsButton
+            icon="pi pi-plus"
+            label="Create collection"
+            data-test="create-collection"
+            @click="router.push('/graph-collections/new')"
+          />
+        </div>
       </div>
 
       <p v-if="loadError" class="error" data-test="load-error">{{ loadError }}</p>
@@ -93,6 +101,8 @@
       </div>
     </TableCard>
 
+    <NodeCollectionPicker class="node-picker" />
+
     <OnmsConfirmationDialog
       :visible="!!collectionToDelete"
       title="Delete Graph Collection"
@@ -124,9 +134,10 @@ import View from '@opennms/onms-ui/icons/action/View.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
+import NodeCollectionPicker from '@/components/GraphCollections/NodeCollectionPicker.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useRole from '@/composables/useRole'
-import { deleteGraphCollection, getGraphCollections } from '@/services/graphCollectionsService'
+import { deleteGraphCollection, getGraphCollections, reloadGraphCollections } from '@/services/graphCollectionsService'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 import { GraphCollection } from '@/types/graphCollection'
@@ -186,6 +197,16 @@ const load = async () => {
 
 onMounted(load)
 
+// The server reads the configuration file only when asked, so edits made to it by hand
+// are invisible until this (or the REST reload operation, or a restart).
+const reloadFromFile = async () => {
+  await withSpinner(async () => {
+    if (report(await reloadGraphCollections(), 'Reloaded the graph collections from the configuration file.')) {
+      await load()
+    }
+  })
+}
+
 const confirmDelete = async () => {
   const collection = collectionToDelete.value
   collectionToDelete.value = null
@@ -205,6 +226,10 @@ const confirmDelete = async () => {
 
 <style scoped lang="scss">
 .graph-collections {
+  .node-picker {
+    margin-top: 1.5rem;
+  }
+
   padding: 0 2px 2rem 2px;
 
   :deep(.table-card) {
@@ -217,6 +242,12 @@ const confirmDelete = async () => {
     justify-content: space-between;
     gap: 1rem;
     margin-bottom: 1rem;
+  }
+
+  .header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
   .card-title {
