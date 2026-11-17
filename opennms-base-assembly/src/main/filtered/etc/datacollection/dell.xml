@@ -37,6 +37,8 @@
    </group>
    <group name="openmanage-powerusage" ifType="all">
       <mibObj oid=".1.3.6.1.4.1.674.10892.1.600.60.1.6" instance="powerUsageIndex" alias="powerUsageEntityName" type="string"/>
+      <!-- This OID is powerUsageCumulativeWattage: cumulative watt-hours since powerUsageCumulativeWattageStartDateName,
+           not instantaneous watts. The alias is kept for compatibility with stored data. -->
       <mibObj oid=".1.3.6.1.4.1.674.10892.1.600.60.1.7" instance="powerUsageIndex" alias="powerUsageWattage" type="Counter32"/>
       <mibObj oid=".1.3.6.1.4.1.674.10892.1.600.60.1.9" instance="powerUsageIndex" alias="powerUsagePeakWatts" type="integer"/>
    </group>

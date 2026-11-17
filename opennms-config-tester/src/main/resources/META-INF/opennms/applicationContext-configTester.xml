@@ -61,7 +61,6 @@
         <entry key="poller-configuration.xml" value="pollerConfigFactory"/>
         <entry key="prometheus-datacollection-config.xml" value="prometheusDataCollectionConfigDao"/>
         <entry key="provisiond-configuration.xml" value="provisiondConfigurationDao"/>
-        <entry key="reportd-configuration.xml" value="reportdConfigurationDao"/>
         <entry key="response-adhoc-graph.properties" value="responseAdhocGraph"/>
         <entry key="response-graph.properties" value="responsePrefabGraph"/>
         <entry key="rrd-configuration.properties" value="rrdConfigurationProperties"/>
@@ -80,7 +79,6 @@
         <entry key="syslogd-configuration.xml" value="syslogdConfigFactory"/>
         <entry key="syslog-northbounder-configuration.xml" value="syslogNorthbounderConfigDao"/>
         <entry key="telemetryd-configuration.xml" value="telemetrydConfigDao"/>
-        <entry key="tl1d-configuration.xml" value="tl1ConfigurationDao"/>
         <entry key="translator-configuration.xml" value="eventTranslatorConfigFactory"/>
         <entry key="vacuumd-configuration.xml" value="vacuumdConfigFactory"/>
         <entry key="viewsdisplay.xml" value="viewsDisplayFactory"/>
@@ -278,10 +276,6 @@
   <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao">
   </bean>
 
-  <bean id="reportdConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultReportdConfigurationDao">
-    <property name="configResource" value="file:${opennms.home}/etc/reportd-configuration.xml"/>
-  </bean>
-  
   <bean id="responseAdhocGraph" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
       <property name="prefabConfigs">
         <map>
@@ -379,10 +373,6 @@
 
   <bean id="telemetrydConfigDao" class="org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/telemetryd-configuration.xml" />
-  </bean>
-  
-  <bean id="tl1ConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultTl1ConfigurationDao">
-    <property name="configResource" value="file:${opennms.home}/etc/tl1d-configuration.xml"/>
   </bean>
   
   <bean id="eventTranslatorConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
