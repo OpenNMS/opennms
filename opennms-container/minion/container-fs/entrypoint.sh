@@ -396,6 +396,15 @@ readConfigEntries() {
   done < "$1"
 }
 
+# readConfigEntries runs in a process substitution, so a read failure there would not stop
+# the entrypoint. Check readability up front instead.
+requireReadable() {
+  if [[ ! -r "$1" ]]; then
+    echo "[Startup][ERROR] ${1} exists but is not readable by uid $(id -u)."
+    exit 1
+  fi
+}
+
 # Order of precedence is (later overwrites former):
 # 1. Feature boot files applied from env vars (MINION_IPC, JAEGER_ENABLED, DOMINION_SCV_ENABLED)
 # 2. Telemetry listener templates applied from env vars (JTI_LISTENER_ENABLED, NXOS_LISTENER_ENABLED, FLOWS_LISTENER_ENABLED)
@@ -414,6 +423,7 @@ configure() {
     export JAVA_OPTS="$JAVA_OPTS -javaagent:${MINION_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*"
   fi
   if [[ -f "$MINION_PROCESS_ENV_CFG" ]]; then
+    requireReadable "$MINION_PROCESS_ENV_CFG"
     while read -r assignment; do
       export "$assignment"
     done < <(readConfigEntries "$MINION_PROCESS_ENV_CFG")
@@ -427,6 +437,7 @@ configure() {
   fi
   validateFeatureBootComposition
   if [[ -f "$MINION_SERVER_CERTS_CFG" ]]; then
+    requireReadable "$MINION_SERVER_CERTS_CFG"
     # cacerts is a symlink to a file, so *do not* put /. on the target
     rsync --out-format="%n %C" "$JAVA_HOME/lib/security/cacerts" "$CACERTS"
     export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=$CACERTS -Djavax.net.ssl.trustStorePassword=changeit"
