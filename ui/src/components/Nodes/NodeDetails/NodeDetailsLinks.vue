@@ -47,8 +47,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref, StyleValue, useTemplateRef, watchEffect } from 'vue'
-import { useElementSize } from '@vueuse/core'
+import { computed, PropType, ref, StyleValue, useTemplateRef, watch } from 'vue'
+import { useDebounceFn, useElementSize } from '@vueuse/core'
 import { OnmsMenubar, OnmsMenuItem } from '@opennms/onms-ui'
 import useRole from '@/composables/useRole'
 import { Node } from '@/types/index'
@@ -186,11 +186,33 @@ const { width: fullRowWidth } = useElementSize(useTemplateRef<HTMLElement>('full
  */
 const fits = ref<boolean>()
 
-watchEffect(() => {
-  if (typeof props.availableWidth === 'number' && fullRowWidth.value > 0) {
-    fits.value = fullRowWidth.value <= props.availableWidth
+/**
+ * How long a new answer must last before the bar changes to it. Each change mounts the bar again,
+ * which also closes an open dropdown, so a window edge dragged back and forth across the point
+ * where the menus fit changes the bar once it stops, not at every crossing. The first answer is
+ * not delayed.
+ */
+const SETTLE_MS = 200
+
+const settle = useDebounceFn((value: boolean) => {
+  fits.value = value
+}, SETTLE_MS)
+
+const measuredFit = computed<boolean | undefined>(() =>
+  (typeof props.availableWidth === 'number' && fullRowWidth.value > 0 ? fullRowWidth.value <= props.availableWidth : undefined))
+
+watch(measuredFit, (value) => {
+  if (value === undefined) {
+    return
   }
-})
+
+  if (fits.value === undefined) {
+    fits.value = value
+  } else {
+    // Called for a change back to the current answer too, so the latest call always wins.
+    settle(value)
+  }
+}, { immediate: true })
 
 // Left to the viewport only for a page that gives no width and never has.
 const collapsed = computed<boolean | undefined>(() => (fits.value === undefined ? undefined : !fits.value))

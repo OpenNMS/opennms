@@ -85,11 +85,32 @@ describe('NodeDetailsLinks.vue', () => {
     })
 
     it('shows the full row while the menus fit, and collapses once they do not', async () => {
+      vi.useFakeTimers()
       const wrapper = mountLinks({ availableWidth: 400 })
       expect(bars(wrapper)[0].props('collapsed')).toBe(false)
 
       await wrapper.setProps({ availableWidth: 399 })
+      await vi.advanceTimersByTimeAsync(200)
       expect(bars(wrapper)[0].props('collapsed')).toBe(true)
+      vi.useRealTimers()
+    })
+
+    // Each change mounts the bar again and closes an open dropdown.
+    it('waits for the room to settle before it changes the bar', async () => {
+      vi.useFakeTimers()
+      const wrapper = mountLinks({ availableWidth: 400 })
+      const uid = bars(wrapper)[0].vm.$.uid
+
+      await wrapper.setProps({ availableWidth: 399 })
+      await vi.advanceTimersByTimeAsync(100)
+      expect(bars(wrapper)[0].props('collapsed')).toBe(false)
+
+      // Back across before it settled: the bar never changed.
+      await wrapper.setProps({ availableWidth: 450 })
+      await vi.advanceTimersByTimeAsync(300)
+      expect(bars(wrapper)[0].props('collapsed')).toBe(false)
+      expect(bars(wrapper)[0].vm.$.uid).toBe(uid)
+      vi.useRealTimers()
     })
 
     // The bar shown, not the measured copy.
