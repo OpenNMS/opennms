@@ -206,10 +206,24 @@
     <!-- Allow certain actions for the ROLE_USER role -->
     <intercept-url pattern="/rest/resources/generateId" method="POST" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_USER')" />
 
+    <!-- Scheduled-outage "applies to" summary is only yes/no per subsystem, with no package
+         names, so any role that reads the outages may read it. It must precede the applies-to
+         rules below; the ".*" and "/" rules cover the .json/.xml/.atom suffixes and the
+         trailing slash the v1 API accepts. -->
+    <intercept-url pattern="/rest/sched-outages/applies-to/summary" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/rest/sched-outages/applies-to/summary.*" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/rest/sched-outages/applies-to/summary/" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/rest/sched-outages/*/applies-to/summary" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/rest/sched-outages/*/applies-to/summary.*" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+    <intercept-url pattern="/rest/sched-outages/*/applies-to/summary/" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN','ROLE_MOBILE','ROLE_USER')"/>
+
     <!-- Scheduled-outage "applies to" enumerates poller/collectd/threshd package
-         names; keep it admin-only, matching the admin-gated Scheduled Outages page. -->
+         names; keep it admin-only, matching the admin-gated Scheduled Outages page.
+         The ".*" rules cover "applies-to.json", which the v1 API serves as "applies-to". -->
     <intercept-url pattern="/rest/sched-outages/applies-to/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/sched-outages/applies-to.*" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
     <intercept-url pattern="/rest/sched-outages/*/applies-to/**" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/sched-outages/*/applies-to.*" method="GET" access="hasAnyRole('ROLE_REST','ROLE_ADMIN')"/>
 
     <!-- NMS-20519: writing users, groups and the group authorizations of categories (the same group ACL as
          /rest/groups/{group}/categories/{category}) is admin-only, the same as the v2 users and groups APIs.
