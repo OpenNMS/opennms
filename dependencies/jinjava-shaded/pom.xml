@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>dependencies</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>33.0.3-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>org.opennms.dependencies.jinjava-shaded</artifactId>
+  <name>OpenNMS :: Dependencies :: Jinjava :: Shaded</name>
+  <description>
+    This module provides jinjava with its embedded copy of jsoup replaced by
+    the jsoup version the rest of the build uses. jinjava ships jsoup relocated
+    to jinjava.org.jsoup inside its own jar, so it cannot be upgraded through
+    dependency management.
+  </description>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+    <license>
+      <name>The MIT License</name>
+      <url>https://jsoup.org/license</url>
+    </license>
+  </licenses>
+  <properties>
+    <jinjavaVersion>2.7.6</jinjavaVersion>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven.shade.plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <!-- keep jinjava's own dependencies (guava, re2j, ...) for consumers -->
+              <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+              <artifactSet>
+                <includes>
+                  <include>com.hubspot.jinjava:jinjava</include>
+                  <include>org.jsoup:jsoup</include>
+                </includes>
+              </artifactSet>
+              <filters>
+                <!-- drop the outdated jsoup that jinjava ships relocated in its own jar -->
+                <filter>
+                  <artifact>com.hubspot.jinjava:jinjava</artifact>
+                  <excludes>
+                    <exclude>jinjava/org/jsoup/**</exclude>
+                    <exclude>META-INF/maven/org.jsoup/**</exclude>
+                  </excludes>
+                </filter>
+                <!--
+                  jsoup is a multi-release jar. Keep only the base classes; the versioned
+                  entries (module-info) would not be relocated consistently.
+                -->
+                <filter>
+                  <artifact>org.jsoup:jsoup</artifact>
+                  <excludes>
+                    <exclude>META-INF/versions/**</exclude>
+                    <exclude>module-info.class</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <!-- relocate to the package jinjava's classes were compiled against -->
+              <relocations>
+                <relocation>
+                  <pattern>org.jsoup</pattern>
+                  <shadedPattern>jinjava.org.jsoup</shadedPattern>
+                </relocation>
+              </relocations>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>com.hubspot.jinjava</groupId>
+      <artifactId>jinjava</artifactId>
+      <version>${jinjavaVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>${jsoupVersion}</version>
+    </dependency>
+  </dependencies>
+</project>
