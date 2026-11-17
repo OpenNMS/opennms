@@ -28,6 +28,7 @@ import static liquibase.ext2.cm.change.ImportConfigurationUtil.importConfig;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
@@ -57,7 +58,8 @@ import liquibase.util.file.FilenameUtils;
  *
  * <p>A file named {@code default.xml} becomes the configuration {@code default.d}, because the id
  * {@code default} belongs to the primary file of the schema. A file that can't be imported (e.g. it doesn't obey
- * the schema) doesn't stop the upgrade: the error is logged and the file stays where it is.</p>
+ * the schema, or its name is not a valid configuration id, see {@link #CONFIG_ID}) doesn't stop the upgrade: the error
+ * is logged and the file stays where it is.</p>
  */
 @DatabaseChange(name = "importConfigDir", description = "Imports all xml configurations of a directory.", priority = ChangeMetaData.PRIORITY_DATABASE)
 public class ImportConfigDirectory extends AbstractCmChange {
@@ -65,6 +67,13 @@ public class ImportConfigDirectory extends AbstractCmChange {
     private static final Logger LOG = LoggerFactory.getLogger(ImportConfigDirectory.class);
 
     private static final String EXTENSION = ".xml";
+
+    /**
+     * The ids the REST APIs accept: the id becomes part of a REST path and of the file name in the
+     * {@code Content-Disposition} header of a download. Same as {@code JdbcDataCollectionConfigRules.SOURCE_ID},
+     * which this module can't depend on; keep the two in step.
+     */
+    static final Pattern CONFIG_ID = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]*");
 
     /** configId of a file named {@code default.xml}, sorts right after {@code default} */
     static final String RENAMED_DEFAULT_CONFIG_ID = ConfigDefinition.DEFAULT_CONFIG_ID + ".d";
@@ -107,6 +116,13 @@ public class ImportConfigDirectory extends AbstractCmChange {
                 LOG.warn("The id '{}' is reserved for the primary configuration, {}/{} is imported as configuration '{}'.",
                         ConfigDefinition.DEFAULT_CONFIG_ID, dirPath, resource.getFilename(), RENAMED_DEFAULT_CONFIG_ID);
                 configId = RENAMED_DEFAULT_CONFIG_ID;
+            }
+            if (!CONFIG_ID.matcher(configId).matches()) {
+                LOG.error("{}/{} is not imported: the configuration id '{}' must start with a letter or digit and contain only "
+                                + "letters, digits, '.', '_' and '-'. The file is left in place and ignored from now on: "
+                                + "rename it and store it with the REST API.",
+                        dirPath, resource.getFilename(), configId);
+                continue;
             }
             resources.merge(configId, resource, (a, b) -> {
                 final boolean sameFile = toConfigId(a.getFilename()).equals(toConfigId(b.getFilename()));

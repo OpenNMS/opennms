@@ -110,12 +110,14 @@ public interface JdbcDataCollectionConfigRestApi {
     @Path("sources")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "List sources",
-            description = "List every source without its collections, in the order the collector merges them: `default` first, then sorted by id.",
+            description = "List every source without its collections, in the order the collector merges them: `default` first, then sorted by id. Requires ROLE_ADMIN.",
             operationId = "getJdbcSources")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Sources retrieved successfully.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             array = @ArraySchema(schema = @Schema(implementation = JdbcSourceSummaryDto.class)))),
+            @ApiResponse(responseCode = "403", description = "Admin role required.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "500", description = "Failed to read the configuration.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string")))
     })
@@ -128,11 +130,14 @@ public interface JdbcDataCollectionConfigRestApi {
             description = """
         Retrieve one source with all of its collections. Each collection lists the collectd services that use
         it, and is marked when an earlier source defines a collection of the same name. The response carries
-        an `ETag` to be used as `If-Match` on a later write to the source or one of its collections.""",
+        an `ETag` to be used as `If-Match` on a later write to the source or one of its collections.
+        Requires ROLE_ADMIN, because the source holds the SQL the collector runs.""",
             operationId = "getJdbcSource")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Source retrieved successfully.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = JdbcSourceDto.class))),
+            @ApiResponse(responseCode = "403", description = "Admin role required.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "404", description = "No source with that id exists.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "JDBC data collection source 'mysql' does not exist.")))
@@ -212,12 +217,14 @@ public interface JdbcDataCollectionConfigRestApi {
     @Path("sources/{sourceId}/collections/{collectionName}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get a collection",
-            description = "Retrieve one collection with all of its queries. The `ETag` is the one of the source.",
+            description = "Retrieve one collection with all of its queries. The `ETag` is the one of the source. Requires ROLE_ADMIN.",
             operationId = "getJdbcCollection")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Collection retrieved successfully.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = JdbcCollectionDto.class),
                             examples = @ExampleObject(value = COLLECTION_JSON_EXAMPLE))),
+            @ApiResponse(responseCode = "403", description = "Admin role required.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "404", description = "No such source or collection.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string")))
     })

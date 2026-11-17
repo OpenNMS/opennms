@@ -291,6 +291,13 @@ public class JdbcDataCollectionConfigRestServiceTest {
     }
 
     @Test
+    public void readingSourcesAndCollectionsRequiresTheAdminRole() {
+        assertStatus(403, restService.getSources(userContext()));
+        assertStatus(403, restService.getSource("postgresql", userContext()));
+        assertStatus(403, restService.getCollection("postgresql", "PostgreSQL", userContext()));
+    }
+
+    @Test
     public void downloadAndUploadRequireTheAdminRole() {
         assertStatus(403, restService.downloadSource("postgresql", "xml", userContext()));
         assertStatus(403, restService.uploadSource(attachment("{}", "x.json"), "x", false, userContext()));

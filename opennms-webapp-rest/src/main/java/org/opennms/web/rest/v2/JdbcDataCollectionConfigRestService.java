@@ -123,6 +123,9 @@ public class JdbcDataCollectionConfigRestService implements JdbcDataCollectionCo
 
     @Override
     public Response getSources(final SecurityContext securityContext) {
+        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            return adminRequiredToRead();
+        }
         try {
             final List<JdbcSourceSummaryDto> summaries = new ArrayList<>();
             for (final String id : jdbcDataCollectionConfigDao.getConfigIds()) {
@@ -137,6 +140,9 @@ public class JdbcDataCollectionConfigRestService implements JdbcDataCollectionCo
 
     @Override
     public Response getSource(final String sourceId, final SecurityContext securityContext) {
+        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            return adminRequiredToRead();
+        }
         try {
             if (!exists(sourceId)) {
                 return unknownSource(sourceId);
@@ -161,6 +167,9 @@ public class JdbcDataCollectionConfigRestService implements JdbcDataCollectionCo
 
     @Override
     public Response getCollection(final String sourceId, final String collectionName, final SecurityContext securityContext) {
+        if (!securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            return adminRequiredToRead();
+        }
         try {
             if (!exists(sourceId)) {
                 return unknownSource(sourceId);
@@ -484,6 +493,11 @@ public class JdbcDataCollectionConfigRestService implements JdbcDataCollectionCo
     }
 
     // ------------------------------------------------------------------ helpers
+
+    /** The configuration holds the SQL the collector runs, so reading it is as restricted as the download. */
+    private static Response adminRequiredToRead() {
+        return Response.status(Status.FORBIDDEN).entity("Admin role required to read the JDBC data collection configuration.").build();
+    }
 
     /**
      * Runs a write under the lock and maps the exceptions of the configuration manager to responses.

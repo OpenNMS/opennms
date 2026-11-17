@@ -105,8 +105,10 @@ The upgrade imports these files once:
 `jdbc-datacollection.d/default.xml` becomes `default.d`, because `default` belongs to `jdbc-datacollection-config.xml`.
 * Imported files are moved to `$\{OPENNMS_HOME}/etc_archive/`, with a timestamp appended to the file name.
 * A file that does not follow the schema `jdbc-datacollection.xsd` is not imported, and the upgrade continues.
-The log names the file and the error, and the file stays in `$\{OPENNMS_HOME}/etc/`.
-Correct the file and add it with the REST API.
+* A file in `jdbc-datacollection.d/` whose name does not make a valid configuration ID is not imported either.
+A valid ID starts with a letter or a digit and contains only letters, digits, `.`, `_` and `-`.
+* In both cases the log names the file and the error, and the file stays in `$\{OPENNMS_HOME}/etc/`.
+Correct or rename the file and add it with the REST API.
 
 IMPORTANT: After the upgrade, {page-component-title} does not read `jdbc-datacollection-config.xml` and the files in `jdbc-datacollection.d/`.
 New or changed files in these locations have no effect.

@@ -43,6 +43,7 @@ import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollection;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
+import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfigRules;
 import org.opennms.netmgt.dao.JdbcDataCollectionConfigDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,21 +93,32 @@ public class JdbcDataCollectionConfigDaoCm extends AbstractCmJaxbConfigDao<JdbcD
     }
 
     /**
-     * Rejects configurations that pass the schema but that the collector can't read, e.g. a column type such as
-     * {@code timeticks} that the schema allows but {@link org.opennms.netmgt.collection.api.AttributeType} doesn't know.
+     * Rejects configurations that pass the schema but that the collector can't use, on every write path (the v2
+     * and the {@code /rest/cm} REST APIs, the DAO): a column type such as {@code timeticks} that the schema allows
+     * but {@link org.opennms.netmgt.collection.api.AttributeType} doesn't know, and everything
+     * {@link JdbcDataCollectionConfigRules} checks, including the id of the configuration.
      */
     @Override
     public Consumer<ConfigUpdateInfo> getValidationCallback() {
         return configUpdateInfo -> {
+            final String idProblem = JdbcDataCollectionConfigRules.validateSourceId(configUpdateInfo.getConfigId());
+            if (idProblem != null) {
+                throw new ValidationException(idProblem);
+            }
             final JSONObject json = configUpdateInfo.getConfigJson();
             if (json == null) {
                 throw new ValidationException(String.format("%s config %s is empty.",
                         configUpdateInfo.getConfigName(), configUpdateInfo.getConfigId()));
             }
+            final JdbcDataCollectionConfig config;
             try {
-                ConfigConvertUtil.jsonToObject(json.toString(), JdbcDataCollectionConfig.class);
+                config = ConfigConvertUtil.jsonToObject(json.toString(), JdbcDataCollectionConfig.class);
             } catch (final ConfigConversionException e) {
                 throw new ValidationException(rootCauseMessage(e));
+            }
+            final String problem = JdbcDataCollectionConfigRules.validate(config);
+            if (problem != null) {
+                throw new ValidationException(problem);
             }
         };
     }
