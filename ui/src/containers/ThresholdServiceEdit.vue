@@ -111,6 +111,7 @@ import { getDefaultThreshdService, useThreshdConfigurationStore } from '@/stores
 import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
 import type { ISelectItemType } from '@/types'
 import type { ThreshdService } from '@/types/thresholdConfig'
+import { isPreconditionFailed } from '@/types/validation'
 import { cloneDeep } from 'lodash'
 import { OnmsInputNumber, OnmsInputText, OnmsSelect, OnmsToggleSwitch } from '@opennms/onms-ui'
 
@@ -200,7 +201,9 @@ const onSave = async () => {
   const result = await store.saveService(isCreate.value ? null : index.value, draft.value)
   isSaving.value = false
 
-  if (report(result, 'Service saved.')) {
+  // After a 412 the store has loaded the current package, in which the index may address another service.
+  // Saving the draft again would overwrite that one, so the user reselects from the package page instead.
+  if (report(result, 'Service saved.') || (!isCreate.value && isPreconditionFailed(result))) {
     goBack()
   }
 }

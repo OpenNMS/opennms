@@ -55,7 +55,9 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
     private final String[][] m_adminPageEntriesAll = new String[][] {
         // OpenNMS System
         new String[] { "System Configuration", "//span[text()='OpenNMS Configuration']" },
-        new String[] { "Configure Users, Groups and On-Call Roles", "//span[text()='Users and Groups']" },
+        new String[] { "Configure Users", "//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage Users']" },
+        new String[] { "Configure Groups", "//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage Groups']" },
+        new String[] { "Configure On-Call Roles", "//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Manage On-Call Roles']" },
         new String[] { "Connect to Zenith", "//span[text()='Zenith Connect']" },
 
         // Provisioning
@@ -98,7 +100,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // Additional Tools
         new String[] { "Configure Grafana Endpoints (Reports only)", "//div/ul/li/a[contains(text(),'Grafana Endpoints')]" },
         new String[] { "Instrumentation Log Reader", "//span[text()='Filtering']" },
-        new String[] { "SNMP MIB Compiler", "//div[@id='content']//iframe[@name='mib-compiler']" },
+        new String[] { "SNMP MIB Compiler", "//div[@id='app']//div[@class='mib-compiler-container']//div[@class='heading']/p[text()='SNMP MIB Compiler']" },
         new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe[@name='surveillance-views-config']" },
         new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe[@name='jmx-config-ui']" },
         new String[] { "Usage Statistics Sharing", "//div[contains(@class, 'card')]//span[text()='Usage Statistics Sharing']" },

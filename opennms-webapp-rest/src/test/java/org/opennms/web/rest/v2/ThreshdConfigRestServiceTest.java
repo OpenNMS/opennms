@@ -140,6 +140,17 @@ public class ThreshdConfigRestServiceTest {
     }
 
     @Test
+    public void encodesThePackageNameInLocation() {
+        // The package is saved before Location is built, so a name that is not a valid URI must not fail the create.
+        try (Response response = restService.createThreshdPackage(packageDto("CPU Load"), adminContext())) {
+            assertEquals(201, response.getStatus());
+            assertEquals("threshd/packages/CPU%20Load", response.getLocation().toString());
+        }
+
+        assertTrue(threshdDao.getWriteableConfig().getPackage("CPU Load").isPresent());
+    }
+
+    @Test
     public void refusesToCreateAPackageThatAlreadyExists() {
         try (Response response = restService.createThreshdPackage(packageDto("example1"), adminContext())) {
             assertEquals(409, response.getStatus());

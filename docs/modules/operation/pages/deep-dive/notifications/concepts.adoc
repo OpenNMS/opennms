@@ -41,8 +41,8 @@ A common use case is to have system engineers in on-call rotations with a define
 On-call roles let you assign a predefined duty schedule to an existing group.
 The group must have users associated with it.
 
-For each on-call role, a user is designated as a supervisor.
-They are responsible for the group of people assigned to the on-call role.
+For each on-call role, you can designate a user as a supervisor.
+They are responsible for the group of people assigned to the on-call role, and receive the notifications when no one is scheduled.
 
 See xref:operation:deep-dive/user-management/user-oncall.adoc[On-Call Roles] for more information.
 

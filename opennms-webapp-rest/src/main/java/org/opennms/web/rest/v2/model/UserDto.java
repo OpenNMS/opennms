@@ -26,9 +26,10 @@ import java.util.List;
 
 /**
  * A user as exposed by the v2 user management API. Field names mirror
- * users.xml where they overlap; the password hash is deliberately never part
- * of this representation, and contact types the API does not expose (XMPP,
- * microblog, phones, pager PINs) are preserved server-side on update.
+ * the legacy users.xml where they overlap. The e-mail addresses, phone numbers, pager services and
+ * pager PINs and the TUI PIN are part of it; the password hash is deliberately never part of this
+ * representation, and contact types the API does not expose (XMPP, microblog, SNMP trap) are
+ * preserved server-side on update.
  */
 public class UserDto {
 
@@ -68,6 +69,9 @@ public class UserDto {
     private List<String> roles;
 
     private Boolean readOnly;
+
+    // the row version, also sent as the ETag; ignored in a request body (the If-Match header is the contract)
+    private Integer version;
 
     public String getUserId() {
         return userId;
@@ -203,5 +207,13 @@ public class UserDto {
 
     public void setReadOnly(final Boolean readOnly) {
         this.readOnly = readOnly;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(final Integer version) {
+        this.version = version;
     }
 }

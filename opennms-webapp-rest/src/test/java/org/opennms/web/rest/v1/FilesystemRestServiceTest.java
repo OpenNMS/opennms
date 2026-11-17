@@ -32,14 +32,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.core.SecurityContext;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.xml.XmlTest;
+import org.opennms.web.api.Authentication;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -62,7 +67,7 @@ public class FilesystemRestServiceTest {
 
     @Test
     public void testXmlValidation() throws IOException {
-        final FilesystemRestService filesystemRestService = new FilesystemRestService(null);
+        final FilesystemRestService filesystemRestService = new FilesystemRestService();
         final HttpServer httpServer = HttpServer.create(new InetSocketAddress(1337), 10);
         httpServer.createContext("/", new TestHttpHandler());
         httpServer.setExecutor(null);
@@ -96,7 +101,7 @@ public class FilesystemRestServiceTest {
         Files.writeString(file.toPath(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<!DOCTYPE Configure PUBLIC \"-//Jetty//Configure//EN\" \"http://www.eclipse.org/jetty/configure.dtd\">\n"
                 + "<Configure id=\"Server\"/>");
-        new FilesystemRestService(null).maybeValidateXml(file);
+        new FilesystemRestService().maybeValidateXml(file);
     }
 
     @Test
@@ -116,12 +121,65 @@ public class FilesystemRestServiceTest {
         file.deleteOnExit();
         Files.writeString(file.toPath(), xml.toString());
         try {
-            new FilesystemRestService(null).maybeValidateXml(file);
+            new FilesystemRestService().maybeValidateXml(file);
             fail("The validation must reject a file that exceeds the entity expansion limit");
         } catch (BadRequestException e) {
             final String message = String.valueOf(e.getResponse().getEntity());
             assertTrue(message, message.contains("entity expansions"));
         }
+    }
+
+    @Test
+    public void testUsersXmlAndItsRpmsaveCopyAreForAdminsOnly() {
+        // the service reads opennms.home when it is created: before() sets it
+        final FilesystemRestService service = new FilesystemRestService();
+        final SecurityContext editor = securityContext(Authentication.ROLE_FILESYSTEM_EDITOR);
+        for (final String name : List.of("users.xml", "users.xml.rpmsave", "./users.xml.rpmsave", "../etc/users.xml.rpmsave")) {
+            try {
+                service.getFileContents(name, editor);
+                fail("A caller without ROLE_ADMIN must not read " + name);
+            } catch (ForbiddenException e) {
+                assertEquals(403, e.getResponse().getStatus());
+            }
+        }
+    }
+
+    @Test
+    public void testUsersXmlRpmsaveIsNotServedToAdminsEither() {
+        // its extension is not supported
+        final FilesystemRestService service = new FilesystemRestService();
+        final SecurityContext admin = securityContext(Authentication.ROLE_FILESYSTEM_EDITOR, Authentication.ROLE_ADMIN);
+        try {
+            service.getFileContents("users.xml.rpmsave", admin);
+            fail("users.xml.rpmsave must not be served");
+        } catch (BadRequestException e) {
+            assertEquals(400, e.getResponse().getStatus());
+        }
+    }
+
+    private static SecurityContext securityContext(final String... roles) {
+        final Set<String> granted = Set.of(roles);
+        return new SecurityContext() {
+            @Override
+            public Principal getUserPrincipal() {
+                return () -> "tester";
+            }
+
+            @Override
+            public boolean isUserInRole(final String role) {
+                return granted.contains(role);
+            }
+
+            @Override
+            public boolean isSecure() {
+                return false;
+            }
+
+            @Override
+            public String getAuthenticationScheme() {
+                return SecurityContext.BASIC_AUTH;
+            }
+        };
     }
 
     private String loadDtdFile() throws IOException {

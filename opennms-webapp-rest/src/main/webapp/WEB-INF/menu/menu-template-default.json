@@ -363,7 +363,7 @@
         {
           "id": "manageOnCall",
           "name": "Manage On-call Roles",
-          "url": "admin/userGroupView/roles",
+          "url": "ui/index.html#/admin/oncall-roles",
           "roles": ["ROLE_ADMIN"]
         }
       ]
@@ -433,12 +433,6 @@
         {
           "id": "snmpMibCompiler",
           "name": "SNMP MIB Compiler",
-          "url": "admin/mibCompiler.jsp",
-          "roles": ["ROLE_ADMIN"]
-        },
-        {
-          "id": "snmpMibCompilerUi",
-          "name": "SNMP MIB Compiler (New UI)",
           "url": "ui/index.html#/mib-compiler",
           "roles": ["ROLE_ADMIN"]
         },

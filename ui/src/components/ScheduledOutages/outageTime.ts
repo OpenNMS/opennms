@@ -26,6 +26,7 @@
 // (8 chars) for daily/weekly/monthly. Every numeric part is zero-padded so the
 // length is exact — matching the legacy admin/sched-outages/editoutage.jsp.
 
+import { toTimeOnlyDate } from '@opennms/onms-ui'
 import { OutageTime, OutageType } from '@/types/scheduledOutage'
 
 export interface Option {
@@ -88,6 +89,16 @@ export const defaultTimeSpanFields = (today: Date): CompleteTimeSpanFields => ({
   end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59),
   day: 'sunday'
 })
+
+// A start or end moved onto the time-only pickers' fixed day (toTimeOnlyDate), keeping its time of day. A recurring
+// span's values sit there: the picker keeps a value's date when the spinners change it, and on today's date a time
+// that today's daylight-saving change skips (02:30) would become another (03:30).
+export const onTimeOnlyDay = (d: Date | null): Date | null =>
+  d && toTimeOnlyDate(d.getHours(), d.getMinutes(), d.getSeconds())
+
+// A start or end moved onto the given day, keeping its time of day.
+export const onDay = (d: Date | null, day: Date): Date | null =>
+  d && new Date(day.getFullYear(), day.getMonth(), day.getDate(), d.getHours(), d.getMinutes(), d.getSeconds())
 
 // HH:mm:ss, the recurring-outage wire format (8 characters)
 export const formatTimeOfDay = (d: Date): string =>

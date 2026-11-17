@@ -128,6 +128,7 @@ import {
   createManagedUser,
   deleteManagedUser,
   getAvailableUserRoles,
+  getManagedUserSummaries,
   getManagedUsers,
   renameManagedUser,
   setManagedUserPassword,
@@ -174,11 +175,21 @@ import {
 import {
   createManagedGroup,
   deleteManagedGroup,
+  getAvailableGroupCategories,
   getGroupMemberCandidates,
   getManagedGroups,
   renameManagedGroup,
   updateManagedGroup
 } from './groupAdminService'
+import {
+  createManagedOnCallRole,
+  deleteManagedOnCallRole,
+  getManagedOnCallRoles,
+  getOnCallScheduleSettings,
+  previewOnCallCalendar,
+  renameManagedOnCallRole,
+  updateManagedOnCallRole
+} from './onCallRoleAdminService'
 
 export default {
   createThresholdGroup,
@@ -297,6 +308,7 @@ export default {
   createManagedUser,
   deleteManagedUser,
   getAvailableUserRoles,
+  getManagedUserSummaries,
   getManagedUsers,
   renameManagedUser,
   setManagedUserPassword,
@@ -328,10 +340,18 @@ export default {
   validateNotificationRule,
   createManagedGroup,
   deleteManagedGroup,
+  getAvailableGroupCategories,
   getGroupMemberCandidates,
   getManagedGroups,
   renameManagedGroup,
   updateManagedGroup,
+  createManagedOnCallRole,
+  deleteManagedOnCallRole,
+  getManagedOnCallRoles,
+  getOnCallScheduleSettings,
+  previewOnCallCalendar,
+  renameManagedOnCallRole,
+  updateManagedOnCallRole,
   getWsmanConfig,
   getWsmanDataCollection,
   getWsmanStatus,

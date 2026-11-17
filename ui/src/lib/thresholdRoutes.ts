@@ -23,7 +23,7 @@
 import type { ThresholdDefinitionKind } from '@/lib/thresholdValidator'
 import type { RouteLocationNormalized } from 'vue-router'
 
-/** Paths of the threshold configuration pages; names are encoded the same way the detail pages decode them. */
+/** Paths of the threshold configuration pages; names are encoded once, which Vue Router undoes when it reads the params. */
 const encode = (name: string) => encodeURIComponent(name)
 
 export const GROUPS_TAB_PATH = '/threshold-config?tab=groups'
@@ -41,8 +41,11 @@ export const packagePath = (name: string) => `/threshold-config/package/${encode
 export const serviceCreatePath = (name: string) => `${packagePath(name)}/service/create`
 export const serviceEditPath = (name: string, index: number) => `${packagePath(name)}/service/${index}/edit`
 
-/** Reads a group or package name from a route param. */
-export const nameFromParam = (param: unknown) => decodeURIComponent(String(param ?? ''))
+/**
+ * Reads a group or package name from a route param. Vue Router has already decoded it; decoding it again would
+ * throw on a name like 'CPU 90%' and turn the name 'CPU%20load' into another one.
+ */
+export const nameFromParam = (param: unknown) => String(param ?? '')
 
 /** Reads an index from a route param; -1 for a create route. */
 export const indexFromParam = (param: unknown) => (param === undefined || param === '' ? -1 : Number(param))

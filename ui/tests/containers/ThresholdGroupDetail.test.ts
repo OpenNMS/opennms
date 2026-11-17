@@ -69,14 +69,14 @@ describe('ThresholdGroupDetail.vue', () => {
     expect(store.fetchGroup).toHaveBeenCalledWith('mib2')
   })
 
-  it('decodes a name that had to be escaped in the URL', async () => {
-    // Group names are free-form, so the route carries them percent-encoded.
-    routeParams.value = { name: 'my%20group' }
+  it('uses the name the router decoded, without decoding it again', async () => {
+    // The path carries free-form group names percent-encoded; Vue Router hands the param over decoded.
+    routeParams.value = { name: 'CPU 90%' }
 
     mountComponent()
     await new Promise(resolve => setTimeout(resolve))
 
-    expect(store.fetchGroup).toHaveBeenCalledWith('my group')
+    expect(store.fetchGroup).toHaveBeenCalledWith('CPU 90%')
   })
 
   it('renders one table per definition kind', () => {
@@ -115,7 +115,7 @@ describe('ThresholdGroupDetail.vue', () => {
   })
 
   it('opens the edit page when the header asks to edit', async () => {
-    routeParams.value = { name: 'my%20group' }
+    routeParams.value = { name: 'my group' }
 
     const wrapper = mountComponent()
     await wrapper.findComponent(ThresholdGroupHeader).vm.$emit('edit')

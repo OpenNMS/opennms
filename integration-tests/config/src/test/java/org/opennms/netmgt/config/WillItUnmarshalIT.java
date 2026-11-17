@@ -73,7 +73,6 @@ import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.geoip.GeoIpConfig;
-import org.opennms.netmgt.config.groups.Groupinfo;
 import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
 import org.opennms.netmgt.config.javamail.JavamailConfiguration;
@@ -88,7 +87,6 @@ import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.config.prometheus.PrometheusDatacollectionConfig;
-import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.config.reporting.OpennmsReports;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
@@ -103,10 +101,8 @@ import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration
 import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
-import org.opennms.netmgt.config.tl1d.Tl1dConfiguration;
 import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
-import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
@@ -216,7 +212,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, true, null);
         addFile(Source.CONFIG, "foreign-sources/selfmonitor.xml", ForeignSource.class, false, null);
         addFile(Source.CONFIG, "geoip-adapter-configuration.xml", GeoIpConfig.class, false, null);
-        addFile(Source.CONFIG, "groups.xml", Groupinfo.class, true, null);
         addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, false, null);
         addFile(Source.CONFIG, "ifttt-config.xml", IfTttConfig.class, true, null);
         addFile(Source.CONFIG, "jasper-reports.xml", LocalJasperReports.class, false, null);
@@ -233,7 +228,6 @@ public class WillItUnmarshalIT {
         // moved to CmWillItUnmarshalIT
         //addFile(Source.CLASSPATH, "/defaults/provisiond-configuration.xml", ProvisiondConfiguration.class, false, null);
         addFile(Source.CONFIG, "remote-repository.xml", RemoteRepositoryConfig.class, true, null);
-        addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, false, null);
         addFile(Source.CONFIG, "rtc-configuration.xml", RTCConfiguration.class, true, null);
         addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, true, null);
         addFile(Source.CONFIG, "service-configuration.xml", ServiceConfiguration.class, false, null);
@@ -251,10 +245,8 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "telemetryd-configuration.xml", TelemetrydConfig.class, false, null);
         addFile(Source.CONFIG, "threshd-configuration.xml", ThreshdConfiguration.class, true, null);
         addFile(Source.CONFIG, "thresholds.xml", ThresholdingConfig.class, true, null);
-        addFile(Source.CONFIG, "tl1d-configuration.xml", Tl1dConfiguration.class, true, null);
         addFile(Source.CONFIG, "translator-configuration.xml", EventTranslatorConfiguration.class, false, null);
         addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, true, null);
-        addFile(Source.CONFIG, "users.xml", Userinfo.class, true, null);
         addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, false, null);
         addFile(Source.CONFIG, "viewsdisplay.xml", Viewinfo.class, false, null);
         addFile(Source.CONFIG, "vmware-cim-datacollection-config.xml", VmwareCimDatacollectionConfig.class, true, null);
@@ -270,7 +262,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, false, null);
         addFile(Source.EXAMPLE, "event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "event-proxy/vacuumd-configuration.xml", VacuumdConfiguration.class, false, null);
-        addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, false, null);
         addFile(Source.EXAMPLE, "jvm-datacollection/collectd-configuration.xml", CollectdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-config.d/activemq.xml", JmxDatacollectionConfig.class, false, null);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-config.d/cassandra.xml", JmxDatacollectionConfig.class, false, null);
@@ -294,7 +285,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "surveillance-views.xml", SurveillanceViewConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "threshd-configuration.xml", ThreshdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "thresholds.xml", ThresholdingConfig.class, false, null);
-        addFile(Source.EXAMPLE, "tl1d-configuration.xml", Tl1dConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, false, null);
 
         // Add all event files

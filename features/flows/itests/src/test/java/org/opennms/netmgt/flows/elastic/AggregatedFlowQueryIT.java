@@ -116,7 +116,6 @@ public class AggregatedFlowQueryIT {
 
     // Elasticsearch version used for testing
     private static final String ES_VERSION = "8.18.2";
-    private static final String DRIFT_PLUGIN_VERSION = "2.0.7";
 
     protected ElasticFlowRepository flowRepository;
     protected SmartQueryService smartQueryService;
@@ -124,31 +123,22 @@ public class AggregatedFlowQueryIT {
     protected AggregatedFlowQueryService aggFlowQueryService;
     protected DocumentEnricherImpl documentEnricher;
 
+    // Stock Elasticsearch, on purpose: the proportional sums used by the series/totals
+    // queries are computed with inline Painless scripts and must work without the
+    // elasticsearch-drift-plugin being installed.
     public static ElasticTestContainerWithPlugins elasticsearchContainer;
 
     static {
         try {
-            elasticsearchContainer = new ElasticTestContainerWithPlugins("docker.elastic.co/elasticsearch/elasticsearch:" + ES_VERSION)
-                    // We only need to add the drift plugin - the Painless plugin is built into the Elasticsearch image
-                    .withPlugin("org.opennms.elasticsearch", "elasticsearch-drift-plugin-" + ES_VERSION, DRIFT_PLUGIN_VERSION);
-
-            LOG.info("Initialized ElasticsearchMavenPluginContainer using downloaded plugin from Maven");
+            elasticsearchContainer = new ElasticTestContainerWithPlugins("docker.elastic.co/elasticsearch/elasticsearch:" + ES_VERSION);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to initialize ElasticsearchMavenPluginContainer", e);
+            throw new RuntimeException("Failed to initialize Elasticsearch test container", e);
         }
     }
 
     @BeforeClass
     public static void setUpClass() {
         elasticsearchContainer.start();
-
-        // Verify plugins were correctly installed
-        boolean pluginsInstalled = elasticsearchContainer.verifyPluginsInstalled();
-        LOG.info("Elasticsearch plugins successfully installed: {}", pluginsInstalled);
-
-        if (!pluginsInstalled) {
-            throw new RuntimeException("Failed to install required Elasticsearch plugins. Test cannot continue.");
-        }
     }
 
 

@@ -702,53 +702,6 @@
 
   <!-- Servlets for configuration of users groups -->
   <servlet>
-    <!-- servlet for passing parameters to the user modify jsp -->
-    <servlet-name>modifyUser</servlet-name>
-    <servlet-class>org.opennms.web.admin.users.ModifyUserServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for updating the local user info during modification-->
-    <servlet-name>updateUser</servlet-name>
-    <servlet-class>org.opennms.web.admin.users.UpdateUserServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for saving the local user info during modification-->
-    <servlet-name>saveUser</servlet-name>
-    <servlet-class>org.opennms.web.admin.users.SaveUserServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for renaming the local user info during modification-->
-    <servlet-name>renameUser</servlet-name>
-    <servlet-class>org.opennms.web.admin.users.RenameUserServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for adding a new user-->
-    <servlet-name>addNewUser</servlet-name>
-    <servlet-class>org.opennms.web.admin.users.AddNewUserServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for deleting a user-->
-    <servlet-name>deleteUser</servlet-name>
-    <servlet-class>org.opennms.web.admin.users.DeleteUserServlet</servlet-class>
-  </servlet>
-
-  <servlet>
-    <!-- servlet for adding duty schedules to a user's notification info-->
-    <servlet-name>addDutySchedules</servlet-name>
-    <servlet-class>org.opennms.web.admin.users.AddDutySchedulesServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <!-- servlet for removing duty schedules from a user's notification info-->
-    <servlet-name>removeDutySchedules</servlet-name>
-    <servlet-class>org.opennms.web.admin.users.RemoveDutySchedulesServlet</servlet-class>
-  </servlet>
-
-  <servlet>
-  	<servlet-name>admin-roles</servlet-name>
-  	<servlet-class>org.opennms.web.admin.roles.AdminRoleServlet</servlet-class>
-  </servlet>
-
-  <servlet>
   	<servlet-name>user-roles</servlet-name>
   	<servlet-class>org.opennms.web.admin.roles.UserRoleServlet</servlet-class>
   </servlet>
@@ -931,61 +884,12 @@
     <url-pattern>/admin/notification/noticeWizard/notificationWizard</url-pattern>
   </servlet-mapping>
 
-  <!-- servlet mapping for configuring users groups -->
-  <!-- user configuration servlets -->
-  <!-- converted to Controller -->
-  <servlet-mapping>
-    <servlet-name>modifyUser</servlet-name>
-    <url-pattern>/admin/userGroupView/users/modifyUser</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>updateUser</servlet-name>
-    <url-pattern>/admin/userGroupView/users/updateUser</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>saveUser</servlet-name>
-    <url-pattern>/admin/userGroupView/users/saveUser</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>renameUser</servlet-name>
-    <url-pattern>/admin/userGroupView/users/renameUser</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>addNewUser</servlet-name>
-    <url-pattern>/admin/userGroupView/users/addNewUser</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>deleteUser</servlet-name>
-    <url-pattern>/admin/userGroupView/users/deleteUser</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>addDutySchedules</servlet-name>
-    <url-pattern>/admin/userGroupView/users/addDutySchedules</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>removeDutySchedules</servlet-name>
-    <url-pattern>/admin/userGroupView/users/removeDutySchedules</url-pattern>
-  </servlet-mapping>
-  <!-- end of user configuration servlets -->
-
-  <!-- group configuration servlets -->
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/admin/userGroupView/groups/modifyGroup</url-pattern>
-  </servlet-mapping>
-  <!-- end of group configuration servlets -->
   <!-- set UserGroup for user dynamically -->
   <servlet-mapping>
       <servlet-name>dispatcher</servlet-name>
       <url-pattern>/support/groups/setACLUserGroups</url-pattern>
   </servlet-mapping>
   <!-- end -->
-
-  <servlet-mapping>
-    <servlet-name>admin-roles</servlet-name>
-    <url-pattern>/admin/userGroupView/roles</url-pattern>
-  </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>user-roles</servlet-name>

@@ -47,4 +47,7 @@ const restFile = axios.create({
   }
 })
 
-export { v2, rest, restFile }
+// Optimistic-lock header for the v2 admin APIs.
+const ifMatch = (version: number) => ({ headers: { 'If-Match': `"${version}"` }})
+
+export { ifMatch, v2, rest, restFile }

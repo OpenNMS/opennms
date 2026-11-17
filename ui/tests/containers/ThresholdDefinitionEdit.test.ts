@@ -110,6 +110,29 @@ describe('ThresholdDefinitionEdit.vue', () => {
     expect(pushMock).not.toHaveBeenCalled()
   })
 
+  it('returns to the group when an edit is rejected with a 412', async () => {
+    // The reloaded group may have shifted, so the index may now address another threshold.
+    store.saveDefinition = vi.fn().mockResolvedValue({ success: false, message: 'changed', status: 412 })
+
+    await mountComponent()
+    await wrapper.find('[data-test="threshold-edit-save"]').trigger('click')
+    await flushPromises()
+
+    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'changed', error: true })
+    expect(pushMock).toHaveBeenCalledWith('/threshold-config/group/mib2')
+  })
+
+  it('keeps a new definition open when its save is rejected with a 412', async () => {
+    route.params = { name: 'mib2', kind: 'threshold' }
+    store.saveDefinition = vi.fn().mockResolvedValue({ success: false, message: 'changed', status: 412 })
+
+    await mountComponent()
+    await wrapper.find('[data-test="threshold-edit-save"]').trigger('click')
+    await flushPromises()
+
+    expect(pushMock).not.toHaveBeenCalled()
+  })
+
   it('shows a not-found state for an index the group does not have', async () => {
     route.params = { name: 'mib2', kind: 'threshold', index: '7' }
 

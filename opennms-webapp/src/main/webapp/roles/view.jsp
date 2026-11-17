@@ -28,14 +28,17 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
+<%-- Breadcrumb titles are printed without escaping, so escape the role name here. --%>
+<c:set var="roleNameHtml" value="${fn:escapeXml(role.name)}"/>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
           .headTitle("${role.name}")
           .headTitle("Roles")
           .breadcrumb("Role List", "roles")
-          .breadcrumb("${role.name}")
+          .breadcrumb("${roleNameHtml}")
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
@@ -88,7 +91,7 @@
 		</tr>
 		<tr class="d-flex">
 			<th class="col-md-2">Supervisor</th>
-			<td class="col-md-4"><c:out value="${role.defaultUser}" /></td>
+			<td class="col-md-4"><c:choose><c:when test="${empty role.defaultUser}">None</c:when><c:otherwise><c:out value="${role.defaultUser}" /></c:otherwise></c:choose></td>
 			<th class="col-md-2">Membership&nbsp;Group</th>
 			<td class="col-md-4"><c:out value="${role.membershipGroup}" /></td>
 		</tr>

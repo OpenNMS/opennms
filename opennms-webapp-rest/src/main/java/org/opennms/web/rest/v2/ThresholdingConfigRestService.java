@@ -22,7 +22,6 @@
 package org.opennms.web.rest.v2;
 
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,6 +40,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -264,7 +264,7 @@ public class ThresholdingConfigRestService implements ThresholdingConfigRestApi 
         }
 
         sendConfigChanged();
-        return Response.created(URI.create("thresholding/groups/" + groupName)).build();
+        return Response.created(UriBuilder.fromPath("thresholding/groups/{name}").build(groupName)).build();
     }
 
     @Override

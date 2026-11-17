@@ -53,7 +53,8 @@ public class ShippedMenuTemplateTest {
      * - URL rules in opennms-webapp/src/main/webapp/WEB-INF/applicationContext-spring-security.xml
      */
     private static final Set<String> ADMIN_ONLY_URLS = Set.of(
-            "ui/index.html#/admin/users", "ui/index.html#/admin/groups", "ui/index.html#/usage-statistics",
+            "ui/index.html#/admin/users", "ui/index.html#/admin/groups", "ui/index.html#/admin/oncall-roles",
+            "ui/index.html#/usage-statistics",
             "ui/index.html#/system-report", "ui/index.html#/logs", "ui/index.html#/scv",
             "ui/index.html#/distributed-monitoring", "ui/index.html#/scheduled-outages",
             "ui/index.html#/notifications-config", "ui/index.html#/mib-compiler",

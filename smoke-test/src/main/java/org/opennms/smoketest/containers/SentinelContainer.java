@@ -115,7 +115,11 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
                 .withNetworkAliases(ALIAS)
                 .withCommand("-f")
                 .waitingFor(new WaitForSentinel(this))
-                .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits)
+                .withCreateContainerCmdModifier(createCmd -> {
+                    TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
+                    // Karaf RMI server
+                    TestContainerUtils.reserveEphemeralPorts(createCmd, "46444");
+                })
                 .addFileSystemBind(overlay.toString(),
                         "/opt/sentinel-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
 

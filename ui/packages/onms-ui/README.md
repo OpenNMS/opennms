@@ -366,6 +366,20 @@ call site holding its bounds in a nullable ref. `TimeControls` relies on this:
 it cross-wires its two pickers (`:maxDate="endDateRef"` / `:minDate="startDateRef"`)
 so a range cannot invert, and both refs start out null.
 
+### Time-only values and daylight saving (NMS-20534)
+
+A time-only value is a `Date` whose date part means nothing, but PrimeVue builds
+a typed time, and a spinner step on an empty picker, on **today's** date. On the
+day the browser's clocks go forward, 02:30 does not exist and became 03:30. In
+time-only mode the wrapper (a subclass of PrimeVue's DatePicker, still named
+`DatePicker`) puts those values on a fixed day instead: 10 January 2000, on which
+no time zone changed its clocks.
+
+A spinner step on a picker that already has a value keeps that value's date, so
+a consumer should start its time-only values on the same day. The barrel exports
+the rule as `toTimeOnlyDate(hours, minutes, seconds = 0)`: use it rather than
+`new Date()` or a day of your own.
+
 ## Runtime exposure for plugins
 
 This package's barrel export (`packages/onms-ui/src/index.ts`) **is** the

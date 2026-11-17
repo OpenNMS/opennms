@@ -48,13 +48,21 @@ public class HibernateCriteriaConverterIplikeTest {
         visitor.visitIplike(new IplikeRestriction("ipAddr", "192.168.*.*"));
         assertEquals(1, visitor.getCriterions().size());
         final Criterion criterion = visitor.getCriterions().get(0);
-        assertEquals("ipLike({alias}.ipAddr, ?)", criterion.toString());
+        assertTrue(criterion.toString().startsWith("({alias}.ipAddr IS NOT NULL AND opennms_safe_inet({alias}.ipAddr)"));
+    }
+
+    @Test
+    public void testValidColumnNameFallsBackToIplike() {
+        // a zone-constrained pattern has no native-inet translation
+        final HibernateRestrictionVisitor visitor = new HibernateRestrictionVisitor();
+        visitor.visitIplike(new IplikeRestriction("ipAddr", "fe80:*:*:*:*:*:*:*%5"));
+        assertEquals("ipLike({alias}.ipAddr, ?)", visitor.getCriterions().get(0).toString());
     }
 
     @Test
     public void testEmptyAttributeUsesIpAddr() {
         final HibernateRestrictionVisitor visitor = new HibernateRestrictionVisitor();
-        visitor.visitIplike(new IplikeRestriction("", "192.168.*.*"));
+        visitor.visitIplike(new IplikeRestriction("", "fe80:*:*:*:*:*:*:*%5"));
         assertEquals("ipLike({alias}.ipAddr, ?)", visitor.getCriterions().get(0).toString());
     }
 

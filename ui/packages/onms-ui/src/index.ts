@@ -74,6 +74,8 @@ export { useOnmsChromeless, useOnmsChromelessHost } from './composables/useOnmsC
 // Directives — register app-level; core does this in src/theme/primevue-setup.ts
 export { default as OnmsTooltip } from './directives/OnmsTooltip'
 
+export { toTimeOnlyDate } from './utils/timeOnlyDate'
+
 export type { OnmsHourFormat, OnmsMenuItem, OnmsTablePageEvent, OnmsTableRowClickEvent, OnmsTableRowEditSaveEvent, OnmsMessageSeverity, OnmsTableSortEvent, OnmsTagSeverity } from './types'
 export type { OnmsColumnProps, OnmsColumnSlots } from './components/OnmsColumn'
 export type { OnmsToastOptions, OnmsToastSeverity } from './composables/useOnmsToast'

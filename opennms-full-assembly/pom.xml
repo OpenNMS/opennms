@@ -14,6 +14,7 @@
     <build.profile>default</build.profile>
     <build.assembly.type>default</build.assembly.type>
     <build.assembly.format>tar.gz</build.assembly.format>
+    <build.skip.coretar>false</build.skip.coretar>
   </properties>
   <profiles>
     <profile>
@@ -502,7 +503,6 @@
                 <feature>opennms-enlinkd-shell</feature>
                 <feature>vaadin</feature>
                 <feature>vaadin-jmxconfiggenerator</feature>
-                <feature>vaadin-snmp-events-and-metrics</feature>
                 <feature>vaadin-surveillance-views</feature>
                 <feature>jira-troubleticketer</feature>
                 <feature>tsrm-troubleticketer</feature>
@@ -655,6 +655,8 @@
               <goal>single</goal>
             </goals>
             <configuration>
+              <!-- Only CI and the container build use the core and optional tarballs. Local builds can skip them. -->
+              <skipAssembly>${build.skip.coretar}</skipAssembly>
               <descriptors>
                 <descriptor>src/assembly/core.xml</descriptor>
                 <descriptor>src/assembly/optional.xml</descriptor>

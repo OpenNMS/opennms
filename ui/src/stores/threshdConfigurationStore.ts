@@ -26,7 +26,7 @@ import { defineStore } from 'pinia'
 import { THRESHOLDING_GROUP_PARAMETER, ThreshdServiceStatus } from '@/lib/thresholdValidator'
 import API from '@/services'
 import type { ValidationResult } from '@/types/validation'
-import { createFailureResult } from '@/types/validation'
+import { createFailureResult, isPreconditionFailed, RELOADED_AFTER_PRECONDITION_FAILED } from '@/types/validation'
 import type {
   ThreshdAddressRange,
   ThreshdConfiguration,
@@ -63,8 +63,6 @@ export const getDefaultThreshdService = (): ThreshdService => ({
 export const getDefaultAddressRange = (): ThreshdAddressRange => ({ begin: '', end: '' })
 
 export const getDefaultParameter = (): ThreshdParameter => ({ key: '', value: '' })
-
-const PRECONDITION_FAILED = 412
 
 /**
  * State for the threshd daemon configuration (formerly threshd-configuration.xml).
@@ -157,11 +155,11 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
       await fetchPackage(pkg.name.trim())
       await fetchConfiguration()
       await fetchPackages()
-    } else if (result.status === PRECONDITION_FAILED) {
+    } else if (isPreconditionFailed(result)) {
       // The loaded copy is stale, and its version would make every later save fail the same way. Reloading
       // also drops pending edits in the form, which were made against what someone has since changed.
       await fetchPackage(name)
-      return { ...result, message: `${result.message} The current version has been loaded; please make your change again.` }
+      return { ...result, message: `${result.message} ${RELOADED_AFTER_PRECONDITION_FAILED}` }
     }
     return result
   }
@@ -175,8 +173,9 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
   }
 
   /**
-   * Adds (index null) or replaces a service and saves the package. The change is made on a copy, so a
-   * failed save leaves the loaded package as it was instead of showing a service that is not stored.
+   * Adds (index null) or replaces a service and saves the package; an index the package does not have fails.
+   * The change is made on a copy, so a failed save leaves the loaded package as it was instead of showing a
+   * service that is not stored.
    */
   const saveService = async (index: number | null, service: ThreshdService): Promise<ValidationResult> => {
     if (!currentPackage.value) {
@@ -185,10 +184,12 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
 
     const pkg = cloneDeep(currentPackage.value)
 
-    if (index === null || index < 0 || index >= pkg.services.length) {
+    if (index === null) {
       pkg.services.push(service)
-    } else {
+    } else if (index >= 0 && index < pkg.services.length) {
       pkg.services.splice(index, 1, service)
+    } else {
+      return createFailureResult('No such service.')
     }
     return writePackage(pkg)
   }

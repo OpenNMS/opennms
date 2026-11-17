@@ -117,7 +117,8 @@ public class ServicePageIT extends OpenNMSSeleniumIT {
         JAXB.marshal(user, xml);
         sendPost("rest/users?hashPassword=true", xml.toString(), 201);
 
-        // UserFactory checks users.xml for changes at most once per second, so a new user cannot log in at once.
+        // The user manager checks the database for changes at most once per second, so a new user cannot log in
+        // at once.
         await().atMost(30, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS)
                 .until(() -> given().auth().preemptive().basic(username, password)
                         .get(buildUrlExternal("rest/whoami")).getStatusCode() != 401);

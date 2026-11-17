@@ -66,6 +66,7 @@ import org.apache.cxf.jaxrs.ext.search.SearchContext;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.IplikeSqlTranslator;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -345,12 +346,24 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
                 return;
             }
             final String pattern = ((String)v).replaceAll("%", "*");
+            // translatable patterns become native-inet range predicates the
+            // database answers through an expression index; the rest keep iplike()
+            final String nativePredicate = IplikeSqlTranslator.toSqlPredicate(pattern, "ipaddr");
+            final String match = nativePredicate != null ? nativePredicate : "iplike(ipaddr, ?)";
             switch (c) {
             case EQUALS:
-                b.sql("{alias}.nodeid in (select nodeid from ipinterface where iplike(ipaddr, ?))", pattern, Type.STRING);
+                if (nativePredicate != null) {
+                    b.sql("{alias}.nodeid in (select nodeid from ipinterface where " + match + ")");
+                } else {
+                    b.sql("{alias}.nodeid in (select nodeid from ipinterface where " + match + ")", pattern, Type.STRING);
+                }
                 break;
             case NOT_EQUALS:
-                b.sql("{alias}.nodeid not in (select nodeid from ipinterface where iplike(ipaddr, ?))", pattern, Type.STRING);
+                if (nativePredicate != null) {
+                    b.sql("{alias}.nodeid not in (select nodeid from ipinterface where " + match + ")");
+                } else {
+                    b.sql("{alias}.nodeid not in (select nodeid from ipinterface where " + match + ")", pattern, Type.STRING);
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Illegal condition type for iplike expression: " + c);

@@ -29,21 +29,21 @@
     </action>
     <action>
         <label>Configure Users</label>
-        <url>admin/userGroupView/users/list.jsp</url>
+        <url>ui/index.html#/admin/users</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
     </action>
     <action>
         <label>Configure Groups</label>
-        <url>admin/userGroupView/groups/list.htm</url>
+        <url>ui/index.html#/admin/groups</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
     </action>
     <action>
         <label>Configure On-Call Roles</label>
-        <url>admin/userGroupView/roles</url>
+        <url>ui/index.html#/admin/oncall-roles</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>

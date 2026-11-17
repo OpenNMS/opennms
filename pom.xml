@@ -121,7 +121,6 @@
     <module>opennms-config</module>
     <module>opennms-config-model</module>
     <module>opennms-provision</module>
-    <module>opennms-enterprise-reporting</module>
     <module>opennms-services</module>
     <module>opennms-taglib</module>
     <module>opennms-jetty</module>
@@ -605,7 +604,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.2</version>
+        <version>3.3.1</version>
         <configuration>
           <doCheck>false</doCheck>
           <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
@@ -1142,8 +1141,11 @@
                 <exclude>opennms-base-assembly/src/main/filtered/etc</exclude>
                 <exclude>opennms-base-assembly/src/main/resources</exclude>
 
-                <!-- BSD + GPL, see header for details -->
-                <exclude>core/test-api/dns/**/DNSServer.java</exclude>
+                <!-- compiled GWT output -->
+                <exclude>**/GWTTerminal/war/**/*</exclude>
+
+                <!-- BSD (derived from dnsjava jnamed), see header -->
+                <exclude>**/DNSServer.java</exclude>
 
                 <!-- APLv2 -->
                 <exclude>**/BlueprintCamelStateService.java</exclude>
@@ -1153,7 +1155,17 @@
                 <exclude>**/KafkaOffsetProvider.java</exclude>
                 <exclude>**/OnmsOSGiBridgeActivator.java</exclude>
                 <exclude>**/container/web/WebAppListener.java</exclude>
-                <exclude>**/hawkular/**/*</exclude>
+                <!-- hawkular: MetricVisitor and MetricCollectingWalker are OpenNMS AGPL, so not excluded -->
+                <exclude>**/hawkular/agent/prometheus/*.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/text/*.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Counter.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Gauge.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Histogram.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Metric.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/MetricFamily.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/MetricType.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/types/Summary.java</exclude>
+                <exclude>**/hawkular/agent/prometheus/walkers/PrometheusMetricsWalker.java</exclude>
                 <exclude>**/impl/holtwinters/*</exclude>
                 <exclude>**/osgi/script/*.java</exclude>
                 <exclude>**/vaadin/extender/Constants.java</exclude>
@@ -1759,7 +1771,7 @@
     <camelVersion>3.22.4</camelVersion>
     <!-- Match (or beat) Newts version -->
     <cassandraVersion>4.17.0</cassandraVersion>
-    <cloverVersion>3.2.0</cloverVersion>
+    <cloverVersion>4.0.6</cloverVersion>
     <commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
     <commonsChainVersion>1.2</commonsChainVersion>
     <commonsCliVersion>1.7.0</commonsCliVersion>
@@ -1799,7 +1811,6 @@
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <eddsaVersion>0.3.0</eddsaVersion>
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
-    <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
     <elasticsearchClientVersion>8.18.1</elasticsearchClientVersion>
     <errorProneAnnotationsVersion>2.25.0</errorProneAnnotationsVersion>
@@ -1974,7 +1985,7 @@
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
-    <pyroscopeVersion>0.13.1</pyroscopeVersion>
+    <pyroscopeVersion>2.9.2</pyroscopeVersion>
     <lz4JavaVersion>1.11.4</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
     <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>
@@ -3563,11 +3574,6 @@
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.jstl-support</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-reportd</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
