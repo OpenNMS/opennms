@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.config.httpdatacollection;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +36,9 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 /**
@@ -65,15 +69,19 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 })
 @XmlRootElement(name = "http-collection")
 @ValidateUsing("http-datacollection-config.xsd")
-public class HttpCollection {
+public class HttpCollection implements Serializable {
+    private static final long serialVersionUID = 1L;
 
+    @JsonProperty("rrd")
     @XmlElement(name = "rrd", required = true)
     protected Rrd m_rrd;
 
+    @JsonIgnore
     @XmlElementWrapper(name="uris")
     @XmlElement(name="uri", required = true)
     protected List<Uri> m_uris = new ArrayList<>();
 
+    @JsonProperty("name")
     @XmlAttribute(name = "name")
     protected String m_name;
 
@@ -93,6 +101,19 @@ public class HttpCollection {
         if (value == m_uris) return;
         m_uris.clear();
         if (value != null) m_uris.addAll(value);
+    }
+
+    /**
+     * Config Management stores the {@code <uris>} wrapper element as a nested object: {@code "uris": {"uri": [...]}}.
+     */
+    @JsonProperty("uris")
+    private UrisJson getUrisJson() {
+        return new UrisJson(m_uris);
+    }
+
+    @JsonProperty("uris")
+    private void setUrisJson(final UrisJson value) {
+        setUris(value == null ? null : value.uri);
     }
 
     public String getName() {
@@ -119,4 +140,18 @@ public class HttpCollection {
         return Objects.hash(m_rrd, m_uris, m_name);
     }
 
+
+    private static class UrisJson implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        @JsonProperty("uri")
+        private List<Uri> uri;
+
+        private UrisJson() {
+        }
+
+        private UrisJson(final List<Uri> uri) {
+            this.uri = uri;
+        }
+    }
 }
