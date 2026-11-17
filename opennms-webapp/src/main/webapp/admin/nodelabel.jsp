@@ -71,6 +71,7 @@
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Change Node Label")
           .breadcrumb("Admin", "admin/index.jsp")
@@ -87,7 +88,7 @@
       </div>
       <div class="card-body">
         <p>
-          <a href="element/node.jsp?node=<%=nodeId%>" title="More information for this node"><%=WebSecurityUtils.sanitizeString(currentLabel.getLabel())%></a> (<%=typeMap.get(currentLabel.getSource())%>)
+          <a href="<%= ElementConstants.NODE_DETAILS_URI %><%=nodeId%>" title="More information for this node"><%=WebSecurityUtils.sanitizeString(currentLabel.getLabel())%></a> (<%=typeMap.get(currentLabel.getSource())%>)
         </p>
       </div>
     </div> <!-- panel -->

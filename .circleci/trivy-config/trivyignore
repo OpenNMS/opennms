@@ -11,3 +11,7 @@ CVE-2026-5598
 CVE-2025-67030
 CVE-2026-39006
 CVE-2026-77422
+# BouncyCastle < 1.85, only in the bcprov-jdk15 1.46 shaded into dependencies/jradius-extended.
+# Not reachable: jradius does no PKIX path validation (8763) and 1.46 has no LazyEncodedSequence (13506).
+CVE-2026-8763
+CVE-2026-13506

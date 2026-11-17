@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.web.api.ElementConstants;
 import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.util.Assert;
 
@@ -601,14 +602,14 @@ public abstract class ElementUtil {
             } catch (NumberFormatException e) {
                 throw new ElementIdNotFoundException("Wrong data type for \""
                         + nodeLookupString + "\", should be integer", nodeLookupString, 
-                        "node", "element/node.jsp", "node", "ui/#/nodes");
+                        "node", ElementConstants.NODE_DETAILS_URI, "node", "ui/#/nodes");
             }
         }
 
         OnmsNode node = NetworkElementFactory.getInstance(servletContext).getNode(nodeLookupString);
 
         if (node == null) {
-            throw new ElementNotFoundException("No such node in database", "node", "element/node.jsp", "node", "ui/#/nodes");
+            throw new ElementNotFoundException("No such node in database", "node", ElementConstants.NODE_DETAILS_URI, "node", "ui/#/nodes");
         }
         
         return node;
@@ -690,7 +691,7 @@ public abstract class ElementUtil {
                 if (node != null) {
                     nodeId = node.getId();
                 } else {
-                    throw new ElementNotFoundException("No such node in database", "node", "element/node.jsp", "node", "ui/#/nodes");
+                    throw new ElementNotFoundException("No such node in database", "node", ElementConstants.NODE_DETAILS_URI, "node", "ui/#/nodes");
                 }
             } else {
                 try {
@@ -917,7 +918,7 @@ public abstract class ElementUtil {
     		nodeId = Integer.parseInt(request.getParameter("node"));
     	} catch (NumberFormatException nfe) {
     		throw new ElementIdNotFoundException("Wrong type for parameter \"node\" (should be integer)",
-    					request.getParameter("node"), "node", "element/node.jsp", "node", "ui/#/nodes");
+    					request.getParameter("node"), "node", ElementConstants.NODE_DETAILS_URI, "node", "ui/#/nodes");
     	}
     	services = NetworkElementFactory.getInstance(servletContext).getServicesOnNode(nodeId, serviceId);
     	return services;

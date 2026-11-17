@@ -8,7 +8,7 @@ import { defaultColumns } from '@/components/Nodes/utils'
 import { SORT } from '@/types'
 import { OnmsChip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
-import { flushPromises, mount } from '@vue/test-utils'
+import { flushPromises, mount, RouterLinkStub } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
@@ -16,6 +16,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
 // ── Module mocks ───────────────────────────────────────────────────────────────
+
+const push = vi.fn()
+
+vi.mock('vue-router', async importOriginal => ({
+  ...(await importOriginal<typeof import('vue-router')>()),
+  useRouter: () => ({ push, replace: vi.fn(), resolve: (to: { params: { id: string }}) => ({ href: `/opennms/ui#/node/${to.params.id}` }) })
+}))
 
 vi.mock('@/composables/useSnackbar', () => ({
   default: () => ({ showSnackBar: vi.fn() })
@@ -44,10 +51,10 @@ vi.mock('@/components/Nodes/hooks/useNodeExport', () => ({
 }))
 
 vi.mock('@/components/Nodes/hooks/useNodeQuery', async () => {
-  // Real (unmocked) module — delegated to below for sanitizeSearchTerm and for
-  // buildUpdatedNodeListQueryParameters, so tests that write a searchTerm directly into the
-  // store can assert on the ACTUAL request shape (e.g. that a term with FIQL-special characters
-  // really does get double-encoded end-to-end), rather than a naive passthrough stub.
+  // Real (unmocked) module — delegated to below for buildUpdatedNodeListQueryParameters, so
+  // tests that write a searchTerm directly into the store can assert on the ACTUAL request shape
+  // (e.g. that a term with FIQL-special characters really does get double-encoded end-to-end),
+  // rather than a naive passthrough stub.
   const actual = await vi.importActual<typeof import('@/components/Nodes/hooks/useNodeQuery')>(
     '@/components/Nodes/hooks/useNodeQuery'
   )
@@ -83,8 +90,7 @@ vi.mock('@/components/Nodes/hooks/useNodeQuery', async () => {
       getDefaultNodeQuerySysParams: () => ({ sysContact: '', sysDescription: '', sysLocation: '', sysName: '', sysObjectId: '' }),
       buildNodeQueryFilterFromQueryString: vi.fn().mockReturnValue(makeDefaultFilter()),
       queryStringHasTrackedValues: vi.fn().mockReturnValue(false)
-    }),
-    sanitizeSearchTerm: actual.sanitizeSearchTerm
+    })
   }
 })
 
@@ -113,7 +119,7 @@ const mountTable = () =>
   mount(NodesTable, {
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
-      stubs
+      stubs: { ...stubs, RouterLink: RouterLinkStub }
     }
   })
 
@@ -199,6 +205,28 @@ describe('NodesTable.vue', () => {
 
     expect(wrapper.findComponent({ name: 'NodeActionsDropdown' }).props('snmpPrimaryIpAddress'))
       .toBe('10.0.0.44')
+  })
+
+  it('links the node id and label columns to Node Details through the router', async () => {
+    const wrapper = mountTable()
+    const ns = useNodeStore()
+    ns.nodes = [{ id: '42', label: 'srv-42' }] as any
+    ns.totalCount = 1
+    await nextTick()
+
+    const links = wrapper.findAllComponents(RouterLinkStub)
+    expect(links.some(l => (l.props('to') as { params: { id: string }}).params.id === '42')).toBe(true)
+  })
+
+  it('opens Node Details from the View Details button', async () => {
+    const wrapper = mountTable()
+    const ns = useNodeStore()
+    ns.nodes = [{ id: '42', label: 'srv-42' }] as any
+    ns.totalCount = 1
+    await nextTick()
+
+    await wrapper.find('[data-test="view-details-button"]').trigger('click')
+    expect(push).toHaveBeenCalledWith({ name: 'Node Details', params: { id: '42' }})
   })
 
   it('onSort updates query order and refetches — descending', () => {
@@ -950,36 +978,19 @@ describe('NodesTable.vue', () => {
       expect(wrapper.exists()).toBe(true)
     })
 
-    it('omits the attribute narrowing when the snmpParm value contains SQL wildcards (% or _)', async () => {
-      const wrapper = mountTable()
-      const ns = useNodeStore()
-      const structure = useNodeListStore()
-      ns.getSnmpInterfacesForNodes = vi.fn().mockResolvedValue(undefined)
-      ns.getNodes = vi.fn().mockResolvedValue(undefined)
-
-      ns.nodes = [{ id: '1' }] as any
-      structure.setFilterWithSnmpParams('snmpIfAlias', 'up%link')
-      await nextTick()
-
-      structure.setShowInterfaces(true)
-      await nextTick()
-
-      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledTimes(1)
-      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledWith(['1'], undefined)
-      expect(wrapper.exists()).toBe(true)
-    })
-
-    // The under-fetch guard must also cover ',' ';' '(' ')': ',' / ';' are FIQL set operators that
-    // sanitizeSearchTerm elsewhere neutralizes by replacing with spaces (making the server
-    // narrowing no longer a superset of the client match, same failure mode as % and _); '(' / ')'
-    // are FIQL grouping delimiters that, passed through raw, unbalance the expression and cause a
-    // server-side FIQL parse error (surfacing client-side as "No interfaces").
+    // No character drops the narrowing: the value is double-encoded (encodeFiqlPattern), so the
+    // server gets the literal, and the FIQL expression and the URL stay intact.
     it.each([
-      ['a comma', 'up,link'],
-      ['a semicolon', 'up;link'],
-      ['an unbalanced open paren', 'up(link'],
-      ['an unbalanced close paren', 'up)link']
-    ])('omits the attribute narrowing when the snmpParm value contains %s', async (_title, value) => {
+      ['a comma', 'up,link', 'ifAlias==*up%252Clink*'],
+      ['a semicolon', 'up;link', 'ifAlias==*up%253Blink*'],
+      ['an unbalanced open paren', 'up(link', 'ifAlias==*up%2528link*'],
+      ['an unbalanced close paren', 'up)link', 'ifAlias==*up%2529link*'],
+      ['an ampersand', 'R&D', 'ifAlias==*R%2526D*'],
+      ['a hash', 'a#b', 'ifAlias==*a%2523b*'],
+      ['a plus and a space', 'a+b c', 'ifAlias==*a%252Bb%2520c*'],
+      ['a percent', 'up%link', 'ifAlias==*up%2525link*'],
+      ['an underscore', 'up_link', 'ifAlias==*up_link*']
+    ])('encodes the attribute narrowing when the snmpParm value contains %s', async (_title, value, narrowing) => {
       const wrapper = mountTable()
       const ns = useNodeStore()
       const structure = useNodeListStore()
@@ -994,7 +1005,7 @@ describe('NodesTable.vue', () => {
       await nextTick()
 
       expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledTimes(1)
-      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledWith(['1'], undefined)
+      expect(ns.getSnmpInterfacesForNodes).toHaveBeenCalledWith(['1'], narrowing)
       expect(wrapper.exists()).toBe(true)
     })
 

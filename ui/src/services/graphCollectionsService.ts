@@ -20,7 +20,8 @@
 /// License.
 ///
 
-import { v2 } from './axiosInstances'
+import { rest, v2 } from './axiosInstances'
+import { serverMessage } from './serverMessage'
 import {
   GraphCollection,
   GraphCollectionGraph,
@@ -58,24 +59,8 @@ export const graphCollectionProblems = (err: any): string[] => {
   return explanation(err).split('\n').map((line: string) => line.trim()).filter(Boolean)
 }
 
-/**
- * The body of a failed call when it is the API's own explanation: plain text, or a string under the
- * JSON type (what the API sent before it declared its error bodies; axios leaves a body it cannot
- * parse as a string). An HTML error page from Jetty or from a proxy in front of it is not one,
- * whatever its status.
- */
-const explanation = (err: any): string => {
-  const detail = err?.response?.data
-  if (typeof detail !== 'string') {
-    return ''
-  }
-  const text = detail.trim()
-  const type = String(err?.response?.headers?.['content-type'] ?? '').toLowerCase()
-  if (text.startsWith('<') || (type && !type.startsWith('text/plain') && !type.startsWith('application/json'))) {
-    return ''
-  }
-  return text
-}
+// the API's own explanation of a failed call, or '' (see serverMessage)
+const explanation = (err: any): string => serverMessage(err, '')
 
 /** True when a write was refused because the collection changed since it was read (412). */
 export const isStaleWrite = (err: any): boolean => err?.response?.status === 412
@@ -231,6 +216,33 @@ export const addGraphToCollection = async (
     return createResultWithPayload(true, '', { collection: resp.data as GraphCollection, etag: etagOf(resp) })
   } catch (err: any) {
     return failure(err, `Failed to add the graph to graph collection ${id}.`)
+  }
+}
+
+export interface NodeSearchResult {
+  nodes: { id: number, label: string }[]
+  totalCount: number
+}
+
+/**
+ * The nodes whose label contains the term, as one page of at most `limit` ordered by label,
+ * with the count of every match. Backs the node picker of the list page, which must not list
+ * every node: the v1 endpoint is paged where the resource tree walk is not, and its ilike
+ * comparator is case-insensitive where v2 FIQL wildcards are not. null when the search failed.
+ */
+export const searchNodes = async (term: string, limit: number): Promise<NodeSearchResult | null> => {
+  const filter = term ? `&comparator=ilike&label=${encodeURIComponent(`%${term}%`)}` : ''
+  try {
+    const resp = await rest.get(`/nodes?limit=${limit}&orderBy=label&order=asc${filter}`)
+    const found: any[] = resp.status === 204 ? [] : (resp.data?.node ?? [])
+    return {
+      nodes: found
+        .map(n => ({ id: Number(n.id), label: String(n.label ?? n.id) }))
+        .filter(n => Number.isInteger(n.id)),
+      totalCount: Number(resp.data?.totalCount ?? 0)
+    }
+  } catch (_err) {
+    return null
   }
 }
 

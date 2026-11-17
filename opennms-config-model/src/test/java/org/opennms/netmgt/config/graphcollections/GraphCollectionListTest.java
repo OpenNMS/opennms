@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class GraphCollectionListTest extends XmlTestNoCastor<GraphCollectionList> {
+public class GraphCollectionListTest extends XmlTest<GraphCollectionList> {
 
     public GraphCollectionListTest(GraphCollectionList sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/ksc-performance-reports.xsd");
@@ -45,6 +45,8 @@ public class GraphCollectionListTest extends XmlTestNoCastor<GraphCollectionList
                 "        <Graph title=\"\"\n" + 
                 "            resourceId=\"node[NODES:1488813909996].interfaceSnmp[docker0-0242b34c4a03]\"\n" + 
                 "            timespan=\"7_day\" graphtype=\"mib2.HCbits\"/>\n" + 
+                "        <Graph title=\"Core CPU\" timespan=\"1_day\" kind=\"adhoc\"\n" + 
+                "            adhocState=\"nf=Routers&amp;rf=nodeSnmp&amp;df=CpuRawUser&amp;n=2\"/>\n" + 
                 "    </Report>\n" + 
                 "</ReportsList>"
             },
@@ -71,6 +73,14 @@ public class GraphCollectionListTest extends XmlTestNoCastor<GraphCollectionList
         graph.setTimespan("7_day");
         graph.setGraphtype("mib2.HCbits");
         report.addGraph(graph);
+
+        // an ad-hoc graph has no graphtype or resource; its sources are in the builder state
+        Graph adhoc = new Graph();
+        adhoc.setTitle("Core CPU");
+        adhoc.setTimespan("1_day");
+        adhoc.setKind("adhoc");
+        adhoc.setAdhocState("nf=Routers&rf=nodeSnmp&df=CpuRawUser&n=2");
+        report.addGraph(adhoc);
 
         return reports;
     }

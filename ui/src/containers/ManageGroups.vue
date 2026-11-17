@@ -6,20 +6,36 @@
   </div>
   <div class="manage-groups-container">
     <h1 class="page-title">Manage Groups</h1>
-    <GroupsTable />
+    <!-- hidden, not removed, while the editor is open: the table keeps its filter, page and sort.
+         The wrapper carries the v-show: the table has several root nodes, and v-show does nothing on those -->
+    <div
+      v-show="store.editMode === AdminEditMode.Table"
+      data-test="groups-table-wrapper"
+    >
+      <GroupsTable />
+    </div>
+    <GroupEditorPanel
+      v-if="store.editMode !== AdminEditMode.Table"
+      :group="store.currentGroup"
+      @close="store.closeGroupEditor()"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import GroupEditorPanel from '@/components/ManageGroups/GroupEditorPanel.vue'
 import GroupsTable from '@/components/ManageGroups/GroupsTable.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useGroupAdminStore } from '@/stores/groupAdminStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
+import { AdminEditMode } from '@/types/adminWrite'
 
 const menuStore = useMenuStore()
+const { withSpinner, report } = useActionFeedback()
 const store = useGroupAdminStore()
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
@@ -32,7 +48,12 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 })
 
 onMounted(async () => {
-  await store.populate()
+  report(await withSpinner(() => store.populate()))
+})
+
+// the editor panel replaces the table on this route; leaving the page closes it
+onUnmounted(() => {
+  store.closeGroupEditor()
 })
 </script>
 

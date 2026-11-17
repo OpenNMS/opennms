@@ -43,7 +43,9 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.distributed.core.api.Identity;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.distributed.core.api.SystemType;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -63,7 +65,6 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-opennms-identity.xml"
 })
 @JUnitConfigurationEnvironment
-@org.springframework.test.annotation.IfProfileValue(name="runFlappers", value="true")
 public class SinkBlueprintMessageFailureIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
@@ -76,12 +77,15 @@ public class SinkBlueprintMessageFailureIT extends CamelBlueprintTest {
     private Component queuingservice;
 
     @Autowired
+    private TracerRegistry tracerRegistry;
+
+    @Autowired
     private MessageConsumerManager consumerManager;
     
     @SuppressWarnings( "rawtypes" )
     @Override
     protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-        services.put(MinionIdentity.class.getName(),
+        services.put(Identity.class.getName(),
                 new KeyValueHolder<Object, Dictionary>(new MinionIdentity() {
                     @Override
                     public String getId() {
@@ -100,11 +104,26 @@ public class SinkBlueprintMessageFailureIT extends CamelBlueprintTest {
         Properties props = new Properties();
         props.setProperty("alias", "opennms.broker");
         services.put(Component.class.getName(), new KeyValueHolder<Object, Dictionary>(queuingservice, props));
+        services.put(TracerRegistry.class.getName(), asService(tracerRegistry, null, null));
     }
 
     @Override
     protected String getBlueprintDescriptor() {
         return "OSGI-INF/blueprint/blueprint-ipc-client.xml";
+    }
+
+    // The descriptor above already runs as the test bundle; loading the client jar's copy too
+    // creates a second sinkClient context and dispatcher service.
+    @Override
+    protected String getBundleFilter() {
+        return "(!(Bundle-SymbolicName=org.opennms.core.ipc.sink.camel.client))";
+    }
+
+    // The test support starts only the context it picks; without a filter that may be sinkServer,
+    // leaving sinkClient (used by the remote dispatcher) stopped.
+    @Override
+    protected String getCamelContextFilter() {
+        return "(camel.context.name=sinkClient)";
     }
 
     @Test(timeout=60000)
@@ -129,8 +148,8 @@ public class SinkBlueprintMessageFailureIT extends CamelBlueprintTest {
 
         Thread.sleep(500);
 
-        // Fetch the remote dispatcher from the blueprint context
-        MessageDispatcherFactory remoteMessageDispatcherFactory = context.getRegistry().lookupByNameAndType("camelRemoteMessageDispatcherFactory", MessageDispatcherFactory.class);
+        // Fetch the remote dispatcher registered by the client blueprint
+        MessageDispatcherFactory remoteMessageDispatcherFactory = getOsgiService(MessageDispatcherFactory.class, "(osgi.service.blueprint.compname=camelRemoteMessageDispatcherFactory)");
         assertNotNull(remoteMessageDispatcherFactory);
         SyncDispatcher<Heartbeat> dispatcher = remoteMessageDispatcherFactory.createSyncDispatcher(HeartbeatModule.INSTANCE);
 

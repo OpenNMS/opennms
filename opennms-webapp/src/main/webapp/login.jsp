@@ -182,6 +182,14 @@
     username.value = '';
     password.value = '';
   }
+  // The browser keeps the URL fragment (e.g. a Vue route "#/node/1") through the redirect to this
+  // page but does not send it to the server. Post it, so the user goes back to it after login.
+  // Set on submit, not on load: a quick submit (e.g. autofill) can come before the load event.
+  document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("loginForm").addEventListener("submit", function() {
+      document.getElementById("input_redirect_fragment").value = window.location.hash;
+    });
+  });
 </script>
 <div class="login-page">
     <div class="card login-form rounded">
@@ -191,6 +199,7 @@
 
       <form class="" id="loginForm" name="loginForm" role="form" method="post" action="<c:url value='j_spring_security_check'/>" autocomplete="off">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        <input type="hidden" id="input_redirect_fragment" name="onms_redirect_fragment" value=""/>
         <div class="form-content">
           <div class="form-group">
             <input type="text" id="input_j_username" name="j_username"
@@ -214,7 +223,7 @@
               Your login attempt failed, please try again.
 
                 <%-- This is: AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY --%>
-              <p id="login-attempt-failed-reason">Reason: ${SPRING_SECURITY_LAST_EXCEPTION.message}</p>
+              <p id="login-attempt-failed-reason">Reason: <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></p>
             </div>
           </c:if>
 

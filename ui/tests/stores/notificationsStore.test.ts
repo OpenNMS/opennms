@@ -9,7 +9,8 @@ import { createResultWithPayload } from '@/types/validation'
 vi.mock('@/services', () => ({
   default: {
     browseNotifications: vi.fn(),
-    acknowledgeNotification: vi.fn()
+    acknowledgeNotification: vi.fn(),
+    getNodeById: vi.fn()
   }
 }))
 
@@ -123,6 +124,7 @@ describe('useNotificationsStore', () => {
         acktype: 'unack',
         user: 'admin',
         excludeUser: null,
+        nodeId: null,
         limit: 10,
         offset: 0
       })
@@ -154,6 +156,7 @@ describe('useNotificationsStore', () => {
         acktype: 'unack',
         user: null,
         excludeUser: null,
+        nodeId: null,
         limit: 10,
         offset: 0
       })
@@ -313,6 +316,7 @@ describe('useNotificationsStore', () => {
         acktype: 'unack',
         user: 'admin',
         excludeUser: null,
+        nodeId: null,
         limit: 1000,
         offset: 0
       })
@@ -352,6 +356,136 @@ describe('useNotificationsStore', () => {
       expect(API.browseNotifications).toHaveBeenCalledWith(
         expect.objectContaining({ acktype: 'unack', user: null, limit: 500 })
       )
+    })
+  })
+
+  describe('node filter', () => {
+    beforeEach(() => {
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
+      vi.mocked(API.getNodeById).mockResolvedValue({ id: '16', label: 'Core-Router-01' })
+    })
+
+    it('narrows a preset to one node and names it in the title', async () => {
+      await store.applyQuery('allOutstanding', '16')
+
+      expect(API.browseNotifications).toHaveBeenCalledWith(expect.objectContaining({ acktype: 'unack', user: null, nodeId: '16' }))
+      expect(store.nodeFilter).toEqual({ id: '16', label: 'Core-Router-01' })
+      expect(store.title).toBe('All Outstanding Notifications for Node Core-Router-01')
+    })
+
+    it('falls back to the node id when the label lookup fails, and still filters', async () => {
+      vi.mocked(API.getNodeById).mockResolvedValue(false)
+
+      await store.applyQuery('allOutstanding', '99')
+
+      expect(API.browseNotifications).toHaveBeenCalledWith(expect.objectContaining({ nodeId: '99' }))
+      expect(store.title).toBe('All Outstanding Notifications for Node 99')
+    })
+
+    it('keeps the node filter when the preset changes', async () => {
+      await store.applyQuery('allOutstanding', '16')
+      await store.applyPreset('allAcknowledged')
+
+      expect(API.browseNotifications).toHaveBeenLastCalledWith(expect.objectContaining({ acktype: 'ack', nodeId: '16' }))
+    })
+
+    it('clears the node filter and reloads', async () => {
+      await store.applyQuery('allOutstanding', '16')
+      await store.clearNodeFilter()
+
+      expect(store.nodeFilter).toBeNull()
+      expect(API.browseNotifications).toHaveBeenLastCalledWith(expect.objectContaining({ nodeId: null }))
+    })
+
+    it('sets a node filter on the current preset and reloads from the first page', async () => {
+      await store.applyPreset('allAcknowledged')
+      await store.onPage(20, 10)
+
+      await store.setNodeFilter('16')
+
+      expect(store.preset).toBe('allAcknowledged')
+      expect(store.first).toBe(0)
+      expect(API.browseNotifications).toHaveBeenLastCalledWith(expect.objectContaining({ acktype: 'ack', nodeId: '16', offset: 0 }))
+      expect(store.nodeFilter).toEqual({ id: '16', label: 'Core-Router-01' })
+    })
+
+    it('keeps the user search when a node filter is set', async () => {
+      await store.applyPreset('userSearch', 'operator')
+
+      await store.setNodeFilter('16')
+
+      expect(store.preset).toBe('userSearch')
+      expect(store.userFilter).toBe('operator')
+      expect(API.browseNotifications).toHaveBeenLastCalledWith(expect.objectContaining({ user: 'operator', nodeId: '16' }))
+    })
+
+    it('replaces the node filter, dropping the old label, and clears it with null', async () => {
+      vi.mocked(API.getNodeById).mockResolvedValue({ id: '17', label: 'Other' })
+      await store.setNodeFilter('16')
+
+      const pending = store.setNodeFilter('17')
+      expect(store.nodeFilter).toEqual({ id: '17', label: null })
+      await pending
+      expect(store.nodeFilter).toEqual({ id: '17', label: 'Other' })
+
+      await store.setNodeFilter(null)
+      expect(store.nodeFilter).toBeNull()
+      expect(API.browseNotifications).toHaveBeenLastCalledWith(expect.objectContaining({ nodeId: null }))
+    })
+
+    it('looks the node label up once when the same node is applied twice', async () => {
+      await store.setNodeFilter('16')
+      await store.setNodeFilter('16')
+
+      expect(API.getNodeById).toHaveBeenCalledTimes(1)
+      expect(store.nodeFilter).toEqual({ id: '16', label: 'Core-Router-01' })
+    })
+
+    it('looks the node label up again when a different node is applied', async () => {
+      await store.setNodeFilter('16')
+      vi.mocked(API.getNodeById).mockResolvedValue({ id: '17', label: 'Other' })
+      await store.setNodeFilter('17')
+
+      expect(API.getNodeById).toHaveBeenCalledTimes(2)
+      expect(API.getNodeById).toHaveBeenLastCalledWith('17')
+    })
+
+    it('looks the node label up again when the first lookup failed', async () => {
+      vi.mocked(API.getNodeById).mockResolvedValueOnce(false)
+      await store.setNodeFilter('16')
+      expect(store.nodeFilter).toEqual({ id: '16', label: null })
+
+      await store.setNodeFilter('16')
+
+      expect(API.getNodeById).toHaveBeenCalledTimes(2)
+      expect(store.nodeFilter).toEqual({ id: '16', label: 'Core-Router-01' })
+    })
+
+    it('passes the node filter to the export as well', async () => {
+      await store.applyQuery('allOutstanding', '16')
+      await store.fetchForExport(500)
+
+      expect(API.browseNotifications).toHaveBeenLastCalledWith(expect.objectContaining({ nodeId: '16', limit: 500 }))
+    })
+  })
+
+  describe('yourAcknowledged', () => {
+    it('asks for the current user acknowledged notifications', async () => {
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
+
+      await store.applyPreset('yourAcknowledged')
+
+      expect(API.browseNotifications).toHaveBeenCalledWith(expect.objectContaining({ acktype: 'ack', user: 'admin', excludeUser: null }))
+      expect(store.title).toBe('Your Acknowledged Notifications')
+    })
+
+    it('refuses rather than widening when the current user is unknown', async () => {
+      useAuthStore().whoAmI = { id: '', fullName: '', internal: true, roles: [] } as never
+
+      const result = await store.applyPreset('yourAcknowledged')
+
+      expect(result.success).toBe(false)
+      expect(API.browseNotifications).not.toHaveBeenCalled()
     })
   })
 })

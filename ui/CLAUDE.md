@@ -51,6 +51,7 @@ Occasionally `rm assets/*.*` in the target directories to clear stale hashed fil
 
 - **Main SPA** (`src/main/`, `vite.config.ts`) — full application served at `/opennms/ui`, built to `src/main/dist/`
 - **Menu app** (`src/menu/`, `vite.config.menu.ts`) — embeds into legacy JSP/Vaadin pages at `/opennms/ui-components`, built to `src/menu/dist-menu/`
+  - Its files are for logged-in users only (a plain 401 otherwise). `vite.config.anonymous.ts` (run by `build:menu`) also builds `assets/anonymous-pages.css` from the menu's global stylesheets (`onms-base`, `onms-theme`, `opennms-styles`). It is the one anonymous file, which `bootstrap.jsp` links on pages seen without login. A new global element style in those stylesheets reaches both.
 
 Both share `src/components/`, `src/services/`, `src/stores/`, and `src/composables/` but have separate entry points and build configs. The Java `SpaRoutingFilter` serves `index.html` for non-asset URLs; routing uses `createWebHashHistory('/opennms/ui')`.
 
@@ -113,7 +114,7 @@ Keep `useSpinner` / `useSnackbar` out of services and Pinia stores. Services mak
 - **Show feedback with `useActionFeedback`** (`src/composables/useActionFeedback.ts`). `withSpinner(action)` wraps a whole user action once: the spinner is a single on/off flag rather than a counter, so don't wrap each request inside the action. `report(result, successMsg?)` shows the failure message, or the success message followed by any follow-up `errors`, and returns `result.success`. Every error snackbar must set `error: true`; `report` and `showError` do that for you.
 - **Check `.success`, not truthiness.** Once a call returns a result object, `if (await store.save(...))` is always true, and the type-checker won't flag it.
 
-`notificationConfigService` / `notificationConfigStore` and `notificationService` / `notificationsStore` follow this pattern; older services still show snackbars themselves and should be migrated when touched.
+`notificationConfigService` / `notificationConfigStore`, `notificationService` / `notificationsStore`, `userAdminService` / `userAdminStore` and `groupAdminService` / `groupAdminStore` follow this pattern (their writes return an `AdminWriteResult`, a `ValidationResult` plus a `stale` flag for a 412, and the components report them with `useAdminWriteFeedback().reportWrite`); older services still show snackbars themselves and should be migrated when touched.
 
 ### Auto-imports
 

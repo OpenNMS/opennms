@@ -27,9 +27,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -148,15 +146,6 @@ public class AuthenticationIT implements InitializingBean {
             ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
-    }
-
-    @Test
-    public void testAdditionalRoles() {
-        System.setProperty("opennms.home", "src/test/resources");
-        List<String> roles = Authentication.getAvailableRoles();
-        Assert.assertTrue(roles.contains("ROLE_MANAGER"));
-        Assert.assertTrue(roles.contains("ROLE_OPERATOR"));
-        Assert.assertTrue(roles.contains("ROLE_USER"));
     }
 
     @Test

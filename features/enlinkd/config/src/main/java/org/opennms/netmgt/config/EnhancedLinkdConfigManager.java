@@ -42,9 +42,10 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
     
     /**
 	 * Object containing all EnhancedLinkd-configuration objects parsed from the XML
-	 * file
+	 * file. Volatile: reload() replaces the reference under the write lock while
+	 * the getters read it lock-free from scheduler and event threads.
 	 */
-	protected static EnlinkdConfiguration m_config;
+	protected volatile EnlinkdConfiguration m_config;
 	 
     /**
      * <p>Constructor for LinkdConfigManager.</p>

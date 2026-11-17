@@ -37,7 +37,7 @@ However, if you prefer the TFTP listener bind to the default non-privileged port
 
 [{tabs}]
 ====
-CentOS/RHEL 7/8::
+CentOS/RHEL::
 +
 --
 include::centos-rhel/firewall-core.adoc[]

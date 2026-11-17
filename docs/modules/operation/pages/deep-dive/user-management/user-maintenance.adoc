@@ -1,7 +1,7 @@
 
 [[ga-user-maintenance]]
 = User Maintenance
-:description: User maintenance in {page-component-title}: changing passwords, deletion, advanced configuration in users.xml.
+:description: User maintenance in {page-component-title}: changing passwords, deletion, where users are stored.
 
 Users are entities with login accounts in the {page-component-title} system.
 Ideally, each user account corresponds to only one person.
@@ -14,10 +14,9 @@ This page describes additional tasks and information related to user accounts.
 
 . Log in as a user with admin permissions.
 . Click menu:User Management[Manage Users] in the side menu.
-. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users].
-. Click the *Modify* icon next to an existing user and select *Reset Password*.
-. Type a new password, confirm it, and click *OK*.
-. Click *Finish* to apply the changes.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click *Configure Users*.
+. Click the *More actions* icon beside the user and select *Change Password*.
+. Type a new password, confirm it, and click *Change Password*.
 
 === Change your password
 
@@ -32,13 +31,28 @@ This page describes additional tasks and information related to user accounts.
 . Log in as a user with admin permissions.
 
 . Click menu:User Management[Manage Users] or menu:User Management[Manage Groups] in the side menu, as appropriate.
-. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users] or *Configure Groups*, as appropriate.
-. Click the *Delete* symbol beside the user or group that you want to delete.
-. Click *OK* to confirm deletion.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click *Configure Users* or *Configure Groups*, as appropriate.
+. Click the delete icon beside the user or group that you want to delete.
+. Confirm the deletion.
+
+NOTE: You cannot delete the `admin` and `rtc` users, the last user with `ROLE_ADMIN`, or a user that supervises an on-call role or that a destination path in `destinationPaths.xml` names.
 
 IMPORTANT: If you delete a group, no one receives a notification that it has been deleted.
 If the group is associated with a schedule, that schedule will also be deleted, and users previously included in the group will no longer receive notifications that were set up in the schedule.
 
-== Advanced configuration
+== Rename a user
 
-{page-component-title} persists the user, password, and other detail descriptions in the `users.xml` file.
+Click the *More actions* icon beside the user and select *Rename*.
+Group memberships follow the rename.
+Destination paths in `destinationPaths.xml` do not: update them yourself.
+
+== Where users are stored
+
+{page-component-title} stores users, groups, on-call roles and custom security roles in the database.
+Use the Manage Users, Manage Groups and Manage On-Call Roles pages or the xref:development:rest/users_v2.adoc[REST v2 APIs] to change them.
+{page-component-title} no longer reads or writes `etc/users.xml`, `etc/groups.xml` or `etc/security-roles.properties`, and it no longer ships `users.xml` and `groups.xml`.
+
+An installation that was created before the move keeps its original files in `etc_archive/`.
+The installer copies the users, groups, on-call roles and custom security roles into the database once, then moves the files there.
+Editing the archived files has no effect.
+A database that has no user data later gets the default `admin` user with the password `admin`, the `rtc` user and the `Admin` group, not the archived data.

@@ -102,6 +102,16 @@
       <artifactId>opennms-bootstrap</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.upgrade</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.password</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
     </dependency>

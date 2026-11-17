@@ -27,10 +27,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.netmgt.collection.api.AttributeType;
 
-public class HttpDatacollectionConfigTest extends XmlTestNoCastor<HttpDatacollectionConfig> {
+public class HttpDatacollectionConfigTest extends XmlTest<HttpDatacollectionConfig> {
 
     public HttpDatacollectionConfigTest(final HttpDatacollectionConfig sampleObject,
             final String sampleXml, final String schemaFile) {

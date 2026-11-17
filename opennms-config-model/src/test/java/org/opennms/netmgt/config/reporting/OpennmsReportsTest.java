@@ -25,12 +25,12 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.netmgt.config.reporting.OpennmsReports;
 import org.opennms.netmgt.config.reporting.Parameters;
 import org.opennms.netmgt.config.reporting.Report;
 
-public class OpennmsReportsTest extends XmlTestNoCastor<OpennmsReports> {
+public class OpennmsReportsTest extends XmlTest<OpennmsReports> {
 
     public OpennmsReportsTest(OpennmsReports sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/reporting.xsd");

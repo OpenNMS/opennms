@@ -182,3 +182,82 @@ Note, however, that the memory the ring buffer uses is reserved, and larger valu
 Newts uses cache priming to help reduce the number of records that need to be indexed after restarting {page-component-title}.
 This works by rebuilding the cache using the index data that has already been persisted in Cassandra.
 If you continue to see large spikes of index-related inserts after rebooting, consider increasing the amount of time spent priming the cache.
+
+[[newts-evaluate]]
+=== Estimate sizes with the evaluation strategy
+
+The `evaluate` time series strategy counts the nodes, resources, attributes, and samples that data collection produces, and discards the data instead of persisting it.
+Use it to estimate `cache.max_entries` and `ring_buffer_size` before you switch to Newts, for example on a staging system with the same inventory and collection configuration.
+
+IMPORTANT: While the `evaluate` strategy is active, {page-component-title} stores no performance data.
+
+. Set the strategy, and enable `storeByGroup` so that the evaluation reports the number of groups, in a file such as `$\{OPENNMS_HOME}/etc/opennms.properties.d/evaluate.properties`:
++
+[source, properties]
+----
+org.opennms.timeseries.strategy=evaluate
+org.opennms.rrd.storeByGroup=true
+----
+
+. Restart {page-component-title}.
+. Let data collection run under full load for a few hours, until all nodes are provisioned and all collectors run.
+. Read the statistics in `$\{OPENNMS_HOME}/logs/EvaluationMetrics.log`.
+
+The log contains the following metrics:
+
+[options="header", cols="1,3"]
+|===
+| Metric
+| Description
+
+| evaluate.nodes
+| Number of nodes with collected data.
+
+| evaluate.interfaces
+| Number of IP interfaces with response time data.
+
+| evaluate.resources
+| Number of unique resources.
+
+| evaluate.numeric-attributes
+| Number of unique numeric attributes, which are stored as samples.
+
+| evaluate.string-attributes
+| Number of unique string attributes, which are stored as resource attributes.
+
+| evaluate.groups
+| Number of unique groups of attributes per resource.
+Reported only when `org.opennms.rrd.storeByGroup` is `true`.
+
+| evaluate.samples
+| Rate at which data collection produces numeric samples, in samples per second.
+|===
+
+As a starting point, set `cache.max_entries` to the smallest power of two that is larger than twice `evaluate.groups`, and set `ring_buffer_size` to twice `cache.max_entries`.
+For example, with `evaluate.groups=1341107`, twice that value is 2682214, so the settings are as follows:
+
+[source, properties]
+----
+org.opennms.newts.config.cache.max_entries=4194304
+org.opennms.newts.config.ring_buffer_size=8388608
+----
+
+When the evaluation is complete, set `org.opennms.timeseries.strategy` to `newts`, remove the `storeByGroup` setting if you added it for the evaluation, and restart {page-component-title}.
+Once Newts runs, use the xref:time-series-storage/newts/cassandra-newts-jmx.adoc[Newts JMX metrics] to refine the values.
+
+The following properties in `opennms.properties` control the evaluation output:
+
+[options="header", cols="2,3,1"]
+|===
+| Name
+| Description
+| Default
+
+| org.opennms.evaluate.dump_stats_frequency
+| Interval, in minutes, at which the metrics are written to `EvaluationMetrics.log`.
+| 5
+
+| org.opennms.evaluate.dump_cache_frequency
+| Interval, in minutes, at which the full list of tracked nodes, resources, groups, and attributes is written to `EvaluationMetrics-Cache.log`.
+| 60
+|===

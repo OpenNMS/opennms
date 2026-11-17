@@ -221,6 +221,17 @@ export interface Node {
   sysLocation: string
 }
 
+/**
+ * Outcome of a filter-rule node lookup. `invalid` is the server rejecting the rule
+ * itself (HTTP 400), which the caller shows as such; `too-many` is a rule that
+ * matched more nodes than the caller asked to receive, with the count; `failed`
+ * is anything else.
+ */
+export type NodeFilterRuleResult =
+  | { nodes: Node[] }
+  | { error: 'invalid' | 'failed' }
+  | { error: 'too-many', count: number }
+
 export interface NodeColumnSelectionItem {
   id: string
   label: string

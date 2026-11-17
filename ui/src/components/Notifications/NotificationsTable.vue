@@ -81,10 +81,10 @@
       </OnmsColumn>
       <OnmsColumn header="Node">
         <template #body="{ data }">
-          <a
+          <router-link
             v-if="data.nodeId"
-            :href="`${baseHref}element/node.jsp?node=${data.nodeId}`"
-          >{{ data.nodeLabel ?? data.nodeId }}</a>
+            :to="nodeDetailsRoute(data.nodeId)"
+          >{{ data.nodeLabel ?? data.nodeId }}</router-link>
           <span v-else>-</span>
         </template>
       </OnmsColumn>
@@ -153,6 +153,7 @@ import useSnackbar from '@/composables/useSnackbar'
 import useRole from '@/composables/useRole'
 import { saveBlobAsFile } from '@/services/eventConfigService'
 import { useMenuStore } from '@/stores/menuStore'
+import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
 import { MessageSeverity } from '@/types'
 import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationsStore } from '@/stores/notificationsStore'

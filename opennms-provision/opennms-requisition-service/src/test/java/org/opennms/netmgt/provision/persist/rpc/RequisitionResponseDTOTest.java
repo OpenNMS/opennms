@@ -25,9 +25,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class RequisitionResponseDTOTest extends XmlTestNoCastor<RequisitionResponseDTO> {
+public class RequisitionResponseDTOTest extends XmlTest<RequisitionResponseDTO> {
 
     public RequisitionResponseDTOTest(RequisitionResponseDTO sampleObject, String sampleXml) {
         super(sampleObject, sampleXml, null);
