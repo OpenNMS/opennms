@@ -80,7 +80,6 @@
         <entry key="syslogd-configuration.xml" value="syslogdConfigFactory"/>
         <entry key="syslog-northbounder-configuration.xml" value="syslogNorthbounderConfigDao"/>
         <entry key="telemetryd-configuration.xml" value="telemetrydConfigDao"/>
-        <entry key="tl1d-configuration.xml" value="tl1ConfigurationDao"/>
         <entry key="translator-configuration.xml" value="eventTranslatorConfigFactory"/>
         <entry key="vacuumd-configuration.xml" value="vacuumdConfigFactory"/>
         <entry key="viewsdisplay.xml" value="viewsDisplayFactory"/>
@@ -379,10 +378,6 @@
 
   <bean id="telemetrydConfigDao" class="org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/telemetryd-configuration.xml" />
-  </bean>
-  
-  <bean id="tl1ConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultTl1ConfigurationDao">
-    <property name="configResource" value="file:${opennms.home}/etc/tl1d-configuration.xml"/>
   </bean>
   
   <bean id="eventTranslatorConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
