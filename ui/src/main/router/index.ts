@@ -133,19 +133,7 @@ const router = createRouter({
       path: '/admin/surveillance-categories',
       name: 'Surveillance Categories',
       component: () => import('@/containers/ManageCategories.vue'),
-      beforeEnter: (to, from) => {
-        const checkRoles = () => {
-          if (!adminRole.value) {
-            showSnackBar({ msg: 'Must be admin to manage surveillance categories.' })
-            router.push(from.path)
-          }
-        }
-        if (rolesAreLoaded.value) {
-          checkRoles()
-        } else {
-          whenever(rolesAreLoaded, () => checkRoles())
-        }
-      }
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage surveillance categories.')
     },
     {
       path: '/configuration',
