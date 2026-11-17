@@ -29,7 +29,7 @@ import { ServiceType } from '@/types'
 
 export type NotificationAckType = 'unack' | 'ack' | 'all'
 
-export type NotificationQueryPreset = 'yourOutstanding' | 'teamOutstanding' | 'allOutstanding' | 'allAcknowledged' | 'userSearch'
+export type NotificationQueryPreset = 'yourOutstanding' | 'yourAcknowledged' | 'teamOutstanding' | 'allOutstanding' | 'allAcknowledged' | 'userSearch'
 
 // AckType enum on the Java model; always NOTIFICATION for these records.
 export type NotificationAckKind = 'UNSPECIFIED' | 'ALARM' | 'NOTIFICATION'

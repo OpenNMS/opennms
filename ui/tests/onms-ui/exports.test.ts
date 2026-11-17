@@ -77,6 +77,7 @@ const EXPECTED_RUNTIME_EXPORTS = [
   'OnmsTooltip',
   'OnmsVirtualScroller',
   'releaseActiveToast',
+  'toTimeOnlyDate',
   'useOnmsChromeless',
   'useOnmsChromelessHost',
   'useOnmsToast'

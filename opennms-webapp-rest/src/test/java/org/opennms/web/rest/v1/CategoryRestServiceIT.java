@@ -27,6 +27,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
@@ -91,12 +94,40 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
         createCategory("AclTest");
         setUser("lowpriv", new String[]{ "ROLE_REST" });
         sendPut("/categories/AclTest", "description=legit&authorizedGroups=AttackerGroup", 204);
+        // other spellings of the property are protected too
+        sendPut("/categories/AclTest", "AuthorizedGroups=AttackerGroup", 304);
+        sendPut("/categories/AclTest", "authorized_groups=AttackerGroup", 304);
 
         final OnmsCategory reloaded = m_categoryDao.findByName("AclTest");
         assertNotNull(reloaded);
         assertFalse("authorizedGroups must not be mass-assignable via updateCategory",
                 reloaded.getAuthorizedGroups().contains("AttackerGroup"));
         assertEquals("legit", reloaded.getDescription());
+    }
+
+    /** A new category's group authorizations are the group ACL too: they need the admin role, and existing groups. */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testCreateWithAuthorizedGroupsNeedsTheAdminRole() throws Exception {
+        final OnmsCategory withGroups = new OnmsCategory("AclCreate");
+        withGroups.getAuthorizedGroups().add("Admin");
+
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        assertEquals("Group management requires the admin role.",
+                sendData(POST, MediaType.APPLICATION_XML, "/categories", JaxbUtils.marshal(withGroups), 403).getContentAsString());
+        assertEquals(null, m_categoryDao.findByName("AclCreate"));
+        // without group authorizations, ROLE_REST still creates categories
+        createCategory("PlainCreate");
+
+        setUser("admin", new String[]{ "ROLE_ADMIN" });
+        final OnmsCategory unknown = new OnmsCategory("AclUnknown");
+        unknown.getAuthorizedGroups().add("NoSuchGroup");
+        assertEquals("Unknown group: NoSuchGroup",
+                sendData(POST, MediaType.APPLICATION_XML, "/categories", JaxbUtils.marshal(unknown), 400).getContentAsString());
+        assertEquals(null, m_categoryDao.findByName("AclUnknown"));
+
+        createCategory(withGroups);
+        assertEquals(Set.of("Admin"), JaxbUtils.unmarshal(OnmsCategory.class, sendRequest(GET, "/categories/AclCreate", 200)).getAuthorizedGroups());
     }
 
     @Override
@@ -234,6 +265,61 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, "/categories/groups/Admin", 200); // list all categories of group Admin
         sendRequest(PUT, "/categories/Routers/groups/Admin", 204); // add category Routers to group Admin
         sendRequest(DELETE, "/categories/Routers/groups/Admin", 204); // remove category from Group 
+    }
+
+    /**
+     * The group authorizations of a category are the group ACL that /groups/{group}/categories/{category} changes too,
+     * so they need the admin role like the other group writes.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGroupCategoriesNeedTheAdminRole() throws Exception {
+        final String message = "Group management requires the admin role.";
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        assertEquals(message, sendData(PUT, MediaType.APPLICATION_XML, "/categories/Routers/groups/Admin", "", 403).getContentAsString());
+        setUser("admin", new String[]{ "ROLE_ADMIN" });
+        assertFalse(authorizedCategoryNames("Admin").contains("Routers"));
+
+        sendRequest(PUT, "/categories/Routers/groups/Admin", 204);
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        assertEquals(message, sendData(DELETE, MediaType.APPLICATION_XML, "/categories/Routers/groups/Admin", "", 403).getContentAsString());
+        setUser("admin", new String[]{ "ROLE_ADMIN" });
+        assertTrue(authorizedCategoryNames("Admin").contains("Routers"));
+
+        sendRequest(DELETE, "/categories/Routers/groups/Admin", 204);
+        assertFalse(authorizedCategoryNames("Admin").contains("Routers"));
+    }
+
+    /**
+     * Deleting a category removes its group authorizations (category_group cascades), so a category that has any needs
+     * the admin role. A ROLE_REST user could otherwise delete it and create it again without them.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testDeleteOfACategoryWithGroupAuthorizationsNeedsTheAdminRole() throws Exception {
+        setUser("admin", new String[]{ "ROLE_ADMIN" });
+        final OnmsCategory withGroups = new OnmsCategory("AclDelete");
+        withGroups.getAuthorizedGroups().add("Admin");
+        createCategory(withGroups);
+
+        setUser("lowpriv", new String[]{ "ROLE_REST" });
+        assertEquals("Deleting a category that has group authorizations requires the admin role.",
+                sendData(DELETE, MediaType.APPLICATION_XML, "/categories/AclDelete", "", 403).getContentAsString());
+        assertEquals(Set.of("Admin"), JaxbUtils.unmarshal(OnmsCategory.class, sendRequest(GET, "/categories/AclDelete", 200)).getAuthorizedGroups());
+        // a category without group authorizations, ROLE_REST still deletes
+        createCategory("PlainDelete");
+        sendRequest(DELETE, "/categories/PlainDelete", 204);
+        sendRequest(GET, "/categories/PlainDelete", 404);
+
+        setUser("admin", new String[]{ "ROLE_ADMIN" });
+        sendRequest(DELETE, "/categories/AclDelete", 204);
+        sendRequest(GET, "/categories/AclDelete", 404);
+        assertFalse(authorizedCategoryNames("Admin").contains("AclDelete"));
+    }
+
+    private List<String> authorizedCategoryNames(final String groupName) throws Exception {
+        return JaxbUtils.unmarshal(OnmsCategoryCollection.class, sendRequest(GET, "/categories/groups/" + groupName, 200))
+                .getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toList());
     }
     
     protected void createCategory(final OnmsCategory category) throws Exception {

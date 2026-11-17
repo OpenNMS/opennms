@@ -1,0 +1,210 @@
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
+package org.opennms.web.svclayer.support;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
+import org.opennms.netmgt.config.GroupDao;
+import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.groups.Group;
+import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsGroup;
+import org.springframework.test.util.ReflectionTestUtils;
+
+public class DefaultGroupServiceTest {
+
+    private CategoryDao m_categoryDao;
+    private GroupDao m_groupDao;
+    private DefaultGroupService m_service;
+    private OnmsCategory m_first;
+    private OnmsCategory m_second;
+
+    @Before
+    public void setUp() {
+        m_categoryDao = mock(CategoryDao.class);
+        m_groupDao = mock(GroupDao.class);
+        m_service = new DefaultGroupService();
+        ReflectionTestUtils.setField(m_service, "m_categoryDao", m_categoryDao);
+        ReflectionTestUtils.setField(m_service, "m_groupDao", m_groupDao);
+        m_first = new OnmsCategory("First");
+        m_second = new OnmsCategory("Second");
+        m_first.getAuthorizedGroups().add("old");
+        m_second.getAuthorizedGroups().add("old");
+        when(m_categoryDao.getCategoriesWithAuthorizedGroup("old")).thenReturn(Arrays.asList(m_first, m_second));
+    }
+
+    @Test
+    public void testMoveCategoryAuthorizations() {
+        m_service.moveCategoryAuthorizations("old", "new");
+
+        for (final OnmsCategory category : Arrays.asList(m_first, m_second)) {
+            assertTrue(category.getAuthorizedGroups().contains("new"));
+            assertFalse(category.getAuthorizedGroups().contains("old"));
+        }
+        verifyNoInteractions(m_groupDao);
+    }
+
+    @Test
+    public void testMoveCategoryAuthorizationsReplacesTheTargetsLeftovers() {
+        final OnmsCategory leftover = new OnmsCategory("Leftover");
+        leftover.getAuthorizedGroups().add("new");
+        leftover.getAuthorizedGroups().add("other");
+        // a category that has both names ends up with the new name only
+        m_second.getAuthorizedGroups().add("new");
+        when(m_categoryDao.getCategoriesWithAuthorizedGroup("new")).thenReturn(Arrays.asList(leftover, m_second));
+
+        m_service.moveCategoryAuthorizations("old", "new");
+
+        assertFalse(leftover.getAuthorizedGroups().contains("new"));
+        assertTrue(leftover.getAuthorizedGroups().contains("other"));
+        assertTrue(m_first.getAuthorizedGroups().contains("new"));
+        assertTrue(m_second.getAuthorizedGroups().contains("new"));
+        assertFalse(m_first.getAuthorizedGroups().contains("old"));
+        assertFalse(m_second.getAuthorizedGroups().contains("old"));
+    }
+
+    @Test
+    public void testSetAuthorizedCategoriesReplacesTheSet() {
+        final OnmsCategory third = new OnmsCategory("Third");
+        third.getAuthorizedGroups().add("other");
+        when(m_categoryDao.findByNames(Set.of("Third"))).thenReturn(List.of(third));
+
+        m_service.setAuthorizedCategories("old", Arrays.asList("First", "Third"));
+
+        assertTrue(m_first.getAuthorizedGroups().contains("old"));
+        assertFalse(m_second.getAuthorizedGroups().contains("old"));
+        assertEquals(Set.of("old", "other"), third.getAuthorizedGroups());
+        // one lookup, of the category the group did not have yet
+        verify(m_categoryDao).findByNames(Set.of("Third"));
+        verifyNoInteractions(m_groupDao);
+    }
+
+    @Test
+    public void testSetAuthorizedCategoriesWithTheSameSetChangesNothing() {
+        m_service.setAuthorizedCategories("old", Arrays.asList("Second", "First"));
+
+        assertEquals(Set.of("old"), m_first.getAuthorizedGroups());
+        assertEquals(Set.of("old"), m_second.getAuthorizedGroups());
+        verify(m_categoryDao).findByNames(Set.of());
+        verify(m_categoryDao, never()).findByName(anyString(), anyBoolean());
+    }
+
+    @Test
+    public void testSetAuthorizedCategoriesWithAnEmptySetClearsThem() {
+        m_service.setAuthorizedCategories("old", Collections.emptyList());
+
+        assertTrue(m_first.getAuthorizedGroups().isEmpty());
+        assertTrue(m_second.getAuthorizedGroups().isEmpty());
+    }
+
+    @Test
+    public void testSetAuthorizedCategoriesIgnoresAnUnknownName() {
+        // the caller validates the names; one that matches no category is skipped, not an error
+        m_service.setAuthorizedCategories("old", Arrays.asList("First", "Gone"));
+
+        assertTrue(m_first.getAuthorizedGroups().contains("old"));
+        assertFalse(m_second.getAuthorizedGroups().contains("old"));
+        verify(m_categoryDao).findByNames(Set.of("Gone"));
+    }
+
+    @Test
+    public void testClearCategoryAuthorizations() {
+        m_service.clearCategoryAuthorizations("old");
+
+        assertTrue(m_first.getAuthorizedGroups().isEmpty());
+        assertTrue(m_second.getAuthorizedGroups().isEmpty());
+        verifyNoInteractions(m_groupDao);
+    }
+
+    @Test
+    public void testSaveOfAnOnmsGroupLeavesTheMergeToTheGroupDao() {
+        // the manager keeps the stored schedules and default map under its own lock, after its own update()
+        final OnmsGroup group = new OnmsGroup("ops");
+        group.setComments("edited");
+        m_service.saveGroup(group, 7L);
+
+        verify(m_groupDao).saveGroup(group, 7L);
+        verify(m_groupDao, never()).getGroup(anyString());
+        verify(m_groupDao, never()).saveGroup(anyString(), any());
+    }
+
+    @Test
+    public void testAddUserMergesUnderTheManagerAndLeavesTheCachedGroupAlone() throws Exception {
+        final UserManager users = mock(UserManager.class);
+        ReflectionTestUtils.setField(m_service, "m_userDao", users);
+        when(users.hasUser("jdoe")).thenReturn(true);
+        final Group cached = new Group();
+        cached.setName("ops");
+        cached.setUsers(List.of("jroe"));
+        when(m_groupDao.getGroup("ops")).thenReturn(cached);
+        when(m_groupDao.getVersion()).thenReturn(7L);
+
+        assertTrue(m_service.addUser("ops", "jdoe"));
+
+        // the version is read before the group, so that the save fails if the group changed in between
+        final InOrder order = inOrder(m_groupDao);
+        order.verify(m_groupDao).getVersion();
+        order.verify(m_groupDao).getGroup("ops");
+        final ArgumentCaptor<OnmsGroup> saved = ArgumentCaptor.forClass(OnmsGroup.class);
+        order.verify(m_groupDao).saveGroup(saved.capture(), eq(7L));
+        assertEquals(List.of("jroe", "jdoe"), saved.getValue().getUsers());
+        verify(m_groupDao, never()).saveGroup(anyString(), any());
+        // the request's change reaches the cache only through the save
+        assertEquals(List.of("jroe"), cached.getUsers());
+    }
+
+    @Test
+    public void testCategoryAuthorizationsDoNotSaveTheGroup() {
+        // they live in category_group, apart from the group row, whose version a trigger moves
+        when(m_categoryDao.findByName("Third")).thenReturn(new OnmsCategory("Third"));
+        when(m_categoryDao.findByNames(Set.of("Third"))).thenReturn(List.of(new OnmsCategory("Third")));
+        assertTrue(m_service.addCategory("old", "Third"));
+        assertTrue(m_service.removeCategory("old", "First"));
+
+        assertFalse(m_first.getAuthorizedGroups().contains("old"));
+        verify(m_groupDao, never()).saveGroup(anyString(), any());
+        verify(m_groupDao, never()).saveGroup(any(OnmsGroup.class), anyLong());
+    }
+}

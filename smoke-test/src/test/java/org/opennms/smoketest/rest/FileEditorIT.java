@@ -276,10 +276,10 @@ public class FileEditorIT {
     private void addUserAPI() {
         LOG.info("User creation request");
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        JAXB.marshal(createUser("editor", "File Editor", "editor@opennms.org", "21232F297A57A5A743894A0E4A801FC3" /* admin */, "ROLE_FILESYSTEM_EDITOR", "ROLE_USER"), outputStream);
+        JAXB.marshal(createUser(USERNAME, "File Editor", "editor@opennms.org", PASSWORD, "ROLE_FILESYSTEM_EDITOR", "ROLE_USER"), outputStream);
 
-
-        final HttpPost post = new HttpPost(STACK.opennms().getBaseUrlExternal().toString() + "/opennms" + "/rest/users");
+        // v1 takes the password in plain text with hashPassword=true; it does not accept a hash
+        final HttpPost post = new HttpPost(STACK.opennms().getBaseUrlExternal().toString() + "/opennms" + "/rest/users?hashPassword=true");
         post.setEntity(new StringEntity(new String(outputStream.toByteArray()), ContentType.APPLICATION_XML));
         Integer response = 0;
         try {
@@ -289,6 +289,8 @@ public class FileEditorIT {
         }
 
         LOG.info(response.toString());
+        // the tests below log in as this user: without it they would all fail with a 401
+        Assert.assertEquals("creating the user " + USERNAME, Integer.valueOf(201), response);
     }
 
     /**
@@ -296,17 +298,16 @@ public class FileEditorIT {
      * @param userId
      * @param username
      * @param userEmail
-     * @param userPasswordHash
+     * @param password the password in plain text
      * @param roles
      * @return User Object
      */
-    private static OnmsUser createUser(String userId, String username, String userEmail, String userPasswordHash, String... roles) {
+    private static OnmsUser createUser(String userId, String username, String userEmail, String password, String... roles) {
         final OnmsUser user = new OnmsUser();
         user.setUsername(userId);
         user.setFullName(username);
         user.setEmail(userEmail);
-        user.setPassword(userPasswordHash);
-        user.setPasswordSalted(false);
+        user.setPassword(password);
         user.setRoles(Arrays.asList(roles));
         return user;
     }

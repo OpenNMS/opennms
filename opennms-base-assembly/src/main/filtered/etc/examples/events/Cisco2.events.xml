@@ -1620,7 +1620,7 @@ quality problem using the Quality Report Tool.&lt;/p>&lt;table>
          </maskelement>
          <maskelement>
             <mename>generic</mename>
-            <mevalue>0</mevalue>
+            <mevalue>6</mevalue>
          </maskelement>
          <maskelement>
             <mename>specific</mename>

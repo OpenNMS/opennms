@@ -43,12 +43,29 @@ export interface ManagedUser {
   dutySchedules?: string[]
   roles?: string[]
   readOnly?: boolean
+  version: number
 }
 
-export interface ManagedUserCreate extends ManagedUser {
+// One entry of GET /api/v2/users?view=summary: what a user picker needs.
+export interface UserSummary {
+  userId: string
+  fullName?: string | null
+}
+
+export interface ManagedUserCreate extends Omit<ManagedUser, 'version'> {
   password: string
 }
 
+// Shown when a write is rejected with 412 (If-Match no longer matches the stored version).
+export const STALE_USER_MESSAGE =
+  'This user was changed by someone else. The list has been reloaded; reapply your change.'
+
+// Shown instead when the reload after a 412 failed too.
+export const STALE_USER_RELOAD_FAILED_MESSAGE =
+  'This user was changed by someone else, and the list could not be reloaded. Reload the page.'
+
 // System accounts the server refuses to delete or rename; mirrored here so
-// the UI can disable the controls with an explanation instead of a 400.
+// the UI can disable the controls with an explanation instead of a 400. The
+// server also refuses a case variant of these as a new or renamed user-id.
+// See UsersRestService.PROTECTED_USERS.
 export const PROTECTED_USER_IDS = ['admin', 'rtc']

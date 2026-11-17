@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Package encapsulating addresses eligible for
  *  thresholding.
@@ -49,6 +51,7 @@ public class Package implements Serializable {
      * Name or identifier for this package
      */
     @XmlAttribute(name = "name", required = true)
+    @JsonProperty("name")
     private String m_name;
 
     /**
@@ -57,18 +60,21 @@ public class Package implements Serializable {
      *  this filter
      */
     @XmlElement(name = "filter", required = true)
+    @JsonProperty("filter")
     private Filter m_filter;
 
     /**
      * Adresses in this package
      */
     @XmlElement(name = "specific")
+    @JsonProperty("specific")
     private List<String> m_specifics = new ArrayList<>();
 
     /**
      * Range of addresses in this package
      */
     @XmlElement(name = "include-range")
+    @JsonProperty("include-range")
     private List<IncludeRange> m_includeRanges = new ArrayList<>();
 
     /**
@@ -76,6 +82,7 @@ public class Package implements Serializable {
      *  package
      */
     @XmlElement(name = "exclude-range")
+    @JsonProperty("exclude-range")
     private List<ExcludeRange> m_excludeRanges = new ArrayList<>();
 
     /**
@@ -86,12 +93,14 @@ public class Package implements Serializable {
      *  are characters after a '<space>#' in a line.
      */
     @XmlElement(name = "include-url")
+    @JsonProperty("include-url")
     private List<String> m_includeUrls = new ArrayList<>();
 
     /**
      * Services for which thresholding is to occur in this package
      */
     @XmlElement(name = "service")
+    @JsonProperty("service")
     private List<Service> m_services = new ArrayList<>();
 
     /**
@@ -99,6 +108,7 @@ public class Package implements Serializable {
      *  during scheduled outages.
      */
     @XmlElement(name = "outage-calendar")
+    @JsonProperty("outage-calendar")
     private List<String> m_outageCalendars = new ArrayList<>();
 
     public Package() { }

@@ -166,7 +166,7 @@ public class GraphCollectionRestServiceIT extends AbstractSpringJerseyRestTestCa
                 "{\"title\":\"x\",\"graphs\":[{\"resourceId\":\"not a resource id\",\"graphtype\":\"mib2.tcpopen\",\"timespan\":\"1_hour\"}]}", 400);
         sendData(POST, MediaType.APPLICATION_JSON, BASE,
                 "{\"title\":\"x\",\"graphs\":[{\"resourceId\":\"node[1].nodeSnmp[]\",\"graphtype\":\"mib2.tcpopen\",\"timespan\":\"1_hour\",\"extlink\":\"javascript:alert(1)\"}]}", 400);
-        // kind: adhoc is reserved and rejected; anything else unknown is rejected too.
+        // an adhoc graph without its builder state is rejected; anything other than the two kinds is too.
         sendData(POST, MediaType.APPLICATION_JSON, BASE,
                 "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"title\":\"a\",\"timespan\":\"1_hour\"}]}", 400);
         sendData(POST, MediaType.APPLICATION_JSON, BASE,
@@ -354,6 +354,86 @@ public class GraphCollectionRestServiceIT extends AbstractSpringJerseyRestTestCa
         assertTrue(new JSONObject(getJson(BASE + "/0/resolved?timespan=none&graphtype=none", 200)).isNull("timespan"));
         sendRequest(GET, BASE + "/0/resolved?timespan=fortnight", 400);
         sendRequest(GET, BASE + "/99/resolved", 404);
+    }
+
+    @Test
+    public void testAdhocGraphs() throws Exception {
+        final String state = "nf=rtr&df=ifHCInOctets&o=node%5B1%5D.interfaceSnmp%5Beth0%5D~ifHCInOctets~AVERAGE~in~line~%23ff0000~0&n=1&title=Uplinks";
+        final String adhoc = "{\"kind\":\"adhoc\",\"title\":\"Uplinks\",\"timespan\":\"1_hour\",\"adhocState\":\"" + state + "\"}";
+
+        // An ad-hoc graph has no resource or graphtype; its sources are in the builder state.
+        final MockHttpServletResponse created = sendData(POST, MediaType.APPLICATION_JSON, BASE,
+                "{\"title\":\"Adhoc\",\"graphs\":[" + adhoc + "]}", 201);
+        final JSONObject saved = new JSONObject(created.getContentAsString());
+        final int id = saved.getInt("id");
+        final JSONObject graph = saved.getJSONArray("graphs").getJSONObject(0);
+        assertEquals("adhoc", graph.getString("kind"));
+        assertEquals(state, graph.getString("adhocState"));
+        assertTrue(graph.isNull("graphtype"));
+        assertTrue(graph.isNull("resourceId"));
+
+        // The file carries the kind and the state, validates against the XSD on reload, and the prefab
+        // entries look as they always did.
+        final String xml = slurp();
+        assertTrue(xml, xml.contains("kind=\"adhoc\""));
+        assertTrue(xml, xml.contains("adhocState=\""));
+        assertFalse(xml, xml.contains("kind=\"prefab\""));
+        GraphCollectionConfigFactory.getInstance().reload();
+        final JSONObject reread = new JSONObject(getJson(BASE + "/" + id, 200)).getJSONArray("graphs").getJSONObject(0);
+        assertEquals("adhoc", reread.getString("kind"));
+        assertEquals(state, reread.getString("adhocState"));
+
+        // The resolved view passes the state through with the window of the effective timespan; there is
+        // no resource to look up and the graphtype override does not touch it.
+        final JSONObject resolved = new JSONObject(getJson(BASE + "/" + id + "/resolved?timespan=1_day&graphtype=mib2.bits", 200));
+        final JSONObject r = resolved.getJSONArray("graphs").getJSONObject(0);
+        assertEquals("adhoc", r.getString("kind"));
+        assertEquals(state, r.getString("adhocState"));
+        assertEquals("1_day", r.getString("timespan"));
+        assertTrue(r.getBoolean("valid"));
+        assertTrue(r.isNull("error"));
+        assertTrue(r.isNull("graphtype"));
+        assertTrue(r.isNull("resource"));
+        final long day = r.getLong("end") - r.getLong("start");
+        assertTrue(Long.toString(day), day >= 86_000_000L && day <= 87_000_000L);
+        assertEquals(0, resolved.getJSONArray("graphTypes").length());
+
+        // The state is part of the tag, so a change to the sources alone is seen by If-Match.
+        final String etag = getResponse(BASE + "/" + id).getHeader("ETag");
+        final MockHttpServletResponse changed = sendData(PUT, MediaType.APPLICATION_JSON, BASE + "/" + id,
+                "{\"title\":\"Adhoc\",\"graphs\":[" + adhoc.replace("n=1", "n=2") + "]}", 200);
+        assertNotEquals(etag, changed.getHeader("ETag"));
+
+        // The single-graph add takes an ad-hoc graph too.
+        final JSONObject added = new JSONObject(sendData(POST, MediaType.APPLICATION_JSON, BASE + "/0/graphs", adhoc, 200).getContentAsString());
+        assertEquals("adhoc", added.getJSONArray("graphs").getJSONObject(1).getString("kind"));
+
+        // What is refused, and why.
+        assertEquals("Graph 1: an ad-hoc graph needs the builder state in adhocState.",
+                sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\"}]}", 400).getContentAsString());
+        assertEquals("Graph 1: an ad-hoc graph takes no resourceId, graphtype or node address; its sources are in adhocState.",
+                sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\",\"resourceId\":\"node[1].nodeSnmp[]\",\"adhocState\":\"" + state + "\"}]}", 400).getContentAsString());
+        assertEquals("Graph 1: adhocState must not carry a time window (range); the entry's timespan sets it.",
+                sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\",\"adhocState\":\"" + state + "&range=hours:24\"}]}", 400).getContentAsString());
+        assertEquals("Graph 1: adhocState must be a URL query string without the leading '?'.",
+                sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\",\"adhocState\":\"?" + state + "\"}]}", 400).getContentAsString());
+        // an encoded key is the same key to the client, so it is refused too
+        assertEquals("Graph 1: adhocState must not carry a time window (range); the entry's timespan sets it.",
+                sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\",\"adhocState\":\"" + state + "&r%61nge=hours:24\"}]}", 400).getContentAsString());
+        // and an encoded source key still names a source
+        sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\",\"adhocState\":\"n%66=a\"}]}", 201);
+        // the decoder's own words follow, and they are the JDK's to change
+        final String malformed = sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\",\"adhocState\":\"nf=a%\"}]}", 400).getContentAsString();
+        assertTrue(malformed, malformed.startsWith("Graph 1: adhocState is not a well-formed URL query string: "));
+        // a title alone is a well-formed query string but no graph; the client could never draw it
+        assertEquals("Graph 1: adhocState names no sources; a graph's share link carries at least one of nf, rf, df, pn, pr, pd, xd, o or e.",
+                sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\",\"adhocState\":\"title=x&n=0\"}]}", 400).getContentAsString());
+        assertEquals("Graph 1: adhocState must be percent-encoded: it may hold only printable ASCII.",
+                sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\",\"adhocState\":\"nf=r\u00f6uter\"}]}", 400).getContentAsString());
+        assertEquals("Graph 1: adhocState belongs to an ad-hoc graph only.",
+                sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"resourceId\":\"node[1].nodeSnmp[]\",\"graphtype\":\"mib2.tcpopen\",\"timespan\":\"1_hour\",\"adhocState\":\"nf=a\"}]}", 400).getContentAsString());
+        sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"1_hour\",\"adhocState\":\"nf=" + "a".repeat(8200) + "\"}]}", 400);
+        sendData(POST, MediaType.APPLICATION_JSON, BASE, "{\"title\":\"x\",\"graphs\":[{\"kind\":\"adhoc\",\"timespan\":\"fortnight\",\"adhocState\":\"nf=a\"}]}", 400);
     }
 
     @Test

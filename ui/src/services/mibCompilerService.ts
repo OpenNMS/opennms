@@ -2,6 +2,7 @@ import {
   MibCompileResult,
   MibDataCollectionPreview,
   MibDirectory,
+  MibEventSource,
   MibEventsPreview,
   MibFilesResponse,
   MibGraphTemplatesResult,
@@ -72,6 +73,20 @@ export const generateEvents = async (name: string, ueiBase?: string): Promise<Mi
     `${endpoint}/compiled/${encodeURIComponent(name)}/events`,
     null,
     { params: ueiBase ? { ueiBase } : {}}
+  )
+  return response.data
+}
+
+/**
+ * Checks an events XML document, typically the edited one right before it is saved, against the event
+ * configuration. Returns the same map as the preview's `existingUeis`; the target source, which the
+ * events will be saved as, is left out. The compiled MIB is not needed.
+ */
+export const findExistingUeis = async (source: string, eventsXml: string): Promise<Record<string, MibEventSource[]>> => {
+  const response = await v2.post<Record<string, MibEventSource[]>>(
+    `${endpoint}/events/existing-ueis`,
+    eventsXml,
+    { params: { source }, headers: { 'Content-Type': 'application/xml' }}
   )
   return response.data
 }
