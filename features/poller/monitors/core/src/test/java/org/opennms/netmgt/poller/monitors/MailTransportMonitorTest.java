@@ -22,12 +22,17 @@
 package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.InvalidPropertiesFormatException;
@@ -35,6 +40,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -111,6 +117,84 @@ public class MailTransportMonitorTest {
         "    </mail-transport-test>\n");
         PollStatus status = m_monitor.poll(getMailService("127.0.0.1"), m_params);
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
+    }
+
+    @Test
+    public void testSendHostIpAddrIsResolvedPerService() throws Exception {
+        try (ServerSocket first = new ServerSocket(0, 10, InetAddressUtils.addr("127.0.0.1"));
+             ServerSocket second = bindSecondLoopback(first.getLocalPort())) {
+            m_params.put("mail-transport-test",
+            "<mail-transport-test>\n" +
+            "  <mail-test>\n" +
+            "    <sendmail-test attempt-interval=\"100\" use-authentication=\"false\" use-jmta=\"false\">\n" +
+            "      <sendmail-host host=\"${ipaddr}\" port=\"" + first.getLocalPort() + "\"/>\n" +
+            "      <sendmail-protocol transport=\"smtp\"/>\n" +
+            "      <sendmail-message to=\"root@localhost\" from=\"root@localhost\" subject=\"test\" body=\"test\"/>\n" +
+            "      <user-auth user-name=\"opennms\" password=\"opennms\"/>\n" +
+            "    </sendmail-test>\n" +
+            "  </mail-test>\n" +
+            "</mail-transport-test>\n");
+
+            assertPollConnectsTo(first, second);
+            assertPollConnectsTo(second, first);
+        }
+        MockLogAppender.resetState();
+    }
+
+    @Test
+    public void testReadHostIpAddrIsResolvedPerService() throws Exception {
+        try (ServerSocket first = new ServerSocket(0, 10, InetAddressUtils.addr("127.0.0.1"));
+             ServerSocket second = bindSecondLoopback(first.getLocalPort())) {
+            m_params.put("mail-transport-test",
+            "<mail-transport-test>\n" +
+            "  <mail-test>\n" +
+            "    <readmail-test attempt-interval=\"100\" mail-folder=\"INBOX\" subject-match=\"test\">\n" +
+            "      <readmail-host host=\"${ipaddr}\" port=\"" + first.getLocalPort() + "\">\n" +
+            "        <readmail-protocol transport=\"imap\"/>\n" +
+            "      </readmail-host>\n" +
+            "      <user-auth user-name=\"opennms\" password=\"opennms\"/>\n" +
+            "    </readmail-test>\n" +
+            "  </mail-test>\n" +
+            "</mail-transport-test>\n");
+
+            assertPollConnectsTo(first, second);
+            assertPollConnectsTo(second, first);
+        }
+        MockLogAppender.resetState();
+    }
+
+    /**
+     * Polls the address {@code expected} listens on, with the shared parameter map, and checks that
+     * only {@code expected} received a connection. Nothing answers, so the poll itself fails.
+     */
+    private void assertPollConnectsTo(final ServerSocket expected, final ServerSocket other) throws Exception {
+        m_params.put("timeout", "500");
+        m_params.put("retry", "0");
+        final MonitoredService svc = getMailService(InetAddressUtils.str(expected.getInetAddress()));
+        m_monitor.poll(svc, m_params);
+        assertTrue("poll of " + svc.getIpAddr() + " did not connect to its own address", accepted(expected));
+        assertFalse("poll of " + svc.getIpAddr() + " connected to " + InetAddressUtils.str(other.getInetAddress()), accepted(other));
+    }
+
+    private static boolean accepted(final ServerSocket server) throws IOException {
+        server.setSoTimeout(200);
+        try (Socket socket = server.accept()) {
+            return true;
+        } catch (final SocketTimeoutException e) {
+            return false;
+        }
+    }
+
+    private static ServerSocket bindSecondLoopback(final int port) {
+        for (final String address : new String[] { "127.0.0.2", "::1" }) {
+            try {
+                return new ServerSocket(port, 10, InetAddressUtils.addr(address));
+            } catch (final IOException e) {
+                // not configured on this host, try the next one
+            }
+        }
+        Assume.assumeTrue("no second loopback address available", false);
+        return null;
     }
 
     @Test
