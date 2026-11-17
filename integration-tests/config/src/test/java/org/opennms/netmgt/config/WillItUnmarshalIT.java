@@ -87,7 +87,6 @@ import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.config.prometheus.PrometheusDatacollectionConfig;
-import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.config.reporting.OpennmsReports;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
@@ -102,7 +101,6 @@ import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration
 import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
-import org.opennms.netmgt.config.tl1d.Tl1dConfiguration;
 import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
@@ -230,7 +228,6 @@ public class WillItUnmarshalIT {
         // moved to CmWillItUnmarshalIT
         //addFile(Source.CLASSPATH, "/defaults/provisiond-configuration.xml", ProvisiondConfiguration.class, false, null);
         addFile(Source.CONFIG, "remote-repository.xml", RemoteRepositoryConfig.class, true, null);
-        addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, false, null);
         addFile(Source.CONFIG, "rtc-configuration.xml", RTCConfiguration.class, true, null);
         addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, true, null);
         addFile(Source.CONFIG, "service-configuration.xml", ServiceConfiguration.class, false, null);
@@ -248,7 +245,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "telemetryd-configuration.xml", TelemetrydConfig.class, false, null);
         addFile(Source.CONFIG, "threshd-configuration.xml", ThreshdConfiguration.class, true, null);
         addFile(Source.CONFIG, "thresholds.xml", ThresholdingConfig.class, true, null);
-        addFile(Source.CONFIG, "tl1d-configuration.xml", Tl1dConfiguration.class, true, null);
         addFile(Source.CONFIG, "translator-configuration.xml", EventTranslatorConfiguration.class, false, null);
         addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, true, null);
         addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, false, null);
@@ -288,7 +284,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "snmp-config.xml", SnmpConfig.class, false, null);
         addFile(Source.EXAMPLE, "surveillance-views.xml", SurveillanceViewConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "thresholds.xml", ThresholdingConfig.class, false, null);
-        addFile(Source.EXAMPLE, "tl1d-configuration.xml", Tl1dConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, false, null);
 
         // Add all event files
