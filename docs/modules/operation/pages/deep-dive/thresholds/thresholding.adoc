@@ -61,8 +61,9 @@ The page requires the `ROLE_ADMIN` role and has the following tabs:
 | Download the threshold groups or the threshd configuration as a JSON or XML file, or replace either of them in full by uploading a file.
 |===
 
-Changes take effect when you save them.
+Changes take effect on {page-component-title} when you save them.
 You do not need to reload Threshd or restart {page-component-title}.
+Sentinel reads the configuration from the shared key-value store and checks it for changes every five minutes, so it can take up to five minutes until a change applies there.
 
 You can also manage the configuration through the xref:development:rest/thresholds-rest-api.adoc[Thresholds REST API].
 

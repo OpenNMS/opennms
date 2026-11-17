@@ -81,9 +81,13 @@ If left blank, it defaults to the standard thresholding UEIs.
 | Re-armed UEI
 | A custom unique event identifier (UEI) sent into the events system when the threshold is re-armed.
 | _Leave blank._
+
+| Relaxed
+| Evaluates the threshold even when some of the referenced values are unknown.
+| _Off._
 |===
 +
-The threshold takes effect as soon as you save it.
+The threshold takes effect on {page-component-title} as soon as you save it (Sentinel picks up changes with a delay; see xref:deep-dive/thresholds/thresholding.adoc#threshold-configuration[Threshold configuration]).
 The default `netsnmp` threshd package already applies the `netsnmp` group to the SNMP service of nodes running a Net-SNMP agent, so you do not need to configure a package for this example.
 For your own groups, see xref:deep-dive/thresholds/thresh-package.adoc[].
 

@@ -43,41 +43,31 @@ Use `Flow-Threshold` as the service name.
 .Example of a threshd package for flow thresholding
 [source, xml]
 ----
-<?xml version="1.0"?>
-<threshd-configuration>
-...
-    <package name="flow-thresholding">
-        <filter>IPADDR != '0.0.0.0'</filter>
-        <include-range begin="1.1.1.1" end="254.254.254.254"/>
-        <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
-        <service name="Flow-Threshold" interval="300000" user-defined="false" status="on">
-            <parameter key="thresholding-group" value="flow-thresholding-group"/>
-        </service>
-    </package>
-...
-</threshd-configuration>
+<package name="flow-thresholding">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <include-range begin="1.1.1.1" end="254.254.254.254"/>
+    <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+    <service name="Flow-Threshold" interval="300000" user-defined="false" status="on">
+        <parameter key="thresholding-group" value="flow-thresholding-group"/>
+    </service>
+</package>
 ----
 
 Finally, define the thresholds in a threshold group named `flow-thresholding-group` on the *Groups* tab under menu:Administration[Configure Thresholds] (see xref:deep-dive/thresholds/thresh-group.adoc[]), or over the xref:development:rest/thresholds-rest-api.adoc[Thresholds REST API].
 Use `flowApp` for the datasource type.
 The following example defines thresholds for HTTPS traffic exceeding 4096000 bytes/second.
 
-.Example of thresholds for https traffic
+.Example of a threshold group for HTTPS traffic
 [source, xml]
 ----
-<?xml version="1.0"?>
-<thresholding-config>
-...
-    <group name="flow-thresholding-group" rrdRepository = "/opt/opennms/share/rrd/snmp/">
-        <threshold type="high" description="Flow-Threshold" ds-type="flowApp" ds-name="bytesIn" value="4096000" rearm="2048000" trigger="1" filterOperator="OR" ds-label="application">
-            <resource-filter field="application">https</resource-filter>
-        </threshold>
-        <threshold type="high" description="Flow-Threshold" ds-type="flowApp" ds-name="bytesOut" value="4096000" rearm="2048000" trigger="1" filterOperator="OR" ds-label="application">
-            <resource-filter field="application">https</resource-filter>
-        </threshold>
-    </group>
-...
-</thresholding-config>
+<group name="flow-thresholding-group" rrdRepository = "/opt/opennms/share/rrd/snmp/">
+    <threshold type="high" description="Flow-Threshold" ds-type="flowApp" ds-name="bytesIn" value="4096000" rearm="2048000" trigger="1" filterOperator="OR" ds-label="application">
+        <resource-filter field="application">https</resource-filter>
+    </threshold>
+    <threshold type="high" description="Flow-Threshold" ds-type="flowApp" ds-name="bytesOut" value="4096000" rearm="2048000" trigger="1" filterOperator="OR" ds-label="application">
+        <resource-filter field="application">https</resource-filter>
+    </threshold>
+</group>
 ----
 
 [[ga-flow-support-thresholding-properties]]
@@ -130,5 +120,6 @@ The default implementation uses the default PostgreSQL database.
 
 You do not need to configure thresholds on Sentinel; just make sure you have enabled the `applicationThresholding` flag in the adapter's definition in `telemetry-configuration.xml` as described in xref:deep-dive/flows/thresholding.adoc#configure-flow-thresholding [configure thresholding for flows applications].
 
-Threshold configuration and state are synced dynamically to all places where needed.
+Threshold configuration and state are synced to all places where needed.
+Sentinel checks the key-value store for configuration changes every five minutes, so a saved change can take up to that long to apply there.
 A triggered threshold results in an event, which Sentinel sends back to the core for further processing and transformation into alarms, and so on.
