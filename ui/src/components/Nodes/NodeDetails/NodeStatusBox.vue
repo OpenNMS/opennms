@@ -67,6 +67,7 @@ import { computed, watch } from 'vue'
 import { OnmsIcon, OnmsTag } from '@opennms/onms-ui'
 import Cancel from '@opennms/onms-ui/icons/action/Cancel.vue'
 import CheckCircle from '@opennms/onms-ui/icons/action/CheckCircle.vue'
+import { plural } from '@/lib/utils'
 import useVisiblePolling from '@/composables/useVisiblePolling'
 import { useAlarmStore } from '@/stores/alarmStore'
 import { useMenuStore } from '@/stores/menuStore'
@@ -99,8 +100,7 @@ const loadFailed = computed<boolean>(() => !isThisNode.value && alarmStore.nodeA
 const severity = computed<BannerSeverity>(() => bannerSeverity(status.value?.severity))
 
 // The tag shows only a number and an icon, so its tooltip and accessible name say what it counts.
-const countLabel = (count: number, kind: 'unacknowledged' | 'acknowledged') =>
-  `${count} ${kind} ${count === 1 ? 'alarm' : 'alarms'}`
+const countLabel = (count: number, kind: 'unacknowledged' | 'acknowledged') => plural(count, `${kind} alarm`)
 
 // The legacy alarm list, filtered to this node. Will need to point at the Vue Alarms page once
 // it's implemented.

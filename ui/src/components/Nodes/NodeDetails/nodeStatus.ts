@@ -20,6 +20,7 @@
 /// License.
 ///
 
+import { plural } from '@/lib/utils'
 import { NodeAlarmStatus } from '@/types/index'
 
 // The tints NodeDetailsBanner offers. Indeterminate and cleared are never a node's status here --
@@ -50,8 +51,6 @@ export interface NodeStatus {
 
 // Above Normal. The server reports the worst unacknowledged one, and NORMAL when there is none.
 const PROBLEM_SEVERITIES = ['WARNING', 'MINOR', 'MAJOR', 'CRITICAL']
-
-const plural = (count: number, singular: string, pluralForm = `${singular}s`) => `${count} ${count === 1 ? singular : pluralForm}`
 
 // The headline when nothing is down: how severe the worst unacknowledged problem alarm is.
 // "Warning alarms" reads awkwardly, so a warning gets its own wording.

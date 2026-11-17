@@ -88,6 +88,7 @@ import TimeControls from '@/components/Common/TimeControls.vue'
 import { useNodeStore } from '@/stores/nodeStore'
 import { selectionFromTime, selectionLabel, windowFor } from '@/components/Nodes/availabilityRange'
 import { useDelayedLoading } from './hooks/useDelayedLoading'
+import { plural } from '@/lib/utils'
 import API from '@/services/index'
 import { Node, NodeAvailability, StartEndTime } from '@/types/index'
 import { NodeOutageTimeline } from '@/types/nodeAvailabilityTimeline'
@@ -166,8 +167,6 @@ const totalInterfaces = ref(0)
 const totalServices = ref(0)
 
 const isPartial = computed(() => totalInterfaces.value + totalServices.value > MAX_ROWS)
-
-const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ? '' : 's'}`
 
 const countText = computed(() => `${plural(totalInterfaces.value, 'interface')} and ${plural(totalServices.value, 'service')}`)
 
