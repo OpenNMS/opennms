@@ -375,10 +375,6 @@
       <artifactId>org.opennms.icmp.proxy.rpc-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-reportd</artifactId>
-    </dependency>
     <!-- just here to be able to unpack it into the assembly tarball -->
     <dependency>
       <groupId>org.opennms.core</groupId>

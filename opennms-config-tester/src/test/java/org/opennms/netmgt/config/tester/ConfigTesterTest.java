@@ -319,11 +319,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testReportdConfiguration() {
-        testConfigFile("reportd-configuration.xml");
-    }
-
-    @Test
     public void testResponseAdhocGraph() {
         testConfigFile("response-adhoc-graph.properties");
     }
@@ -441,11 +436,6 @@ public class ConfigTesterTest {
     @Test
     public void testThresholds() {
         ignoreConfigFile("thresholds.xml");
-    }
-
-    @Test
-    public void testTl1dConfiguration() {
-        testConfigFile("tl1d-configuration.xml");
     }
 
     @Test
