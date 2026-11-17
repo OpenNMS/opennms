@@ -35,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.After;
@@ -192,6 +193,25 @@ public class JdbcDataCollectionConfigCmDaoIT {
         assertThrows(ValidationException.class, () -> dao.updateConfig("postgresql", json, true));
         assertThrows(ValidationException.class, () -> dao.updateConfig(ConfigDefinition.DEFAULT_CONFIG_ID, json, true));
         assertThat(dao.getDataCollectionByName("PostgreSQL").getQueries().get(0).getJdbcColumns().get(0).getDataType(), notNullValue());
+    }
+
+    @Test
+    public void configurationTheCollectorCannotUseIsRejected() {
+        // the same checks for every write path, e.g. /rest/cm, which goes straight to the configuration manager
+        final JSONObject noAlias = new JSONObject(ConfigConvertUtil.objectToJson(dao.getConfig("postgresql")));
+        noAlias.getJSONArray("jdbc-collection").getJSONObject(0)
+                .getJSONObject("queries").getJSONArray("query").getJSONObject(0)
+                .getJSONObject("columns").getJSONArray("column").getJSONObject(0)
+                .put("alias", "an-alias-longer-than-rrdtool-allows");
+        final ValidationException tooLong = assertThrows(ValidationException.class,
+                () -> cm.registerConfiguration(CONFIG_NAME, "bad", new JsonAsString(noAlias.toString())));
+        assertThat(tooLong.getMessage(), containsString("an-alias-longer-than-rrdtool-allows"));
+
+        final String valid = ConfigConvertUtil.objectToJson(dao.getConfig("mysql"));
+        final ValidationException badId = assertThrows(ValidationException.class,
+                () -> cm.registerConfiguration(CONFIG_NAME, "../evil", new JsonAsString(valid)));
+        assertThat(badId.getMessage(), containsString("../evil"));
+        assertThat(cm.getConfigIds(CONFIG_NAME), equalTo(Set.of(ConfigDefinition.DEFAULT_CONFIG_ID, "mysql", "postgresql")));
     }
 
     @Test

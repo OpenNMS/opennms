@@ -495,6 +495,30 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         }
     }
 
+    /**
+     * A file whose name is not an id the REST API accepts is not imported and stays in etc/, the others are imported.
+     */
+    @Test
+    public void shouldSkipJdbcFileWithInvalidId() throws Exception {
+        try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
+            final Path etcDir = Path.of(this.opennmsHome + "/etc");
+            final Path includeDir = Files.createDirectories(etcDir.resolve("jdbc-datacollection.d"));
+            Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection-config.xml"), etcDir.resolve("jdbc-datacollection-config.xml"));
+            Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection.d/postgresql.xml"), includeDir.resolve("postgresql.xml"));
+            Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection.d/mysql.xml"), includeDir.resolve("-mysql.xml"));
+
+            new LiquibaseUpgrader(cmSpy).runChangelog(JDBC_CHANGELOG, dataSource.getConnection());
+
+            assertEquals(Set.of(DEFAULT_CONFIG_ID, "postgresql"), this.cm.getConfigIds(SCHEMA_NAME_JDBC));
+            assertTrue(Files.exists(includeDir.resolve("-mysql.xml")));
+            assertFalse(Files.exists(includeDir.resolve("postgresql.xml")));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
     private void resetDatabase() throws SQLException {
         PreparedStatement statement = connection.prepareStatement("DROP TABLE IF EXISTS " + TABLE_NAME_DATABASECHANGELOG);
         statement.execute();

@@ -5,8 +5,8 @@
 The JDBC data collection configuration lives in the database and is managed over REST at `/api/v2/jdbc-datacollection`.
 It replaces the former `jdbc-datacollection-config.xml` and `jdbc-datacollection.d/*.xml` files.
 
-Reading requires any authenticated role.
-Every write, download and upload requires `ROLE_ADMIN`.
+Every request requires `ROLE_ADMIN`, because the configuration holds the SQL statements the collector runs.
+The same applies to the configuration manager API at `/rest/cm/jdbc-datacollection-config`.
 
 == Sources, collections, queries and columns
 

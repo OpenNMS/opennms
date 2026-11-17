@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfigRules;
 import org.opennms.web.rest.v2.model.JdbcCollectionDto;
 import org.opennms.web.rest.v2.model.JdbcColumnDto;
 import org.opennms.web.rest.v2.model.JdbcQueryDto;
@@ -36,30 +37,23 @@ import org.opennms.web.rest.v2.model.JdbcSourceDto;
  * Checks of the JDBC data collection DTOs that the schema of the configuration manager does not make: required
  * values the collector cannot work without, value ranges and uniqueness.
  *
- * <p>Every method returns the first problem as a message for the client, or null when there is none. The UI
- * mirrors these rules in {@code ui/src/lib/jdbcDataCollectionValidator.ts}; keep the two in step.</p>
+ * <p>Every method returns the first problem as a message for the client, or null when there is none. These are the
+ * rules of {@link JdbcDataCollectionConfigRules}, which the configuration manager runs on every write, checked on
+ * the DTOs first to name the offending field. The UI mirrors them in
+ * {@code ui/src/lib/jdbcDataCollectionValidator.ts}; keep the three in step.</p>
  */
 public final class JdbcDataCollectionConfigValidator {
 
     /** The longest datasource name RRDtool can store; the alias of a column becomes that name. */
-    public static final int MAX_ALIAS_LENGTH = 19;
+    public static final int MAX_ALIAS_LENGTH = JdbcDataCollectionConfigRules.MAX_ALIAS_LENGTH;
 
-    /** The id becomes part of the REST path and was a file name, so it is kept to what is safe in both. */
-    private static final Pattern SOURCE_ID = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]*");
-
-    private static final Pattern RRA = Pattern.compile("RRA:(AVERAGE|MIN|MAX|LAST):\\d*\\.?\\d+:\\d+:\\d+");
+    private static final Pattern RRA = JdbcDataCollectionConfigRules.RRA;
 
     private JdbcDataCollectionConfigValidator() {
     }
 
     public static String validateSourceId(final String id) {
-        if (isBlank(id)) {
-            return "The source id is required.";
-        }
-        if (!SOURCE_ID.matcher(id).matches()) {
-            return "Source id '" + id + "' must start with a letter or digit and contain only letters, digits, '.', '_' and '-'.";
-        }
-        return null;
+        return JdbcDataCollectionConfigRules.validateSourceId(id);
     }
 
     /** Validates a whole source, as it comes in with an upload. */

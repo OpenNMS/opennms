@@ -112,6 +112,10 @@
     <intercept-url pattern="/rest/cm/snmp-config.*" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
     <intercept-url pattern="/rest/cm/trapd-config/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
     <intercept-url pattern="/rest/cm/trapd-config.*" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>
+    <!-- The jdbc-datacollection-config CM configurations hold the SQL the JDBC collector runs. Only the admin role can
+         read or change them, the same as /api/v2/jdbc-datacollection. -->
+    <intercept-url pattern="/rest/cm/jdbc-datacollection-config/**" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/cm/jdbc-datacollection-config.*" access="hasAnyRole('ROLE_ADMIN')"/>
 
 
     <!-- Calls to health/overview are always accepted -->
@@ -398,8 +402,12 @@
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/datacollectionconf.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
 
-    <!-- JDBC data collection configuration holds the SQL the collector runs; mutation is admin-only.
-         Reads fall through to the generic read rule below; download and upload check the admin role themselves. -->
+    <!-- JDBC data collection configuration holds the SQL the collector runs; admin-only in every method
+         (the service also asserts it in code for the reads, the download and the upload). -->
+    <intercept-url pattern="/api/v2/jdbc-datacollection/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection.*" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/jdbc-datacollection/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/jdbc-datacollection.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/jdbc-datacollection/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
