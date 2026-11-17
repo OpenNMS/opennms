@@ -63,7 +63,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // Provisioning
         new String[] { "Manage Provisioning Requisitions", "//h4[contains(text(), 'Requisitions (')]" },
         new String[] { "Import and Export Asset Information", "//span[text()='Import and Export Assets']" },
-        new String[] { "Manage Surveillance Categories", "//span[text()='Surveillance Categories']" },
+        new String[] { "Manage Surveillance Categories", "//div[@id='app']//h1[@class='page-title' and normalize-space(text())='Surveillance Categories']" },
         new String[] { "Configure Discovery", "//span[text()='General Settings']" },
         new String[] { "Run Single Discovery Scan", "//span[text()='Exclude Ranges']" },
         new String[] { "Configure SNMP Community Names by IP Address", "//h2[text()='Manage SNMP Configuration']" },
