@@ -63,7 +63,7 @@ The following example illustrates collector package attributes that use some of 
 ----
 <package name="example1" remote="false"> <1>
   <filter>IPADDR != '0.0.0.0'</filter> <2>
-  <include-range begin="1.0.0.0" end="254.254.254.254"/> <3>
+  <include-range begin="1.1.1.1" end="254.254.254.254"/> <3>
   <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/> <4>
   ...
 </package>

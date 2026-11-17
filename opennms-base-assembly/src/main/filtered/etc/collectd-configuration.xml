@@ -60,7 +60,7 @@
    </package>
    <package name="opennms" remote="false">
       <filter>IPADDR != '0.0.0.0'</filter>
-      <include-range begin="1.0.0.0" end="254.254.254.254" />
+      <include-range begin="1.1.1.1" end="254.254.254.254" />
       <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
       <service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
          <parameter key="port" value="${requisition:port|detector:port|18980}" />
@@ -108,7 +108,7 @@
    </package>
    <package name="example1" remote="false">
       <filter>IPADDR != '0.0.0.0'</filter>
-      <include-range begin="1.0.0.0" end="254.254.254.254" />
+      <include-range begin="1.1.1.1" end="254.254.254.254" />
       <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
       <service name="SNMP" interval="300000" user-defined="false" status="on">
          <parameter key="collection" value="${requisition:collection|detector:collection|default}" />
