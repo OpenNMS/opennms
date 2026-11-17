@@ -50,10 +50,20 @@ import org.opennms.web.rest.v2.model.ParameterDto;
  * Converts between the JAXB HTTP collection config model and the REST DTOs.
  *
  * <p>URL attributes with a schema default are read through the model's getters, so a DTO always shows the value
- * the collector uses. On the way back a null DTO field leaves the model field unset, which means the default.
+ * the collector uses. On the way back a null DTO field, or one holding the schema default, leaves the model field unset,
+ * so a save does not write the defaults the DTO shows into the stored URL.
  * Expects a DTO that passed {@code HttpCollectionConfigValidator}; the model setters reject empty required values.</p>
  */
 public abstract class HttpCollectionConfigMapper {
+
+    // The schema defaults, as the getters of Url return them for an unset field.
+    static final String DEFAULT_METHOD = "GET";
+    static final String DEFAULT_HTTP_VERSION = "1.1";
+    static final String DEFAULT_SCHEME = "http";
+    static final String DEFAULT_HOST = "${ipaddr}";
+    static final Integer DEFAULT_PORT = 80;
+    static final String DEFAULT_MATCHES = "(.*)";
+    static final String DEFAULT_RESPONSE_RANGE = "100-399";
 
     private HttpCollectionConfigMapper() {
     }
@@ -181,27 +191,27 @@ public abstract class HttpCollectionConfigMapper {
 
     public static Url toEntity(final HttpUrlDto dto) {
         final Url url = new Url();
-        url.setMethod(dto.getMethod());
-        url.setHttpVersion(dto.getHttpVersion());
+        url.setMethod(unlessDefault(dto.getMethod(), DEFAULT_METHOD));
+        url.setHttpVersion(unlessDefault(dto.getHttpVersion(), DEFAULT_HTTP_VERSION));
         url.setUserAgent(dto.getUserAgent());
         url.setVirtualHost(dto.getVirtualHost());
-        url.setScheme(dto.getScheme());
+        url.setScheme(unlessDefault(dto.getScheme(), DEFAULT_SCHEME));
         url.setUserInfo(dto.getUserInfo());
-        url.setHost(dto.getHost());
-        url.setPort(dto.getPort());
+        url.setHost(unlessDefault(dto.getHost(), DEFAULT_HOST));
+        url.setPort(unlessDefault(dto.getPort(), DEFAULT_PORT));
         url.setPath(dto.getPath().trim());
         url.setQuery(dto.getQuery());
         url.setFragment(dto.getFragment());
-        url.setMatches(dto.getMatches());
-        url.setResponseRange(dto.getResponseRange());
-        url.setCanonicalEquivalence(dto.getCanonicalEquivalence());
-        url.setCaseInsensitive(dto.getCaseInsensitive());
-        url.setComments(dto.getComments());
-        url.setDotall(dto.getDotall());
-        url.setLiteral(dto.getLiteral());
-        url.setMultiline(dto.getMultiline());
-        url.setUnicodeCase(dto.getUnicodeCase());
-        url.setUnixLines(dto.getUnixLines());
+        url.setMatches(unlessDefault(dto.getMatches(), DEFAULT_MATCHES));
+        url.setResponseRange(unlessDefault(dto.getResponseRange(), DEFAULT_RESPONSE_RANGE));
+        url.setCanonicalEquivalence(unlessDefault(dto.getCanonicalEquivalence(), Boolean.FALSE));
+        url.setCaseInsensitive(unlessDefault(dto.getCaseInsensitive(), Boolean.FALSE));
+        url.setComments(unlessDefault(dto.getComments(), Boolean.FALSE));
+        url.setDotall(unlessDefault(dto.getDotall(), Boolean.FALSE));
+        url.setLiteral(unlessDefault(dto.getLiteral(), Boolean.FALSE));
+        url.setMultiline(unlessDefault(dto.getMultiline(), Boolean.FALSE));
+        url.setUnicodeCase(unlessDefault(dto.getUnicodeCase(), Boolean.FALSE));
+        url.setUnixLines(unlessDefault(dto.getUnixLines(), Boolean.FALSE));
 
         final List<Parameter> parameters = map(dto.getParameters(), p -> {
             final Parameter parameter = new Parameter();
@@ -225,6 +235,10 @@ public abstract class HttpCollectionConfigMapper {
     }
 
     // ------------------------------------------------------------------ helpers
+
+    private static <T> T unlessDefault(final T value, final T defaultValue) {
+        return defaultValue.equals(value) ? null : value;
+    }
 
     private static <S, T> List<T> map(final Collection<S> source, final Function<S, T> mapper) {
         if (source == null) {

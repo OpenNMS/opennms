@@ -143,9 +143,9 @@ public class HttpCollectionConfigRestService implements HttpCollectionConfigRest
                     return preconditionFailed("The HTTP collector settings have changed since they were read.");
                 }
 
-                final HttpCollectionConfigDto draft = HttpCollectionConfigMapper.toDto(current);
-                draft.setRrdRepository(settings.getRrdRepository().trim());
-                httpCollectionConfigDao.replaceConfig(HttpCollectionConfigMapper.toEntity(draft));
+                final HttpDatacollectionConfig updated = copyOf(current);
+                updated.setRrdRepository(settings.getRrdRepository().trim());
+                httpCollectionConfigDao.replaceConfig(updated);
             }
         } catch (final ValidationException e) {
             LOG.warn("The HTTP collector settings failed schema validation.", e);
@@ -230,8 +230,9 @@ public class HttpCollectionConfigRestService implements HttpCollectionConfigRest
                 if (existing.isPresent()) {
                     return conflict("HTTP collection '" + existing.get().getName() + "' already exists.");
                 }
-                draft.getCollections().add(collection);
-                httpCollectionConfigDao.replaceConfig(HttpCollectionConfigMapper.toEntity(draft));
+                final HttpDatacollectionConfig updated = copyOf(current);
+                updated.getHttpCollection().add(HttpCollectionConfigMapper.toEntity(collection));
+                httpCollectionConfigDao.replaceConfig(updated);
             }
         } catch (final ValidationException e) {
             LOG.warn("HTTP collection {} failed schema validation.", name, e);
@@ -284,8 +285,9 @@ public class HttpCollectionConfigRestService implements HttpCollectionConfigRest
                     }
                 }
 
-                draft.getCollections().set(index, collection);
-                httpCollectionConfigDao.replaceConfig(HttpCollectionConfigMapper.toEntity(draft));
+                final HttpDatacollectionConfig updated = copyOf(current);
+                updated.getHttpCollection().set(index, HttpCollectionConfigMapper.toEntity(collection));
+                httpCollectionConfigDao.replaceConfig(updated);
             }
         } catch (final ValidationException e) {
             LOG.warn("HTTP collection {} failed schema validation.", name, e);
@@ -323,9 +325,13 @@ public class HttpCollectionConfigRestService implements HttpCollectionConfigRest
                             + String.join(", ", users) + ".");
                 }
 
-                draft.getCollections().remove(index);
-                httpCollectionConfigDao.replaceConfig(HttpCollectionConfigMapper.toEntity(draft));
+                final HttpDatacollectionConfig updated = copyOf(current);
+                updated.getHttpCollection().remove(index);
+                httpCollectionConfigDao.replaceConfig(updated);
             }
+        } catch (final ValidationException e) {
+            LOG.warn("Deleting HTTP collection {} failed schema validation.", name, e);
+            return badRequest(e.getMessage());
         } catch (final Exception e) {
             LOG.error("Failed to delete HTTP collection {}.", name, e);
             return serverError(PERSIST_FAILED_MESSAGE);
@@ -445,6 +451,15 @@ public class HttpCollectionConfigRestService implements HttpCollectionConfigRest
         final HttpCollectionSettingsDto dto = new HttpCollectionSettingsDto();
         dto.setRrdRepository(config.getRrdRepository());
         return dto;
+    }
+
+    /**
+     * A copy of the stored model to apply a change to. Writes splice the changed collection into this copy instead of
+     * mapping the whole config through the DTOs, which would store the defaults the DTOs show for every URL.
+     * The DTO list from {@code toDto(config)} keeps the model's order, so an index found there is valid here.
+     */
+    private static HttpDatacollectionConfig copyOf(final HttpDatacollectionConfig config) {
+        return JaxbUtils.duplicateObject(config, HttpDatacollectionConfig.class);
     }
 
     /** The collector looks collections up ignoring case, so this does too. */

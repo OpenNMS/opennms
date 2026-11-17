@@ -49,6 +49,7 @@ import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
+import org.opennms.netmgt.config.httpdatacollection.Url;
 import org.opennms.netmgt.dao.api.HttpCollectionConfigDao;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.v2.model.HttpAttribDto;
@@ -329,6 +330,74 @@ public class HttpCollectionConfigRestServiceTest {
         try (Response response = restService.createCollection(collection("new-one"), adminContext())) {
             assertEquals(400, response.getStatus());
             assertEquals("schema says no", response.getEntity());
+        }
+    }
+
+    @Test
+    public void mapsASchemaFailureOfADeleteToABadRequest() {
+        dao.failure = new org.opennms.features.config.exception.ValidationException("schema says no");
+        try (Response response = restService.deleteCollection("unused", null, adminContext())) {
+            assertEquals(400, response.getStatus());
+            assertEquals("schema says no", response.getEntity());
+        }
+    }
+
+    // ------------------------------------------------------------ stored defaults
+
+    @Test
+    public void updateLeavesTheOtherCollectionsAsStored() {
+        final String untouched = JaxbUtils.marshal(dao.config.getHttpCollection().get(0));
+        final HttpCollectionDto dto = read("unused");
+        dto.getRrd().setStep(120);
+        try (Response response = restService.updateCollection("unused", dto, null, adminContext())) {
+            assertEquals(204, response.getStatus());
+        }
+        // doc-count keeps its explicit response-range and gets none of the defaults the API shows.
+        assertEquals(untouched, JaxbUtils.marshal(dao.config.getHttpCollection().get(0)));
+        // The saved collection does not store the defaults its DTO carried either.
+        assertNoDefaultsStored(dao.config.getHttpCollection().get(1).getUris().get(0).getUrl());
+    }
+
+    @Test
+    public void createDeleteAndSettingsLeaveTheOtherCollectionsAsStored() {
+        final String untouched = JaxbUtils.marshal(dao.config.getHttpCollection().get(0));
+
+        try (Response response = restService.createCollection(collection("new-one"), adminContext())) {
+            assertEquals(201, response.getStatus());
+        }
+        assertEquals(untouched, JaxbUtils.marshal(dao.config.getHttpCollection().get(0)));
+        assertNoDefaultsStored(dao.config.getHttpCollection().get(2).getUris().get(0).getUrl());
+
+        try (Response response = restService.deleteCollection("unused", null, adminContext())) {
+            assertEquals(204, response.getStatus());
+        }
+        assertEquals(untouched, JaxbUtils.marshal(dao.config.getHttpCollection().get(0)));
+        assertNoDefaultsStored(dao.config.getHttpCollection().get(1).getUris().get(0).getUrl());
+
+        final HttpCollectionSettingsDto settings = new HttpCollectionSettingsDto();
+        settings.setRrdRepository("/tmp/rrd/");
+        try (Response response = restService.updateSettings(settings, null, adminContext())) {
+            assertEquals(204, response.getStatus());
+        }
+        assertEquals("/tmp/rrd/", dao.config.getRrdRepository());
+        assertEquals(untouched, JaxbUtils.marshal(dao.config.getHttpCollection().get(0)));
+        assertNoDefaultsStored(dao.config.getHttpCollection().get(1).getUris().get(0).getUrl());
+    }
+
+    @Test
+    public void xmlUploadDoesNotStoreDefaults() throws Exception {
+        try (Response response = restService.uploadConfigurationXml(attachment(CONFIG_XML), adminContext())) {
+            assertEquals(200, response.getStatus());
+        }
+        assertNoDefaultsStored(dao.config.getHttpCollection().get(0).getUris().get(0).getUrl());
+        assertNoDefaultsStored(dao.config.getHttpCollection().get(1).getUris().get(0).getUrl());
+    }
+
+    private static void assertNoDefaultsStored(final Url url) {
+        final String xml = JaxbUtils.marshal(url);
+        for (final String attribute : List.of(" method=", " http-version=", " scheme=", " host=", " port=",
+                " matches=\"(.*)\"", " response-range=\"100-399\"", " literal=", " unix-lines=")) {
+            assertFalse(xml, xml.contains(attribute));
         }
     }
 

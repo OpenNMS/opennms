@@ -47,7 +47,7 @@ public class HttpCollectionConfigMapperTest {
                     <url method="POST" http-version="1.0" user-agent="agent" virtual-host="vhost" scheme="https"
                          user-info="user:secret" host="example.org" port="8443" path="/p" query="a=b" fragment="f"
                          matches="A=([0-9]+) B=(\\w+)" response-range="200-299" canonical-equivalence="true"
-                         case-insensitive="true" comments="true" dotall="true" literal="false" multiline="true"
+                         case-insensitive="true" comments="true" dotall="true" literal="true" multiline="true"
                          unicode-case="true" unix-lines="true">
                       <parameters><parameter key="k" value="v"/></parameters>
                       <headers><header name="Authorization" value="Bearer ${scv:token:password}"/></headers>
@@ -82,7 +82,7 @@ public class HttpCollectionConfigMapperTest {
     }
 
     @Test
-    public void showsDefaultsAndWritesThemExplicitly() {
+    public void showsDefaultsButDoesNotStoreThem() {
         final HttpDatacollectionConfig config = JaxbUtils.unmarshal(HttpDatacollectionConfig.class, FULL_XML);
         final HttpUrlDto defaults = HttpCollectionConfigMapper.toDto(config).getCollections().get(0).getUris().get(1).getUrl();
         assertEquals("GET", defaults.getMethod());
@@ -95,6 +95,30 @@ public class HttpCollectionConfigMapperTest {
         assertEquals(Boolean.FALSE, defaults.getDotall());
         assertNull(defaults.getUserInfo());
         assertTrue(defaults.getHeaders().isEmpty());
+
+        // Saving what the API showed must not turn the defaults into explicit values.
+        final Url stored = HttpCollectionConfigMapper.toEntity(defaults);
+        assertEquals(config.getHttpCollection().get(0).getUris().get(1).getUrl(), stored);
+        final String xml = JaxbUtils.marshal(stored);
+        for (final String attribute : List.of("method=", "http-version=", "scheme=", "host=", "port=", "matches=",
+                "response-range=", "dotall=", "literal=", "unix-lines=")) {
+            assertFalse(xml, xml.contains(attribute));
+        }
+    }
+
+    @Test
+    public void storesAnExplicitDefaultAsUnset() {
+        final HttpUrlDto dto = new HttpUrlDto();
+        dto.setPath("/p");
+        dto.setMethod("GET");
+        dto.setPort(80);
+        dto.setCaseInsensitive(false);
+        dto.setResponseRange("200-299");
+
+        final Url expected = new Url();
+        expected.setPath("/p");
+        expected.setResponseRange("200-299");
+        assertEquals(expected, HttpCollectionConfigMapper.toEntity(dto));
     }
 
     @Test

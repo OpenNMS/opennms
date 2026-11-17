@@ -26,7 +26,7 @@ A `PUT` body is not a patch; a URI missing from it is deleted.
 Read the collection, change what you need, and send the whole thing back.
 
 URL attributes the configuration leaves unset are returned with their default (`method` `GET`, `port` `80`, `host` `$\{ipaddr}`, `matches` `(.*)`, and so on).
-A `null` field in a write also means the default.
+A `null` field in a write also means the default; a field that holds its default is stored as unset, and a write leaves the other collections as they are stored.
 
 == Concurrent edits
 
