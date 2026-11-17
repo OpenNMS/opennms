@@ -62,5 +62,6 @@
     <module>spring-web</module>
     <module>twitter4j</module>
     <module>jcifs-shaded</module>
+    <module>jinjava-shaded</module>
   </modules>
 </project>
