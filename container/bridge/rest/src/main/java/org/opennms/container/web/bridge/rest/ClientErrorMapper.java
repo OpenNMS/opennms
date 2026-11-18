@@ -22,31 +22,25 @@
 package org.opennms.container.web.bridge.rest;
 
 import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.Providers;
 
 /**
- * Converts a {@link ClientErrorException} that has no mapper of its own.
- * CXF throws this exception type when a request matches a resource but no method of the resource.
+ * Keeps the status code of a {@link ClientErrorException}, for example 400, 404, 405, 406 or 415.
+ * The response entity is the exception message as plain text.
  * <p>
- * Status 404 stays 404. For each other status, the mapper for {@link Exception} makes the response.
+ * Without this mapper, a mapper for {@link Exception} can change the status code.
  */
 @Provider
 public class ClientErrorMapper implements ExceptionMapper<ClientErrorException> {
 
-    @Context
-    private Providers providers;
-
     @Override
     public Response toResponse(final ClientErrorException exception) {
-        final Response response = exception.getResponse();
-        if (response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
-            return Response.status(Response.Status.NOT_FOUND).entity(exception.getMessage()).build();
-        }
-        final ExceptionMapper<Exception> fallback = providers.getExceptionMapper(Exception.class);
-        return fallback == null ? response : fallback.toResponse(exception);
+        return Response.fromResponse(exception.getResponse())
+                .type(MediaType.TEXT_PLAIN)
+                .entity(exception.getMessage())
+                .build();
     }
 }

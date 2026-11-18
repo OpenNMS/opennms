@@ -32,6 +32,7 @@ import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -196,6 +197,51 @@ public class OsgiRestIT {
                 .get("/rest/health/osgi-rest-it-missing")
         .then()
                 .statusCode(404)
+                .body(not(containsString("<html")));
+    }
+
+    @Test
+    public void returnsBadRequestForInvalidEntity() {
+        asAdmin()
+                .contentType(XML_UTF_8)
+                .body("INVALID-XML".getBytes(StandardCharsets.UTF_8))
+        .when()
+                .post("/rest/graphml/{name}", "osgi-rest-it-invalid")
+        .then()
+                .statusCode(400)
+                .body(not(containsString("<html")));
+    }
+
+    @Test
+    public void returnsMethodNotAllowedForUnsupportedMethod() {
+        asAdmin()
+        .when()
+                .delete("/rest/scv")
+        .then()
+                .statusCode(405)
+                .body(not(containsString("<html")));
+    }
+
+    @Test
+    public void returnsNotAcceptableForUnsupportedAcceptType() {
+        asAdmin()
+                .accept(ContentType.XML)
+        .when()
+                .get("/rest/scv")
+        .then()
+                .statusCode(406)
+                .body(not(containsString("<html")));
+    }
+
+    @Test
+    public void returnsUnsupportedMediaTypeForUnsupportedContentType() {
+        asAdmin()
+                .contentType(ContentType.TEXT)
+                .body("osgi-rest-it")
+        .when()
+                .post("/rest/scv")
+        .then()
+                .statusCode(415)
                 .body(not(containsString("<html")));
     }
 
