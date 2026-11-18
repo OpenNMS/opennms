@@ -94,6 +94,21 @@
   --onms-minor: #ffac26;
   --onms-cleared: #757575;
   --onms-indeterminate: #0092c7;
+
+  // Severity icons (SeverityIcon): the circle (bg) and the glyph on it (fg). Each glyph is the one
+  // of white and near-black with the higher contrast on its circle.
+  --onms-severity-critical-bg: var(--onms-error);
+  --onms-severity-critical-fg: #ffffff;
+  --onms-severity-major-bg: var(--onms-major);
+  --onms-severity-major-fg: #0a0c1b;
+  --onms-severity-minor-bg: var(--onms-minor);
+  --onms-severity-minor-fg: #0a0c1b;
+  --onms-severity-warning-bg: var(--onms-warning);
+  --onms-severity-warning-fg: #0a0c1b;
+  --onms-severity-normal-bg: var(--onms-indeterminate);
+  --onms-severity-normal-fg: #0a0c1b;
+  --onms-severity-none-bg: var(--onms-cleared);
+  --onms-severity-none-fg: #ffffff;
 }
 
 .open-dark {
@@ -121,4 +136,19 @@
   --onms-minor: #ffac26;
   --onms-cleared: #b7b7b7;
   --onms-indeterminate: #20b9f0;
+
+  // As in the light theme. Critical takes the error icon red: --onms-error is a pink here, which
+  // does not read as critical.
+  --onms-severity-critical-bg: var(--onms-error-icon);
+  --onms-severity-critical-fg: #ffffff;
+  --onms-severity-major-bg: var(--onms-major);
+  --onms-severity-major-fg: #0a0c1b;
+  --onms-severity-minor-bg: var(--onms-minor);
+  --onms-severity-minor-fg: #0a0c1b;
+  --onms-severity-warning-bg: var(--onms-warning);
+  --onms-severity-warning-fg: #0a0c1b;
+  --onms-severity-normal-bg: var(--onms-indeterminate);
+  --onms-severity-normal-fg: #0a0c1b;
+  --onms-severity-none-bg: var(--onms-cleared);
+  --onms-severity-none-fg: #0a0c1b;
 }

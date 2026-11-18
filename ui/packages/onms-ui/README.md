@@ -214,9 +214,9 @@ import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 // then: <OnmsIcon :icon="DeleteIcon" />
 ```
 
-The 12 category directories (`account`, `action`, `communication`, `content`,
+The 13 category directories (`account`, `action`, `communication`, `content`,
 `datavis`, `file`, `hardware`, `medical`, `navigation`, `network`,
-`notification`, `status`) are part of the path. They matter: several basenames
+`notification`, `severity`, `status`) are part of the path. They matter: several basenames
 (`Server`, `Cloud`, `Security`, `Group`, `Build`, `Code`, `Cancel`, …) appear in
 more than one category, so the category is what disambiguates them.
 

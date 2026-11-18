@@ -119,6 +119,7 @@ describe('NodeStatusBox.vue', () => {
 
     expect(wrapper.text()).toContain('Checking node status')
     expect(wrapper.find('[data-test="node-status"]').classes()).toContain('node-details-banner--none')
+    expect(wrapper.find('[data-test="node-status-icon"]').exists()).toBe(false)
   })
 
   it('shows a node with no problems as normal, without counts', async () => {
@@ -127,8 +128,19 @@ describe('NodeStatusBox.vue', () => {
 
     expect(wrapper.find('[data-test="node-status-message"]').text()).toBe('Node has no problem alarms.')
     expect(wrapper.find('[data-test="node-status"]').classes()).toContain('node-details-banner--normal')
+    expect(wrapper.find('[data-test="node-status-icon"]').classes()).toContain('severity-icon--normal')
     expect(wrapper.find('[data-test="node-status-unack-link"]').exists()).toBe(false)
     expect(wrapper.find('[data-test="node-status-ack-link"]').exists()).toBe(false)
+  })
+
+  it('leads with the icon for the worst unacknowledged alarm\'s severity', async () => {
+    const wrapper = mountBox(() => answerWith(major))
+    await flushPromises()
+
+    const icon = wrapper.find('[data-test="node-status-icon"]')
+    expect(icon.classes()).toContain('severity-icon--major')
+    expect(icon.attributes('aria-label')).toBe('Major severity')
+    expect(icon.element.nextElementSibling?.getAttribute('data-test')).toBe('node-status-message')
   })
 
   describe('count tags', () => {
@@ -189,6 +201,8 @@ describe('NodeStatusBox.vue', () => {
 
     expect(wrapper.find('[data-test="node-status-unavailable"]').exists()).toBe(true)
     expect(wrapper.find('[data-test="node-status"]').classes()).toContain('node-details-banner--none')
+    expect(wrapper.find('[data-test="node-status-icon"]').classes()).toContain('severity-icon--none')
+    expect(wrapper.find('[data-test="node-status-icon"]').attributes('aria-label')).toBe('Unknown severity')
   })
 
   // A minute-old status says more than none.

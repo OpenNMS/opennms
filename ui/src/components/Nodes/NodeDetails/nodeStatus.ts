@@ -20,19 +20,16 @@
 /// License.
 ///
 
+import { severityKey, SeverityKey } from '@/lib/severity'
 import { plural } from '@/lib/utils'
 import { NodeAlarmStatus } from '@/types/index'
 
-// The tints NodeDetailsBanner offers. Indeterminate and cleared are never a node's status here --
-// they are not problems -- so they have none of their own.
-export type BannerSeverity = 'none' | 'normal' | 'warning' | 'minor' | 'major' | 'critical'
+// The tints NodeDetailsBanner offers: one per severity look. Indeterminate and cleared are never a
+// node's status here -- they are not problems -- so they have none of their own.
+export type BannerSeverity = SeverityKey
 
 /** The banner tint for an OnmsSeverity name; `none` for one that has no tint. */
-export const bannerSeverity = (severity: string | undefined): BannerSeverity => {
-  const key = (severity ?? '').toLowerCase()
-
-  return (['normal', 'warning', 'minor', 'major', 'critical'] as const).find(s => s === key) ?? 'none'
-}
+export const bannerSeverity = (severity: string | undefined): BannerSeverity => severityKey(severity)
 
 /**
  * A node's at-a-glance status, as the legacy node page's status box showed it.

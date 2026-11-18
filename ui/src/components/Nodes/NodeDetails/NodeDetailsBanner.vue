@@ -27,7 +27,6 @@ withDefaults(defineProps<{
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/onms-tokens' as variables;
 @use '@/styles/onms-color-utils' as utils;
 
 .node-details-banner {
@@ -45,18 +44,11 @@ withDefaults(defineProps<{
   }
 }
 
-$severity-tokens: (
-  'normal': variables.$success,
-  'warning': variables.$warning,
-  'minor': variables.$minor,
-  'major': variables.$major,
-  'critical': variables.$error
-);
-
-@each $name, $token in $severity-tokens {
+// The severity icons' colors (SeverityIcon), so a banner and its icon always agree.
+@each $name in normal, warning, minor, major, critical {
   .node-details-banner--#{$name} {
-    border-left-color: var(#{$token});
-    background: utils.alpha($token, 0.2);
+    border-left-color: var(--onms-severity-#{$name}-bg);
+    background: utils.alpha(--onms-severity-#{$name}-bg, 0.2);
   }
 }
 

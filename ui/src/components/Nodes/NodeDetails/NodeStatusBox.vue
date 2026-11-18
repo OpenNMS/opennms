@@ -5,6 +5,11 @@
     data-test="node-status"
   >
     <template v-if="status">
+      <SeverityIcon
+        :severity="status.severity"
+        class="node-status-icon"
+        data-test="node-status-icon"
+      />
       <strong data-test="node-status-message">{{ status.message }}</strong>
       <!--
         A tag per count, each a link to the node's alarms in the legacy list. A count of 0 has no
@@ -36,10 +41,14 @@
         </NodeBannerTagLink>
       </span>
     </template>
-    <span
-      v-else-if="loadFailed"
-      data-test="node-status-unavailable"
-    >Node status is unavailable.</span>
+    <template v-else-if="loadFailed">
+      <!-- With no status, the severity is not known: the "?" icon. -->
+      <SeverityIcon
+        class="node-status-icon"
+        data-test="node-status-icon"
+      />
+      <span data-test="node-status-unavailable">Node status is unavailable.</span>
+    </template>
     <span v-else>Checking node status&hellip;</span>
   </NodeDetailsBanner>
 </template>
@@ -48,6 +57,7 @@
 import { computed, watch } from 'vue'
 import { plural } from '@/lib/utils'
 import useVisiblePolling from '@/composables/useVisiblePolling'
+import SeverityIcon from '@/components/Common/SeverityIcon.vue'
 import { useAlarmStore } from '@/stores/alarmStore'
 import { useMenuStore } from '@/stores/menuStore'
 import NodeBannerTagLink from './NodeBannerTagLink.vue'
@@ -101,6 +111,10 @@ defineExpose({ fetchStatus })
 </script>
 
 <style lang="scss" scoped>
+.node-status-icon {
+  margin-right: 0.5rem;
+}
+
 .node-status-tags {
   display: inline-flex;
   gap: 0.5rem;

@@ -72,6 +72,7 @@ The package covers most of the PrimeVue surface in use: buttons, form inputs (te
 ### UI, theming, layout
 
 - Icons: `OnmsIcon` wrapper + vendored SVG components, both in the seam package — `packages/onms-ui/src/icons/<category>/<Name>.vue`. Import via the subpath export, e.g. `import Delete from '@opennms/onms-ui/icons/action/Delete.vue'`. They are deliberately **not** exported from the package barrel (see `packages/onms-ui/README.md`, "Icons"): the barrel is assigned wholesale to `window.OnmsUI`, so a barrel export would force every icon into every bundle.
+- Alarm severity: show it with `SeverityIcon` (`src/components/Common/SeverityIcon.vue`), an icon from `icons/severity/` on a colored circle. Its colors are the `--onms-severity-<key>-bg`/`-fg` tokens in `onms-theme.scss`; `src/lib/severity.ts` maps an OnmsSeverity name to its key (`none` for indeterminate, cleared and unknown).
 - Layout: `OnmsAppLayout` (`src/components/Layout/OnmsAppLayout.vue`)
 - Theming: owned `--onms-*` tokens (`src/styles/onms-theme.scss`, `_onms-tokens.scss`) layered over PrimeVue's `--p-*` tokens; light/dark via `.open-light`/`.open-dark` class on `<html>`/`<body>` (PrimeVue `darkModeSelector`)
 - Typography: owned mixins in `src/styles/_onms-typography.scss` (CSS classes `.headline3`, `.headline4`, `.subtitle1`)
