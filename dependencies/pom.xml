@@ -58,5 +58,6 @@
     <module>spring-test</module>
     <module>spring-web</module>
     <module>jcifs-shaded</module>
+    <module>jinjava-shaded</module>
   </modules>
 </project>
