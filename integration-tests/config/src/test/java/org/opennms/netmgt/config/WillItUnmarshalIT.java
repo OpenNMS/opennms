@@ -283,7 +283,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "scriptd-configuration.xml", ScriptdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "snmp-config.xml", SnmpConfig.class, false, null);
         addFile(Source.EXAMPLE, "surveillance-views.xml", SurveillanceViewConfiguration.class, false, null);
-        addFile(Source.EXAMPLE, "threshd-configuration.xml", ThreshdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "thresholds.xml", ThresholdingConfig.class, false, null);
         addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, false, null);
 

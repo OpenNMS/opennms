@@ -33,10 +33,10 @@
           </annotation>
         </element>
 
-        <element maxOccurs="1" minOccurs="1" name="mstation" type="string">
+        <element maxOccurs="1" minOccurs="0" name="mstation" type="string">
           <annotation>
-            <documentation>Monitoring station? This is seemingly
-            unused.</documentation>
+            <documentation>Deprecated and ignored. Accepted only so that
+            existing users.xml files still validate.</documentation>
           </annotation>
         </element>
       </sequence>
