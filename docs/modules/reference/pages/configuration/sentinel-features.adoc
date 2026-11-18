@@ -470,6 +470,15 @@ parameters.some-key = some-value
 
 IMPORTANT: If you need a more sophisticated JMX configuration with custom rules, inject your own `config.yaml` file rather than relying on the default.
 
+=== Health check
+
+The `/health.sh` script in the image queries the health REST endpoint at `http://localhost:8181/sentinel/rest/health/probe` and exits with `0` when all health checks pass.
+You can use it as a Docker `HEALTHCHECK` or a Kubernetes `exec` probe.
+
+The endpoint is provided by the `opennms-health-rest-service` feature, which the container installs from `$\{SENTINEL_HOME}/etc/featuresBoot.d/health.boot`.
+The container writes this file on every start, so it is also present when an `etc` volume from an older image is reused, and changes made to it directly are not kept.
+To disable the endpoint, add a line `!opennms-health-rest-service` to another file in `featuresBoot.d`, for example through an overlay.
+
 [[sentinel-etc-overlay]]
 === Directory conventions
 
