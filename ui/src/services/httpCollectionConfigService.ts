@@ -29,6 +29,7 @@ import type {
   HttpCollectionSettings,
   HttpCollectionSummary
 } from '@/types/httpCollectionConfig'
+import { isPathAddressable } from '@/lib/adminValidation'
 import { v2 } from './axiosInstances'
 
 const endpoint = '/httpcollection'
@@ -75,10 +76,34 @@ const failureWithPayload = <T>(error: unknown, fallbackMessage: string): Validat
   return result
 }
 
+interface CollectionTarget {
+  url: string
+  params?: { name: string }
+}
+
+/**
+ * Where a request for one collection goes. The path form is used whenever it can carry the name; a name with
+ * / \ or % (which the servlet container rejects in a path segment), . or .., or the name 'item' (the query
+ * endpoint itself) goes in the query of collections/item instead.
+ */
+const collectionTarget = (name: string): CollectionTarget =>
+  isPathAddressable(name) && name !== 'item'
+    ? { url: `${endpoint}/collections/${encodeURIComponent(name)}` }
+    : { url: `${endpoint}/collections/item`, params: { name }}
+
+/** The request config for a collection target: its query, plus the ETag a GET returned as If-Match. */
+const requestConfig = (target: CollectionTarget, version?: string) => {
+  if (!target.params && !version) {
+    return undefined
+  }
+  return {
+    ...(target.params ? { params: target.params } : {}),
+    ...(version ? { headers: { 'If-Match': `"${version}"` }} : {})
+  }
+}
+
 /** The ETag a GET returned, ready to be sent back as If-Match. */
 const ifMatchHeaders = (version?: string) => (version ? { headers: { 'If-Match': `"${version}"` }} : undefined)
-
-const encodeName = (name: string) => encodeURIComponent(name)
 
 export const getHttpCollectionSettings = async (): Promise<ValidationResultWithPayload<HttpCollectionSettings>> => {
   try {
@@ -109,7 +134,8 @@ export const getHttpCollections = async (): Promise<ValidationResultWithPayload<
 
 export const getHttpCollection = async (name: string): Promise<ValidationResultWithPayload<HttpCollection>> => {
   try {
-    const response = await v2.get(`${endpoint}/collections/${encodeName(name)}`)
+    const target = collectionTarget(name)
+    const response = await v2.get(target.url, requestConfig(target))
     return createResultWithPayload<HttpCollection>(true, '', response.data)
   } catch (error) {
     return failureWithPayload<HttpCollection>(error, `Failed to retrieve HTTP collection '${name}'.`)
@@ -129,7 +155,8 @@ export const createHttpCollection = async (collection: HttpCollection): Promise<
 export const updateHttpCollection = async (name: string, collection: HttpCollection): Promise<ValidationResult> => {
   try {
     const { version, ...body } = collection
-    await v2.put(`${endpoint}/collections/${encodeName(name)}`, body, ifMatchHeaders(version))
+    const target = collectionTarget(name)
+    await v2.put(target.url, body, requestConfig(target, version))
     return createSuccessResponse()
   } catch (error) {
     return failure(error, `Failed to save HTTP collection '${name}'.`)
@@ -138,7 +165,8 @@ export const updateHttpCollection = async (name: string, collection: HttpCollect
 
 export const deleteHttpCollection = async (name: string, version?: string): Promise<ValidationResult> => {
   try {
-    await v2.delete(`${endpoint}/collections/${encodeName(name)}`, ifMatchHeaders(version))
+    const target = collectionTarget(name)
+    await v2.delete(target.url, requestConfig(target, version))
     return createSuccessResponse()
   } catch (error) {
     return failure(error, `Failed to delete HTTP collection '${name}'.`)

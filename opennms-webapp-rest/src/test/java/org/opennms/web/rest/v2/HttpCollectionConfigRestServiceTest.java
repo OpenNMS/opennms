@@ -216,20 +216,85 @@ public class HttpCollectionConfigRestServiceTest {
 
     @Test
     public void createsACollectionWhoseNameNeedsEncoding() {
-        try (Response response = restService.createCollection(collection("my collection 90%"), adminContext())) {
+        try (Response response = restService.createCollection(collection("my collection #1"), adminContext())) {
             assertEquals(201, response.getStatus());
-            assertEquals("httpcollection/collections/my%20collection%2090%25", response.getLocation().toString());
+            assertEquals("httpcollection/collections/my%20collection%20%231", response.getLocation().toString());
         }
         assertEquals(3, dao.config.getHttpCollection().size());
-        assertEquals("my collection 90%", dao.config.getHttpCollection().get(2).getName());
+        assertEquals("my collection #1", dao.config.getHttpCollection().get(2).getName());
     }
 
     @Test
-    public void refusesASlashInTheCollectionName() {
+    public void createsACollectionAPathCannotCarryAndPointsAtTheQueryForm() {
+        try (Response response = restService.createCollection(collection("a/b 90%"), adminContext())) {
+            assertEquals(201, response.getStatus());
+            assertEquals("httpcollection/collections/item?name=a/b+90%25", response.getLocation().toString());
+        }
+        assertEquals("a/b 90%", dao.config.getHttpCollection().get(2).getName());
+    }
+
+    @Test
+    public void pointsAtTheQueryFormForReservedNames() {
+        for (final String name : new String[] { "item", ".", "..", "a\\b" }) {
+            assertTrue(name, HttpCollectionConfigRestService.locationOf(name).toString().startsWith("httpcollection/collections/item?name="));
+        }
+        assertEquals("httpcollection/collections/items", HttpCollectionConfigRestService.locationOf("items").toString());
+    }
+
+    @Test
+    public void readsUpdatesAndDeletesACollectionAPathCannotCarry() {
         try (Response response = restService.createCollection(collection("a/b"), adminContext())) {
-            assertEquals(400, response.getStatus());
+            assertEquals(201, response.getStatus());
+        }
+
+        final HttpCollectionDto dto;
+        try (Response response = restService.getCollectionByQuery("a/b", adminContext())) {
+            assertEquals(200, response.getStatus());
+            dto = (HttpCollectionDto) response.getEntity();
+        }
+        assertEquals("a/b", dto.getName());
+        assertNotNull(dto.getVersion());
+
+        dto.getRrd().setStep(120);
+        try (Response response = restService.updateCollectionByQuery("a/b", dto, dto.getVersion(), adminContext())) {
+            assertEquals(204, response.getStatus());
+        }
+        assertEquals(120, dao.config.getHttpCollection().get(2).getRrd().getStep());
+
+        try (Response response = restService.updateCollectionByQuery("a/b", dto, dto.getVersion(), adminContext())) {
+            assertEquals("the old version is stale after the update", 412, response.getStatus());
+        }
+
+        try (Response response = restService.deleteCollectionByQuery("a/b", null, adminContext())) {
+            assertEquals(204, response.getStatus());
+        }
+        assertEquals(List.of("doc-count", "unused"), dao.config.getHttpCollection().stream().map(c -> c.getName()).toList());
+    }
+
+    @Test
+    public void refusesTheQueryFormWithoutAName() {
+        final HttpCollectionDto dto = collection("x");
+        for (final String name : new String[] { null, "" }) {
+            try (Response response = restService.getCollectionByQuery(name, adminContext())) {
+                assertEquals(400, response.getStatus());
+            }
+            try (Response response = restService.updateCollectionByQuery(name, dto, null, adminContext())) {
+                assertEquals(400, response.getStatus());
+            }
+            try (Response response = restService.deleteCollectionByQuery(name, null, adminContext())) {
+                assertEquals(400, response.getStatus());
+            }
         }
         assertEquals(0, dao.writes);
+    }
+
+    @Test
+    public void acceptsAnUploadWithACollectionAPathCannotCarry() {
+        final String xml = CONFIG_XML.replace("name=\"unused\"", "name=\"legacy/status\"");
+        try (Response response = restService.uploadConfigurationXml(attachment(xml), adminContext())) {
+            assertEquals(200, response.getStatus());
+        }
+        assertEquals("legacy/status", dao.config.getHttpCollection().get(1).getName());
     }
 
     @Test

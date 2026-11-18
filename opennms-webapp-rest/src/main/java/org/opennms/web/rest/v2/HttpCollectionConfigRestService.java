@@ -22,6 +22,7 @@
 package org.opennms.web.rest.v2;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -241,8 +242,25 @@ public class HttpCollectionConfigRestService implements HttpCollectionConfigRest
             LOG.error("Failed to create HTTP collection {}.", name, e);
             return serverError(PERSIST_FAILED_MESSAGE);
         }
-        // Built with UriBuilder: the name is user input and may contain characters that need encoding.
-        return Response.created(UriBuilder.fromPath("httpcollection/collections/{name}").build(name)).build();
+        return Response.created(locationOf(name)).build();
+    }
+
+    /** Built with UriBuilder: the name is user input and may contain characters that need encoding. */
+    static URI locationOf(final String name) {
+        if (isPathAddressable(name)) {
+            return UriBuilder.fromPath("httpcollection/collections/{name}").build(name);
+        }
+        return UriBuilder.fromPath("httpcollection/collections/item").queryParam("name", "{name}").build(name);
+    }
+
+    /**
+     * Whether a collection can be addressed as {@code collections/{name}}. The servlet container rejects
+     * / \ and % in a path segment, . and .. are path navigation, and "item" is the query endpoint itself.
+     * The UI applies the same rule (isPathAddressable in ui/src/lib/adminValidation.ts).
+     */
+    static boolean isPathAddressable(final String name) {
+        return name.chars().noneMatch(c -> c == '/' || c == '\\' || c == '%')
+                && !".".equals(name) && !"..".equals(name) && !"item".equals(name);
     }
 
     @Override
@@ -338,6 +356,26 @@ public class HttpCollectionConfigRestService implements HttpCollectionConfigRest
             return serverError(PERSIST_FAILED_MESSAGE);
         }
         return Response.noContent().build();
+    }
+
+    // ------------------------------------------- collections addressed by query
+
+    private static final String MISSING_NAME_MESSAGE = "The 'name' query parameter is required.";
+
+    @Override
+    public Response getCollectionByQuery(final String name, final SecurityContext securityContext) {
+        return name == null || name.isEmpty() ? badRequest(MISSING_NAME_MESSAGE) : getCollection(name, securityContext);
+    }
+
+    @Override
+    public Response updateCollectionByQuery(final String name, final HttpCollectionDto collection, final String ifMatch,
+                                            final SecurityContext securityContext) {
+        return name == null || name.isEmpty() ? badRequest(MISSING_NAME_MESSAGE) : updateCollection(name, collection, ifMatch, securityContext);
+    }
+
+    @Override
+    public Response deleteCollectionByQuery(final String name, final String ifMatch, final SecurityContext securityContext) {
+        return name == null || name.isEmpty() ? badRequest(MISSING_NAME_MESSAGE) : deleteCollection(name, ifMatch, securityContext);
     }
 
     // ------------------------------------------------------- download / upload
