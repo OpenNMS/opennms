@@ -328,6 +328,36 @@ public class CollectorTest {
     }
 
     @Test
+    public void testSortByMinMaxLastCollectionTime() {
+
+        Collector c = new Collector();
+        c.addLog("2010-03-13 02:21:30,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:31,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:32,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:42,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:30,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:35,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:40,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:42,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: end:example1/0/2.2.2.2/SNMP");
+
+        c.setSortColumn(SortColumn.MINCOLLECTTIME);
+        List<ServiceCollector> collectors = c.getServiceCollectors();
+        assertEquals("example1/0/2.2.2.2/SNMP", collectors.get(0).getServiceID());
+        assertEquals(2000L, collectors.get(0).getMinCollectionTime());
+
+        c.setSortColumn(SortColumn.MAXCOLLECTTIME);
+        collectors = c.getServiceCollectors();
+        assertEquals("example1/0/1.1.1.1/SNMP", collectors.get(0).getServiceID());
+        assertEquals(10000L, collectors.get(0).getMaxCollectionTime());
+
+        c.setSortColumn(SortColumn.LASTCOLLECTTIME);
+        c.setSortOrder(SortOrder.ASCENDING);
+        collectors = c.getServiceCollectors();
+        assertEquals("example1/0/2.2.2.2/SNMP", collectors.get(0).getServiceID());
+        assertEquals(2000L, collectors.get(0).getLastCollectionTime());
+    }
+
+    @Test
     public void testSortByAverageTimeBetweenCollections() {
 
         Collector c = new Collector();
