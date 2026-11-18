@@ -103,8 +103,9 @@ If you copied the plugin's `.kar` file into `$\{OPENNMS_HOME}/deploy`, do these 
 . Remove `wait-for-kar=opennms-prometheus-remotewrite-plugin` from `$\{OPENNMS_HOME}/etc/featuresBoot.d/prometheus-remotewrite.boot`.
 . Restart the {page-component-title} service.
 
-If you do not remove the `.kar` file, {page-component-title} starts the plugin version from the release.
-The version from the `.kar` file stays in the feature list and is not in use.
+If the `.kar` file stays in `$\{OPENNMS_HOME}/deploy`, two versions of the plugin are available.
+{page-component-title} then starts the highest version, which can be the version from the `.kar` file.
+Remove the `.kar` file to make sure that the version from the release is in use.
 
 == Validation
 
