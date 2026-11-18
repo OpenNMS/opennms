@@ -35,11 +35,13 @@ import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.opennms.container.web.bridge.api.RestEndpointRegistry;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -55,6 +57,9 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
  * The <code>application-path</code> service property selects the application that serves the resource.
  * A service is a provider when it has the {@link Provider} annotation or implements {@link Feature}.
  * Each application uses all providers.
+ * <p>
+ * The publisher registers the applications only with the HTTP service of the HTTP bridge.
+ * The web application forwards requests to that HTTP service and to no other.
  */
 @Component(name = "restEndpointRegistry", immediate = true)
 public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCustomizer<Object, OsgiRestPublisher.Published> {
@@ -63,39 +68,49 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
     static final String DEFAULT_APPLICATION_PATH = "/services";
 
     private static final Logger LOG = LoggerFactory.getLogger(OsgiRestPublisher.class);
-    private static final String ALL_SERVICES = "(objectClass=*)";
+    private static final String BRIDGE_BUNDLE = "org.apache.felix.http.bridge";
+    private static final Filter ALL_SERVICES_FILTER = allServices();
 
     private final Object lock = new Object();
     private final Map<String, RestApplication> applications = new HashMap<>();
     private final List<Object> providers = new ArrayList<>();
     private final Object jsonProvider = new JacksonJaxbJsonProvider();
 
-    private HttpService httpService;
     private BundleContext bundleContext;
+    private ServiceTracker<HttpService, HttpService> httpServiceTracker;
+    private HttpService httpService;
     private ServiceTracker<Object, Published> tracker;
 
-    @Reference
-    public void setHttpService(final HttpService httpService) {
-        this.httpService = httpService;
-    }
-
     @Activate
-    public void activate(final BundleContext bundleContext) throws Exception {
+    public void activate(final BundleContext bundleContext) {
         this.bundleContext = bundleContext;
         // Bundles call the JAX-RS API from threads that cannot find the implementation.
         // The API keeps the first implementation it finds.
         CxfClassLoader.run(RuntimeDelegate::getInstance);
-        tracker = new ServiceTracker<>(bundleContext, bundleContext.createFilter(ALL_SERVICES), this);
-        tracker.open();
+        httpServiceTracker = new ServiceTracker<>(bundleContext, HttpService.class, new BridgeHttpServiceCustomizer());
+        httpServiceTracker.open();
     }
 
     @Deactivate
     public void deactivate() {
+        httpServiceTracker.close();
+    }
+
+    private void start(final HttpService bridgeHttpService) {
+        synchronized (lock) {
+            httpService = bridgeHttpService;
+        }
+        tracker = new ServiceTracker<>(bundleContext, ALL_SERVICES_FILTER, this);
+        tracker.open();
+    }
+
+    private void stop() {
         tracker.close();
         synchronized (lock) {
             applications.values().forEach(RestApplication::close);
             applications.clear();
             providers.clear();
+            httpService = null;
         }
     }
 
@@ -188,6 +203,42 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
             application.publish(allProviders);
         } catch (Exception e) {
             LOG.error("Failed to publish the ReST application with path {}", application.getPath(), e);
+        }
+    }
+
+    private static Filter allServices() {
+        try {
+            return FrameworkUtil.createFilter("(objectClass=*)");
+        } catch (InvalidSyntaxException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /** Accepts the HTTP service of the HTTP bridge and ignores each other HTTP service. */
+    private final class BridgeHttpServiceCustomizer implements ServiceTrackerCustomizer<HttpService, HttpService> {
+
+        @Override
+        public HttpService addingService(final ServiceReference<HttpService> reference) {
+            if (!BRIDGE_BUNDLE.equals(reference.getBundle().getSymbolicName())) {
+                LOG.debug("Ignoring the HTTP service of bundle {}", reference.getBundle().getSymbolicName());
+                return null;
+            }
+            final HttpService bridgeHttpService = bundleContext.getService(reference);
+            if (bridgeHttpService != null) {
+                start(bridgeHttpService);
+            }
+            return bridgeHttpService;
+        }
+
+        @Override
+        public void modifiedService(final ServiceReference<HttpService> reference, final HttpService service) {
+            // The service properties have no effect on the publisher.
+        }
+
+        @Override
+        public void removedService(final ServiceReference<HttpService> reference, final HttpService service) {
+            stop();
+            bundleContext.ungetService(reference);
         }
     }
 
