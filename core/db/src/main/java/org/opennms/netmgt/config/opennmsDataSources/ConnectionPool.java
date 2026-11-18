@@ -161,6 +161,24 @@ public class ConnectionPool implements java.io.Serializable {
     }
 
     /**
+     * Interpolates an integer attribute. An absent or blank value (for example an
+     * environment variable that is set but empty) yields the default.
+     *
+     * @throws IllegalArgumentException if the value is not an integer, naming the attribute
+     */
+    private Integer resolveInteger(final String name, final String rawValue, final int defaultValue) {
+        final String interpolated = interpolateAttribute(rawValue);
+        if (interpolated == null || interpolated.isBlank()) {
+            return defaultValue;
+        }
+        try {
+            return Integer.valueOf(interpolated.trim());
+        } catch (final NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid connection pool " + name + " '" + interpolated + "', expected an integer", e);
+        }
+    }
+
+    /**
      * Returns the value of field 'factory'. The field 'factory' has the following
      * description: The connection pool implementation to use.
      *
@@ -178,8 +196,7 @@ public class ConnectionPool implements java.io.Serializable {
      * @return the value of field 'IdleTimeout'.
      */
     public Integer getIdleTimeout() {
-        String interpolated = interpolateAttribute(this.rawIdleTimeout);
-        return interpolated != null ? Integer.parseInt(interpolated) : 600;
+        return resolveInteger("idleTimeout", this.rawIdleTimeout, 600);
     }
 
     /**
@@ -190,8 +207,7 @@ public class ConnectionPool implements java.io.Serializable {
      * @return the value of field 'LoginTimeout'.
      */
     public Integer getLoginTimeout() {
-        String interpolated = interpolateAttribute(this.rawLoginTimeout);
-        return interpolated != null ? Integer.parseInt(interpolated) : 3;
+        return resolveInteger("loginTimeout", this.rawLoginTimeout, 3);
     }
 
     /**
@@ -201,8 +217,7 @@ public class ConnectionPool implements java.io.Serializable {
      * @return the value of field 'MaxPool'.
      */
     public Integer getMaxPool() {
-        String interpolated = interpolateAttribute(this.rawMaxPool);
-        return interpolated != null ? Integer.parseInt(interpolated) : 50;
+        return resolveInteger("maxPool", this.rawMaxPool, 50);
     }
 
     /**
@@ -212,8 +227,7 @@ public class ConnectionPool implements java.io.Serializable {
      * @return the value of field 'MaxSize'.
      */
     public Integer getMaxSize() {
-        String interpolated = interpolateAttribute(this.rawMaxSize);
-        return interpolated != null ? Integer.parseInt(interpolated) : 500;
+        return resolveInteger("maxSize", this.rawMaxSize, 500);
     }
 
     /**
@@ -223,8 +237,7 @@ public class ConnectionPool implements java.io.Serializable {
      * @return the value of field 'MinPool'.
      */
     public Integer getMinPool() {
-        String interpolated = interpolateAttribute(this.rawMinPool);
-        return interpolated != null ? Integer.parseInt(interpolated) : 10;
+        return resolveInteger("minPool", this.rawMinPool, 10);
     }
 
     /**

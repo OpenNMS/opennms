@@ -36,15 +36,33 @@ public class ConfigFactory {
         Objects.requireNonNull(connectionPool);
         Objects.requireNonNull(jdbcDataSource);
 
+        // Resolve every setting before the pool exists: creating it opens connections,
+        // and nothing would close them if an invalid value failed afterwards.
+        final int idleTimeout = connectionPool.getIdleTimeout();
+        final int loginTimeout = connectionPool.getLoginTimeout();
+        final int minPool = connectionPool.getMinPool();
+        final int maxPool = connectionPool.getMaxPool();
+        final int maxSize = connectionPool.getMaxSize();
+
         final String connectionPoolFactoryClassName = connectionPool.getFactory();
         final Class<?> clazz = Class.forName(connectionPoolFactoryClassName);
         final Constructor<?> constructor = clazz.getConstructor(new Class<?>[] { JdbcDataSource.class });
         final ClosableDataSource dataSource = (ClosableDataSource)constructor.newInstance(new Object[] { jdbcDataSource });
-        dataSource.setIdleTimeout(connectionPool.getIdleTimeout());
-        dataSource.setLoginTimeout(connectionPool.getLoginTimeout());
-        dataSource.setMinPool(connectionPool.getMinPool());
-        dataSource.setMaxPool(connectionPool.getMaxPool());
-        dataSource.setMaxSize(connectionPool.getMaxSize());
+        try {
+            dataSource.setIdleTimeout(idleTimeout);
+            dataSource.setLoginTimeout(loginTimeout);
+            dataSource.setMinPool(minPool);
+            dataSource.setMaxPool(maxPool);
+            dataSource.setMaxSize(maxSize);
+        } catch (final Exception | Error e) {
+            // The pool rejected a value (e.g. HikariCP refuses a maxPool below 1); don't leave it running
+            try {
+                dataSource.close();
+            } catch (final Exception closeFailure) {
+                e.addSuppressed(closeFailure);
+            }
+            throw e;
+        }
         return dataSource;
     }
 }
