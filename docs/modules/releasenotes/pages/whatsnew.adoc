@@ -37,6 +37,12 @@ Hexadecimal digits in IPv6 addresses and patterns now match regardless of case; 
 The upgrade builds the new indexes, which can take several minutes on an `events` table with tens of millions of rows that have an IP address.
 If necessary, set the system property `org.opennms.iplike.native=false` to restore the previous query behavior.
 
+=== OSGi ReST resources return client error status codes
+ReST resources that Karaf bundles and plugins provide now return the correct status code for a client error, for example 400, 405, 406, or 415.
+Before this release, these requests returned status 500.
+The response body is the error message as plain text.
+Change scripts and integrations that expect status 500 for such requests.
+
 === Trap audit log
 Trapd on core and Minion can now write one line per received SNMP trap, with the sender address and trap OID, to a dedicated `trap-audit.log`.
 It is disabled by default and is enabled by setting the `trap-audit` logger to `INFO` in `etc/log4j2.xml` (core) or `etc/org.ops4j.pax.logging.cfg` (Minion).

@@ -61,7 +61,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
  * The publisher registers the applications only with the HTTP service of the HTTP bridge.
  * The web application forwards requests to that HTTP service and to no other.
  */
-@Component(name = "restEndpointRegistry", immediate = true)
+@Component(name = "restEndpointRegistry", immediate = true, service = RestEndpointRegistry.class)
 public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCustomizer<Object, OsgiRestPublisher.Published> {
 
     static final String APPLICATION_PATH = "application-path";
@@ -80,6 +80,7 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
     private ServiceTracker<HttpService, HttpService> httpServiceTracker;
     private HttpService httpService;
     private ServiceTracker<Object, Published> tracker;
+    private boolean publishSuspended;
 
     @Activate
     public void activate(final BundleContext bundleContext) {
@@ -99,18 +100,31 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
     private void start(final HttpService bridgeHttpService) {
         synchronized (lock) {
             httpService = bridgeHttpService;
+            publishSuspended = true;
         }
         tracker = new ServiceTracker<>(bundleContext, ALL_SERVICES_FILTER, this);
-        tracker.open();
+        try {
+            tracker.open();
+        } finally {
+            // One publish operation serves all services that the tracker found.
+            synchronized (lock) {
+                publishSuspended = false;
+                republishAll();
+            }
+        }
     }
 
     private void stop() {
+        synchronized (lock) {
+            publishSuspended = true;
+        }
         tracker.close();
         synchronized (lock) {
             applications.values().forEach(RestApplication::close);
             applications.clear();
             providers.clear();
             httpService = null;
+            publishSuspended = false;
         }
     }
 
@@ -168,6 +182,9 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
                         path -> new RestApplication(path, httpService));
                 application.addResource(published.service);
                 republish(application);
+                if (application.isEmpty()) {
+                    applications.remove(published.applicationPath);
+                }
             }
         }
     }
@@ -191,10 +208,13 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
     }
 
     private void republishAll() {
-        applications.values().forEach(this::republish);
+        new ArrayList<>(applications.values()).forEach(this::republish);
     }
 
     private void republish(final RestApplication application) {
+        if (publishSuspended) {
+            return;
+        }
         final List<Object> allProviders = new ArrayList<>();
         allProviders.add(jsonProvider);
         allProviders.add(new ClientErrorMapper());
@@ -202,7 +222,7 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
         try {
             application.publish(allProviders);
         } catch (Exception e) {
-            LOG.error("Failed to publish the ReST application with path {}", application.getPath(), e);
+            LOG.error("The ReST application with path {} did not start.", application.getPath(), e);
         }
     }
 
@@ -214,13 +234,13 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
         }
     }
 
-    /** Accepts the HTTP service of the HTTP bridge and ignores each other HTTP service. */
+    /** Accepts only the HTTP service of the HTTP bridge. */
     private final class BridgeHttpServiceCustomizer implements ServiceTrackerCustomizer<HttpService, HttpService> {
 
         @Override
         public HttpService addingService(final ServiceReference<HttpService> reference) {
             if (!BRIDGE_BUNDLE.equals(reference.getBundle().getSymbolicName())) {
-                LOG.debug("Ignoring the HTTP service of bundle {}", reference.getBundle().getSymbolicName());
+                LOG.debug("The publisher ignores the HTTP service of bundle {}.", reference.getBundle().getSymbolicName());
                 return null;
             }
             final HttpService bridgeHttpService = bundleContext.getService(reference);
@@ -252,7 +272,36 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
         if (hasAnnotation(service.getClass(), Path.class)) {
             return new Published(service, getApplicationPath(reference));
         }
+        final Class<? extends Annotation> foreign = findForeignAnnotation(service.getClass());
+        if (foreign != null) {
+            LOG.warn("The publisher ignores the service {} of bundle {}. A different class loader loaded its {} annotation: {}",
+                    service.getClass().getName(), reference.getBundle().getSymbolicName(),
+                    foreign.getName(), foreign.getClassLoader());
+        }
         return null;
+    }
+
+    /**
+     * Finds a {@link Path} or {@link Provider} annotation that a different class loader loaded.
+     * The publisher cannot use a service with such an annotation.
+     */
+    static Class<? extends Annotation> findForeignAnnotation(final Class<?> type) {
+        if (type == null) {
+            return null;
+        }
+        for (Annotation annotation : type.getAnnotations()) {
+            final Class<? extends Annotation> annotationType = annotation.annotationType();
+            final String name = annotationType.getName();
+            if ((name.equals(Path.class.getName()) && annotationType != Path.class)
+                    || (name.equals(Provider.class.getName()) && annotationType != Provider.class)) {
+                return annotationType;
+            }
+        }
+        Class<? extends Annotation> found = findForeignAnnotation(type.getSuperclass());
+        for (int i = 0; found == null && i < type.getInterfaces().length; i++) {
+            found = findForeignAnnotation(type.getInterfaces()[i]);
+        }
+        return found;
     }
 
     private static String getApplicationPath(final ServiceReference<Object> reference) {
