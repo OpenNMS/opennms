@@ -41,9 +41,10 @@ describe('httpCollectionValidator', () => {
     expect(sameCollectionName(' Doc ', 'doc')).toBe(true)
   })
 
-  test('refuses a slash in the name, but not other characters that need encoding', () => {
-    expect(validateCollection(collection({ name: 'a/b' })).name).toBe('Name must not contain \'/\'.')
-    expect(validateCollection(collection({ name: 'CPU 90%' })).name).toBeUndefined()
+  test('accepts names a path segment cannot carry: the service addresses them by query', () => {
+    for (const name of ['a/b', 'CPU 90%', 'a\\b', 'item']) {
+      expect(validateCollection(collection({ name })).name).toBeUndefined()
+    }
   })
 
   test('checks the rrd', () => {

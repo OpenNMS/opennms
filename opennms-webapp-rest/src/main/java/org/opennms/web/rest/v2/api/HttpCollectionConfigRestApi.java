@@ -259,6 +259,83 @@ public interface HttpCollectionConfigRestApi {
             @HeaderParam(HttpHeaders.IF_MATCH) String ifMatch,
             @Context SecurityContext securityContext);
 
+    // ------------------------------------------- collections addressed by query
+    //
+    // The servlet container rejects / \ and % in a path segment, and the name "item" is taken by these
+    // endpoints themselves. Collections with such names are addressed through the query instead.
+
+    @GET
+    @Path("collections/item")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get an HTTP collection by query parameter (for names a path cannot carry)",
+            description = "Same as `GET collections/{name}`, for a name containing `/`, `\\` or `%`, or one that is `.`, `..` or `item`.",
+            operationId = "getHttpCollectionByQuery")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Collection retrieved successfully.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = HttpCollectionDto.class))),
+            @ApiResponse(responseCode = "400", description = "The `name` query parameter is missing.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "404", description = "No collection of that name exists.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string")))
+    })
+    Response getCollectionByQuery(
+            @Parameter(description = "Name of the collection.", example = "apache/status")
+            @QueryParam("name") String name,
+            @Context SecurityContext securityContext);
+
+    @PUT
+    @Path("collections/item")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Replace an HTTP collection by query parameter (for names a path cannot carry)",
+            description = "Same as `PUT collections/{name}`, for a name a path segment cannot carry.",
+            operationId = "updateHttpCollectionByQuery")
+    @RequestBody(required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = HttpCollectionDto.class)))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Collection replaced. No response body."),
+            @ApiResponse(responseCode = "400", description = "The `name` query parameter or the body is missing, or a validation rule failed.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "404", description = "No collection of that name exists.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "409", description = "The new name is taken, or a collectd package uses the collection that is renamed.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "412", description = "`If-Match` does not match the stored collection; it changed since it was read.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string")))
+    })
+    Response updateCollectionByQuery(
+            @Parameter(description = "Name of the collection to replace.", example = "apache/status")
+            @QueryParam("name") String name,
+            HttpCollectionDto collection,
+            @Parameter(description = "Version as returned by the `ETag` of a previous GET. Omit to force the write.")
+            @HeaderParam(HttpHeaders.IF_MATCH) String ifMatch,
+            @Context SecurityContext securityContext);
+
+    @DELETE
+    @Path("collections/item")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Delete an HTTP collection by query parameter (for names a path cannot carry)",
+            description = "Same as `DELETE collections/{name}`, for a name a path segment cannot carry.",
+            operationId = "deleteHttpCollectionByQuery")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Collection deleted. No response body."),
+            @ApiResponse(responseCode = "400", description = "The `name` query parameter is missing.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "404", description = "No collection of that name exists.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "409", description = "A collectd package still uses the collection.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "412", description = "`If-Match` does not match the stored collection.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string")))
+    })
+    Response deleteCollectionByQuery(
+            @Parameter(description = "Name of the collection to delete.", example = "apache/status")
+            @QueryParam("name") String name,
+            @Parameter(description = "Version as returned by the `ETag` of a previous GET.")
+            @HeaderParam(HttpHeaders.IF_MATCH) String ifMatch,
+            @Context SecurityContext securityContext);
+
     // ---------------------------------------------------------------- metadata
 
     @GET

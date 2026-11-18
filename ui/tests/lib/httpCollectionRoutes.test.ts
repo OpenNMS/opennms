@@ -30,7 +30,7 @@ import {
   uriEditPath
 } from '@/lib/httpCollectionRoutes'
 
-const NAMES = ['Doc Count', 'CPU 90%', 'CPU%20load', 'create']
+const NAMES = ['Doc Count', 'CPU 90%', 'CPU%20load', 'create', 'a/b', 'a\\b', 'item', '..']
 
 /** Resolves a path against the app's own routes; resolving runs no guards. */
 const resolve = (path: string) => router.resolve(path)

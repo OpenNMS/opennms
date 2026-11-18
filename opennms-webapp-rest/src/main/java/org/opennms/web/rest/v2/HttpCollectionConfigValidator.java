@@ -105,10 +105,6 @@ public abstract class HttpCollectionConfigValidator {
         if (isBlank(collection.getName())) {
             return "HTTP collection name is required.";
         }
-        if (collection.getName().contains("/")) {
-            // The name is a path segment of the REST API, and an encoded slash cannot be relied upon there.
-            return "HTTP collection name must not contain '/'.";
-        }
         final String prefix = "HTTP collection '" + collection.getName().trim() + "': ";
 
         final String rrdMessage = validateRrd(collection.getRrd());

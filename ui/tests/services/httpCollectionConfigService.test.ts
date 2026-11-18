@@ -26,12 +26,31 @@ describe('httpCollectionConfigService', () => {
   })
 
   test('encodes the collection name in the path', async () => {
-    vi.mocked(v2.get).mockResolvedValue({ data: { name: 'a/b' }})
+    vi.mocked(v2.get).mockResolvedValue({ data: { name: 'a b#1' }})
 
-    const result = await getHttpCollection('a/b')
+    const result = await getHttpCollection('a b#1')
 
-    expect(v2.get).toHaveBeenCalledWith('/httpcollection/collections/a%2Fb')
-    expect(result.payload?.name).toBe('a/b')
+    expect(v2.get).toHaveBeenCalledWith('/httpcollection/collections/a%20b%231', undefined)
+    expect(result.payload?.name).toBe('a b#1')
+  })
+
+  test.each(['a/b', 'a\\b', 'CPU 90%', '.', '..', 'item'])('addresses %s, which a path segment cannot carry, by query', async (name) => {
+    vi.mocked(v2.get).mockResolvedValue({ data: { name }})
+    vi.mocked(v2.put).mockResolvedValue({})
+    vi.mocked(v2.delete).mockResolvedValue({})
+    const collection = { name, rrd: { step: 300, rras: [] }, uris: [], version: 'abc' }
+
+    await getHttpCollection(name)
+    await updateHttpCollection(name, collection)
+    await deleteHttpCollection(name, 'abc')
+
+    expect(v2.get).toHaveBeenCalledWith('/httpcollection/collections/item', { params: { name }})
+    expect(v2.put).toHaveBeenCalledWith(
+      '/httpcollection/collections/item',
+      { name, rrd: { step: 300, rras: [] }, uris: [] },
+      { params: { name }, headers: { 'If-Match': '"abc"' }}
+    )
+    expect(v2.delete).toHaveBeenCalledWith('/httpcollection/collections/item', { params: { name }, headers: { 'If-Match': '"abc"' }})
   })
 
   test('sends the version as If-Match and not in the body', async () => {

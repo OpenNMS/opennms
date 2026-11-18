@@ -61,15 +61,9 @@ public class HttpCollectionConfigValidatorTest {
     }
 
     @Test
-    public void refusesASlashInTheName() {
-        final HttpCollectionDto collection = collection();
-        collection.setName("a/b");
-        assertEquals("HTTP collection name must not contain '/'.", HttpCollectionConfigValidator.validateCollection(collection));
-    }
-
-    @Test
     public void acceptsNamesThatNeedEncoding() {
-        for (final String name : new String[] { "a b", "90%", "a%20b" }) {
+        // Names a path segment cannot carry are addressed through collections/item?name=.
+        for (final String name : new String[] { "a b", "90%", "a%20b", "a/b", "a\\b", "item", ".." }) {
             final HttpCollectionDto collection = collection();
             collection.setName(name);
             assertNull(name, HttpCollectionConfigValidator.validateCollection(collection));
