@@ -32,6 +32,12 @@ FROM ${BASE_IMAGE} AS minion-base
 
 ADD --chown=10001:0 ./tarball-root/ /opt/minion/
 RUN rm /opt/minion/etc/org.opennms.features.telemetry.listeners-single-port-flows.cfg
+
+# Overlay container-specific etc config files. Added before the chmod below so they get the
+# same group permissions as the rest of etc: with an arbitrary UID in group 0 (OpenShift),
+# the entrypoint must be able to rewrite them.
+COPY --chown=10001:0 container-fs/etc/ /opt/minion/etc/
+
 RUN chmod -R g-w /opt/minion && \
     chmod -R g=u \
         /opt/minion/etc \
@@ -88,15 +94,13 @@ COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yam
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
 COPY --chown=10001:0 --from=minion-base /opt /opt
 
-# Overlay container-specific etc config files
-COPY --chown=10001:0 container-fs/etc/ /opt/minion/etc/
-
 # featuresBoot and telemetry listener templates. Kept outside /opt/minion/etc so a mounted or
 # persisted etc directory cannot hide them; the entrypoint applies them from here.
 COPY --chown=10001:0 container-fs/templates/ /opt/minion/container-fs/templates/
 
-# Create the directory for server certificates
-RUN install -d -m 750 /opt/minion/server-certs
+# Create the directory for server certificates. Owned by the runtime user (group 0 for
+# arbitrary UIDs) so certificates mounted as single files under it stay readable.
+RUN install -d -m 750 -o 10001 -g 0 /opt/minion/server-certs
 
 # Create prom-jmx-exporter folder
 RUN install -d -m 770 /opt/prom-jmx-exporter && chown 10001:0 /opt/prom-jmx-exporter
