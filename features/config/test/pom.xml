@@ -56,6 +56,19 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.jdbc-collector</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- JdbcDataCollectionUpgradeIT: the upgrade can't depend on the jdbc-collector, so its import is tested here -->
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>org.opennms.features.config.upgrade</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.openapi4j</groupId>
       <artifactId>openapi-schema-validator</artifactId>
       <version>${openapiSchemaValidatorVersion}</version>

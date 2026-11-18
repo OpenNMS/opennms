@@ -47,6 +47,7 @@ import java.util.Set;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath*:/META-INF/opennms/applicationContext-config-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase

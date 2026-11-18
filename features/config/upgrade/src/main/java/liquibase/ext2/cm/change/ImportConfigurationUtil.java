@@ -47,6 +47,17 @@ import liquibase.util.file.FilenameUtils;
 
 public class ImportConfigurationUtil {
 
+    /**
+     * @return the message of the innermost cause, which names what is wrong with a file
+     */
+    public static String rootCauseMessage(final Throwable t) {
+        Throwable cause = t;
+        while (cause.getCause() != null && cause.getCause() != cause) {
+            cause = cause.getCause();
+        }
+        return cause.getMessage() != null ? cause.getMessage() : t.toString();
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
 
     public static void importConfig(
@@ -54,10 +65,24 @@ public class ImportConfigurationUtil {
             final Resource configResource,
             final ConfigUpdateInfo configurationIdentifier,
             final Path archivePath) {
+        importConfig(configurationManagerService, configResource, configurationIdentifier, archivePath, configResource.getFilename());
+    }
+
+    /**
+     * @param etcRelativePath the path of the file relative to {@code etc/}, e.g. {@code jdbc-datacollection.d/mysql.xml}.
+     *                        A file imported from there is moved to the same relative path below the archive directory.
+     */
+    public static void importConfig(
+            final ConfigurationManagerService configurationManagerService,
+            final Resource configResource,
+            final ConfigUpdateInfo configurationIdentifier,
+            final Path archivePath,
+            final String etcRelativePath) {
         Objects.requireNonNull(configurationManagerService);
         Objects.requireNonNull(configResource);
         Objects.requireNonNull(configurationIdentifier);
         Objects.requireNonNull(archivePath);
+        Objects.requireNonNull(etcRelativePath);
         LOG.info("Importing configuration from {} for {}", configResource.getFilename(), configurationIdentifier);
         try {
             ConfigDefinition configDefinition = configurationManagerService
@@ -85,13 +110,14 @@ public class ImportConfigurationUtil {
             }
             configurationManagerService.registerConfiguration(configurationIdentifier, configObject);
             LOG.info("Configuration {} imported.", configurationIdentifier);
-            if(configResource.getURL().getFile().endsWith("/etc/" + configResource.getFilename())) {
+            if(configResource.getURL().getFile().endsWith("/etc/" + etcRelativePath)) {
                 Path etcFile = configResource.getFile().getAbsoluteFile().toPath();
 
                 // we imported a user defined config file => move to archive
                 // in order to prevent file exist exception, append data time sting at the end
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-                Path archiveFile = Path.of(archivePath.toString(), etcFile.getFileName() + "." + formatter.format(LocalDateTime.now()));
+                Path archiveFile = Path.of(archivePath.toString(), etcRelativePath + "." + formatter.format(LocalDateTime.now()));
+                Files.createDirectories(archiveFile.getParent());
                 Files.move(etcFile, archiveFile);
                 LOG.info("Configuration file {} moved to {}", etcFile, archivePath);
             }

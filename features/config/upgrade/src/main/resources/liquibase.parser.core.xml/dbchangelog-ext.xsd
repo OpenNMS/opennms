@@ -54,6 +54,8 @@
             <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
             <xsd:attribute name="configId" type="xsd:string" use="optional"/>
             <xsd:attribute name="filePath" type="xsd:string" use="required"/>
+            <!-- false: a file that can't be imported is logged and left in place instead of stopping the upgrade -->
+            <xsd:attribute name="failOnError" type="xsd:boolean" use="optional"/>
         </xsd:complexType>
     </xsd:element>
 
@@ -62,6 +64,14 @@
         <xsd:complexType>
             <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
             <xsd:attribute name="filePath" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="importConfigDir">
+        <!-- imports every xml file of a directory below etc/, the file name without .xml is the configId -->
+        <xsd:complexType>
+            <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
+            <xsd:attribute name="dirPath" type="xsd:string" use="required"/>
         </xsd:complexType>
     </xsd:element>
 
