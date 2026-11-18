@@ -44,7 +44,7 @@ if [[ "${PROM_JMX_EXPORTER_ENABLED,,}" == "true" ]]; then
   export JAVA_OPTS="${JAVA_OPTS} -javaagent:${PROM_JMX_EXPORTER_JAR}=${PROM_JMX_EXPORTER_PORT}:${PROM_JMX_EXPORTER_CONFIG}"
 fi
 
-export JAVA_OPTS="$JAVA_OPTS -Djava.locale.providers=CLDR,COMPAT"
+export JAVA_OPTS="-XX:-UseBASE64Intrinsics $JAVA_OPTS -Djava.locale.providers=CLDR,COMPAT"
 export JAVA_OPTS="$JAVA_OPTS $("${MINION_HOME}/bin/_module_opts.sh")"
 export JAVA_OPTS="$JAVA_OPTS -Dopennms.home=${MINION_HOME}"
 export JAVA_OPTS="$JAVA_OPTS -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
