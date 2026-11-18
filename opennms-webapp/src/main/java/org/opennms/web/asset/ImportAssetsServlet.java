@@ -276,6 +276,10 @@ public class ImportAssetsServlet extends HttpServlet {
                         asset.setLatitude(Util.decode(line[61]));
                     }
 
+                    if (line.length > 62) {
+                        asset.setEmail(Util.decode(line[62]));
+                    }
+
                     list.add(asset);
                     logger.debug("decoded asset:'{}'", (Object)asset);
 

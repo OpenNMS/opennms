@@ -253,6 +253,17 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     @JUnitTemporaryDatabase
+    public void testPutEmail() throws Exception {
+        createNode();
+        String url = "/nodes/1/assetRecord";
+        sendPut(url, "email=ops%40example.com%3Bnoc%40example.org", 204);
+
+        String xml = sendRequest(GET, url, 200);
+        assertTrue(xml, xml.contains("<email>ops@example.com;noc@example.org</email>"));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
     public void testNodeJson() throws Exception {
         createSnmpInterface();
 

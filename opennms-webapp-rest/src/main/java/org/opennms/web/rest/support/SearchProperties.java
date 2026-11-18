@@ -152,6 +152,7 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAssetRecord.class, "description", "Description", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "displayCategory", "Display Category", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "division", "Division", STRING),
+		new SearchProperty(OnmsAssetRecord.class, "email", "Email", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "floor", "Floor", STRING),
 		//new SearchProperty(OnmsAssetRecord.class, "geolocation", "", ?),
 		new SearchProperty(OnmsAssetRecord.class, "hdd1", "HDD 1", STRING),

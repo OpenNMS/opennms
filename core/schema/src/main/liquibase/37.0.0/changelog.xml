@@ -1091,4 +1091,19 @@ CREATE TRIGGER categories_lock_versions BEFORE DELETE ON categories FOR EACH STA
         </rollback>
     </changeSet>
 
+    <!-- Contact email address(es) for a node, separated by semicolons (NMS-5526). -->
+    <changeSet author="joseanesONMS" id="37.0.0-assets-email">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="assets"/>
+            <not>
+                <columnExists tableName="assets" columnName="email"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="assets">
+            <column name="email" type="text"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="assets" columnName="email"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
