@@ -286,7 +286,7 @@ function parseEnvironment() {
         fi
 
         # The image-provided ${env:...} placeholders already track these variables; the
-        # mapping only matters for files that still hold a literal value from older images.
+        # mapping only matters for files from older images that hold a literal value or lack the key.
         case "$env_var" in
           OPENNMS_INSTANCE_ID)
             applyEnvConfig "$env_var" "org.opennms.instance.id" "${SENTINEL_HOME}/etc/custom.system.properties"
@@ -392,6 +392,21 @@ function validateEnvironment() {
         exit ${E_ILLEGAL_ARGS}
         ;;
     esac
+
+    # The pool settings are integers; anything else stops the datasource from starting.
+    # An empty value counts as unset, so the image default applies whether the cfg holds
+    # the ${env:...:-default} placeholder or comes from an older image without the key.
+    local pool_var
+    for pool_var in IDLETIMEOUT LOGINTIMEOUT MINPOOL MAXPOOL MAXSIZE; do
+      pool_var="OPENNMS_DATABASE_CONNECTION_${pool_var}"
+      [ -n "${!pool_var+set}" ] || continue
+      if [ -z "${!pool_var}" ]; then
+        unset "${pool_var}"
+      elif [[ ! "${!pool_var}" =~ ^[0-9]+$ ]]; then
+        echo "[Startup][ERROR] Invalid ${pool_var} '${!pool_var}', expected a non-negative integer."
+        exit ${E_ILLEGAL_ARGS}
+      fi
+    done
 }
 
 function seedContainerConfig() {
