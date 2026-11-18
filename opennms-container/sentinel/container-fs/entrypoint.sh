@@ -255,7 +255,7 @@ function applyEnvConfig() {
 }
 
 function parseEnvironment() {
-    local env_var ipc_name es_key
+    local env_var ipc_name es_key pool_key
     APPLIED_ENV_KEYS=()
 
     # compgen -e lists variable names only, so multi-line values are handled correctly
@@ -293,6 +293,20 @@ function parseEnvironment() {
             ;;
           POSTGRES_JDBC_URL)
             applyEnvConfig "$env_var" "datasource.url" "${SENTINEL_HOME}/etc/org.opennms.netmgt.distributed.datasource.cfg"
+            ;;
+          OPENNMS_DATABASE_CONNECTION_*)
+            case "${env_var#OPENNMS_DATABASE_CONNECTION_}" in
+              IDLETIMEOUT)  pool_key="idleTimeout" ;;
+              LOGINTIMEOUT) pool_key="loginTimeout" ;;
+              MINPOOL)      pool_key="minPool" ;;
+              MAXPOOL)      pool_key="maxPool" ;;
+              MAXSIZE)      pool_key="maxSize" ;;
+              *)
+                echo "[Configuring] Ignoring unrecognized variable ${env_var}"
+                continue
+                ;;
+            esac
+            applyEnvConfig "$env_var" "connection.pool.${pool_key}" "${SENTINEL_HOME}/etc/org.opennms.netmgt.distributed.datasource.cfg"
             ;;
         esac
     done < <(compgen -e)
