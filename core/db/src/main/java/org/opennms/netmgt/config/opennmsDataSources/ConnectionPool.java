@@ -196,7 +196,17 @@ public class ConnectionPool implements java.io.Serializable {
      * @return the value of field 'IdleTimeout'.
      */
     public Integer getIdleTimeout() {
-        return resolveInteger("idleTimeout", this.rawIdleTimeout, 600);
+        return getIdleTimeout(600);
+    }
+
+    /**
+     * Returns the value of field 'idleTimeout', or {@code defaultValue} when it is absent or blank.
+     *
+     * @param defaultValue the value to use when 'idleTimeout' is absent or blank
+     * @return the value of field 'IdleTimeout'.
+     */
+    public Integer getIdleTimeout(final int defaultValue) {
+        return resolveInteger("idleTimeout", this.rawIdleTimeout, defaultValue);
     }
 
     /**
@@ -207,7 +217,17 @@ public class ConnectionPool implements java.io.Serializable {
      * @return the value of field 'LoginTimeout'.
      */
     public Integer getLoginTimeout() {
-        return resolveInteger("loginTimeout", this.rawLoginTimeout, 3);
+        return getLoginTimeout(3);
+    }
+
+    /**
+     * Returns the value of field 'loginTimeout', or {@code defaultValue} when it is absent or blank.
+     *
+     * @param defaultValue the value to use when 'loginTimeout' is absent or blank
+     * @return the value of field 'LoginTimeout'.
+     */
+    public Integer getLoginTimeout(final int defaultValue) {
+        return resolveInteger("loginTimeout", this.rawLoginTimeout, defaultValue);
     }
 
     /**
@@ -217,7 +237,17 @@ public class ConnectionPool implements java.io.Serializable {
      * @return the value of field 'MaxPool'.
      */
     public Integer getMaxPool() {
-        return resolveInteger("maxPool", this.rawMaxPool, 50);
+        return getMaxPool(50);
+    }
+
+    /**
+     * Returns the value of field 'maxPool', or {@code defaultValue} when it is absent or blank.
+     *
+     * @param defaultValue the value to use when 'maxPool' is absent or blank
+     * @return the value of field 'MaxPool'.
+     */
+    public Integer getMaxPool(final int defaultValue) {
+        return resolveInteger("maxPool", this.rawMaxPool, defaultValue);
     }
 
     /**
@@ -227,7 +257,17 @@ public class ConnectionPool implements java.io.Serializable {
      * @return the value of field 'MaxSize'.
      */
     public Integer getMaxSize() {
-        return resolveInteger("maxSize", this.rawMaxSize, 500);
+        return getMaxSize(500);
+    }
+
+    /**
+     * Returns the value of field 'maxSize', or {@code defaultValue} when it is absent or blank.
+     *
+     * @param defaultValue the value to use when 'maxSize' is absent or blank
+     * @return the value of field 'MaxSize'.
+     */
+    public Integer getMaxSize(final int defaultValue) {
+        return resolveInteger("maxSize", this.rawMaxSize, defaultValue);
     }
 
     /**
@@ -237,7 +277,17 @@ public class ConnectionPool implements java.io.Serializable {
      * @return the value of field 'MinPool'.
      */
     public Integer getMinPool() {
-        return resolveInteger("minPool", this.rawMinPool, 10);
+        return getMinPool(10);
+    }
+
+    /**
+     * Returns the value of field 'minPool', or {@code defaultValue} when it is absent or blank.
+     *
+     * @param defaultValue the value to use when 'minPool' is absent or blank
+     * @return the value of field 'MinPool'.
+     */
+    public Integer getMinPool(final int defaultValue) {
+        return resolveInteger("minPool", this.rawMinPool, defaultValue);
     }
 
     /**

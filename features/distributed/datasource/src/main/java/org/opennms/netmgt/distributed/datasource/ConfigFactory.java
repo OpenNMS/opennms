@@ -32,17 +32,26 @@ import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 
 public class ConfigFactory {
 
+    // Same values as the cm:default-properties in blueprint.xml. A key left blank in the
+    // .cfg file overrides those defaults with an empty string, so apply them again here
+    // rather than fall back to ConnectionPool's defaults, which are sized for Core.
+    static final int DEFAULT_IDLE_TIMEOUT = 600;
+    static final int DEFAULT_LOGIN_TIMEOUT = 3;
+    static final int DEFAULT_MIN_POOL = 50;
+    static final int DEFAULT_MAX_POOL = 50;
+    static final int DEFAULT_MAX_SIZE = 50;
+
     public DataSource createDataSource(ConnectionPool connectionPool, JdbcDataSource jdbcDataSource) throws Exception {
         Objects.requireNonNull(connectionPool);
         Objects.requireNonNull(jdbcDataSource);
 
         // Resolve every setting before the pool exists: creating it opens connections,
         // and nothing would close them if an invalid value failed afterwards.
-        final int idleTimeout = connectionPool.getIdleTimeout();
-        final int loginTimeout = connectionPool.getLoginTimeout();
-        final int minPool = connectionPool.getMinPool();
-        final int maxPool = connectionPool.getMaxPool();
-        final int maxSize = connectionPool.getMaxSize();
+        final int idleTimeout = connectionPool.getIdleTimeout(DEFAULT_IDLE_TIMEOUT);
+        final int loginTimeout = connectionPool.getLoginTimeout(DEFAULT_LOGIN_TIMEOUT);
+        final int minPool = connectionPool.getMinPool(DEFAULT_MIN_POOL);
+        final int maxPool = connectionPool.getMaxPool(DEFAULT_MAX_POOL);
+        final int maxSize = connectionPool.getMaxSize(DEFAULT_MAX_SIZE);
 
         final String connectionPoolFactoryClassName = connectionPool.getFactory();
         final Class<?> clazz = Class.forName(connectionPoolFactoryClassName);

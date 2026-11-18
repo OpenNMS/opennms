@@ -57,6 +57,16 @@ public class ConnectionPoolTest {
     }
 
     @Test
+    public void shouldUseTheCallersDefaultWhenAbsentOrBlank() {
+        final ConnectionPool pool = new ConnectionPool();
+        assertEquals(Integer.valueOf(42), pool.getMinPool(42));
+        pool.setMinPool(" ");
+        assertEquals(Integer.valueOf(42), pool.getMinPool(42));
+        pool.setMinPool("7");
+        assertEquals(Integer.valueOf(7), pool.getMinPool(42));
+    }
+
+    @Test
     public void shouldUseFallbackOfUnsetEnvironmentVariable() {
         final ConnectionPool pool = new ConnectionPool();
         pool.setMaxPool("${env:NMS_20620_UNSET_VARIABLE|12}");

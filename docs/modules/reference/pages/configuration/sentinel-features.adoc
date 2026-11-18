@@ -420,7 +420,7 @@ With the defaults, that is 50 connections per Sentinel at all times.
 When several Sentinels share a database, size `max_connections` on the server for the sum of their pools plus the {page-component-title} Core pools.
 
 NOTE: When you lower `OPENNMS_DATABASE_CONNECTION_MAXPOOL`, lower `OPENNMS_DATABASE_CONNECTION_MINPOOL` as well.
-A minimum above the maximum is capped at the maximum.
+The pool never opens more than `OPENNMS_DATABASE_CONNECTION_MAXPOOL` connections, even when `OPENNMS_DATABASE_CONNECTION_MINPOOL` is higher.
 
 === Elasticsearch configuration
 

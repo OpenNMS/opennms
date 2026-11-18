@@ -68,6 +68,24 @@ public class ConfigFactoryTest {
     }
 
     @Test
+    public void shouldUseTheSentinelDefaultsForBlankValues() throws Exception {
+        // A key left blank in org.opennms.netmgt.distributed.datasource.cfg reaches the bean as ""
+        connectionPool.setIdleTimeout("");
+        connectionPool.setLoginTimeout(" ");
+        connectionPool.setMinPool("");
+        connectionPool.setMaxPool("");
+        connectionPool.setMaxSize("");
+
+        configFactory.createDataSource(connectionPool, jdbcDataSource);
+
+        assertEquals(600, FakePool.created.idleTimeout);
+        assertEquals(3, FakePool.created.loginTimeout);
+        assertEquals(50, FakePool.created.minPool);
+        assertEquals(50, FakePool.created.maxPool);
+        assertEquals(50, FakePool.created.maxSize);
+    }
+
+    @Test
     public void shouldNotCreateAPoolForAnInvalidValue() {
         connectionPool.setMaxPool("abc");
 
@@ -90,8 +108,11 @@ public class ConfigFactoryTest {
     public static class FakePool implements ClosableDataSource {
         static FakePool created;
 
+        int idleTimeout;
+        int loginTimeout;
         int minPool;
         int maxPool;
+        int maxSize;
         boolean closed;
 
         public FakePool(final JdbcDataSource ignored) {
@@ -117,9 +138,9 @@ public class ConfigFactoryTest {
             closed = true;
         }
 
-        @Override public void setIdleTimeout(final int idleTimeout) { }
-        @Override public void setLoginTimeout(final int loginTimeout) { }
-        @Override public void setMaxSize(final int maxSize) { }
+        @Override public void setIdleTimeout(final int idleTimeout) { this.idleTimeout = idleTimeout; }
+        @Override public void setLoginTimeout(final int loginTimeout) { this.loginTimeout = loginTimeout; }
+        @Override public void setMaxSize(final int maxSize) { this.maxSize = maxSize; }
         @Override public int getLoginTimeout() { return 0; }
         @Override public Connection getConnection() { throw new UnsupportedOperationException(); }
         @Override public Connection getConnection(final String username, final String password) { throw new UnsupportedOperationException(); }
