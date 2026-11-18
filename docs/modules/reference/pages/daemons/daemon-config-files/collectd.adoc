@@ -50,9 +50,11 @@ Attributes are retrieved using SQL queries.
 
 | http-datacollection-config.xml
 | Defines HTTP data collections.
-Attributes are extracted from the HTTP responses using a regular expression.
+Attributes are extracted from the HTTP responses using a regular expression. +
+HTTP data collection is managed in the database via *Admin -> Configure HTTP Data Collection*; this file is read only at upgrade migration if present.
+Changes apply from the next collection on.
 | no
-| yes
+| no
 
 | prometheus-datacollection-config.xml
 | Defines data collections via Prometheus Exporter.
