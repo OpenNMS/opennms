@@ -202,6 +202,12 @@
           "roles": ["ROLE_ADMIN"]
         },
         {
+          "id": "configureHttpDataCollection",
+          "name": "Configure HTTP Data Collection",
+          "url": "ui/index.html#/http-collection-config",
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
           "id": "configureThresholds",
           "name": "Configure Thresholds",
           "url": "ui/index.html#/threshold-config",

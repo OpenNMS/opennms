@@ -110,7 +110,7 @@ public class HttpDatacollectionConfig implements Serializable {
         return m_rrdRepository;
     }
 
-    void setRrdRepository(final String value) {
+    public void setRrdRepository(final String value) {
         m_rrdRepository = ConfigUtils.assertNotEmpty(value, "value");
     }
 
