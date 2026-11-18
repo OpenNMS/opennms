@@ -34,6 +34,7 @@ import java.util.Set;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -104,7 +105,7 @@ public class ImportConfiguration extends AbstractCmChange {
             }
             LOG.error("Configuration {} of schema {} was not imported from {}: {}. The file is left in place and ignored from now on: "
                             + "fix it and store it with the configuration manager REST API.",
-                    getConfigId(), schemaId, this.filePath, ImportConfigurationUtil.rootCauseMessage(e), e);
+                    getConfigId(), schemaId, this.filePath, ConfigConvertUtil.rootCauseMessage(e), e);
         }
     }
 

@@ -384,6 +384,54 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     }
 
     /**
+     * Without failOnError="false", importConfigDir stops the upgrade at a file that can't be imported, like importConfig.
+     */
+    @Test
+    public void shouldFailOnInvalidFileInDirectoryByDefault() throws Exception {
+        try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
+            final Path includeDir = Files.createDirectories(Path.of(this.opennmsHome + "/etc/jdbc-datacollection.d"));
+            FileUtils.writeStringToFile(includeDir.resolve("broken.xml").toFile(), JDBC_INVALID_XML, StandardCharsets.UTF_8);
+
+            final LiquibaseUpgrader liqui = new LiquibaseUpgrader(cmSpy);
+            assertThrowsException(MigrationFailedException.class,
+                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog-dir-fail.xml", dataSource.getConnection()));
+
+            assertTrue(Files.exists(includeDir.resolve("broken.xml")));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    /**
+     * A file that is imported but can't be archived doesn't stop the upgrade: the configuration is stored and
+     * the file stays in etc/.
+     */
+    @Test
+    public void shouldKeepImportedConfigurationWhenArchivingFails() throws Exception {
+        try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
+            final Path etcDir = Path.of(this.opennmsHome + "/etc");
+            final Path includeDir = Files.createDirectories(etcDir.resolve("jdbc-datacollection.d"));
+            Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection-config.xml"), etcDir.resolve("jdbc-datacollection-config.xml"));
+            Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection.d/mysql.xml"), includeDir.resolve("mysql.xml"));
+            // a file where the archive directory should be: the directory can't be created
+            final Path archiveDir = Files.createDirectories(Path.of(this.opennmsHome + "/etc_archive"));
+            FileUtils.writeStringToFile(archiveDir.resolve("jdbc-datacollection.d").toFile(), "in the way", StandardCharsets.UTF_8);
+
+            new LiquibaseUpgrader(cmSpy).runChangelog(JDBC_CHANGELOG, dataSource.getConnection());
+
+            assertEquals(Set.of(DEFAULT_CONFIG_ID, "mysql"), this.cm.getConfigIds(SCHEMA_NAME_JDBC));
+            assertFalse(Files.exists(etcDir.resolve("jdbc-datacollection-config.xml")));
+            assertTrue(Files.exists(includeDir.resolve("mysql.xml")));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    /**
      * The id 'default' belongs to jdbc-datacollection-config.xml, so jdbc-datacollection.d/default.xml becomes 'default.d'.
      */
     @Test

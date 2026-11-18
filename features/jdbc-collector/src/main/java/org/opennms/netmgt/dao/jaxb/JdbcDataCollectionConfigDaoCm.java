@@ -105,17 +105,9 @@ public class JdbcDataCollectionConfigDaoCm extends AbstractCmJaxbConfigDao<JdbcD
             try {
                 ConfigConvertUtil.jsonToObject(json.toString(), JdbcDataCollectionConfig.class);
             } catch (final ConfigConversionException e) {
-                throw new ValidationException(rootCauseMessage(e));
+                throw new ValidationException(ConfigConvertUtil.rootCauseMessage(e));
             }
         };
-    }
-
-    private static String rootCauseMessage(final Throwable t) {
-        Throwable cause = t;
-        while (cause.getCause() != null && cause.getCause() != cause) {
-            cause = cause.getCause();
-        }
-        return cause.getMessage() != null ? cause.getMessage() : t.getMessage();
     }
 
     private void onConfigChanged(final ConfigUpdateInfo info) {
@@ -125,7 +117,7 @@ public class JdbcDataCollectionConfigDaoCm extends AbstractCmJaxbConfigDao<JdbcD
         } catch (ConfigNotFoundException e) {
             LOG.debug("Configuration {} vanished while reloading it.", info.getConfigId());
         } catch (ConfigConversionException e) {
-            LOG.error("Configuration {} of {} can not be read and is ignored: {}", info.getConfigId(), CONFIG_NAME, rootCauseMessage(e));
+            LOG.error("Configuration {} of {} can not be read and is ignored: {}", info.getConfigId(), CONFIG_NAME, ConfigConvertUtil.rootCauseMessage(e));
         }
         invalidate();
     }
@@ -189,7 +181,7 @@ public class JdbcDataCollectionConfigDaoCm extends AbstractCmJaxbConfigDao<JdbcD
                 continue;
             } catch (ConfigConversionException e) {
                 // e.g. imported by the upgrade, which can't run the validation callback; don't let it break the others
-                LOG.error("Configuration {} of {} can not be read and is ignored: {}", configId, CONFIG_NAME, rootCauseMessage(e));
+                LOG.error("Configuration {} of {} can not be read and is ignored: {}", configId, CONFIG_NAME, ConfigConvertUtil.rootCauseMessage(e));
                 continue;
             }
             for (final JdbcDataCollection collection : config.getJdbcDataCollections()) {

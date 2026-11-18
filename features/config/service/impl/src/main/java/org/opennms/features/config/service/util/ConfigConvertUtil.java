@@ -76,4 +76,17 @@ public class ConfigConvertUtil {
             throw new ConfigConversionException("Fail to convert object to json. ", e);
         }
     }
+
+    /**
+     * A conversion exception wraps the parser error, whose message names what is wrong with a configuration.
+     *
+     * @return the message of the innermost cause, or {@code t.toString()} if it has none
+     */
+    public static String rootCauseMessage(final Throwable t) {
+        Throwable cause = t;
+        while (cause.getCause() != null && cause.getCause() != cause) {
+            cause = cause.getCause();
+        }
+        return cause.getMessage() != null ? cause.getMessage() : t.toString();
+    }
 }

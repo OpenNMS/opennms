@@ -72,6 +72,8 @@
         <xsd:complexType>
             <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
             <xsd:attribute name="dirPath" type="xsd:string" use="required"/>
+            <!-- false: a file that can't be imported is logged and left in place, the other files are still imported -->
+            <xsd:attribute name="failOnError" type="xsd:boolean" use="optional"/>
         </xsd:complexType>
     </xsd:element>
 

@@ -77,7 +77,7 @@ The collector merges all IDs into one list: `default` first, then the other IDs 
 If a collection name appears more than once, the first one is used and the others are ignored with a warning in the log.
 
 A change takes effect with the next collection; no restart or reload event is needed.
-A configuration with a column `type` that {page-component-title} does not support (for example, `timeticks`) is rejected.
+The REST API rejects a configuration with a column `type` that {page-component-title} does not support (for example, `timeticks`).
 
 To read and change the collections, use the Config Management REST API, for example:
 
@@ -104,9 +104,13 @@ The upgrade imports these files once:
 * Each `jdbc-datacollection.d/<name>.xml` becomes the configuration ID `<name>`, for example, `postgresql.xml` becomes `postgresql`.
 `jdbc-datacollection.d/default.xml` becomes `default.d`, because `default` belongs to `jdbc-datacollection-config.xml`.
 * Imported files are moved to `$\{OPENNMS_HOME}/etc_archive/`, with a timestamp appended to the file name.
+If a file can't be moved, it is still imported, the log shows a warning, and you have to remove the file from `$\{OPENNMS_HOME}/etc/` yourself.
 * A file that does not follow the schema `jdbc-datacollection.xsd` is not imported, and the upgrade continues.
 The log names the file and the error, and the file stays in `$\{OPENNMS_HOME}/etc/`.
 Correct the file and add it with the REST API.
+* A file that follows the schema but has a column `type` that {page-component-title} does not support (for example, `timeticks`) is imported and archived like any other file, because the schema allows any type name.
+The collector ignores this whole configuration ID and logs an error that names it.
+Correct the type and replace the configuration with the REST API (`PUT` with `?replace=true`).
 
 IMPORTANT: After the upgrade, {page-component-title} does not read `jdbc-datacollection-config.xml` and the files in `jdbc-datacollection.d/`.
 New or changed files in these locations have no effect.

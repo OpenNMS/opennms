@@ -32,6 +32,7 @@ import java.util.TreeMap;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -56,8 +57,11 @@ import liquibase.util.file.FilenameUtils;
  * An empty or missing directory imports nothing.</p>
  *
  * <p>A file named {@code default.xml} becomes the configuration {@code default.d}, because the id
- * {@code default} belongs to the primary file of the schema. A file that can't be imported (e.g. it doesn't obey
- * the schema) doesn't stop the upgrade: the error is logged and the file stays where it is.</p>
+ * {@code default} belongs to the primary file of the schema.</p>
+ *
+ * <p>With {@code failOnError="false"} a file that can't be imported (e.g. it doesn't obey the schema) doesn't stop
+ * the upgrade: the error is logged, nothing is stored for it, the file stays where it is, and the other files are
+ * still imported.</p>
  */
 @DatabaseChange(name = "importConfigDir", description = "Imports all xml configurations of a directory.", priority = ChangeMetaData.PRIORITY_DATABASE)
 public class ImportConfigDirectory extends AbstractCmChange {
@@ -71,6 +75,7 @@ public class ImportConfigDirectory extends AbstractCmChange {
 
     private String schemaId;
     private String dirPath;
+    private Boolean failOnError;
     private Path archivePath;
     /** configId -> file, sorted by configId */
     private Map<String, Resource> configResources = new TreeMap<>();
@@ -162,10 +167,12 @@ public class ImportConfigDirectory extends AbstractCmChange {
             try {
                 importConfig(cm, entry.getValue(), new ConfigUpdateInfo(schemaId, entry.getKey()), archivePath, etcRelativePath);
             } catch (RuntimeException e) {
-                // the old DAO did not validate the files, so a file the collector used to accept must not stop the upgrade
+                if (!Boolean.FALSE.equals(this.failOnError)) {
+                    throw e;
+                }
                 LOG.error("Configuration {} of schema {} was not imported from {}: {}. The file is left in place and ignored from now on: "
                                 + "fix it and store it with the configuration manager REST API.",
-                        entry.getKey(), schemaId, etcRelativePath, ImportConfigurationUtil.rootCauseMessage(e), e);
+                        entry.getKey(), schemaId, etcRelativePath, ConfigConvertUtil.rootCauseMessage(e), e);
             }
         }
     }
@@ -184,5 +191,16 @@ public class ImportConfigDirectory extends AbstractCmChange {
 
     public void setDirPath(String dirPath) {
         this.dirPath = dirPath;
+    }
+
+    /**
+     * @return the attribute as given, null if not set (means true), like {@link ImportConfiguration#getFailOnError()}
+     */
+    public Boolean getFailOnError() {
+        return failOnError;
+    }
+
+    public void setFailOnError(Boolean failOnError) {
+        this.failOnError = failOnError;
     }
 }
