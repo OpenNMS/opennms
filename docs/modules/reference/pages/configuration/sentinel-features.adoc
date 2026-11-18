@@ -411,12 +411,16 @@ The prefix is stripped, the remainder is lowercased, and underscores are convert
 | `OPENNMS_DATABASE_CONNECTION_IDLETIMEOUT`  | Seconds an idle connection is kept before it is closed. | `600`
 | `OPENNMS_DATABASE_CONNECTION_LOGINTIMEOUT` | Seconds to wait when opening a connection. | `3`
 | `OPENNMS_DATABASE_CONNECTION_MINPOOL`      | Minimum number of idle connections kept open. | `50`
-| `OPENNMS_DATABASE_CONNECTION_MAXPOOL`      | Maximum number of connections in the pool. | `50`
+| `OPENNMS_DATABASE_CONNECTION_MAXPOOL`      | Maximum number of connections in the pool, at least `1`. | `50`
 | `OPENNMS_DATABASE_CONNECTION_MAXSIZE`      | Accepted for compatibility; ignored by the default HikariCP pool. | `50`
 |===
 
-Each Sentinel opens up to `OPENNMS_DATABASE_CONNECTION_MAXPOOL` connections to PostgreSQL.
+Each Sentinel keeps `OPENNMS_DATABASE_CONNECTION_MINPOOL` connections to PostgreSQL open, even when idle, and can grow to `OPENNMS_DATABASE_CONNECTION_MAXPOOL`.
+With the defaults, that is 50 connections per Sentinel at all times.
 When several Sentinels share a database, size `max_connections` on the server for the sum of their pools plus the {page-component-title} Core pools.
+
+NOTE: When you lower `OPENNMS_DATABASE_CONNECTION_MAXPOOL`, lower `OPENNMS_DATABASE_CONNECTION_MINPOOL` as well.
+A minimum above the maximum is capped at the maximum.
 
 === Elasticsearch configuration
 

@@ -393,17 +393,23 @@ function validateEnvironment() {
         ;;
     esac
 
-    # The pool settings are integers; anything else stops the datasource from starting.
+    # The pool settings are Java ints; anything else stops the datasource from starting,
+    # and HikariCP refuses a maximum pool size below 1.
     # An empty value counts as unset, so the image default applies whether the cfg holds
     # the ${env:...:-default} placeholder or comes from an older image without the key.
-    local pool_var
-    for pool_var in IDLETIMEOUT LOGINTIMEOUT MINPOOL MAXPOOL MAXSIZE; do
-      pool_var="OPENNMS_DATABASE_CONNECTION_${pool_var}"
+    local pool_name pool_var pool_min
+    for pool_name in IDLETIMEOUT LOGINTIMEOUT MINPOOL MAXPOOL MAXSIZE; do
+      pool_var="OPENNMS_DATABASE_CONNECTION_${pool_name}"
       [ -n "${!pool_var+set}" ] || continue
       if [ -z "${!pool_var}" ]; then
         unset "${pool_var}"
-      elif [[ ! "${!pool_var}" =~ ^[0-9]+$ ]]; then
-        echo "[Startup][ERROR] Invalid ${pool_var} '${!pool_var}', expected a non-negative integer."
+        continue
+      fi
+      pool_min=0
+      [ "${pool_name}" = "MAXPOOL" ] && pool_min=1
+      # At most 10 digits keeps the comparison within bash's 64-bit arithmetic; 10# reads leading zeros as decimal
+      if [[ ! "${!pool_var}" =~ ^[0-9]{1,10}$ ]] || (( 10#${!pool_var} < pool_min || 10#${!pool_var} > 2147483647 )); then
+        echo "[Startup][ERROR] Invalid ${pool_var} '${!pool_var}', expected an integer from ${pool_min} to 2147483647."
         exit ${E_ILLEGAL_ARGS}
       fi
     done
