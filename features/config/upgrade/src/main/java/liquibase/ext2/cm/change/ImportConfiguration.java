@@ -34,6 +34,7 @@ import java.util.Set;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -48,6 +49,9 @@ import liquibase.statement.SqlStatement;
 
 /**
  * Imports an existing configuration. It can either live in {opennms.home}/etc (user defined) or in the class path (default).
+ *
+ * <p>With {@code failOnError="false"} a file that can't be imported (e.g. it doesn't obey the schema) doesn't stop the
+ * upgrade: the error is logged, nothing is stored, and the file stays where it is.</p>
  */
 @DatabaseChange(name = "importConfig", description = "Imports a configuration from file.", priority = ChangeMetaData.PRIORITY_DATABASE)
 public class ImportConfiguration extends AbstractCmChange {
@@ -58,6 +62,7 @@ public class ImportConfiguration extends AbstractCmChange {
     private String schemaId;
     private String configId;
     private String filePath;
+    private Boolean failOnError;
     private Path archivePath;
     private Resource configResource;
 
@@ -87,8 +92,21 @@ public class ImportConfiguration extends AbstractCmChange {
     @Override
     public SqlStatement[] generateStatements(Database database) {
         return new SqlStatement[] {
-                new GenericCmStatement((ConfigurationManagerService cm) -> importConfig(cm, this.configResource, new ConfigUpdateInfo(schemaId, getConfigId()), archivePath))
+                new GenericCmStatement(this::importConfiguration)
         };
+    }
+
+    private void importConfiguration(final ConfigurationManagerService cm) {
+        try {
+            importConfig(cm, this.configResource, new ConfigUpdateInfo(schemaId, getConfigId()), archivePath);
+        } catch (RuntimeException e) {
+            if (!Boolean.FALSE.equals(this.failOnError)) {
+                throw e;
+            }
+            LOG.error("Configuration {} of schema {} was not imported from {}: {}. The file is left in place and ignored from now on: "
+                            + "fix it and store it with the configuration manager REST API.",
+                    getConfigId(), schemaId, this.filePath, ConfigConvertUtil.rootCauseMessage(e), e);
+        }
     }
 
     public String getSchemaId() {
@@ -105,6 +123,18 @@ public class ImportConfiguration extends AbstractCmChange {
 
     public void setConfigId(String configId) {
         this.configId = configId;
+    }
+
+    /**
+     * @return the attribute as given, null if not set (means true). Returning the default here would change the
+     *         checksum of changesets that were executed before this attribute existed.
+     */
+    public Boolean getFailOnError() {
+        return failOnError;
+    }
+
+    public void setFailOnError(Boolean failOnError) {
+        this.failOnError = failOnError;
     }
 
     public String getFilePath() {
