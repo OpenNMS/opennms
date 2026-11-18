@@ -73,6 +73,9 @@ import java.util.List;
         nothing but the row ids defines.""")
 public interface EventConfRestApi {
 
+    String NO_UPLOAD_PART_ERROR = "No eventconf files received: send each file as a multipart/form-data part named 'upload', "
+            + "for example curl -F upload=@my.events.xml";
+
     @POST
     @Path("/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -121,9 +124,12 @@ public interface EventConfRestApi {
                         }
                       ]
                     }"""))),
-            @ApiResponse(responseCode = "400", description = "The multipart body has no `upload` part; rejected before the handler with an empty body. A file that fails to parse is not a 400: it is reported inside `errors` with 200.")
+            @ApiResponse(responseCode = "400", description = "The multipart body has no part named `upload`. A file that fails to parse is not a 400: it is reported inside `errors` with 200.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = EventConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"" + EventConfRestApi.NO_UPLOAD_PART_ERROR + "\"}")))
     })
-    Response uploadEventConfFiles(@Multipart("upload") List<Attachment> attachments,
+    Response uploadEventConfFiles(@Multipart(value = "upload", required = false) List<Attachment> attachments,
                                   @Context SecurityContext securityContext) throws Exception;
 
     @GET
@@ -133,7 +139,8 @@ public interface EventConfRestApi {
             summary = "Filter EventConf Records",
             description = """
         Fetch EventConf records based on provided filters such as UEI, vendor, source and name.
-        Each filter is optional; omitted filters are not applied. `limit` must be at least 1.
+        Each filter is optional; omitted filters are not applied.
+        `offset` and `limit` are optional: `offset` defaults to 0, and omitting `limit` (or passing 0) returns every match.
         `createdTime` and `lastModified` come back as epoch milliseconds, not as the date-time strings the schema shows.""",
             operationId = "filterEventConf"
     )
@@ -159,22 +166,26 @@ public interface EventConfRestApi {
                         "severity": "Warning"
                       }
                     ]"""))),
-            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
-                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request – a negative `offset` or `limit`",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = EventConfErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"offset must be 0 or greater\"}"))),
             @ApiResponse(responseCode = "204", description = "No matching EventConf records found for the given criteria",
                     content = @Content)
     })
     Response filterEventConf(
-            @Parameter(description = "Exact UEI to match.", example = "uei.opennms.org/vendor/cisco/syslog/LINK-3-UPDOWN")
+            @Parameter(description = "Case-insensitive substring matched against the UEI.", example = "uei.opennms.org/vendor/cisco/syslog/LINK-3-UPDOWN")
             @QueryParam("uei") String uei,
-            @Parameter(description = "Vendor to match.", example = "Cisco")
+            @Parameter(description = "Case-insensitive substring matched against the source's vendor.", example = "Cisco")
             @QueryParam("vendor") String vendor,
-            @Parameter(description = "Source name to match.", example = "Cisco.syslog.events")
+            @Parameter(description = "Case-insensitive substring matched against the source name.", example = "Cisco.syslog.events")
             @QueryParam("sourceName") String sourceName,
-            @Parameter(description = "Zero-based index of the first record to return.", example = "0")
-            @QueryParam("offset") int offset,
-            @Parameter(description = "Maximum number of records to return.", example = "20")
-            @QueryParam("limit") int limit,
+            @Parameter(description = "Zero-based index of the first record to return.", example = "0",
+                    schema = @Schema(type = "integer", minimum = "0", defaultValue = "0"))
+            @QueryParam("offset") Integer offset,
+            @Parameter(description = "Maximum number of records to return; omit or pass 0 for every match.", example = "20",
+                    schema = @Schema(type = "integer", minimum = "0", defaultValue = "0"))
+            @QueryParam("limit") Integer limit,
             @Context SecurityContext securityContext );
 
     @PATCH
@@ -229,7 +240,7 @@ public interface EventConfRestApi {
         - `eventSortBy`: sort field `eventOrder`, `uei`, `eventLabel`, `description`, `severity`, `enabled`;
           defaults to `eventOrder` (the evaluation position within the source, 1 = evaluated first) if missing or invalid.
         - `eventOrder`: `asc` or `desc` (default: `desc`, or `asc` when falling back to `eventOrder`).
-        - `offset` and `limit`: for pagination; omitting `limit` (or passing 0) returns every match in one page.
+        - `offset` and `limit`: optional; `offset` defaults to 0, and omitting `limit` (or passing 0) returns every match in one page.
 
         The response wraps the page in `eventConfSourceList`; the entries are events, not sources.
         `createdTime` and `lastModified` come back as epoch milliseconds, not as the date-time strings the schema shows.""",
@@ -260,10 +271,10 @@ public interface EventConfRestApi {
                     }
                   ]
                 }"""))),
-        @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+        @ApiResponse(responseCode = "400", description = "Bad Request – a non-positive `sourceId`, or a negative `offset` or `limit`",
                 content = @Content(mediaType = MediaType.APPLICATION_JSON,
                         schema = @Schema(implementation = EventConfErrorResponse.class),
-                        examples = @ExampleObject(value = "{\"error\": \"Invalid sourceId/offset/limit values\"}"))),
+                        examples = @ExampleObject(value = "{\"error\": \"offset must be 0 or greater\"}"))),
         @ApiResponse(responseCode = "204", description = "No matching EventConfEvent record found for the given criteria",
                 content = @Content)
     })
@@ -273,19 +284,21 @@ public interface EventConfRestApi {
             @Parameter(description = "Case-insensitive substring matched against UEI, event label, and description.",
                     example = "LINK-3")
             @QueryParam("eventFilter") String eventFilter,
-            @Parameter(description = "Sort field: `uei`, `eventLabel`, `description`, `severity`, or `enabled`. Anything else sorts by `createdTime`.",
+            @Parameter(description = "Sort field: `eventOrder`, `uei`, `eventLabel`, `description`, `severity`, `enabled`, or `createdTime`. Anything else sorts by `eventOrder`.",
                     example = "uei",
-                    schema = @Schema(allowableValues = {"uei", "eventLabel", "description", "severity", "enabled"}))
+                    schema = @Schema(allowableValues = {"eventOrder", "uei", "eventLabel", "description", "severity", "enabled", "createdTime"}, defaultValue = "eventOrder"))
             @QueryParam("eventSortBy") String eventSortBy,
-            @Parameter(description = "Sort direction.", example = "asc",
-                    schema = @Schema(allowableValues = {"asc", "desc"}, defaultValue = "desc"))
+            @Parameter(description = "Sort direction. Defaults to `asc` when sorting by `eventOrder`, otherwise `desc`.", example = "asc",
+                    schema = @Schema(allowableValues = {"asc", "desc"}))
             @QueryParam("eventOrder") String eventOrder,
             @Parameter(description = "Total matching records as already known to the caller. When present, the count query is not run.",
                     example = "132")
             @QueryParam("totalRecords") Integer totalRecords,
-            @Parameter(description = "Zero-based index of the first record to return (default 0).", example = "0")
+            @Parameter(description = "Zero-based index of the first record to return.", example = "0",
+                    schema = @Schema(type = "integer", minimum = "0", defaultValue = "0"))
             @QueryParam("offset") Integer offset,
-            @Parameter(description = "Maximum number of records to return; omit or pass 0 for every match in one page.", example = "20")
+            @Parameter(description = "Maximum number of records to return; omit or pass 0 for every match in one page.", example = "20",
+                    schema = @Schema(type = "integer", minimum = "0", defaultValue = "0"))
             @QueryParam("limit") Integer limit,
             @Context SecurityContext securityContext );
 
@@ -374,6 +387,7 @@ public interface EventConfRestApi {
         - `sortBy`: `name`, `vendor`, `description`, `evaluationOrder`, `fileOrder`, `eventCount`; missing or
           unrecognised values sort by `createdTime`.
         - `order`: `asc` or `desc` (default: `desc`).
+        - `offset` and `limit`: optional; `offset` defaults to 0, and omitting `limit` (or passing 0) returns every match in one page.
         `evaluationOrder` is the position in which sources are evaluated when matching events (1 = first).
         It is derived from the stored `fileOrder`, where a higher value is evaluated first and
         `opennms.catch-all.events` is pinned at 1 (always evaluated last).""",
@@ -401,19 +415,19 @@ public interface EventConfRestApi {
                         }
                       ]
                     }"""))),
-            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+            @ApiResponse(responseCode = "400", description = "Bad Request – a negative `offset` or `limit`",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = EventConfErrorResponse.class),
-                            examples = @ExampleObject(value = "{\"error\": \"Invalid offset/limit values\"}"))),
+                            examples = @ExampleObject(value = "{\"error\": \"limit must be 0 or greater; omit it or pass 0 for every match\"}"))),
             @ApiResponse(responseCode = "204", description = "No matching EventConfSource records found for the given criteria",
                     content = @Content)
     })
     Response filterEventConfSource(
             @Parameter(description = "Case-insensitive term matched against name, vendor, and description, and against the UEIs and event labels of the source's events.", example = "cisco")
             @QueryParam("filter") String filter,
-            @Parameter(description = "Sort field: `name`, `vendor`, `description`, `fileOrder`, or `eventCount`. Anything else sorts by `createdTime`.",
-                    example = "name", required = true,
-                    schema = @Schema(allowableValues = {"name", "vendor", "description", "fileOrder", "eventCount"}))
+            @Parameter(description = "Sort field: `name`, `vendor`, `description`, `evaluationOrder`, `fileOrder`, or `eventCount`. Anything else sorts by `createdTime`.",
+                    example = "name",
+                    schema = @Schema(allowableValues = {"name", "vendor", "description", "evaluationOrder", "fileOrder", "eventCount"}))
             @QueryParam("sortBy") String sortBy,
             @Parameter(description = "Sort direction.", example = "asc",
                     schema = @Schema(allowableValues = {"asc", "desc"}, defaultValue = "desc"))
@@ -421,9 +435,11 @@ public interface EventConfRestApi {
             @Parameter(description = "Total matching records as already known to the caller. When present, the count query is not run.",
                     example = "41")
             @QueryParam("totalRecords") Integer totalRecords,
-            @Parameter(description = "Zero-based index of the first record to return.", example = "0")
+            @Parameter(description = "Zero-based index of the first record to return.", example = "0",
+                    schema = @Schema(type = "integer", minimum = "0", defaultValue = "0"))
             @QueryParam("offset") Integer offset,
-            @Parameter(description = "Maximum number of records to return.", example = "20")
+            @Parameter(description = "Maximum number of records to return; omit or pass 0 for every match in one page.", example = "20",
+                    schema = @Schema(type = "integer", minimum = "0", defaultValue = "0"))
             @QueryParam("limit") Integer limit,
             @Context SecurityContext securityContext );
 

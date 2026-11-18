@@ -95,6 +95,12 @@ public class EventConfRestService implements EventConfRestApi {
 
     @Override
     public Response uploadEventConfFiles(final List<Attachment> attachments, final SecurityContext securityContext) {
+        if (attachments == null || attachments.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .type(MediaType.APPLICATION_JSON)
+                    .entity(Map.of("error", NO_UPLOAD_PART_ERROR))
+                    .build();
+        }
         final String username = getUsername(securityContext);
         final Date now = new Date();
         final List<Map<String, Object>> successList = new ArrayList<>();
@@ -243,15 +249,15 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
     @Override
-    public Response filterEventConf(String uei, String vendor, String sourceName, int offset, int limit, SecurityContext securityContext) {
-
-        // Return 400 Bad Request if offset is negative or limit is less than 1
-        if (offset < 0 || limit < 1) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+    public Response filterEventConf(String uei, String vendor, String sourceName, Integer offset, Integer limit, SecurityContext securityContext) {
+        final Response invalidPaging = validatePaging(offset, limit);
+        if (invalidPaging != null) {
+            return invalidPaging;
         }
 
         // Call the persistence service
-        List<EventConfEvent> results = eventConfPersistenceService.findEventConfByFilters(uei, vendor, sourceName, offset, limit);
+        List<EventConfEvent> results = eventConfPersistenceService.findEventConfByFilters(uei, vendor, sourceName,
+                Objects.requireNonNullElse(offset, 0), limitOrAll(limit));
         if (results == null || results.isEmpty()) {
             // Return 204 No Content if no matching records found
             return Response.noContent().build();
@@ -295,13 +301,14 @@ public class EventConfRestService implements EventConfRestApi {
                                                String eventOrder, Integer totalRecords, Integer offset,
                                                Integer limit, SecurityContext securityContext) {
 
-        // Return 400 Bad Request on a missing/invalid sourceId or a negative offset/limit;
-        // a missing or zero limit means the whole result set in one page
-        if (Objects.requireNonNullElse(sourceId, 0L) <= 0L || Objects.requireNonNullElse(offset, 0) < 0
-                || Objects.requireNonNullElse(limit, 0) < 0) {
+        if (Objects.requireNonNullElse(sourceId, 0L) <= 0L) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "Invalid sourceId/offset/limit values"))
+                    .entity(Map.of("error", "sourceId must be a positive number"))
                     .build();
+        }
+        final Response invalidPaging = validatePaging(offset, limit);
+        if (invalidPaging != null) {
+            return invalidPaging;
         }
 
         // Call service to fetch results
@@ -327,11 +334,9 @@ public class EventConfRestService implements EventConfRestApi {
     public Response filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords,
                                           Integer offset, Integer limit, SecurityContext securityContext) {
 
-        // Return 400 Bad Request if offset < 0 or limit < 1
-        if (Objects.requireNonNullElse(offset, 0) < 0 || Objects.requireNonNullElse(limit, 0) < 1) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "Invalid offset/limit values"))
-                    .build();
+        final Response invalidPaging = validatePaging(offset, limit);
+        if (invalidPaging != null) {
+            return invalidPaging;
         }
 
         // Call service to fetch results
@@ -848,6 +853,26 @@ public class EventConfRestService implements EventConfRestApi {
                     .entity(Map.of("error", "Unexpected error occurred: " + e.getMessage()))
                     .build();
         }
+    }
+
+    /**
+     * The paging contract shared by every /filter endpoint: both parameters are optional, a missing
+     * offset means 0 and a missing or zero limit means every match. Returns the 400 to send, or null.
+     */
+    private static Response validatePaging(final Integer offset, final Integer limit) {
+        if (offset != null && offset < 0) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "offset must be 0 or greater")).build();
+        }
+        if (limit != null && limit < 0) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "limit must be 0 or greater; omit it or pass 0 for every match")).build();
+        }
+        return null;
+    }
+
+    private static int limitOrAll(final Integer limit) {
+        return (limit == null || limit == 0) ? Integer.MAX_VALUE : limit;
     }
 
     private Events parseEventFile(final InputStream inputStream) throws Exception {
