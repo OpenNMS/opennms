@@ -30,8 +30,8 @@ import java.util.regex.Pattern;
  * The checks a JDBC data collection configuration must pass before it is stored, beyond what the schema of the
  * configuration manager checks: values the collector cannot work without, value ranges and uniqueness.
  *
- * <p>The configuration manager runs them on every write (see
- * {@link org.opennms.netmgt.dao.jaxb.JdbcDataCollectionConfigDaoCm}). The v2 REST API checks the same rules on its
+ * <p>The configuration manager runs them on every write, including the import of the configuration upgrade (see
+ * {@link org.opennms.netmgt.dao.jaxb.JdbcDataCollectionConfigValidator}). The v2 REST API checks the same rules on its
  * DTOs first to name the offending field, and the UI mirrors them in
  * {@code ui/src/lib/jdbcDataCollectionValidator.ts}; keep the three in step.</p>
  */
