@@ -14,6 +14,8 @@ The `.env` file (or `.env.development`) contains some compile-time environment-s
 
 - `VITE_DEV_PROXY_TARGET`: OpenNMS instance that `pnpm dev` proxies `/opennms` requests to. Default: `http://localhost:8980`
 
+- `VITE_DEV_PROXY_INSECURE`: Set to `true` to skip certificate verification when `VITE_DEV_PROXY_TARGET` is an `https` instance with a certificate Node does not trust. Default: unset
+
 - `VITE_MENU_APP_MOUNT_ID`: Id of the `div` element hosting the Vue menu application. Default: `opennms-sidemenu-container`
 
 - `VITE_APP_LOGO_NAME`: Base logo name for the main logo at the top of the application.

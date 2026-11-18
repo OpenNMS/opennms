@@ -46,7 +46,7 @@ Project routes make use of [vue-router](https://next.router.vuejs.org/guide/).
 
 ### Dev server
 
-With an OpenNMS instance running on `http://localhost:8980`, run `pnpm dev` and open `http://localhost:3001/opennms/`. The dev server serves the Vue SPA at `/opennms/ui/` with hot reload and proxies the rest of `/opennms` to the instance, so login, the menu and legacy pages work as usual. Set `VITE_DEV_PROXY_TARGET` (e.g. in `.env.development.local`) to use another instance.
+With an OpenNMS instance running on `http://localhost:8980`, run `pnpm dev` and open `http://localhost:3001/opennms/`. The dev server serves the Vue SPA at `/opennms/ui/` with hot reload and proxies the rest of `/opennms` to the instance, so login, the menu and legacy pages work as usual. Set `VITE_DEV_PROXY_TARGET` (e.g. in `.env.development.local`) to use another instance. For an `https` instance whose certificate Node does not trust (self-signed, for example), either point `NODE_EXTRA_CA_CERTS` at its CA or set `VITE_DEV_PROXY_INSECURE=true` to skip certificate verification.
 
 The menu app embedded in legacy pages still comes from the instance's deployed build; to change it, use the build and deploy workflow below.
 
