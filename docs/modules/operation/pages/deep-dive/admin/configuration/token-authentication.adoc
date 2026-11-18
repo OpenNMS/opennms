@@ -179,7 +179,7 @@ The previously-loaded configuration remains in effect until the next successful 
 Both the XML and HTTP collectors accept `${token:<name>}` in any header value.
 
 * In `xml-datacollection-config.xml`: This collector supports the placeholder inside a `<request>/<header>` element of an `<xml-source>`.
-* In `http-datacollection-config.xml`: The `<url>` element supports a `<headers>` block for the same purpose.
+* In the xref:reference:performance-data-collection/collectors/http.adoc#ref-collector-http-collections[HTTP data collection configuration]: Add the placeholder to a request header of a URI, either on the URI's edit page under menu:Administration[Configure HTTP Data Collection] or in the `<headers>` block of a `<url>` element in an uploaded XML file.
 
 The header value is resolved at request build time, alongside any other metadata DSL placeholders.
 A header such as `X-Tenant: ${node:foreign-source}` and `Authorization: Bearer ${token:my-auth}` can appear on the same request.
