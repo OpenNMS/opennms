@@ -545,22 +545,6 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
-  <!-- Only use BASIC auth for the RSS URL -->
-  <http pattern="/rss.jsp*" realm="OpenNMS Realm" use-expressions="false">
-    <request-cache ref="nullRequestCache"/>
-    <csrf disabled="true" />
-    <headers defaults-disabled="true" />
-
-    <access-denied-handler error-page="/accessDenied.jsp" />
-    <intercept-url pattern="/rss.jsp*" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
-
-    <http-basic entry-point-ref="xRequestedWithAwareBasicAuthEntryPoint" />
-
-    <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
-    <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
-    <custom-filter position="LAST" ref="authFilterEnabler"/>
-  </http>
-  
   <!-- Static files of the Vue SPA (/ui/assets) and of the Vue menu bundle (/ui-components/assets).
        Logged-in users only. An unauthenticated request gets a plain, uncacheable 401 and not a redirect
        to login.jsp: rendering the login page for a script or stylesheet creates a session, which can
