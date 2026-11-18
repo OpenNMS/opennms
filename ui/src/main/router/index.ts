@@ -130,6 +130,12 @@ const router = createRouter({
       redirect: { path: '/distributed-monitoring', query: { tab: 'locations' }}
     },
     {
+      path: '/admin/surveillance-categories',
+      name: 'Surveillance Categories',
+      component: () => import('@/containers/ManageCategories.vue'),
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage surveillance categories.')
+    },
+    {
       path: '/configuration',
       name: 'Configuration',
       component: () => import('@/containers/ProvisionDConfig.vue'),
