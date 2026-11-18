@@ -21,12 +21,15 @@
  */
 package org.opennms.features.kafka.producer.collection;
 
+import com.codahale.metrics.Timer;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.opennms.features.kafka.producer.KafkaProducerManager.MessageType;
+import org.opennms.features.kafka.producer.ProducerMetrics;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource;
 import org.opennms.netmgt.collection.api.AttributeGroup;
@@ -74,6 +77,8 @@ public class KafkaPersister implements Persister {
 
     private MetricTopicRouter metricTopicRouter;
 
+    private ProducerMetrics metrics;
+
     public KafkaPersister(ServiceParameters params) {
         m_params = params;
     }
@@ -87,8 +92,11 @@ public class KafkaPersister implements Persister {
     public void visitCollectionSet(CollectionSet collectionSet) {
         // With metric routing disabled the router resolves every resource to topicName, so this
         // yields a single group and behaves exactly as the un-routed path did.
-        final Map<String, CollectionSetProtos.CollectionSet> collectionSetProtosByTopic = collectionSetMapper
-                .buildCollectionSetProtosByTopic(collectionSet, m_params, metricTopicRouter, topicName);
+        final Map<String, CollectionSetProtos.CollectionSet> collectionSetProtosByTopic;
+        try (Timer.Context ignored = metrics != null ? metrics.build(MessageType.METRIC).time() : null) {
+            collectionSetProtosByTopic = collectionSetMapper
+                    .buildCollectionSetProtosByTopic(collectionSet, m_params, metricTopicRouter, topicName);
+        }
         if (collectionSetProtosByTopic == null) {
             return;
         }
@@ -268,14 +276,31 @@ public class KafkaPersister implements Persister {
         // Derive key, it will be nodeId for all resources except for response time, it would be IpAddress
         final String key = deriveKeyFromCollectionSet(collectionSetProto);
         final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, key, payload);
-        producer.send(record, (recordMetadata, e) -> {
-            if (e != null) {
-                LOG.warn("Failed to send record to producer: {}.", record, e);
-                return;
-            } else if (LOG.isDebugEnabled()) {
-                LOG.debug("persisted collection {} to kafka with key {}", collectionSetProto.toString(), key);
+        if (metrics != null) {
+            metrics.size(MessageType.METRIC, payload);
+        }
+        try {
+            producer.send(record, (recordMetadata, e) -> {
+                if (e != null) {
+                    if (metrics != null) {
+                        metrics.failed(MessageType.METRIC);
+                    }
+                    LOG.warn("Failed to send record to producer: {}.", record, e);
+                    return;
+                }
+                if (metrics != null) {
+                    metrics.sent(MessageType.METRIC);
+                }
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("persisted collection {} to kafka with key {}", collectionSetProto.toString(), key);
+                }
+            });
+        } catch (RuntimeException e) {
+            if (metrics != null) {
+                metrics.failed(MessageType.METRIC);
             }
-        });
+            throw e;
+        }
     }
 
     private String deriveKeyFromCollectionSet(CollectionSetProtos.CollectionSet collectionSetProto) {
@@ -312,6 +337,7 @@ public class KafkaPersister implements Persister {
 
     public void setMetricTopicRouter(MetricTopicRouter metricTopicRouter) {
         this.metricTopicRouter = metricTopicRouter;
+        this.metrics = metricTopicRouter != null ? new ProducerMetrics(metricTopicRouter.getMetricRegistry()) : null;
     }
 
     @Override
