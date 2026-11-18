@@ -198,13 +198,13 @@ public class JdbcDataCollectionConfigCmDaoIT {
     @Test
     public void configurationTheCollectorCannotUseIsRejected() {
         // the same checks for every write path, e.g. /rest/cm, which goes straight to the configuration manager
-        final JSONObject noAlias = new JSONObject(ConfigConvertUtil.objectToJson(dao.getConfig("postgresql")));
-        noAlias.getJSONArray("jdbc-collection").getJSONObject(0)
+        final JSONObject tooLongAlias = new JSONObject(ConfigConvertUtil.objectToJson(dao.getConfig("postgresql")));
+        tooLongAlias.getJSONArray("jdbc-collection").getJSONObject(0)
                 .getJSONObject("queries").getJSONArray("query").getJSONObject(0)
                 .getJSONObject("columns").getJSONArray("column").getJSONObject(0)
                 .put("alias", "an-alias-longer-than-rrdtool-allows");
         final ValidationException tooLong = assertThrows(ValidationException.class,
-                () -> cm.registerConfiguration(CONFIG_NAME, "bad", new JsonAsString(noAlias.toString())));
+                () -> cm.registerConfiguration(CONFIG_NAME, "bad", new JsonAsString(tooLongAlias.toString())));
         assertThat(tooLong.getMessage(), containsString("an-alias-longer-than-rrdtool-allows"));
 
         final String valid = ConfigConvertUtil.objectToJson(dao.getConfig("mysql"));

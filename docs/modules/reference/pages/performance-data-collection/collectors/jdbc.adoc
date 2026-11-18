@@ -105,14 +105,11 @@ The upgrade imports these files once:
 `jdbc-datacollection.d/default.xml` becomes `default.d`, because `default` belongs to `jdbc-datacollection-config.xml`.
 * Imported files are moved to `$\{OPENNMS_HOME}/etc_archive/`, with a timestamp appended to the file name.
 If a file can't be moved, it is still imported, the log shows a warning, and you have to remove the file from `$\{OPENNMS_HOME}/etc/` yourself.
-* A file that does not follow the schema `jdbc-datacollection.xsd` is not imported, and the upgrade continues.
+* A file that does not follow the schema `jdbc-datacollection.xsd`, or that {page-component-title} can't use (for example, a column `type` such as `timeticks` that the collector does not support), is not imported, and the upgrade continues.
 * A file in `jdbc-datacollection.d/` whose name does not make a valid configuration ID is not imported either.
 A valid ID starts with a letter or a digit and contains only letters, digits, `.`, `_` and `-`.
-* In both cases the log names the file and the error, and the file stays in `$\{OPENNMS_HOME}/etc/`.
+* In these cases the log names the file and the error, and the file stays in `$\{OPENNMS_HOME}/etc/`.
 Correct or rename the file and add it with the REST API.
-* A file that follows the schema but has a column `type` that {page-component-title} does not support (for example, `timeticks`) is imported and archived like any other file, because the schema allows any type name.
-The collector ignores this whole configuration ID and logs an error that names it.
-Correct the type and replace the configuration with the REST API (`PUT` with `?replace=true`).
 
 IMPORTANT: After the upgrade, {page-component-title} does not read `jdbc-datacollection-config.xml` and the files in `jdbc-datacollection.d/`.
 New or changed files in these locations have no effect.
