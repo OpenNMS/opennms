@@ -638,8 +638,10 @@ public class ThresholdController extends AbstractController implements Initializ
         }
     }
     
+    // String.trim(), as in Event.setUei, so a value that setUei would reject never reaches it
     private static String trimToNull(final String value) {
-        return value == null || value.isBlank() ? null : value.trim();
+        final String trimmed = value == null ? null : value.trim();
+        return trimmed == null || trimmed.isEmpty() ? null : trimmed;
     }
 
     private  org.opennms.netmgt.xml.eventconf.Event getSourceEvent(ThresholdType thresholdType, boolean isTrigger) {

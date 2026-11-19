@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
@@ -82,6 +83,17 @@ public class ThresholdControllerUeiTest {
     }
 
     @Test
+    public void controlCharacterUeisMeanNoCustomUei() {
+        // String.trim() (used by Event.setUei) strips these, but isBlank() does not count them as whitespace
+        final Threshold threshold = new Threshold();
+        controller.commonFinishEdit(form("\u0001", " \u0000 "), threshold);
+
+        assertFalse(threshold.getTriggeredUEI().isPresent());
+        assertFalse(threshold.getRearmedUEI().isPresent());
+        verify(eventConfProgrammaticService, never()).saveEventToDB(any(), anyString());
+    }
+
+    @Test
     public void paddedUeisAreTrimmed() {
         final Threshold threshold = new Threshold();
         controller.commonFinishEdit(form("  uei.opennms.org/test/exceeded \n", "\tuei.opennms.org/test/rearmed "), threshold);
@@ -91,7 +103,7 @@ public class ThresholdControllerUeiTest {
         verify(eventConfDao).getEvents("uei.opennms.org/test/exceeded");
         verify(eventConfDao).getEvents("uei.opennms.org/test/rearmed");
         final ArgumentCaptor<Event> saved = ArgumentCaptor.forClass(Event.class);
-        verify(eventConfProgrammaticService, org.mockito.Mockito.times(2)).saveEventToDB(saved.capture(), anyString());
+        verify(eventConfProgrammaticService, times(2)).saveEventToDB(saved.capture(), anyString());
         assertEquals("uei.opennms.org/test/exceeded", saved.getAllValues().get(0).getUei());
         assertEquals("uei.opennms.org/test/rearmed", saved.getAllValues().get(1).getUei());
     }
