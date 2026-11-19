@@ -90,8 +90,11 @@ const monitored = computed(() => isMonitored(props.row.availability))
   overflow: hidden;
 }
 
+// Indented under its interface's heading. A margin, not padding, so the indent is not part of the
+// link; the name still truncates within the narrower width.
 .service-link {
   display: block;
+  margin-left: 1em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
