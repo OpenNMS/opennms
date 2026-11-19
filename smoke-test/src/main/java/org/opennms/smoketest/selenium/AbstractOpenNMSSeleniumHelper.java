@@ -120,6 +120,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     public static final long   LOAD_TIMEOUT       = Long.getLong("org.opennms.smoketest.web-timeout", 120000l);
     public static final long   REQ_TIMEOUT        = Long.getLong("org.opennms.smoketest.requisition-timeout", 240000l);
+    private static final int   LOGIN_ATTEMPTS     = 3;
 
     public static final String BASIC_AUTH_USERNAME = "admin";
     public static final String BASIC_AUTH_PASSWORD = "admin";
@@ -283,6 +284,24 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     public void login(final String username, final String password) {
+        for (int attempt = 1; attempt <= LOGIN_ATTEMPTS; attempt++) {
+            if (attemptLogin(username, password)) {
+                return;
+            }
+            LOG.warn("Login attempt {}/{} for user '{}' was rejected (current URL: {}); retrying.",
+                    attempt, LOGIN_ATTEMPTS, username, getDriver().getCurrentUrl());
+        }
+        fail("Login for user '" + username + "' was rejected " + LOGIN_ATTEMPTS
+                + " times; current URL: " + getDriver().getCurrentUrl());
+    }
+
+    /**
+     * Performs a single login attempt.
+     *
+     * @return false if the login POST was rejected before authentication happened (e.g. by the CSRF filter,
+     *         which forwards to accessDenied.jsp), true if the login went through
+     */
+    private boolean attemptLogin(final String username, final String password) {
         // Start with a clean slate
         getDriver().manage().deleteAllCookies();
 
@@ -298,6 +317,14 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             return ! driver.getCurrentUrl().contains("login.jsp");
         });
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
+
+        // A rejected login POST is forwarded (not redirected) to accessDenied.jsp, so the browser stays on
+        // j_spring_security_check and the access denied page also has a 'content' div. Without this check
+        // the login looks successful and the next page load bounces back to the login page.
+        if (isLoginRejected()) {
+            return false;
+        }
+
         invokeWithImplicitWait(0, () -> {
             try {
                 // Make sure that the 'login-attempt-failed' element is not present
@@ -318,6 +345,19 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                 // No further action required
             }
         });
+        return true;
+    }
+
+    private boolean isLoginRejected() {
+        final String currentUrl = getDriver().getCurrentUrl();
+        if (currentUrl.contains("j_spring_security_check") || currentUrl.contains("accessDenied.jsp")) {
+            return true;
+        }
+        final boolean[] accessDenied = { false };
+        invokeWithImplicitWait(0, () -> {
+            accessDenied[0] = !getDriver().findElements(By.xpath("//h2[text()='Access denied']")).isEmpty();
+        });
+        return accessDenied[0];
     }
 
     private void invokeWithImplicitWait(int implicitWait, Runnable runnable) {
