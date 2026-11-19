@@ -457,7 +457,7 @@ public class EventConfRestService implements EventConfRestApi {
         }
         try {
             final List<EventConfEventDto> events =
-                    EventConfEventDto.fromEntity(eventConfPersistenceService.findEventsBySourceIdAndUei(sourceId, uei));
+                    EventConfEventDto.fromEntity(eventConfPersistenceService.findEventsBySourceIdAndUei(sourceId, uei.trim()));
             return Response.ok(events).build();
         } catch (EntityNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity(ex.getMessage()).build();
@@ -513,6 +513,8 @@ public class EventConfRestService implements EventConfRestApi {
 
         } catch (EntityNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity(Map.of("error", ex.getMessage())).build();
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", String.valueOf(ex.getMessage()))).build();
         } catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Map.of("error", "Unexpected error occurred: " + ex.getMessage())).build();
         }
