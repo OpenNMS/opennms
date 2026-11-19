@@ -177,7 +177,7 @@ public abstract class SnmpAttributeType extends AbstractCollectionAttributeType 
     }
 
     SnmpObjId getSnmpObjId() {
-        return m_mibObj.getSnmpObjId();
+        return m_mibObj == null ? null : m_mibObj.getSnmpObjId();
     }
 
     /* (non-Javadoc)
