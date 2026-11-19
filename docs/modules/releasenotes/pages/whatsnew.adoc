@@ -445,6 +445,11 @@ Remove the `DOCTYPE` from requisitions that external tools write, or set the sys
 Minion does not use these endpoints.
 `ROLE_MINION` still gives access to the embedded ActiveMQ broker.
 
+=== HotSpot Base64 intrinsics disabled by default
+Core, Minion and Sentinel now start their JVM with `-XX:-UseBASE64Intrinsics`, on native installs and in the container images.
+To turn the intrinsics back on, add `-XX:+UseBASE64Intrinsics` to `ADDITIONAL_MANAGER_OPTIONS` in `$OPENNMS_HOME/etc/opennms.conf` on a native Core, or to `JAVA_OPTS` on Minion, Sentinel and the containers.
+On the Minion container, `CUSTOM_JAVA_OPTS` from confd works as well.
+
 === Ops Board and Wallboard removed
 
 The Vaadin-based Ops Board (operator board) and Wallboard, their dashlets, and the *Wallboard Configuration* admin page have been removed.

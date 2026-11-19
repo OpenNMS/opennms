@@ -906,6 +906,10 @@ if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c StartAttachListener)" 
 	ADDITIONAL_MANAGER_OPTIONS+=("-XX:+StartAttachListener")
 fi
 
+if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c UseBASE64Intrinsics)" -eq 0 ]; then
+	ADDITIONAL_MANAGER_OPTIONS+=("-XX:-UseBASE64Intrinsics")
+fi
+
 if (( ${#ADDITIONAL_MANAGER_OPTIONS[@]} )); then
 	MANAGER_OPTIONS+=("${ADDITIONAL_MANAGER_OPTIONS[@]}")
 fi
