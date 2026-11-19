@@ -64,6 +64,7 @@ public class EventConfServiceHelper {
      */
     public static Long saveEvent(EventConfEventDao eventConfEventDao, EventConfSource source,
                                   Event event, String username, Date timestamp) {
+        requireUei(event);
         EventConfEvent eventConfEvent = new EventConfEvent();
         eventConfEvent.setSource(source);
         // Appended events are evaluated last within their source (allocation locks the source row)
@@ -78,6 +79,20 @@ public class EventConfServiceHelper {
         eventConfEvent.setLastModified(timestamp);
         eventConfEvent.setModifiedBy(username);
         return eventConfEventDao.save(eventConfEvent);
+    }
+
+    /**
+     * Rejects an event definition without a UEI. Parsing trims the UEI (see the eventconf package's
+     * StringTrimAdapter) and {@link Event#setUei} trims it too, so a UEI of only whitespace arrives here
+     * as empty.
+     *
+     * @param event the event definition about to be stored
+     * @throws IllegalArgumentException if the UEI is null or blank
+     */
+    public static void requireUei(final Event event) {
+        if (event.getUei() == null || event.getUei().isBlank()) {
+            throw new IllegalArgumentException("Event 'uei' is required");
+        }
     }
 
     /**
@@ -176,6 +191,7 @@ public class EventConfServiceHelper {
                                                                       String username,
                                                                       Date timestamp,
                                                                       int startOrder) {
+        events.forEach(EventConfServiceHelper::requireUei);
         final AtomicInteger nextOrder = new AtomicInteger(startOrder);
         return events.stream().map(parsed -> {
             EventConfEvent event = new EventConfEvent();
