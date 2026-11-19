@@ -565,7 +565,8 @@ public class ThresholdController extends AbstractController implements Initializ
         return modelAndView;
     }
 
-    private void commonFinishEdit(HttpServletRequest request, Basethresholddef baseDef) {
+    // package-private for ThresholdControllerUeiTest
+    void commonFinishEdit(HttpServletRequest request, Basethresholddef baseDef) {
         String dsLabel = request.getParameter("dsLabel");
         if (dsLabel == null || "".equals(dsLabel)) {
             baseDef.setDsLabel(null); //Must set null in correct circumstances - empty string isn't quite the same thing
@@ -612,8 +613,9 @@ public class ThresholdController extends AbstractController implements Initializ
 
         String clearKey = null;
 
-        String triggeredUEI = request.getParameter("triggeredUEI");
-        if (triggeredUEI == null || "".equals(triggeredUEI)) {
+        // whitespace around a UEI is not part of it, and a field of only whitespace means no custom UEI
+        final String triggeredUEI = trimToNull(request.getParameter("triggeredUEI"));
+        if (triggeredUEI == null) {
             baseDef.setTriggeredUEI(null); //Must set null in correct circumstances - empty string isn't quite the same thing
         }
         else {
@@ -625,8 +627,8 @@ public class ThresholdController extends AbstractController implements Initializ
             this.ensureUEIInEventConf(source, triggeredUEI, baseDef.getType(), null, true);
         }
 
-        String rearmedUEI = request.getParameter("rearmedUEI");
-        if (rearmedUEI == null || "".equals(rearmedUEI) || baseDef.getType().equals(ThresholdType.RELATIVE_CHANGE) || baseDef.getType().equals(ThresholdType.ABSOLUTE_CHANGE)) { // It doesn't make sense a rearm UEI for relativeChange or absoluteChange
+        final String rearmedUEI = trimToNull(request.getParameter("rearmedUEI"));
+        if (rearmedUEI == null || baseDef.getType().equals(ThresholdType.RELATIVE_CHANGE) || baseDef.getType().equals(ThresholdType.ABSOLUTE_CHANGE)) { // It doesn't make sense a rearm UEI for relativeChange or absoluteChange
             baseDef.setRearmedUEI(null); //Must set null in correct circumstances - empty string isn't quite the same thing
         }
         else {
@@ -636,6 +638,10 @@ public class ThresholdController extends AbstractController implements Initializ
         }
     }
     
+    private static String trimToNull(final String value) {
+        return value == null || value.isBlank() ? null : value.trim();
+    }
+
     private  org.opennms.netmgt.xml.eventconf.Event getSourceEvent(ThresholdType thresholdType, boolean isTrigger) {
         String sourceUei = null;
         switch(thresholdType) {
