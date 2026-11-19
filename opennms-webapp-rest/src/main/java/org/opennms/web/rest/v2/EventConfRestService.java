@@ -30,6 +30,7 @@ import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
+import org.opennms.netmgt.dao.support.EventConfServiceHelper;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfEventDto;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
@@ -148,6 +149,8 @@ public class EventConfRestService implements EventConfRestApi {
             }
 
             try {
+                // checked here too, so a bad file never locks its source or opens a transaction
+                EventConfServiceHelper.requireUeis(fileEvents.getEvents());
                 // the source position is decided inside the persisting transaction: an existing source keeps
                 // its committed position, a new one is allocated there
                 eventConfPersistenceService.persistEventConfFile(
@@ -506,6 +509,10 @@ public class EventConfRestService implements EventConfRestApi {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(Map.of("error", "The 'enabled' flag must be provided (true/false).")).build();
         }
+        if (payload.getEvent().getUei() == null || payload.getEvent().getUei().isBlank()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "Event 'uei' is required")).build();
+        }
         try {
             eventConfPersistenceService.updateEventConfEvent(sourceId, eventId, payload, getUsername(securityContext));
             eventConfPersistenceService.reloadEventsIntoMemory();
@@ -513,8 +520,6 @@ public class EventConfRestService implements EventConfRestApi {
 
         } catch (EntityNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity(Map.of("error", ex.getMessage())).build();
-        } catch (IllegalArgumentException ex) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", String.valueOf(ex.getMessage()))).build();
         } catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Map.of("error", "Unexpected error occurred: " + ex.getMessage())).build();
         }

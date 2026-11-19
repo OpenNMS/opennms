@@ -91,9 +91,13 @@ public class EventConfServiceHelper {
      * @throws IllegalArgumentException if the UEI is null or blank
      */
     public static void requireUei(final Event event) {
-        if (event.getUei() == null || event.getUei().isBlank()) {
+        if (!hasUei(event)) {
             throw new IllegalArgumentException("Event 'uei' is required");
         }
+    }
+
+    private static boolean hasUei(final Event event) {
+        return event.getUei() != null && !event.getUei().isBlank();
     }
 
     /**
@@ -101,13 +105,14 @@ public class EventConfServiceHelper {
      * 1-based position in the list and, when it has one, its event-label, so a whole file can be fixed
      * after one failed upload.
      *
+     * @param events the event definitions about to be stored, in file order
      * @throws IllegalArgumentException if any UEI is null or blank
      */
-    private static void requireUeis(final List<Event> events) {
+    public static void requireUeis(final List<Event> events) {
         final List<String> missing = new ArrayList<>();
         for (int i = 0; i < events.size(); i++) {
             final Event event = events.get(i);
-            if (event.getUei() == null || event.getUei().isBlank()) {
+            if (!hasUei(event)) {
                 final String label = event.getEventLabel();
                 missing.add("#" + (i + 1) + (label == null || label.isBlank() ? "" : " (event-label '" + label + "')"));
             }

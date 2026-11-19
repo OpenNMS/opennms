@@ -229,7 +229,7 @@ public class EventConfPersistenceService {
 
     /**
      * @throws EntityNotFoundException on an unknown source or event, for the REST layer's 404
-     * @throws IllegalArgumentException when the event has no UEI, for the REST layer's 400
+     * @throws IllegalArgumentException when the event has no UEI (the REST layer checks this first; this is the backstop)
      */
     @Transactional
     public void updateEventConfEvent(final Long sourceId, final Long eventId, EventConfEventEditRequest payload, final String userName) {
