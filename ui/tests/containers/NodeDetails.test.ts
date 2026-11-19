@@ -8,7 +8,9 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { computed, ref } from 'vue'
+import { computed, markRaw, ref } from 'vue'
+import ChevronRight from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
+import ExpandLess from '@opennms/onms-ui/icons/navigation/ExpandLess.vue'
 
 const routerReplace = vi.fn()
 vi.mock('vue-router', () => ({
@@ -285,6 +287,76 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'NodeScheduledOutagesBox' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeCriticalPathPanel' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'AlarmsTable' }).exists()).toBe(true)
+  })
+
+  describe('System Information expander', () => {
+    const toggle = (wrapper: any) => wrapper.find('[data-test="node-system-info-toggle"]')
+    const toggleButton = (wrapper: any) => wrapper.findComponent({ name: 'OnmsIconButton' })
+    const panel = (wrapper: any) => wrapper.findComponent({ name: 'NodeSystemInfoPanel' })
+
+    it('is collapsed at first: a right chevron, and no panel', async () => {
+      const { wrapper } = mountComponent('42', true)
+      await flushPromises()
+
+      expect(toggle(wrapper).attributes('aria-expanded')).toBe('false')
+      expect(toggle(wrapper).attributes('aria-controls')).toBeUndefined()
+      expect(toggleButton(wrapper).props('icon')).toEqual(markRaw(ChevronRight))
+      expect(toggleButton(wrapper).props('tooltip')).toBe('View node system info')
+      expect(panel(wrapper).exists()).toBe(false)
+    })
+
+    it('opens the panel for the node, under the badges, and says it can hide it', async () => {
+      const { wrapper, nodeStore } = mountComponent('42', true)
+      await flushPromises()
+      await toggle(wrapper).trigger('click')
+
+      expect(nodeStore.nodeSystemInfoExpanded).toBe(true)
+      expect(panel(wrapper).props('node')).toEqual(nodeStore.node)
+      expect(panel(wrapper).attributes('id')).toBe('node-system-info')
+      expect(toggle(wrapper).attributes('aria-expanded')).toBe('true')
+      expect(toggle(wrapper).attributes('aria-controls')).toBe('node-system-info')
+      expect(toggleButton(wrapper).props('icon')).toEqual(markRaw(ExpandLess))
+      expect(toggleButton(wrapper).props('tooltip')).toBe('Hide node system info')
+    })
+
+    it('closes the panel again', async () => {
+      const { wrapper, nodeStore } = mountComponent('42', true)
+      await flushPromises()
+      await toggle(wrapper).trigger('click')
+      await toggle(wrapper).trigger('click')
+
+      expect(nodeStore.nodeSystemInfoExpanded).toBe(false)
+      expect(panel(wrapper).exists()).toBe(false)
+    })
+
+    // Kept in the store, so it is still open on the next node's page.
+    it('opens expanded when it was left open', async () => {
+      const { wrapper, nodeStore } = mountComponent('42', true)
+      nodeStore.nodeSystemInfoExpanded = true
+      await flushPromises()
+
+      expect(panel(wrapper).exists()).toBe(true)
+      expect(toggle(wrapper).attributes('aria-expanded')).toBe('true')
+    })
+
+    it('stays open on every tab', async () => {
+      const { wrapper, nodeStore } = mountComponent('42', true)
+      await flushPromises()
+      await toggle(wrapper).trigger('click')
+      nodeStore.nodeDetailsTab = 'events'
+      await flushPromises()
+
+      expect(panel(wrapper).exists()).toBe(true)
+    })
+
+    it('waits for the node', async () => {
+      const { wrapper, nodeStore } = mountComponent()
+      nodeStore.nodeSystemInfoExpanded = true
+      await flushPromises()
+
+      expect(toggle(wrapper).exists()).toBe(false)
+      expect(panel(wrapper).exists()).toBe(false)
+    })
   })
 
   describe('Monitoring / Events / Neighbors tabs', () => {

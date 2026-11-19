@@ -95,6 +95,14 @@ export const useNodeStore = defineStore('nodeStore', () => {
     nodeDetailsTab.value = tab
   }
 
+  // Whether the details page's System Information panel is open. Kept here for the same reason
+  // as nodeDetailsTab: it stays open from one node to the next.
+  const nodeSystemInfoExpanded = ref(false)
+
+  const setNodeSystemInfoExpanded = (expanded: boolean) => {
+    nodeSystemInfoExpanded.value = expanded
+  }
+
   // map of nodeId to IpInterfaces associated with that node
   const nodeToIpInterfaceMap = ref<Map<string, IpInterface[]>>(new Map<string, IpInterface[]>())
 
@@ -433,6 +441,8 @@ export const useNodeStore = defineStore('nodeStore', () => {
     setAvailabilityRange,
     nodeDetailsTab,
     setNodeDetailsTab,
+    nodeSystemInfoExpanded,
+    setNodeSystemInfoExpanded,
     nodeQueryParameters,
     getIpInterfacesForNodes,
     getSnmpInterfacesForNodes,

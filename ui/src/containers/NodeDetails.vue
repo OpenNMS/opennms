@@ -52,10 +52,22 @@
             ref="summaryRow"
             class="onms-col-12 node-summary"
           >
-            <NodeDetailsHeader
+            <!-- The expander and the badges are measured as one, for the width the menus have left. -->
+            <div
               ref="summaryHeader"
-              :node="nodeStore.node"
-            />
+              class="node-summary-start"
+            >
+              <OnmsIconButton
+                class="node-system-info-toggle"
+                :icon="systemInfoExpanded ? ExpandLess : ChevronRight"
+                :tooltip="systemInfoExpanded ? 'Hide node system info' : 'View node system info'"
+                :aria-expanded="String(systemInfoExpanded)"
+                :aria-controls="systemInfoExpanded ? 'node-system-info' : undefined"
+                data-test="node-system-info-toggle"
+                @click="nodeStore.setNodeSystemInfoExpanded(!systemInfoExpanded)"
+              />
+              <NodeDetailsHeader :node="nodeStore.node" />
+            </div>
             <NodeDetailsLinks
               class="node-summary-links"
               :availableWidth="linksAvailableWidth"
@@ -69,6 +81,15 @@
             />
           </div>
         </div>
+        <!--
+          A row of its own under the badges, on every tab. Outside the grid above, whose row gap
+          would add to the badges' bottom margin.
+        -->
+        <NodeSystemInfoPanel
+          v-if="nodeLoaded && systemInfoExpanded"
+          id="node-system-info"
+          :node="nodeStore.node"
+        />
 
         <!--
           KeepAlive so a tab mounts -- and its tables fetch -- only when first shown, then keeps its
@@ -100,7 +121,9 @@
 import { computed, ref, useTemplateRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useElementSize } from '@vueuse/core'
-import { OnmsSelectButton } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsSelectButton } from '@opennms/onms-ui'
+import ChevronRight from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
+import ExpandLess from '@opennms/onms-ui/icons/navigation/ExpandLess.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
 import NodeDetailsEventsTab from '@/components/Nodes/NodeDetails/NodeDetailsEventsTab.vue'
@@ -109,6 +132,7 @@ import NodeDetailsLinks from '@/components/Nodes/NodeDetails/NodeDetailsLinks.vu
 import NodeDetailsMonitoringTab from '@/components/Nodes/NodeDetails/NodeDetailsMonitoringTab.vue'
 import NodeDetailsNeighborsTab from '@/components/Nodes/NodeDetails/NodeDetailsNeighborsTab.vue'
 import NodeLookupMessage from '@/components/Nodes/NodeDetails/NodeLookupMessage.vue'
+import NodeSystemInfoPanel from '@/components/Nodes/NodeDetails/NodeSystemInfoPanel.vue'
 import { nodeDetailsRoute, parseNodeRouteId } from '@/lib/nodeDetailsRoute'
 import API from '@/services'
 import useRole from '@/composables/useRole'
@@ -158,6 +182,10 @@ const nodeLoaded = computed<boolean>(() => nodeStore.nodeLoaded)
 // Fetched alongside the node: the node payload carries no interfaces, and the IP Interfaces
 // table holds only whatever page it is showing.
 const snmpPrimaryIpAddress = computed<string | undefined>(() => nodeStore.snmpPrimaryIpAddress)
+
+// The System Information panel, opened from the expander before the badges. In the store, so it
+// stays open from one node to the next.
+const systemInfoExpanded = computed<boolean>(() => nodeStore.nodeSystemInfoExpanded)
 
 // What the summary row leaves for the link menus once the badges have their natural width. The
 // badges are not squeezed while there is room for both, so their width is the width they need;
@@ -329,6 +357,18 @@ watch(
     justify-content: space-between;
     gap: 0.5rem 1rem;
     margin-bottom: 1rem;
+  }
+
+  .node-summary-start {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  // The icon in line with the left edge of the panels below, rather than indented by the button's
+  // padding. Its hover background reaches past that edge.
+  .node-system-info-toggle {
+    margin-left: -1rem;
   }
 
   .node-summary-links {
