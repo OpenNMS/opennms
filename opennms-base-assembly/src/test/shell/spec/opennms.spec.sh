@@ -164,6 +164,7 @@ testAgalueJavaConf() {
 	assertContains "$output" "'-Xmx8192m'"
 	assertContains "$output" "'-d64'"
 	assertContains "$output" "'-XX:+StartAttachListener'"
+	assertContains "$output" "'-XX:-UseBASE64Intrinsics'"
 }
 
 testJessieJavaConf() {

@@ -46,7 +46,7 @@ fi
 # of $JAVA_OPTS as the final part of Karaf's initialization.
 
 # shellcheck disable=SC2034
-EXTRA_JAVA_OPTS="$JAVA_OPTS $EXTRA_JAVA_OPTS"
+EXTRA_JAVA_OPTS="-XX:-UseBASE64Intrinsics $JAVA_OPTS $EXTRA_JAVA_OPTS"
 unset JAVA_OPTS
 
 # always dump heap if we OOM

@@ -129,6 +129,11 @@ Remove the `DOCTYPE` from requisitions that external tools write, or set the sys
 Minion does not use these endpoints.
 `ROLE_MINION` still gives access to the embedded ActiveMQ broker.
 
+=== HotSpot Base64 intrinsics disabled by default
+Core, Minion and Sentinel now start their JVM with `-XX:-UseBASE64Intrinsics`, on native installs and in the container images.
+To turn the intrinsics back on, add `-XX:+UseBASE64Intrinsics` to `ADDITIONAL_MANAGER_OPTIONS` in `$OPENNMS_HOME/etc/opennms.conf` on a native Core, or to `JAVA_OPTS` on Minion, Sentinel and the containers.
+On the Minion container, `CUSTOM_JAVA_OPTS` from confd works as well.
+
 === SNMP4J upgrade
 The SNMP4J library has been upgraded to version 2.8.15.
 As part of this upgrade, the SNMP4J logger configuration has been updated to use the SLF4J logging implementation:

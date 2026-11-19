@@ -188,7 +188,8 @@ start() {
   -Dgroovy.use.classvalue=true
   -Djava.io.tmpdir=${OPENNMS_HOME}/data/tmp
   -Djava.locale.providers=CLDR,COMPAT
-  -XX:+StartAttachListener"
+  -XX:+StartAttachListener
+  -XX:-UseBASE64Intrinsics"
   exec ${JAVA_HOME}/bin/java ${OPENNMS_JAVA_OPTS} ${JAVA_OPTS} -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar start
 }
 

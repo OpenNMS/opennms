@@ -245,6 +245,7 @@ configure() {
     done < "$MINION_PROCESS_ENV_CFG"
     export JAVA_OPTS="$CUSTOM_JAVA_OPTS $JAVA_OPTS"
   fi
+  export JAVA_OPTS="-XX:-UseBASE64Intrinsics $JAVA_OPTS"
   if [[ -f "$MINION_SERVER_CERTS_CFG" ]]; then
     # cacerts is a symlink to a file, so *do not* put /. on the target
     rsync --out-format="%n %C" "$JAVA_HOME/lib/security/cacerts" "$CACERTS"
