@@ -234,6 +234,18 @@ defineExpose({ items })
     padding: 0;
   }
 
+  // PrimeVue hangs each menu's dropdown from the left edge of the menu. The row ends at the page's
+  // right edge, so the last menu's dropdown would run past the window: hang it from the menu's
+  // right edge instead. The others have room to their right.
+  :deep(.p-menubar:not(.p-menubar-mobile) .p-menubar-root-list > .p-menubar-item:last-child) {
+    position: relative;
+
+    > .p-menubar-submenu {
+      left: auto;
+      right: 0;
+    }
+  }
+
   // Collapsed to the hamburger, the menubar is only as wide as its button, and PrimeVue sizes the
   // dropdown to the menubar and hangs it from the left edge. The page puts the button at the right,
   // so hang the dropdown from the right edge instead and give it a width of its own.
