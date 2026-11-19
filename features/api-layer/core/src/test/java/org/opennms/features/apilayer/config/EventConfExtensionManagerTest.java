@@ -24,6 +24,7 @@ package org.opennms.features.apilayer.config;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +32,8 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import org.junit.Test;
+import org.opennms.core.test.Level;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.integration.api.v1.config.events.EventConfExtension;
 import org.opennms.integration.api.v1.config.events.EventDefinition;
 import org.opennms.integration.api.v1.config.events.LogMessage;
@@ -130,6 +133,28 @@ public class EventConfExtensionManagerTest {
         Events events = eventConfExtensionMgr.getObject();
         assertThat(events.getEvents(), hasSize(1));
         assertThat(events.getEvents().get(0).getUei(), equalTo("uei/padded"));
+    }
+
+    @Test
+    public void invalidPluginEventDefinitionIsLogged() {
+        MockLogAppender.setupLogging(true, "DEBUG");
+        EventConfExtensionManager eventConfExtensionMgr = new EventConfExtensionManager(mock(EventConfDao.class),
+                mock(EventConfSourceDao.class), mock(EventConfEventDao.class), mock(EventConfGlobalSecurityDao.class),
+                mock(SessionUtils.class));
+
+        EventConfExtension ext = mock(EventConfExtension.class);
+        EventDefinition def = mock(EventDefinition.class);
+        when(def.getUei()).thenReturn("   ");
+        when(def.getLabel()).thenReturn("Bad Plugin Event");
+        when(def.getSeverity()).thenReturn(Severity.NORMAL);
+        when(def.getLogMessage()).thenReturn(mock(LogMessage.class));
+        when(ext.getEventDefinitions()).thenReturn(Collections.singletonList(def));
+
+        // the bind still fails as before: skipping bad definitions is a separate change
+        assertThrows(IllegalArgumentException.class, () -> eventConfExtensionMgr.onBind(ext, new HashMap()));
+        // but the log names the plugin and the definition, so the bad plugin can be found and removed
+        MockLogAppender.assertLogMatched(Level.ERROR, ext.getClass().getName());
+        MockLogAppender.assertLogMatched(Level.ERROR, "event-label 'Bad Plugin Event'");
     }
 
     @Test
