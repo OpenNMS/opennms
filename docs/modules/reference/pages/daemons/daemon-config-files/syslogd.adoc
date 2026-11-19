@@ -100,6 +100,10 @@ Messages that are discarded or fail conversion are not counted.
 `consumer.messagesReceived` on {page-component-title} adds up the messages from every Minion and from the {page-component-title} listener itself, so compare it with the sum of the `udp.packetsReceived` and `tcp.packetsReceived` counters.
 The difference between `consumer.messagesReceived` and `consumer.eventsBroadcast` is the number of messages that were discarded or could not be converted.
 
+Compare the counts only after {page-component-title} has consumed everything the Minions sent.
+Until then, `consumer.messagesReceived` is lower than the sum of the listener counters.
+With Kafka, that is when the consumer lag on the Sink topic is zero.
+
 `consumer.messagesReceived` can be higher than the sum of the listener counters.
 The Kafka Sink delivers at least once, so a batch that is delivered again, for example after a consumer rebalance, is counted again.
 
