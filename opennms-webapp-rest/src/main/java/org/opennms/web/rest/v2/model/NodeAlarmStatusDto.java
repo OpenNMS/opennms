@@ -29,26 +29,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * The body of {@code GET /nodes/{nodeCriteria}/alarmStatus}.
  */
-@Schema(name = "NodeAlarmStatus", description = "A summary of one node's problem alarms (severity above "
-        + "Normal), as the legacy node page's status box worked it out. Counted on the server, so it costs the "
-        + "same for a node with thousands of alarms as for one with none.")
+@Schema(name = "NodeAlarmStatus", description = "A summary of one node's unacknowledged problem alarms (severity "
+        + "above Normal). Counted on the server, so it costs the same for a node with thousands of alarms as for one "
+        + "with none.")
 public class NodeAlarmStatusDto {
 
     @Schema(description = "Highest severity among the unacknowledged problem alarms; `NORMAL` when there are none. "
-            + "An acknowledged alarm is counted, but does not raise this.", example = "MAJOR")
+            + "An acknowledged alarm does not raise this.", example = "MAJOR")
     private String severity;
-
-    @Schema(description = "Whether a problem alarm's UEI contains `nodeDown`.", example = "false")
-    private boolean nodeDown;
-
-    @Schema(description = "Problem alarms whose UEI contains `interfaceDown`.", example = "0")
-    private long interfacesDown;
-
-    @Schema(description = "Problem alarms whose UEI contains `nodeLostService`.", example = "1")
-    private long servicesDown;
-
-    @Schema(description = "Problem alarms that are acknowledged.", example = "1")
-    private long acknowledgedCount;
 
     @Schema(description = "Problem alarms that are not acknowledged.", example = "2")
     private long unacknowledgedCount;
@@ -64,38 +52,6 @@ public class NodeAlarmStatusDto {
 
     public void setSeverity(final String severity) {
         this.severity = severity;
-    }
-
-    public boolean isNodeDown() {
-        return nodeDown;
-    }
-
-    public void setNodeDown(final boolean nodeDown) {
-        this.nodeDown = nodeDown;
-    }
-
-    public long getInterfacesDown() {
-        return interfacesDown;
-    }
-
-    public void setInterfacesDown(final long interfacesDown) {
-        this.interfacesDown = interfacesDown;
-    }
-
-    public long getServicesDown() {
-        return servicesDown;
-    }
-
-    public void setServicesDown(final long servicesDown) {
-        this.servicesDown = servicesDown;
-    }
-
-    public long getAcknowledgedCount() {
-        return acknowledgedCount;
-    }
-
-    public void setAcknowledgedCount(final long acknowledgedCount) {
-        this.acknowledgedCount = acknowledgedCount;
     }
 
     public long getUnacknowledgedCount() {

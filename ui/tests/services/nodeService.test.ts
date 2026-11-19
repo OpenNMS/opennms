@@ -66,7 +66,7 @@ describe('nodeService.getNodeAlarmStatus', () => {
   })
 
   it('asks v2 for the node\'s alarm summary', async () => {
-    const status = { severity: 'MAJOR', nodeDown: false, interfacesDown: 0, servicesDown: 1, acknowledgedCount: 0, unacknowledgedCount: 1 }
+    const status = { severity: 'MAJOR', unacknowledgedCount: 1, unacknowledgedBySeverity: { CRITICAL: 0, MAJOR: 1, MINOR: 0, WARNING: 0 }}
     vi.mocked(v2.get).mockResolvedValue({ status: 200, data: status })
 
     const result = await getNodeAlarmStatus('144')

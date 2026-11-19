@@ -28,7 +28,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
@@ -77,7 +76,6 @@ import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsNode;
@@ -1099,24 +1097,20 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional(readOnly = true)
     @Operation(
-            summary = "Get a summary of a node's problem alarms",
+            summary = "Get a summary of a node's unacknowledged problem alarms",
             description = """
-        Return what the legacy node page's status box showed: whether the node is down, how many interfaces
-        and services are down, how many problem alarms are acknowledged and unacknowledged, how many are
-        unacknowledged at each severity, and the highest unacknowledged severity. A problem alarm is one above
-        Normal severity. Down is read from the UEI, as
-        the status box did: a UEI that contains `nodeDown`, `interfaceDown` or `nodeLostService`.
+        Return how many of the node's problem alarms are unacknowledged, how many are unacknowledged at each
+        severity, and the highest unacknowledged severity. A problem alarm is one above Normal severity.
 
-        Every figure is counted on the server, so the answer stays small however many alarms the node has.
-        Use `GET /alarms` with a node filter for the alarms themselves.""",
+        The figures come from one grouped count on the server, so the answer stays small however many alarms
+        the node has. Use `GET /alarms` with a node filter for the alarms themselves.""",
             operationId = "NodeRestServiceGETAlarmStatusByNodeId")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The node's alarm summary.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = NodeAlarmStatusDto.class),
                             examples = @ExampleObject(value = """
-                    {"severity": "MAJOR", "nodeDown": false, "interfacesDown": 0, "servicesDown": 1,
-                     "acknowledgedCount": 1, "unacknowledgedCount": 2,
+                    {"severity": "MAJOR", "unacknowledgedCount": 2,
                      "unacknowledgedBySeverity": {"CRITICAL": 0, "MAJOR": 1, "MINOR": 1, "WARNING": 0}}"""))),
             @ApiResponse(responseCode = "404", description = "No such node.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
@@ -1133,9 +1127,9 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         }
         final int nodeId = node.getId();
 
-        // As the legacy node page's status box, which loaded every alarm and counted them; here the database counts.
-        // One grouped count gives the unacknowledged figures: the count for each severity, their total, and the
-        // highest severity that has any.
+        // The legacy node page's status box loaded every alarm and counted them; here the database counts. One
+        // grouped count gives every figure: the count for each severity, their total, and the highest severity
+        // that has any.
         final Map<OnmsSeverity, Long> unacknowledged = m_alarmDao.getUnacknowledgedCountsBySeverity(nodeId);
         final Map<String, Long> unacknowledgedBySeverity = new LinkedHashMap<>();
         OnmsSeverity worstUnacknowledged = OnmsSeverity.NORMAL;
@@ -1151,10 +1145,6 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
         final NodeAlarmStatusDto result = new NodeAlarmStatusDto();
         result.setSeverity(worstUnacknowledged.name());
-        result.setNodeDown(countProblemAlarms(nodeId, b -> b.like("uei", "%nodeDown%")) > 0);
-        result.setInterfacesDown(countProblemAlarms(nodeId, b -> b.like("uei", "%interfaceDown%")));
-        result.setServicesDown(countProblemAlarms(nodeId, b -> b.like("uei", "%nodeLostService%")));
-        result.setAcknowledgedCount(countProblemAlarms(nodeId, b -> b.isNotNull("alarmAckTime")));
         result.setUnacknowledgedCount(unacknowledgedCount);
         result.setUnacknowledgedBySeverity(unacknowledgedBySeverity);
         return Response.ok(result).build();
@@ -1163,18 +1153,6 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     // The severities above Normal, highest first: indeterminate, cleared and normal alarms are not problems.
     private static final List<OnmsSeverity> PROBLEM_SEVERITIES = List.of(
             OnmsSeverity.CRITICAL, OnmsSeverity.MAJOR, OnmsSeverity.MINOR, OnmsSeverity.WARNING);
-
-    // The node's alarms above Normal: indeterminate, cleared and normal ones are not problems.
-    private static CriteriaBuilder problemAlarms(final int nodeId) {
-        return new CriteriaBuilder(OnmsAlarm.class)
-                .alias("node", "node")
-                .eq("node.id", nodeId)
-                .gt("severity", OnmsSeverity.NORMAL);
-    }
-
-    private int countProblemAlarms(final int nodeId, final UnaryOperator<CriteriaBuilder> restrict) {
-        return m_alarmDao.countMatching(restrict.apply(problemAlarms(nodeId)).toCriteria());
-    }
 
     @GET
     @Path("{nodeCriteria}/notificationStatus")

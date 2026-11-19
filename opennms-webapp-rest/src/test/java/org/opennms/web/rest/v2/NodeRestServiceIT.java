@@ -883,29 +883,25 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // The populator's only alarm on node1 is Normal, which is not a problem.
         JSONObject status = new JSONObject(sendRequest(GET, url, 200));
         assertEquals("NORMAL", status.getString("severity"));
-        assertFalse(status.getBoolean("nodeDown"));
-        assertEquals(0, status.getLong("interfacesDown"));
-        assertEquals(0, status.getLong("servicesDown"));
-        assertEquals(0, status.getLong("acknowledgedCount"));
         assertEquals(0, status.getLong("unacknowledgedCount"));
         assertUnacknowledgedBySeverity(status, 0, 0, 0, 0);
+        // Only the unacknowledged figures: the down and acknowledged counts are not part of it.
+        for (final String removed : new String[] { "nodeDown", "interfacesDown", "servicesDown", "acknowledgedCount" }) {
+            assertFalse(removed, status.has(removed));
+        }
 
         m_transactionTemplate.execute(s -> {
             saveAlarm("uei.opennms.org/nodes/nodeLostService", OnmsSeverity.MAJOR, false);
             saveAlarm("uei.opennms.org/nodes/nodeLostService", OnmsSeverity.MINOR, false);
-            // Acknowledged: counted, but does not raise the severity.
+            // Acknowledged: not counted, and does not raise the severity.
             saveAlarm("uei.opennms.org/nodes/interfaceDown", OnmsSeverity.CRITICAL, true);
-            // Cleared: not a problem, so the node is not down.
+            // Cleared: not a problem.
             saveAlarm("uei.opennms.org/nodes/nodeDown", OnmsSeverity.CLEARED, false);
             return null;
         });
 
         status = new JSONObject(sendRequest(GET, url, 200));
         assertEquals("MAJOR", status.getString("severity"));
-        assertFalse(status.getBoolean("nodeDown"));
-        assertEquals(1, status.getLong("interfacesDown"));
-        assertEquals(2, status.getLong("servicesDown"));
-        assertEquals(1, status.getLong("acknowledgedCount"));
         assertEquals(2, status.getLong("unacknowledgedCount"));
         // The acknowledged critical and the cleared alarm are not in it.
         assertUnacknowledgedBySeverity(status, 0, 1, 1, 0);
@@ -915,7 +911,6 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
             return null;
         });
         status = new JSONObject(sendRequest(GET, url, 200));
-        assertTrue(status.getBoolean("nodeDown"));
         assertEquals(3, status.getLong("unacknowledgedCount"));
         assertUnacknowledgedBySeverity(status, 0, 2, 1, 0);
 

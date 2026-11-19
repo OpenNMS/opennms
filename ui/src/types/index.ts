@@ -372,14 +372,11 @@ export interface NodeLinkService {
 }
 
 // GET /api/v2/nodes/{id}/criticalPath: the node's own row in the pathoutage table.
-// GET /api/v2/nodes/{id}/alarmStatus: the node's problem alarms (above Normal), counted on the server.
+// GET /api/v2/nodes/{id}/alarmStatus: the node's unacknowledged problem alarms (above Normal), counted
+// on the server.
 export interface NodeAlarmStatus {
   // Highest unacknowledged problem severity, as an OnmsSeverity name; NORMAL when there is none.
   severity: string
-  nodeDown: boolean
-  interfacesDown: number
-  servicesDown: number
-  acknowledgedCount: number
   unacknowledgedCount: number
   // Unacknowledged problem alarms at each severity above Normal (CRITICAL, MAJOR, MINOR and WARNING,
   // each present, 0 when there are none).

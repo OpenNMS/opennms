@@ -76,7 +76,7 @@ export const computeNodeStatus = (summary: NodeAlarmStatus): NodeStatus => {
 
   return {
     severity: hasProblems ? severity : 'NORMAL',
-    message: hasProblems ? 'Node has unacknowledged alarms.' : 'Node has no problem alarms.',
+    message: hasProblems ? 'Node has unacknowledged alarms.' : 'Node has no unacknowledged alarms.',
     hasProblems,
     unackBySeverity
   }

@@ -40,15 +40,12 @@ vi.mock('vue-router', async () => {
 
 const bySeverity = (counts: Record<string, number> = {}) => ({ CRITICAL: 0, MAJOR: 0, MINOR: 0, WARNING: 0, ...counts })
 const summary = (overrides: Record<string, unknown> = {}) => ({
-  severity: 'NORMAL', nodeDown: false, interfacesDown: 0, servicesDown: 0, acknowledgedCount: 0, unacknowledgedCount: 0,
-  unacknowledgedBySeverity: bySeverity(), ...overrides
+  severity: 'NORMAL', unacknowledgedCount: 0, unacknowledgedBySeverity: bySeverity(), ...overrides
 })
-// One service down and unacknowledged, plus one minor problem someone has acknowledged.
-const major = summary({ severity: 'MAJOR', servicesDown: 1, unacknowledgedCount: 1, acknowledgedCount: 1, unacknowledgedBySeverity: bySeverity({ MAJOR: 1 }) })
+// One major alarm unacknowledged.
+const major = summary({ severity: 'MAJOR', unacknowledgedCount: 1, unacknowledgedBySeverity: bySeverity({ MAJOR: 1 }) })
 // Unacknowledged alarms at three severities.
 const mixed = summary({ severity: 'CRITICAL', unacknowledgedCount: 6, unacknowledgedBySeverity: bySeverity({ CRITICAL: 1, MAJOR: 2, WARNING: 3 }) })
-// Everything acknowledged: no problem left to act on.
-const allAcked = summary({ acknowledgedCount: 3 })
 
 // Every test moves the one shared route; a box left mounted from an earlier test would follow it.
 enableAutoUnmount(afterEach)
@@ -125,11 +122,12 @@ describe('NodeStatusBox.vue', () => {
     expect(wrapper.find('[data-test="node-status-icon"]').exists()).toBe(false)
   })
 
-  it('shows a node with no problems as normal, without counts', async () => {
+  // Acknowledged alarms are not in the summary, so a node whose alarms are all acknowledged looks the same.
+  it('shows a node with no unacknowledged alarms as normal, without tags', async () => {
     const wrapper = mountBox()
     await flushPromises()
 
-    expect(wrapper.find('[data-test="node-status-message"]').text()).toBe('Node has no problem alarms.')
+    expect(wrapper.find('[data-test="node-status-message"]').text()).toBe('Node has no unacknowledged alarms.')
     expect(wrapper.find('[data-test="node-status"]').classes()).toContain('node-details-banner--normal')
     expect(wrapper.find('[data-test="node-status-icon"]').classes()).toContain('severity-icon--normal')
     expect(wrapper.findAllComponents(OnmsTag)).toHaveLength(0)
@@ -196,14 +194,6 @@ describe('NodeStatusBox.vue', () => {
       expect(tooltipOf(wrapper, tag('critical'))).toBe('1 unacknowledged critical alarm')
       expect(wrapper.find(tag('major')).attributes('aria-label')).toBe('2 unacknowledged major alarms')
       expect(tooltipOf(wrapper, tag('major'))).toBe('2 unacknowledged major alarms')
-    })
-
-    it('has no tags, and no acknowledged count, when everything is acknowledged', async () => {
-      const wrapper = mountBox(() => answerWith(allAcked))
-      await flushPromises()
-
-      expect(wrapper.find('[data-test="node-status-message"]').text()).toBe('Node has no problem alarms.')
-      expect(wrapper.findAllComponents(OnmsTag)).toHaveLength(0)
     })
   })
 

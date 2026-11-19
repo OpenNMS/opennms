@@ -28,10 +28,6 @@ const bySeverity = (counts: Record<string, number> = {}) => ({ CRITICAL: 0, MAJO
 
 const summary = (overrides: Partial<NodeAlarmStatus> = {}): NodeAlarmStatus => ({
   severity: 'NORMAL',
-  nodeDown: false,
-  interfacesDown: 0,
-  servicesDown: 0,
-  acknowledgedCount: 0,
   unacknowledgedCount: 0,
   unacknowledgedBySeverity: bySeverity(),
   ...overrides
@@ -39,10 +35,11 @@ const summary = (overrides: Partial<NodeAlarmStatus> = {}): NodeAlarmStatus => (
 
 // The counting is the server's (NodeRestServiceIT#testAlarmStatus).
 describe('computeNodeStatus', () => {
-  it('reports no problems for a node without problem alarms', () => {
+  // Acknowledged alarms are not in the summary: the server leaves the severity NORMAL when all are.
+  it('reports no problems for a node without unacknowledged alarms', () => {
     expect(computeNodeStatus(summary())).toEqual({
       severity: 'NORMAL',
-      message: 'Node has no problem alarms.',
+      message: 'Node has no unacknowledged alarms.',
       hasProblems: false,
       unackBySeverity: []
     })
@@ -64,27 +61,11 @@ describe('computeNodeStatus', () => {
     expect(computeNodeStatus(summary({ severity: 'Critical' })).severity).toBe('CRITICAL')
   })
 
-  // Acknowledged means someone has it: the server leaves the severity NORMAL.
-  it('is not a problem when every problem alarm is acknowledged', () => {
-    const status = computeNodeStatus(summary({ acknowledgedCount: 2 }))
-
-    expect(status.severity).toBe('NORMAL')
-    expect(status.hasProblems).toBe(false)
-    expect(status.message).toBe('Node has no problem alarms.')
-  })
-
   it.each(['INDETERMINATE', 'CLEARED', 'NORMAL'])('treats %s as no problem', (severity) => {
     const status = computeNodeStatus(summary({ severity }))
 
     expect(status.hasProblems).toBe(false)
-    expect(status.message).toBe('Node has no problem alarms.')
-  })
-
-  // Outages no longer have a headline of their own; their alarms are in the counts.
-  it('does not word the headline for outages', () => {
-    const status = computeNodeStatus(summary({ severity: 'MAJOR', nodeDown: true, interfacesDown: 1, servicesDown: 2 }))
-
-    expect(status.message).toBe('Node has unacknowledged alarms.')
+    expect(status.message).toBe('Node has no unacknowledged alarms.')
   })
 
   describe('counts by severity', () => {
