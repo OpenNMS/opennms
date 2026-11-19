@@ -381,6 +381,9 @@ export interface NodeAlarmStatus {
   servicesDown: number
   acknowledgedCount: number
   unacknowledgedCount: number
+  // Unacknowledged problem alarms at each severity above Normal (CRITICAL, MAJOR, MINOR and WARNING,
+  // each present, 0 when there are none).
+  unacknowledgedBySeverity: Record<string, number>
 }
 
 export interface NodeCriticalPath {

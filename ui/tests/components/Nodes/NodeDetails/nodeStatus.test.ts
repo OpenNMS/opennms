@@ -24,6 +24,8 @@ import { describe, expect, it } from 'vitest'
 import { bannerSeverity, computeNodeStatus } from '@/components/Nodes/NodeDetails/nodeStatus'
 import { NodeAlarmStatus } from '@/types/index'
 
+const bySeverity = (counts: Record<string, number> = {}) => ({ CRITICAL: 0, MAJOR: 0, MINOR: 0, WARNING: 0, ...counts })
+
 const summary = (overrides: Partial<NodeAlarmStatus> = {}): NodeAlarmStatus => ({
   severity: 'NORMAL',
   nodeDown: false,
@@ -31,50 +33,44 @@ const summary = (overrides: Partial<NodeAlarmStatus> = {}): NodeAlarmStatus => (
   servicesDown: 0,
   acknowledgedCount: 0,
   unacknowledgedCount: 0,
+  unacknowledgedBySeverity: bySeverity(),
   ...overrides
 })
 
-// The counting is the server's (NodeRestServiceIT#testAlarmStatus); this is the JSP's wording.
+// The counting is the server's (NodeRestServiceIT#testAlarmStatus).
 describe('computeNodeStatus', () => {
   it('reports no problems for a node without problem alarms', () => {
     expect(computeNodeStatus(summary())).toEqual({
       severity: 'NORMAL',
       message: 'Node has no problem alarms.',
       hasProblems: false,
-      ackCount: 0,
-      unackCount: 0
+      unackBySeverity: []
     })
   })
 
-  it('names the highest unacknowledged severity', () => {
-    const status = computeNodeStatus(summary({ severity: 'MAJOR', unacknowledgedCount: 3 }))
+  it('keeps the highest unacknowledged severity, and says there are unacknowledged alarms', () => {
+    const status = computeNodeStatus(summary({ severity: 'MAJOR', unacknowledgedCount: 3, unacknowledgedBySeverity: bySeverity({ MAJOR: 3 }) }))
 
     expect(status.severity).toBe('MAJOR')
-    expect(status.message).toBe('Node has major alarms.')
+    expect(status.message).toBe('Node has unacknowledged alarms.')
     expect(status.hasProblems).toBe(true)
-    expect(status.unackCount).toBe(3)
   })
 
-  it.each([
-    ['WARNING', 'Node has warnings.'],
-    ['warning', 'Node has warnings.'],
-    ['MINOR', 'Node has minor alarms.'],
-    ['CRITICAL', 'Node has critical alarms.']
-  ])('words the headline for %s', (severity, message) => {
-    expect(computeNodeStatus(summary({ severity })).message).toBe(message)
+  it.each(['CRITICAL', 'MAJOR', 'MINOR', 'WARNING', 'warning'])('says the same for %s', (severity) => {
+    expect(computeNodeStatus(summary({ severity })).message).toBe('Node has unacknowledged alarms.')
   })
 
   it('matches severity names regardless of case', () => {
     expect(computeNodeStatus(summary({ severity: 'Critical' })).severity).toBe('CRITICAL')
   })
 
-  // Acknowledged means someone has it: it is counted, but the server leaves the severity NORMAL.
-  it('is not a problem when every problem alarm is acknowledged, but still counts them', () => {
+  // Acknowledged means someone has it: the server leaves the severity NORMAL.
+  it('is not a problem when every problem alarm is acknowledged', () => {
     const status = computeNodeStatus(summary({ acknowledgedCount: 2 }))
 
     expect(status.severity).toBe('NORMAL')
     expect(status.hasProblems).toBe(false)
-    expect(status.ackCount).toBe(2)
+    expect(status.message).toBe('Node has no problem alarms.')
   })
 
   it.each(['INDETERMINATE', 'CLEARED', 'NORMAL'])('treats %s as no problem', (severity) => {
@@ -84,26 +80,41 @@ describe('computeNodeStatus', () => {
     expect(status.message).toBe('Node has no problem alarms.')
   })
 
-  describe('headline', () => {
-    it('says the node is down, over any interface or service counts', () => {
-      expect(computeNodeStatus(summary({ nodeDown: true, interfacesDown: 1, servicesDown: 1 })).message)
-        .toBe('Node is currently down.')
+  // Outages no longer have a headline of their own; their alarms are in the counts.
+  it('does not word the headline for outages', () => {
+    const status = computeNodeStatus(summary({ severity: 'MAJOR', nodeDown: true, interfacesDown: 1, servicesDown: 2 }))
+
+    expect(status.message).toBe('Node has unacknowledged alarms.')
+  })
+
+  describe('counts by severity', () => {
+    it('lists each severity with unacknowledged alarms, highest first', () => {
+      const status = computeNodeStatus(summary({
+        severity: 'CRITICAL',
+        // Not in order, as a server might send them.
+        unacknowledgedBySeverity: { WARNING: 4, MINOR: 0, CRITICAL: 1, MAJOR: 2 }
+      }))
+
+      expect(status.unackBySeverity).toEqual([
+        { severity: 'CRITICAL', count: 1 },
+        { severity: 'MAJOR', count: 2 },
+        { severity: 'WARNING', count: 4 }
+      ])
     })
 
-    it.each([
-      [1, 0, 'Node has 1 interface down.'],
-      [2, 0, 'Node has 2 interfaces down.'],
-      [0, 1, 'Node has 1 service down.'],
-      [0, 3, 'Node has 3 services down.'],
-      [1, 1, 'Node has 1 interface and 1 service down.'],
-      [2, 2, 'Node has 2 interfaces and 2 services down.']
-    ])('%i interfaces, %i services -> %s', (interfacesDown, servicesDown, message) => {
-      expect(computeNodeStatus(summary({ severity: 'MINOR', interfacesDown, servicesDown })).message).toBe(message)
+    it('matches severity names regardless of case', () => {
+      expect(computeNodeStatus(summary({ severity: 'MINOR', unacknowledgedBySeverity: { minor: 2 }})).unackBySeverity)
+        .toEqual([{ severity: 'MINOR', count: 2 }])
     })
 
-    // The JSP counts these whether or not they are acknowledged, so the server does too.
-    it('reports outages even when nothing unacknowledged is left', () => {
-      expect(computeNodeStatus(summary({ servicesDown: 1, acknowledgedCount: 1 })).message).toBe('Node has 1 service down.')
+    it('leaves out a severity that is not a problem', () => {
+      expect(computeNodeStatus(summary({ unacknowledgedBySeverity: { NORMAL: 5, CLEARED: 1 }})).unackBySeverity).toEqual([])
+    })
+
+    it('has none when the server sends no counts', () => {
+      const status = computeNodeStatus({ ...summary({ severity: 'MAJOR' }), unacknowledgedBySeverity: undefined as never })
+
+      expect(status.unackBySeverity).toEqual([])
     })
   })
 })

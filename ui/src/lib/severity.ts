@@ -20,7 +20,8 @@
 /// License.
 ///
 
-// Alarm severities as OpenNMS names them (OnmsSeverity), lowest to highest.
+// Alarm severities as OpenNMS names them (OnmsSeverity), lowest to highest: the position plus 1
+// is the severity's id.
 const ONMS_SEVERITIES = ['INDETERMINATE', 'CLEARED', 'NORMAL', 'WARNING', 'MINOR', 'MAJOR', 'CRITICAL']
 
 /**
@@ -43,4 +44,11 @@ export const severityName = (severity: string | null | undefined): string => {
   const upper = (severity ?? '').toUpperCase()
 
   return ONMS_SEVERITIES.includes(upper) ? upper.charAt(0) + upper.slice(1).toLowerCase() : 'Unknown'
+}
+
+/** The OnmsSeverity id for a severity name, in any case, for example 6 for MAJOR; undefined for an unknown one. */
+export const severityId = (severity: string | null | undefined): number | undefined => {
+  const index = ONMS_SEVERITIES.indexOf((severity ?? '').toUpperCase())
+
+  return index === -1 ? undefined : index + 1
 }

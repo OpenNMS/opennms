@@ -12,32 +12,22 @@
       />
       <strong data-test="node-status-message">{{ status.message }}</strong>
       <!--
-        A tag per count, each a link to the node's alarms in the legacy list. A count of 0 has no
-        tag; acknowledged alarms show even when nothing is left unacknowledged.
+        A tag per severity with unacknowledged alarms, highest first: the count and the severity's
+        icon, each a link to those alarms in the legacy list. A severity with none has no tag.
       -->
       <span
-        v-if="status.unackCount > 0 || status.ackCount > 0"
+        v-if="status.unackBySeverity.length > 0"
         class="node-status-tags"
       >
         <NodeBannerTagLink
-          v-if="status.unackCount > 0"
-          :label="countLabel(status.unackCount, 'unacknowledged')"
-          :href="alarmListHref('unack')"
-          severity="warn"
-          state="outstanding"
-          data-test="node-status-unack-link"
+          v-for="item in status.unackBySeverity"
+          :key="item.severity"
+          :label="countLabel(item)"
+          :href="alarmListHref(item.severity)"
+          :data-test="`node-status-unack-${item.severity.toLowerCase()}-link`"
         >
-          <span class="node-status-tag-count">{{ status.unackCount }}</span>
-        </NodeBannerTagLink>
-        <NodeBannerTagLink
-          v-if="status.ackCount > 0"
-          :label="countLabel(status.ackCount, 'acknowledged')"
-          :href="alarmListHref('ack')"
-          severity="success"
-          state="acknowledged"
-          data-test="node-status-ack-link"
-        >
-          <span class="node-status-tag-count">{{ status.ackCount }}</span>
+          <span class="node-status-tag-count">{{ item.count }}</span>
+          <SeverityIcon :severity="item.severity" />
         </NodeBannerTagLink>
       </span>
     </template>
@@ -55,6 +45,7 @@
 
 <script setup lang="ts">
 import { computed, watch } from 'vue'
+import { severityId, severityName } from '@/lib/severity'
 import { plural } from '@/lib/utils'
 import useVisiblePolling from '@/composables/useVisiblePolling'
 import SeverityIcon from '@/components/Common/SeverityIcon.vue'
@@ -62,7 +53,7 @@ import { useAlarmStore } from '@/stores/alarmStore'
 import { useMenuStore } from '@/stores/menuStore'
 import NodeBannerTagLink from './NodeBannerTagLink.vue'
 import NodeDetailsBanner from './NodeDetailsBanner.vue'
-import { BannerSeverity, bannerSeverity, computeNodeStatus, NodeStatus } from './nodeStatus'
+import { BannerSeverity, bannerSeverity, computeNodeStatus, NodeStatus, SeverityCount } from './nodeStatus'
 import useActiveNodeId from './hooks/useActiveNodeId'
 
 // How often the status is refreshed while it is on screen. The JSP worked it out once per page
@@ -90,12 +81,13 @@ const loadFailed = computed<boolean>(() => !isThisNode.value && alarmStore.nodeA
 const severity = computed<BannerSeverity>(() => bannerSeverity(status.value?.severity))
 
 // The tag shows only a number and an icon, so its tooltip and accessible name say what it counts.
-const countLabel = (count: number, kind: 'unacknowledged' | 'acknowledged') => plural(count, `${kind} alarm`)
+const countLabel = ({ severity, count }: SeverityCount) =>
+  plural(count, `unacknowledged ${severityName(severity).toLowerCase()} alarm`)
 
-// The legacy alarm list, filtered to this node. Will need to point at the Vue Alarms page once
-// it's implemented.
-const alarmListHref = (ackType: 'ack' | 'unack') =>
-  `${menuStore.mainMenu.baseHref}alarm/list.htm?filter=node%3d${nodeId.value}&acktype=${ackType}`
+// The legacy alarm list, filtered to this node's unacknowledged alarms at one severity. Will need
+// to point at the Vue Alarms page once it's implemented.
+const alarmListHref = (severity: string) =>
+  `${menuStore.mainMenu.baseHref}alarm/list.htm?filter=node%3d${nodeId.value}&filter=severity%3d${severityId(severity)}&acktype=unack`
 
 const fetchStatus = async () => {
   if (nodeId.value) {

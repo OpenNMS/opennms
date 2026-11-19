@@ -21,7 +21,6 @@
 ///
 
 import { severityKey, SeverityKey } from '@/lib/severity'
-import { plural } from '@/lib/utils'
 import { NodeAlarmStatus } from '@/types/index'
 
 // The tints NodeDetailsBanner offers: one per severity look. Indeterminate and cleared are never a
@@ -31,61 +30,54 @@ export type BannerSeverity = SeverityKey
 /** The banner tint for an OnmsSeverity name; `none` for one that has no tint. */
 export const bannerSeverity = (severity: string | undefined): BannerSeverity => severityKey(severity)
 
+/** How many of the node's problem alarms are unacknowledged at one severity. */
+export interface SeverityCount {
+  // An upper-case OnmsSeverity name above Normal.
+  severity: string
+  count: number
+}
+
 /**
- * A node's at-a-glance status, as the legacy node page's status box showed it.
+ * A node's at-a-glance status: how severe its unacknowledged problem alarms are, and how many
+ * there are at each severity.
  */
 export interface NodeStatus {
   // Highest severity among the node's unacknowledged problem alarms, as an upper-case
   // OnmsSeverity name; NORMAL when there are none.
   severity: string
-  // Headline: down, how many interfaces/services are down, or how severe its problem alarms are.
   message: string
   // Whether there is anything unacknowledged to act on -- the JSP's maxSeverity > NORMAL.
   hasProblems: boolean
-  ackCount: number
-  unackCount: number
+  // The unacknowledged problem alarms at each severity that has any, highest first.
+  unackBySeverity: SeverityCount[]
 }
 
-// Above Normal. The server reports the worst unacknowledged one, and NORMAL when there is none.
-const PROBLEM_SEVERITIES = ['WARNING', 'MINOR', 'MAJOR', 'CRITICAL']
-
-// The headline when nothing is down: how severe the worst unacknowledged problem alarm is.
-// "Warning alarms" reads awkwardly, so a warning gets its own wording.
-const severityMessage = (severity: string, hasProblems: boolean) => {
-  if (!hasProblems) {
-    return 'Node has no problem alarms.'
-  }
-
-  return severity === 'WARNING' ? 'Node has warnings.' : `Node has ${severity.toLowerCase()} alarms.`
-}
+// Above Normal, highest first. The server reports the worst unacknowledged one, and NORMAL when
+// there is none.
+const PROBLEM_SEVERITIES = ['CRITICAL', 'MAJOR', 'MINOR', 'WARNING']
 
 /**
  * The status box's headline and counts from the server's summary of the node's problem alarms
- * (GET /api/v2/nodes/{id}/alarmStatus). The server does the counting, as the JSP did over every
- * alarm the node had. The wording follows the JSP's, but says alarms where the JSP said problems.
+ * (GET /api/v2/nodes/{id}/alarmStatus). The server does the counting. The headline says only
+ * whether there are unacknowledged alarms; the counts by severity say the rest.
  */
 export const computeNodeStatus = (summary: NodeAlarmStatus): NodeStatus => {
   const severity = (summary.severity ?? 'NORMAL').toUpperCase()
   const hasProblems = PROBLEM_SEVERITIES.includes(severity)
-  const { nodeDown, interfacesDown: intfDown, servicesDown: servDown } = summary
 
-  let message = severityMessage(severity, hasProblems)
+  // Keyed by severity name; matched in any case, and put in order here rather than trusting the
+  // order of the server's keys.
+  const counts = new Map(Object.entries(summary.unacknowledgedBySeverity ?? {})
+    .map(([name, count]) => [name.toUpperCase(), count]))
 
-  if (nodeDown) {
-    message = 'Node is currently down.'
-  } else if (intfDown > 0 && servDown > 0) {
-    message = `Node has ${plural(intfDown, 'interface')} and ${plural(servDown, 'service')} down.`
-  } else if (intfDown > 0) {
-    message = `Node has ${plural(intfDown, 'interface')} down.`
-  } else if (servDown > 0) {
-    message = `Node has ${plural(servDown, 'service')} down.`
-  }
+  const unackBySeverity = PROBLEM_SEVERITIES
+    .map(name => ({ severity: name, count: counts.get(name) ?? 0 }))
+    .filter(item => item.count > 0)
 
   return {
     severity: hasProblems ? severity : 'NORMAL',
-    message,
+    message: hasProblems ? 'Node has unacknowledged alarms.' : 'Node has no problem alarms.',
     hasProblems,
-    ackCount: summary.acknowledgedCount,
-    unackCount: summary.unacknowledgedCount
+    unackBySeverity
   }
 }

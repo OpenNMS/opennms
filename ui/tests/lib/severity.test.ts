@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { severityKey, severityName } from '@/lib/severity'
+import { severityId, severityKey, severityName } from '@/lib/severity'
 import { describe, expect, it } from 'vitest'
 
 describe('severity', () => {
@@ -52,6 +52,24 @@ describe('severity', () => {
 
     it.each(['BOGUS', '', null, undefined])('names %s Unknown', (severity) => {
       expect(severityName(severity)).toBe('Unknown')
+    })
+  })
+
+  describe('severityId', () => {
+    it.each([
+      ['INDETERMINATE', 1],
+      ['CLEARED', 2],
+      ['NORMAL', 3],
+      ['WARNING', 4],
+      ['minor', 5],
+      ['Major', 6],
+      ['CRITICAL', 7]
+    ])('gives %s the id %i', (severity, id) => {
+      expect(severityId(severity)).toBe(id)
+    })
+
+    it.each(['BOGUS', '', null, undefined])('gives %s no id', (severity) => {
+      expect(severityId(severity)).toBeUndefined()
     })
   })
 })

@@ -21,6 +21,9 @@
  */
 package org.opennms.web.rest.v2.model;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -49,6 +52,11 @@ public class NodeAlarmStatusDto {
 
     @Schema(description = "Problem alarms that are not acknowledged.", example = "2")
     private long unacknowledgedCount;
+
+    @Schema(description = "Unacknowledged problem alarms at each severity above Normal, highest first. Every one "
+            + "of `CRITICAL`, `MAJOR`, `MINOR` and `WARNING` is present, with 0 when there are none.",
+            example = "{\"CRITICAL\": 0, \"MAJOR\": 1, \"MINOR\": 1, \"WARNING\": 0}")
+    private Map<String, Long> unacknowledgedBySeverity = new LinkedHashMap<>();
 
     public String getSeverity() {
         return severity;
@@ -96,5 +104,13 @@ public class NodeAlarmStatusDto {
 
     public void setUnacknowledgedCount(final long unacknowledgedCount) {
         this.unacknowledgedCount = unacknowledgedCount;
+    }
+
+    public Map<String, Long> getUnacknowledgedBySeverity() {
+        return unacknowledgedBySeverity;
+    }
+
+    public void setUnacknowledgedBySeverity(final Map<String, Long> unacknowledgedBySeverity) {
+        this.unacknowledgedBySeverity = unacknowledgedBySeverity;
     }
 }

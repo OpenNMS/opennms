@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.SituationSummary;
 
@@ -59,6 +60,15 @@ public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
     List<AlarmSummary> getNodeAlarmSummariesIncludeAcknowledgedOnes(List<Integer> nodeIds);
 
     List<OnmsAlarm> getAlarmsForEventParameters(final Map<String, String> eventParameters);
+
+    /**
+     * Count a node's unacknowledged alarms by severity, in one query.
+     *
+     * @param nodeId the node's database id
+     * @return each severity that has unacknowledged alarms on the node, with how many. A severity
+     * with none is not in the map.
+     */
+    Map<OnmsSeverity, Long> getUnacknowledgedCountsBySeverity(int nodeId);
 
     /**
      * Returns the number of situations currently present in the database.

@@ -886,6 +886,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals(0, status.getLong("servicesDown"));
         assertEquals(0, status.getLong("acknowledgedCount"));
         assertEquals(0, status.getLong("unacknowledgedCount"));
+        assertUnacknowledgedBySeverity(status, 0, 0, 0, 0);
 
         m_transactionTemplate.execute(s -> {
             saveAlarm("uei.opennms.org/nodes/nodeLostService", OnmsSeverity.MAJOR, false);
@@ -904,18 +905,48 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals(2, status.getLong("servicesDown"));
         assertEquals(1, status.getLong("acknowledgedCount"));
         assertEquals(2, status.getLong("unacknowledgedCount"));
+        // The acknowledged critical and the cleared alarm are not in it.
+        assertUnacknowledgedBySeverity(status, 0, 1, 1, 0);
 
         m_transactionTemplate.execute(s -> {
             saveAlarm("uei.opennms.org/nodes/nodeDown", OnmsSeverity.MAJOR, false);
             return null;
         });
-        assertTrue(new JSONObject(sendRequest(GET, url, 200)).getBoolean("nodeDown"));
+        status = new JSONObject(sendRequest(GET, url, 200));
+        assertTrue(status.getBoolean("nodeDown"));
+        assertEquals(3, status.getLong("unacknowledgedCount"));
+        assertUnacknowledgedBySeverity(status, 0, 2, 1, 0);
+
+        m_transactionTemplate.execute(s -> {
+            saveAlarm("uei.opennms.org/test/warning", OnmsSeverity.WARNING, false);
+            saveAlarm("uei.opennms.org/test/critical", OnmsSeverity.CRITICAL, false);
+            return null;
+        });
+        final String body = sendRequest(GET, url, 200);
+        status = new JSONObject(body);
+        assertEquals("CRITICAL", status.getString("severity"));
+        assertEquals(5, status.getLong("unacknowledgedCount"));
+        assertUnacknowledgedBySeverity(status, 1, 2, 1, 1);
+        // Highest first. JSONObject does not keep the order, so look at the body itself.
+        assertTrue(body.indexOf("\"CRITICAL\"") < body.indexOf("\"MAJOR\"")
+                && body.indexOf("\"MAJOR\"") < body.indexOf("\"MINOR\"")
+                && body.indexOf("\"MINOR\"") < body.indexOf("\"WARNING\""));
 
         // Another node's alarms are not counted.
         final JSONObject node2 = new JSONObject(sendRequest(GET, "/nodes/" + m_databasePopulator.getNode2().getId() + "/alarmStatus", 200));
         assertEquals(0, node2.getLong("unacknowledgedCount"));
 
         sendRequest(GET, "/nodes/999999/alarmStatus", 404);
+    }
+
+    private static void assertUnacknowledgedBySeverity(final JSONObject status, final long critical, final long major,
+                                                       final long minor, final long warning) {
+        final JSONObject bySeverity = status.getJSONObject("unacknowledgedBySeverity");
+        assertEquals(4, bySeverity.length());
+        assertEquals(critical, bySeverity.getLong("CRITICAL"));
+        assertEquals(major, bySeverity.getLong("MAJOR"));
+        assertEquals(minor, bySeverity.getLong("MINOR"));
+        assertEquals(warning, bySeverity.getLong("WARNING"));
     }
 
     private void saveAlarm(final String uei, final OnmsSeverity severity, final boolean acknowledged) {

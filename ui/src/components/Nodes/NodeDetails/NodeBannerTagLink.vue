@@ -76,8 +76,9 @@ withDefaults(defineProps<{
 .node-banner-tag {
   gap: 0.3rem;
 
-  // Every icon in the tag, the slotted one too.
-  :deep(.onms-icon) {
+  // The tag's own icons, the slotted one too. Only its direct children: an icon inside a slotted
+  // component, such as SeverityIcon's, keeps that component's size.
+  > :deep(.onms-icon) {
     font-size: 1.5rem;
   }
 }
