@@ -255,9 +255,8 @@ configure() {
     rsync -L --out-format="%n %C" "$JAVA_HOME/lib/security/cacerts" "$CACERTS" || exit ${E_INIT_CONFIG}
     chmod u+w "$CACERTS" || exit ${E_INIT_CONFIG}
     export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=$CACERTS -Djavax.net.ssl.trustStorePassword=changeit"
-    # $CACERTS is a fresh copy of the JDK truststore on every start, so no
-    # configured alias is present yet; an alias listed twice fails the import.
-    while read certid; do
+    # A last line without a trailing newline is still read.
+    while read -r certid || [[ -n $certid ]]; do
       [[ $certid =~ ^#.* ]] && continue
       [[ -z $certid ]] && continue
       certfile="/opt/minion/server-certs/$certid"
@@ -265,8 +264,14 @@ configure() {
         echo "Server certificate $certfile listed in $MINION_SERVER_CERTS_CFG is missing or not readable" >&2
         exit ${E_INIT_CONFIG}
       fi
+      # Replace an existing entry: an alias listed twice, or one that has the
+      # same name as a JDK CA, was tolerated before and must not stop startup.
+      if keytool -list -alias "$certid" -keystore "$CACERTS" -storepass changeit >/dev/null 2>&1; then
+        echo "Alias \"$certid\" is already in $CACERTS; replacing it" >&2
+        keytool -delete -alias "$certid" -keystore "$CACERTS" -storepass changeit || exit ${E_INIT_CONFIG}
+      fi
       if ! keytool -importcert -file "$certfile" -alias "$certid" -keystore "$CACERTS" -storepass changeit -noprompt; then
-        echo "Failed to import $certfile into $CACERTS as alias \"$certid\"; check that it is a valid certificate and is listed only once in $MINION_SERVER_CERTS_CFG" >&2
+        echo "Failed to import $certfile into $CACERTS as alias \"$certid\"; check that it is a valid certificate" >&2
         exit ${E_INIT_CONFIG}
       fi
     done < "$MINION_SERVER_CERTS_CFG"
