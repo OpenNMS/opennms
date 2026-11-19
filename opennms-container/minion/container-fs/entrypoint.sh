@@ -257,6 +257,8 @@ configure() {
     export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=$CACERTS -Djavax.net.ssl.trustStorePassword=changeit"
     # A last line without a trailing newline is still read.
     while read -r certid || [[ -n $certid ]]; do
+      # Accept a file with Windows (CRLF) line endings.
+      certid=${certid%$'\r'}
       [[ $certid =~ ^#.* ]] && continue
       [[ -z $certid ]] && continue
       certfile="/opt/minion/server-certs/$certid"

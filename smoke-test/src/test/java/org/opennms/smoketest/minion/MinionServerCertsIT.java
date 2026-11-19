@@ -61,6 +61,8 @@ public class MinionServerCertsIT {
     // ${MINION_HOME}/cacerts in the container entrypoint
     private static final String MINION_TRUSTSTORE = "/opt/minion/cacerts";
     private static final Pattern ENTRY_COUNT = Pattern.compile("contains (\\d+) entr");
+    // printed by keytool -importcert, once per line of the env file
+    private static final Pattern IMPORTED = Pattern.compile("Certificate was added to keystore");
 
     private static final Path WORK_DIR = Paths.get("target", "minion-server-certs").toAbsolutePath();
     private static final Path CERT_DIR = generateCertificate();
@@ -94,7 +96,10 @@ public class MinionServerCertsIT {
                     "-keystore", keystore.toString(), "-storepass", STORE_PASSWORD);
             hostKeytool("-exportcert", "-rfc", "-alias", CERT_ALIAS, "-keystore", keystore.toString(),
                     "-storepass", STORE_PASSWORD, "-file", certDir.resolve(CERT_ALIAS).toString());
-            Files.write(WORK_DIR.resolve("minion-server-certs.env"), (CERT_ALIAS + "\n").getBytes(StandardCharsets.UTF_8));
+            // A CRLF line ending, the same alias listed twice, and a last line
+            // with no trailing newline must all be accepted.
+            Files.write(WORK_DIR.resolve("minion-server-certs.env"),
+                    (CERT_ALIAS + "\r\n" + CERT_ALIAS).getBytes(StandardCharsets.UTF_8));
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Could not generate the test certificate", e);
         }
@@ -114,10 +119,17 @@ public class MinionServerCertsIT {
 
     @Test
     public void serverCertsAreAddedToJdkTruststore() throws Exception {
-        // the entrypoint imports the certificate before it starts Karaf
+        // the entrypoint imports the certificate before it starts Karaf; wait
+        // for both lines of the env file to be imported
         await().atMost(5, MINUTES)
                 .pollInterval(5, SECONDS)
-                .until(() -> keytool("-list", "-alias", CERT_ALIAS, "-keystore", MINION_TRUSTSTORE).getExitCode() == 0);
+                .until(() -> countMatches(IMPORTED, minionLogs()) == 2);
+
+        assertThat("The repeated alias should replace the first entry",
+                minionLogs().contains("Alias \"" + CERT_ALIAS + "\" is already in " + MINION_TRUSTSTORE + "; replacing it"),
+                equalTo(true));
+        assertThat("Configured certificate is not in the Minion truststore",
+                keytool("-list", "-alias", CERT_ALIAS, "-keystore", MINION_TRUSTSTORE).getExitCode(), equalTo(0));
 
         final int jdkEntries = countEntries("$JAVA_HOME/lib/security/cacerts");
         final int minionEntries = countEntries(MINION_TRUSTSTORE);
@@ -125,6 +137,22 @@ public class MinionServerCertsIT {
         assertThat("JDK truststore has no CA certificates", jdkEntries, greaterThan(0));
         assertThat("Minion truststore should hold every JDK CA plus the configured certificate",
                 minionEntries, equalTo(jdkEntries + 1));
+    }
+
+    private static String minionLogs() {
+        if (!MINION_CONTAINER.isRunning()) {
+            throw new AssertionError("Minion container stopped:\n" + MINION_CONTAINER.getLogs());
+        }
+        return MINION_CONTAINER.getLogs();
+    }
+
+    private static int countMatches(final Pattern pattern, final String text) {
+        final Matcher matcher = pattern.matcher(text);
+        int count = 0;
+        while (matcher.find()) {
+            count++;
+        }
+        return count;
     }
 
     private static Container.ExecResult keytool(final String... args) throws Exception {
