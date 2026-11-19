@@ -436,6 +436,7 @@ configure() {
     printKarafResolutionDiagnostics
   fi
   validateFeatureBootComposition
+  export JAVA_OPTS="-XX:-UseBASE64Intrinsics $JAVA_OPTS"
   if [[ -f "$MINION_SERVER_CERTS_CFG" ]]; then
     requireReadable "$MINION_SERVER_CERTS_CFG"
     # cacerts is a symlink to a file, so *do not* put /. on the target
