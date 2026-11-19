@@ -10,7 +10,10 @@
         class="node-status-icon"
         data-test="node-status-icon"
       />
-      <strong data-test="node-status-message">{{ status.message }}</strong>
+      <strong
+        class="node-status-message"
+        data-test="node-status-message"
+      >{{ status.message }}</strong>
       <!--
         A tag per severity with unacknowledged alarms, highest first: the count and the severity's
         icon, each a link to those alarms in the legacy list. A severity with none has no tag.
@@ -107,6 +110,11 @@ defineExpose({ fetchStatus })
   margin-right: 0.5rem;
 }
 
+// Centred on the icon and the tags beside it, which are middle-aligned too.
+.node-status-message {
+  vertical-align: middle;
+}
+
 .node-status-tags {
   display: inline-flex;
   gap: 0.5rem;
@@ -115,6 +123,7 @@ defineExpose({ fetchStatus })
 }
 
 .node-status-tag-count {
+  padding-right: 0.5rem;
   font-weight: 700;
 }
 </style>

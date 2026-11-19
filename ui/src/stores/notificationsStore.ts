@@ -21,6 +21,7 @@
 ///
 
 import API from '@/services'
+import { NodeNotificationStatus } from '@/types'
 import { useAuthStore } from '@/stores/authStore'
 import { NotificationAckType, NotificationBrowseResult, NotificationQueryPreset, OnmsNotification } from '@/types/notifications'
 import { createFailureResult, createResultWithPayload, createSuccessResponse, ValidationResult, ValidationResultWithPayload } from '@/types/validation'
@@ -38,6 +39,15 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
   const rows = ref(10)
   const first = ref(0)
   const loading = ref(false)
+
+  // The Node Details notifications box's slice: the server's counts of one node's notifications,
+  // stamped with the node, as the alarm store's nodeAlarmStatus is. Apart from the page's query.
+  const nodeNotificationStatus = ref<NodeNotificationStatus | undefined>(undefined)
+  const nodeNotificationStatusNodeId = ref<string | undefined>(undefined)
+  // The node whose latest fetch failed, if any; kept by node id so one node's failure never reads
+  // as another's.
+  const nodeNotificationStatusFailedNodeId = ref<string | undefined>(undefined)
+  let nodeNotificationStatusRequestId = 0
 
   const currentUser = computed<string>(() => authStore.whoAmI.id)
 
@@ -227,6 +237,38 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
     return reload.success ? createSuccessResponse() : { ...createSuccessResponse(), errors: [reload.message] }
   }
 
+  /**
+   * Fetch the counts of one node's notifications. Replaced only on success, so check
+   * `nodeNotificationStatusNodeId` before showing them for a node, and
+   * `nodeNotificationStatusFailedNodeId` to tell one still loading from one that failed.
+   */
+  const getNodeNotificationStatus = async (nodeId: string): Promise<ValidationResultWithPayload<NodeNotificationStatus>> => {
+    const requestId = ++nodeNotificationStatusRequestId
+
+    // A fetch for another node starts afresh; a refresh of the failed node keeps saying so.
+    if (nodeNotificationStatusFailedNodeId.value !== nodeId) {
+      nodeNotificationStatusFailedNodeId.value = undefined
+    }
+
+    const result = await API.getNodeNotificationStatus(nodeId)
+
+    if (requestId !== nodeNotificationStatusRequestId) {
+      return createResultWithPayload(false, 'Superseded by a newer request')
+    }
+
+    if (!result.success || !result.payload) {
+      nodeNotificationStatusFailedNodeId.value = nodeId
+
+      return createResultWithPayload(false, result.message)
+    }
+
+    nodeNotificationStatus.value = result.payload
+    nodeNotificationStatusNodeId.value = nodeId
+    nodeNotificationStatusFailedNodeId.value = undefined
+
+    return result
+  }
+
   return {
     preset,
     userFilter,
@@ -247,6 +289,10 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
     clearNodeFilter,
     onPage,
     fetchForExport,
-    acknowledge
+    acknowledge,
+    nodeNotificationStatus,
+    nodeNotificationStatusNodeId,
+    nodeNotificationStatusFailedNodeId,
+    getNodeNotificationStatus
   }
 })

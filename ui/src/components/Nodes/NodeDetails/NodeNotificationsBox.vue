@@ -10,13 +10,18 @@
         v-for="link in links"
         :key="link.dataTest"
         :label="link.label"
-        :to="link.to"
-        :state="link.state"
+        :to="forNode(link.preset)"
         :data-test="link.dataTest"
       >
+        <!-- No number until the counts have loaded, or when they failed to; the link still works. -->
+        <span
+          v-if="counts"
+          class="node-notifications-tag-count"
+          :data-test="`${link.dataTest}-count`"
+        >{{ counts[link.count] }}</span>
         <OnmsIcon
-          :icon="WHO_ICONS[link.who]"
-          class="node-notifications-who-icon"
+          :icon="link.icon"
+          class="node-notifications-icon"
         />
       </NodeBannerTagLink>
     </span>
@@ -24,55 +29,71 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { RouteLocationRaw } from 'vue-router'
+import { computed, watch } from 'vue'
 import { OnmsIcon } from '@opennms/onms-ui'
 import Group from '@opennms/onms-ui/icons/action/Group.vue'
 import Person from '@opennms/onms-ui/icons/action/Person.vue'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
+import useVisiblePolling from '@/composables/useVisiblePolling'
+import { useNotificationsStore } from '@/stores/notificationsStore'
+import { NodeNotificationStatus } from '@/types'
 import { NotificationQueryPreset } from '@/types/notifications'
-import NodeBannerTagLink, { NodeBannerTagState } from './NodeBannerTagLink.vue'
+import NodeBannerTagLink from './NodeBannerTagLink.vue'
 import NodeDetailsBanner from './NodeDetailsBanner.vue'
 import useActiveNodeId from './hooks/useActiveNodeId'
 
 // A condensed view of the node's notifications, beside the status banner: a tag per link to the
-// Notifications page, filtered to this node. It borrows the banner's look with no tint and no severity strip --
-// notifications have no severity of their own to signal -- so it has the panels' background.
+// Notifications page, filtered to this node, each with how many notifications it leads to. It
+// borrows the banner's look with no tint and no severity strip -- notifications have no severity
+// of their own to signal -- so it has the panels' background.
 //
-// Each node tag is two icons: whose notifications (yours, or everyone's) and which (outstanding or
-// acknowledged). The last tag, all of the node's notifications, is the one icon. The tooltip and
-// accessible name say each in words.
+// Each tag is a count and an icon for whose notifications: yours, everyone's outstanding, or all
+// of the node's. The tooltip and accessible name say it in words. A count of 0 still shows: the
+// tags are the way to the Notifications page too.
 
-// Whose notifications a tag links to: yours, everyone's, or all of the node's whatever their state.
-type Who = 'you' | 'everyone' | 'all'
-
-const WHO_ICONS: Record<Who, object> = {
-  you: Person,
-  everyone: Group,
-  all: IconViewDetails
-}
+// How often the counts are refreshed while they are on screen, on the same cycle as the status
+// banner beside them. Each refresh is three counts on the server.
+const POLL_INTERVAL_MS = 60_000
 
 interface NotificationsLink {
   dataTest: string
   label: string
-  to: RouteLocationRaw
-  who: Who
-  state?: NodeBannerTagState
+  preset: NotificationQueryPreset
+  count: Exclude<keyof NodeNotificationStatus, 'user'>
+  icon: object
 }
+
+// The Notifications page applies the current user to the "your" preset itself; the server counts
+// for the same user.
+const links: NotificationsLink[] = [
+  { dataTest: 'your-outstanding-notifications-link', label: 'View your outstanding notifications for this node', preset: 'yourOutstanding', count: 'yourOutstanding', icon: Person },
+  { dataTest: 'all-outstanding-notifications-link', label: 'View all outstanding notifications for this node', preset: 'allOutstanding', count: 'allOutstanding', icon: Group },
+  // Every notification for this node, outstanding and acknowledged, whoever it was sent to.
+  { dataTest: 'view-all-notifications-link', label: 'View all notifications for this node', preset: 'all', count: 'total', icon: IconViewDetails }
+]
+
+const notificationsStore = useNotificationsStore()
 
 const nodeId = useActiveNodeId()
 
-// The Notifications page applies the current user to the "your" presets itself.
 const forNode = (preset: NotificationQueryPreset) => ({ name: 'Notifications', query: { preset, node: nodeId.value }})
 
-const links = computed<NotificationsLink[]>(() => [
-  { dataTest: 'your-outstanding-notifications-link', label: 'Your outstanding notifications for this node', to: forNode('yourOutstanding'), who: 'you', state: 'outstanding' },
-  { dataTest: 'your-acknowledged-notifications-link', label: 'Your acknowledged notifications for this node', to: forNode('yourAcknowledged'), who: 'you', state: 'acknowledged' },
-  { dataTest: 'all-outstanding-notifications-link', label: 'All outstanding notifications for this node', to: forNode('allOutstanding'), who: 'everyone', state: 'outstanding' },
-  { dataTest: 'all-acknowledged-notifications-link', label: 'All acknowledged notifications for this node', to: forNode('allAcknowledged'), who: 'everyone', state: 'acknowledged' },
-  // Every notification for this node, outstanding and acknowledged, whoever it was sent to.
-  { dataTest: 'view-all-notifications-link', label: 'All notifications for this node', to: forNode('all'), who: 'all' }
-])
+// The store's slice is only replaced on success, so it may still be the previous node's. A failed
+// refresh of this node keeps the counts it had.
+const counts = computed<NodeNotificationStatus | undefined>(() =>
+  (notificationsStore.nodeNotificationStatusNodeId === nodeId.value ? notificationsStore.nodeNotificationStatus : undefined))
+
+const fetchCounts = async () => {
+  if (nodeId.value) {
+    await notificationsStore.getNodeNotificationStatus(nodeId.value)
+  }
+}
+
+useVisiblePolling(fetchCounts, POLL_INTERVAL_MS)
+
+watch(nodeId, fetchCounts, { immediate: true })
+
+defineExpose({ fetchCounts })
 </script>
 
 <style lang="scss" scoped>
@@ -88,7 +109,13 @@ const links = computed<NotificationsLink[]>(() => [
   gap: 0.5rem;
 }
 
-.node-notifications-who-icon {
+// As the status banner's counts.
+.node-notifications-tag-count {
+  padding-right: 0.5rem;
+  font-weight: 700;
+}
+
+.node-notifications-icon {
   color: var(--p-button-text-primary-color);
 }
 </style>

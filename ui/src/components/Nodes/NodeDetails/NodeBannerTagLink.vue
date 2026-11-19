@@ -1,7 +1,6 @@
 <!--
   A link whose whole face is a tag, for the banners at the top of the Monitoring tab (the status
-  banner and the notifications box). The default slot is what leads the tag: a count, or an icon
-  for whose items these are. `state` adds an icon for outstanding (red) or acknowledged (green).
+  banner and the notifications box). The default slot is the tag's face: a count and an icon.
 
   The tag carries no words, so `label` is its tooltip and its accessible name.
 -->
@@ -19,27 +18,13 @@
       class="node-banner-tag"
     >
       <slot />
-      <OnmsIcon
-        v-if="state"
-        :icon="STATE_ICONS[state]"
-        :class="`node-banner-tag-icon--${state}`"
-      />
     </OnmsTag>
   </component>
 </template>
 
 <script setup lang="ts">
 import { RouteLocationRaw, RouterLink } from 'vue-router'
-import { OnmsIcon, OnmsTag, OnmsTagSeverity } from '@opennms/onms-ui'
-import Cancel from '@opennms/onms-ui/icons/action/Cancel.vue'
-import CheckCircle from '@opennms/onms-ui/icons/action/CheckCircle.vue'
-
-export type NodeBannerTagState = 'outstanding' | 'acknowledged'
-
-const STATE_ICONS: Record<NodeBannerTagState, object> = {
-  outstanding: Cancel,
-  acknowledged: CheckCircle
-}
+import { OnmsTag, OnmsTagSeverity } from '@opennms/onms-ui'
 
 // `to` for a page of this app, `href` for a page outside it (the legacy alarm list).
 withDefaults(defineProps<{
@@ -47,12 +32,10 @@ withDefaults(defineProps<{
   to?: RouteLocationRaw
   href?: string
   severity?: OnmsTagSeverity
-  state?: NodeBannerTagState
 }>(), {
   to: undefined,
   href: undefined,
-  severity: 'secondary',
-  state: undefined
+  severity: 'secondary'
 })
 </script>
 
@@ -76,18 +59,10 @@ withDefaults(defineProps<{
 .node-banner-tag {
   gap: 0.3rem;
 
-  // The tag's own icons, the slotted one too. Only its direct children: an icon inside a slotted
-  // component, such as SeverityIcon's, keeps that component's size.
+  // A slotted icon. Only the tag's direct children: an icon inside a slotted component, such as
+  // SeverityIcon's, keeps that component's size.
   > :deep(.onms-icon) {
     font-size: 1.5rem;
   }
-}
-
-.node-banner-tag-icon--outstanding {
-  color: var(--onms-error-icon);
-}
-
-.node-banner-tag-icon--acknowledged {
-  color: var(--onms-success);
 }
 </style>

@@ -386,6 +386,17 @@ export interface NodeAlarmStatus {
   unacknowledgedBySeverity: Record<string, number>
 }
 
+// GET /api/v2/nodes/{id}/notificationStatus: the node's notifications, counted on the server.
+export interface NodeNotificationStatus {
+  // The user `yourOutstanding` counts for: the one logged in.
+  user: string
+  // Outstanding (not acknowledged) and sent to that user; one sent by several methods counts once.
+  yourOutstanding: number
+  allOutstanding: number
+  // Outstanding and acknowledged.
+  total: number
+}
+
 export interface NodeCriticalPath {
   criticalPathIp: string | null
   criticalPathServiceName: string | null

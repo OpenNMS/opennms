@@ -53,8 +53,10 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsPathOutage;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -937,6 +939,66 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals(0, node2.getLong("unacknowledgedCount"));
 
         sendRequest(GET, "/nodes/999999/alarmStatus", 404);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testNotificationStatus() throws Exception {
+        m_databasePopulator.populateDatabase();
+        final OnmsNode node1 = m_databasePopulator.getNode1();
+        final String url = "/nodes/" + node1.getId() + "/notificationStatus";
+
+        // The populator's one notification is on node1, outstanding, and sent to TestUser and TestUser2.
+        JSONObject status = new JSONObject(sendRequest(GET, url, 200));
+        assertEquals("admin", status.getString("user"));
+        assertEquals(0, status.getLong("yourOutstanding"));
+        assertEquals(1, status.getLong("allOutstanding"));
+        assertEquals(1, status.getLong("total"));
+
+        m_transactionTemplate.execute(s -> {
+            // Sent to the caller by two methods: one notification.
+            saveNotification(node1, false, "admin", "admin");
+            saveNotification(node1, false, "TestUser");
+            // Acknowledged: in the total only.
+            saveNotification(node1, true, "admin");
+            // Another node's.
+            saveNotification(m_databasePopulator.getNode2(), false, "admin");
+            return null;
+        });
+
+        status = new JSONObject(sendRequest(GET, url, 200));
+        assertEquals(1, status.getLong("yourOutstanding"));
+        assertEquals(3, status.getLong("allOutstanding"));
+        assertEquals(4, status.getLong("total"));
+
+        sendRequest(GET, "/nodes/999999/notificationStatus", 404);
+    }
+
+    private void saveNotification(final OnmsNode node, final boolean acknowledged, final String... users) {
+        final OnmsEvent event = m_databasePopulator.buildEvent(m_databasePopulator.getDistPollerDao().whoami());
+        m_databasePopulator.getEventDao().save(event);
+
+        final OnmsNotification notification = new OnmsNotification();
+        notification.setEvent(event);
+        notification.setNode(node);
+        notification.setTextMsg("Test notification");
+        notification.setPageTime(new Date());
+        if (acknowledged) {
+            notification.setAnsweredBy("admin");
+            notification.setRespondTime(new Date());
+        }
+        m_databasePopulator.getNotificationDao().save(notification);
+
+        // One row per user and method, as notifd writes them.
+        for (int i = 0; i < users.length; i++) {
+            final OnmsUserNotification delivery = new OnmsUserNotification();
+            delivery.setUserId(users[i]);
+            delivery.setMedia("media" + i);
+            delivery.setNotification(notification);
+            m_databasePopulator.getUserNotificationDao().save(delivery);
+        }
+        m_databasePopulator.getNotificationDao().flush();
+        m_databasePopulator.getUserNotificationDao().flush();
     }
 
     private static void assertUnacknowledgedBySeverity(final JSONObject status, final long critical, final long major,

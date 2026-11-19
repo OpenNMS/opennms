@@ -21,13 +21,10 @@
 ///
 
 import NodeBannerTagLink from '@/components/Nodes/NodeDetails/NodeBannerTagLink.vue'
-import { OnmsIcon, OnmsTag, OnmsTooltip } from '@opennms/onms-ui'
-import Cancel from '@opennms/onms-ui/icons/action/Cancel.vue'
-import CheckCircle from '@opennms/onms-ui/icons/action/CheckCircle.vue'
+import { OnmsTag, OnmsTooltip } from '@opennms/onms-ui'
 import { mount, RouterLinkStub } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { describe, expect, it } from 'vitest'
-import { markRaw } from 'vue'
 
 const mountLink = (props: Record<string, unknown>, slot = '<span class="lead">3</span>') =>
   mount(NodeBannerTagLink, {
@@ -67,26 +64,10 @@ describe('NodeBannerTagLink.vue', () => {
     expect(tooltipOf(wrapper.element)).toBe('3 unacknowledged alarms')
   })
 
-  it('puts the slot first in the tag, then the state icon', () => {
-    const wrapper = mountLink({ href: '#', state: 'outstanding' })
-    const tag = wrapper.findComponent(OnmsTag)
+  it('puts the slot in the tag', () => {
+    const tag = mountLink({ href: '#' }).findComponent(OnmsTag)
 
     expect(tag.find('.lead').text()).toBe('3')
-    expect(tag.findAllComponents(OnmsIcon).map(icon => icon.props('icon'))).toEqual([markRaw(Cancel)])
-  })
-
-  it.each([
-    ['outstanding', Cancel],
-    ['acknowledged', CheckCircle]
-  ] as const)('shows the %s icon, with a class to color it', (state, icon) => {
-    const stateIcon = mountLink({ href: '#', state }).findComponent(OnmsIcon)
-
-    expect(stateIcon.props('icon')).toEqual(markRaw(icon))
-    expect(stateIcon.classes()).toContain(`node-banner-tag-icon--${state}`)
-  })
-
-  it('shows no state icon without a state', () => {
-    expect(mountLink({ href: '#' }, '<b>all</b>').findComponent(OnmsIcon).exists()).toBe(false)
   })
 
   it('uses the secondary tag unless given a severity', () => {

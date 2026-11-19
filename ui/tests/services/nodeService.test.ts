@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getNodeAlarmStatus, getNodeAvailabilityPercentage, getNodeCriticalPath, lookupNodeById, resolveNodeId } from '@/services/nodeService'
+import { getNodeAlarmStatus, getNodeAvailabilityPercentage, getNodeCriticalPath, getNodeNotificationStatus, lookupNodeById, resolveNodeId } from '@/services/nodeService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -79,6 +79,28 @@ describe('nodeService.getNodeAlarmStatus', () => {
     vi.mocked(v2.get).mockRejectedValue(new Error('boom'))
 
     expect((await getNodeAlarmStatus('144')).success).toBe(false)
+  })
+})
+
+describe('nodeService.getNodeNotificationStatus', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('asks v2 for the node\'s notification counts', async () => {
+    const status = { user: 'admin', yourOutstanding: 2, allOutstanding: 5, total: 40 }
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: status })
+
+    const result = await getNodeNotificationStatus('144')
+
+    expect(v2.get).toHaveBeenCalledWith('/nodes/144/notificationStatus')
+    expect(result).toEqual(expect.objectContaining({ success: true, payload: status }))
+  })
+
+  it('answers a failed result when the request fails', async () => {
+    vi.mocked(v2.get).mockRejectedValue(new Error('boom'))
+
+    expect((await getNodeNotificationStatus('144')).success).toBe(false)
   })
 })
 

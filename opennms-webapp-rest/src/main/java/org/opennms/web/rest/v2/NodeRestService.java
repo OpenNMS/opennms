@@ -73,6 +73,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -81,6 +82,7 @@ import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
+import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsPathOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -99,6 +101,7 @@ import org.opennms.web.rest.support.SearchPropertyCollection;
 import org.opennms.web.rest.support.StringCollection;
 import org.opennms.web.rest.v2.model.NodeAlarmStatusDto;
 import org.opennms.web.rest.v2.model.NodeCriticalPathDto;
+import org.opennms.web.rest.v2.model.NodeNotificationStatusDto;
 import org.opennms.web.rest.v2.model.NodeServiceTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,6 +165,9 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     @Autowired
     private AlarmDao m_alarmDao;
+
+    @Autowired
+    private NotificationDao m_notificationDao;
 
     @Autowired
     @Qualifier("eventProxy")
@@ -1168,6 +1174,64 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     private int countProblemAlarms(final int nodeId, final UnaryOperator<CriteriaBuilder> restrict) {
         return m_alarmDao.countMatching(restrict.apply(problemAlarms(nodeId)).toCriteria());
+    }
+
+    @GET
+    @Path("{nodeCriteria}/notificationStatus")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional(readOnly = true)
+    @Operation(
+            summary = "Get a count of a node's notifications",
+            description = """
+        Return how many notifications the node has: the outstanding ones sent to the caller, all the outstanding
+        ones, and all of them, outstanding and acknowledged. Outstanding is not yet acknowledged.
+
+        The figures match the totals of `GET /rest/notifications` with a `node.id` filter: `answeredBy=null` and
+        `usersNotified.userId=<caller>`, `answeredBy=null`, and no other filter. A notification sent to the
+        caller by more than one method is counted once.""",
+            operationId = "NodeRestServiceGETNotificationStatusByNodeId")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The node's notification counts.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = NodeNotificationStatusDto.class),
+                            examples = @ExampleObject(value = """
+                    {"user": "admin", "yourOutstanding": 2, "allOutstanding": 5, "total": 40}"""))),
+            @ApiResponse(responseCode = "404", description = "No such node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found.")))
+    })
+    public Response getNotificationStatus(
+            @Context final SecurityContext securityContext,
+            @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("nodeCriteria") final String nodeCriteria) {
+        final OnmsNode node = m_dao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.NOT_FOUND, "Node {} was not found.", nodeCriteria);
+        }
+        final int nodeId = node.getId();
+        final String user = securityContext.getUserPrincipal().getName();
+
+        final NodeNotificationStatusDto result = new NodeNotificationStatusDto();
+        result.setUser(user);
+        // A notification has one usersNotified row per user and method, so the join is counted over distinct
+        // notifications, as the v1 summary and the list are.
+        result.setYourOutstanding(m_notificationDao.countMatching(nodeNotifications(nodeId)
+                .isNull("answeredBy")
+                .alias("usersNotified", "usersNotified")
+                .eq("usersNotified.userId", user)
+                .distinct()
+                .toCriteria()));
+        result.setAllOutstanding(m_notificationDao.countMatching(nodeNotifications(nodeId).isNull("answeredBy").toCriteria()));
+        result.setTotal(m_notificationDao.countMatching(nodeNotifications(nodeId).toCriteria()));
+        return Response.ok(result).build();
+    }
+
+    private static CriteriaBuilder nodeNotifications(final int nodeId) {
+        return new CriteriaBuilder(OnmsNotification.class)
+                .alias("node", "node")
+                .eq("node.id", nodeId);
     }
 
     @Path("{nodeCriteria}/ipinterfaces")
