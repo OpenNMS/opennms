@@ -226,6 +226,27 @@ runConfd() {
   "$CONFD_BIN" -onetime -config-file "$CONFD_CONFIG_FILE"
 }
 
+# Print the entries of a line-based config file: one per line, without CR line endings,
+# skipping blank and whitespace-only lines and comments. A last line without a trailing newline is included
+# (e.g. from kubectl create configmap --from-literal).
+readConfigEntries() {
+  local line
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%$'\r'}"
+    [[ $line =~ ^[[:space:]]*(#|$) ]] && continue
+    printf '%s\n' "$line"
+  done < "$1"
+}
+
+# readConfigEntries runs in a process substitution, so a read failure there would not stop
+# the entrypoint. Check readability up front instead.
+requireReadable() {
+  if [[ ! -r "$1" ]]; then
+    echo "[Startup][ERROR] ${1} exists but is not readable by uid $(id -u)."
+    exit 1
+  fi
+}
+
 # Order of precedence is (later overwrites former):
 # 1. Config set via environment variable
 # 2. Config set via overlayed keystore (confd)
@@ -239,25 +260,25 @@ configure() {
     export JAVA_OPTS="$JAVA_OPTS -javaagent:${MINION_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*"
   fi
   if [[ -f "$MINION_PROCESS_ENV_CFG" ]]; then
-    while read assignment; do
-      [[ $assignment =~ ^#.* ]] && continue
+    requireReadable "$MINION_PROCESS_ENV_CFG"
+    while read -r assignment; do
       export "$assignment"
-    done < "$MINION_PROCESS_ENV_CFG"
+    done < <(readConfigEntries "$MINION_PROCESS_ENV_CFG")
     export JAVA_OPTS="$CUSTOM_JAVA_OPTS $JAVA_OPTS"
   fi
   export JAVA_OPTS="-XX:-UseBASE64Intrinsics $JAVA_OPTS"
   if [[ -f "$MINION_SERVER_CERTS_CFG" ]]; then
+    requireReadable "$MINION_SERVER_CERTS_CFG"
     # cacerts is a symlink to a file, so *do not* put /. on the target
     rsync --out-format="%n %C" "$JAVA_HOME/lib/security/cacerts" "$CACERTS"
     export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=$CACERTS -Djavax.net.ssl.trustStorePassword=changeit"
-    while read certid; do
-      [[ $certid =~ ^#.* ]] && continue
+    while read -r certid; do
       # check if CA cert already exists and remove so re-adding doesn't error
       if keytool -list -alias "$certid" -keystore "$CACERTS" -storepass changeit; then
         keytool -delete -alias "$certid" -keystore "$CACERTS" -storepass changeit
       fi
       keytool -importcert -file "/opt/minion/server-certs/$certid" -alias "$certid" -keystore "$CACERTS" -storepass changeit -noprompt
-    done < "$MINION_SERVER_CERTS_CFG"
+    done < <(readConfigEntries "$MINION_SERVER_CERTS_CFG")
   fi
 }
 
