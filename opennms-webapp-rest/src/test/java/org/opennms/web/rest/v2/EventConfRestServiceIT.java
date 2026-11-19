@@ -1821,7 +1821,9 @@ public class EventConfRestServiceIT {
         final List<Map<String, Object>> errors = (List<Map<String, Object>>) entity.get("errors");
         assertEquals(List.of("good.events"), success.stream().map(m -> m.get("file")).toList());
         assertEquals(List.of("blank.events"), errors.stream().map(m -> m.get("file")).toList());
-        assertTrue(errors.get(0).get("error").toString().contains("uei"));
+        // the error names the offending event, not just the file
+        final String error = errors.get(0).get("error").toString();
+        assertTrue(error, error.contains("'uei'") && error.contains("#2 (event-label 'Label 2')"));
 
         // the rejected file stores nothing, not even the events that were fine
         assertNull(eventConfSourceDao.findByName("blank.events"));

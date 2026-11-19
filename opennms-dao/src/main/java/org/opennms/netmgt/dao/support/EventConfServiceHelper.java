@@ -34,6 +34,7 @@ import org.opennms.netmgt.xml.eventconf.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -92,6 +93,27 @@ public class EventConfServiceHelper {
     public static void requireUei(final Event event) {
         if (event.getUei() == null || event.getUei().isBlank()) {
             throw new IllegalArgumentException("Event 'uei' is required");
+        }
+    }
+
+    /**
+     * Rejects a list of event definitions if any of them has no UEI, naming every such event by its
+     * 1-based position in the list and, when it has one, its event-label, so a whole file can be fixed
+     * after one failed upload.
+     *
+     * @throws IllegalArgumentException if any UEI is null or blank
+     */
+    private static void requireUeis(final List<Event> events) {
+        final List<String> missing = new ArrayList<>();
+        for (int i = 0; i < events.size(); i++) {
+            final Event event = events.get(i);
+            if (event.getUei() == null || event.getUei().isBlank()) {
+                final String label = event.getEventLabel();
+                missing.add("#" + (i + 1) + (label == null || label.isBlank() ? "" : " (event-label '" + label + "')"));
+            }
+        }
+        if (!missing.isEmpty()) {
+            throw new IllegalArgumentException("Events with no 'uei', by position: " + String.join(", ", missing));
         }
     }
 
@@ -191,7 +213,7 @@ public class EventConfServiceHelper {
                                                                       String username,
                                                                       Date timestamp,
                                                                       int startOrder) {
-        events.forEach(EventConfServiceHelper::requireUei);
+        requireUeis(events);
         final AtomicInteger nextOrder = new AtomicInteger(startOrder);
         return events.stream().map(parsed -> {
             EventConfEvent event = new EventConfEvent();

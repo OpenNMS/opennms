@@ -43,9 +43,15 @@ import org.opennms.netmgt.xml.eventconf.Event;
 public class EventConfServiceHelperUeiTest {
 
     private static Event parse(final String ueiElementContent) {
+        return parse(ueiElementContent, "L");
+    }
+
+    /** {@code label} null leaves out the event-label element. */
+    private static Event parse(final String ueiElementContent, final String label) {
         return JaxbUtils.unmarshal(Event.class, "<event xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">"
                 + "<uei>" + ueiElementContent + "</uei>"
-                + "<event-label>L</event-label><descr>d</descr><severity>Normal</severity></event>");
+                + (label == null ? "" : "<event-label>" + label + "</event-label>")
+                + "<descr>d</descr><severity>Normal</severity></event>");
     }
 
     @Test
@@ -69,6 +75,20 @@ public class EventConfServiceHelperUeiTest {
         final List<Event> events = List.of(parse("uei.opennms.org/ok"), parse(" \n "));
         assertThrows(IllegalArgumentException.class,
                 () -> EventConfServiceHelper.createEventConfEventEntities(new EventConfSource(), events, "u", new Date(), 1));
+    }
+
+    @Test
+    public void createEntitiesNamesEveryEventWithoutUei() {
+        final List<Event> events = List.of(
+                parse("uei.opennms.org/ok/1"),
+                parse(" \n ", "Foo Down"),
+                parse("uei.opennms.org/ok/2"),
+                parse("", null),
+                parse("  ", "Bar Up"));
+        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> EventConfServiceHelper.createEventConfEventEntities(new EventConfSource(), events, "u", new Date(), 1));
+        assertEquals("Events with no 'uei', by position: #2 (event-label 'Foo Down'), #4, #5 (event-label 'Bar Up')",
+                e.getMessage());
     }
 
     @Test
