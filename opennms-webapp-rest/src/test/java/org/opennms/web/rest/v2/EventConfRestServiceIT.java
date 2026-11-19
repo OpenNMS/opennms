@@ -1829,6 +1829,88 @@ public class EventConfRestServiceIT {
         assertNotNull(eventConfEventDao.findByUei("uei.opennms.org/test/upload/good"));
     }
 
+    /** Asserts the column and xml_content of the stored definition both hold {@code uei}, trimmed. */
+    private EventConfEvent assertStoredTrimmed(final String uei) {
+        final EventConfEvent stored = eventConfEventDao.findByUei(uei);
+        assertNotNull("no event stored under the trimmed UEI " + uei, stored);
+        assertEquals(uei, stored.getUei());
+        assertTrue(stored.getXmlContent(), stored.getXmlContent().contains("<uei>" + uei + "</uei>"));
+        return stored;
+    }
+
+    private static String padded(final String uei) {
+        return "\n   " + uei + "\n";
+    }
+
+    @Test
+    @Transactional
+    public void testUpload_PaddedUei_StoredTrimmed() throws Exception {
+        final String uei = "uei.opennms.org/test/padded/upload";
+        final Response resp = eventConfRestApi.uploadEventConfFiles(
+                List.of(inlineAttachment("padded-upload.events.xml", eventsFile(padded(uei)))), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        flushAndClear();
+        assertStoredTrimmed(uei);
+
+        // an event sent with the trimmed UEI finds the definition
+        EventConfServiceHelper.reloadEventsFromDB(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
+        assertNotNull(eventConfDao.findByUei(uei));
+    }
+
+    @Test
+    @Transactional
+    public void testAdd_PaddedUei_StoredTrimmed() throws Exception {
+        final EventConfSource source = createSource("padded-add.events", eventConfSourceDao.nextFileOrder());
+        flushAndClear();
+        final String uei = "uei.opennms.org/test/padded/add";
+        final Response resp = eventConfRestApi.addEventConfSourceEvent(source.getId(),
+                eventDef(padded(uei), "Padded add", "Normal", "d"), securityContext);
+        assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
+        flushAndClear();
+        assertStoredTrimmed(uei);
+    }
+
+    @Test
+    @Transactional
+    public void testUpsert_PaddedUeiMatchesExistingTrimmed() throws Exception {
+        final EventConfSource source = createSource("padded-upsert.events", eventConfSourceDao.nextFileOrder());
+        flushAndClear();
+        final String uei = "uei.opennms.org/test/padded/upsert";
+
+        Response resp = eventConfRestApi.upsertEventConfSourceEvent(source.getId(),
+                maskedEventDef(padded(uei), "1", "Padded upsert", "Warning", "d"), securityContext);
+        assertEquals("created", upsertBody(resp).get("outcome"));
+        final Long id = (Long) upsertBody(resp).get("id");
+        flushAndClear();
+        assertStoredTrimmed(uei);
+
+        // the same padded definition again is the stored one, not a new event
+        resp = eventConfRestApi.upsertEventConfSourceEvent(source.getId(),
+                maskedEventDef(padded(uei), "1", "Padded upsert", "Warning", "d"), securityContext);
+        assertEquals("unchanged", upsertBody(resp).get("outcome"));
+        assertEquals(id, upsertBody(resp).get("id"));
+    }
+
+    @Test
+    @Transactional
+    public void testEdit_PaddedUei_StoredTrimmed() throws Exception {
+        final EventConfSource source = createSource("padded-edit.events", eventConfSourceDao.nextFileOrder());
+        flushAndClear();
+        final String original = "uei.opennms.org/test/padded/edit-original";
+        eventConfRestApi.addEventConfSourceEvent(source.getId(), eventDef(original, "Original", "Normal", "d"), securityContext);
+        flushAndClear();
+        final Long eventId = eventConfEventDao.findByUei(original).getId();
+
+        final String uei = "uei.opennms.org/test/padded/edit";
+        final EventConfEventEditRequest payload = new EventConfEventEditRequest();
+        payload.setEnabled(true);
+        payload.setEvent(eventDef(padded(uei), "Edited", "Normal", "d"));
+        assertEquals(Response.Status.OK.getStatusCode(),
+                eventConfRestApi.updateEventConfEvent(source.getId(), eventId, payload, securityContext).getStatus());
+        flushAndClear();
+        assertEquals(eventId, assertStoredTrimmed(uei).getId());
+    }
+
     @Test
     @Transactional
     public void testGetEventsByUei_PaddedQueryParam() throws Exception {
