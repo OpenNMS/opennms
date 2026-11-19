@@ -113,6 +113,26 @@ public class EventConfExtensionManagerTest {
     }
 
     @Test
+    public void pluginEventUeiIsTrimmed() {
+        EventConfExtensionManager eventConfExtensionMgr = new EventConfExtensionManager(mock(EventConfDao.class),
+                mock(EventConfSourceDao.class), mock(EventConfEventDao.class), mock(EventConfGlobalSecurityDao.class),
+                mock(SessionUtils.class));
+
+        EventConfExtension ext = mock(EventConfExtension.class);
+        EventDefinition def = mock(EventDefinition.class);
+        when(def.getUei()).thenReturn("  uei/padded \n");
+        when(def.getLabel()).thenReturn("Padded");
+        when(def.getSeverity()).thenReturn(Severity.NORMAL);
+        when(def.getLogMessage()).thenReturn(mock(LogMessage.class));
+        when(ext.getEventDefinitions()).thenReturn(Collections.singletonList(def));
+        eventConfExtensionMgr.onBind(ext, new HashMap());
+
+        Events events = eventConfExtensionMgr.getObject();
+        assertThat(events.getEvents(), hasSize(1));
+        assertThat(events.getEvents().get(0).getUei(), equalTo("uei/padded"));
+    }
+
+    @Test
     public void canPreserveEventNumberAndOrdering() {
         String ueiBase = "uei.opennms.org/test/VoluminousEventConfExtension/";
         EventConfDao eventConfDao = mock(EventConfDao.class);

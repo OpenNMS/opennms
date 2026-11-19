@@ -205,7 +205,8 @@ public class Event implements Serializable, Comparable<Event> {
     }
 
     public void setUei(final String uei) {
-        m_uei = ConfigUtils.assertNotEmpty(uei, "uei").intern();
+        // whitespace around a UEI is never part of it (parsing trims it through the package's StringTrimAdapter)
+        m_uei = ConfigUtils.assertNotEmpty(uei == null ? null : uei.trim(), "uei").intern();
     }
 
     public Integer getPriority() {
