@@ -49,6 +49,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({}) 
+@SuppressWarnings("removal") // tests a deprecated pinger; remove along with it
 public class Jni6PingIT {
 
     static private Jni6Pinger s_jniPinger = new Jni6Pinger();
