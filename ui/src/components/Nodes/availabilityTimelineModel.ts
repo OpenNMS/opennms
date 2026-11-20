@@ -73,6 +73,11 @@ export interface TimelineServiceRow {
    * -1 to one that is not managed; null when the server has no status for it.
    */
   status?: string | null
+  /**
+   * A managed service with a current outage (the server's `up` is false): down now, whatever the
+   * window shows. False when the server does not say.
+   */
+  down: boolean
   segments: TimelineSegment[]
 }
 
@@ -211,6 +216,7 @@ export const buildTimelineModel = (
           ipAddress: iface.address,
           availability: service.availability,
           status: service.status,
+          down: service.up === false,
           segments: segmentsByService.get(service.id) ?? []
         }))
         .sort((a, b) => a.serviceName.localeCompare(b.serviceName))
@@ -351,6 +357,13 @@ const hasStatus = (row: TimelineServiceRow): row is TimelineServiceRow & { statu
  */
 export const isServiceMonitored = (row: TimelineServiceRow): boolean =>
   isMonitored(row.availability) && (!hasStatus(row) || row.status === 'A')
+
+/**
+ * The service link's accessible name and title. A service that is down now says so, as its red name
+ * does, so that colour is not the only sign.
+ */
+export const serviceLinkLabel = (row: TimelineServiceRow): string =>
+  row.down ? `${row.serviceName}, down now` : row.serviceName
 
 /** As formatAvailability, but a service that is not managed says why it has no figure. */
 export const serviceAvailabilityText = (row: TimelineServiceRow): string =>

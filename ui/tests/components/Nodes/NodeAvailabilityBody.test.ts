@@ -46,6 +46,7 @@ const model = (over: Partial<TimelineModel> = {}): TimelineModel => ({
       serviceName: 'ICMP',
       ipAddress: '192.168.1.1',
       availability: 98.5,
+      down: false,
       segments: []
     }]
   }],

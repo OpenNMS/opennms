@@ -37,6 +37,7 @@ import {
   segmentFor,
   serviceAvailabilityClass,
   serviceAvailabilityText,
+  serviceLinkLabel,
   unmonitoredPercent,
   TimelineInterfaceGroup,
   TimelineModel,
@@ -338,6 +339,7 @@ describe('segmentDescription', () => {
     serviceName: 'SNMP',
     ipAddress: '192.168.1.1',
     availability: 97,
+    down: false,
     segments: []
   }
 
@@ -410,7 +412,7 @@ describe('availability text for a level with nothing monitored', () => {
    */
   const service = (availability: number) => ({
     ifServiceId: 1, serviceId: 1, serviceName: 'ICMP', ipAddress: '10.0.0.1',
-    availability, segments: []
+    availability, down: false, segments: []
   })
   const group = (...avails: number[]) => ({
     ipInterfaceId: 1, ipAddress: '10.0.0.1', availability: 100,
@@ -486,6 +488,7 @@ describe('limitTimelineRows', () => {
       serviceName: `SVC${i}`,
       ipAddress: `10.0.0.${id}`,
       availability: 100,
+      down: false,
       segments: []
     }))
   })
@@ -555,6 +558,7 @@ describe('availability status and thresholds', () => {
     serviceName: 'ICMP',
     ipAddress: '10.0.0.1',
     availability: 99.5,
+    down: false,
     segments: [],
     ...over
   })
@@ -695,6 +699,28 @@ describe('availability status and thresholds', () => {
       expect(group.isManaged).toBeUndefined()
       expect(interfaceAvailabilityText(group)).toBe('99%')
       expect(interfaceAvailabilityClass(group, thresholds)).toBe('warning')
+    })
+  })
+
+  // The JSP showed the name of a managed service with a current outage in red. `up` is false for
+  // exactly that service.
+  describe('service down now', () => {
+    it.each([
+      [false, true],
+      [true, false],
+      [undefined, false]
+    ])('marks a service with up %s as down: %s', (up, down) => {
+      const model = buildTimelineModel(doc({}, up === undefined ? {} : { up }), null, WINDOW)
+
+      expect(model.interfaces[0]!.services[0]!.down).toBe(down)
+    })
+
+    it('says down now in the link label of a service that is down', () => {
+      expect(serviceLinkLabel(row({ down: true }))).toBe('ICMP, down now')
+    })
+
+    it('is the service name for a service that is not down', () => {
+      expect(serviceLinkLabel(row())).toBe('ICMP')
     })
   })
 

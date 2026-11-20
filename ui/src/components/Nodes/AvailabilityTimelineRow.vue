@@ -8,11 +8,25 @@
       scope="row"
       class="col-label"
     >
-      <a
-        :href="serviceHref"
-        class="service-link"
-        :title="row.serviceName"
-      >{{ row.serviceName }}</a>
+      <div class="service-label">
+        <!-- Hidden from assistive technology: the link's name already says "down now". -->
+        <SeverityIcon
+          v-if="row.down"
+          severity="critical"
+          size="small"
+          aria-hidden="true"
+          data-test="service-down-icon"
+        />
+        <a
+          :href="serviceHref"
+          class="service-link"
+          :class="{ 'service-link--down': row.down }"
+          :title="serviceLinkLabel(row)"
+          :aria-label="row.down ? serviceLinkLabel(row) : undefined"
+          :data-down="row.down ? 'true' : undefined"
+          data-test="timeline-service-link"
+        >{{ row.serviceName }}</a>
+      </div>
     </th>
     <td>
       <div
@@ -62,12 +76,14 @@
 import { computed } from 'vue'
 import { outageDetailLink, serviceLink } from '@/lib/linkUtils'
 import AvailabilityBadge from './AvailabilityBadge.vue'
+import SeverityIcon from '@/components/Common/SeverityIcon.vue'
 import {
   AvailabilityThresholds,
   isServiceMonitored,
   segmentDescription,
   serviceAvailabilityClass,
   serviceAvailabilityText,
+  serviceLinkLabel,
   TimelineServiceRow
 } from '@/components/Nodes/availabilityTimelineModel'
 import { TimelineTick } from './availabilityTimelineAxis'
@@ -100,13 +116,34 @@ const monitored = computed(() => isServiceMonitored(props.row))
 }
 
 // Indented under its interface's heading. A margin, not padding, so the indent is not part of the
-// link; the name still truncates within the narrower width.
+// link; the name still truncates within the narrower width, after the icon of a service that is down.
+.service-label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 1em;
+  min-width: 0;
+}
+
 .service-link {
   display: block;
-  margin-left: 1em;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+// Down now: the red the legacy page gave the name (severity-Critical), as the critical icon before
+// it. The token is a red in both themes; --onms-error is a pink in the dark one.
+.service-link--down {
+  color: var(--onms-severity-critical-bg);
+}
+
+// The small icon is 20px. A negative block margin lets it overhang the line by 2px at top and
+// bottom rather than push the row taller than the 1rem strip, so a down service's row keeps the
+// height of the others. Its root takes this component's scope, so no :deep() is needed.
+.service-label > .severity-icon {
+  margin-block: -2px;
 }
 
 .col-pct {
