@@ -57,3 +57,12 @@ const onPage = (event: { page: number, first: number, rows: number, pageCount?: 
   emit('page', { page: event.page, first: event.first, rows: event.rows, pageCount: event.pageCount })
 }
 </script>
+
+<style lang="scss" scoped>
+// PrimeVue gives the page report no spacing of its own -- only the paginator's 0.25rem gap, which
+// suits the buttons but sets the text hard against the rows-per-page dropdown. Space just the report
+// rather than the paginator.gap token, which would loosen every control in every paginator.
+:deep(.p-paginator-current) {
+  margin-inline-start: var(--onms-spacing-xxs);
+}
+</style>
