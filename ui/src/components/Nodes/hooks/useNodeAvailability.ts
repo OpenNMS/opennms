@@ -125,11 +125,15 @@ export const useNodeAvailability = (
     return { limit, offset, withServices: true }
   }
 
+  // The totals go too: the page's paginator shows while totalInterfaces > 0, and kept, it showed the
+  // last good answer's numbers beside the error. The range picker stays to try again.
   const fail = () => {
     loadFailed.value = true
     outagesCached = false
     availability.value = undefined
     timeline.value = null
+    totalInterfaces.value = 0
+    totalServices.value = 0
   }
 
   const applyRoster = (avail: NodeAvailability) => {

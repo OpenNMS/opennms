@@ -405,6 +405,23 @@ describe('useNodeAvailability', () => {
     expect(result.model.value).toBeUndefined()
   })
 
+  // The page's paginator shows while totalInterfaces > 0. Kept after a failure, it showed the last
+  // good answer's numbers beside the error.
+  it('a failure resets the totals', async () => {
+    getAvailability.mockResolvedValueOnce(availabilityDoc({ ipinterfaceCount: 12, 'service-count': 30 }))
+    wrapper = mountHost()
+    await flushPromises()
+    expect(result.totalInterfaces.value).toBe(12)
+
+    getAvailability.mockResolvedValueOnce(false)
+    await wrapper.setProps({ offset: 4 })
+    await flushPromises()
+
+    expect(result.loadFailed.value).toBe(true)
+    expect(result.totalInterfaces.value).toBe(0)
+    expect(result.totalServices.value).toBe(0)
+  })
+
   // With nothing cached for the node and range, a roster alone would be joined to no outages.
   it('refetches both on a page change after a failed load', async () => {
     getTimeline.mockResolvedValueOnce(null)
