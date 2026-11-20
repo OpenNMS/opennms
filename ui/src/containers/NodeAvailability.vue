@@ -1,0 +1,95 @@
+<template>
+  <div class="onms-node-availability">
+    <div class="onms-row">
+      <div class="onms-col-12">
+        <BreadCrumbs :items="items" />
+      </div>
+    </div>
+    <div class="header">
+      <h2>{{ heading }}</h2>
+    </div>
+    <p
+      v-if="pageState === 'resolving'"
+      data-test="node-availability-resolving"
+    >
+      Looking up node {{ lookupValue }}…
+    </p>
+    <NodeLookupMessage
+      v-else-if="pageState === 'invalid' || pageState === 'notFound' || pageState === 'error'"
+      :state="pageState"
+      :value="lookupValue"
+      :route-for="nodeAvailabilityRoute"
+      @retry="followRoute"
+    />
+    <!--
+      getNodeById clears nodeLoaded before its first await, so another node removes this panel and
+      mounts a new one: each node starts at its first page with the default page size.
+    -->
+    <NodeAvailabilityPanel
+      v-else-if="nodeStore.nodeLoaded"
+      :node="nodeStore.node"
+      :base-href="baseHref"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import NodeAvailabilityPanel from '@/components/Nodes/Availability/NodeAvailabilityPanel.vue'
+import NodeLookupMessage from '@/components/Nodes/NodeLookupMessage.vue'
+import { useNodeRouteResolution } from '@/components/Nodes/hooks/useNodeRouteResolution'
+import { nodeAvailabilityRoute, nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
+import { useMenuStore } from '@/stores/menuStore'
+import { useNodeStore } from '@/stores/nodeStore'
+import { BreadCrumb, Node } from '@/types'
+
+const menuStore = useMenuStore()
+const nodeStore = useNodeStore()
+const router = useRouter()
+
+const props = defineProps({
+  id: {
+    type: String
+  }
+})
+
+const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
+
+// The node is loaded for its label only: the panel fetches its availability by id.
+const loadNode = (id: string) => nodeStore.getNodeById({ id } as Node)
+
+// A foreign id is resolved and replaced with the node id on this page, not on Node Details.
+const { lookupValue, pageState, followRoute } = useNodeRouteResolution(() => props.id ?? '', nodeAvailabilityRoute, loadNode)
+
+const heading = computed<string>(() => {
+  if (pageState.value !== 'node') {
+    return 'Availability'
+  }
+
+  // The store starts with an empty node object, so the label is what says the fetch has landed.
+  const node = nodeStore.node
+
+  return node?.label ? `Availability for ${node.label} (ID: ${node.id})` : 'Availability for'
+})
+
+const items = computed<BreadCrumb[]>(() => [
+  { label: 'Home', to: menuStore.mainMenu.homeUrl, isAbsoluteLink: true },
+  { label: 'Nodes', to: '/nodes' },
+  // BreadCrumb takes a path, so the route is resolved to one: nodeDetailsRoute owns its shape. An
+  // empty id cannot fill the route's param, and has no node to go back to.
+  { label: 'Node Details', to: lookupValue.value ? router.resolve(nodeDetailsRoute(lookupValue.value)).fullPath : '/nodes' },
+  { label: 'Availability', to: '#', position: 'last' }
+])
+</script>
+
+<style lang="scss" scoped>
+.onms-node-availability {
+  padding: 1.5em;
+
+  .header {
+    margin-bottom: 1.25em;
+  }
+}
+</style>

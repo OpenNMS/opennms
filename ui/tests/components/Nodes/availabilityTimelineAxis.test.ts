@@ -27,7 +27,7 @@ import {
   chooseTickStep,
   MAX_TICKS,
   tickEdgeClass
-} from '@/components/Nodes/NodeDetails/availabilityTimelineAxis'
+} from '@/components/Nodes/availabilityTimelineAxis'
 import { TIME_RANGE_OPTIONS } from '@/components/Common/utils/timeRangeOptions'
 import { TimelineWindow } from '@/components/Nodes/availabilityTimelineModel'
 

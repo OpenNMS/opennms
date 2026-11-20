@@ -99,7 +99,7 @@ import { snmpInterfaceLink } from '@/lib/linkUtils'
 import { getFlowGraphUrl } from '@/services/flowService'
 import useSnackbar from '@/composables/useSnackbar'
 import { useDebouncedSearch } from './hooks/useDebouncedSearch'
-import { useDelayedLoading } from './hooks/useDelayedLoading'
+import { useDelayedLoading } from '@/components/Nodes/hooks/useDelayedLoading'
 import useActiveNodeId from './hooks/useActiveNodeId'
 import {
   formatIfSpeed,

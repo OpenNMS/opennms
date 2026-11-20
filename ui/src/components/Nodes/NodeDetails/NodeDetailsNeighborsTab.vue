@@ -80,7 +80,7 @@ import { computed, ref, watch } from 'vue'
 import { useEnlinkdStore } from '@/stores/enlinkdStore'
 import { NodeEnlinkdElements } from '@/types/enlinkd'
 import NodeDetailsFieldList from './NodeDetailsFieldList.vue'
-import NodeDetailsPanel from './NodeDetailsPanel.vue'
+import NodeDetailsPanel from '@/components/Nodes/NodeDetailsPanel.vue'
 import { BridgeGroup, bridgeGroup, cdpFields, isisFields, lldpFields, ospfFields } from './nodeEnlinkdFields'
 import useActiveNodeId from './hooks/useActiveNodeId'
 

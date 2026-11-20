@@ -22,15 +22,22 @@
 
 import { describe, expect, it, vi } from 'vitest'
 import {
+  availabilityClass,
   buildTimelineModel,
   formatAvailability,
   formatCompactDuration,
+  interfaceAvailabilityClass,
   interfaceAvailabilityText,
   isMonitored,
+  isServiceMonitored,
   limitTimelineRows,
+  nodeAvailabilityClass,
   nodeAvailabilityText,
   segmentDescription,
   segmentFor,
+  serviceAvailabilityClass,
+  serviceAvailabilityText,
+  serviceLinkLabel,
   unmonitoredPercent,
   TimelineInterfaceGroup,
   TimelineModel,
@@ -332,6 +339,7 @@ describe('segmentDescription', () => {
     serviceName: 'SNMP',
     ipAddress: '192.168.1.1',
     availability: 97,
+    down: false,
     segments: []
   }
 
@@ -404,7 +412,7 @@ describe('availability text for a level with nothing monitored', () => {
    */
   const service = (availability: number) => ({
     ifServiceId: 1, serviceId: 1, serviceName: 'ICMP', ipAddress: '10.0.0.1',
-    availability, segments: []
+    availability, down: false, segments: []
   })
   const group = (...avails: number[]) => ({
     ipInterfaceId: 1, ipAddress: '10.0.0.1', availability: 100,
@@ -480,6 +488,7 @@ describe('limitTimelineRows', () => {
       serviceName: `SVC${i}`,
       ipAddress: `10.0.0.${id}`,
       availability: 100,
+      down: false,
       segments: []
     }))
   })
@@ -523,5 +532,267 @@ describe('limitTimelineRows', () => {
 
     expect(limited.availability).toBe(99)
     expect(limited.monitored).toBe(true)
+  })
+})
+
+describe('availability status and thresholds', () => {
+  const thresholds = { normal: 99.99, warning: 97 }
+
+  const doc = (over: Partial<NodeAvailability> = {}, serviceOver: Record<string, unknown> = {}): NodeAvailability => ({
+    id: 1,
+    availability: 99,
+    'service-count': 1,
+    'service-down-count': 0,
+    ipinterfaces: [{
+      id: 5,
+      address: '10.0.0.1',
+      availability: 99,
+      services: [{ id: 11, name: 'ICMP', serviceId: 1, availability: 99, ...serviceOver }]
+    }],
+    ...over
+  })
+
+  const row = (over: Partial<TimelineServiceRow> = {}): TimelineServiceRow => ({
+    ifServiceId: 11,
+    serviceId: 1,
+    serviceName: 'ICMP',
+    ipAddress: '10.0.0.1',
+    availability: 99.5,
+    down: false,
+    segments: [],
+    ...over
+  })
+
+  describe('availabilityClass', () => {
+    it.each([
+      [99.99, 'normal'],
+      [99.989, 'warning'],
+      [97, 'warning'],
+      [96.99, 'critical']
+    ])('classes %s as %s', (value, expected) => {
+      expect(availabilityClass(value, thresholds)).toBe(expected)
+    })
+
+    it('has no class for a figure that could not be computed', () => {
+      expect(availabilityClass(-1, thresholds)).toBeUndefined()
+    })
+
+    it('has no class without thresholds', () => {
+      expect(availabilityClass(99.5)).toBeUndefined()
+    })
+  })
+
+  describe('node monitored', () => {
+    it('is false for a managed service count of 0, whatever the page holds', () => {
+      const model = buildTimelineModel(doc({ 'managed-service-count': 0 }), null, WINDOW)
+      expect(model.monitored).toBe(false)
+      expect(nodeAvailabilityText(model)).toBe('Unmanaged')
+    })
+
+    it('is true for a positive count even when the page has no figures', () => {
+      const model = buildTimelineModel(doc({ 'managed-service-count': 3 }, { availability: -1 }), null, WINDOW)
+      expect(model.monitored).toBe(true)
+    })
+
+    it('falls back to the page when the count is absent', () => {
+      expect(buildTimelineModel(doc(), null, WINDOW).monitored).toBe(true)
+      expect(buildTimelineModel(doc({}, { availability: -1 }), null, WINDOW).monitored).toBe(false)
+    })
+  })
+
+  describe('thresholds', () => {
+    it('are set when both are present', () => {
+      const model = buildTimelineModel(doc({ 'normal-threshold': 99.99, 'warning-threshold': 97 }), null, WINDOW)
+      expect(model.thresholds).toEqual(thresholds)
+    })
+
+    it.each([
+      [{ 'normal-threshold': 99.99 }],
+      [{ 'warning-threshold': 97 }]
+    ])('are absent when one is missing (%o)', (over) => {
+      expect(buildTimelineModel(doc(over), null, WINDOW).thresholds).toBeUndefined()
+    })
+  })
+
+  describe('service status', () => {
+    it('is copied into each row', () => {
+      const model = buildTimelineModel(doc({}, { status: 'F', availability: -1 }), null, WINDOW)
+      expect(model.interfaces[0]!.services[0]!.status).toBe('F')
+    })
+
+    it('reads a non-managed status as its label', () => {
+      expect(serviceAvailabilityText(row({ availability: -1, status: 'F' }))).toBe('Forced Unmanaged')
+    })
+
+    it('reads no status and no figure as Not Monitored', () => {
+      expect(serviceAvailabilityText(row({ availability: -1 }))).toBe('Not Monitored')
+    })
+
+    it('reads a managed service as its figure', () => {
+      expect(serviceAvailabilityText(row({ status: 'A' }))).toBe('99.5%')
+    })
+
+    // The availability resource's -1: managed, but no figure could be computed.
+    it('reads a managed service with no figure as Not Monitored, with no class', () => {
+      const managedNoFigure = row({ status: 'A', availability: -1 })
+
+      expect(serviceAvailabilityText(managedNoFigure)).toBe('Not Monitored')
+      expect(serviceAvailabilityClass(managedNoFigure, thresholds)).toBeUndefined()
+    })
+
+    it('names an undefined code', () => {
+      expect(serviceAvailabilityText(row({ availability: -1, status: 'Q' }))).toBe('Unknown (Q)')
+    })
+
+    it('is monitored only with a figure and a status that is absent or A', () => {
+      expect(isServiceMonitored(row())).toBe(true)
+      expect(isServiceMonitored(row({ status: 'A' }))).toBe(true)
+      expect(isServiceMonitored(row({ status: 'F' }))).toBe(false)
+      expect(isServiceMonitored(row({ availability: -1 }))).toBe(false)
+    })
+  })
+
+  // The JSP showed an interface that is not managed as one row with its status, for example
+  // 'Forced Unmanaged'. Its figure is -1 then, which alone would read 'Not Monitored'.
+  describe('interface is-managed', () => {
+    const groupFor = (ifaceOver: Record<string, unknown>, serviceOver: Record<string, unknown> = {}) => {
+      const ipinterfaces = doc({}, serviceOver).ipinterfaces.map(iface => ({ ...iface, ...ifaceOver }))
+      return buildTimelineModel(doc({ ipinterfaces }), null, WINDOW).interfaces[0]!
+    }
+
+    it('is copied into the group', () => {
+      expect(groupFor({ 'is-managed': 'F' }).isManaged).toBe('F')
+    })
+
+    it.each([
+      ['F', 'Forced Unmanaged'],
+      ['U', 'Unmanaged'],
+      ['D', 'Deleted'],
+      ['Q', 'Unknown (Q)']
+    ])('reads an interface with code %s as %s, with no class', (code, label) => {
+      const group = groupFor({ 'is-managed': code })
+
+      expect(interfaceAvailabilityText(group)).toBe(label)
+      expect(interfaceAvailabilityClass(group, thresholds)).toBeUndefined()
+    })
+
+    it('reads a managed interface as its figure', () => {
+      const group = groupFor({ 'is-managed': 'M' })
+
+      expect(interfaceAvailabilityText(group)).toBe('99%')
+      expect(interfaceAvailabilityClass(group, thresholds)).toBe('warning')
+    })
+
+    it('reads a managed interface with nothing monitored as Not Monitored', () => {
+      const group = groupFor({ 'is-managed': 'M' }, { availability: -1 })
+
+      expect(interfaceAvailabilityText(group)).toBe('Not Monitored')
+    })
+
+    // null from the JSON provider, absent from an older server: the figure alone decides, as before.
+    it.each([
+      ['null', { 'is-managed': null }],
+      ['absent', {}]
+    ])('lets the figure decide when the code is %s', (_, ifaceOver) => {
+      const group = groupFor(ifaceOver)
+
+      expect(group.isManaged).toBeUndefined()
+      expect(interfaceAvailabilityText(group)).toBe('99%')
+      expect(interfaceAvailabilityClass(group, thresholds)).toBe('warning')
+    })
+  })
+
+  // The JSP showed the name of a managed service with a current outage in red. `up` is false for
+  // exactly that service.
+  describe('service down now', () => {
+    it.each([
+      [false, true],
+      [true, false],
+      [undefined, false]
+    ])('marks a service with up %s as down: %s', (up, down) => {
+      const model = buildTimelineModel(doc({}, up === undefined ? {} : { up }), null, WINDOW)
+
+      expect(model.interfaces[0]!.services[0]!.down).toBe(down)
+    })
+
+    it('says down now in the link label of a service that is down', () => {
+      expect(serviceLinkLabel(row({ down: true }))).toBe('ICMP, down now')
+    })
+
+    it('is the service name for a service that is not down', () => {
+      expect(serviceLinkLabel(row())).toBe('ICMP')
+    })
+  })
+
+  describe('class functions', () => {
+    it('class a figure that is shown as a percentage', () => {
+      const model = buildTimelineModel(doc({ 'normal-threshold': 99.99, 'warning-threshold': 97 }), null, WINDOW)
+      expect(serviceAvailabilityClass(row({ availability: 98 }), thresholds)).toBe('warning')
+      expect(interfaceAvailabilityClass(model.interfaces[0]!, thresholds)).toBe('warning')
+      expect(nodeAvailabilityClass(model)).toBe('warning')
+    })
+
+    it('have no class where the text is not a percentage', () => {
+      const unmanaged = row({ availability: 99.5, status: 'U' })
+      expect(serviceAvailabilityClass(unmanaged, thresholds)).toBeUndefined()
+
+      const model = buildTimelineModel(
+        doc({ 'managed-service-count': 0, 'normal-threshold': 99.99, 'warning-threshold': 97 }), null, WINDOW)
+      expect(nodeAvailabilityClass(model)).toBeUndefined()
+      expect(interfaceAvailabilityClass({ ...model.interfaces[0]!, monitored: false }, thresholds)).toBeUndefined()
+    })
+  })
+
+  // The v1 JSON provider writes an unset attribute as null rather than leaving it out, so an
+  // undefined category sends null thresholds. `value >= null` is true, which made every badge normal.
+  describe('null fields, as the JSON provider sends them', () => {
+    const nulls = {
+      'normal-threshold': null,
+      'warning-threshold': null,
+      'managed-service-count': null
+    }
+
+    it('builds a model with no thresholds and no classes', () => {
+      const model = buildTimelineModel(doc(nulls), null, WINDOW)
+      const group = model.interfaces[0]!
+      const service = group.services[0]!
+
+      expect(model.thresholds).toBeUndefined()
+      expect(nodeAvailabilityClass(model)).toBeUndefined()
+      expect(interfaceAvailabilityClass(group, model.thresholds)).toBeUndefined()
+      expect(serviceAvailabilityClass(service, model.thresholds)).toBeUndefined()
+    })
+
+    it('has no thresholds when only one of them is null', () => {
+      expect(buildTimelineModel(doc({ 'normal-threshold': 99.99, 'warning-threshold': null }), null, WINDOW).thresholds).toBeUndefined()
+      expect(buildTimelineModel(doc({ 'normal-threshold': null, 'warning-threshold': 97 }), null, WINDOW).thresholds).toBeUndefined()
+    })
+
+    it('decides whether the node is monitored from the page when the count is null', () => {
+      expect(buildTimelineModel(doc(nulls), null, WINDOW).monitored).toBe(true)
+      expect(buildTimelineModel(doc(nulls, { availability: -1 }), null, WINDOW).monitored).toBe(false)
+    })
+
+    it('reads a null service status as no status', () => {
+      const model = buildTimelineModel(doc({}, { status: null }), null, WINDOW)
+      const service = model.interfaces[0]!.services[0]!
+
+      expect(isServiceMonitored(service)).toBe(true)
+      expect(serviceAvailabilityText(service)).toBe('99%')
+    })
+  })
+
+  describe('older server without status, thresholds or count', () => {
+    it('builds a model with no thresholds and no classes', () => {
+      const model = buildTimelineModel(doc(), null, WINDOW)
+      const group = model.interfaces[0]!
+      const service = group.services[0]!
+
+      expect(model.thresholds).toBeUndefined()
+      expect(service.status).toBeUndefined()
+      expect(nodeAvailabilityClass(model)).toBeUndefined()
+      expect(interfaceAvailabilityClass(group, model.thresholds)).toBeUndefined()
+      expect(serviceAvailabilityClass(service, model.thresholds)).toBeUndefined()
+    })
   })
 })

@@ -1,5 +1,5 @@
 // ui/tests/components/Nodes/NodeDetailsPanel.test.ts
-import NodeDetailsPanel from '@/components/Nodes/NodeDetails/NodeDetailsPanel.vue'
+import NodeDetailsPanel from '@/components/Nodes/NodeDetailsPanel.vue'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 
