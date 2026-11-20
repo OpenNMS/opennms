@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import {
   createThresholdGroup,
   createThreshdPackage,
@@ -49,6 +49,10 @@ const threshdPackage = (overrides: Partial<ThreshdPackage> = {}): ThreshdPackage
 describe('thresholdConfigurationService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   describe('reads', () => {
@@ -159,6 +163,7 @@ describe('thresholdConfigurationService', () => {
 
   describe('failures', () => {
     test('surfaces the server message verbatim instead of throwing', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       // The server explains exactly which rule failed; flattening that to a generic message would make the
       // 400 undiagnosable from the UI.
       const axiosError = Object.assign(new Error('Request failed'), {
@@ -171,9 +176,11 @@ describe('thresholdConfigurationService', () => {
 
       expect(result.success).toBe(false)
       expect(result.message).toContain('longer than 19 characters')
+      expect(consoleError).toHaveBeenCalled()
     })
 
     test('passes the HTTP status on, so a 412 can be told apart from an invalid change', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       const axiosError = Object.assign(new Error('Request failed'), {
         isAxiosError: true,
         response: { status: 412, data: 'Threshold group \'mib2\' has changed since it was read.' }
@@ -184,9 +191,11 @@ describe('thresholdConfigurationService', () => {
 
       expect(result.success).toBe(false)
       expect(result.status).toBe(412)
+      expect(consoleError).toHaveBeenCalled()
     })
 
     test('falls back to a descriptive message for a non-axios failure', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.get).mockRejectedValue(new Error(''))
 
       const result = await getThresholdGroup('mib2')
@@ -194,12 +203,15 @@ describe('thresholdConfigurationService', () => {
       expect(result.success).toBe(false)
       expect(result.message).toContain('Failed to retrieve threshold group \'mib2\'.')
       expect(result.payload).toBeUndefined()
+      expect(consoleError).toHaveBeenCalled()
     })
 
     test('returns false from a failed download rather than rejecting', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.get).mockRejectedValue(new Error('boom'))
 
       await expect(downloadThresholdingConfiguration(true)).resolves.toBe(false)
+      expect(consoleError).toHaveBeenCalled()
     })
 
     test('requests the right format on download', async () => {

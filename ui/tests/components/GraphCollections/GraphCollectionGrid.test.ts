@@ -163,7 +163,9 @@ describe('GraphCollectionGrid.vue', () => {
     const canvas = before.attributes('data-canvas')
     await wrapper.setProps({ collection: collection([graph(0, { start: END - 2 * DAY }), adhoc(1, { start: END - 2 * DAY })]) })
     const after = wrapper.findComponent(AdhocStub)
-    expect(after.vm).toBe(before.vm)
+    // Compare with ===, not toBe: a failed Object.is makes Vitest deep-compare the two
+    // component proxies for its message, and enumerating their keys is a Vue warning.
+    expect(after.vm === before.vm).toBe(true)
     expect(after.attributes('data-canvas')).toBe(canvas)
     expect(after.attributes('data-start')).toBe(String(END - 2 * DAY))
   })
@@ -174,7 +176,8 @@ describe('GraphCollectionGrid.vue', () => {
     // the entry was edited, or another one now sits at this index: the old sources must not be drawn under the new title
     await wrapper.setProps({ collection: collection([adhoc(0, { adhocState: 'nf=core&df=ifHCOutOctets&n=1&title=Downlinks' })]) })
     const after = wrapper.findComponent(AdhocStub)
-    expect(after.vm).not.toBe(before.vm)
+    // === rather than toBe, as above
+    expect(after.vm === before.vm).toBe(false)
     expect(after.attributes('data-canvas')).toBe(before.attributes('data-canvas'))
     expect(after.attributes('data-state')).toBe('nf=core&df=ifHCOutOctets&n=1&title=Downlinks')
     expect(wrapper.find('[data-test="gc-title"]').text()).toBe('Downlinks')

@@ -21,20 +21,27 @@
 ///
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { effectScope } from 'vue'
+import { effectScope, type EffectScope } from 'vue'
 import { LOADING_DELAY_MS, useDelayedLoading } from '@/components/Nodes/NodeDetails/hooks/useDelayedLoading'
 
 describe('useDelayedLoading', () => {
+  // The hook registers onScopeDispose, so run it in a scope as a component would;
+  // outside one, Vue warns that there is no active effect scope.
+  let scope: EffectScope
+  const setup = () => scope.run(() => useDelayedLoading())!
+
   beforeEach(() => {
     vi.useFakeTimers()
+    scope = effectScope()
   })
 
   afterEach(() => {
+    scope.stop()
     vi.useRealTimers()
   })
 
   it('marks a fetch as running straight away', () => {
-    const { isFetching, showSpinner, start } = useDelayedLoading()
+    const { isFetching, showSpinner, start } = setup()
 
     start()
 
@@ -44,7 +51,7 @@ describe('useDelayedLoading', () => {
 
   // The point of the delay: a fetch that returns promptly never flashes a spinner.
   it('shows no spinner for a fetch that finishes inside the delay', () => {
-    const { showSpinner, start, stop } = useDelayedLoading()
+    const { showSpinner, start, stop } = setup()
 
     start()
     vi.advanceTimersByTime(LOADING_DELAY_MS - 25)
@@ -55,7 +62,7 @@ describe('useDelayedLoading', () => {
   })
 
   it('shows the spinner once the fetch outlives the delay', () => {
-    const { isFetching, showSpinner, start } = useDelayedLoading()
+    const { isFetching, showSpinner, start } = setup()
 
     start()
     vi.advanceTimersByTime(LOADING_DELAY_MS)
@@ -65,7 +72,7 @@ describe('useDelayedLoading', () => {
   })
 
   it('clears both when the fetch finishes', () => {
-    const { isFetching, showSpinner, start, stop } = useDelayedLoading()
+    const { isFetching, showSpinner, start, stop } = setup()
 
     start()
     vi.advanceTimersByTime(LOADING_DELAY_MS)
@@ -79,7 +86,7 @@ describe('useDelayedLoading', () => {
   // first hide everyone's spinner.
   describe('overlapping fetches', () => {
     it('keeps waiting until the last one finishes', () => {
-      const { isFetching, showSpinner, start, stop } = useDelayedLoading()
+      const { isFetching, showSpinner, start, stop } = setup()
 
       start()
       start()
@@ -98,7 +105,7 @@ describe('useDelayedLoading', () => {
     // The second fetch must not restart the clock, or a rapid series would defer the spinner
     // indefinitely.
     it('does not restart the delay for a fetch begun midway through it', () => {
-      const { showSpinner, start } = useDelayedLoading()
+      const { showSpinner, start } = setup()
 
       start()
       vi.advanceTimersByTime(LOADING_DELAY_MS - 25)
@@ -110,7 +117,7 @@ describe('useDelayedLoading', () => {
 
     // More stops than starts must not leave the count negative, or the next fetch never shows.
     it('survives an unmatched stop', () => {
-      const { showSpinner, start, stop } = useDelayedLoading()
+      const { showSpinner, start, stop } = setup()
 
       stop()
       start()

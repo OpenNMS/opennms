@@ -185,6 +185,7 @@ describe('useSnmpDataCollectionStore', () => {
       await store.fetchAllSourcesNames()
 
       expect(store.isLoading).toBe(false)
+      expect(consoleErrorSpy).toHaveBeenCalled()
       consoleErrorSpy.mockRestore()
     })
   })
@@ -598,6 +599,7 @@ describe('useSnmpDataCollectionStore', () => {
       await store.fetchSnmpCollectionSources()
 
       expect(store.sources).toEqual(initialSources)
+      expect(consoleErrorSpy).toHaveBeenCalled()
       consoleErrorSpy.mockRestore()
     })
   })

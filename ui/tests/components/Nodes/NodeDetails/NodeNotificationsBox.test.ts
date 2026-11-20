@@ -23,7 +23,7 @@
 import NodeNotificationsBox from '@/components/Nodes/NodeDetails/NodeNotificationsBox.vue'
 import { useNotificationsStore } from '@/stores/notificationsStore'
 import { NodeNotificationStatus } from '@/types'
-import { OnmsIcon, OnmsTag, OnmsTooltip } from '@opennms/onms-ui'
+import { OnmsIcon, OnmsTag } from '@opennms/onms-ui'
 import Group from '@opennms/onms-ui/icons/action/Group.vue'
 import Person from '@opennms/onms-ui/icons/action/Person.vue'
 import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
@@ -86,7 +86,6 @@ describe('NodeNotificationsBox.vue', () => {
     return mount(NodeNotificationsBox, {
       global: {
         plugins: [PrimeVue, pinia],
-        directives: { 'onms-tooltip': OnmsTooltip },
         stubs: { RouterLink: RouterLinkStub }
       }
     })

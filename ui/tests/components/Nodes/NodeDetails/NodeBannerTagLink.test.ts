@@ -21,7 +21,7 @@
 ///
 
 import NodeBannerTagLink from '@/components/Nodes/NodeDetails/NodeBannerTagLink.vue'
-import { OnmsTag, OnmsTooltip } from '@opennms/onms-ui'
+import { OnmsTag } from '@opennms/onms-ui'
 import { mount, RouterLinkStub } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { describe, expect, it } from 'vitest'
@@ -32,7 +32,6 @@ const mountLink = (props: Record<string, unknown>, slot = '<span class="lead">3<
     slots: { default: slot },
     global: {
       plugins: [PrimeVue],
-      directives: { 'onms-tooltip': OnmsTooltip },
       stubs: { RouterLink: RouterLinkStub }
     }
   })

@@ -2,7 +2,6 @@ import EventConfigSourceTable from '@/components/EventConfiguration/EventConfigS
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
-import { OnmsTooltip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -48,7 +47,6 @@ describe('EventConfigSourceTable.vue', () => {
   const mountTable = () => mount(EventConfigSourceTable, {
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
-      directives: { 'onms-tooltip': OnmsTooltip },
       stubs
     }
   })

@@ -24,7 +24,6 @@ import SnmpInterfacesTable from '@/components/Nodes/NodeDetails/SnmpInterfacesTa
 import { LOADING_DELAY_MS } from '@/components/Nodes/NodeDetails/hooks/useDelayedLoading'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
-import { OnmsTooltip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -73,11 +72,7 @@ describe('SnmpInterfacesTable.vue', () => {
 
     return mount(SnmpInterfacesTable, {
       global: {
-        plugins: [pinia, PrimeVue],
-        // The real directive, registered app-wide in theme/primevue-setup.ts. It parks the
-        // resolved text on the host element as $_ptooltipValue, which is what the tooltip
-        // assertions below read.
-        directives: { 'onms-tooltip': OnmsTooltip }
+        plugins: [pinia, PrimeVue]
       }
     })
   }
@@ -588,7 +583,7 @@ describe('SnmpInterfacesTable.vue', () => {
 
       return mount(SnmpInterfacesTable, {
         props: { active: false },
-        global: { plugins: [pinia, PrimeVue], directives: { 'onms-tooltip': OnmsTooltip }}
+        global: { plugins: [pinia, PrimeVue] }
       })
     }
 
@@ -668,7 +663,7 @@ describe('SnmpInterfacesTable.vue', () => {
       useMenuStore(pinia).mainMenu = { baseHref: '/opennms/' } as any
 
       const w = mount(SnmpInterfacesTable, {
-        global: { plugins: [pinia, PrimeVue], directives: { 'onms-tooltip': OnmsTooltip }}
+        global: { plugins: [pinia, PrimeVue] }
       })
 
       return { wrapper: w, release }

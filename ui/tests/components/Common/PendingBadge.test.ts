@@ -26,7 +26,7 @@ import { describe, expect, it } from 'vitest'
 
 describe('PendingBadge.vue', () => {
   it('shows "Pending" in a tag styled as the pending badge', () => {
-    const wrapper = mount(PendingBadge, { global: { plugins: [PrimeVue], directives: { 'onms-tooltip': {}}}})
+    const wrapper = mount(PendingBadge, { global: { plugins: [PrimeVue] }})
 
     expect(wrapper.text()).toBe('Pending')
     expect(wrapper.classes()).toContain('pending-badge')
