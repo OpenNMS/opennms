@@ -420,6 +420,29 @@ describe('useNodeAvailability', () => {
     expect(result.model.value).toBeDefined()
   })
 
+  // fail() clears the cached outages, so the page after a failed roster-only fetch cannot be joined
+  // to them: the outages are fetched again with it.
+  it('a failed page fetch makes the next page change a full fetch', async () => {
+    wrapper = mountHost()
+    await flushPromises()
+    expect(getTimeline).toHaveBeenCalledTimes(1)
+
+    getAvailability.mockResolvedValueOnce(false)
+    await wrapper.setProps({ offset: 4 })
+    await flushPromises()
+
+    expect(getTimeline).toHaveBeenCalledTimes(1)
+    expect(result.loadFailed.value).toBe(true)
+
+    await wrapper.setProps({ offset: 8 })
+    await flushPromises()
+
+    expect(getTimeline).toHaveBeenCalledTimes(2)
+    expect(rosterCalls().at(-1)?.[3]).toEqual({ limit: 4, offset: 8, withServices: true })
+    expect(result.loadFailed.value).toBe(false)
+    expect(result.model.value).toBeDefined()
+  })
+
   it('totals come from ipinterfaceCount and service-count', async () => {
     getAvailability.mockResolvedValueOnce(availabilityDoc({ ipinterfaceCount: 12, 'service-count': 30 }))
     wrapper = mountHost()

@@ -93,6 +93,21 @@ const mountPanel = (nodeId = '101', stubs: Record<string, unknown> = {}) =>
     }
   })
 
+const TimeControlsStub = {
+  name: 'TimeControls',
+  template: '<button></button>',
+  props: ['label', 'initialLabel'],
+  emits: ['updateTime']
+}
+
+/** What TimeControls emits for the 'Last hour' preset. */
+const lastHourTime = () => ({
+  startTime: Math.floor((Date.now() - HOUR) / 1000),
+  endTime: Math.floor(Date.now() / 1000),
+  format: 'hours',
+  range: { unit: 'hours', amount: 1 }
+})
+
 const PaginatorStub = {
   name: 'OnmsPaginator',
   template: '<nav></nav>',
@@ -235,6 +250,21 @@ describe('NodeAvailabilityPanel.vue', () => {
 
       expect(paginator().props('first')).toBe(50)
       expect(pagingCalls().at(-1)).toEqual({ id: '101', limit: 10, offset: 50, withServices: true })
+    })
+
+    // Only another node goes back to the first page: a new range keeps the page shown.
+    it('keeps the page when the range changes', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaceCount: 60 }))
+      wrapper = mountPanel('101', { TimeControls: TimeControlsStub })
+      await flushPromises()
+      await turnPage(25, 25)
+
+      wrapper.findComponent({ name: 'TimeControls' }).vm.$emit('updateTime', lastHourTime())
+      await flushPromises()
+
+      expect(getTimeline).toHaveBeenCalledTimes(2)
+      expect(paginator().props('first')).toBe(25)
+      expect(pagingCalls().at(-1)).toEqual({ id: '101', limit: 25, offset: 25, withServices: true })
     })
 
     it('is not shown for a node with no monitored interfaces', async () => {
