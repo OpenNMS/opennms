@@ -119,7 +119,6 @@
 
 <script setup lang="ts">
 import { computed, ref, useTemplateRef, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import { useElementSize } from '@vueuse/core'
 import { OnmsIconButton, OnmsSelectButton } from '@opennms/onms-ui'
 import ChevronRight from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
@@ -133,8 +132,8 @@ import NodeDetailsMonitoringTab from '@/components/Nodes/NodeDetails/NodeDetails
 import NodeDetailsNeighborsTab from '@/components/Nodes/NodeDetails/NodeDetailsNeighborsTab.vue'
 import NodeLookupMessage from '@/components/Nodes/NodeLookupMessage.vue'
 import NodeSystemInfoPanel from '@/components/Nodes/NodeDetails/NodeSystemInfoPanel.vue'
-import { nodeDetailsRoute, parseNodeRouteId } from '@/lib/nodeDetailsRoute'
-import API from '@/services'
+import { useNodeRouteResolution } from '@/components/Nodes/hooks/useNodeRouteResolution'
+import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 import useRole from '@/composables/useRole'
 import { useMenuStore } from '@/stores/menuStore'
 import { NodeDetailsTab, useNodeStore } from '@/stores/nodeStore'
@@ -143,8 +142,6 @@ import { BreadCrumb, Node } from '@/types'
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
 const { provisionRole } = useRole()
-const route = useRoute()
-const router = useRouter()
 
 const props = defineProps({
   id: {
@@ -205,27 +202,17 @@ const linksAvailableWidth = computed<number | null>(() => {
   return summaryRowWidth.value - summaryHeaderWidth.value - gap
 })
 
-type PageState = 'node' | 'resolving' | 'invalid' | 'notFound' | 'error'
+const fetchNode = async (id: string) => {
+  nodeStore.getNodeSnmpPrimaryInterface(id)
+  nodeStore.getNodeCriticalPath(id)
+  nodeStore.getNodeLinkServices(id)
+
+  await nodeStore.getNodeById({ id } as Node)
+}
 
 // The tabs read route.params.id themselves (useActiveNodeId), so they mount only once the route
 // holds a canonical node id; a foreign id is resolved and replaced first.
-const resolveState = ref<'resolving' | 'notFound' | 'error' | null>(null)
-const routeId = computed(() => parseNodeRouteId(props.id ?? ''))
-const lookupValue = computed(() => (routeId.value.kind === 'numeric' ? routeId.value.id : routeId.value.value))
-
-const pageState = computed<PageState>(() => {
-  const rid = routeId.value
-  if (rid.kind === 'invalid') {
-    return 'invalid'
-  }
-  if (rid.kind === 'foreign' || rid.id !== props.id) {
-    return resolveState.value ?? 'resolving'
-  }
-  if (nodeStore.nodeLoadError === 'notFound') {
-    return 'notFound'
-  }
-  return nodeStore.nodeLoadError === 'failed' ? 'error' : 'node'
-})
+const { lookupValue, pageState, followRoute } = useNodeRouteResolution(() => props.id ?? '', nodeDetailsRoute, fetchNode)
 
 const heading = computed<string>(() => {
   if (pageState.value !== 'node') {
@@ -245,52 +232,6 @@ const items = computed<BreadCrumb[]>(() => [
   { label: 'Nodes', to: '/nodes' },
   { label: 'Node Details', to: '#', position: 'last' }
 ])
-
-const fetchNode = async (id: string) => {
-  nodeStore.getNodeSnmpPrimaryInterface(id)
-  nodeStore.getNodeCriticalPath(id)
-  nodeStore.getNodeLinkServices(id)
-
-  await nodeStore.getNodeById({ id } as Node)
-}
-
-// Canonical numeric id: load. Anything else: replace the route with the canonical id (keeping the
-// query) and let this watcher run again for it.
-let resolveRequest = 0
-const followRoute = async () => {
-  const rid = routeId.value
-  const request = ++resolveRequest
-  resolveState.value = null
-
-  if (rid.kind === 'invalid') {
-    return
-  }
-  if (rid.kind === 'numeric') {
-    if (rid.id !== props.id) {
-      router.replace({ ...nodeDetailsRoute(rid.id), query: route.query })
-      return
-    }
-    await fetchNode(rid.id)
-    return
-  }
-
-  resolveState.value = 'resolving'
-  const result = await API.resolveNodeId(rid.value)
-  if (request !== resolveRequest) {
-    return
-  }
-  if (!result.success) {
-    resolveState.value = 'error'
-  } else if (result.payload === null || result.payload === undefined) {
-    resolveState.value = 'notFound'
-  } else {
-    router.replace({ ...nodeDetailsRoute(result.payload), query: route.query })
-  }
-}
-
-// Immediate, so the fetch starts (and the store clears an earlier visit's failure) before the
-// first render.
-watch(() => props.id, followRoute, { immediate: true })
 
 // Whether the requisition check has answered for this node, so the links row's Edit in Requisition
 // action is final. On the links row as data-requisition-checked: the smoke tests wait for it
