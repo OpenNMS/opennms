@@ -36,7 +36,8 @@
           :first="first"
           :rows="rows"
           :total-records="totalInterfaces"
-          :rows-per-page-options="[10, 25, 50, 100]"
+          :rows-per-page-options="[5, 10, 20, 50]"
+          page-report="Interfaces {first}–{last} of {totalRecords}"
           data-test="availability-paginator"
           @page="onPage"
         />
@@ -59,9 +60,10 @@ const props = defineProps<{
   node: Node
 }>()
 
-// The page of interfaces shown. The server computes figures for these only.
+// The page of interfaces shown. The server computes figures for these only. The unit is the
+// interface, each with all of its services, not the row -- so the paginator's report names it.
 const first = ref(0)
-const rows = ref(25)
+const rows = ref(10)
 
 // Another node starts at its first page. Sync, and set up before the composable, so the node change
 // and the reset reach the composable as one change: one fetch, at offset 0, rather than one at the

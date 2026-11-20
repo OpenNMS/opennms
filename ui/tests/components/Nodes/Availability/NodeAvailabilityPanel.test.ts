@@ -138,11 +138,11 @@ describe('NodeAvailabilityPanel.vue', () => {
     wrapper?.unmount()
   })
 
-  it('asks for the first 25 interfaces', async () => {
+  it('asks for the first 10 interfaces', async () => {
     wrapper = mountPanel()
     await flushPromises()
 
-    expect(pagingCalls()).toEqual([{ id: '101', limit: 25, offset: 0, withServices: true }])
+    expect(pagingCalls()).toEqual([{ id: '101', limit: 10, offset: 0, withServices: true }])
   })
 
   it('is titled Availability and has the range picker but no View Availability button', async () => {
@@ -177,7 +177,7 @@ describe('NodeAvailabilityPanel.vue', () => {
   })
 
   describe('paginator', () => {
-    it('pages interfaces 25 at a time, out of the node\'s total, with 10, 25, 50 or 100 per page', async () => {
+    it('pages interfaces 10 at a time, out of the node\'s total, with 5, 10, 20 or 50 per page', async () => {
       getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaceCount: 60 }))
       wrapper = mountPanel()
       await flushPromises()
@@ -185,9 +185,19 @@ describe('NodeAvailabilityPanel.vue', () => {
       const p = paginator()
       expect(p.attributes('data-test')).toBe('availability-paginator')
       expect(p.props('first')).toBe(0)
-      expect(p.props('rows')).toBe(25)
+      expect(p.props('rows')).toBe(10)
       expect(p.props('totalRecords')).toBe(60)
-      expect(p.props('rowsPerPageOptions')).toEqual([10, 25, 50, 100])
+      expect(p.props('rowsPerPageOptions')).toEqual([5, 10, 20, 50])
+    })
+
+    // A page is a number of interfaces, each with every service, not a number of rows: say so.
+    it('names interfaces as the unit it pages by', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaceCount: 60 }))
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(paginator().props('pageReport')).toBe('Interfaces {first}–{last} of {totalRecords}')
+      expect(paginator().find('.p-paginator-current').text()).toBe('Interfaces 1–10 of 60')
     })
 
     it('fetches the page chosen, the roster only', async () => {

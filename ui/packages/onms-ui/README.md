@@ -176,7 +176,10 @@ Where these diverge from PrimeVue, deliberately:
 - **`OnmsPaginator`** (added later, NMS-20303) is paging controls on their own,
   for content that is not an `OnmsTable` (which has its own). `page` emits the
   same `OnmsTablePageEvent` as `OnmsTable`, rather than PrimeVue's
-  `PageState`.
+  `PageState`. `pageReport` adds text after the rows-per-page dropdown, with
+  PrimeVue's placeholders (`{first}`, `{last}`, `{totalRecords}`, ...), for a
+  page whose unit is not one row each, e.g.
+  `'Interfaces {first}–{last} of {totalRecords}'`.
 - **`OnmsColorPicker`** is a composite, not a thin wrapper: a swatch grid in an
   `OnmsPopover` with PrimeVue's spectrum picker behind a "Custom" toggle, since
   4.5.5 offers no swatch surface. `format` is baked to `'hex'` and the value

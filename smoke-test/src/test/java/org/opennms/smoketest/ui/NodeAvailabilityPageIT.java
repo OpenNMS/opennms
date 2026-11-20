@@ -37,14 +37,15 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 /**
  * Smoke tests for the Vue Node Availability page, which replaced the legacy availability JSP.
  *
- * The node has 27 managed interfaces, one more page than the default page size of 25 interfaces
+ * The node has 12 managed interfaces: one more page than the default page size of 10 interfaces
  * needs, so pagination can be exercised. Each interface has an ICMP service; the first one also has
  * an HTTP service in the forced-unmanaged state, so the status label can be checked.
  */
 public class NodeAvailabilityPageIT extends OpenNMSSeleniumIT {
     private static final String LABEL = "Test_Node_Availability_Page";
     private static final String NODE_CRITERIA = "smoketests:availabilityPage";
-    private static final int INTERFACE_COUNT = 27;
+    private static final int INTERFACE_COUNT = 12;
+    private static final int PAGE_SIZE = 10;
 
     private int nodeId;
 
@@ -103,14 +104,17 @@ public class NodeAvailabilityPageIT extends OpenNMSSeleniumIT {
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.cssSelector("[data-test='availability-timeline']")));
-        assertEquals("The first page should hold the default 25 interfaces.", 25, groupCount());
+        assertEquals("The first page should hold the default " + PAGE_SIZE + " interfaces.", PAGE_SIZE, groupCount());
+        // A page is a number of interfaces, each with all of its services, and the paginator says so.
+        assertEquals("Interfaces 1–" + PAGE_SIZE + " of " + INTERFACE_COUNT, getDriver().findElement(
+                By.cssSelector("[data-test='availability-paginator'] .p-paginator-current")).getText());
 
         final WebElement next = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(
                 "[data-test='availability-paginator'] button[aria-label='Next Page']")));
         next.click();
 
-        wait.until(driver -> groupCount() == INTERFACE_COUNT - 25);
-        assertEquals(INTERFACE_COUNT - 25, groupCount());
+        wait.until(driver -> groupCount() == INTERFACE_COUNT - PAGE_SIZE);
+        assertEquals(INTERFACE_COUNT - PAGE_SIZE, groupCount());
     }
 
     @Test
