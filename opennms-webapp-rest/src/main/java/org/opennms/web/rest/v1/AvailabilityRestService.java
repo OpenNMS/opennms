@@ -316,7 +316,8 @@ public class AvailabilityRestService extends OnmsRestService {
         to contain the node; membership is checked before the node is loaded.
 
         The result is the same payload as `GET /availability/nodes/{nodeId}`: the category only acts as a
-        membership check and does not restrict which of the node's services are reported.
+        membership check and does not restrict which of the node's services are reported. The thresholds are the
+        category's; the figures are not restricted to its services.
 
         `normal-threshold` and `warning-threshold` come from the path's category in `categories.xml`. When it
         does not define them they are null in JSON and omitted in XML. `managed-service-count`, the number of

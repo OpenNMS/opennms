@@ -253,6 +253,8 @@ export const ipInterfaceStatus = (isManaged?: string | null) => {
 /**
  * The ifservices status codes, as the legacy availability box worded them. Only 'A' has a figure;
  * every other code is a reason there is none.
+ *
+ * The source of truth is OnmsMonitoredService.STATUS_MAP (opennms-model). Keep these in step with it.
  */
 export const MONITORED_SERVICE_STATUS_LABELS: Record<string, string> = {
   A: 'Managed',

@@ -57,6 +57,10 @@ public class AvailabilityNode {
      * Services with status A (managed) on managed interfaces, across every interface of the node,
      * whatever the paging: the services the availability figures count. Unset when the node was
      * built from an RTC node.
+     * <p>
+     * The node figures also require {@code nodetype = 'A'} (an active node), which this count does
+     * not check. So a node of another type with managed services has a count above 0, but its
+     * figure is -1.
      */
     @XmlAttribute(name="managed-service-count")
     private Long m_managedServiceCount;
