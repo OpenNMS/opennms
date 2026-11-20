@@ -109,26 +109,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>copy-jaxrs-feature</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>com.eclipsesource.jaxrs</groupId>
-                  <artifactId>features</artifactId>
-                  <version>${osgiJaxRsVersion}</version>
-                  <classifier>features</classifier>
-                  <type>xml</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>${project.build.directory}/downloaded-features</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-          <execution>
             <id>copy-newts-feature</id>
             <phase>process-resources</phase>
             <goals>
@@ -236,35 +216,6 @@
                 <replacement>
                   <token>com\.fasterxml\.jackson\.core/jackson-annotations/2\.[0-9]+[0-9.]*</token>
                   <value>com.fasterxml.jackson.core/jackson-annotations/${jackson2AnnotationsVersion}</value>
-                </replacement>
-              </replacements>
-            </configuration>
-          </execution>
-          <execution>
-            <id>exec-jaxrs</id>
-            <phase>package</phase>
-            <goals>
-              <goal>replace</goal>
-            </goals>
-            <configuration>
-              <file>${project.build.directory}/downloaded-features/features-${osgiJaxRsVersion}-features.xml</file>
-              <replacements>
-                <replacement>
-                  <token>com\.fasterxml\.jackson\.([a-z]+)/([a-zA-Z0-9._-]+)/2\.[0-9]+[0-9.]*</token>
-                  <value>com.fasterxml.jackson.$1/$2/${jackson2Version}</value>
-                </replacement>
-                <replacement>
-                  <token>com\.fasterxml\.jackson\.core/jackson-annotations/2\.[0-9]+[0-9.]*</token>
-                  <value>com.fasterxml.jackson.core/jackson-annotations/${jackson2AnnotationsVersion}</value>
-                </replacement>
-                <!-- keep the "jackson" feature version and its consumers in step with the bundles above -->
-                <replacement>
-                  <token>name="jackson" version="2\.9\.8"</token>
-                  <value>name="jackson" version="${jackson2Version}"</value>
-                </replacement>
-                <replacement>
-                  <token><![CDATA[<feature version="2\.9\.8">jackson</feature>]]></token>
-                  <value><![CDATA[<feature version="${jackson2Version}">jackson</feature>]]></value>
                 </replacement>
               </replacements>
             </configuration>
@@ -406,11 +357,6 @@
                   <classifier>overrides</classifier>
                 </artifact>
                 <artifact>
-                  <file>${project.build.directory}/downloaded-features/features-${osgiJaxRsVersion}-features.xml</file>
-                  <type>xml</type>
-                  <classifier>jaxrs</classifier>
-                </artifact>
-                <artifact>
                   <file>${project.build.directory}/downloaded-features/newts-karaf-${newtsVersion}-features.xml</file>
                   <type>xml</type>
                   <classifier>newts</classifier>
@@ -453,7 +399,6 @@
                           <descriptor>file:${project.build.directory}/classes/features-minion.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features-sentinel.xml</descriptor>
                           <descriptor>file:${project.build.directory}/downloaded-features/apache-camel-${camelVersion}-features.xml</descriptor>
-                          <descriptor>file:${project.build.directory}/downloaded-features/features-${osgiJaxRsVersion}-features.xml</descriptor>
                           <descriptor>file:${project.build.directory}/downloaded-features/activemq-karaf-${activemqVersion}-features.xml</descriptor>
                           <descriptor>file:${project.build.directory}/downloaded-features/activemq-karaf-${activemqVersion}-features-core.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/karaf-extensions.xml</descriptor>

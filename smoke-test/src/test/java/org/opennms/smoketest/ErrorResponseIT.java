@@ -53,7 +53,7 @@ public class ErrorResponseIT extends OpenNMSSeleniumIT {
             httpPost.setHeader("Content-Type", "application/xml");
             httpPost.setEntity(new StringEntity("INVALID-XML"));
             CloseableHttpResponse response = client.execute(httpPost);
-            verify(response);
+            verify(response, 400);
         }
     }
 
@@ -64,7 +64,7 @@ public class ErrorResponseIT extends OpenNMSSeleniumIT {
             HttpGet httpGet = new HttpGet(getBaseUrlExternal() + "opennms/api/v2/nodes?_s=label=*");
             httpGet.setHeader("Accept", "application/json");
             CloseableHttpResponse response = client.execute(httpGet);
-            verify(response);
+            verify(response, 500);
         }
     }
 
@@ -74,8 +74,8 @@ public class ErrorResponseIT extends OpenNMSSeleniumIT {
         return wrapper;
     }
 
-    private static void verify(CloseableHttpResponse response) throws IOException {
-        assertEquals(500, response.getStatusLine().getStatusCode());
+    private static void verify(CloseableHttpResponse response, int expectedStatus) throws IOException {
+        assertEquals(expectedStatus, response.getStatusLine().getStatusCode());
 
         // Verify response entity. It should contain error information and should not be the JSP
         final String responseEntity = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))
