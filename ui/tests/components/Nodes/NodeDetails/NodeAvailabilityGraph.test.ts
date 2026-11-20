@@ -25,13 +25,15 @@ import { LOADING_DELAY_MS } from '@/components/Nodes/hooks/useDelayedLoading'
 import { NodeAvailability } from '@/types/index'
 import { NodeOutageTimeline } from '@/types/nodeAvailabilityTimeline'
 import { createTestingPinia } from '@pinia/testing'
-import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
+import { flushPromises, mount, RouterLinkStub, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+const { push } = vi.hoisted(() => ({ push: vi.fn() }))
+
 vi.mock('vue-router', () => ({
   useRoute: () => ({ params: { id: '101' }}),
-  useRouter: () => ({ push: vi.fn() })
+  useRouter: () => ({ push })
 }))
 
 vi.mock('@/services/index', () => ({
@@ -122,7 +124,7 @@ const mountPanel = (
     },
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
-      stubs: { TimeControls: true, ...stubs },
+      stubs: { TimeControls: true, RouterLink: RouterLinkStub, ...stubs },
       directives: { 'onms-tooltip': {}}
     }
   })
@@ -514,7 +516,8 @@ describe('NodeAvailabilityGraph.vue', () => {
 
       const message = wrapper.get('[data-test="availability-partial"]')
       expect(message.text()).toBe('Node has 4 monitored interfaces and 24 services, only some shown here. View them all on the Availability page.')
-      expect(message.get('[data-test="availability-page-link"]').attributes('href')).toBe('/opennms/element/availability.jsp?node=101')
+      expect(message.findComponent(RouterLinkStub).props('to'))
+        .toEqual({ name: 'Node Availability', params: { id: '101' }})
     })
 
     it('words one interface and one service in the singular', async () => {
@@ -564,16 +567,14 @@ describe('NodeAvailabilityGraph.vue', () => {
     })
   })
 
-  // The legacy Availability page, which lists every interface and service.
-  it('links its View Availability button to the legacy availability page for the node', async () => {
-    const assign = vi.fn()
-    vi.stubGlobal('location', { assign } as any)
+  // The Vue Availability page, which lists every interface and service.
+  it('sends its View Availability button to the Availability page for the node', async () => {
+    push.mockClear()
     wrapper = mountPanel()
     await flushPromises()
 
     await wrapper.find('[data-test="availability-details-button"]').trigger('click')
 
-    expect(assign).toHaveBeenCalledWith('/opennms/element/availability.jsp?node=101')
-    vi.unstubAllGlobals()
+    expect(push).toHaveBeenCalledWith({ name: 'Node Availability', params: { id: '101' }})
   })
 })

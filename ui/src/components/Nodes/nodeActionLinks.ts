@@ -118,7 +118,7 @@ export const mapLink = (name: string, node: Node, context: NodeActionLinkContext
     case 'surveillance-categories':
       return `admin/categories.htm?edit&node=${node.id}`
     case 'availability':
-      return `element/availability.jsp?node=${node.id}`
+      return `ui/#/node/${node.id}/availability`
     case 'siteStatus': {
       if (node.assetRecord?.building && node.assetRecord.building.length > 0) {
         const encodedBuilding = encodeURIComponent(node.assetRecord.building)

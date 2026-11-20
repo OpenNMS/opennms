@@ -69,10 +69,10 @@
           data-test="availability-partial"
         >
           Node has {{ countText }}, only some shown here. View them all on the
-          <a
-            :href="availabilityPageHref"
+          <router-link
+            :to="nodeAvailabilityRoute(node.id)"
             data-test="availability-page-link"
-          >Availability page</a>.
+          >Availability page</router-link>.
         </p>
       </template>
     </template>
@@ -81,6 +81,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { OnmsIconButton, OnmsSpinner } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import NodeDetailsPanel from '@/components/Nodes/NodeDetailsPanel.vue'
@@ -89,6 +90,7 @@ import AvailabilityTimeline from '@/components/Nodes/AvailabilityTimeline.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TimeControls from '@/components/Common/TimeControls.vue'
 import { useNodeAvailability } from '@/components/Nodes/hooks/useNodeAvailability'
+import { nodeAvailabilityRoute } from '@/lib/nodeDetailsRoute'
 import { plural } from '@/lib/utils'
 import { Node } from '@/types/index'
 import {
@@ -145,11 +147,11 @@ const isPartial = computed(() => totalInterfaces.value + totalServices.value > M
 // IP Interfaces table on the same tab may outnumber.
 const countText = computed(() => `${plural(totalInterfaces.value, 'monitored interface')} and ${plural(totalServices.value, 'service')}`)
 
-// The legacy page lists every interface and service. The message and the button both go there.
-const availabilityPageHref = computed(() => `${props.baseHref}element/availability.jsp?node=${props.node.id}`)
+const router = useRouter()
 
+// The Availability page lists every interface and service. The message and the button both go there.
 const onViewDetailsClick = () => {
-  window.location.assign(availabilityPageHref.value)
+  router.push(nodeAvailabilityRoute(props.node.id))
 }
 
 // The node's figure comes from the whole roster; only the rows are cut.
