@@ -98,7 +98,7 @@ describe('NodeAvailability.vue', () => {
     const { wrapper } = mountComponent('42', true)
     await flushPromises()
 
-    expect(wrapper.find('h2').text()).toBe('Availability for srv-42 (id: 42)')
+    expect(wrapper.find('h2').text()).toBe('Availability for srv-42 (ID: 42)')
   })
 
   it('leaves the heading unnamed while the node is still being fetched', async () => {

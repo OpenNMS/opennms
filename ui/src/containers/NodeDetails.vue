@@ -222,7 +222,7 @@ const heading = computed<string>(() => {
   // The store starts with an empty node object, so the label is what says the fetch has landed.
   const node = nodeStore.node
 
-  return node?.label ? `Node Details for ${node.label} (id: ${node.id})` : 'Node Details for'
+  return node?.label ? `Node Details for ${node.label} (ID: ${node.id})` : 'Node Details for'
 })
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)

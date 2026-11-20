@@ -65,12 +65,12 @@ public class NodeDetailsPage {
     }
 
     /**
-     * Waits until the heading names the node, as "Node Details for &lt;label&gt; (id: &lt;id&gt;)". The
+     * Waits until the heading names the node, as "Node Details for &lt;label&gt; (ID: &lt;id&gt;)". The
      * whole heading must match, so a label that is a prefix of another (my-node, my-node-2) does
      * not match the other node's page.
      */
     public NodeDetailsPage waitForLabel(final String label) {
-        final Pattern heading = Pattern.compile("^Node Details for " + Pattern.quote(label) + " \\(id: \\d+\\)$");
+        final Pattern heading = Pattern.compile("^Node Details for " + Pattern.quote(label) + " \\(ID: \\d+\\)$");
         testCase.wait.until(ExpectedConditions.textMatches(By.cssSelector(".onms-node-details .heading h2"), heading));
         return this;
     }

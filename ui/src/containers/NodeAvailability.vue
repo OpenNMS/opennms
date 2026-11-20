@@ -67,7 +67,7 @@ const heading = computed<string>(() => {
   // The store starts with an empty node object, so the label is what says the fetch has landed.
   const node = nodeStore.node
 
-  return node?.label ? `Availability for ${node.label} (id: ${node.id})` : 'Availability for'
+  return node?.label ? `Availability for ${node.label} (ID: ${node.id})` : 'Availability for'
 })
 
 const items = computed<BreadCrumb[]>(() => [
