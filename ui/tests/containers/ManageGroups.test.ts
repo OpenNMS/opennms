@@ -77,21 +77,20 @@ describe('ManageGroups.vue (container)', () => {
   })
 
   it('really hides the real table, which has several root nodes, without a Vue warning', async () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    // tests/setup.ts fails the test on any Vue warning, including the one for
+    // v-show on a component with a non-element root.
     store.populate.mockResolvedValue({ success: true, message: '' })
     store.editMode = AdminEditMode.Edit
     const wrapper = mount(ManageGroups, {
       attachTo: document.body,
-      global: { plugins: [PrimeVue], directives: { 'onms-tooltip': {}}, stubs: { BreadCrumbs: true, GroupEditorPanel: true }}
+      global: { plugins: [PrimeVue], stubs: { BreadCrumbs: true, GroupEditorPanel: true }}
     })
     try {
       await flushPromises()
 
       expect(wrapper.find('[data-test="groups-table-wrapper"]').isVisible()).toBe(false)
-      expect(warn.mock.calls.filter(c => String(c[0]).includes('non-element root node'))).toEqual([])
     } finally {
       wrapper.unmount()
-      warn.mockRestore()
     }
   })
 

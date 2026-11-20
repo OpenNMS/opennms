@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useDashboardStore } from '@/stores/dashboardStore'
 import { createDefaultLayout } from '@/components/Dashboard/defaultLayout'
@@ -17,6 +17,10 @@ describe('useDashboardStore', () => {
     setActivePinia(createPinia())
     store = useDashboardStore()
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('starts with the factory default and a clean slate', () => {
@@ -50,7 +54,6 @@ describe('useDashboardStore', () => {
     expect(store.isDirty).toBe(true)
     expect(store.loadError).toBe(true)
     expect(consoleError).toHaveBeenCalled()
-    consoleError.mockRestore()
   })
 
   it('load bumps the layout revision so the grid rebuilds', async () => {
@@ -81,7 +84,6 @@ describe('useDashboardStore', () => {
     expect(await store.save()).toBe(false)
     expect(store.isDirty).toBe(true)
     expect(consoleError).toHaveBeenCalled()
-    consoleError.mockRestore()
   })
 
   it('addPanel places the new panel below everything and marks dirty', () => {

@@ -32,13 +32,11 @@ import { pickDate } from '../../utils'
 
 enableAutoUnmount(afterEach)
 
-const noop = { mounted: () => undefined }
-
 describe('OnCallSchedulesTab', () => {
   const mountTab = (cards = [newCard('bob', 'daily')], extra: Record<string, unknown> = {}) =>
     mount(OnCallSchedulesTab, {
       props: { ...extra, cards, members: ['bob'], groupChanged: false, shortMonths: [], highlightKey: null },
-      global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
+      global: { plugins: [PrimeVue] }
     })
 
   it('says the settings could not be loaded instead of claiming the supervisor covers every time', () => {
@@ -86,7 +84,7 @@ describe('OnCallSchedulesTab', () => {
       const cards = [newCard('bob', 'daily'), newCard('bob', 'weekly')]
       const w = mount(OnCallSchedulesTab, {
         props: { cards, members: ['bob'], groupChanged: false, shortMonths: [], highlightKey: cards[1].key },
-        global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
+        global: { plugins: [PrimeVue] }
       })
       await nextTick()
       await nextTick()
@@ -116,7 +114,7 @@ describe('OnCallSchedulesTab', () => {
         })
       }
     })
-    const w = mount(Parent, { global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}})
+    const w = mount(Parent, { global: { plugins: [PrimeVue] }})
     await w.find('[data-test="add-time"]').trigger('click')
     await nextTick()
     const before = w.find('[data-test="time-begin-0"]').element

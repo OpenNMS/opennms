@@ -192,7 +192,9 @@ describe('AdhocCollectionGraph.vue', () => {
     await flushPromises()
     await flushPromises()
     const after = wrapper.findComponent(AdhocCollectionGraph)
-    expect(after.vm.$.uid).not.toBe(before.vm.$.uid)
+    // Compare with ===, not toBe: a failed Object.is makes Vitest deep-compare the two
+    // component proxies for its message, and enumerating their keys is a Vue warning.
+    expect(after.vm === before.vm).toBe(false)
     expect(after.find('[data-test="chart-stub"]').attributes('data-canvas')).toBe('gc-3-1')
     expect(after.find('[data-test="chart-stub"]').attributes('data-series')).toBe('1')
     expect(after.find('[data-test="chart-stub"]').attributes('data-error')).toBe('')

@@ -23,10 +23,13 @@
 // Global test setup, run before every test file (vite.config.ts `test.setupFiles`).
 
 import { config } from '@vue/test-utils'
-import { afterEach } from 'vitest'
+import { afterAll, afterEach, beforeEach } from 'vitest'
 // Import the directive module itself, not the `@opennms/onms-ui` barrel: the
 // barrel pulls in every component and PrimeVue service before a test file's
 // `vi.mock` calls run, so a mock of e.g. `primevue/toasteventbus` would miss.
+// The same holds on a smaller scale for this module and `primevue/tooltip`: a
+// test that needs a different tooltip should override `directives['onms-tooltip']`
+// in its mount options, not `vi.mock` the module.
 import OnmsTooltip from '../packages/onms-ui/src/directives/OnmsTooltip'
 
 // The app registers `v-onms-tooltip` globally in src/theme/primevue-setup.ts,
@@ -45,10 +48,13 @@ config.global.directives = {
 // This wraps console.warn rather than setting `config.global.config.warnHandler`,
 // because Vue sends warnings raised outside a mounted app (e.g. onScopeDispose
 // with no active scope) straight to console.warn. It is a plain assignment, not
-// vi.spyOn, so vi.restoreAllMocks() in a test file doesn't remove it. A test
-// that expects a warning can still silence it with
-// vi.spyOn(console, 'warn').mockImplementation(...), which replaces this wrapper
-// for that test.
+// vi.spyOn, so vi.restoreAllMocks() in a test file doesn't remove it.
+//
+// vi.spyOn(console, 'warn').mockImplementation(...) replaces this wrapper, so it
+// turns the check off for every Vue warning in that test, not only the expected
+// one. Use it only to mute an expected warning from app code. To assert that a
+// warning was logged, spy without mockImplementation: the call still reaches
+// this wrapper.
 const VUE_WARNING = /^\[Vue( Router)? warn\]/
 const vueWarnings: string[] = []
 const originalWarn = console.warn
@@ -60,9 +66,19 @@ console.warn = (...args: unknown[]) => {
   originalWarn(...args)
 }
 
-afterEach(() => {
+const failOnWarnings = (where: string) => {
   if (vueWarnings.length > 0) {
     const warnings = vueWarnings.splice(0)
-    throw new Error(`Test triggered ${warnings.length} Vue warning(s); fix the cause (see stderr above):\n${warnings.join('\n')}`)
+    throw new Error(`${warnings.length} Vue warning(s) ${where}; fix the cause (see stderr above):\n${warnings.join('\n')}`)
   }
-})
+}
+
+// Registered before the test file's own hooks, so this runs first and catches
+// warnings from module-scope code, beforeAll, or async work that outlived the
+// previous test, without blaming the test that is about to run.
+beforeEach(() => failOnWarnings('raised before this test (module scope, beforeAll, or async work from an earlier test)'))
+
+afterEach(() => failOnWarnings('raised by this test'))
+
+// Catches warnings from afterAll or async work that finished after the last test.
+afterAll(() => failOnWarnings('raised after the last test in this file (afterAll or late async work)'))

@@ -2,7 +2,7 @@ import {
   filterEventConfigEvents,
   filterEventConfigSources
 } from '@/services/eventConfigService'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockGet = vi.hoisted(() => vi.fn())
 vi.mock('@/services/axiosInstances', () => ({
@@ -14,6 +14,10 @@ vi.mock('@/services/axiosInstances', () => ({
 describe('eventConfigService filters', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('maps a 200 sources page', async () => {
@@ -45,6 +49,5 @@ describe('eventConfigService filters', () => {
     mockGet.mockResolvedValue({ status: 500, data: '' })
     await expect(filterEventConfigSources(0, 10, '', 'name', 'asc')).rejects.toThrow('Unexpected response status: 500')
     expect(consoleError).toHaveBeenCalled()
-    consoleError.mockRestore()
   })
 })

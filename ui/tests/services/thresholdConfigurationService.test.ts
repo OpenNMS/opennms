@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import {
   createThresholdGroup,
   createThreshdPackage,
@@ -49,6 +49,10 @@ const threshdPackage = (overrides: Partial<ThreshdPackage> = {}): ThreshdPackage
 describe('thresholdConfigurationService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   describe('reads', () => {
@@ -173,7 +177,6 @@ describe('thresholdConfigurationService', () => {
       expect(result.success).toBe(false)
       expect(result.message).toContain('longer than 19 characters')
       expect(consoleError).toHaveBeenCalled()
-      consoleError.mockRestore()
     })
 
     test('passes the HTTP status on, so a 412 can be told apart from an invalid change', async () => {
@@ -189,7 +192,6 @@ describe('thresholdConfigurationService', () => {
       expect(result.success).toBe(false)
       expect(result.status).toBe(412)
       expect(consoleError).toHaveBeenCalled()
-      consoleError.mockRestore()
     })
 
     test('falls back to a descriptive message for a non-axios failure', async () => {
@@ -202,7 +204,6 @@ describe('thresholdConfigurationService', () => {
       expect(result.message).toContain('Failed to retrieve threshold group \'mib2\'.')
       expect(result.payload).toBeUndefined()
       expect(consoleError).toHaveBeenCalled()
-      consoleError.mockRestore()
     })
 
     test('returns false from a failed download rather than rejecting', async () => {
@@ -211,7 +212,6 @@ describe('thresholdConfigurationService', () => {
 
       await expect(downloadThresholdingConfiguration(true)).resolves.toBe(false)
       expect(consoleError).toHaveBeenCalled()
-      consoleError.mockRestore()
     })
 
     test('requests the right format on download', async () => {

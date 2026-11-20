@@ -129,7 +129,7 @@ export default defineConfig(({ mode }) => {
     test: {
       dir: './tests',
       globals: true,
-      setupFiles: ['../../tests/setup.ts'],
+      setupFiles: [fileURLToPath(new URL('./tests/setup.ts', import.meta.url))],
       environment: 'happy-dom',
       css: {
         include: /.+/

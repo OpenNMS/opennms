@@ -59,7 +59,6 @@ vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner: vi.
 
 enableAutoUnmount(afterEach)
 
-const noop = { mounted: () => undefined }
 const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 const storedRole = (): ManagedOnCallRole => ({
@@ -79,7 +78,7 @@ const storedRole = (): ManagedOnCallRole => ({
 const mountPanel = async (role: ManagedOnCallRole | null = null) => {
   const wrapper = mount(OnCallRoleEditorPanel, {
     props: { role },
-    global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
+    global: { plugins: [PrimeVue] }
   })
   await flushPromises()
   return wrapper
