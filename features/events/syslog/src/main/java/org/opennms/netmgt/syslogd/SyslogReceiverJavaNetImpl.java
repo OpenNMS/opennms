@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 
 /**
@@ -46,8 +45,6 @@ import com.codahale.metrics.MetricRegistry;
  */
 public class SyslogReceiverJavaNetImpl extends SinkDispatchingSyslogReceiver {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverJavaNetImpl.class);
-    
-    private static final MetricRegistry METRICS = new MetricRegistry();
 
     private static final int SOCKET_TIMEOUT = 500;
 
@@ -69,7 +66,11 @@ public class SyslogReceiverJavaNetImpl extends SinkDispatchingSyslogReceiver {
     private final SyslogdConfig m_config;
 
     public SyslogReceiverJavaNetImpl(final SyslogdConfig config) {
-        super(config);
+        this(config, new MetricRegistry());
+    }
+
+    public SyslogReceiverJavaNetImpl(final SyslogdConfig config, final MetricRegistry metricRegistry) {
+        super(config, metricRegistry);
         m_config = config;
         m_stop = false;
         m_dgSock = null;
@@ -118,9 +119,7 @@ public class SyslogReceiverJavaNetImpl extends SinkDispatchingSyslogReceiver {
         // get the context
         m_context = Thread.currentThread();
 
-        // Create some metrics
-        Meter packetMeter = METRICS.meter(MetricRegistry.name(getClass(), "packets"));
-        Histogram packetSizeHistogram = METRICS.histogram(MetricRegistry.name(getClass(), "packetSize"));
+        Histogram packetSizeHistogram = getMetricRegistry().histogram("packetSize");
 
         if (m_stop) {
             LOG.debug("Stop flag set before thread started, exiting");
@@ -201,10 +200,10 @@ public class SyslogReceiverJavaNetImpl extends SinkDispatchingSyslogReceiver {
                 m_dgSock.receive(pkt);
 
                 // Increment the packet counter
-                packetMeter.mark();
+                m_udpPacketsReceived.mark();
 
                 // Create a metric for the Syslog packet size
-                packetSizeHistogram.update(length);
+                packetSizeHistogram.update(pkt.getLength());
 
                 final SyslogConnection connection = new SyslogConnection(pkt, true);
                 m_dispatcher.send(connection);
