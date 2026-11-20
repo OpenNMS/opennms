@@ -3,6 +3,9 @@
   all their services, a page of interfaces at a time. Fetching, the range and the race between
   responses are the composable's, and the states NodeAvailabilityBody's, as for the Node Details
   panel; this panel only pages.
+
+  The page mounts a new panel for each node (it shows none while the node loads), so a node starts
+  at its first page with the default page size.
 -->
 <template>
   <NodeDetailsPanel title="Availability">
@@ -62,15 +65,9 @@ const props = defineProps<{
 
 // The page of interfaces shown. The server computes figures for these only. The unit is the
 // interface, each with all of its services, not the row -- so the paginator's report names it.
+// Local to this panel, so each node, which gets a new panel, starts at its first page.
 const first = ref(0)
 const rows = ref(10)
-
-// Another node starts at its first page. Sync, and set up before the composable, so the node change
-// and the reset reach the composable as one change: one fetch, at offset 0, rather than one at the
-// old node's page first.
-watch(() => props.node?.id, () => {
-  first.value = 0
-}, { flush: 'sync' })
 
 const {
   model,

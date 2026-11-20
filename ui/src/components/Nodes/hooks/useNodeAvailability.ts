@@ -75,9 +75,9 @@ export const useNodeAvailability = (
   const nodeStore = useNodeStore()
 
   /**
-   * The selection lives in the node store rather than here, so it survives a node change: the
-   * details page rebuilds its panel for each node, and a range held locally would be lost every
-   * time the user moved on.
+   * The selection lives in the node store rather than here, so it survives a node change: both
+   * pages mount a new panel for each node, and a range held locally would be lost every time the
+   * user moved on.
    */
   const selection = computed(() => nodeStore.availabilityRange)
 
@@ -109,8 +109,9 @@ export const useNodeAvailability = (
 
   // Monotonic per fetch, full or roster-only, as nodeStore does for its own. One counter for both
   // kinds, so a page response cannot overwrite a later node or range change, nor the reverse. The
-  // range or page can change before a request has landed, and the Availability page keeps one
-  // instance across node ids (the details page rebuilds its panel per node), so responses can race.
+  // range or page can change before a request has landed, so responses can race. Both pages mount
+  // a new panel for each node, but a consumer that keeps one instance across node ids is handled
+  // too: a node change is a full fetch, and supersedes the old node's requests.
   let requestId = 0
 
   // True while timeline and activeWindow hold a successful full fetch for the current node and
@@ -217,9 +218,9 @@ export const useNodeAvailability = (
   // One watcher drives everything, so changes in the same tick are coalesced into one fetch. Paging
   // is watched by value, so a getter that builds a new object each time is not a change.
   //
-  // immediate is what fetches on mount. The details page rebuilds its panel for each node rather
-  // than feeding a new id to the existing one, so the node id never changes during that instance's
-  // life and a change-only watch would never fire at all.
+  // immediate is what fetches on mount. Both pages mount a new panel for each node rather than
+  // feeding a new id to the existing one, so the node id never changes during that instance's life
+  // and a change-only watch would never fire at all.
   watch(
     [() => toValue(nodeId), selection, () => toValue(paging).limit, () => toValue(paging).offset],
     ([id, sel], previous) => {

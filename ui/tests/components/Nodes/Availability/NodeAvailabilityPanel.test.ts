@@ -222,20 +222,6 @@ describe('NodeAvailabilityPanel.vue', () => {
       expect(paginator().props('rows')).toBe(50)
     })
 
-    // One fetch for the new node, at its first page: never one at the old node's page.
-    it('goes back to the first page for another node', async () => {
-      getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaceCount: 60 }))
-      wrapper = mountPanel()
-      await flushPromises()
-      await turnPage(25, 25)
-
-      await wrapper.setProps({ node: { id: '102' } as any })
-      await flushPromises()
-
-      expect(pagingCalls().filter(call => call.id === '102')).toEqual([{ id: '102', limit: 25, offset: 0, withServices: true }])
-      expect(paginator().props('first')).toBe(0)
-    })
-
     // The roster shrank under the page shown: go to the last page there is, not an empty one.
     // PrimeVue's paginator does the same on its own, so it is stubbed: the panel must not rely on
     // that, nor on the paginator being shown at all.
@@ -261,7 +247,7 @@ describe('NodeAvailabilityPanel.vue', () => {
       expect(pagingCalls().at(-1)).toEqual({ id: '101', limit: 10, offset: 50, withServices: true })
     })
 
-    // Only another node goes back to the first page: a new range keeps the page shown.
+    // A new range keeps the page shown.
     it('keeps the page when the range changes', async () => {
       getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaceCount: 60 }))
       wrapper = mountPanel('101', { TimeControls: TimeControlsStub })

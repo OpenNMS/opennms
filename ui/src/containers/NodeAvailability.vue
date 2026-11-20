@@ -21,6 +21,10 @@
       :route-for="nodeAvailabilityRoute"
       @retry="followRoute"
     />
+    <!--
+      getNodeById clears nodeLoaded before its first await, so another node removes this panel and
+      mounts a new one: each node starts at its first page with the default page size.
+    -->
     <NodeAvailabilityPanel
       v-else-if="nodeStore.nodeLoaded"
       :node="nodeStore.node"

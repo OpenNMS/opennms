@@ -131,6 +131,27 @@ describe('NodeAvailability.vue', () => {
     expect(panel.props('baseHref')).toBe('/base/')
   })
 
+  // getNodeById clears nodeLoaded before its first await, so the panel goes before the new node is
+  // drawn: each node gets a new panel, at its first page with the default page size.
+  it('gives each node a new panel', async () => {
+    const { wrapper, nodeStore } = mountComponent('42', true)
+    nodeStore.getNodeById = vi.fn(async (n) => {
+      nodeStore.nodeLoaded = false
+      await Promise.resolve()
+      nodeStore.node = { id: n.id, label: `srv-${n.id}` } as any
+      nodeStore.nodeLoaded = true
+    })
+    await flushPromises()
+    const before = wrapper.findComponent({ name: 'NodeAvailabilityPanel' }).vm.$.uid
+
+    await wrapper.setProps({ id: '43' })
+    await flushPromises()
+
+    const after = wrapper.findComponent({ name: 'NodeAvailabilityPanel' })
+    expect(after.props('node')).toEqual({ id: '43', label: 'srv-43' })
+    expect(after.vm.$.uid).not.toBe(before)
+  })
+
   it('shows no panel until the node has loaded', async () => {
     const { wrapper } = mountComponent('42')
     await flushPromises()
