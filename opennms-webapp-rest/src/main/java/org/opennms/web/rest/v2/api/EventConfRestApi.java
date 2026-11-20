@@ -557,19 +557,19 @@ public interface EventConfRestApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated successfully",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "EventConfEvent updated successfully."))),
+                            schema = @Schema(type = "object"),
+                            examples = @ExampleObject(value = "{\"message\": \"EventConfEvent updated successfully.\"}"))),
             @ApiResponse(responseCode = "400", description = "The body has no `event` or `enabled`, or the event's `uei` is blank",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
+                            schema = @Schema(type = "object"),
                             examples = @ExampleObject(value = "{\"error\": \"Event 'uei' is required\"}"))),
             @ApiResponse(responseCode = "404", description = "The source or the event does not exist",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
+                            schema = @Schema(type = "object"),
                             examples = @ExampleObject(value = "{\"error\": \"EventConfEvent not found for eventId=4211\"}"))),
             @ApiResponse(responseCode = "500", description = "Update failed",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
+                            schema = @Schema(type = "object"),
                             examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred: Failed to update EventConfEvent XML for eventId=4211\"}")))
     })
     Response updateEventConfEvent(
@@ -1026,8 +1026,9 @@ public interface EventConfRestApi {
             description = """
         Returns the source's events whose UEI matches `uei` exactly (case-sensitive, no wildcards), in
         evaluation order. Whitespace around `uei` is ignored. The results are full records, including
-        `id` and `xmlContent`. This resolves an event's id from its identity: pick among the results by comparing masks in `xmlContent`. For substring
-        search use `filter/{sourceId}/events`; for definitions without ids use `.../events/download`.""",
+        `id` and `xmlContent`. This resolves an event's id from its identity: pick among the results by
+        comparing masks in `xmlContent`. For substring search use `filter/{sourceId}/events`; for
+        definitions without ids use `.../events/download`.""",
             operationId = "getEventConfSourceEventsByUei"
     )
     @ApiResponses(value = {
