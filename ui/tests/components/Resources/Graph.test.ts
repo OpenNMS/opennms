@@ -52,7 +52,7 @@ describe('Graph.vue', () => {
   it('renders again when the time prop is replaced by a plain object', async () => {
     // tests/setup.ts fails the test on any Vue warning, including
     // "Invalid watch source".
-    vi.spyOn(console, 'log').mockImplementation(() => {})
+    const consoleLog = vi.spyOn(console, 'log').mockImplementation(() => {})
     const wrapper = mount(Graph, {
       props: { definition: 'mib2.bits', resourceId: 'node[1].nodeSnmp[]', time: timeFrom(0), label: 'rtr', isSingleGraph: false },
       global: { plugins: [createTestingPinia(), PrimeVue], stubs: { RouterLink: RouterLinkStub }}
@@ -64,5 +64,6 @@ describe('Graph.vue', () => {
     await wrapper.setProps({ time: timeFrom(7200) })
     await flushPromises()
     expect(store.getDefinitionData).toHaveBeenCalledTimes(2)
+    expect(consoleLog).toHaveBeenCalled()
   })
 })

@@ -22,6 +22,7 @@
 
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { muteAppWarnings } from '../vueWarnings'
 
 const NOW = 1_000_000_000_000
 
@@ -153,7 +154,7 @@ describe('sessionExpiry', () => {
     })
 
     it('shows the dialog instead when the page was reloaded for this recently', async () => {
-      const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const consoleWarn = muteAppWarnings()
       const { router, instance, SESSION_EXPIRED_RELOAD_KEY, RELOAD_GUARD_MS, sessionExpiredDialogVisible } = await setup()
       window.sessionStorage.setItem(SESSION_EXPIRED_RELOAD_KEY, String(NOW - RELOAD_GUARD_MS + 1))
       router.navigate('/node/2')
@@ -176,7 +177,7 @@ describe('sessionExpiry', () => {
     })
 
     it('still reloads for a later expiry after a 401 inside the guard window', async () => {
-      const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const consoleWarn = muteAppWarnings()
       const { router, instance, SESSION_EXPIRED_RELOAD_KEY, RELOAD_GUARD_MS } = await setup()
       window.sessionStorage.setItem(SESSION_EXPIRED_RELOAD_KEY, String(NOW - 1000))
       router.navigate('/node/2')
@@ -193,7 +194,7 @@ describe('sessionExpiry', () => {
     })
 
     it('shows the dialog when the reload did not happen (e.g. cancelled by a beforeunload prompt)', async () => {
-      const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const consoleWarn = muteAppWarnings()
       const { router, instance, RELOAD_CANCELLED_AFTER_MS, sessionExpiredDialogVisible } = await setup()
       router.navigate('/node/2')
       await instance.get('/a').catch(() => undefined)
@@ -315,7 +316,7 @@ describe('sessionExpiry', () => {
     })
 
     it('shows the dialog instead when the page was reloaded for this recently', async () => {
-      const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const consoleWarn = muteAppWarnings()
       const { router, SESSION_EXPIRED_RELOAD_KEY, RELOAD_GUARD_MS, sessionExpiredDialogVisible } = await setup()
       window.sessionStorage.setItem(SESSION_EXPIRED_RELOAD_KEY, String(NOW - RELOAD_GUARD_MS + 1))
 

@@ -408,7 +408,7 @@ describe('useEventConfigStore', () => {
   it('should maintain state consistency after failed operations', async () => {
     const error = new Error('Network error')
     vi.mocked(filterEventConfigSources).mockRejectedValue(error)
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     const initialSources = [...store.sources]
     const initialPagination = { ...store.sourcesPagination }
@@ -418,6 +418,7 @@ describe('useEventConfigStore', () => {
     expect(store.sources).toEqual(initialSources)
     expect(store.sourcesPagination).toEqual(initialPagination)
     expect(store.isLoading).toBe(false)
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('should show create event config source dialog', () => {

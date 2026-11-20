@@ -524,7 +524,7 @@ describe('useEventConfigDetailStore', () => {
     store.selectedSource = mockSource
     const error = new Error('Network error')
     vi.mocked(filterEventConfigEvents).mockRejectedValue(error)
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     const initialEvents = [...store.events]
     const initialPagination = { ...store.eventsPagination }
@@ -534,6 +534,7 @@ describe('useEventConfigDetailStore', () => {
     expect(store.events).toEqual(initialEvents)
     expect(store.eventsPagination).toEqual(initialPagination)
     expect(store.isLoading).toBe(false)
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('should handle changing source and fetching events', async () => {

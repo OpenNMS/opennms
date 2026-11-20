@@ -89,7 +89,7 @@ describe('minionAdminService', () => {
   })
 
   it('getMinion is null for a missing row, an empty body, or a failure', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(v2.get).mockRejectedValueOnce(http(404))
     expect(await getMinion('m1')).toBeNull()
     vi.mocked(v2.get).mockResolvedValueOnce({ status: 204 } as any)
@@ -98,6 +98,7 @@ describe('minionAdminService', () => {
     expect(await getMinion('m1')).toBeNull()
     vi.mocked(v2.get).mockRejectedValueOnce(http(500))
     expect(await getMinion('m1')).toBeNull()
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('deleteMinion treats a 404 (already deleted) as success', async () => {
@@ -121,10 +122,11 @@ describe('minionAdminService', () => {
   })
 
   it('getCoreVersion is null when the info endpoint fails or has no version', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(rest.get).mockRejectedValueOnce(http(500))
     expect(await getCoreVersion()).toBeNull()
     vi.mocked(rest.get).mockResolvedValueOnce({ data: {}} as any)
     expect(await getCoreVersion()).toBeNull()
+    expect(consoleError).toHaveBeenCalled()
   })
 })

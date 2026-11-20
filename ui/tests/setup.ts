@@ -31,6 +31,7 @@ import { afterAll, afterEach, beforeEach } from 'vitest'
 // test that needs a different tooltip should override `directives['onms-tooltip']`
 // in its mount options, not `vi.mock` the module.
 import OnmsTooltip from '../packages/onms-ui/src/directives/OnmsTooltip'
+import { isVueWarning } from './vueWarnings'
 
 // The app registers `v-onms-tooltip` globally in src/theme/primevue-setup.ts,
 // so components use it without a local import. Register it the same way for
@@ -52,16 +53,14 @@ config.global.directives = {
 //
 // vi.spyOn(console, 'warn').mockImplementation(...) replaces this wrapper, so it
 // turns the check off for every Vue warning in that test, not only the expected
-// one. Use it only to mute an expected warning from app code. To assert that a
-// warning was logged, spy without mockImplementation: the call still reaches
-// this wrapper.
-const VUE_WARNING = /^\[Vue( Router)? warn\]/
+// one. To mute an expected warning from app code, use muteAppWarnings() from
+// tests/vueWarnings.ts, which passes Vue warnings on to this wrapper.
 const vueWarnings: string[] = []
 const originalWarn = console.warn
 
 console.warn = (...args: unknown[]) => {
-  if (typeof args[0] === 'string' && VUE_WARNING.test(args[0])) {
-    vueWarnings.push(args[0])
+  if (isVueWarning(args[0])) {
+    vueWarnings.push(args[0] as string)
   }
   originalWarn(...args)
 }

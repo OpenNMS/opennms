@@ -10,6 +10,7 @@ import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { reactive } from 'vue'
+import { muteAppWarnings } from '../../vueWarnings'
 
 vi.mock('@/stores/eventConfigStore')
 vi.mock('@/composables/useSnackbar')
@@ -375,8 +376,8 @@ describe('EventConfigUploadFilesTab.vue', () => {
     })
 
     it('does nothing when there are no files', async () => {
-      // The component warns about the empty queue; suppress the expected noise.
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      // The component warns about the empty queue; mute that, but not Vue warnings.
+      const consoleWarnSpy = muteAppWarnings()
       await wrapper.vm.uploadFiles()
       expect(uploadEventConfigFiles).not.toHaveBeenCalled()
       expect(consoleWarnSpy).toHaveBeenCalled()
