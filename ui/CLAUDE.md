@@ -67,11 +67,12 @@ Owned `Onms-` components that wrap PrimeVue 4.x behind a stable, OpenNMS-control
 4. No PrimeVue types or values in any public signature; exported types are defined in OpenNMS vocabulary in `packages/onms-ui/src/types.ts`.
 5. Every new component ships with a contract test in `tests/onms-ui/` asserting prop mapping, emit forwarding, and slot forwarding.
 
-The package covers most of the PrimeVue surface in use: buttons, form inputs (text, number, password, textarea, checkbox, radio, select, select button, slider, color picker, multiselect, autocomplete, datepicker, toggle switch, search input, listbox), overlays (dialog, confirmation/message dialogs, drawer, popover, menu, tiered menu, context menu), data display (table + column, virtual scroller, card, panel, chip, tag, tabs family), plus `OnmsSpinner`, `OnmsToastHost` + `useOnmsToast`, and the `v-onms-tooltip` directive. The authoritative list is `packages/onms-ui/src/components/` and the ESLint `no-restricted-imports` entries in `eslint.config.js` — check there before importing anything from `primevue/*`. Exception: `SideMenu.vue` keeps a direct `primevue/tieredmenu` import (inline-disabled) because it drives the component's internals rather than its props.
+The package covers most of the PrimeVue surface in use: buttons, form inputs (text, number, password, textarea, checkbox, radio, select, select button, toggle button, slider, color picker, multiselect, autocomplete, datepicker, toggle switch, search input, listbox), overlays (dialog, confirmation/message dialogs, drawer, popover, menu, tiered menu, context menu), data display (table + column, virtual scroller, card, panel, chip, tag, tabs family), plus `OnmsSpinner`, `OnmsToastHost` + `useOnmsToast`, and the `v-onms-tooltip` directive. The authoritative list is `packages/onms-ui/src/components/` and the ESLint `no-restricted-imports` entries in `eslint.config.js` — check there before importing anything from `primevue/*`. Exception: `SideMenu.vue` keeps a direct `primevue/tieredmenu` import (inline-disabled) because it drives the component's internals rather than its props.
 
 ### UI, theming, layout
 
 - Icons: `OnmsIcon` wrapper + vendored SVG components, both in the seam package — `packages/onms-ui/src/icons/<category>/<Name>.vue`. Import via the subpath export, e.g. `import Delete from '@opennms/onms-ui/icons/action/Delete.vue'`. They are deliberately **not** exported from the package barrel (see `packages/onms-ui/README.md`, "Icons"): the barrel is assigned wholesale to `window.OnmsUI`, so a barrel export would force every icon into every bundle.
+- Alarm severity: show it with `SeverityIcon` (`src/components/Common/SeverityIcon.vue`), an icon from `icons/severity/` on a colored circle. Its colors are the `--onms-severity-<key>-bg`/`-fg` tokens in `onms-theme.scss`; `src/lib/severity.ts` maps an OnmsSeverity name to its key (`none` for indeterminate, cleared and unknown).
 - Layout: `OnmsAppLayout` (`src/components/Layout/OnmsAppLayout.vue`)
 - Theming: owned `--onms-*` tokens (`src/styles/onms-theme.scss`, `_onms-tokens.scss`) layered over PrimeVue's `--p-*` tokens; light/dark via `.open-light`/`.open-dark` class on `<html>`/`<body>` (PrimeVue `darkModeSelector`)
 - Typography: owned mixins in `src/styles/_onms-typography.scss` (CSS classes `.headline3`, `.headline4`, `.subtitle1`)
@@ -131,6 +132,7 @@ Vitest + Happy-DOM + `@vue/test-utils` + `@pinia/testing`. Tests live in `tests/
 ### Key directories
 
 - `src/components/` — reusable components (organized by feature)
+  - `src/components/Nodes/` has one subfolder per page (`NodeDetails/`, `NodeList/`; later `Availability/`, `IpInterfaces/`, `SnmpInterfaces/`). A file goes in a page folder only when that page is its only user; files used by more than one page (or by `nodeStore`, which the Map also uses) stay in the `Nodes/` root. The root and each page folder have their own `hooks/`. Imports within a folder are relative; imports across folders use `@/components/Nodes/...`.
 - `src/containers/` — top-level page components (route targets)
 - `src/composables/` — shared reactive logic
 - `src/stores/` — Pinia stores

@@ -1,97 +1,139 @@
 <template>
-  <div class="onms-node-details">
-    <div class="onms-row">
-      <div class="onms-col-12">
-        <BreadCrumbs :items="items" />
-      </div>
-    </div>
-    <div class="header">
-      <div class="heading">
-        <h2>{{ heading }}</h2>
-      </div>
-      <div
-        v-if="pageState === 'node'"
-        class="header-controls"
-      >
-        <OnmsSelectButton
-          v-model="activeTab"
-          :options="tabOptions"
-          option-label="label"
-          option-value="value"
-          aria-label="Node details view"
-          data-test="node-details-tab-select"
-        />
-      </div>
-    </div>
-    <p
-      v-if="pageState === 'resolving'"
-      data-test="node-details-resolving"
-    >
-      Looking up node {{ lookupValue }}…
-    </p>
-    <NodeLookupMessage
-      v-else-if="pageState === 'invalid' || pageState === 'notFound' || pageState === 'error'"
-      :state="pageState"
-      :value="lookupValue"
-      @retry="followRoute"
-    />
-    <template v-else>
-      <div
-        v-if="nodeLoaded"
-        class="onms-row"
-      >
+  <div
+    class="onms-node-details"
+    :class="{ 'onms-node-details--node': pageState === 'node' }"
+  >
+    <!--
+      Below this width the badges, menus and panels start to wrap into each other, so the page
+      keeps it and scrolls sideways instead.
+    -->
+    <div class="node-details-content">
+      <div class="onms-row">
         <div class="onms-col-12">
-          <NodeDetailsHeader :node="nodeStore.node" />
-          <NodeDetailsLinks
-            :baseHref="baseHref"
-            :node="nodeStore.node"
-            :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
-            :existsInRequisition="nodeStore.existsInRequisition"
-            :services="nodeStore.linkServices"
-            :triggerNodeInfo="onNodeInfo"
-            :data-requisition-checked="requisitionChecked || undefined"
+          <BreadCrumbs :items="items" />
+        </div>
+      </div>
+      <div class="header">
+        <div class="heading">
+          <h2>{{ heading }}</h2>
+        </div>
+        <div
+          v-if="pageState === 'node'"
+          class="header-controls"
+        >
+          <OnmsSelectButton
+            v-model="activeTab"
+            :options="tabOptions"
+            option-label="label"
+            option-value="value"
+            aria-label="Node details view"
+            data-test="node-details-tab-select"
           />
         </div>
       </div>
-
-      <!--
-        KeepAlive so a tab mounts -- and its tables fetch -- only when first shown, then keeps its
-        paging and sorting when the user switches away and back. A hidden tab does not follow the
-        route (see useActiveNodeId): it refreshes for the node on screen when it is shown again.
-      -->
-      <KeepAlive>
-        <NodeDetailsMainTab
-          v-if="activeTab === 'main'"
-          :node="nodeStore.node"
-          :nodeLoaded="nodeLoaded"
-          :baseHref="baseHref"
-        />
-        <NodeDetailsAdditionalTab v-else-if="activeTab === 'additional'" />
-        <NodeDetailsNetworkTab v-else />
-      </KeepAlive>
-
-      <NodeDetailsDialog
-        :visible="dialogVisible"
-        :node="nodeStore.node"
-        @close="dialogVisible = false"
+      <p
+        v-if="pageState === 'resolving'"
+        data-test="node-details-resolving"
+      >
+        Looking up node {{ lookupValue }}…
+      </p>
+      <NodeLookupMessage
+        v-else-if="pageState === 'invalid' || pageState === 'notFound' || pageState === 'error'"
+        :state="pageState"
+        :value="lookupValue"
+        @retry="followRoute"
       />
-    </template>
+      <template v-else>
+        <div
+          v-if="nodeLoaded"
+          class="onms-row"
+        >
+          <div
+            ref="summaryRow"
+            class="onms-col-12 node-summary"
+          >
+            <!-- The expander and the badges are measured as one, for the width the menus have left. -->
+            <div
+              ref="summaryHeader"
+              class="node-summary-start"
+            >
+              <OnmsIconButton
+                class="node-system-info-toggle"
+                :icon="systemInfoExpanded ? ExpandLess : ChevronRight"
+                :tooltip="systemInfoExpanded ? 'Hide node system info' : 'View node system info'"
+                :aria-expanded="String(systemInfoExpanded)"
+                :aria-controls="systemInfoExpanded ? 'node-system-info' : undefined"
+                data-test="node-system-info-toggle"
+                @click="nodeStore.setNodeSystemInfoExpanded(!systemInfoExpanded)"
+              />
+              <NodeDetailsHeader :node="nodeStore.node" />
+            </div>
+            <NodeDetailsLinks
+              class="node-summary-links"
+              :availableWidth="linksAvailableWidth"
+              :baseHref="baseHref"
+              :node="nodeStore.node"
+              :snmpPrimaryIpAddress="snmpPrimaryIpAddress"
+              :existsInRequisition="nodeStore.existsInRequisition"
+              :services="nodeStore.linkServices"
+              :triggerNodeInfo="onNodeInfo"
+              :data-requisition-checked="requisitionChecked || undefined"
+            />
+          </div>
+        </div>
+        <!--
+          A row of its own under the badges, on every tab. Outside the grid above, whose row gap
+          would add to the badges' bottom margin.
+        -->
+        <NodeSystemInfoPanel
+          v-if="nodeLoaded && systemInfoExpanded"
+          id="node-system-info"
+          :node="nodeStore.node"
+        />
+
+        <!--
+          KeepAlive so a tab mounts -- and its tables fetch -- only when first shown, then keeps its
+          paging and sorting when the user switches away and back. A hidden tab does not follow the
+          route (see useActiveNodeId): it refreshes for the node on screen when it is shown again.
+        -->
+        <KeepAlive>
+          <NodeDetailsMonitoringTab
+            v-if="activeTab === 'monitoring'"
+            :node="nodeStore.node"
+            :nodeLoaded="nodeLoaded"
+            :baseHref="baseHref"
+          />
+          <NodeDetailsEventsTab v-else-if="activeTab === 'events'" />
+          <NodeDetailsNeighborsTab v-else />
+        </KeepAlive>
+
+        <NodeDetailsDialog
+          :visible="dialogVisible"
+          :node="nodeStore.node"
+          @close="dialogVisible = false"
+        />
+      </template>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, useTemplateRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { OnmsSelectButton } from '@opennms/onms-ui'
+import { useElementSize } from '@vueuse/core'
+import { OnmsIconButton, OnmsSelectButton } from '@opennms/onms-ui'
+import ChevronRight from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
+import ExpandLess from '@opennms/onms-ui/icons/navigation/ExpandLess.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import NodeDetailsAdditionalTab from '@/components/Nodes/NodeDetailsAdditionalTab.vue'
 import NodeDetailsDialog from '@/components/Nodes/NodeDetailsDialog.vue'
-import NodeDetailsHeader from '@/components/Nodes/NodeDetailsHeader.vue'
-import NodeDetailsLinks from '@/components/Nodes/NodeDetailsLinks.vue'
-import NodeDetailsMainTab from '@/components/Nodes/NodeDetailsMainTab.vue'
-import NodeDetailsNetworkTab from '@/components/Nodes/NodeDetailsNetworkTab.vue'
-import NodeLookupMessage from '@/components/Nodes/NodeLookupMessage.vue'
-import { nodeDetailsRoute, parseNodeRouteId } from '@/components/Nodes/nodeDetailsRoute'
+import NodeDetailsEventsTab from '@/components/Nodes/NodeDetails/NodeDetailsEventsTab.vue'
+import NodeDetailsHeader from '@/components/Nodes/NodeDetails/NodeDetailsHeader.vue'
+import NodeDetailsLinks from '@/components/Nodes/NodeDetails/NodeDetailsLinks.vue'
+import NodeDetailsMonitoringTab from '@/components/Nodes/NodeDetails/NodeDetailsMonitoringTab.vue'
+import NodeDetailsNeighborsTab from '@/components/Nodes/NodeDetails/NodeDetailsNeighborsTab.vue'
+import NodeLookupMessage from '@/components/Nodes/NodeDetails/NodeLookupMessage.vue'
+import NodeSystemInfoPanel from '@/components/Nodes/NodeDetails/NodeSystemInfoPanel.vue'
+import { nodeDetailsRoute, parseNodeRouteId } from '@/lib/nodeDetailsRoute'
 import API from '@/services'
 import useRole from '@/composables/useRole'
 import { useMenuStore } from '@/stores/menuStore'
@@ -113,9 +155,9 @@ const props = defineProps({
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
 
 const tabOptions: { label: string, value: NodeDetailsTab }[] = [
-  { label: 'Main', value: 'main' },
-  { label: 'Additional', value: 'additional' },
-  { label: 'Network', value: 'network' }
+  { label: 'Monitoring', value: 'monitoring' },
+  { label: 'Events', value: 'events' },
+  { label: 'Neighbors', value: 'neighbors' }
 ]
 
 const activeTab = computed<NodeDetailsTab>({
@@ -141,6 +183,28 @@ const nodeLoaded = computed<boolean>(() => nodeStore.nodeLoaded)
 // table holds only whatever page it is showing.
 const snmpPrimaryIpAddress = computed<string | undefined>(() => nodeStore.snmpPrimaryIpAddress)
 
+// The System Information panel, opened from the expander before the badges. In the store, so it
+// stays open from one node to the next.
+const systemInfoExpanded = computed<boolean>(() => nodeStore.nodeSystemInfoExpanded)
+
+// What the summary row leaves for the link menus once the badges have their natural width. The
+// badges are not squeezed while there is room for both, so their width is the width they need;
+// when there is not, the menus collapse to the hamburger button. null until the row is measured,
+// so the menus wait for it rather than guess.
+const summaryRow = useTemplateRef<HTMLElement>('summaryRow')
+const { width: summaryRowWidth } = useElementSize(summaryRow)
+const { width: summaryHeaderWidth } = useElementSize(useTemplateRef('summaryHeader'), undefined, { box: 'border-box' })
+
+const linksAvailableWidth = computed<number | null>(() => {
+  if (!summaryRow.value || summaryRowWidth.value === 0) {
+    return null
+  }
+
+  const gap = parseFloat(getComputedStyle(summaryRow.value).columnGap) || 0
+
+  return summaryRowWidth.value - summaryHeaderWidth.value - gap
+})
+
 type PageState = 'node' | 'resolving' | 'invalid' | 'notFound' | 'error'
 
 // The tabs read route.params.id themselves (useActiveNodeId), so they mount only once the route
@@ -163,8 +227,16 @@ const pageState = computed<PageState>(() => {
   return nodeStore.nodeLoadError === 'failed' ? 'error' : 'node'
 })
 
-const heading = computed<string>(() =>
-  pageState.value === 'node' ? `Node Details for ${nodeStore.node?.label ?? ''}`.trimEnd() : 'Node Details')
+const heading = computed<string>(() => {
+  if (pageState.value !== 'node') {
+    return 'Node Details'
+  }
+
+  // The store starts with an empty node object, so the label is what says the fetch has landed.
+  const node = nodeStore.node
+
+  return node?.label ? `Node Details for ${node.label} (id: ${node.id})` : 'Node Details for'
+})
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
@@ -242,7 +314,24 @@ watch(
 
 <style lang="scss" scoped>
 .onms-node-details {
-  padding: 1.5em;
+  // Scrolls sideways below the content's minimum width (the page itself cannot: <html> hides its
+  // horizontal overflow).
+  overflow-x: auto;
+
+  // A scroll container clips in both directions, though, and the link menus' dropdowns are not
+  // teleported out of it, so a short tab (an empty Neighbors tab, say) leaves room for the deepest
+  // of them -- the hamburger list with one submenu open -- below the header. Only while a node is
+  // shown: the lookup and error messages have no menus. Remove this if OnmsMenubar gets an
+  // appendTo (teleported dropdowns).
+  &.onms-node-details--node {
+    min-height: 36rem;
+  }
+
+  .node-details-content {
+    box-sizing: border-box;
+    min-width: 1200px;
+    padding: 1.5em;
+  }
 
   .header {
     display: flex;
@@ -256,6 +345,34 @@ watch(
       align-items: center;
       gap: 0.75em;
     }
+  }
+
+  // The badges on the left and the link menus on the right of one row. When the two do not fit
+  // side by side, the menus collapse to the hamburger button (see linksAvailableWidth), which wraps
+  // onto a row of its own, still on the right, only if the badges fill the row by themselves.
+  .node-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .node-summary-start {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  // The icon in line with the left edge of the panels below, rather than indented by the button's
+  // padding. Its hover background reaches past that edge.
+  .node-system-info-toggle {
+    margin-left: -1rem;
+  }
+
+  .node-summary-links {
+    margin-left: auto;
   }
 }
 </style>

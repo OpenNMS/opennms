@@ -95,6 +95,14 @@ describe('Notifications page URL', () => {
     expect(replace).not.toHaveBeenCalled()
   })
 
+  // Node Details' "All notifications for this node" link.
+  it('applies the all preset and node from the URL', async () => {
+    const { store } = mountPage({ preset: 'all', node: '146' })
+    await flushPromises()
+
+    expect(store.applyQuery).toHaveBeenCalledWith('all', '146')
+  })
+
   it('ignores an unknown preset and a non-numeric node', async () => {
     const { store } = mountPage({ preset: 'bogus', node: 'abc' })
     await flushPromises()

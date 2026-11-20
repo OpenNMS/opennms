@@ -169,7 +169,10 @@ Where these diverge from PrimeVue, deliberately:
   top-level items in a row, each opening its nested `items` as a dropdown. It
   takes the same `OnmsMenuItem` model, forwards `#item`, and adds `#start` and
   `#end` for content around the items. An item with `target: '_blank'` gets
-  `rel="noopener noreferrer"`, which PrimeVue does not add.
+  `rel="noopener noreferrer"`, which PrimeVue does not add. `collapsed` forces
+  the hamburger button (`true`) or the full row (`false`) for a bar whose room
+  depends on its row rather than on the viewport; left out, PrimeVue switches at
+  its 960px viewport breakpoint.
 - **`OnmsPaginator`** (added later, NMS-20303) is paging controls on their own,
   for content that is not an `OnmsTable` (which has its own). `page` emits the
   same `OnmsTablePageEvent` as `OnmsTable`, rather than PrimeVue's
@@ -186,6 +189,15 @@ Where these diverge from PrimeVue, deliberately:
   (`OnmsTable`'s `virtualScrollItemSize` remains the table case). Its `#item`
   slot exposes `{ item, index }` rather than forwarding PrimeVue's internal
   `options` bookkeeping.
+- **`OnmsToggleButton`** (added later, NMS-20449) is one on/off button that
+  stays pressed, for a set of choices where more than one can be on (several
+  of them side by side) or none at all. `label` is the text for both states;
+  `onLabel` / `offLabel` override it per state. Without any of them the
+  button has no text, where PrimeVue would show "Yes" / "No". `onIcon` /
+  `offIcon` take an icon component rather than PrimeVue's CSS class string.
+  The icon gets `onms-toggle-button-icon` plus `--on` / `--off`, and the
+  wrapper leaves its color to the consumer. `change` emits the new value, not
+  the DOM event, matching `OnmsSelectButton`.
 
 ## Icons
 
@@ -202,9 +214,9 @@ import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 // then: <OnmsIcon :icon="DeleteIcon" />
 ```
 
-The 12 category directories (`account`, `action`, `communication`, `content`,
+The 13 category directories (`account`, `action`, `communication`, `content`,
 `datavis`, `file`, `hardware`, `medical`, `navigation`, `network`,
-`notification`, `status`) are part of the path. They matter: several basenames
+`notification`, `severity`, `status`) are part of the path. They matter: several basenames
 (`Server`, `Cloud`, `Security`, `Group`, `Build`, `Code`, `Cancel`, …) appear in
 more than one category, so the category is what disambiguates them.
 

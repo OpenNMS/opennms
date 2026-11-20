@@ -24,10 +24,10 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
@@ -72,14 +72,15 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
+import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsPathOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -98,6 +99,7 @@ import org.opennms.web.rest.support.SearchPropertyCollection;
 import org.opennms.web.rest.support.StringCollection;
 import org.opennms.web.rest.v2.model.NodeAlarmStatusDto;
 import org.opennms.web.rest.v2.model.NodeCriticalPathDto;
+import org.opennms.web.rest.v2.model.NodeNotificationStatusDto;
 import org.opennms.web.rest.v2.model.NodeServiceTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,6 +163,9 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     @Autowired
     private AlarmDao m_alarmDao;
+
+    @Autowired
+    private NotificationDao m_notificationDao;
 
     @Autowired
     @Qualifier("eventProxy")
@@ -1092,23 +1097,21 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional(readOnly = true)
     @Operation(
-            summary = "Get a summary of a node's problem alarms",
+            summary = "Get a summary of a node's unacknowledged problem alarms",
             description = """
-        Return what the legacy node page's status box showed: whether the node is down, how many interfaces
-        and services are down, how many problem alarms are acknowledged and unacknowledged, and the highest
-        unacknowledged severity. A problem alarm is one above Normal severity. Down is read from the UEI, as
-        the status box did: a UEI that contains `nodeDown`, `interfaceDown` or `nodeLostService`.
+        Return how many of the node's problem alarms are unacknowledged, how many are unacknowledged at each
+        severity, and the highest unacknowledged severity. A problem alarm is one above Normal severity.
 
-        Every figure is counted on the server, so the answer stays small however many alarms the node has.
-        Use `GET /alarms` with a node filter for the alarms themselves.""",
+        The figures come from one grouped count on the server, so the answer stays small however many alarms
+        the node has. Use `GET /alarms` with a node filter for the alarms themselves.""",
             operationId = "NodeRestServiceGETAlarmStatusByNodeId")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "The node's alarm summary.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = NodeAlarmStatusDto.class),
                             examples = @ExampleObject(value = """
-                    {"severity": "MAJOR", "nodeDown": false, "interfacesDown": 0, "servicesDown": 1,
-                     "acknowledgedCount": 1, "unacknowledgedCount": 2}"""))),
+                    {"severity": "MAJOR", "unacknowledgedCount": 2,
+                     "unacknowledgedBySeverity": {"CRITICAL": 0, "MAJOR": 1, "MINOR": 1, "WARNING": 0}}"""))),
             @ApiResponse(responseCode = "404", description = "No such node.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
@@ -1124,35 +1127,89 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         }
         final int nodeId = node.getId();
 
-        // As the legacy node page's status box, which loaded every alarm and counted them; here the database counts.
-        final List<OnmsAlarm> worstUnacknowledged = m_alarmDao.findMatching(problemAlarms(nodeId)
-                .isNull("alarmAckTime")
-                .orderBy("severity").desc()
-                .limit(1)
-                .toCriteria());
+        // The legacy node page's status box loaded every alarm and counted them; here the database counts. One
+        // grouped count gives every figure: the count for each severity, their total, and the highest severity
+        // that has any.
+        final Map<OnmsSeverity, Long> unacknowledged = m_alarmDao.getUnacknowledgedCountsBySeverity(nodeId);
+        final Map<String, Long> unacknowledgedBySeverity = new LinkedHashMap<>();
+        OnmsSeverity worstUnacknowledged = OnmsSeverity.NORMAL;
+        long unacknowledgedCount = 0;
+        for (final OnmsSeverity severity : PROBLEM_SEVERITIES) {
+            final long count = unacknowledged.getOrDefault(severity, 0L);
+            unacknowledgedBySeverity.put(severity.name(), count);
+            unacknowledgedCount += count;
+            if (count > 0 && worstUnacknowledged == OnmsSeverity.NORMAL) {
+                worstUnacknowledged = severity;
+            }
+        }
 
         final NodeAlarmStatusDto result = new NodeAlarmStatusDto();
-        result.setSeverity(worstUnacknowledged.isEmpty()
-                ? OnmsSeverity.NORMAL.name()
-                : worstUnacknowledged.get(0).getSeverity().name());
-        result.setNodeDown(countProblemAlarms(nodeId, b -> b.like("uei", "%nodeDown%")) > 0);
-        result.setInterfacesDown(countProblemAlarms(nodeId, b -> b.like("uei", "%interfaceDown%")));
-        result.setServicesDown(countProblemAlarms(nodeId, b -> b.like("uei", "%nodeLostService%")));
-        result.setAcknowledgedCount(countProblemAlarms(nodeId, b -> b.isNotNull("alarmAckTime")));
-        result.setUnacknowledgedCount(countProblemAlarms(nodeId, b -> b.isNull("alarmAckTime")));
+        result.setSeverity(worstUnacknowledged.name());
+        result.setUnacknowledgedCount(unacknowledgedCount);
+        result.setUnacknowledgedBySeverity(unacknowledgedBySeverity);
         return Response.ok(result).build();
     }
 
-    // The node's alarms above Normal: indeterminate, cleared and normal ones are not problems.
-    private static CriteriaBuilder problemAlarms(final int nodeId) {
-        return new CriteriaBuilder(OnmsAlarm.class)
-                .alias("node", "node")
-                .eq("node.id", nodeId)
-                .gt("severity", OnmsSeverity.NORMAL);
+    // The severities above Normal, highest first: indeterminate, cleared and normal alarms are not problems.
+    private static final List<OnmsSeverity> PROBLEM_SEVERITIES = List.of(
+            OnmsSeverity.CRITICAL, OnmsSeverity.MAJOR, OnmsSeverity.MINOR, OnmsSeverity.WARNING);
+
+    @GET
+    @Path("{nodeCriteria}/notificationStatus")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional(readOnly = true)
+    @Operation(
+            summary = "Get a count of a node's notifications",
+            description = """
+        Return how many notifications the node has: the outstanding ones sent to the caller, all the outstanding
+        ones, and all of them, outstanding and acknowledged. Outstanding is not yet acknowledged.
+
+        The figures match the totals of `GET /rest/notifications` with a `node.id` filter: `answeredBy=null` and
+        `usersNotified.userId=<caller>`, `answeredBy=null`, and no other filter. A notification sent to the
+        caller by more than one method is counted once.""",
+            operationId = "NodeRestServiceGETNotificationStatusByNodeId")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The node's notification counts.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = NodeNotificationStatusDto.class),
+                            examples = @ExampleObject(value = """
+                    {"user": "admin", "yourOutstanding": 2, "allOutstanding": 5, "total": 40}"""))),
+            @ApiResponse(responseCode = "404", description = "No such node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found.")))
+    })
+    public Response getNotificationStatus(
+            @Context final SecurityContext securityContext,
+            @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("nodeCriteria") final String nodeCriteria) {
+        final OnmsNode node = m_dao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.NOT_FOUND, "Node {} was not found.", nodeCriteria);
+        }
+        final int nodeId = node.getId();
+        final String user = securityContext.getUserPrincipal().getName();
+
+        final NodeNotificationStatusDto result = new NodeNotificationStatusDto();
+        result.setUser(user);
+        // A notification has one usersNotified row per user and method, so the join is counted over distinct
+        // notifications, as the v1 summary and the list are.
+        result.setYourOutstanding(m_notificationDao.countMatching(nodeNotifications(nodeId)
+                .isNull("answeredBy")
+                .alias("usersNotified", "usersNotified")
+                .eq("usersNotified.userId", user)
+                .distinct()
+                .toCriteria()));
+        result.setAllOutstanding(m_notificationDao.countMatching(nodeNotifications(nodeId).isNull("answeredBy").toCriteria()));
+        result.setTotal(m_notificationDao.countMatching(nodeNotifications(nodeId).toCriteria()));
+        return Response.ok(result).build();
     }
 
-    private int countProblemAlarms(final int nodeId, final UnaryOperator<CriteriaBuilder> restrict) {
-        return m_alarmDao.countMatching(restrict.apply(problemAlarms(nodeId)).toCriteria());
+    private static CriteriaBuilder nodeNotifications(final int nodeId) {
+        return new CriteriaBuilder(OnmsNotification.class)
+                .alias("node", "node")
+                .eq("node.id", nodeId);
     }
 
     @Path("{nodeCriteria}/ipinterfaces")

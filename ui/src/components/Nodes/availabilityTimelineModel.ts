@@ -203,6 +203,28 @@ export const buildTimelineModel = (
 }
 
 /**
+ * The model cut to at most `maxRows` rows, in order. Each interface takes a row for its heading and
+ * one per service. An interface is only shown with at least one of its services, so one that would
+ * fit only its heading is left out. The node's own figures are not changed.
+ */
+export const limitTimelineRows = (model: TimelineModel, maxRows: number): TimelineModel => {
+  const interfaces: TimelineInterfaceGroup[] = []
+  let remaining = maxRows
+
+  for (const group of model.interfaces) {
+    if (remaining < 2) {
+      break
+    }
+
+    const services = group.services.slice(0, remaining - 1)
+    interfaces.push(services.length === group.services.length ? group : { ...group, services })
+    remaining -= 1 + services.length
+  }
+
+  return { ...model, interfaces }
+}
+
+/**
  * How much of the left of the strip predates the node. The server-rendered strip left this region
  * unpainted rather than green, because green meant "monitored", not "up". It matters more now that
  * the window is selectable: over ninety days, a node provisioned yesterday would otherwise read as

@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.dao.mock;
 
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,6 +31,7 @@ import java.util.stream.Stream;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.SituationSummary;
 
@@ -108,6 +110,14 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
     @Override
     public List<AlarmSummary> getNodeAlarmSummariesIncludeAcknowledgedOnes(List<Integer> nodeIds) {
         throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public Map<OnmsSeverity, Long> getUnacknowledgedCountsBySeverity(final int nodeId) {
+        return findAll().stream()
+                .filter(a -> a.getNode() != null && a.getNode().getId() != null && a.getNode().getId() == nodeId)
+                .filter(a -> a.getAlarmAckTime() == null)
+                .collect(Collectors.groupingBy(OnmsAlarm::getSeverity, () -> new EnumMap<>(OnmsSeverity.class), Collectors.counting()));
     }
 
     @Override

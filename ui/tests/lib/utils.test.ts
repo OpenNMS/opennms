@@ -27,7 +27,8 @@ import {
   hasNonEmptyProperty,
   isConvertibleToInteger,
   isNumber,
-  isString
+  isString,
+  plural
 } from '@/lib/utils'
 
 describe('lib/utils test', () => {
@@ -108,5 +109,16 @@ describe('htmlToText', () => {
   test('answers empty for nothing', () => {
     expect(htmlToText(undefined)).toBe('')
     expect(htmlToText('')).toBe('')
+  })
+})
+
+describe('plural', () => {
+  test.each([
+    [0, 'service', undefined, '0 services'],
+    [1, 'service', undefined, '1 service'],
+    [2, 'unacknowledged alarm', undefined, '2 unacknowledged alarms'],
+    [3, 'child', 'children', '3 children']
+  ])('%i %s', (count, singular, pluralForm, expected) => {
+    expect(plural(count, singular, pluralForm)).toBe(expected)
   })
 })

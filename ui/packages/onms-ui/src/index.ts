@@ -65,6 +65,7 @@ export { default as OnmsTag } from './components/OnmsTag.vue'
 export { default as OnmsTextarea } from './components/OnmsTextarea.vue'
 export { default as OnmsTieredMenu } from './components/OnmsTieredMenu.vue'
 export { default as OnmsToastHost } from './components/OnmsToastHost.vue'
+export { default as OnmsToggleButton } from './components/OnmsToggleButton.vue'
 export { default as OnmsToggleSwitch } from './components/OnmsToggleSwitch.vue'
 export { default as OnmsVirtualScroller } from './components/OnmsVirtualScroller.vue'
 

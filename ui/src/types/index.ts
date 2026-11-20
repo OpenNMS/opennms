@@ -372,15 +372,26 @@ export interface NodeLinkService {
 }
 
 // GET /api/v2/nodes/{id}/criticalPath: the node's own row in the pathoutage table.
-// GET /api/v2/nodes/{id}/alarmStatus: the node's problem alarms (above Normal), counted on the server.
+// GET /api/v2/nodes/{id}/alarmStatus: the node's unacknowledged problem alarms (above Normal), counted
+// on the server.
 export interface NodeAlarmStatus {
   // Highest unacknowledged problem severity, as an OnmsSeverity name; NORMAL when there is none.
   severity: string
-  nodeDown: boolean
-  interfacesDown: number
-  servicesDown: number
-  acknowledgedCount: number
   unacknowledgedCount: number
+  // Unacknowledged problem alarms at each severity above Normal (CRITICAL, MAJOR, MINOR and WARNING,
+  // each present, 0 when there are none).
+  unacknowledgedBySeverity: Record<string, number>
+}
+
+// GET /api/v2/nodes/{id}/notificationStatus: the node's notifications, counted on the server.
+export interface NodeNotificationStatus {
+  // The user `yourOutstanding` counts for: the one logged in.
+  user: string
+  // Outstanding (not acknowledged) and sent to that user; one sent by several methods counts once.
+  yourOutstanding: number
+  allOutstanding: number
+  // Outstanding and acknowledged.
+  total: number
 }
 
 export interface NodeCriticalPath {
@@ -778,6 +789,12 @@ export interface AssetFilter {
   value: string
 }
 
+/**
+ * A choice of the Node List's Flows filter. Ingress and Egress together mean either kind; Both and
+ * No Flows each stand alone (see components/Nodes/NodeList/flowFilter.ts).
+ */
+export type FlowFilter = 'Ingress' | 'Egress' | 'Both' | 'No Flows'
+
 /** All components of a node list query */
 export interface NodeQueryFilter {
   searchTerm: string
@@ -785,7 +802,7 @@ export interface NodeQueryFilter {
   selectedCategories: Category[]
   selectedCategories2?: Category[]
   selectedServices?: string[]
-  selectedFlows: string[]
+  selectedFlows: FlowFilter[]
   selectedMonitoringLocations: MonitoringLocation[]
   ipAddress?: string
   macAddress?: string

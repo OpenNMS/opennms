@@ -30,7 +30,7 @@ import { useIpInterfaceQuery } from '@/components/Nodes/hooks/useIpInterfaceQuer
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { interfaceLink } from '@/lib/linkUtils'
-import { nodeDetailsRoute } from './nodeDetailsRoute'
+import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 import { Node } from '@/types'
 
 const props = defineProps({
@@ -67,8 +67,8 @@ const nodeItems = computed(() => {
     { label: 'Node ID', text: props.node?.id, to: nodeRoute },
     { label: 'Node Label', text: props.node?.label, to: nodeRoute },
     { label: 'IP Address', text: ipLabel.label, link: interfaceLink(baseHref, nodeId, ipLabel.label) },
-    { label: 'Location', text: props.node?.location },
-    { label: 'FS:FID', text: `${props.node?.foreignSource}:${props.node?.foreignId}` },
+    { label: 'Monitoring Location', text: props.node?.location },
+    { label: 'FS:FID', text: `${props.node?.foreignSource || EMPTY}:${props.node?.foreignId || EMPTY}` },
     { label: 'Sys Contact', text: props.node?.sysContact || EMPTY },
     { label: 'Sys Description', text: props.node?.sysDescription || EMPTY },
     { label: 'Sys Location', text: props.node?.sysLocation || EMPTY },
