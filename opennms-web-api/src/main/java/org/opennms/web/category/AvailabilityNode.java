@@ -60,7 +60,10 @@ public class AvailabilityNode {
     @XmlAttribute(name="managed-service-count")
     private Long m_managedServiceCount;
 
-    /** Availability at or above this is normal; null when the category does not define it. */
+    /**
+     * Availability at or above this is normal; null when the category does not define it, which is
+     * written as null in JSON and omitted in XML.
+     */
     @XmlAttribute(name="normal-threshold")
     private Double m_normalThreshold;
 

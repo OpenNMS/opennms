@@ -68,8 +68,11 @@ export interface TimelineServiceRow {
   ipAddress: string
   /** From the availability resource, not derived from the segments. */
   availability: number
-  /** The ifservices status code. Absent from an older server, which only returns managed services. */
-  status?: string
+  /**
+   * The ifservices status code. Absent from an older server, which returns every service and gives
+   * -1 to one that is not managed; null when the server has no status for it.
+   */
+  status?: string | null
   segments: TimelineSegment[]
 }
 
@@ -216,10 +219,13 @@ export const buildTimelineModel = (
     availability: availability.availability,
     // The count covers every interface, so it stays right when the page holds only some of them.
     // An older server has no count, and the page is all there is to go on.
-    monitored: managedCount !== undefined
+    //
+    // typeof, not `!== undefined`: the JSON provider writes an unset field as null, and the
+    // comparisons below are true against null (`99 >= null`), which classed every figure normal.
+    monitored: typeof managedCount === 'number'
       ? managedCount > 0
       : interfaces.some(iface => iface.monitored),
-    thresholds: normal !== undefined && warning !== undefined ? { normal, warning } : undefined,
+    thresholds: typeof normal === 'number' && typeof warning === 'number' ? { normal, warning } : undefined,
     interfaces,
     unmonitoredPct: unmonitoredPercent(timeline?.nodeCreateTime, window)
   }
@@ -313,17 +319,21 @@ export const nodeAvailabilityText = (model: TimelineModel): string =>
 export const interfaceAvailabilityText = (group: TimelineInterfaceGroup): string =>
   group.monitored ? formatAvailability(group.availability) : 'Not Monitored'
 
+// Absent (an older server) and null (no status known) both leave the figure alone to decide.
+const hasStatus = (row: TimelineServiceRow): row is TimelineServiceRow & { status: string } =>
+  typeof row.status === 'string'
+
 /**
  * True when this row has a figure to show: one was computed, and the service is managed. A service
  * that is unmanaged or deleted can still carry a stale figure, which must not read as uptime. An
  * older server sends no status, and then the figure alone decides.
  */
 export const isServiceMonitored = (row: TimelineServiceRow): boolean =>
-  isMonitored(row.availability) && (row.status === undefined || row.status === 'A')
+  isMonitored(row.availability) && (!hasStatus(row) || row.status === 'A')
 
 /** As formatAvailability, but a service that is not managed says why it has no figure. */
 export const serviceAvailabilityText = (row: TimelineServiceRow): string =>
-  row.status !== undefined && row.status !== 'A'
+  hasStatus(row) && row.status !== 'A'
     ? monitoredServiceStatus(row.status)
     : formatAvailability(row.availability)
 

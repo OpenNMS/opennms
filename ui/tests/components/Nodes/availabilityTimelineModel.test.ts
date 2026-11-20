@@ -628,6 +628,14 @@ describe('availability status and thresholds', () => {
       expect(serviceAvailabilityText(row({ status: 'A' }))).toBe('99.5%')
     })
 
+    // The availability resource's -1: managed, but no figure could be computed.
+    it('reads a managed service with no figure as Not Monitored, with no class', () => {
+      const managedNoFigure = row({ status: 'A', availability: -1 })
+
+      expect(serviceAvailabilityText(managedNoFigure)).toBe('Not Monitored')
+      expect(serviceAvailabilityClass(managedNoFigure, thresholds)).toBeUndefined()
+    })
+
     it('names an undefined code', () => {
       expect(serviceAvailabilityText(row({ availability: -1, status: 'Q' }))).toBe('Unknown (Q)')
     })
@@ -656,6 +664,45 @@ describe('availability status and thresholds', () => {
         doc({ 'managed-service-count': 0, 'normal-threshold': 99.99, 'warning-threshold': 97 }), null, WINDOW)
       expect(nodeAvailabilityClass(model)).toBeUndefined()
       expect(interfaceAvailabilityClass({ ...model.interfaces[0]!, monitored: false }, thresholds)).toBeUndefined()
+    })
+  })
+
+  // The v1 JSON provider writes an unset attribute as null rather than leaving it out, so an
+  // undefined category sends null thresholds. `value >= null` is true, which made every badge normal.
+  describe('null fields, as the JSON provider sends them', () => {
+    const nulls = {
+      'normal-threshold': null,
+      'warning-threshold': null,
+      'managed-service-count': null
+    }
+
+    it('builds a model with no thresholds and no classes', () => {
+      const model = buildTimelineModel(doc(nulls), null, WINDOW)
+      const group = model.interfaces[0]!
+      const service = group.services[0]!
+
+      expect(model.thresholds).toBeUndefined()
+      expect(nodeAvailabilityClass(model)).toBeUndefined()
+      expect(interfaceAvailabilityClass(group, model.thresholds)).toBeUndefined()
+      expect(serviceAvailabilityClass(service, model.thresholds)).toBeUndefined()
+    })
+
+    it('has no thresholds when only one of them is null', () => {
+      expect(buildTimelineModel(doc({ 'normal-threshold': 99.99, 'warning-threshold': null }), null, WINDOW).thresholds).toBeUndefined()
+      expect(buildTimelineModel(doc({ 'normal-threshold': null, 'warning-threshold': 97 }), null, WINDOW).thresholds).toBeUndefined()
+    })
+
+    it('decides whether the node is monitored from the page when the count is null', () => {
+      expect(buildTimelineModel(doc(nulls), null, WINDOW).monitored).toBe(true)
+      expect(buildTimelineModel(doc(nulls, { availability: -1 }), null, WINDOW).monitored).toBe(false)
+    })
+
+    it('reads a null service status as no status', () => {
+      const model = buildTimelineModel(doc({}, { status: null }), null, WINDOW)
+      const service = model.interfaces[0]!.services[0]!
+
+      expect(isServiceMonitored(service)).toBe(true)
+      expect(serviceAvailabilityText(service)).toBe('99%')
     })
   })
 
