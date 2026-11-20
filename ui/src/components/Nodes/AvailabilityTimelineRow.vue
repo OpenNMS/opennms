@@ -50,7 +50,10 @@
       </div>
     </td>
     <td class="col-pct">
-      {{ formatAvailability(row.availability) }}
+      <AvailabilityBadge
+        :text="serviceAvailabilityText(row)"
+        :level="serviceAvailabilityClass(row, thresholds)"
+      />
     </td>
   </tr>
 </template>
@@ -58,10 +61,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { outageDetailLink, serviceLink } from '@/lib/linkUtils'
+import AvailabilityBadge from './AvailabilityBadge.vue'
 import {
-  formatAvailability,
+  AvailabilityThresholds,
   isMonitored,
   segmentDescription,
+  serviceAvailabilityClass,
+  serviceAvailabilityText,
   TimelineServiceRow
 } from '@/components/Nodes/availabilityTimelineModel'
 import { TimelineTick } from './availabilityTimelineAxis'
@@ -73,6 +79,7 @@ const props = defineProps<{
   nodeId: string | number
   /** Width of the leading band in which the node did not yet exist, 0-100. */
   unmonitoredPct: number
+  thresholds?: AvailabilityThresholds
 }>()
 
 const serviceHref = computed(() =>

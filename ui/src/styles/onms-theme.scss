@@ -97,6 +97,9 @@
 
   // Severity icons (SeverityIcon): the circle (bg) and the glyph on it (fg). Each glyph is the one
   // of white and near-black with the higher contrast on its circle.
+  // Availability figures: green is the success colour; severity-normal is blue, so not reused.
+  --onms-availability-normal-bg: var(--onms-success);
+  --onms-availability-normal-fg: #ffffff;
   --onms-severity-critical-bg: var(--onms-error);
   --onms-severity-critical-fg: #ffffff;
   --onms-severity-major-bg: var(--onms-major);
@@ -139,6 +142,8 @@
 
   // As in the light theme. Critical takes the error icon red: --onms-error is a pink here, which
   // does not read as critical.
+  --onms-availability-normal-bg: var(--onms-success);
+  --onms-availability-normal-fg: #0a0c1b;
   --onms-severity-critical-bg: var(--onms-error-icon);
   --onms-severity-critical-fg: #ffffff;
   --onms-severity-major-bg: var(--onms-major);

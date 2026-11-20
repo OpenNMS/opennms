@@ -188,6 +188,61 @@ describe('NodeAvailabilityGraph.vue', () => {
     expect(wrapper.get('[data-test="node-availability"]').text()).toBe('98.76%')
   })
 
+  describe('availability badges', () => {
+    const levels = () => wrapper.findAll('[data-test="timeline-service-row"]')
+      .map(row => row.find('[data-test="availability-badge"]').attributes('data-level'))
+
+    it('classes the service and node figures by the thresholds', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({
+        availability: 99.995,
+        'normal-threshold': 99.99,
+        'warning-threshold': 97,
+        'managed-service-count': 3,
+        ipinterfaces: [{
+          address: '192.168.1.1', availability: 99.5, id: 1,
+          services: [
+            { id: 10, name: 'A', serviceId: 1, availability: 99.995 },
+            { id: 11, name: 'B', serviceId: 2, availability: 98 },
+            { id: 12, name: 'C', serviceId: 3, availability: 50 }
+          ]
+        }]
+      }))
+
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(levels()).toEqual(['normal', 'warning', 'critical'])
+      expect(wrapper.get('[data-test="node-availability"]').attributes('data-level')).toBe('normal')
+    })
+
+    it('shows the status label and no level for a service that is not managed', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({
+        'normal-threshold': 99.99,
+        'warning-threshold': 97,
+        ipinterfaces: [{
+          address: '192.168.1.1', availability: 99.5, id: 1,
+          services: [{ id: 10, name: 'ICMP', serviceId: 1, availability: 99.5, status: 'F' }]
+        }]
+      }))
+
+      wrapper = mountPanel()
+      await flushPromises()
+
+      const badge = wrapper.get('[data-test="timeline-service-row"] .availability-badge')
+      expect(badge.text()).toBe('Forced Unmanaged')
+      expect(badge.attributes('data-level')).toBeUndefined()
+    })
+
+    it('shows the placeholder before data arrives', () => {
+      getAvailability.mockReturnValue(new Promise(() => {}) as any)
+      getTimeline.mockReturnValue(new Promise(() => {}) as any)
+
+      wrapper = mountPanel()
+
+      expect(wrapper.get('[data-test="node-availability"]').text()).toBe('—')
+    })
+  })
+
   // The previous version computed 100 * undefined on first paint.
   it('never renders NaN, before or after the fetch resolves', async () => {
     getAvailability.mockReturnValue(new Promise(() => {}) as any)

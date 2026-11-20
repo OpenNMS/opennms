@@ -26,10 +26,12 @@
 
     <div class="availability-summary">
       <span class="subtitle2">Availability ({{ rangeLabel.toLowerCase() }})</span>
-      <span
+      <AvailabilityBadge
         class="availability-summary__value"
         data-test="node-availability"
-      >{{ model ? nodeAvailabilityText(model) : '—' }}</span>
+        :text="model ? nodeAvailabilityText(model) : '—'"
+        :level="model ? nodeAvailabilityClass(model) : undefined"
+      />
     </div>
 
     <OnmsSpinner v-if="showSpinner" />
@@ -82,6 +84,7 @@ import { computed, ref, watch } from 'vue'
 import { OnmsIconButton, OnmsSpinner } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import NodeDetailsPanel from '@/components/Nodes/NodeDetailsPanel.vue'
+import AvailabilityBadge from '@/components/Nodes/AvailabilityBadge.vue'
 import AvailabilityTimeline from '@/components/Nodes/AvailabilityTimeline.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TimeControls from '@/components/Common/TimeControls.vue'
@@ -95,6 +98,7 @@ import { NodeOutageTimeline } from '@/types/nodeAvailabilityTimeline'
 import {
   buildTimelineModel,
   limitTimelineRows,
+  nodeAvailabilityClass,
   nodeAvailabilityText,
   TimelineWindow
 } from '@/components/Nodes/availabilityTimelineModel'

@@ -51,6 +51,7 @@
     <tbody
       v-for="group of model.interfaces"
       :key="group.ipInterfaceId"
+      data-test="timeline-interface-group"
     >
       <tr class="interface-row">
         <th
@@ -65,7 +66,10 @@
         <!-- No strip: the axis above spans this column for every row beneath it. -->
         <td />
         <td class="col-pct">
-          {{ interfaceAvailabilityText(group) }}
+          <AvailabilityBadge
+            :text="interfaceAvailabilityText(group)"
+            :level="interfaceAvailabilityClass(group, model.thresholds)"
+          />
         </td>
       </tr>
 
@@ -77,15 +81,17 @@
         :base-href="baseHref"
         :node-id="nodeId"
         :unmonitored-pct="model.unmonitoredPct"
+        :thresholds="model.thresholds"
       />
     </tbody>
   </table>
 </template>
 
 <script setup lang="ts">
+import AvailabilityBadge from './AvailabilityBadge.vue'
 import AvailabilityTimelineRow from './AvailabilityTimelineRow.vue'
 import { interfaceLink } from '@/lib/linkUtils'
-import { interfaceAvailabilityText, TimelineModel } from '@/components/Nodes/availabilityTimelineModel'
+import { interfaceAvailabilityClass, interfaceAvailabilityText, TimelineModel } from '@/components/Nodes/availabilityTimelineModel'
 import { tickEdgeClass, TimelineTick } from './availabilityTimelineAxis'
 
 defineProps<{
