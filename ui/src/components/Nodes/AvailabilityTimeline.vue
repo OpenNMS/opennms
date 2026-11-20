@@ -146,9 +146,10 @@ defineProps<{
   }
 
   .col-pct {
-    // Wide enough for 'Not Monitored' on one line: wrapping it made those rows taller than the
-    // rest and broke the alignment of the strips down the panel.
-    width: 7rem;
+    // Wide enough for the longest status label ('Remotely Monitored', about 130px at 14px) on one
+    // line: wrapping one made its row taller than the rest and broke the alignment of the strips
+    // down the panel. Interfaces and services both show these labels.
+    width: 9rem;
     text-align: right;
     white-space: nowrap;
   }

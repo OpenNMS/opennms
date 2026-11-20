@@ -148,6 +148,9 @@ const monitored = computed(() => isServiceMonitored(props.row))
 
 .col-pct {
   text-align: right;
+  // As the interface rows: the timeline's own rule for this column is scoped to it, and does not
+  // reach the cells of this component.
+  white-space: nowrap;
 }
 
 .strip {
