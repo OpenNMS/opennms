@@ -152,16 +152,19 @@ public class OnCallScheduleExpanderTest {
 
     /**
      * DST starts at local midnight in Havana, so 00:00 does not exist on that day (8 March 2026), and ends at 01:00, so
-     * 00:00 to 01:00 happens twice on that day (1 November 2026, the first day of a month).
+     * 00:00 to 01:00 happens twice on that day (1 November 2020, the first day of a month).
+     * <p>
+     * The DST end uses 2020 because past transitions do not change between tzdata releases: Cuba cancelled the
+     * 1 November 2026 fall-back in tzdata 2026f.
      */
     @Test
     public void testAgreesWithIsTimeInScheduleWhenDstChangesAtMidnight() {
         TimeZone.setDefault(TimeZone.getTimeZone("America/Havana"));
-        assertAgrees(new int[][] { { 2026, 3 }, { 2026, 10 }, { 2026, 11 } });
+        assertAgrees(new int[][] { { 2026, 3 }, { 2020, 10 }, { 2020, 11 } });
     }
 
     /**
-     * The first 00:00 to 01:00 of 1 November 2026 in Havana is on 1 November, whose times notifd reads onto the second
+     * The first 00:00 to 01:00 of 1 November 2020 in Havana is on 1 November, whose times notifd reads onto the second
      * 00:00, so even an all-day schedule does not cover it and the supervisor is on call; the November month starts
      * with it.
      */
@@ -172,15 +175,15 @@ public class OnCallScheduleExpanderTest {
         role.setName("test");
         role.setSupervisor("sup");
         role.addSchedule(JaxbUtils.unmarshal(Schedule.class, SCHEDULES[ALL_DAY_INDEX]));
-        final Date start = monthStart(2026, 11);
+        final Date start = monthStart(2020, 11);
         final Date firstHour = new Date(start.getTime() + 30 * 60 * 1000L);
         assertEquals(Set.of("sup"), expected(role, firstHour));
 
-        final List<Entry> entries = OnCallScheduleExpander.entries(role, start, monthStart(2026, 12));
+        final List<Entry> entries = OnCallScheduleExpander.entries(role, start, monthStart(2020, 12));
         assertEquals(new Entry(start, new Date(start.getTime() + 60 * 60 * 1000L), "sup", null), entries.get(0));
-        check(role, entries, firstHour, start, monthStart(2026, 12));
+        check(role, entries, firstHour, start, monthStart(2020, 12));
         // October ends where November starts
-        final List<Entry> october = OnCallScheduleExpander.entries(role, monthStart(2026, 10), start);
+        final List<Entry> october = OnCallScheduleExpander.entries(role, monthStart(2020, 10), start);
         assertEquals(start, october.get(october.size() - 1).end());
     }
 
