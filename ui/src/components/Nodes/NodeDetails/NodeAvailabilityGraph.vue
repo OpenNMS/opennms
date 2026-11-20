@@ -24,45 +24,20 @@
       />
     </template>
 
-    <div class="availability-summary">
-      <span class="subtitle2">Availability ({{ rangeLabel.toLowerCase() }})</span>
-      <AvailabilityBadge
-        class="availability-summary__value"
-        data-test="node-availability"
-        :text="model ? nodeAvailabilityText(model) : '—'"
-        :level="model ? nodeAvailabilityClass(model) : undefined"
-      />
-    </div>
-
-    <OnmsSpinner v-if="showSpinner" />
-
-    <template v-else-if="!isFetching">
-      <EmptyList
-        v-if="loadFailed"
-        :content="errorContent"
-        data-test="availability-error"
-      />
-      <!-- From the node's total, not from the interfaces fetched. -->
-      <EmptyList
-        v-else-if="hasLoaded && totalInterfaces === 0"
-        :content="emptyContent"
-        data-test="availability-empty"
-      />
-      <template v-else-if="model && model.interfaces.length > 0">
-        <p
-          v-if="timeline?.truncated"
-          class="availability-truncated"
-          data-test="availability-truncated"
-        >
-          Showing the {{ timeline.count }} most recent outages. Some are not drawn.
-        </p>
-        <AvailabilityTimeline
-          :model="model"
-          :ticks="ticks"
-          :base-href="baseHref"
-          :node-id="node.id"
-          :range-label="rangeLabel"
-        />
+    <NodeAvailabilityBody
+      :model="model"
+      :ticks="ticks"
+      :timeline="timeline"
+      :range-label="rangeLabel"
+      :base-href="baseHref"
+      :node-id="node.id"
+      :show-spinner="showSpinner"
+      :is-fetching="isFetching"
+      :load-failed="loadFailed"
+      :has-loaded="hasLoaded"
+      :total-interfaces="totalInterfaces"
+    >
+      <template #after-timeline>
         <p
           v-if="isPartial"
           class="availability-partial"
@@ -75,29 +50,23 @@
           >Availability page</router-link>.
         </p>
       </template>
-    </template>
+    </NodeAvailabilityBody>
   </NodeDetailsPanel>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { OnmsIconButton, OnmsSpinner } from '@opennms/onms-ui'
+import { OnmsIconButton } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import NodeDetailsPanel from '@/components/Nodes/NodeDetailsPanel.vue'
-import AvailabilityBadge from '@/components/Nodes/AvailabilityBadge.vue'
-import AvailabilityTimeline from '@/components/Nodes/AvailabilityTimeline.vue'
-import EmptyList from '@/components/Common/EmptyList.vue'
+import NodeAvailabilityBody from '@/components/Nodes/NodeAvailabilityBody.vue'
 import TimeControls from '@/components/Common/TimeControls.vue'
 import { useNodeAvailability } from '@/components/Nodes/hooks/useNodeAvailability'
 import { nodeAvailabilityRoute } from '@/lib/nodeDetailsRoute'
 import { plural } from '@/lib/utils'
 import { Node } from '@/types/index'
-import {
-  limitTimelineRows,
-  nodeAvailabilityClass,
-  nodeAvailabilityText
-} from '@/components/Nodes/availabilityTimelineModel'
+import { limitTimelineRows } from '@/components/Nodes/availabilityTimelineModel'
 
 const props = defineProps<{
   baseHref: string
@@ -119,7 +88,7 @@ const MAX_ROWS = 8
 const FETCH_INTERFACES = MAX_ROWS / 2
 
 // Fetching, the range in the node store, and the race between responses all live in the
-// composable; this panel only cuts the rows and words the states.
+// composable, and the states are NodeAvailabilityBody's; this panel only cuts the rows.
 const {
   model: fullModel,
   ticks,
@@ -134,12 +103,6 @@ const {
   totalServices,
   timeline
 } = useNodeAvailability(() => props.node?.id, { limit: FETCH_INTERFACES, offset: 0 })
-
-const errorContent = {
-  title: 'Availability unavailable',
-  msg: 'Could not load availability for this node.'
-}
-const emptyContent = { msg: 'No monitored services on this node.' }
 
 const isPartial = computed(() => totalInterfaces.value + totalServices.value > MAX_ROWS)
 
@@ -159,27 +122,9 @@ const model = computed(() => fullModel.value ? limitTimelineRows(fullModel.value
 </script>
 
 <style lang="scss" scoped>
-.availability-summary {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-}
-
-.availability-truncated {
-  margin: 0 0 0.5rem;
-  font-size: 0.8125rem;
-  color: var(--onms-secondary-text-on-surface);
-}
-
 .availability-partial {
   margin: 0.5rem 0 0;
   font-size: 0.8125rem;
   color: var(--onms-secondary-text-on-surface);
-}
-
-.availability-summary__value {
-  font-variant-numeric: tabular-nums;
-  font-weight: 600;
 }
 </style>
