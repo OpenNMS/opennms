@@ -25,6 +25,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -92,12 +93,20 @@ public class PrometheusCollectorIT {
     public void setUp() {
         stubFor(get(urlEqualTo("/metrics"))
                 .willReturn(aResponse()
-                        .withHeader("Content-Type", "Content-Type: text/plain; version=0.0.4")
+                        .withHeader("Content-Type", "text/plain; version=0.0.4")
                         .withBodyFile("linux.metrics")));
         stubFor(get(urlEqualTo("/nephron_on_flink"))
                 .willReturn(aResponse()
-                        .withHeader("Content-Type", "Content-Type: text/plain; version=0.0.4")
+                        .withHeader("Content-Type", "text/plain; version=0.0.4")
                         .withBodyFile("flink.metrics")));
+        stubFor(get(urlEqualTo("/actuator/prometheus"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/openmetrics-text;version=1.0.0")
+                        .withBodyFile("open.metrics")));
+        stubFor(get(urlEqualTo("/open_noncompliant"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/openmetrics-text")
+                        .withBodyFile("open_noncompliant.metrics")));
     }
 
     @Test
@@ -419,6 +428,77 @@ public class PrometheusCollectorIT {
                 "0/nodeExporterCPU/cpu7/node-exporter-cpu/system[null,200.86]",
                 "0/nodeExporterCPU/cpu7/node-exporter-cpu/user[null,1203.71]"), collectionSetKeys);
     }
+    
+    @Test
+    public void canGatherOpenMetricsGauges() {
+        Collection collection = new Collection();
+    
+        Group executorPool = new Group();
+        executorPool.setName("executor-pool");
+        executorPool.setFilterExp("name matches 'executor_pool_size_threads'");
+        executorPool.setResourceType("node");
+    
+        NumericAttribute executorPoolSize = new NumericAttribute();
+        executorPoolSize.setAliasExp("labels[name]");
+        executorPool.getNumericAttribute().add(executorPoolSize);
+       
+        // Collect!
+        CollectionSet collectionSet = collectOpenMetrics(collection,executorPool);
+    
+        // Verify
+        List<String> collectionSetKeys = CollectionSetUtils.flatten(collectionSet);
+        assertThat(collectionSetKeys, hasSize(1));
+        assertThat(collectionSetKeys, hasItem("0/executor-pool/taskExecutor[null,0.0]"));        
+    }
+    
+    @Test
+    public void canGatherOpenMetricsCounters() {
+        Collection collection = new Collection();
+    
+        Group logbackEvents = new Group();
+        logbackEvents.setName("logback-events");
+        logbackEvents.setFilterExp("name matches 'logback_events'");
+        logbackEvents.setGroupByExp("labels[level]");
+        logbackEvents.setResourceType("node");
+    
+        NumericAttribute logbackEventCount = new NumericAttribute();
+        logbackEventCount.setAliasExp("labels[level]");
+        logbackEvents.getNumericAttribute().add(logbackEventCount);
+       
+        // Collect!
+        CollectionSet collectionSet = collectOpenMetrics(collection,logbackEvents);
+    
+        // Verify
+        List<String> collectionSetKeys = CollectionSetUtils.flatten(collectionSet);
+        assertThat(collectionSetKeys, hasSize(5));             
+        assertThat(collectionSetKeys, hasItem("0/logback-events/debug[null,2.0]"));
+        assertThat(collectionSetKeys, hasItem("0/logback-events/error[null,9170.0]"));
+        assertThat(collectionSetKeys, hasItem("0/logback-events/info[null,251.0]"));
+        assertThat(collectionSetKeys, hasItem("0/logback-events/trace[null,1.0]"));
+        assertThat(collectionSetKeys, hasItem("0/logback-events/warn[null,2876.0]"));     
+    }
+    
+    @Test
+    public void canGatherOpenMetricsNonCompliant() {
+        Collection collection = new Collection();
+        
+        Group executorPool = new Group();
+        executorPool.setName("executor-pool");
+        executorPool.setFilterExp("name matches 'executor_pool_size_threads'");
+        executorPool.setResourceType("node");
+    
+        NumericAttribute executorPoolSize = new NumericAttribute();
+        executorPoolSize.setAliasExp("labels[name]");
+        executorPool.getNumericAttribute().add(executorPoolSize);
+       
+        // Collect!
+        CollectionSet collectionSet = collect(collection,singletonList(executorPool), "open_noncompliant");
+    
+        // Verify
+        List<String> collectionSetKeys = CollectionSetUtils.flatten(collectionSet);
+        assertThat(collectionSetKeys, hasSize(1));
+        assertThat(collectionSetKeys, hasItem("0/executor-pool/taskExecutor[null,0.0]"));       
+    }
 
     private CollectionSet collect(Collection collection, List<Group> groups) {
         return collect(collection, groups, "metrics");
@@ -426,6 +506,10 @@ public class PrometheusCollectorIT {
 
     private CollectionSet collectNephronMetrics(Collection collection, Group... groups) {
         return collect(collection, Arrays.asList(groups), "nephron_on_flink");
+    }
+    
+    private CollectionSet collectOpenMetrics(Collection collection, Group... groups) {
+        return collect(collection, Arrays.asList(groups), "actuator/prometheus");
     }
 
     private CollectionSet collect(Collection collection, List<Group> groups, String path) {

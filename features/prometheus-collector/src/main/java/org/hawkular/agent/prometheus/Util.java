@@ -16,7 +16,18 @@
  */
 package org.hawkular.agent.prometheus;
 
+import java.time.Instant;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Util {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
+    
+    private Util() {
+        // prevent instantiation
+    }
 
     public static double convertStringToDouble(String valueString) {
         double doubleValue;
@@ -38,5 +49,20 @@ public class Util {
             return (value < 0.0) ? "-Inf" : "+Inf";
         }
         return String.format("%f", value);
+    }
+    
+    public static Instant tryConvertTimestamp(CharSequence timestamp) {
+        if (timestamp == null || timestamp.isEmpty()) {
+            return null;
+        }
+        try {
+            double timestampDouble = Double.parseDouble(timestamp.toString());
+            long epochSecond = (long) timestampDouble;
+            return Instant.ofEpochSecond(epochSecond);
+        }
+        catch (NumberFormatException e) {
+            LOGGER.warn("Invalid timestamp: " + timestamp);
+            return null;
+        }
     }
 }
