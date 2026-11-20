@@ -158,6 +158,27 @@ public class EventConfExtensionManagerTest {
     }
 
     @Test
+    public void unicodeSpaceUeiFromPluginIsLogged() {
+        // String.trim() keeps U+2003; the UEI must still fail in toEvent, where the plugin is known
+        MockLogAppender.setupLogging(true, "DEBUG");
+        EventConfExtensionManager eventConfExtensionMgr = new EventConfExtensionManager(mock(EventConfDao.class),
+                mock(EventConfSourceDao.class), mock(EventConfEventDao.class), mock(EventConfGlobalSecurityDao.class),
+                mock(SessionUtils.class));
+
+        EventConfExtension ext = mock(EventConfExtension.class);
+        EventDefinition def = mock(EventDefinition.class);
+        when(def.getUei()).thenReturn("\u2003");
+        when(def.getLabel()).thenReturn("Em Space Event");
+        when(def.getSeverity()).thenReturn(Severity.NORMAL);
+        when(def.getLogMessage()).thenReturn(mock(LogMessage.class));
+        when(ext.getEventDefinitions()).thenReturn(Collections.singletonList(def));
+
+        assertThrows(IllegalArgumentException.class, () -> eventConfExtensionMgr.onBind(ext, new HashMap()));
+        MockLogAppender.assertLogMatched(Level.ERROR, ext.getClass().getName());
+        MockLogAppender.assertLogMatched(Level.ERROR, "event-label 'Em Space Event'");
+    }
+
+    @Test
     public void canPreserveEventNumberAndOrdering() {
         String ueiBase = "uei.opennms.org/test/VoluminousEventConfExtension/";
         EventConfDao eventConfDao = mock(EventConfDao.class);

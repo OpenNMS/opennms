@@ -92,6 +92,24 @@ public class EventConfServiceHelperUeiTest {
     }
 
     @Test
+    public void isBlankUeiAgreesWithEventSetUei() {
+        // U+2003 and U+3000 are Unicode spaces that String.trim() keeps; U+0001 is a control character that
+        // isBlank() keeps; U+00A0 is neither whitespace for Java nor removed by trim()
+        for (final String uei : List.of("uei.opennms.org/x", " uei.opennms.org/x ", "", "  \t\n", "\u0001",
+                "\u2003", "\u3000 ", "\u0001\u2003", "\u2003\u0001", "\u00A0", "\u2003uei.opennms.org/x")) {
+            boolean setUeiAccepts;
+            try {
+                new Event().setUei(uei);
+                setUeiAccepts = true;
+            } catch (IllegalArgumentException e) {
+                setUeiAccepts = false;
+            }
+            final String codePoints = uei.codePoints().mapToObj(c -> String.format("U+%04X", c)).toList().toString();
+            assertEquals("for UEI " + codePoints, setUeiAccepts, !EventConfServiceHelper.isBlankUei(uei));
+        }
+    }
+
+    @Test
     public void createEntitiesKeepsTrimmedUeiFromPaddedXml() {
         final List<EventConfEvent> entities = EventConfServiceHelper.createEventConfEventEntities(
                 new EventConfSource(), List.of(parse("\n  uei.opennms.org/x\n")), "u", new Date(), 1);

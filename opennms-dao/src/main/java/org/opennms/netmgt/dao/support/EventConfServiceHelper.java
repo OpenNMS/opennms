@@ -91,13 +91,22 @@ public class EventConfServiceHelper {
      * @throws IllegalArgumentException if the UEI is null or blank
      */
     public static void requireUei(final Event event) {
-        if (!hasUei(event)) {
+        if (isBlankUei(event.getUei())) {
             throw new IllegalArgumentException("Event 'uei' is required");
         }
     }
 
-    private static boolean hasUei(final Event event) {
-        return event.getUei() != null && !event.getUei().isBlank();
+    /**
+     * The one test for a missing UEI, for the storage checks and the REST layer. It is the same rule that
+     * {@link Event#setUei} applies: trim with {@link String#trim()}, then test with {@link String#isBlank()}.
+     * trim() removes control characters but keeps Unicode spaces, and isBlank() does the opposite, so a UEI
+     * of only control characters or only Unicode spaces is blank.
+     *
+     * @param uei the UEI to test
+     * @return true if the UEI is null or blank
+     */
+    public static boolean isBlankUei(final String uei) {
+        return uei == null || uei.trim().isBlank();
     }
 
     /**
@@ -112,7 +121,7 @@ public class EventConfServiceHelper {
         final List<String> missing = new ArrayList<>();
         for (int i = 0; i < events.size(); i++) {
             final Event event = events.get(i);
-            if (!hasUei(event)) {
+            if (isBlankUei(event.getUei())) {
                 final String label = event.getEventLabel();
                 missing.add("#" + (i + 1) + (label == null || label.isBlank() ? "" : " (event-label '" + label + "')"));
             }

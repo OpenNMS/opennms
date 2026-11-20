@@ -509,7 +509,7 @@ public class EventConfRestService implements EventConfRestApi {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(Map.of("error", "The 'enabled' flag must be provided (true/false).")).build();
         }
-        if (payload.getEvent().getUei() == null || payload.getEvent().getUei().isBlank()) {
+        if (EventConfServiceHelper.isBlankUei(payload.getEvent().getUei())) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(Map.of("error", "Event 'uei' is required")).build();
         }
@@ -929,7 +929,9 @@ public class EventConfRestService implements EventConfRestApi {
         if (event == null) {
             throw new IllegalArgumentException("Event payload is missing");
         }
-        requireNonBlank(event.getUei(), "Event 'uei' is required");
+        if (EventConfServiceHelper.isBlankUei(event.getUei())) {
+            throw new IllegalArgumentException("Event 'uei' is required");
+        }
         requireNonBlank(event.getEventLabel(), "Event 'event-label' is required");
         requireNonBlank(event.getSeverity(), "Event 'severity' is required");
     }

@@ -45,6 +45,12 @@ public class EventUeiTrimTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void setUeiRejectsUnicodeSpacesOnly() {
+        // String.trim() keeps U+2003 (em space) and U+3000 (ideographic space)
+        new Event().setUei("\u2003 \u3000");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void setUeiRejectsEmpty() {
         new Event().setUei("");
     }

@@ -94,6 +94,17 @@ public class ThresholdControllerUeiTest {
     }
 
     @Test
+    public void unicodeSpaceUeisMeanNoCustomUei() {
+        // String.trim() keeps these, but Event.setUei treats a UEI that is blank after the trim as missing
+        final Threshold threshold = new Threshold();
+        controller.commonFinishEdit(form("\u2003", " \u3000 "), threshold);
+
+        assertFalse(threshold.getTriggeredUEI().isPresent());
+        assertFalse(threshold.getRearmedUEI().isPresent());
+        verify(eventConfProgrammaticService, never()).saveEventToDB(any(), anyString());
+    }
+
+    @Test
     public void paddedUeisAreTrimmed() {
         final Threshold threshold = new Threshold();
         controller.commonFinishEdit(form("  uei.opennms.org/test/exceeded \n", "\tuei.opennms.org/test/rearmed "), threshold);

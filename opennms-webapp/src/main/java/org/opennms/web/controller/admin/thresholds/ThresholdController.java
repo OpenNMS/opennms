@@ -44,6 +44,7 @@ import org.opennms.netmgt.config.threshd.ResourceFilter;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.support.EventConfServiceHelper;
 import org.opennms.netmgt.dao.support.GenericIndexResourceType;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -638,10 +639,9 @@ public class ThresholdController extends AbstractController implements Initializ
         }
     }
     
-    // String.trim(), as in Event.setUei, so a value that setUei would reject never reaches it
+    // the same rule as Event.setUei, so a value that setUei would reject never reaches it
     private static String trimToNull(final String value) {
-        final String trimmed = value == null ? null : value.trim();
-        return trimmed == null || trimmed.isEmpty() ? null : trimmed;
+        return EventConfServiceHelper.isBlankUei(value) ? null : value.trim();
     }
 
     private  org.opennms.netmgt.xml.eventconf.Event getSourceEvent(ThresholdType thresholdType, boolean isTrigger) {
