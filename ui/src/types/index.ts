@@ -499,6 +499,9 @@ export interface NodeAvailabilityInterface {
   address: string
   availability: number
   id: number
+  // The ipinterface.ismanaged code (M managed, F forced unmanaged, ...). Only a managed interface has
+  // a figure. Absent from an older server; null in JSON when the interface has no code.
+  'is-managed'?: string | null
   services: NodeAvailabilityService[]
 }
 

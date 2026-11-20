@@ -307,6 +307,31 @@ public class AvailabilityRestServiceIT extends AbstractSpringJerseyRestTestCase 
         Assert.assertEquals(6, seen);
     }
 
+    /**
+     * Each interface carries its ipinterface.ismanaged code, so a client can name an unmanaged
+     * interface ("Forced Unmanaged") rather than show the -1 of its availability as "Not Monitored".
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeReportsInterfaceIsManaged() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        final int forcedId = m_template.execute(status -> {
+            final OnmsIpInterface iface = m_populator.getIpInterfaceDao()
+                    .findByNodeIdAndIpAddress(nodeId, "192.168.1.2");
+            iface.setIsManaged("F");
+            m_populator.getIpInterfaceDao().saveOrUpdate(iface);
+            m_populator.getIpInterfaceDao().flush();
+            return iface.getId();
+        });
+
+        final JSONArray interfaces = getNodeJson(nodeId, "").getJSONArray("ipinterfaces");
+        Assert.assertEquals(4, interfaces.length());
+        for (int i = 0; i < interfaces.length(); i++) {
+            final JSONObject iface = interfaces.getJSONObject(i);
+            Assert.assertEquals(iface.getInt("id") == forcedId ? "F" : "M", iface.getString("is-managed"));
+        }
+    }
+
     @Test
     @JUnitTemporaryDatabase
     public void testGetAvailabilityNodeManagedServiceCountIgnoresPaging() throws Exception {

@@ -23,7 +23,7 @@
 import { NodeAvailability } from '@/types'
 import { NodeOutageTimeline, NodeOutageTimelineEntry } from '@/types/nodeAvailabilityTimeline'
 import { formatInDisplayZone } from '@/lib/displayTimeZone'
-import { monitoredServiceStatus } from './utils'
+import { ipInterfaceStatus, monitoredServiceStatus } from './utils'
 
 /** The window the panel is showing, in epoch milliseconds. */
 export interface TimelineWindow {
@@ -80,6 +80,11 @@ export interface TimelineInterfaceGroup {
   ipInterfaceId: number
   ipAddress: string
   availability: number
+  /**
+   * The ipinterface.ismanaged code. Undefined when the server does not send it (an older server) or
+   * sends null; the figure alone then decides what the interface shows.
+   */
+  isManaged?: string
   /** Whether any service on it has an availability figure at all. */
   monitored: boolean
   services: TimelineServiceRow[]
@@ -194,6 +199,7 @@ export const buildTimelineModel = (
       ipInterfaceId: iface.id,
       ipAddress: iface.address,
       availability: iface.availability,
+      isManaged: iface['is-managed'] ?? undefined,
       monitored: (iface.services ?? []).some(service => isMonitored(service.availability)),
       // Sorted by name: the availability resource returns services in database order, so without
       // this the rows shuffle between refreshes of the same node. The legacy page sorted them too.
@@ -315,9 +321,24 @@ export const formatAvailability = (pct: number): string => {
 export const nodeAvailabilityText = (model: TimelineModel): string =>
   model.monitored ? formatAvailability(model.availability) : 'Unmanaged'
 
-/** As above, one level down. 'Not Monitored' is what the legacy box called such an interface. */
-export const interfaceAvailabilityText = (group: TimelineInterfaceGroup): string =>
-  group.monitored ? formatAvailability(group.availability) : 'Not Monitored'
+// An interface that is not managed has no figure (the server's -1), and says why, as the legacy box
+// did ('Forced Unmanaged'). No code (an older server) leaves the figure alone to decide.
+const isUnmanagedInterface = (
+  group: TimelineInterfaceGroup
+): group is TimelineInterfaceGroup & { isManaged: string } =>
+  group.isManaged !== undefined && group.isManaged !== 'M'
+
+/**
+ * As above, one level down. 'Not Monitored' is what the legacy box called a managed interface with
+ * nothing monitored; one that is not managed gets its status label instead.
+ */
+export const interfaceAvailabilityText = (group: TimelineInterfaceGroup): string => {
+  if (isUnmanagedInterface(group)) {
+    return ipInterfaceStatus(group.isManaged)
+  }
+
+  return group.monitored ? formatAvailability(group.availability) : 'Not Monitored'
+}
 
 // Absent (an older server) and null (no status known) both leave the figure alone to decide.
 const hasStatus = (row: TimelineServiceRow): row is TimelineServiceRow & { status: string } =>
@@ -368,7 +389,9 @@ export const interfaceAvailabilityClass = (
   group: TimelineInterfaceGroup,
   thresholds?: AvailabilityThresholds
 ): AvailabilityClass | undefined =>
-  group.monitored ? availabilityClass(group.availability, thresholds) : undefined
+  group.monitored && !isUnmanagedInterface(group)
+    ? availabilityClass(group.availability, thresholds)
+    : undefined
 
 export const nodeAvailabilityClass = (model: TimelineModel): AvailabilityClass | undefined =>
   model.monitored ? availabilityClass(model.availability, model.thresholds) : undefined

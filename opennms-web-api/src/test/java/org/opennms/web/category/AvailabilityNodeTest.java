@@ -86,6 +86,24 @@ public class AvailabilityNodeTest {
         assertEquals(Long.valueOf(4), avail.getServiceCount());
     }
 
+    /**
+     * The interface carries its ismanaged code, so a client can name an unmanaged interface rather
+     * than show its -1 availability as "Not Monitored".
+     */
+    @Test
+    public void ipInterfaceCarriesIsManaged() {
+        final OnmsNode node = new OnmsNode();
+        node.setId(1);
+        final OnmsIpInterface forced = addInterface(node, "192.168.1.1", "F");
+        forced.setId(5);
+
+        final AvailabilityIpInterface avail = new AvailabilityIpInterface(forced, -1d);
+
+        assertEquals("F", avail.getIsManaged());
+        assertEquals("M", new AvailabilityIpInterface(addInterface(node, "192.168.1.2", "M"), 100d).getIsManaged());
+        assertNull(new AvailabilityIpInterface().getIsManaged());
+    }
+
     private static OnmsIpInterface addInterface(final OnmsNode node, final String address, final String isManaged) {
         final OnmsIpInterface iface = new OnmsIpInterface(address, node);
         iface.setIsManaged(isManaged);

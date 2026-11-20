@@ -320,7 +320,8 @@ public class AvailabilityRestService extends OnmsRestService {
 
         `normal-threshold` and `warning-threshold` come from the path's category in `categories.xml`. When it
         does not define them they are null in JSON and omitted in XML. `managed-service-count`, the number of
-        services with status `A` on managed interfaces, covers every interface of the node.
+        services with status `A` on managed interfaces, covers every interface of the node. Each interface carries
+        its `is-managed` code and each service its `status` code, as on `GET /availability/nodes/{nodeId}`.
 
         A node id that is not in the category, or that does not exist, is reported as 500 rather than 404.""",
             operationId = "getAvailabilityCategoryNode"
@@ -344,6 +345,7 @@ public class AvailabilityRestService extends OnmsRestService {
                         {
                           "id": 1,
                           "address": "127.0.0.4",
+                          "is-managed": "M",
                           "availability": 99.92797222222222,
                           "services": [
                             {
@@ -406,7 +408,9 @@ public class AvailabilityRestService extends OnmsRestService {
         (the services the figures count), whatever the paging.
         `normal-threshold` and `warning-threshold` come from `categories.xml` (Overall Service Availability).
         When it does not define them they are null in JSON and omitted in XML. Each service carries its
-        `status` code.
+        `status` code. Each interface carries its `is-managed` code, from `ipinterface.ismanaged` (`M` managed,
+        `U` unmanaged, `F` forced unmanaged, `N` not monitored, `D` deleted); only a managed interface has an
+        availability figure, so for another one this code says why it has none.
         `withServices=true` leaves out interfaces with no monitored services before counting and paging,
         for a caller that shows only monitored interfaces and would otherwise get short or empty pages.
 
@@ -437,6 +441,7 @@ public class AvailabilityRestService extends OnmsRestService {
                         {
                           "id": 1,
                           "address": "127.0.0.4",
+                          "is-managed": "M",
                           "availability": 99.92797222222222,
                           "services": [
                             {

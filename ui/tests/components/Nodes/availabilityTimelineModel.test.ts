@@ -648,6 +648,56 @@ describe('availability status and thresholds', () => {
     })
   })
 
+  // The JSP showed an interface that is not managed as one row with its status, for example
+  // 'Forced Unmanaged'. Its figure is -1 then, which alone would read 'Not Monitored'.
+  describe('interface is-managed', () => {
+    const groupFor = (ifaceOver: Record<string, unknown>, serviceOver: Record<string, unknown> = {}) => {
+      const ipinterfaces = doc({}, serviceOver).ipinterfaces.map(iface => ({ ...iface, ...ifaceOver }))
+      return buildTimelineModel(doc({ ipinterfaces }), null, WINDOW).interfaces[0]!
+    }
+
+    it('is copied into the group', () => {
+      expect(groupFor({ 'is-managed': 'F' }).isManaged).toBe('F')
+    })
+
+    it.each([
+      ['F', 'Forced Unmanaged'],
+      ['U', 'Unmanaged'],
+      ['D', 'Deleted'],
+      ['Q', 'Unknown (Q)']
+    ])('reads an interface with code %s as %s, with no class', (code, label) => {
+      const group = groupFor({ 'is-managed': code })
+
+      expect(interfaceAvailabilityText(group)).toBe(label)
+      expect(interfaceAvailabilityClass(group, thresholds)).toBeUndefined()
+    })
+
+    it('reads a managed interface as its figure', () => {
+      const group = groupFor({ 'is-managed': 'M' })
+
+      expect(interfaceAvailabilityText(group)).toBe('99%')
+      expect(interfaceAvailabilityClass(group, thresholds)).toBe('warning')
+    })
+
+    it('reads a managed interface with nothing monitored as Not Monitored', () => {
+      const group = groupFor({ 'is-managed': 'M' }, { availability: -1 })
+
+      expect(interfaceAvailabilityText(group)).toBe('Not Monitored')
+    })
+
+    // null from the JSON provider, absent from an older server: the figure alone decides, as before.
+    it.each([
+      ['null', { 'is-managed': null }],
+      ['absent', {}]
+    ])('lets the figure decide when the code is %s', (_, ifaceOver) => {
+      const group = groupFor(ifaceOver)
+
+      expect(group.isManaged).toBeUndefined()
+      expect(interfaceAvailabilityText(group)).toBe('99%')
+      expect(interfaceAvailabilityClass(group, thresholds)).toBe('warning')
+    })
+  })
+
   describe('class functions', () => {
     it('class a figure that is shown as a percentage', () => {
       const model = buildTimelineModel(doc({ 'normal-threshold': 99.99, 'warning-threshold': 97 }), null, WINDOW)
