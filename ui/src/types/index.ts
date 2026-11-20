@@ -490,6 +490,8 @@ export interface NodeAvailabilityService {
   serviceId: number
   availability: number
   up?: boolean
+  // The ifservices status code. Absent from an older server, which only returns managed services.
+  status?: string
 }
 
 export interface NodeAvailabilityInterface {
@@ -507,6 +509,11 @@ export interface NodeAvailability {
   'service-down-count': number
   // The node's total interfaces, when `ipinterfaces` may hold only a page of them.
   ipinterfaceCount?: number
+  // Managed services on every interface, whatever page of them `ipinterfaces` holds.
+  'managed-service-count'?: number
+  // From categories.xml; both absent when the category is not defined, or on an older server.
+  'normal-threshold'?: number
+  'warning-threshold'?: number
 }
 
 export interface FileEditorResponseLog {

@@ -22,15 +22,21 @@
 
 import { describe, expect, it, vi } from 'vitest'
 import {
+  availabilityClass,
   buildTimelineModel,
   formatAvailability,
   formatCompactDuration,
+  interfaceAvailabilityClass,
   interfaceAvailabilityText,
   isMonitored,
+  isServiceMonitored,
   limitTimelineRows,
+  nodeAvailabilityClass,
   nodeAvailabilityText,
   segmentDescription,
   segmentFor,
+  serviceAvailabilityClass,
+  serviceAvailabilityText,
   unmonitoredPercent,
   TimelineInterfaceGroup,
   TimelineModel,
@@ -523,5 +529,147 @@ describe('limitTimelineRows', () => {
 
     expect(limited.availability).toBe(99)
     expect(limited.monitored).toBe(true)
+  })
+})
+
+describe('availability status and thresholds', () => {
+  const thresholds = { normal: 99.99, warning: 97 }
+
+  const doc = (over: Partial<NodeAvailability> = {}, serviceOver: Record<string, unknown> = {}): NodeAvailability => ({
+    id: 1,
+    availability: 99,
+    'service-count': 1,
+    'service-down-count': 0,
+    ipinterfaces: [{
+      id: 5,
+      address: '10.0.0.1',
+      availability: 99,
+      services: [{ id: 11, name: 'ICMP', serviceId: 1, availability: 99, ...serviceOver }]
+    }],
+    ...over
+  })
+
+  const row = (over: Partial<TimelineServiceRow> = {}): TimelineServiceRow => ({
+    ifServiceId: 11,
+    serviceId: 1,
+    serviceName: 'ICMP',
+    ipAddress: '10.0.0.1',
+    availability: 99.5,
+    segments: [],
+    ...over
+  })
+
+  describe('availabilityClass', () => {
+    it.each([
+      [99.99, 'normal'],
+      [99.989, 'warning'],
+      [97, 'warning'],
+      [96.99, 'critical']
+    ])('classes %s as %s', (value, expected) => {
+      expect(availabilityClass(value, thresholds)).toBe(expected)
+    })
+
+    it('has no class for a figure that could not be computed', () => {
+      expect(availabilityClass(-1, thresholds)).toBeUndefined()
+    })
+
+    it('has no class without thresholds', () => {
+      expect(availabilityClass(99.5)).toBeUndefined()
+    })
+  })
+
+  describe('node monitored', () => {
+    it('is false for a managed service count of 0, whatever the page holds', () => {
+      const model = buildTimelineModel(doc({ 'managed-service-count': 0 }), null, WINDOW)
+      expect(model.monitored).toBe(false)
+      expect(nodeAvailabilityText(model)).toBe('Unmanaged')
+    })
+
+    it('is true for a positive count even when the page has no figures', () => {
+      const model = buildTimelineModel(doc({ 'managed-service-count': 3 }, { availability: -1 }), null, WINDOW)
+      expect(model.monitored).toBe(true)
+    })
+
+    it('falls back to the page when the count is absent', () => {
+      expect(buildTimelineModel(doc(), null, WINDOW).monitored).toBe(true)
+      expect(buildTimelineModel(doc({}, { availability: -1 }), null, WINDOW).monitored).toBe(false)
+    })
+  })
+
+  describe('thresholds', () => {
+    it('are set when both are present', () => {
+      const model = buildTimelineModel(doc({ 'normal-threshold': 99.99, 'warning-threshold': 97 }), null, WINDOW)
+      expect(model.thresholds).toEqual(thresholds)
+    })
+
+    it.each([
+      [{ 'normal-threshold': 99.99 }],
+      [{ 'warning-threshold': 97 }]
+    ])('are absent when one is missing (%o)', (over) => {
+      expect(buildTimelineModel(doc(over), null, WINDOW).thresholds).toBeUndefined()
+    })
+  })
+
+  describe('service status', () => {
+    it('is copied into each row', () => {
+      const model = buildTimelineModel(doc({}, { status: 'F', availability: -1 }), null, WINDOW)
+      expect(model.interfaces[0]!.services[0]!.status).toBe('F')
+    })
+
+    it('reads a non-managed status as its label', () => {
+      expect(serviceAvailabilityText(row({ availability: -1, status: 'F' }))).toBe('Forced Unmanaged')
+    })
+
+    it('reads no status and no figure as Not Monitored', () => {
+      expect(serviceAvailabilityText(row({ availability: -1 }))).toBe('Not Monitored')
+    })
+
+    it('reads a managed service as its figure', () => {
+      expect(serviceAvailabilityText(row({ status: 'A' }))).toBe('99.5%')
+    })
+
+    it('names an undefined code', () => {
+      expect(serviceAvailabilityText(row({ availability: -1, status: 'Q' }))).toBe('Unknown (Q)')
+    })
+
+    it('is monitored only with a figure and a status that is absent or A', () => {
+      expect(isServiceMonitored(row())).toBe(true)
+      expect(isServiceMonitored(row({ status: 'A' }))).toBe(true)
+      expect(isServiceMonitored(row({ status: 'F' }))).toBe(false)
+      expect(isServiceMonitored(row({ availability: -1 }))).toBe(false)
+    })
+  })
+
+  describe('class functions', () => {
+    it('class a figure that is shown as a percentage', () => {
+      const model = buildTimelineModel(doc({ 'normal-threshold': 99.99, 'warning-threshold': 97 }), null, WINDOW)
+      expect(serviceAvailabilityClass(row({ availability: 98 }), thresholds)).toBe('warning')
+      expect(interfaceAvailabilityClass(model.interfaces[0]!, thresholds)).toBe('warning')
+      expect(nodeAvailabilityClass(model)).toBe('warning')
+    })
+
+    it('have no class where the text is not a percentage', () => {
+      const unmanaged = row({ availability: 99.5, status: 'U' })
+      expect(serviceAvailabilityClass(unmanaged, thresholds)).toBeUndefined()
+
+      const model = buildTimelineModel(
+        doc({ 'managed-service-count': 0, 'normal-threshold': 99.99, 'warning-threshold': 97 }), null, WINDOW)
+      expect(nodeAvailabilityClass(model)).toBeUndefined()
+      expect(interfaceAvailabilityClass({ ...model.interfaces[0]!, monitored: false }, thresholds)).toBeUndefined()
+    })
+  })
+
+  describe('older server without status, thresholds or count', () => {
+    it('builds a model with no thresholds and no classes', () => {
+      const model = buildTimelineModel(doc(), null, WINDOW)
+      const group = model.interfaces[0]!
+      const service = group.services[0]!
+
+      expect(model.thresholds).toBeUndefined()
+      expect(service.status).toBeUndefined()
+      expect(nodeAvailabilityClass(model)).toBeUndefined()
+      expect(interfaceAvailabilityClass(group, model.thresholds)).toBeUndefined()
+      expect(serviceAvailabilityClass(service, model.thresholds)).toBeUndefined()
+    })
   })
 })
