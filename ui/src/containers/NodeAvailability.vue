@@ -31,17 +31,19 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import NodeAvailabilityPanel from '@/components/Nodes/Availability/NodeAvailabilityPanel.vue'
 import NodeLookupMessage from '@/components/Nodes/NodeLookupMessage.vue'
 import { useNodeRouteResolution } from '@/components/Nodes/hooks/useNodeRouteResolution'
-import { nodeAvailabilityRoute } from '@/lib/nodeDetailsRoute'
+import { nodeAvailabilityRoute, nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { BreadCrumb, Node } from '@/types'
 
 const menuStore = useMenuStore()
 const nodeStore = useNodeStore()
+const router = useRouter()
 
 const props = defineProps({
   id: {
@@ -71,7 +73,9 @@ const heading = computed<string>(() => {
 const items = computed<BreadCrumb[]>(() => [
   { label: 'Home', to: menuStore.mainMenu.homeUrl, isAbsoluteLink: true },
   { label: 'Nodes', to: '/nodes' },
-  { label: 'Node Details', to: `/node/${encodeURIComponent(lookupValue.value)}` },
+  // BreadCrumb takes a path, so the route is resolved to one: nodeDetailsRoute owns its shape. An
+  // empty id cannot fill the route's param, and has no node to go back to.
+  { label: 'Node Details', to: lookupValue.value ? router.resolve(nodeDetailsRoute(lookupValue.value)).fullPath : '/nodes' },
   { label: 'Availability', to: '#', position: 'last' }
 ])
 </script>

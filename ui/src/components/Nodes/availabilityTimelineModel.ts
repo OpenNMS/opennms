@@ -196,7 +196,7 @@ export const buildTimelineModel = (
       availability: iface.availability,
       monitored: (iface.services ?? []).some(service => isMonitored(service.availability)),
       // Sorted by name: the availability resource returns services in database order, so without
-      // this the rows shuffle between refreshes of the same node. The legacy page sorts them too.
+      // this the rows shuffle between refreshes of the same node. The legacy page sorted them too.
       services: (iface.services ?? [])
         .map(service => ({
           ifServiceId: service.id,
@@ -278,16 +278,16 @@ export const unmonitoredPercent = (
  * The availability resource returns -1 when its query matched no row, which it requires to be a
  * managed service, on a managed interface, on an active node. A strip for one of those must not be
  * painted as available: green would claim uptime for something nothing was watching. The legacy
- * page draws an empty strip in the same situation.
+ * page drew an empty strip in the same situation.
  */
 export const isMonitored = (availability: number): boolean => availability >= 0
 
 /**
  * Availability for display.
  *
- * 'Not Monitored' matches the wording the legacy availability box uses for the same rows. That page
- * further distinguishes 'Remotely Monitored', which this payload cannot express -- the availability
- * resource reports one number and no managed or perspective state.
+ * 'Not Monitored' matches the wording the legacy availability box used for the same rows. A service
+ * that is not managed says why instead (see serviceAvailabilityText): its status code, which gives
+ * 'Remotely Monitored' for status X as the legacy box did.
  *
  * Never rounds up to 100%: '100%' has to mean no downtime at all, so anything short of it is
  * reported short of it.
@@ -315,7 +315,7 @@ export const formatAvailability = (pct: number): string => {
 export const nodeAvailabilityText = (model: TimelineModel): string =>
   model.monitored ? formatAvailability(model.availability) : 'Unmanaged'
 
-/** As above, one level down. 'Not Monitored' is what the legacy box calls such an interface. */
+/** As above, one level down. 'Not Monitored' is what the legacy box called such an interface. */
 export const interfaceAvailabilityText = (group: TimelineInterfaceGroup): string =>
   group.monitored ? formatAvailability(group.availability) : 'Not Monitored'
 

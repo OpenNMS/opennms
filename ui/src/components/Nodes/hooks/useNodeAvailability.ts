@@ -109,8 +109,8 @@ export const useNodeAvailability = (
 
   // Monotonic per fetch, full or roster-only, as nodeStore does for its own. One counter for both
   // kinds, so a page response cannot overwrite a later node or range change, nor the reverse. The
-  // details page keeps one instance across node ids, and the range or page can change before a
-  // request has landed, so responses can race.
+  // range or page can change before a request has landed, and the Availability page keeps one
+  // instance across node ids (the details page rebuilds its panel per node), so responses can race.
   let requestId = 0
 
   // True while timeline and activeWindow hold a successful full fetch for the current node and

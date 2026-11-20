@@ -33,9 +33,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const routerReplace = vi.fn()
 const routerPush = vi.fn()
+// Not the real path, so a breadcrumb that builds its own path instead of resolving the route fails.
+const routerResolve = vi.fn((to: { name: string, params: { id: string }}) => ({ fullPath: `/resolved/${to.name}/${to.params.id}` }))
 vi.mock('vue-router', () => ({
   useRoute: vi.fn(() => ({ params: { id: '42' }, query: {}})),
-  useRouter: vi.fn(() => ({ push: routerPush, replace: routerReplace }))
+  useRouter: vi.fn(() => ({ push: routerPush, replace: routerReplace, resolve: routerResolve }))
 }))
 
 vi.mock('@/services', () => ({
@@ -114,9 +116,10 @@ describe('NodeAvailability.vue', () => {
     expect(items).toEqual([
       { label: 'Home', to: '/home', isAbsoluteLink: true },
       { label: 'Nodes', to: '/nodes' },
-      { label: 'Node Details', to: '/node/42' },
+      { label: 'Node Details', to: '/resolved/Node Details/42' },
       { label: 'Availability', to: '#', position: 'last' }
     ])
+    expect(routerResolve).toHaveBeenCalledWith({ name: 'Node Details', params: { id: '42' }})
   })
 
   it('hands the panel the node and the base href once the node has loaded', async () => {
