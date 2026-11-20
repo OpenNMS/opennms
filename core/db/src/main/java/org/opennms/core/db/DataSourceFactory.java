@@ -68,6 +68,14 @@ public abstract class DataSourceFactory {
         final var connectionPool = ConnectionPool.merge(jdbcDataSource.getConnectionPool(), m_dataSourceConfigFactory.getConnectionPool());
         final var factoryClass = connectionPool.getFactory();
 
+        // Resolve every setting before the pool exists: creating it opens connections,
+        // and nothing would close them if an invalid value failed afterwards.
+        final int idleTimeout = connectionPool.getIdleTimeout();
+        final int loginTimeout = connectionPool.getLoginTimeout();
+        final int minPool = connectionPool.getMinPool();
+        final int maxPool = connectionPool.getMaxPool();
+        final int maxSize = connectionPool.getMaxSize();
+
     	ClosableDataSource dataSource = null;
 		final String defaultClassName = DEFAULT_FACTORY_CLASS.getName();
         try {
@@ -88,17 +96,25 @@ public abstract class DataSourceFactory {
 			}
     	}
     	
-    	if (connectionPool != null) {
-    		dataSource.setIdleTimeout(connectionPool.getIdleTimeout());
-    		try {
-    			dataSource.setLoginTimeout(connectionPool.getLoginTimeout());
-    		} catch (SQLException e) {
-    			LOG.warn("Exception thrown while trying to set login timeout on datasource", e);
-    		}
-    		dataSource.setMinPool(connectionPool.getMinPool());
-    		dataSource.setMaxPool(connectionPool.getMaxPool());
-    		dataSource.setMaxSize(connectionPool.getMaxSize());
-    	}
+        try {
+            dataSource.setIdleTimeout(idleTimeout);
+            try {
+                dataSource.setLoginTimeout(loginTimeout);
+            } catch (SQLException e) {
+                LOG.warn("Exception thrown while trying to set login timeout on datasource", e);
+            }
+            dataSource.setMinPool(minPool);
+            dataSource.setMaxPool(maxPool);
+            dataSource.setMaxSize(maxSize);
+        } catch (final RuntimeException | Error e) {
+            // The pool rejected a value (e.g. HikariCP refuses a maxPool below 1); don't leave it running
+            try {
+                dataSource.close();
+            } catch (final RuntimeException closeFailure) {
+                e.addSuppressed(closeFailure);
+            }
+            throw e;
+        }
 
     	return dataSource;
     }
