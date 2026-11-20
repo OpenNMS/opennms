@@ -81,13 +81,13 @@
 import { computed, ref, watch } from 'vue'
 import { OnmsIconButton, OnmsSpinner } from '@opennms/onms-ui'
 import IconViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
-import NodeDetailsPanel from './NodeDetailsPanel.vue'
-import AvailabilityTimeline from './AvailabilityTimeline.vue'
+import NodeDetailsPanel from '@/components/Nodes/NodeDetailsPanel.vue'
+import AvailabilityTimeline from '@/components/Nodes/AvailabilityTimeline.vue'
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TimeControls from '@/components/Common/TimeControls.vue'
 import { useNodeStore } from '@/stores/nodeStore'
 import { selectionFromTime, selectionLabel, windowFor } from '@/components/Nodes/availabilityRange'
-import { useDelayedLoading } from './hooks/useDelayedLoading'
+import { useDelayedLoading } from '@/components/Nodes/hooks/useDelayedLoading'
 import { plural } from '@/lib/utils'
 import API from '@/services/index'
 import { Node, NodeAvailability, StartEndTime } from '@/types/index'
@@ -98,7 +98,7 @@ import {
   nodeAvailabilityText,
   TimelineWindow
 } from '@/components/Nodes/availabilityTimelineModel'
-import { buildTicks } from './availabilityTimelineAxis'
+import { buildTicks } from '@/components/Nodes/availabilityTimelineAxis'
 
 const props = defineProps<{
   baseHref: string

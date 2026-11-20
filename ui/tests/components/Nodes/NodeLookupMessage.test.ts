@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import NodeLookupMessage from '@/components/Nodes/NodeDetails/NodeLookupMessage.vue'
+import NodeLookupMessage from '@/components/Nodes/NodeLookupMessage.vue'
 import { flushPromises, mount, RouterLinkStub } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'

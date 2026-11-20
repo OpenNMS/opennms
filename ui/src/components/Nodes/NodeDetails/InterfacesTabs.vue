@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
-import NodeDetailsPanel from './NodeDetailsPanel.vue'
+import NodeDetailsPanel from '@/components/Nodes/NodeDetailsPanel.vue'
 import SnmpInterfacesTable from './SnmpInterfacesTable.vue'
 import IpInterfacesTable from './IpInterfacesTable.vue'
 

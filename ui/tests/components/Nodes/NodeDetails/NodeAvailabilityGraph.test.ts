@@ -21,7 +21,7 @@
 ///
 
 import NodeAvailabilityGraph from '@/components/Nodes/NodeDetails/NodeAvailabilityGraph.vue'
-import { LOADING_DELAY_MS } from '@/components/Nodes/NodeDetails/hooks/useDelayedLoading'
+import { LOADING_DELAY_MS } from '@/components/Nodes/hooks/useDelayedLoading'
 import { NodeAvailability } from '@/types/index'
 import { NodeOutageTimeline } from '@/types/nodeAvailabilityTimeline'
 import { createTestingPinia } from '@pinia/testing'

@@ -22,7 +22,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { effectScope } from 'vue'
-import { LOADING_DELAY_MS, useDelayedLoading } from '@/components/Nodes/NodeDetails/hooks/useDelayedLoading'
+import { LOADING_DELAY_MS, useDelayedLoading } from '@/components/Nodes/hooks/useDelayedLoading'
 
 describe('useDelayedLoading', () => {
   beforeEach(() => {

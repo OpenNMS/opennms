@@ -131,7 +131,7 @@ import NodeDetailsHeader from '@/components/Nodes/NodeDetails/NodeDetailsHeader.
 import NodeDetailsLinks from '@/components/Nodes/NodeDetails/NodeDetailsLinks.vue'
 import NodeDetailsMonitoringTab from '@/components/Nodes/NodeDetails/NodeDetailsMonitoringTab.vue'
 import NodeDetailsNeighborsTab from '@/components/Nodes/NodeDetails/NodeDetailsNeighborsTab.vue'
-import NodeLookupMessage from '@/components/Nodes/NodeDetails/NodeLookupMessage.vue'
+import NodeLookupMessage from '@/components/Nodes/NodeLookupMessage.vue'
 import NodeSystemInfoPanel from '@/components/Nodes/NodeDetails/NodeSystemInfoPanel.vue'
 import { nodeDetailsRoute, parseNodeRouteId } from '@/lib/nodeDetailsRoute'
 import API from '@/services'
