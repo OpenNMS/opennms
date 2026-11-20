@@ -35,7 +35,7 @@
       :content="emptyContent"
       data-test="availability-empty"
     />
-    <template v-else-if="model && model.interfaces.length > 0">
+    <template v-else-if="model && model.interfaces.length > 0 && nodeId !== undefined">
       <p
         v-if="timeline?.truncated"
         class="availability-truncated"
@@ -74,7 +74,12 @@ defineProps<{
   /** The range the figures were fetched for, e.g. 'Last day'. */
   rangeLabel: string
   baseHref: string
-  nodeId: string | number
+  /**
+   * Optional: the body can be shown before a node is known, and then has nothing but its summary to
+   * draw. The timeline, which links by node id, needs it -- and has no model to draw until a fetch
+   * for a node has landed anyway.
+   */
+  nodeId?: string | number
   showSpinner: boolean
   isFetching: boolean
   loadFailed: boolean

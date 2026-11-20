@@ -55,9 +55,6 @@ const mountTimeline = () =>
       baseHref: '/opennms/',
       nodeId: 101,
       rangeLabel: 'Last day'
-    },
-    global: {
-      directives: { 'onms-tooltip': {}}
     }
   })
 

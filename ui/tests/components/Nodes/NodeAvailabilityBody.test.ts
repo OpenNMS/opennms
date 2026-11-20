@@ -84,8 +84,7 @@ const mountBody = (props: Partial<typeof baseProps> & { model?: TimelineModel } 
       footer: '<nav data-test="footer-slot">footer</nav>'
     },
     global: {
-      plugins: [PrimeVue],
-      directives: { 'onms-tooltip': {}}
+      plugins: [PrimeVue]
     }
   })
 

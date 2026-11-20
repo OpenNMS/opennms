@@ -88,8 +88,7 @@ const mountPanel = (nodeId = '101', stubs: Record<string, unknown> = {}) =>
     },
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
-      stubs: { TimeControls: true, ...stubs },
-      directives: { 'onms-tooltip': {}}
+      stubs: { TimeControls: true, ...stubs }
     }
   })
 

@@ -44,9 +44,6 @@ const mountRow = (over: Partial<TimelineServiceRow> = {}) =>
       nodeId: 101,
       unmonitoredPct: 0,
       thresholds: { normal: 99.99, warning: 97 }
-    },
-    global: {
-      directives: { 'onms-tooltip': {}}
     }
   })
 
