@@ -3,7 +3,6 @@ import NodeDetailsHeader from '@/components/Nodes/NodeDetails/NodeDetailsHeader.
 import { OnmsMenu, OnmsTag } from '@opennms/onms-ui'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import { OnmsTooltip } from '@opennms/onms-ui'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Shows which value was formatted without depending on the display zone or format.
@@ -88,8 +87,7 @@ describe('NodeDetailsHeader.vue', () => {
       mount(NodeDetailsHeader, {
         props: { node: { ...node, categories }},
         global: {
-          plugins: [PrimeVue],
-          directives: { 'onms-tooltip': OnmsTooltip }
+          plugins: [PrimeVue]
         }
       })
 
@@ -193,7 +191,7 @@ describe('NodeDetailsHeader.vue', () => {
     const flowsTag = (extra: object) =>
       mount(NodeDetailsHeader, {
         props: { node: { ...node, ...extra }},
-        global: { plugins: [PrimeVue], directives: { 'onms-tooltip': OnmsTooltip }}
+        global: { plugins: [PrimeVue] }
       }).find('[data-test="flows-tag"]')
 
     it('shows a success badge when the node had a flow in the last week', () => {

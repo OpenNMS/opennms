@@ -4,7 +4,6 @@ import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
-import { OnmsTooltip } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -41,7 +40,6 @@ describe('EventConfigEventTable.vue', () => {
   const mountTable = () => mount(EventConfigEventTable, {
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
-      directives: { 'onms-tooltip': OnmsTooltip },
       stubs
     }
   })

@@ -55,6 +55,7 @@ describe('mibCompilerStore', () => {
   })
 
   it('fetchMibFiles reports the error and resets loading', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     mockListMibFiles.mockRejectedValue(new Error('boom'))
 
     const store = useMibCompilerStore()
@@ -65,5 +66,7 @@ describe('mibCompilerStore', () => {
     expect(store.isLoading).toBe(false)
     // an empty page with no message would read as "no MIB files"
     expect(mockShowSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+    expect(consoleError).toHaveBeenCalled()
+    consoleError.mockRestore()
   })
 })

@@ -8,7 +8,6 @@ import { uploadEventConfigFiles } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import { OnmsTooltip } from '@opennms/onms-ui'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { reactive } from 'vue'
 
@@ -50,7 +49,6 @@ describe('EventConfigUploadFilesTab.vue', () => {
   const mountTab = () => mount(EventConfigUploadFilesTab, {
     global: {
       plugins: [PrimeVue],
-      directives: { 'onms-tooltip': OnmsTooltip },
       stubs
     }
   })

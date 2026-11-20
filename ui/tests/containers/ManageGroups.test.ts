@@ -30,6 +30,7 @@ const UNAVAILABLE = 'User management is temporarily unavailable.'
 
 const store = vi.hoisted(() => ({
   editMode: 'table',
+  currentGroup: null,
   populate: vi.fn(),
   closeGroupEditor: vi.fn(),
   groups: []

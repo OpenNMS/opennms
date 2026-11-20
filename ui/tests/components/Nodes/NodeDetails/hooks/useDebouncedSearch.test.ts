@@ -21,20 +21,27 @@
 ///
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { effectScope } from 'vue'
+import { effectScope, type EffectScope } from 'vue'
 import { SEARCH_DEBOUNCE_MS, useDebouncedSearch } from '@/components/Nodes/NodeDetails/hooks/useDebouncedSearch'
 
 describe('useDebouncedSearch', () => {
+  // The hook registers onScopeDispose, so run it in a scope as a component would;
+  // outside one, Vue warns that there is no active effect scope.
+  let scope: EffectScope
+  const setup = () => scope.run(() => useDebouncedSearch())!
+
   beforeEach(() => {
     vi.useFakeTimers()
+    scope = effectScope()
   })
 
   afterEach(() => {
+    scope.stop()
     vi.useRealTimers()
   })
 
   it('follows the input immediately but applies on a delay', () => {
-    const { searchTerm, appliedTerm, onSearch } = useDebouncedSearch()
+    const { searchTerm, appliedTerm, onSearch } = setup()
 
     onSearch('eth')
     expect(searchTerm.value).toBe('eth')
@@ -45,7 +52,7 @@ describe('useDebouncedSearch', () => {
   })
 
   it('coalesces a burst of typing into one applied term', () => {
-    const { appliedTerm, onSearch } = useDebouncedSearch()
+    const { appliedTerm, onSearch } = setup()
 
     onSearch('e')
     vi.advanceTimersByTime(50)
@@ -60,7 +67,7 @@ describe('useDebouncedSearch', () => {
 
   // Normalised once here rather than per row per keystroke.
   it('trims and lowercases the applied term', () => {
-    const { appliedTerm, onSearch } = useDebouncedSearch()
+    const { appliedTerm, onSearch } = setup()
 
     onSearch('  UPLink  ')
     vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS)
@@ -69,7 +76,7 @@ describe('useDebouncedSearch', () => {
   })
 
   it('treats an undefined value as empty', () => {
-    const { searchTerm, onSearch } = useDebouncedSearch()
+    const { searchTerm, onSearch } = setup()
 
     onSearch(undefined)
 
@@ -78,7 +85,7 @@ describe('useDebouncedSearch', () => {
 
   // The user is asking to see everything again, so it takes effect at once.
   it('clears without waiting for the debounce', () => {
-    const { searchTerm, appliedTerm, onSearch, clearSearch } = useDebouncedSearch()
+    const { searchTerm, appliedTerm, onSearch, clearSearch } = setup()
 
     onSearch('eth')
     vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS)
@@ -106,7 +113,7 @@ describe('useDebouncedSearch', () => {
   // Without cancelling, the apply queued by those keystrokes would land after the clear and
   // re-filter the table.
   it('drops a pending apply when cleared mid-type', () => {
-    const { appliedTerm, onSearch, clearSearch } = useDebouncedSearch()
+    const { appliedTerm, onSearch, clearSearch } = setup()
 
     onSearch('eth')
     clearSearch()

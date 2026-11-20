@@ -104,9 +104,12 @@ describe('snmpDataCollectionService', () => {
     })
 
     it('rethrows other errors', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.get).mockRejectedValue({ response: { status: 500 }})
 
       await expect(findMibGroupsByName('mib2-interfaces')).rejects.toEqual({ response: { status: 500 }})
+      expect(consoleError).toHaveBeenCalled()
+      consoleError.mockRestore()
     })
   })
 })

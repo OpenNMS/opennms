@@ -578,6 +578,7 @@ describe('useEventConfigDetailStore', () => {
     })
 
     it('fetchOrderedEvents failure leaves the reorder mode and says why', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       store.selectedSource = mockSource
       vi.mocked(getOrderedEventConfigEvents).mockRejectedValue(new Error('boom'))
 
@@ -587,6 +588,7 @@ describe('useEventConfigDetailStore', () => {
       // an empty reorder view with no explanation is worse than no reorder view
       expect(store.eventsReorderMode).toBe(false)
       expect(mockShowSnackBar).toHaveBeenCalledWith({ msg: 'Failed to load the event order. Try again.', error: true })
+      expect(consoleError).toHaveBeenCalled()
     })
 
     it('saveEventsOrder refreshes the table page on success', async () => {
@@ -613,12 +615,14 @@ describe('useEventConfigDetailStore', () => {
     })
 
     it('saveEventsOrder without a selected source fails fast', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       store.selectedSource = null
 
       const result = await store.saveEventsOrder([7, 8])
 
       expect(result.ok).toBe(false)
       expect(updateEventConfigEventsOrder).not.toHaveBeenCalled()
+      expect(consoleError).toHaveBeenCalled()
     })
 
     it('loading a source drops reorder state left over from another source', async () => {

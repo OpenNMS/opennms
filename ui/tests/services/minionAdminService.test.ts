@@ -27,8 +27,10 @@ describe('minionAdminService', () => {
   })
 
   it('listMinions returns null on failure', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(v2.get).mockRejectedValue(http(500))
     expect(await listMinions()).toBeNull()
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('getMinionNodeIds ORs foreignId== per minion and maps node ids by id+location', async () => {
@@ -52,6 +54,7 @@ describe('minionAdminService', () => {
   })
 
   it('getMinionNodeIds chunks the lookup so the URL stays short, and keeps the chunks that succeed', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     const many = Array.from({ length: NODE_LOOKUP_CHUNK * 2 + 1 }, (_, i) => minion(`m${i}`))
     vi.mocked(v2.get).mockImplementation(async (url: string) => {
       const ids = [...decodeURIComponent(url).matchAll(/foreignId==([^,)]+)/g)].map(m => m[1])
@@ -68,12 +71,15 @@ describe('minionAdminService', () => {
     expect(map['m0\u0000Default']).toBeUndefined()
     expect(map[`m${NODE_LOOKUP_CHUNK}\u0000Default`]).toBe(1000)
     expect(map[`m${NODE_LOOKUP_CHUNK * 2}\u0000Default`]).toBe(1000)
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('getMinionNodeIds is best-effort — no minions or a failure yields an empty map', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     expect(await getMinionNodeIds([])).toEqual({})
     vi.mocked(v2.get).mockRejectedValue(http(500))
     expect(await getMinionNodeIds([minion('m1')])).toEqual({})
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('getMinion reads one row by id', async () => {
@@ -100,10 +106,12 @@ describe('minionAdminService', () => {
   })
 
   it('deleteMinion returns a failure result on a real failure', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(v2.delete).mockRejectedValue(http(500))
     const result = await deleteMinion('m1')
     expect(result.success).toBe(false)
     expect(result.message).toBe('Failed to delete minion \'m1\'.')
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('getCoreVersion reads the version field of /rest/info verbatim', async () => {

@@ -209,6 +209,7 @@ describe('NodeDetails.vue', () => {
   it('does not show Node Not Found on first render from an earlier visit\'s failure', () => {
     const pinia = createTestingPinia({ stubActions: false })
     setActivePinia(pinia)
+    useMenuStore().mainMenu = { homeUrl: '/home', baseHref: '/base' } as any
     const nodeStore = useNodeStore()
     nodeStore.nodeLoadError = 'notFound'
     nodeStore.getNodeById = vi.fn(async () => {

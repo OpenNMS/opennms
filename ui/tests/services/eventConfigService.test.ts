@@ -41,7 +41,10 @@ describe('eventConfigService filters', () => {
   })
 
   it('still rejects an unexpected status', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     mockGet.mockResolvedValue({ status: 500, data: '' })
     await expect(filterEventConfigSources(0, 10, '', 'name', 'asc')).rejects.toThrow('Unexpected response status: 500')
+    expect(consoleError).toHaveBeenCalled()
+    consoleError.mockRestore()
   })
 })

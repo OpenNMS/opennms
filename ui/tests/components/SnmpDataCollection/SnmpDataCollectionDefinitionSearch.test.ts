@@ -23,7 +23,7 @@
 import SnmpDataCollectionDefinitionSearch from '@/components/SnmpDataCollection/SnmpDataCollectionDefinitionSearch.vue'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
-import { OnmsAutoComplete, OnmsSelect, OnmsTooltip } from '@opennms/onms-ui'
+import { OnmsAutoComplete, OnmsSelect } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -53,8 +53,7 @@ vi.mock('@/composables/useSnackbar', () => ({
 
 const mountSearch = () => mount(SnmpDataCollectionDefinitionSearch, {
   global: {
-    plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
-    directives: { 'onms-tooltip': OnmsTooltip }
+    plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue]
   }
 })
 
@@ -237,7 +236,7 @@ describe('SnmpDataCollectionDefinitionSearch.vue', () => {
     useSnmpDataCollectionStore(pinia).definitionSearch = { kind: 'resourcetypes', name: 'hrStorageIndex' }
 
     const wrapper = mount(SnmpDataCollectionDefinitionSearch, {
-      global: { plugins: [pinia, PrimeVue], directives: { 'onms-tooltip': OnmsTooltip }}
+      global: { plugins: [pinia, PrimeVue] }
     })
     await flushPromises()
 

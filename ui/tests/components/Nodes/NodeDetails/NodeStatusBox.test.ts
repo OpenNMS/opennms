@@ -23,7 +23,7 @@
 import NodeStatusBox from '@/components/Nodes/NodeDetails/NodeStatusBox.vue'
 import { useAlarmStore } from '@/stores/alarmStore'
 import { useMenuStore } from '@/stores/menuStore'
-import { OnmsTag, OnmsTooltip } from '@opennms/onms-ui'
+import { OnmsTag } from '@opennms/onms-ui'
 import { createTestingPinia } from '@pinia/testing'
 import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
@@ -87,8 +87,7 @@ describe('NodeStatusBox.vue', () => {
   const mountBox = (setup: () => void = () => answerWith(summary())) =>
     mount(NodeStatusBox, {
       global: {
-        plugins: [PrimeVue, createPinia(setup)],
-        directives: { 'onms-tooltip': OnmsTooltip }
+        plugins: [PrimeVue, createPinia(setup)]
       }
     })
 
