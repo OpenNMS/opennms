@@ -138,4 +138,16 @@ public class NodeAvailabilityPageIT extends OpenNMSSeleniumIT {
         assertTrue(getDriver().getCurrentUrl().endsWith("/node/" + nodeId + "/availability"));
         wait.until(pageContainsText("Availability for " + LABEL));
     }
+
+    /** The Monitoring menu of the links row links to this page (ui/#/node/&lt;id&gt;/availability under the base href). */
+    @Test
+    public void reachedFromNodeDetailsLinksRow() {
+        new NodeDetailsPage(this).open(nodeId).waitForLabel(LABEL).clickLink("Monitoring", "Availability");
+
+        wait.until(ExpectedConditions.urlContains("/ui/#/node/" + nodeId + "/availability"));
+        assertTrue(getDriver().getCurrentUrl().endsWith("/node/" + nodeId + "/availability"));
+        wait.until(pageContainsText("Availability for " + LABEL));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector("[data-test='availability-timeline']")));
+    }
 }
