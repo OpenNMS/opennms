@@ -64,7 +64,7 @@ import { outageDetailLink, serviceLink } from '@/lib/linkUtils'
 import AvailabilityBadge from './AvailabilityBadge.vue'
 import {
   AvailabilityThresholds,
-  isMonitored,
+  isServiceMonitored,
   segmentDescription,
   serviceAvailabilityClass,
   serviceAvailabilityText,
@@ -85,7 +85,9 @@ const props = defineProps<{
 const serviceHref = computed(() =>
   serviceLink(props.baseHref, props.nodeId, props.row.ipAddress, props.row.serviceId))
 
-const monitored = computed(() => isMonitored(props.row.availability))
+// The same test as the text and the badge, so a service that is not managed draws no green strip
+// beside its status label.
+const monitored = computed(() => isServiceMonitored(props.row))
 </script>
 
 <style lang="scss" scoped>
@@ -128,7 +130,7 @@ const monitored = computed(() => isMonitored(props.row.availability))
 }
 
 // Nothing was watching this service over the window, so the strip claims nothing. Green here would
-// read as a full window of uptime; the legacy page leaves the same rows empty.
+// read as a full window of uptime; the legacy page left the same rows empty.
 .strip--unmonitored {
   background: var(--timeline-unmonitored);
 }
