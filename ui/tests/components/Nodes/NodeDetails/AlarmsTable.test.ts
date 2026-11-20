@@ -21,7 +21,6 @@
 ///
 
 import AlarmsTable from '@/components/Nodes/NodeDetails/AlarmsTable.vue'
-import { OnmsTooltip } from '@opennms/onms-ui'
 import NodeDownloadDropdown from '@/components/Nodes/NodeDownloadDropdown.vue'
 import API from '@/services/index'
 import { useAlarmStore } from '@/stores/alarmStore'
@@ -100,8 +99,7 @@ describe('AlarmsTable.vue', () => {
   const mountTable = async () => {
     const wrapper = mount(AlarmsTable, {
       global: {
-        plugins: [createPinia(), PrimeVue],
-        directives: { 'onms-tooltip': OnmsTooltip }
+        plugins: [createPinia(), PrimeVue]
       }
     })
     await flushPromises()

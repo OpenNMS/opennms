@@ -57,7 +57,7 @@ const shapeB = { id: 'shape-b', type: 'rect', x: 20, y: 0, w: 10, h: 10, stroke:
 const mountInspector = async () => {
   const wrapper = mount(TopologyInspector, {
     props: { canvas: null },
-    global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })] }
+    global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })], stubs: { RouterLink: RouterLinkStub }}
   })
   const store = useTopologyStore()
   store.shapes = [{ ...shapeA }, { ...shapeB }] as never
@@ -85,7 +85,7 @@ describe('TopologyInspector discovered vertices', () => {
   const mountFull = async (nodes: unknown[], selected: string) => {
     const wrapper = mount(TopologyInspector, {
       props: { canvas: null },
-      global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })] }
+      global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })], stubs: { RouterLink: RouterLinkStub }}
     })
     const store = useTopologyStore()
     store.discoveredGraph = {
@@ -426,7 +426,7 @@ describe('TopologyInspector link interface state', () => {
     }
     const wrapper = mount(TopologyInspector, {
       props: { canvas: canvas as never },
-      global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })] }
+      global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })], stubs: { RouterLink: RouterLinkStub }}
     })
     const store = useTopologyStore()
     store.selectedIds = ['e1'] as never
@@ -471,7 +471,7 @@ describe('TopologyInspector geomap background', () => {
   const mountBackground = async (background: Record<string, unknown>) => {
     const wrapper = mount(TopologyInspector, {
       props: { canvas: null },
-      global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })] }
+      global: { plugins: [PrimeVue, createTestingPinia({ stubActions: false })], stubs: { RouterLink: RouterLinkStub }}
     })
     const store = useTopologyStore()
     store.currentView = {

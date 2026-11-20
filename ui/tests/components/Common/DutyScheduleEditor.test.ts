@@ -7,7 +7,7 @@ import { dutyTime, setDutyTime } from '../../utils'
 
 describe('DutyScheduleEditor.vue', () => {
   const mountEditor = (modelValue: string[]) =>
-    mount(DutyScheduleEditor, { props: { modelValue }, global: { plugins: [PrimeVue], directives: { 'onms-tooltip': {}}}})
+    mount(DutyScheduleEditor, { props: { modelValue }, global: { plugins: [PrimeVue] }})
 
   it('parses a schedule string into day toggles and times', () => {
     const wrapper = mountEditor(['MoWeFr800-1700'])

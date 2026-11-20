@@ -24,7 +24,6 @@ import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import PrimeVue from 'primevue/config'
-import { OnmsTooltip } from '@opennms/onms-ui'
 import ManagementIPTooltipCell from '@/components/Nodes/NodeList/ManagementIPTooltipCell.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { IpInterface, Node } from '@/types/index'
@@ -43,8 +42,7 @@ const mountCell = (ipInterfaces: Partial<IpInterface>[]) => {
       nodeToIpInterfaceMap: new Map([['42', ipInterfaces as IpInterface[]]])
     },
     global: {
-      plugins: [pinia, PrimeVue],
-      directives: { 'onms-tooltip': OnmsTooltip }
+      plugins: [pinia, PrimeVue]
     }
   })
 }

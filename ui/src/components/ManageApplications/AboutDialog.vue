@@ -1,5 +1,5 @@
 <template>
-  <AboutDialogButton title="Applications" class="about-dialog">
+  <AboutDialogButton title="Applications">
     <div class="help-section" data-test="about-applications">
       <div class="section-title">Applications</div>
       <p>An application groups monitored services that together deliver one thing your users rely on, such as a web store made of web, database and DNS services.</p>

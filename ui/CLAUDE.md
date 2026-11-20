@@ -127,7 +127,14 @@ Routes and UI elements check roles via the `useRole` composable (`adminRole`, `f
 
 ### Testing
 
-Vitest + Happy-DOM + `@vue/test-utils` + `@pinia/testing`. Tests live in `tests/`, mirroring the `src/` structure. Mount components with `createTestingPinia({ stubActions: false })` and stub `router-link`; prefer `data-test` attributes for element selection.
+Vitest + Happy-DOM + `@vue/test-utils` + `@pinia/testing`. Tests live in `tests/`, mirroring the `src/` structure. Mount components with `createTestingPinia({ stubActions: false })` and stub `router-link` (`stubs: { RouterLink: RouterLinkStub }`); prefer `data-test` attributes for element selection.
+
+**Tests should run silently: a passing test should print nothing to stdout or stderr.** Only Vue warnings are enforced (below); keep other output to rare, deliberate cases.
+
+- `tests/setup.ts` (Vitest `setupFiles`) fails any test that triggers a `[Vue warn]` or `[Vue Router warn]`. Fix the cause, don't silence it: register or stub the component, pass a prop of the declared type (including `null` vs `undefined` in store mocks), emit declared event names (`optionSelect`, not `option-select`), and run composables that use `onScopeDispose` inside an `effectScope()`. A component calling `onBeforeRouteLeave`/`onBeforeRouteUpdate` mounted outside a `<router-view>` needs `provide: { [matchedRouteKey as symbol]: computed(() => router.currentRoute.value.matched[0]) }`.
+- `tests/setup.ts` also registers `v-onms-tooltip` for every mount, as the app does; don't register it per test. Override it only when the test asserts what the tooltip receives, with a stub that records `binding.value` (see `UsersTable.test.ts`).
+- When the code under test is expected to log (a failure path), spy on it in that test, not in a `beforeEach` that mutes the whole file, and assert it: `const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})` … `expect(consoleError).toHaveBeenCalled()`, with `afterEach(() => { vi.restoreAllMocks() })` in the file, so a failed assertion can't leave the console muted. For an expected `console.warn` from app code, use `muteAppWarnings()` from `tests/vueWarnings.ts`, not `mockImplementation`: a bare mock replaces the setup file's wrapper and turns the Vue-warning check off for that test.
+- Vitest 4.1+ detects when an AI agent runs it and hides console output from passing tests, so a plain `pnpm test` looks quiet even when it isn't. Check with `pnpm test --reporter=default --silent=false`.
 
 ### Key directories
 

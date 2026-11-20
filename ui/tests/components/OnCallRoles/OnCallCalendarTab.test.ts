@@ -55,7 +55,7 @@ const ok = (payload: OnCallCalendar) => ({ success: true, message: '', payload }
 const mountTab = async (props: Record<string, unknown> = {}) => {
   const wrapper = mount(OnCallCalendarTab, {
     props: { draft: draft(), cards: [newCard('bob', 'daily')], members: ['bob', 'carol'], timeZone: 'UTC', ...props },
-    global: { plugins: [PrimeVue], directives: { 'onms-tooltip': { mounted: () => undefined }}}
+    global: { plugins: [PrimeVue] }
   })
   await flushPromises()
   return wrapper
@@ -203,7 +203,7 @@ describe('OnCallCalendarTab', () => {
     }))
     const wrapper = mount(OnCallCalendarTab, {
       props: { draft: draft(), cards: [newCard('bob', 'daily')], members: [], timeZone: 'UTC' },
-      global: { plugins: [PrimeVue], directives: { 'onms-tooltip': { mounted: () => undefined }}}
+      global: { plugins: [PrimeVue] }
     })
     await wrapper.find('[data-test="calendar-next"]').trigger('click')
     await flushPromises()

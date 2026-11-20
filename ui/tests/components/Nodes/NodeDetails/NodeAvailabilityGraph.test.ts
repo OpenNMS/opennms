@@ -124,8 +124,7 @@ const mountPanel = (
     },
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
-      stubs: { TimeControls: true, RouterLink: RouterLinkStub, ...stubs },
-      directives: { 'onms-tooltip': {}}
+      stubs: { TimeControls: true, RouterLink: RouterLinkStub, ...stubs }
     }
   })
 
@@ -419,8 +418,7 @@ describe('NodeAvailabilityGraph.vue', () => {
         props: { baseHref: '/opennms/', node: { id: nodeId } as any },
         global: {
           plugins: [pinia, PrimeVue],
-          stubs: { TimeControls: TimeControlsStub },
-          directives: { 'onms-tooltip': {}}
+          stubs: { TimeControls: TimeControlsStub, RouterLink: RouterLinkStub }
         }
       })
 
