@@ -13,14 +13,16 @@
                     "name": "ICMP",
                     "serviceId": 1,
                     "availability": -1.0,
-                    "up": true
+                    "up": true,
+                    "status": "A"
                 },
                 {
                     "id": 3,
                     "name": "SNMP",
                     "serviceId": 2,
                     "availability": -1.0,
-                    "up": true
+                    "up": true,
+                    "status": "A"
                 }
             ]
         },
@@ -34,14 +36,16 @@
                     "name": "ICMP",
                     "serviceId": 1,
                     "availability": -1.0,
-                    "up": true
+                    "up": true,
+                    "status": "A"
                 },
                 {
                     "id": 6,
                     "name": "HTTP",
                     "serviceId": 3,
                     "availability": -1.0,
-                    "up": true
+                    "up": true,
+                    "status": "A"
                 }
             ]
         },
@@ -55,7 +59,8 @@
                     "name": "ICMP",
                     "serviceId": 1,
                     "availability": -1.0,
-                    "up": true
+                    "up": true,
+                    "status": "A"
                 }
             ]
         },
@@ -69,11 +74,15 @@
                     "name": "ICMP",
                     "serviceId": 1,
                     "availability": -1.0,
-                    "up": true
+                    "up": true,
+                    "status": "A"
                 }
             ]
         }
     ],
     "service-count": 6,
-    "service-down-count": 0
+    "service-down-count": 0,
+    "managed-service-count": 6,
+    "normal-threshold": 99.99,
+    "warning-threshold": 97.0
 }
