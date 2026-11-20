@@ -54,8 +54,9 @@ public class AvailabilityNode {
     private Long m_serviceDownCount;
 
     /**
-     * Services with status A (managed) across every interface of the node, whatever the paging.
-     * Unset when the node was built from an RTC node.
+     * Services with status A (managed) on managed interfaces, across every interface of the node,
+     * whatever the paging: the services the availability figures count. Unset when the node was
+     * built from an RTC node.
      */
     @XmlAttribute(name="managed-service-count")
     private Long m_managedServiceCount;
@@ -103,9 +104,11 @@ public class AvailabilityNode {
         m_serviceDownCount = 0l;
         m_managedServiceCount = 0l;
         for (final OnmsIpInterface iface : node.getIpInterfaces()) {
+            // The availability queries match only a managed service on a managed interface.
+            final boolean ifaceManaged = "M".equals(iface.getIsManaged());
             for (final OnmsMonitoredService svc : iface.getMonitoredServices()) {
                 m_serviceCount++;
-                if ("A".equals(svc.getStatus())) {
+                if (ifaceManaged && "A".equals(svc.getStatus())) {
                     m_managedServiceCount++;
                 }
                 if (svc.isDown()) {

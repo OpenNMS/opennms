@@ -319,8 +319,8 @@ public class AvailabilityRestService extends OnmsRestService {
         membership check and does not restrict which of the node's services are reported.
 
         `normal-threshold` and `warning-threshold` come from the path's category in `categories.xml`. When it
-        does not define them they are null in JSON and omitted in XML. `managed-service-count` covers every
-        interface of the node.
+        does not define them they are null in JSON and omitted in XML. `managed-service-count`, the number of
+        services with status `A` on managed interfaces, covers every interface of the node.
 
         A node id that is not in the category, or that does not exist, is reported as 500 rather than 404.""",
             operationId = "getAvailabilityCategoryNode"
@@ -402,7 +402,8 @@ public class AvailabilityRestService extends OnmsRestService {
         the page's interfaces and services have their availability computed -- each figure is a query of its
         own, so a node with many interfaces is far cheaper a page at a time. `ipinterfaceCount` is the node's
         total, for a paginator; the node's own figures and service counts always cover every interface,
-        and so does `managed-service-count`, the number of services with status `A`, whatever the paging.
+        and so does `managed-service-count`, the number of services with status `A` on managed interfaces
+        (the services the figures count), whatever the paging.
         `normal-threshold` and `warning-threshold` come from `categories.xml` (Overall Service Availability).
         When it does not define them they are null in JSON and omitted in XML. Each service carries its
         `status` code.

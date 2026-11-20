@@ -312,6 +312,7 @@ public class AvailabilityRestServiceIT extends AbstractSpringJerseyRestTestCase 
     public void testGetAvailabilityNodeManagedServiceCountIgnoresPaging() throws Exception {
         final int nodeId = m_populator.getNode1().getId();
         final long expected = m_template.execute(status -> m_populator.getNodeDao().get(nodeId).getIpInterfaces().stream()
+                .filter(iface -> "M".equals(iface.getIsManaged()))
                 .flatMap(iface -> iface.getMonitoredServices().stream())
                 .filter(svc -> "A".equals(svc.getStatus()))
                 .count());

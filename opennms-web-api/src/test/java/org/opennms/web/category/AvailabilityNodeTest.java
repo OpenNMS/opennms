@@ -52,10 +52,8 @@ public class AvailabilityNodeTest {
     public void managedServiceCountCountsOnlyStatusA() {
         final OnmsNode node = new OnmsNode();
         node.setId(1);
-        final OnmsIpInterface if1 = new OnmsIpInterface("192.168.1.1", node);
-        final OnmsIpInterface if2 = new OnmsIpInterface("192.168.1.2", node);
-        node.addIpInterface(if1);
-        node.addIpInterface(if2);
+        final OnmsIpInterface if1 = addInterface(node, "192.168.1.1", "M");
+        final OnmsIpInterface if2 = addInterface(node, "192.168.1.2", "M");
         addService(if1, "ICMP", "A");
         addService(if1, "SNMP", "F");
         addService(if2, "ICMP", "A");
@@ -64,6 +62,35 @@ public class AvailabilityNodeTest {
 
         assertEquals(Long.valueOf(2), avail.getManagedServiceCount());
         assertEquals(Long.valueOf(3), avail.getServiceCount());
+    }
+
+    /**
+     * The availability figures count a service only on a managed interface, so the count must not
+     * include the services of an unmanaged one, whatever their own status.
+     */
+    @Test
+    public void managedServiceCountSkipsUnmanagedInterfaces() {
+        final OnmsNode node = new OnmsNode();
+        node.setId(1);
+        final OnmsIpInterface managed = addInterface(node, "192.168.1.1", "M");
+        final OnmsIpInterface unmanaged = addInterface(node, "192.168.1.2", "U");
+        final OnmsIpInterface unset = addInterface(node, "192.168.1.3", null);
+        addService(managed, "ICMP", "A");
+        addService(unmanaged, "ICMP", "A");
+        addService(unmanaged, "SNMP", "A");
+        addService(unset, "ICMP", "A");
+
+        final AvailabilityNode avail = new AvailabilityNode(node, 100d);
+
+        assertEquals(Long.valueOf(1), avail.getManagedServiceCount());
+        assertEquals(Long.valueOf(4), avail.getServiceCount());
+    }
+
+    private static OnmsIpInterface addInterface(final OnmsNode node, final String address, final String isManaged) {
+        final OnmsIpInterface iface = new OnmsIpInterface(address, node);
+        iface.setIsManaged(isManaged);
+        node.addIpInterface(iface);
+        return iface;
     }
 
     private static void addService(final OnmsIpInterface iface, final String name, final String status) {
