@@ -405,6 +405,45 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     }
 
     /**
+     * A missing jdbc-datacollection-config.xml doesn't stop the upgrade with failOnError="false", like a missing
+     * jdbc-datacollection.d/ doesn't: no 'default' is stored and the files of the directory are still imported.
+     */
+    @Test
+    public void shouldSkipMissingJdbcDataCollectionConfigFile() throws Exception {
+        try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
+            final Path includeDir = Files.createDirectories(Path.of(this.opennmsHome + "/etc/jdbc-datacollection.d"));
+            Files.copy(Path.of(ASSEMBLY_ETC + "jdbc-datacollection.d/mysql.xml"), includeDir.resolve("mysql.xml"));
+
+            new LiquibaseUpgrader(cmSpy).runChangelog(JDBC_CHANGELOG, dataSource.getConnection());
+
+            assertEquals(Set.of("mysql"), this.cm.getConfigIds(SCHEMA_NAME_JDBC));
+            assertFalse(Files.exists(includeDir.resolve("mysql.xml")));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive/jdbc-datacollection.d", "mysql.xml"));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    /**
+     * Without failOnError="false", importConfig still stops the upgrade when the file is missing.
+     */
+    @Test
+    public void shouldFailOnMissingFileByDefault() throws Exception {
+        try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
+
+            final LiquibaseUpgrader liqui = new LiquibaseUpgrader(cmSpy);
+            assertThrowsException(ValidationFailedException.class,
+                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog-file-missing.xml", dataSource.getConnection()));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    /**
      * A file that is imported but can't be archived doesn't stop the upgrade: the configuration is stored and
      * the file stays in etc/.
      */

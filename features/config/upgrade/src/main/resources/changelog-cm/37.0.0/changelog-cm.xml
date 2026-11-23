@@ -7,7 +7,8 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <!-- jdbc-datacollection-config.xml becomes the configuration 'default', every file of jdbc-datacollection.d/ a configuration named after the file
-         (default.xml becomes 'default.d'). Files that can't be imported are logged and left in etc/, they don't stop the upgrade:
+         (default.xml becomes 'default.d'). Files that can't be imported are logged and left in etc/, and a missing file or directory
+         imports nothing; neither stops the upgrade:
          the old DAO didn't validate them, so a file the collector used to accept must not break the upgrade. -->
     <changeSet author="cpape" id="register-schema-jdbc-datacollection-config">
         <cm:registerSchema id="jdbc-datacollection-config" allowMultiple="true"/>

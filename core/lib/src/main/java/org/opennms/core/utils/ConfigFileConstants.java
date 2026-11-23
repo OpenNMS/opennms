@@ -363,11 +363,6 @@ public abstract class ConfigFileConstants {
     public static final int WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME;
 
     /**
-     * The config file for the JDBC Data Collector.
-     */
-    public static final int JDBC_COLLECTION_CONFIG_FILE_NAME;
-
-    /**
      * The token-auth-configuration file: token-based authentication
      * definitions used by the XML/JSON and HTTP collectors.
      */
@@ -466,8 +461,6 @@ public abstract class ConfigFileConstants {
 
         SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME = 79;
         
-        JDBC_COLLECTION_CONFIG_FILE_NAME = 80;
-        
         ENLINKD_CONFIG_FILE_NAME = 81;
 
         WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME = 82;
@@ -550,7 +543,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[MAPS_ADAPTER_CONFIG_FILE_NAME] = "mapsadapter-configuration.xml";
         FILE_ID_TO_NAME[SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME] = "snmp-asset-adapter-configuration.xml";
         FILE_ID_TO_NAME[WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME] = "wsman-asset-adapter-configuration.xml";
-        FILE_ID_TO_NAME[JDBC_COLLECTION_CONFIG_FILE_NAME] = "jdbc-datacollection-config.xml";
         FILE_ID_TO_NAME[TOKEN_AUTH_CONFIG_FILE_NAME] = "token-auth-configuration.xml";
     }
 

@@ -51,7 +51,8 @@ import liquibase.statement.SqlStatement;
  * Imports an existing configuration. It can either live in {opennms.home}/etc (user defined) or in the class path (default).
  *
  * <p>With {@code failOnError="false"} a file that can't be imported (e.g. it doesn't obey the schema) doesn't stop the
- * upgrade: the error is logged, nothing is stored, and the file stays where it is.</p>
+ * upgrade: the error is logged, nothing is stored, and the file stays where it is. A missing file is skipped the same way,
+ * like a missing directory is by {@link ImportConfigDirectory}.</p>
  */
 @DatabaseChange(name = "importConfig", description = "Imports a configuration from file.", priority = ChangeMetaData.PRIORITY_DATABASE)
 public class ImportConfiguration extends AbstractCmChange {
@@ -73,8 +74,14 @@ public class ImportConfiguration extends AbstractCmChange {
         Optional<Resource> configResource = findConfigFiles(this.filePath).stream().findAny();
 
         if (configResource.isEmpty() || !configResource.get().isReadable()) {
-            validationErrors.addError(String.format("Can not read configuration in file: %s/etc/%s or in classpath: /defaults/%s",
-                    getOpennmsHome(), this.filePath, this.filePath));
+            this.configResource = null;
+            if (Boolean.FALSE.equals(this.failOnError)) {
+                LOG.warn("Configuration file {} not found or not readable in {}/etc/, the classpath defaults or etc_archive/. Nothing is imported for configuration {} of schema {}.",
+                        this.filePath, getOpennmsHome(), getConfigId(), this.schemaId);
+            } else {
+                validationErrors.addError(String.format("Can not read configuration in file: %s/etc/%s or in classpath: /defaults/%s",
+                        getOpennmsHome(), this.filePath, this.filePath));
+            }
         } else {
             this.configResource = configResource.get();
         }
@@ -86,6 +93,9 @@ public class ImportConfiguration extends AbstractCmChange {
 
     @Override
     public String getConfirmationMessage() {
+        if (this.configResource == null) {
+            return String.format("No configuration file %s found, nothing imported for schema=%s", this.filePath, this.schemaId);
+        }
         return String.format("Imported configuration from %s with id=%s for schema=%s", this.filePath, getConfigId(), this.schemaId);
     }
 
@@ -97,6 +107,10 @@ public class ImportConfiguration extends AbstractCmChange {
     }
 
     private void importConfiguration(final ConfigurationManagerService cm) {
+        if (this.configResource == null) {
+            // missing file with failOnError="false", already logged by validate()
+            return;
+        }
         try {
             importConfig(cm, this.configResource, new ConfigUpdateInfo(schemaId, getConfigId()), archivePath);
         } catch (RuntimeException e) {
