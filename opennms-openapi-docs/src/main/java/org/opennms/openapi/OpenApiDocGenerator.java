@@ -24,8 +24,10 @@ package org.opennms.openapi;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,6 +35,7 @@ import java.util.stream.Stream;
 import javax.ws.rs.Path;
 
 import org.apache.cxf.common.util.ClasspathScanner;
+import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,6 +47,8 @@ import io.swagger.v3.jaxrs2.Reader;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
@@ -53,9 +58,14 @@ import io.swagger.v3.oas.models.servers.Server;
 /**
  * Produces the OpenAPI documents packaged under openapi/ in this module's jar.
  *
- * The metadata and base packages here must match
- * {@code opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-rest-v*.xml},
- * or the documents stop describing what is deployed.
+ * Each document has two sources, and both must match what is deployed:
+ * <ul>
+ * <li>The metadata and base packages must match
+ * {@code opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-rest-v*.xml}.</li>
+ * <li>The OSGi resource classes must match the Blueprint services that publish into the same
+ * path with an {@code application-path} property. {@code OpenApiResourceCoverageTest} checks
+ * this list against the Blueprint files.</li>
+ * </ul>
  */
 public final class OpenApiDocGenerator {
 
@@ -71,8 +81,8 @@ public final class OpenApiDocGenerator {
            "The original OpenNMS ReST API. Endpoints accept and return XML or JSON, "
                    + "and authenticate with HTTP basic.",
            "org.opennms.web.rest.v1",
-           // OSGi services published under application-path /rest, outside the scanned package
-           List.of("org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService"),
+           // Blueprint services with application-path /rest
+           List.of(DeviceConfigRestService.class),
            "openapi-v1.json"),
         V2("OpenNMS V2 RESTful API",
            "The newer OpenNMS ReST API, where collection endpoints share a common query layer: "
@@ -80,17 +90,18 @@ public final class OpenApiDocGenerator {
                    + "page and sort the result. Endpoints accept and return XML or JSON, and "
                    + "authenticate with HTTP basic.",
            "org.opennms.web.rest.v2,org.opennms.web.rest.v2.bsm,,org.opennms.web.rest.v2.status",
+           // Blueprint services with application-path /api/v2
            List.of(),
            "openapi-v2.json");
 
         private final String title;
         private final String description;
         private final String basePackages;
-        private final List<String> osgiResourceClasses;
+        private final List<Class<?>> osgiResourceClasses;
         private final String fileName;
 
         Api(final String title, final String description, final String basePackages,
-            final List<String> osgiResourceClasses, final String fileName) {
+            final List<Class<?>> osgiResourceClasses, final String fileName) {
             this.title = title;
             this.description = description;
             this.basePackages = basePackages;
@@ -111,11 +122,22 @@ public final class OpenApiDocGenerator {
         }
 
         /**
-         * ReST services the Karaf container publishes into this API's servlet path. They live
-         * outside the scanned packages, and declare their JAX-RS and swagger annotations on an
-         * interface, so they are named here and read through that interface.
+         * ReST services that a Blueprint {@code <service>} publishes into this API's path through
+         * its {@code application-path} property: {@code /rest} for V1, {@code /api/v2} for V2.
+         * They live outside the scanned packages and declare their JAX-RS and swagger annotations
+         * on an interface, so they are listed here and read through that interface. Add a
+         * service's interface to the {@code Api} whose path matches its {@code application-path},
+         * and its module as a provided dependency of this module.
+         *
+         * <p>Karaf serves these services with Jersey and the Jackson 2 provider, not with the
+         * webapp's Jackson 1 / JAXB provider. The schemas of their DTOs still go through
+         * {@link WireFormatModelResolver}, which models the webapp. That is correct only for DTOs
+         * with no JAXB or Jackson 1 annotations. Also, Jackson 2 writes a {@code Date} as epoch
+         * milliseconds, so annotate each {@code Date} property
+         * {@code @Schema(type = "integer", format = "int64")}. {@code OpenApiDocsContentTest}
+         * fails when an OSGi schema has a {@code date-time} property.</p>
          */
-        public List<String> getOsgiResourceClasses() {
+        public List<Class<?>> getOsgiResourceClasses() {
             return osgiResourceClasses;
         }
 
@@ -151,10 +173,14 @@ public final class OpenApiDocGenerator {
                     + "; the generator classpath is missing the ReST modules");
         }
 
-        // Sorted so the document is byte-stable across classpath orderings.
-        final Set<Class<?>> resourceClasses = Stream.concat(scanned.stream(),
-                        loadOsgiResourceClasses(api.getOsgiResourceClasses()).stream())
-                .sorted(Comparator.comparing(Class::getName))
+        final List<Class<?>> osgi = api.getOsgiResourceClasses();
+        for (final Class<?> clazz : osgi) {
+            if (!clazz.isAnnotationPresent(Path.class)) {
+                throw new IllegalStateException(clazz.getName() + " has no @Path, so it would add nothing to the document");
+            }
+        }
+
+        final Set<Class<?>> resourceClasses = Stream.concat(scanned.stream(), osgi.stream())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
         final SwaggerConfiguration configuration = new SwaggerConfiguration()
@@ -166,7 +192,39 @@ public final class OpenApiDocGenerator {
                         .map(Class::getName)
                         .collect(Collectors.toCollection(LinkedHashSet::new)));
 
-        return serialize(new Reader(configuration).read(resourceClasses));
+        final Reader reader = new Reader(configuration);
+        reader.read(scanned);
+        // One at a time, so an OSGi operation that replaces one already read is detected.
+        for (final Class<?> clazz : osgi) {
+            final Map<String, Map<PathItem.HttpMethod, Operation>> before = operations(reader.getOpenAPI());
+            reader.read(clazz);
+            requireNoReplacedOperation(clazz, before, reader.getOpenAPI());
+        }
+        return serialize(reader.getOpenAPI());
+    }
+
+    private static Map<String, Map<PathItem.HttpMethod, Operation>> operations(final OpenAPI document) {
+        final Map<String, Map<PathItem.HttpMethod, Operation>> operations = new HashMap<>();
+        if (document.getPaths() != null) {
+            document.getPaths().forEach((path, item) -> operations.put(path, item.readOperationsMap()));
+        }
+        return operations;
+    }
+
+    /**
+     * Swagger's Reader merges path items with the same path, and an operation with the same method
+     * replaces the earlier one without a warning. Refuse to drop an operation that way.
+     */
+    private static void requireNoReplacedOperation(final Class<?> clazz,
+                                                   final Map<String, Map<PathItem.HttpMethod, Operation>> before,
+                                                   final OpenAPI after) {
+        before.forEach((path, methods) -> methods.forEach((method, operation) -> {
+            final Operation current = after.getPaths().get(path).readOperationsMap().get(method);
+            if (current != operation) {
+                throw new IllegalStateException(clazz.getName() + " also declares " + method + " " + path
+                        + ", which replaces the operation already read for it");
+            }
+        }));
     }
 
     /**
@@ -178,22 +236,6 @@ public final class OpenApiDocGenerator {
         final ObjectMapper mapper = Json.mapper().copy()
                 .configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(document);
-    }
-
-    private static List<Class<?>> loadOsgiResourceClasses(final List<String> classNames) {
-        return classNames.stream().map(className -> {
-            final Class<?> clazz;
-            try {
-                clazz = Class.forName(className);
-            } catch (final ClassNotFoundException e) {
-                throw new IllegalStateException(className + " is not on the generator classpath; add its module"
-                        + " as a provided dependency in opennms-openapi-docs/pom.xml", e);
-            }
-            if (!clazz.isAnnotationPresent(Path.class)) {
-                throw new IllegalStateException(className + " has no @Path, so it would add nothing to the document");
-            }
-            return clazz;
-        }).collect(Collectors.toList());
     }
 
     /**

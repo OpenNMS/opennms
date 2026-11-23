@@ -351,12 +351,15 @@ public interface DeviceConfigRestService {
             @ApiResponse(responseCode = "400", description = "`id` is not a comma-separated list of numbers.",
                     content = @Content(schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "Invalid 'id' parameter"))),
-            @ApiResponse(responseCode = "500", description = "The archive could not be built.",
-                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+            @ApiResponse(responseCode = "500", description = """
+                    The archive could not be built. This also happens when a comma in `id` is followed by a \
+                    space, and when two records give the same file name, for example when an id is given twice.""",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "For input string: \" 43\"")))
     })
     Response downloadDeviceConfig(
             @Parameter(in = ParameterIn.QUERY, name = "id", required = true,
-                    description = "Database id of a device config, or a comma-separated list of ids. A space may follow each comma.",
+                    description = "Database id of a device config, or a comma-separated list of ids with no spaces. Give each id once.",
                     example = "42,43")
             @QueryParam("id") @DefaultValue("") String id);
 

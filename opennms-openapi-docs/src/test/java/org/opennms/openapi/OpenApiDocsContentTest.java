@@ -26,9 +26,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.ws.rs.Path;
 
 import org.junit.Test;
 
@@ -108,6 +115,56 @@ public class OpenApiDocsContentTest {
         assertSchemaProperty(document, "OnmsMonitoringLocation", "location-name", true);
 
         assertPathCountAtLeast(document, "v2", 200);
+    }
+
+    /**
+     * Karaf serves the OSGi services with Jackson 2, which writes a Date as epoch milliseconds,
+     * but the generator documents it as a date-time string unless the property says otherwise.
+     * Check every schema that an OSGi operation reaches, directly or through $ref.
+     */
+    @Test
+    public void osgiSchemasDocumentDatesAsEpochMillis() throws Exception {
+        final List<String> dateTimes = new ArrayList<>();
+        for (final OpenApiDocGenerator.Api api : OpenApiDocGenerator.Api.values()) {
+            final JsonNode document = load(api.getFileName());
+            for (final Class<?> resource : api.getOsgiResourceClasses()) {
+                final String prefix = "/" + resource.getAnnotation(Path.class).value().replaceAll("^/+|/+$", "");
+                final Deque<String> refs = new ArrayDeque<>();
+                document.get("paths").fields().forEachRemaining(path -> {
+                    if (path.getKey().equals(prefix) || path.getKey().startsWith(prefix + "/")) {
+                        findDateTimes(path.getValue(), api.getFileName() + " " + path.getKey(), refs, dateTimes);
+                    }
+                });
+                final Set<String> visited = new HashSet<>();
+                while (!refs.isEmpty()) {
+                    final String schema = refs.pop();
+                    if (visited.add(schema)) {
+                        findDateTimes(document.at("/components/schemas/" + schema),
+                                api.getFileName() + " " + schema, refs, dateTimes);
+                    }
+                }
+            }
+        }
+        assertTrue("these OSGi properties are documented as date-time, but Jackson 2 sends epoch milliseconds."
+                        + " Annotate them @Schema(type = \"integer\", format = \"int64\"): " + dateTimes,
+                dateTimes.isEmpty());
+    }
+
+    private static void findDateTimes(final JsonNode node, final String location, final Deque<String> refs,
+                                      final List<String> dateTimes) {
+        if (node.isArray()) {
+            node.forEach(element -> findDateTimes(element, location, refs, dateTimes));
+        } else if (node.isObject()) {
+            final String ref = node.path("$ref").asText();
+            if (ref.startsWith("#/components/schemas/")) {
+                refs.push(ref.substring("#/components/schemas/".length()));
+            }
+            if ("date-time".equals(node.path("format").asText())) {
+                dateTimes.add(location);
+            }
+            node.fields().forEachRemaining((Map.Entry<String, JsonNode> field) ->
+                    findDateTimes(field.getValue(), location + "/" + field.getKey(), refs, dateTimes));
+        }
     }
 
     /** A tripwire for mass loss of endpoints, not an exact count; raise it if the API grows. */

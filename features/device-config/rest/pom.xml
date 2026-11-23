@@ -24,7 +24,7 @@
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <!-- Swagger annotations only feed the build-time OpenAPI documents; the container does not ship them. -->
+                        <!-- Optional, so the bundle resolves without swagger. Only the build-time OpenAPI generator reads the annotations. -->
                         <Import-Package>io.swagger.v3.oas.annotations;resolution:=optional,io.swagger.v3.oas.annotations.*;resolution:=optional,*</Import-Package>
                     </instructions>
                 </configuration>
