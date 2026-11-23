@@ -412,6 +412,13 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <!-- OSGi services under /rest, listed in OpenApiDocGenerator.Api.V1 -->
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.rest</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
 
     <!--
       cxf-rt-rs-service-description-openapi-v3 is here for its META-INF/services
