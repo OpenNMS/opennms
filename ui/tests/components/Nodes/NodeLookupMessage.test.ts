@@ -20,19 +20,24 @@
 /// License.
 ///
 
-import NodeLookupMessage from '@/components/Nodes/NodeDetails/NodeLookupMessage.vue'
+import NodeLookupMessage from '@/components/Nodes/NodeLookupMessage.vue'
 import { flushPromises, mount, RouterLinkStub } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { RouteLocationRaw } from 'vue-router'
 
 const push = vi.fn()
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push })
 }))
 
-const mountMessage = (state: 'invalid' | 'notFound' | 'error', value = 'abc') =>
+const mountMessage = (
+  state: 'invalid' | 'notFound' | 'error',
+  value = 'abc',
+  routeFor?: (id: string) => RouteLocationRaw
+) =>
   mount(NodeLookupMessage, {
-    props: { state, value },
+    props: { state, value, routeFor },
     global: { plugins: [PrimeVue], stubs: { RouterLink: RouterLinkStub }}
   })
 
@@ -64,6 +69,16 @@ describe('NodeLookupMessage', () => {
 
     expect(push).toHaveBeenCalledTimes(1)
     expect(push).toHaveBeenCalledWith({ name: 'Node Details', params: { id: 'SmokeTests:TestMachine1' }})
+  })
+
+  // The page it is on decides where a look-up goes: the Availability page stays on its own route.
+  it('goes to the route the page asks for', async () => {
+    const wrapper = mountMessage('notFound', '12345', id => ({ name: 'Node Availability', params: { id }}))
+    await wrapper.find('[data-test="node-lookup-input"]').setValue('7')
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(push).toHaveBeenCalledWith({ name: 'Node Availability', params: { id: '7' }})
   })
 
   // Going to the route already shown is a duplicate navigation the router ignores, so the

@@ -25,7 +25,7 @@ import IconSettings from '@opennms/onms-ui/icons/action/Settings.vue'
 import useRole from '@/composables/useRole'
 import { useNodeStore } from '@/stores/nodeStore'
 import { NodeCriticalPath } from '@/types/index'
-import NodeDetailsPanel from './NodeDetailsPanel.vue'
+import NodeDetailsPanel from '@/components/Nodes/NodeDetailsPanel.vue'
 
 // The legacy node page's "Path Outage - Critical Path" box: the node's own critical path, and
 // nothing at all for a node without one -- the configured default is not shown there either.

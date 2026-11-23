@@ -59,7 +59,7 @@ import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { interfaceLink } from '@/lib/linkUtils'
 import { useDebouncedSearch } from './hooks/useDebouncedSearch'
-import { useDelayedLoading } from './hooks/useDelayedLoading'
+import { useDelayedLoading } from '@/components/Nodes/hooks/useDelayedLoading'
 import { ipInterfaceStatus, matchesSearchTerm } from '@/components/Nodes/utils'
 import useActiveNodeId from './hooks/useActiveNodeId'
 
