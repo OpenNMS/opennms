@@ -61,6 +61,11 @@ public class OpenApiDocsContentTest {
         assertHasPath(document, "/requisitions");
         // org.opennms.features.measurements.rest
         assertHasPath(document, "/measurements");
+        // org.opennms.features.device-config.rest, an OSGi service read through its interface
+        assertHasPath(document, "/device-config");
+        assertHasPath(document, "/device-config/latest");
+        assertHasPath(document, "/device-config/backup");
+        assertSchemaPropertyType(document, "DeviceConfigDTO", "lastBackupDate", "integer");
 
         // WireFormatModelResolver: JAXB names on the wire, not bean names
         assertSchemaProperty(document, "RequisitionNode", "meta-data", true);

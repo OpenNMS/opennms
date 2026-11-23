@@ -21,10 +21,16 @@
  */
 package org.opennms.features.deviceconfig.rest;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "A triggered backup that failed.")
 public class BackupResponseDTO {
 
+    @Schema(description = "HTTP status describing the failure: 400 when the request named an unknown interface or unbound service, 500 when the backup itself failed.", example = "400")
     private Integer status;
+    @Schema(description = "The request that failed.")
     private BackupRequestDTO request;
+    @Schema(description = "Why the backup failed.", example = "No interface found with ipAddress 10.0.0.5 at location Branch-Office")
     private String failureMessage;
 
     public BackupResponseDTO(Integer status, String failureMessage, BackupRequestDTO backupRequestDTO) {

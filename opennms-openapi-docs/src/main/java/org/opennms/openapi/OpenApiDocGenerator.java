@@ -25,8 +25,10 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.Path;
 
@@ -69,6 +71,8 @@ public final class OpenApiDocGenerator {
            "The original OpenNMS ReST API. Endpoints accept and return XML or JSON, "
                    + "and authenticate with HTTP basic.",
            "org.opennms.web.rest.v1",
+           // OSGi services published under application-path /rest, outside the scanned package
+           List.of("org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService"),
            "openapi-v1.json"),
         V2("OpenNMS V2 RESTful API",
            "The newer OpenNMS ReST API, where collection endpoints share a common query layer: "
@@ -76,17 +80,21 @@ public final class OpenApiDocGenerator {
                    + "page and sort the result. Endpoints accept and return XML or JSON, and "
                    + "authenticate with HTTP basic.",
            "org.opennms.web.rest.v2,org.opennms.web.rest.v2.bsm,,org.opennms.web.rest.v2.status",
+           List.of(),
            "openapi-v2.json");
 
         private final String title;
         private final String description;
         private final String basePackages;
+        private final List<String> osgiResourceClasses;
         private final String fileName;
 
-        Api(final String title, final String description, final String basePackages, final String fileName) {
+        Api(final String title, final String description, final String basePackages,
+            final List<String> osgiResourceClasses, final String fileName) {
             this.title = title;
             this.description = description;
             this.basePackages = basePackages;
+            this.osgiResourceClasses = osgiResourceClasses;
             this.fileName = fileName;
         }
 
@@ -100,6 +108,15 @@ public final class OpenApiDocGenerator {
 
         public String getBasePackages() {
             return basePackages;
+        }
+
+        /**
+         * ReST services the Karaf container publishes into this API's servlet path. They live
+         * outside the scanned packages, and declare their JAX-RS and swagger annotations on an
+         * interface, so they are named here and read through that interface.
+         */
+        public List<String> getOsgiResourceClasses() {
+            return osgiResourceClasses;
         }
 
         public String getFileName() {
@@ -128,11 +145,17 @@ public final class OpenApiDocGenerator {
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("basic")));
 
-        final Set<Class<?>> resourceClasses = findResourceClasses(api.getBasePackages());
-        if (resourceClasses.isEmpty()) {
+        final Set<Class<?>> scanned = findResourceClasses(api.getBasePackages());
+        if (scanned.isEmpty()) {
             throw new IllegalStateException("no @Path resource classes found in " + api.getBasePackages()
                     + "; the generator classpath is missing the ReST modules");
         }
+
+        // Sorted so the document is byte-stable across classpath orderings.
+        final Set<Class<?>> resourceClasses = Stream.concat(scanned.stream(),
+                        loadOsgiResourceClasses(api.getOsgiResourceClasses()).stream())
+                .sorted(Comparator.comparing(Class::getName))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
         final SwaggerConfiguration configuration = new SwaggerConfiguration()
                 .openAPI(seed)
@@ -155,6 +178,22 @@ public final class OpenApiDocGenerator {
         final ObjectMapper mapper = Json.mapper().copy()
                 .configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(document);
+    }
+
+    private static List<Class<?>> loadOsgiResourceClasses(final List<String> classNames) {
+        return classNames.stream().map(className -> {
+            final Class<?> clazz;
+            try {
+                clazz = Class.forName(className);
+            } catch (final ClassNotFoundException e) {
+                throw new IllegalStateException(className + " is not on the generator classpath; add its module"
+                        + " as a provided dependency in opennms-openapi-docs/pom.xml", e);
+            }
+            if (!clazz.isAnnotationPresent(Path.class)) {
+                throw new IllegalStateException(className + " has no @Path, so it would add nothing to the document");
+            }
+            return clazz;
+        }).collect(Collectors.toList());
     }
 
     /**
