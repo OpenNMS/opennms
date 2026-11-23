@@ -34,6 +34,7 @@ import org.opennms.netmgt.xml.eventconf.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -64,6 +65,7 @@ public class EventConfServiceHelper {
      */
     public static Long saveEvent(EventConfEventDao eventConfEventDao, EventConfSource source,
                                   Event event, String username, Date timestamp) {
+        requireUei(event);
         EventConfEvent eventConfEvent = new EventConfEvent();
         eventConfEvent.setSource(source);
         // Appended events are evaluated last within their source (allocation locks the source row)
@@ -78,6 +80,55 @@ public class EventConfServiceHelper {
         eventConfEvent.setLastModified(timestamp);
         eventConfEvent.setModifiedBy(username);
         return eventConfEventDao.save(eventConfEvent);
+    }
+
+    /**
+     * Rejects an event definition without a UEI. Parsing trims the UEI (see the eventconf package's
+     * StringTrimAdapter) and {@link Event#setUei} trims it too, so a UEI of only whitespace arrives here
+     * as empty.
+     *
+     * @param event the event definition about to be stored
+     * @throws IllegalArgumentException if the UEI is null or blank
+     */
+    public static void requireUei(final Event event) {
+        if (isBlankUei(event.getUei())) {
+            throw new IllegalArgumentException("Event 'uei' is required");
+        }
+    }
+
+    /**
+     * The one test for a missing UEI, for the storage checks and the REST layer. It is the same rule that
+     * {@link Event#setUei} applies: trim with {@link String#trim()}, then test with {@link String#isBlank()}.
+     * trim() removes control characters but keeps Unicode spaces, and isBlank() does the opposite, so a UEI
+     * of only control characters or only Unicode spaces is blank.
+     *
+     * @param uei the UEI to test
+     * @return true if the UEI is null or blank
+     */
+    public static boolean isBlankUei(final String uei) {
+        return uei == null || uei.trim().isBlank();
+    }
+
+    /**
+     * Rejects a list of event definitions if any of them has no UEI, naming every such event by its
+     * 1-based position in the list and, when it has one, its event-label, so a whole file can be fixed
+     * after one failed upload.
+     *
+     * @param events the event definitions about to be stored, in file order
+     * @throws IllegalArgumentException if any UEI is null or blank
+     */
+    public static void requireUeis(final List<Event> events) {
+        final List<String> missing = new ArrayList<>();
+        for (int i = 0; i < events.size(); i++) {
+            final Event event = events.get(i);
+            if (isBlankUei(event.getUei())) {
+                final String label = event.getEventLabel();
+                missing.add("#" + (i + 1) + (label == null || label.isBlank() ? "" : " (event-label '" + label + "')"));
+            }
+        }
+        if (!missing.isEmpty()) {
+            throw new IllegalArgumentException("Events with no 'uei', by position: " + String.join(", ", missing));
+        }
     }
 
     /**
@@ -176,6 +227,7 @@ public class EventConfServiceHelper {
                                                                       String username,
                                                                       Date timestamp,
                                                                       int startOrder) {
+        requireUeis(events);
         final AtomicInteger nextOrder = new AtomicInteger(startOrder);
         return events.stream().map(parsed -> {
             EventConfEvent event = new EventConfEvent();
