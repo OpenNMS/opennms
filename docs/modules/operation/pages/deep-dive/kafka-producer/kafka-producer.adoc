@@ -129,40 +129,27 @@ It names the protocol of the collector or telemetry adapter that produced the da
 |===
 
 Collectors from plugins and response time data have no `agent_protocol`.
-The attribute is not added when the collector already set an `agent_protocol` attribute on the resource.
-The name `agent_protocol` is reserved for this purpose.
-Do not use it for other data.
 
 Each numeric and string attribute can also carry a `metric_id`.
-It is field 6 on `NumericAttribute` and field 3 on `StringAttribute` in `collectionset.proto`.
-Consumers built against an older schema ignore it.
-When the Kafka Producer runs in JSON mode (`metrics.useJson=true`), the field is named `metricId`.
-
-The `metric_id` identifies the metric at its source.
-It is the identifier the collector assigned to the attribute, without the `<agent_protocol>_` prefix.
+The `metric_id` is extra metadata that identifies the metric at its source, such as the OID for SNMP or the MBean attribute for JMX.
 
 .Metric identifier examples
-[options="header", cols="1,2,2"]
+[options="header", cols="1,3"]
 |===
 | `agent_protocol`
-| Internal identifier
 | `metric_id`
 
 | `SNMP`
-| `SNMP_.1.3.6.1.2.1.31.1.1.1.6.512`
 | `.1.3.6.1.2.1.31.1.1.1.6.512`
 
 | `JMX`
-| `JMX_java.lang:type=Memory.HeapMemoryUsage.used`
 | `java.lang:type=Memory.HeapMemoryUsage.used`
 |===
 
-Only the SNMP collector (`SnmpCollector`) and the JMX collectors set such identifiers today.
-All other collectors and adapters publish an empty `metric_id`.
+Only the SNMP collector (`SnmpCollector`) and the JMX collectors set a `metric_id` today.
+All other collectors and adapters, gNMI included, publish an empty `metric_id`.
 SNMP attributes that a property extender adds have no OID and also publish an empty `metric_id`.
 An attribute name is never used as a `metric_id`.
-
-When the Kafka Producer splits a large collection set into several messages, it repeats `agent_protocol` on every message.
 
 == Schema
 View the https://github.com/OpenNMS/opennms/blob/develop/features/kafka/producer/src/main/proto/opennms-kafka-producer.proto[Kafka Producer schema] on GitHub.
