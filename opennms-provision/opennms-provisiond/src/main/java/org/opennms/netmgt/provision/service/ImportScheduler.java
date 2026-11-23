@@ -51,7 +51,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.StringUtils;
 
 /**
- * Maintains the Provisioner's import schedule defined in provisiond-configuration.xml
+ * Maintains the Provisioner's import schedule defined in the provisiond configuration (Configuration Manager)
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $

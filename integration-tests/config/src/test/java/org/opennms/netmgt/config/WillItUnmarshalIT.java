@@ -225,8 +225,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, false, null);
         addFile(Source.CONFIG, "poll-outages.xml", Outages.class, true, null);
         addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, true, null);
-        // moved to CmWillItUnmarshalIT
-        //addFile(Source.CLASSPATH, "/defaults/provisiond-configuration.xml", ProvisiondConfiguration.class, false, null);
         addFile(Source.CONFIG, "remote-repository.xml", RemoteRepositoryConfig.class, true, null);
         addFile(Source.CONFIG, "rtc-configuration.xml", RTCConfiguration.class, true, null);
         addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, true, null);
