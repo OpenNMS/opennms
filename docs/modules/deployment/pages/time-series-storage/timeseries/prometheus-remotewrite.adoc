@@ -101,6 +101,12 @@ If you copied the plugin's `.kar` file into `$\{OPENNMS_HOME}/deploy`, do these 
 
 . Remove the plugin's `.kar` file from `$\{OPENNMS_HOME}/deploy`.
 . Remove `wait-for-kar=opennms-prometheus-remotewrite-plugin` from `$\{OPENNMS_HOME}/etc/featuresBoot.d/prometheus-remotewrite.boot`.
++
+If the boot file has the old Cortex names, replace the line `opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-tss-plugin` with this line:
++
+[source, properties]
+opennms-plugins-prometheus-remotewrite
+
 . Restart the {page-component-title} service.
 
 If the `.kar` file stays in `$\{OPENNMS_HOME}/deploy`, two versions of the plugin are available.
