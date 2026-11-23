@@ -18,7 +18,7 @@
 import { computed } from 'vue'
 import { Node } from '@/types/index'
 import NodeDetailsFieldList from './NodeDetailsFieldList.vue'
-import NodeDetailsPanel from './NodeDetailsPanel.vue'
+import NodeDetailsPanel from '@/components/Nodes/NodeDetailsPanel.vue'
 import { NodeDetailsField } from './nodeEnlinkdFields'
 
 // The node's SNMP system group, as the node info dialog (NodeDetailsDialog) shows it, opened

@@ -23,6 +23,7 @@
 import { NodeAvailability } from '@/types'
 import { NodeOutageTimeline, NodeOutageTimelineEntry } from '@/types/nodeAvailabilityTimeline'
 import { formatInDisplayZone } from '@/lib/displayTimeZone'
+import { ipInterfaceStatus, monitoredServiceStatus } from './utils'
 
 /** The window the panel is showing, in epoch milliseconds. */
 export interface TimelineWindow {
@@ -52,6 +53,14 @@ export interface TimelineSegment {
   openAtWindowEnd: boolean
 }
 
+/** Which badge colour a figure earns, by the node's configured thresholds. */
+export type AvailabilityClass = 'normal' | 'warning' | 'critical'
+
+export interface AvailabilityThresholds {
+  normal: number
+  warning: number
+}
+
 export interface TimelineServiceRow {
   ifServiceId: number
   serviceId: number
@@ -59,6 +68,16 @@ export interface TimelineServiceRow {
   ipAddress: string
   /** From the availability resource, not derived from the segments. */
   availability: number
+  /**
+   * The ifservices status code. Absent from an older server, which returns every service and gives
+   * -1 to one that is not managed; null when the server has no status for it.
+   */
+  status?: string | null
+  /**
+   * A managed service with a current outage (the server's `up` is false): down now, whatever the
+   * window shows. False when the server does not say.
+   */
+  down: boolean
   segments: TimelineSegment[]
 }
 
@@ -66,6 +85,11 @@ export interface TimelineInterfaceGroup {
   ipInterfaceId: number
   ipAddress: string
   availability: number
+  /**
+   * The ipinterface.ismanaged code. Undefined when the server does not send it (an older server) or
+   * sends null; the figure alone then decides what the interface shows.
+   */
+  isManaged?: string
   /** Whether any service on it has an availability figure at all. */
   monitored: boolean
   services: TimelineServiceRow[]
@@ -76,6 +100,8 @@ export interface TimelineModel {
   availability: number
   /** Whether anything on the node is monitored at all. */
   monitored: boolean
+  /** Set only when the server gave both; without them nothing is classed, rather than guessed. */
+  thresholds?: AvailabilityThresholds
   interfaces: TimelineInterfaceGroup[]
   /**
    * Width of the leading band in which the node did not yet exist, 0-100. Zero whenever the node
@@ -178,9 +204,10 @@ export const buildTimelineModel = (
       ipInterfaceId: iface.id,
       ipAddress: iface.address,
       availability: iface.availability,
+      isManaged: iface['is-managed'] ?? undefined,
       monitored: (iface.services ?? []).some(service => isMonitored(service.availability)),
       // Sorted by name: the availability resource returns services in database order, so without
-      // this the rows shuffle between refreshes of the same node. The legacy page sorts them too.
+      // this the rows shuffle between refreshes of the same node. The legacy page sorted them too.
       services: (iface.services ?? [])
         .map(service => ({
           ifServiceId: service.id,
@@ -188,15 +215,29 @@ export const buildTimelineModel = (
           serviceName: service.name,
           ipAddress: iface.address,
           availability: service.availability,
+          status: service.status,
+          down: service.up === false,
           segments: segmentsByService.get(service.id) ?? []
         }))
         .sort((a, b) => a.serviceName.localeCompare(b.serviceName))
     }))
 
+  const normal = availability['normal-threshold']
+  const warning = availability['warning-threshold']
+  const managedCount = availability['managed-service-count']
+
   return {
     window,
     availability: availability.availability,
-    monitored: interfaces.some(iface => iface.monitored),
+    // The count covers every interface, so it stays right when the page holds only some of them.
+    // An older server has no count, and the page is all there is to go on.
+    //
+    // typeof, not `!== undefined`: the JSON provider writes an unset field as null, and the
+    // comparisons below are true against null (`99 >= null`), which classed every figure normal.
+    monitored: typeof managedCount === 'number'
+      ? managedCount > 0
+      : interfaces.some(iface => iface.monitored),
+    thresholds: typeof normal === 'number' && typeof warning === 'number' ? { normal, warning } : undefined,
     interfaces,
     unmonitoredPct: unmonitoredPercent(timeline?.nodeCreateTime, window)
   }
@@ -249,16 +290,16 @@ export const unmonitoredPercent = (
  * The availability resource returns -1 when its query matched no row, which it requires to be a
  * managed service, on a managed interface, on an active node. A strip for one of those must not be
  * painted as available: green would claim uptime for something nothing was watching. The legacy
- * page draws an empty strip in the same situation.
+ * page drew an empty strip in the same situation.
  */
 export const isMonitored = (availability: number): boolean => availability >= 0
 
 /**
  * Availability for display.
  *
- * 'Not Monitored' matches the wording the legacy availability box uses for the same rows. That page
- * further distinguishes 'Remotely Monitored', which this payload cannot express -- the availability
- * resource reports one number and no managed or perspective state.
+ * 'Not Monitored' matches the wording the legacy availability box used for the same rows. A service
+ * that is not managed says why instead (see serviceAvailabilityText): its status code, which gives
+ * 'Remotely Monitored' for status X as the legacy box did.
  *
  * Never rounds up to 100%: '100%' has to mean no downtime at all, so anything short of it is
  * reported short of it.
@@ -286,9 +327,87 @@ export const formatAvailability = (pct: number): string => {
 export const nodeAvailabilityText = (model: TimelineModel): string =>
   model.monitored ? formatAvailability(model.availability) : 'Unmanaged'
 
-/** As above, one level down. 'Not Monitored' is what the legacy box calls such an interface. */
-export const interfaceAvailabilityText = (group: TimelineInterfaceGroup): string =>
-  group.monitored ? formatAvailability(group.availability) : 'Not Monitored'
+// An interface that is not managed has no figure (the server's -1), and says why, as the legacy box
+// did ('Forced Unmanaged'). No code (an older server) leaves the figure alone to decide.
+const isUnmanagedInterface = (
+  group: TimelineInterfaceGroup
+): group is TimelineInterfaceGroup & { isManaged: string } =>
+  group.isManaged !== undefined && group.isManaged !== 'M'
+
+/**
+ * As above, one level down. 'Not Monitored' is what the legacy box called a managed interface with
+ * nothing monitored; one that is not managed gets its status label instead.
+ */
+export const interfaceAvailabilityText = (group: TimelineInterfaceGroup): string => {
+  if (isUnmanagedInterface(group)) {
+    return ipInterfaceStatus(group.isManaged)
+  }
+
+  return group.monitored ? formatAvailability(group.availability) : 'Not Monitored'
+}
+
+// Absent (an older server) and null (no status known) both leave the figure alone to decide.
+const hasStatus = (row: TimelineServiceRow): row is TimelineServiceRow & { status: string } =>
+  typeof row.status === 'string'
+
+/**
+ * True when this row has a figure to show: one was computed, and the service is managed. A service
+ * that is unmanaged or deleted can still carry a stale figure, which must not read as uptime. An
+ * older server sends no status, and then the figure alone decides.
+ */
+export const isServiceMonitored = (row: TimelineServiceRow): boolean =>
+  isMonitored(row.availability) && (!hasStatus(row) || row.status === 'A')
+
+/**
+ * The service link's accessible name and title. A service that is down now says so, as its red name
+ * does, so that colour is not the only sign.
+ */
+export const serviceLinkLabel = (row: TimelineServiceRow): string =>
+  row.down ? `${row.serviceName}, down now` : row.serviceName
+
+/** As formatAvailability, but a service that is not managed says why it has no figure. */
+export const serviceAvailabilityText = (row: TimelineServiceRow): string =>
+  hasStatus(row) && row.status !== 'A'
+    ? monitoredServiceStatus(row.status)
+    : formatAvailability(row.availability)
+
+/**
+ * The class for a figure: at or above `normal` is normal, at or above `warning` is warning, else
+ * critical. The raw value is compared, not the rounded text, so 99.989 shown as 99.989% is not
+ * normal. No class without thresholds or without a figure.
+ */
+export const availabilityClass = (
+  value: number,
+  thresholds?: AvailabilityThresholds
+): AvailabilityClass | undefined => {
+  if (!thresholds || !isMonitored(value)) {
+    return undefined
+  }
+
+  if (value >= thresholds.normal) {
+    return 'normal'
+  }
+
+  return value >= thresholds.warning ? 'warning' : 'critical'
+}
+
+// Each of these is undefined exactly where the matching *Text function shows no percentage.
+export const serviceAvailabilityClass = (
+  row: TimelineServiceRow,
+  thresholds?: AvailabilityThresholds
+): AvailabilityClass | undefined =>
+  isServiceMonitored(row) ? availabilityClass(row.availability, thresholds) : undefined
+
+export const interfaceAvailabilityClass = (
+  group: TimelineInterfaceGroup,
+  thresholds?: AvailabilityThresholds
+): AvailabilityClass | undefined =>
+  group.monitored && !isUnmanagedInterface(group)
+    ? availabilityClass(group.availability, thresholds)
+    : undefined
+
+export const nodeAvailabilityClass = (model: TimelineModel): AvailabilityClass | undefined =>
+  model.monitored ? availabilityClass(model.availability, model.thresholds) : undefined
 
 /** '2d 4h', '17m', '41s' -- date-fns' formatDuration is far too long for a tooltip. */
 export const formatCompactDuration = (ms: number): string => {

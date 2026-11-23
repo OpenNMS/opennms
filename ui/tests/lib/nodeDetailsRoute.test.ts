@@ -21,7 +21,13 @@
 ///
 
 import { describe, expect, it } from 'vitest'
-import { NODE_DETAILS_ROUTE_NAME, nodeDetailsRoute, parseNodeRouteId } from '@/lib/nodeDetailsRoute'
+import {
+  NODE_AVAILABILITY_ROUTE_NAME,
+  NODE_DETAILS_ROUTE_NAME,
+  nodeAvailabilityRoute,
+  nodeDetailsRoute,
+  parseNodeRouteId
+} from '@/lib/nodeDetailsRoute'
 
 describe('parseNodeRouteId', () => {
   it.each([
@@ -50,5 +56,12 @@ describe('nodeDetailsRoute', () => {
   it('names the Node Details route with a string id', () => {
     expect(nodeDetailsRoute(42)).toEqual({ name: NODE_DETAILS_ROUTE_NAME, params: { id: '42' }})
     expect(nodeDetailsRoute('SmokeTests:TestMachine1')).toEqual({ name: 'Node Details', params: { id: 'SmokeTests:TestMachine1' }})
+  })
+})
+
+describe('nodeAvailabilityRoute', () => {
+  it('names the Node Availability route with a string id', () => {
+    expect(nodeAvailabilityRoute(42)).toEqual({ name: NODE_AVAILABILITY_ROUTE_NAME, params: { id: '42' }})
+    expect(nodeAvailabilityRoute('fs:fid')).toEqual({ name: 'Node Availability', params: { id: 'fs:fid' }})
   })
 })

@@ -248,7 +248,7 @@ describe('NodeDetails.vue', () => {
     const { wrapper } = mountComponent('42', true)
     await flushPromises()
 
-    expect(wrapper.find('h2').text()).toBe('Node Details for srv-42 (id: 42)')
+    expect(wrapper.find('h2').text()).toBe('Node Details for srv-42 (ID: 42)')
   })
 
   // The Update SNMP action needs the SNMP-primary address, which the node payload does not

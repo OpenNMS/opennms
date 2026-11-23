@@ -490,12 +490,18 @@ export interface NodeAvailabilityService {
   serviceId: number
   availability: number
   up?: boolean
+  // The ifservices status code. Absent from an older server, which returns every service and gives
+  // -1 to one that is not managed. Null in JSON when the server has no status for it.
+  status?: string | null
 }
 
 export interface NodeAvailabilityInterface {
   address: string
   availability: number
   id: number
+  // The ipinterface.ismanaged code (M managed, F forced unmanaged, ...). Only a managed interface has
+  // a figure. Absent from an older server; null in JSON when the interface has no code.
+  'is-managed'?: string | null
   services: NodeAvailabilityService[]
 }
 
@@ -507,6 +513,13 @@ export interface NodeAvailability {
   'service-down-count': number
   // The node's total interfaces, when `ipinterfaces` may hold only a page of them.
   ipinterfaceCount?: number
+  // Managed services on managed interfaces, over every interface, whatever page of them
+  // `ipinterfaces` holds. Null in JSON (absent in XML) when the server did not count them.
+  'managed-service-count'?: number | null
+  // From categories.xml. When the category does not define them both are null in JSON and absent in
+  // XML; an older server sends neither.
+  'normal-threshold'?: number | null
+  'warning-threshold'?: number | null
 }
 
 export interface FileEditorResponseLog {

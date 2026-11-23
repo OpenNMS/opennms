@@ -51,6 +51,7 @@
     <tbody
       v-for="group of model.interfaces"
       :key="group.ipInterfaceId"
+      data-test="timeline-interface-group"
     >
       <tr class="interface-row">
         <th
@@ -65,7 +66,10 @@
         <!-- No strip: the axis above spans this column for every row beneath it. -->
         <td />
         <td class="col-pct">
-          {{ interfaceAvailabilityText(group) }}
+          <AvailabilityBadge
+            :text="interfaceAvailabilityText(group)"
+            :level="interfaceAvailabilityClass(group, model.thresholds)"
+          />
         </td>
       </tr>
 
@@ -77,15 +81,17 @@
         :base-href="baseHref"
         :node-id="nodeId"
         :unmonitored-pct="model.unmonitoredPct"
+        :thresholds="model.thresholds"
       />
     </tbody>
   </table>
 </template>
 
 <script setup lang="ts">
+import AvailabilityBadge from './AvailabilityBadge.vue'
 import AvailabilityTimelineRow from './AvailabilityTimelineRow.vue'
 import { interfaceLink } from '@/lib/linkUtils'
-import { interfaceAvailabilityText, TimelineModel } from '@/components/Nodes/availabilityTimelineModel'
+import { interfaceAvailabilityClass, interfaceAvailabilityText, TimelineModel } from '@/components/Nodes/availabilityTimelineModel'
 import { tickEdgeClass, TimelineTick } from './availabilityTimelineAxis'
 
 defineProps<{
@@ -140,9 +146,10 @@ defineProps<{
   }
 
   .col-pct {
-    // Wide enough for 'Not Monitored' on one line: wrapping it made those rows taller than the
-    // rest and broke the alignment of the strips down the panel.
-    width: 7rem;
+    // Wide enough for the longest status label ('Remotely Monitored', about 130px at 14px) on one
+    // line: wrapping one made its row taller than the rest and broke the alignment of the strips
+    // down the panel. Interfaces and services both show these labels.
+    width: 9rem;
     text-align: right;
     white-space: nowrap;
   }

@@ -20,9 +20,10 @@
 /// License.
 ///
 
-// The one place that knows the shape of the Vue Node Details route. Vue code links with
-// nodeDetailsRoute() through vue-router (router-link, or useRouter().resolve(...).href where a
-// string is needed), so the path, name and id encoding live here only.
+// The one place that knows the shape of the Vue Node Details and Node Availability routes. Vue code
+// links with nodeDetailsRoute() and nodeAvailabilityRoute() through vue-router (router-link, or
+// useRouter().resolve(...).href where a string is needed), so the paths, names and id encoding live
+// here only. Both routes take the same id.
 //
 // The id accepts what the legacy element/node.jsp?node= accepted: a database id, or
 // foreignSource:foreignId. The two differ for a foreign id holding ':'. This page splits at the
@@ -32,6 +33,7 @@
 import { parsePositiveIntegerId } from '@/lib/ids'
 
 export const NODE_DETAILS_ROUTE_NAME = 'Node Details'
+export const NODE_AVAILABILITY_ROUTE_NAME = 'Node Availability'
 
 export type NodeRouteId =
   | { kind: 'numeric', id: string }
@@ -57,5 +59,10 @@ export const parseNodeRouteId = (raw: string): NodeRouteId => {
 
 export const nodeDetailsRoute = (id: string | number) => ({
   name: NODE_DETAILS_ROUTE_NAME,
+  params: { id: String(id) }
+})
+
+export const nodeAvailabilityRoute = (id: string | number) => ({
+  name: NODE_AVAILABILITY_ROUTE_NAME,
   params: { id: String(id) }
 })

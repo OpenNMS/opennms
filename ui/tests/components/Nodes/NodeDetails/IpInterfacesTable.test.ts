@@ -21,7 +21,7 @@
 ///
 
 import IpInterfacesTable from '@/components/Nodes/NodeDetails/IpInterfacesTable.vue'
-import { LOADING_DELAY_MS } from '@/components/Nodes/NodeDetails/hooks/useDelayedLoading'
+import { LOADING_DELAY_MS } from '@/components/Nodes/hooks/useDelayedLoading'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { createTestingPinia } from '@pinia/testing'

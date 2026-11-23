@@ -8,11 +8,25 @@
       scope="row"
       class="col-label"
     >
-      <a
-        :href="serviceHref"
-        class="service-link"
-        :title="row.serviceName"
-      >{{ row.serviceName }}</a>
+      <div class="service-label">
+        <!-- Hidden from assistive technology: the link's name already says "down now". -->
+        <SeverityIcon
+          v-if="row.down"
+          severity="critical"
+          size="small"
+          aria-hidden="true"
+          data-test="service-down-icon"
+        />
+        <a
+          :href="serviceHref"
+          class="service-link"
+          :class="{ 'service-link--down': row.down }"
+          :title="serviceLinkLabel(row)"
+          :aria-label="row.down ? serviceLinkLabel(row) : undefined"
+          :data-down="row.down ? 'true' : undefined"
+          data-test="timeline-service-link"
+        >{{ row.serviceName }}</a>
+      </div>
     </th>
     <td>
       <div
@@ -50,7 +64,10 @@
       </div>
     </td>
     <td class="col-pct">
-      {{ formatAvailability(row.availability) }}
+      <AvailabilityBadge
+        :text="serviceAvailabilityText(row)"
+        :level="serviceAvailabilityClass(row, thresholds)"
+      />
     </td>
   </tr>
 </template>
@@ -58,10 +75,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { outageDetailLink, serviceLink } from '@/lib/linkUtils'
+import AvailabilityBadge from './AvailabilityBadge.vue'
+import SeverityIcon from '@/components/Common/SeverityIcon.vue'
 import {
-  formatAvailability,
-  isMonitored,
+  AvailabilityThresholds,
+  isServiceMonitored,
   segmentDescription,
+  serviceAvailabilityClass,
+  serviceAvailabilityText,
+  serviceLinkLabel,
   TimelineServiceRow
 } from '@/components/Nodes/availabilityTimelineModel'
 import { TimelineTick } from './availabilityTimelineAxis'
@@ -73,12 +95,15 @@ const props = defineProps<{
   nodeId: string | number
   /** Width of the leading band in which the node did not yet exist, 0-100. */
   unmonitoredPct: number
+  thresholds?: AvailabilityThresholds
 }>()
 
 const serviceHref = computed(() =>
   serviceLink(props.baseHref, props.nodeId, props.row.ipAddress, props.row.serviceId))
 
-const monitored = computed(() => isMonitored(props.row.availability))
+// The same test as the text and the badge, so a service that is not managed draws no green strip
+// beside its status label.
+const monitored = computed(() => isServiceMonitored(props.row))
 </script>
 
 <style lang="scss" scoped>
@@ -91,17 +116,41 @@ const monitored = computed(() => isMonitored(props.row.availability))
 }
 
 // Indented under its interface's heading. A margin, not padding, so the indent is not part of the
-// link; the name still truncates within the narrower width.
+// link; the name still truncates within the narrower width, after the icon of a service that is down.
+.service-label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 1em;
+  min-width: 0;
+}
+
 .service-link {
   display: block;
-  margin-left: 1em;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+// Down now: the red the legacy page gave the name (severity-Critical), as the critical icon before
+// it. The token is a red in both themes; --onms-error is a pink in the dark one.
+.service-link--down {
+  color: var(--onms-severity-critical-bg);
+}
+
+// The small icon is 20px. A negative block margin lets it overhang the line by 2px at top and
+// bottom rather than push the row taller than the 1rem strip, so a down service's row keeps the
+// height of the others. Its root takes this component's scope, so no :deep() is needed.
+.service-label > .severity-icon {
+  margin-block: -2px;
+}
+
 .col-pct {
   text-align: right;
+  // As the interface rows: the timeline's own rule for this column is scoped to it, and does not
+  // reach the cells of this component.
+  white-space: nowrap;
 }
 
 .strip {
@@ -121,7 +170,7 @@ const monitored = computed(() => isMonitored(props.row.availability))
 }
 
 // Nothing was watching this service over the window, so the strip claims nothing. Green here would
-// read as a full window of uptime; the legacy page leaves the same rows empty.
+// read as a full window of uptime; the legacy page left the same rows empty.
 .strip--unmonitored {
   background: var(--timeline-unmonitored);
 }

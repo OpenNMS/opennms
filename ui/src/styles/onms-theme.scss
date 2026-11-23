@@ -109,6 +109,11 @@
   --onms-severity-normal-fg: #0a0c1b;
   --onms-severity-none-bg: var(--onms-cleared);
   --onms-severity-none-fg: #ffffff;
+
+  // Availability badges (AvailabilityBadge) at the normal level: green is the success colour;
+  // severity-normal is blue, so not reused. Warning and critical take the severity tokens.
+  --onms-availability-normal-bg: var(--onms-success);
+  --onms-availability-normal-fg: #ffffff;
 }
 
 .open-dark {
@@ -151,4 +156,8 @@
   --onms-severity-normal-fg: #0a0c1b;
   --onms-severity-none-bg: var(--onms-cleared);
   --onms-severity-none-fg: #0a0c1b;
+
+  // Availability badges, as in the light theme. The success green is light here, so near-black text.
+  --onms-availability-normal-bg: var(--onms-success);
+  --onms-availability-normal-fg: #0a0c1b;
 }

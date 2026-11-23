@@ -21,17 +21,19 @@
 ///
 
 import NodeAvailabilityGraph from '@/components/Nodes/NodeDetails/NodeAvailabilityGraph.vue'
-import { LOADING_DELAY_MS } from '@/components/Nodes/NodeDetails/hooks/useDelayedLoading'
+import { LOADING_DELAY_MS } from '@/components/Nodes/hooks/useDelayedLoading'
 import { NodeAvailability } from '@/types/index'
 import { NodeOutageTimeline } from '@/types/nodeAvailabilityTimeline'
 import { createTestingPinia } from '@pinia/testing'
-import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
+import { flushPromises, mount, RouterLinkStub, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+const { push } = vi.hoisted(() => ({ push: vi.fn() }))
+
 vi.mock('vue-router', () => ({
   useRoute: () => ({ params: { id: '101' }}),
-  useRouter: () => ({ push: vi.fn() })
+  useRouter: () => ({ push })
 }))
 
 vi.mock('@/services/index', () => ({
@@ -47,7 +49,6 @@ const getTimeline = vi.mocked(API.getNodeOutageTimeline)
 const getAvailability = vi.mocked(API.getNodeAvailabilityPercentage)
 
 const HOUR = 3_600_000
-const MINUTE = 60_000
 
 // The panel derives its window from the clock at setup, so the fixtures have to be anchored to the
 // same clock: a fixed timestamp would fall outside the window and every bar would be dropped.
@@ -123,7 +124,7 @@ const mountPanel = (
     },
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
-      stubs: { TimeControls: true, ...stubs }
+      stubs: { TimeControls: true, RouterLink: RouterLinkStub, ...stubs }
     }
   })
 
@@ -142,35 +143,11 @@ describe('NodeAvailabilityGraph.vue', () => {
     vi.useRealTimers()
   })
 
-  // The details page keeps one component instance across node ids and nothing resets it, so a
-  // panel that only fetches when props.node.id CHANGES never fetches at all on a return visit.
-  it('fetches both documents once on mount, for the same window', async () => {
+  // The window itself is the composable's; the heading names it. See useNodeAvailability.test.ts.
+  it('names the default range in the heading', async () => {
     wrapper = mountPanel()
     await flushPromises()
 
-    expect(getAvailability).toHaveBeenCalledTimes(1)
-    expect(getTimeline).toHaveBeenCalledTimes(1)
-
-    const [, availStart, availEnd] = getAvailability.mock.calls[0]
-    const [, tlStart, tlEnd] = getTimeline.mock.calls[0]
-    expect(availStart).toBe(tlStart)
-    expect(availEnd).toBe(tlEnd)
-  })
-
-  it('does not fetch before the node is known', async () => {
-    wrapper = mountPanel(NO_NODE)
-    await flushPromises()
-
-    expect(getAvailability).not.toHaveBeenCalled()
-    expect(getTimeline).not.toHaveBeenCalled()
-  })
-
-  it('defaults to a 24 hour window, matching the range picker default', async () => {
-    wrapper = mountPanel()
-    await flushPromises()
-
-    const [, start, end] = getTimeline.mock.calls[0]
-    expect(end - start).toBe(24 * HOUR)
     // The label the picker shows before anything is picked.
     expect(wrapper.text()).toContain('last day')
   })
@@ -185,6 +162,61 @@ describe('NodeAvailabilityGraph.vue', () => {
     wrapper = mountPanel()
     await flushPromises()
     expect(wrapper.get('[data-test="node-availability"]').text()).toBe('98.76%')
+  })
+
+  describe('availability badges', () => {
+    const levels = () => wrapper.findAll('[data-test="timeline-service-row"]')
+      .map(row => row.find('[data-test="availability-badge"]').attributes('data-level'))
+
+    it('classes the service and node figures by the thresholds', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({
+        availability: 99.995,
+        'normal-threshold': 99.99,
+        'warning-threshold': 97,
+        'managed-service-count': 3,
+        ipinterfaces: [{
+          address: '192.168.1.1', availability: 99.5, id: 1,
+          services: [
+            { id: 10, name: 'A', serviceId: 1, availability: 99.995 },
+            { id: 11, name: 'B', serviceId: 2, availability: 98 },
+            { id: 12, name: 'C', serviceId: 3, availability: 50 }
+          ]
+        }]
+      }))
+
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(levels()).toEqual(['normal', 'warning', 'critical'])
+      expect(wrapper.get('[data-test="node-availability"]').attributes('data-level')).toBe('normal')
+    })
+
+    it('shows the status label and no level for a service that is not managed', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({
+        'normal-threshold': 99.99,
+        'warning-threshold': 97,
+        ipinterfaces: [{
+          address: '192.168.1.1', availability: 99.5, id: 1,
+          services: [{ id: 10, name: 'ICMP', serviceId: 1, availability: 99.5, status: 'F' }]
+        }]
+      }))
+
+      wrapper = mountPanel()
+      await flushPromises()
+
+      const badge = wrapper.get('[data-test="timeline-service-row"] .availability-badge')
+      expect(badge.text()).toBe('Forced Unmanaged')
+      expect(badge.attributes('data-level')).toBeUndefined()
+    })
+
+    it('shows the placeholder before data arrives', () => {
+      getAvailability.mockReturnValue(new Promise(() => {}) as any)
+      getTimeline.mockReturnValue(new Promise(() => {}) as any)
+
+      wrapper = mountPanel()
+
+      expect(wrapper.get('[data-test="node-availability"]').text()).toBe('—')
+    })
   })
 
   // The previous version computed 100 * undefined on first paint.
@@ -362,47 +394,6 @@ describe('NodeAvailabilityGraph.vue', () => {
     expect(wrapper.get('.service-link').attributes('href')).toContain('intf=fe80%3A%3A1%25eth0')
   })
 
-  it('refetches both documents when the range changes', async () => {
-    wrapper = mountPanel('101', { TimeControls: TimeControlsStub })
-    await flushPromises()
-    expect(getTimeline).toHaveBeenCalledTimes(1)
-
-    await wrapper.get('[data-test="availability-range"]').trigger('click')
-    await flushPromises()
-
-    expect(getTimeline).toHaveBeenCalledTimes(2)
-    expect(getAvailability).toHaveBeenCalledTimes(2)
-
-    const [, start, end] = getTimeline.mock.calls[1]
-    expect(end - start).toBe(HOUR)
-  })
-
-  // The summary names the range its figure was fetched for. Naming the new one as soon as it was
-  // picked put that name beside the previous range's percentage until the fetch landed.
-  it('does not name the new range beside the old figure', async () => {
-    let resolveSecond: (v: NodeAvailability) => void = () => {}
-    getAvailability.mockResolvedValueOnce(availabilityDoc())
-    getAvailability.mockReturnValueOnce(new Promise<NodeAvailability>((r) => {
-      resolveSecond = r
-    }) as any)
-
-    wrapper = mountPanel('101', { TimeControls: TimeControlsStub })
-    await flushPromises()
-    expect(wrapper.text()).toContain('last day')
-
-    await wrapper.get('[data-test="availability-range"]').trigger('click')
-    await flushPromises()
-
-    // In flight: still the range the visible figure belongs to.
-    expect(wrapper.text()).toContain('last day')
-    expect(wrapper.text()).not.toContain('last hour')
-
-    resolveSecond(availabilityDoc({ availability: 12.5 }))
-    await flushPromises()
-
-    expect(wrapper.text()).toContain('last hour')
-  })
-
   // The heading should name the range the way the picker's own button does, rather than
   // reconstructing it from unit and amount, which pluralised 'Last hour' as 'last 1 hours'.
   it('names the selected range the way the picker does', async () => {
@@ -417,60 +408,6 @@ describe('NodeAvailabilityGraph.vue', () => {
   })
 
   /*
-   * Defensive on this page: NodeDetails rebuilds the panel for each node rather than feeding it a
-   * new id, so it never carries a window across a node change. The behaviour is still what a
-   * relative range means -- resolve it when you ask, not when it was picked -- and it is what makes
-   * the panel correct if it is ever mounted without that gate or given a refresh control.
-   */
-  it('re-resolves a relative range against the clock when the node changes', async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true })
-    vi.setSystemTime(NOW)
-
-    wrapper = mountPanel()
-    await flushPromises()
-    const firstEnd = getTimeline.mock.calls[0][2] as number
-
-    vi.setSystemTime(NOW + 2 * HOUR)
-    await wrapper.setProps({ node: { id: '202' } as any })
-    await flushPromises()
-
-    const secondEnd = getTimeline.mock.calls[1][2] as number
-    expect(secondEnd - firstEnd).toBeGreaterThanOrEqual(2 * HOUR - 1000)
-  })
-
-  // The other half of the above, and the guard that re-resolving does not move a fixed window.
-  it('keeps an absolute custom range fixed across a node change', async () => {
-    const AbsoluteStub = {
-      name: 'TimeControls',
-      template: '<button @click="$emit(\'updateTime\', payload)">range</button>',
-      emits: ['updateTime'],
-      computed: {
-        payload() {
-          // No `range`, which is what TimeControls emits for a custom absolute window.
-          return {
-            startTime: Math.floor((NOW - 5 * HOUR) / 1000),
-            endTime: Math.floor((NOW - 4 * HOUR) / 1000),
-            format: 'hours'
-          }
-        }
-      }
-    }
-
-    wrapper = mountPanel('101', { TimeControls: AbsoluteStub })
-    await flushPromises()
-    await wrapper.get('[data-test="availability-range"]').trigger('click')
-    await flushPromises()
-
-    const [, pickedStart, pickedEnd] = getTimeline.mock.calls[1]
-
-    await wrapper.setProps({ node: { id: '202' } as any })
-    await flushPromises()
-
-    expect(getTimeline.mock.calls[2].slice(1)).toEqual([pickedStart, pickedEnd])
-    expect(wrapper.text()).toContain('custom range')
-  })
-
-  /*
    * The page rebuilds this panel for each node rather than feeding it a new id, so a range held in
    * the component is lost the moment the user moves on. It lives in the node store instead. These
    * mount twice against ONE pinia, which is what a node change actually does.
@@ -481,32 +418,9 @@ describe('NodeAvailabilityGraph.vue', () => {
         props: { baseHref: '/opennms/', node: { id: nodeId } as any },
         global: {
           plugins: [pinia, PrimeVue],
-          stubs: { TimeControls: TimeControlsStub }
+          stubs: { TimeControls: TimeControlsStub, RouterLink: RouterLinkStub }
         }
       })
-
-    it('reuses the chosen range for the next node', async () => {
-      const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
-
-      const first = mountWith(pinia, '101')
-      await flushPromises()
-      await first.get('[data-test="availability-range"]').trigger('click')
-      await flushPromises()
-
-      const [, , pickedEnd] = getTimeline.mock.calls[1]
-      const [, pickedStart] = getTimeline.mock.calls[1]
-      expect(pickedEnd - (pickedStart as number)).toBe(HOUR)
-      first.unmount()
-
-      const second = mountWith(pinia, '202')
-      await flushPromises()
-
-      const [nodeId, start, end] = getTimeline.mock.calls[2]
-      expect(nodeId).toBe('202')
-      // The hour range carried over rather than reverting to the default day.
-      expect(end - start).toBe(HOUR)
-      second.unmount()
-    })
 
     it('seeds the picker with the carried range, so the button does not contradict it', async () => {
       const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
@@ -531,40 +445,8 @@ describe('NodeAvailabilityGraph.vue', () => {
       await flushPromises()
 
       expect(w.findComponent({ name: 'TimeControls' }).props('initialLabel')).toBe('Last day')
-      const [, start, end] = getTimeline.mock.calls[0]
-      expect(end - start).toBe(24 * HOUR)
       w.unmount()
     })
-  })
-
-  // A slow first request must not overwrite the result of a later one.
-  it('ignores a superseded response', async () => {
-    let resolveFirst: (v: NodeOutageTimeline) => void = () => {}
-    const first = new Promise<NodeOutageTimeline>((r) => {
-      resolveFirst = r
-    })
-
-    getTimeline.mockReturnValueOnce(first as any)
-    getTimeline.mockResolvedValueOnce(timelineDoc({
-      outage: [{
-        id: 9999, ifServiceId: 11, ipInterfaceId: 1, ipAddress: '192.168.1.1',
-        serviceId: 2, serviceName: 'SNMP',
-        ifLostService: NOW - 30 * MINUTE, ifRegainedService: NOW - 20 * MINUTE
-      }]
-    }))
-
-    wrapper = mountPanel('101', { TimeControls: TimeControlsStub })
-    await wrapper.get('[data-test="availability-range"]').trigger('click')
-    await flushPromises()
-
-    // The first request now lands, out of order, carrying outage 3543.
-    resolveFirst(timelineDoc())
-    await flushPromises()
-
-    const hrefs = wrapper.findAll('[data-test="outage-segment"]')
-      .map(a => a.attributes('href'))
-    expect(hrefs).toContain('/opennms/outage/detail.htm?id=9999')
-    expect(hrefs).not.toContain('/opennms/outage/detail.htm?id=3543')
   })
 
   // The panel shows at most 8 rows: a heading per interface plus one per service.
@@ -632,7 +514,8 @@ describe('NodeAvailabilityGraph.vue', () => {
 
       const message = wrapper.get('[data-test="availability-partial"]')
       expect(message.text()).toBe('Node has 4 monitored interfaces and 24 services, only some shown here. View them all on the Availability page.')
-      expect(message.get('[data-test="availability-page-link"]').attributes('href')).toBe('/opennms/element/availability.jsp?node=101')
+      expect(message.findComponent(RouterLinkStub).props('to'))
+        .toEqual({ name: 'Node Availability', params: { id: '101' }})
     })
 
     it('words one interface and one service in the singular', async () => {
@@ -682,16 +565,14 @@ describe('NodeAvailabilityGraph.vue', () => {
     })
   })
 
-  // The legacy Availability page, which lists every interface and service.
-  it('links its View Availability button to the legacy availability page for the node', async () => {
-    const assign = vi.fn()
-    vi.stubGlobal('location', { assign } as any)
+  // The Vue Availability page, which lists every interface and service.
+  it('sends its View Availability button to the Availability page for the node', async () => {
+    push.mockClear()
     wrapper = mountPanel()
     await flushPromises()
 
     await wrapper.find('[data-test="availability-details-button"]').trigger('click')
 
-    expect(assign).toHaveBeenCalledWith('/opennms/element/availability.jsp?node=101')
-    vi.unstubAllGlobals()
+    expect(push).toHaveBeenCalledWith({ name: 'Node Availability', params: { id: '101' }})
   })
 })
