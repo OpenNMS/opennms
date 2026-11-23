@@ -37,8 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -132,8 +130,8 @@ public class OpenApiResourceCoverageTest {
     }
 
     /**
-     * Each Blueprint service with an application-path and a type-level @Path must be listed under
-     * the Api for that path, or be in NOT_YET_DOCUMENTED. Each listed class and each
+     * Each interface that a Blueprint service publishes with an application-path must be listed
+     * under the Api for that path, or be in NOT_YET_DOCUMENTED. Each listed class and each
      * NOT_YET_DOCUMENTED entry must still be published there.
      */
     @Test
@@ -183,20 +181,17 @@ public class OpenApiResourceCoverageTest {
                 errors.isEmpty());
     }
 
-    /** Maps each OSGi ReST service with a type-level @Path to its application-path. */
+    /**
+     * Maps each interface that a Blueprint service publishes with an application-path to that path.
+     * No @Path filter: a service with an application-path is a ReST resource for Karaf, and a filter
+     * that reads the source could miss an inherited or fully qualified @Path.
+     */
     private static Map<String, String> publishedOsgiResources(final Path repoRoot) throws Exception {
         final List<Path> blueprints = new ArrayList<>();
-        final Map<String, Path> sources = new HashMap<>();
         walk(repoRoot, file -> {
             final String path = file.toString().replace('\\', '/');
             if (path.endsWith(".xml") && path.contains(BLUEPRINT_DIR)) {
                 blueprints.add(file);
-            } else if (path.endsWith(".java")) {
-                final int sourceRoot = path.lastIndexOf(SOURCE_ROOT);
-                if (sourceRoot >= 0) {
-                    final String relative = path.substring(sourceRoot + SOURCE_ROOT.length());
-                    sources.put(relative.substring(0, relative.length() - ".java".length()).replace('/', '.'), file);
-                }
             }
         });
 
@@ -211,21 +206,41 @@ public class OpenApiResourceCoverageTest {
             for (int i = 0; i < services.getLength(); i++) {
                 final Element service = (Element) services.item(i);
                 final String applicationPath = applicationPath(service);
-                final String type = service.getAttribute("interface");
-                if (applicationPath == null || type.isEmpty()) {
+                if (applicationPath == null) {
                     continue;
                 }
-                final Path source = sources.get(type);
-                if (source == null) {
-                    throw new IllegalStateException(blueprint + " publishes " + type + " at " + applicationPath
-                            + ", but its source is not in this repository");
+                final List<String> types = interfaces(service);
+                if (types.isEmpty()) {
+                    throw new IllegalStateException(blueprint + " publishes a service at " + applicationPath
+                            + " with no interface attribute or <interfaces> element. Name the interface,"
+                            + " so that this test can check it");
                 }
-                if (hasTypeLevelPath(source, type)) {
-                    published.put(type, applicationPath);
+                for (final String type : types) {
+                    final String previous = published.put(type, applicationPath);
+                    if (previous != null && !previous.equals(applicationPath)) {
+                        throw new IllegalStateException(type + " is published at " + previous + " and at "
+                                + applicationPath);
+                    }
                 }
             }
         }
         return published;
+    }
+
+    /** The interface attribute and the values of an {@code <interfaces>} element. */
+    private static List<String> interfaces(final Element service) {
+        final List<String> types = new ArrayList<>();
+        if (!service.getAttribute("interface").isEmpty()) {
+            types.add(service.getAttribute("interface"));
+        }
+        final NodeList lists = service.getElementsByTagNameNS(BLUEPRINT_NS, "interfaces");
+        for (int i = 0; i < lists.getLength(); i++) {
+            final NodeList values = ((Element) lists.item(i)).getElementsByTagNameNS(BLUEPRINT_NS, "value");
+            for (int j = 0; j < values.getLength(); j++) {
+                types.add(values.item(j).getTextContent().trim());
+            }
+        }
+        return types;
     }
 
     private static String applicationPath(final Element service) {
@@ -237,18 +252,6 @@ public class OpenApiResourceCoverageTest {
             }
         }
         return null;
-    }
-
-    /** True if a @Path annotation comes before the declaration of the type. */
-    private static boolean hasTypeLevelPath(final Path source, final String type) throws IOException {
-        final String text = Files.readString(source);
-        final String simpleName = type.substring(type.lastIndexOf('.') + 1);
-        final Matcher declaration = Pattern.compile("(?m)^\\s*public\\s+(?:abstract\\s+)?(?:interface|class)\\s+"
-                + Pattern.quote(simpleName) + "\\b").matcher(text);
-        if (!declaration.find()) {
-            throw new IllegalStateException("no declaration of " + simpleName + " in " + source);
-        }
-        return Pattern.compile("(?m)^\\s*@Path\\(").matcher(text.substring(0, declaration.start())).find();
     }
 
     private interface FileVisitor {

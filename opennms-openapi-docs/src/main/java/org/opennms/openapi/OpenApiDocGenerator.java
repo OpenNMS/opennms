@@ -54,6 +54,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.oas.models.tags.Tag;
 
 /**
  * Produces the OpenAPI documents packaged under openapi/ in this module's jar.
@@ -200,7 +201,14 @@ public final class OpenApiDocGenerator {
             reader.read(clazz);
             requireNoReplacedOperation(clazz, before, reader.getOpenAPI());
         }
-        return serialize(reader.getOpenAPI());
+        final OpenAPI document = reader.getOpenAPI();
+        // Swagger UI shows the tag groups in list order, and the Reader lists them in read order,
+        // which puts the OSGi tags after all the webapp tags.
+        if (document.getTags() != null) {
+            document.getTags().sort(Comparator.comparing(Tag::getName, String.CASE_INSENSITIVE_ORDER)
+                    .thenComparing(Tag::getName));
+        }
+        return serialize(document);
     }
 
     private static Map<String, Map<PathItem.HttpMethod, Operation>> operations(final OpenAPI document) {

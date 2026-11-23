@@ -22,6 +22,7 @@
 package org.opennms.openapi;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -115,6 +116,19 @@ public class OpenApiDocsContentTest {
         assertSchemaProperty(document, "OnmsMonitoringLocation", "location-name", true);
 
         assertPathCountAtLeast(document, "v2", 200);
+    }
+
+    /** Swagger UI shows the tag groups in list order, so the OSGi tags must not trail the webapp tags. */
+    @Test
+    public void tagsAreSortedByName() throws Exception {
+        for (final OpenApiDocGenerator.Api api : OpenApiDocGenerator.Api.values()) {
+            final List<String> names = new ArrayList<>();
+            load(api.getFileName()).path("tags").forEach(tag -> names.add(tag.path("name").asText()));
+            final List<String> sorted = new ArrayList<>(names);
+            sorted.sort(String.CASE_INSENSITIVE_ORDER);
+            assertFalse("no tags in " + api.getFileName(), names.isEmpty());
+            assertEquals("tag order in " + api.getFileName(), sorted, names);
+        }
     }
 
     /**
