@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -43,6 +44,10 @@ import org.slf4j.LoggerFactory;
  * @author mvrueden
  */
 public class KarafShell {
+
+    private static final Pattern TERMINAL_ESCAPE = Pattern.compile("\\u001B(?:\\[[0-9;?]*[A-Za-z]|.)");
+    private static final int FEATURE_NAME_COLUMN = 0;
+    private static final int FEATURE_STATE_COLUMN = 3;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final InetSocketAddress sshAddress;
@@ -155,8 +160,17 @@ public class KarafShell {
         await(String.format("waiting for feature %s state to match regex '%s'", feature, regex))
                 .atMost(wait)
                 .until(() ->
-                        runCommandOnce("feature:list | grep " + feature,
-                                output -> output.matches("(?ms).*?\\|\\s*(" + regex + ")\\s*\\|.*"), false)
+                        // Without format, Karaf separates the columns with tabs and prints no borders
+                        runCommandOnce("feature:list --no-format | grep " + feature,
+                                output -> hasFeatureState(output, feature, regex), false)
                 );
+    }
+
+    static boolean hasFeatureState(String output, String feature, String regex) {
+        return output.lines()
+                .map(line -> TERMINAL_ESCAPE.matcher(line).replaceAll("").split("\t"))
+                .filter(cells -> cells.length > FEATURE_STATE_COLUMN)
+                .filter(cells -> cells[FEATURE_NAME_COLUMN].trim().equals(feature))
+                .anyMatch(cells -> cells[FEATURE_STATE_COLUMN].trim().matches(regex));
     }
 }

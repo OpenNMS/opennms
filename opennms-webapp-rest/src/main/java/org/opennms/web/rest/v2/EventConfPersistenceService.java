@@ -137,6 +137,7 @@ public class EventConfPersistenceService {
      */
     @Transactional
     public EventUpsertResult upsertEventConfSourceEvent(final Long sourceId, final String userName, final Event desired) {
+        EventConfServiceHelper.requireUei(desired);
         final Date now = new Date();
         final EventConfSource source = eventConfSourceDao.lockForUpdate(sourceId);
 
@@ -226,9 +227,13 @@ public class EventConfPersistenceService {
     }
 
 
-    /** @throws EntityNotFoundException on an unknown source or event, for the REST layer's 404 */
+    /**
+     * @throws EntityNotFoundException on an unknown source or event, for the REST layer's 404
+     * @throws IllegalArgumentException when the event has no UEI (the REST layer checks this first; this is the backstop)
+     */
     @Transactional
     public void updateEventConfEvent(final Long sourceId, final Long eventId, EventConfEventEditRequest payload, final String userName) {
+        EventConfServiceHelper.requireUei(payload.getEvent());
         final Date now = new Date();
         // Keep deleteEventsForSource's compaction out while this event is rewritten, so the
         // eventOrder we hold cannot be stale by the time it is flushed
