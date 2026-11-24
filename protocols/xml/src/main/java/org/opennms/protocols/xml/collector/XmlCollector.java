@@ -61,6 +61,14 @@ import com.google.common.collect.Sets;
  */
 public class XmlCollector extends AbstractRemoteServiceCollector {
 
+    /** Agent protocol of this collector, published as {@code agent_protocol} on Kafka. */
+    public static final String AGENT_PROTOCOL = "XML";
+
+    @Override
+    public String getAgentProtocol() {
+        return AGENT_PROTOCOL;
+    }
+
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(XmlCollector.class);
 

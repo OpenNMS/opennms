@@ -255,7 +255,7 @@ function applyEnvConfig() {
 }
 
 function parseEnvironment() {
-    local env_var ipc_name es_key
+    local env_var ipc_name es_key pool_key
     APPLIED_ENV_KEYS=()
 
     # compgen -e lists variable names only, so multi-line values are handled correctly
@@ -286,13 +286,27 @@ function parseEnvironment() {
         fi
 
         # The image-provided ${env:...} placeholders already track these variables; the
-        # mapping only matters for files that still hold a literal value from older images.
+        # mapping only matters for files from older images that hold a literal value or lack the key.
         case "$env_var" in
           OPENNMS_INSTANCE_ID)
             applyEnvConfig "$env_var" "org.opennms.instance.id" "${SENTINEL_HOME}/etc/custom.system.properties"
             ;;
           POSTGRES_JDBC_URL)
             applyEnvConfig "$env_var" "datasource.url" "${SENTINEL_HOME}/etc/org.opennms.netmgt.distributed.datasource.cfg"
+            ;;
+          OPENNMS_DATABASE_CONNECTION_*)
+            case "${env_var#OPENNMS_DATABASE_CONNECTION_}" in
+              IDLETIMEOUT)  pool_key="idleTimeout" ;;
+              LOGINTIMEOUT) pool_key="loginTimeout" ;;
+              MINPOOL)      pool_key="minPool" ;;
+              MAXPOOL)      pool_key="maxPool" ;;
+              MAXSIZE)      pool_key="maxSize" ;;
+              *)
+                echo "[Configuring] Ignoring unrecognized variable ${env_var}"
+                continue
+                ;;
+            esac
+            applyEnvConfig "$env_var" "connection.pool.${pool_key}" "${SENTINEL_HOME}/etc/org.opennms.netmgt.distributed.datasource.cfg"
             ;;
         esac
     done < <(compgen -e)
@@ -378,6 +392,27 @@ function validateEnvironment() {
         exit ${E_ILLEGAL_ARGS}
         ;;
     esac
+
+    # The pool settings are Java ints; anything else stops the datasource from starting,
+    # and HikariCP refuses a maximum pool size below 1.
+    # An empty value counts as unset, so the image default applies whether the cfg holds
+    # the ${env:...:-default} placeholder or comes from an older image without the key.
+    local pool_name pool_var pool_min
+    for pool_name in IDLETIMEOUT LOGINTIMEOUT MINPOOL MAXPOOL MAXSIZE; do
+      pool_var="OPENNMS_DATABASE_CONNECTION_${pool_name}"
+      [ -n "${!pool_var+set}" ] || continue
+      if [ -z "${!pool_var}" ]; then
+        unset "${pool_var}"
+        continue
+      fi
+      pool_min=0
+      [ "${pool_name}" = "MAXPOOL" ] && pool_min=1
+      # At most 10 digits keeps the comparison within bash's 64-bit arithmetic; 10# reads leading zeros as decimal
+      if [[ ! "${!pool_var}" =~ ^[0-9]{1,10}$ ]] || (( 10#${!pool_var} < pool_min || 10#${!pool_var} > 2147483647 )); then
+        echo "[Startup][ERROR] Invalid ${pool_var} '${!pool_var}', expected an integer from ${pool_min} to 2147483647."
+        exit ${E_ILLEGAL_ARGS}
+      fi
+    done
 }
 
 function seedContainerConfig() {

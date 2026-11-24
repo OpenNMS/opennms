@@ -81,6 +81,15 @@ import com.google.common.collect.Lists;
  * @author jwhite
  */
 public class WsManCollector extends AbstractRemoteServiceCollector {
+
+    /** Agent protocol of this collector, published as {@code agent_protocol} on Kafka. */
+    public static final String AGENT_PROTOCOL = "WSMAN";
+
+    @Override
+    public String getAgentProtocol() {
+        return AGENT_PROTOCOL;
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(WsManCollector.class);
 
     private static final String WSMAN_AGENT_CONFIG_KEY = "wsmanAgentConfig";

@@ -102,12 +102,22 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
 
     @Override
     public String getMetricIdentifier() {
-        String instance = m_resource.getInstance();
         SnmpAttributeType type = (SnmpAttributeType)m_attribType;
+        final SnmpObjId objId = type.getSnmpObjId();
+        if (objId == null) {
+            // Attributes added by property extenders have no MIB object.
+            return null;
+        }
+        String instance = m_resource.getInstance();
         if (instance == null) {
             instance = type.getInstance();
         }
-        return "SNMP_"+SnmpObjId.get(type.getSnmpObjId(), instance);
+        try {
+            return AbstractSnmpCollector.AGENT_PROTOCOL + "_" + SnmpObjId.get(objId, instance);
+        } catch (IllegalArgumentException e) {
+            // Aliased resources have no instance, which leaves the "ifIndex" placeholder.
+            return null;
+        }
     }
     
     /**
