@@ -21,7 +21,7 @@
 ///
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { flushPromises, mount } from '@vue/test-utils'
+import { flushPromises, mount, RouterLinkStub } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import PrimeVue from 'primevue/config'
 import Graph from '@/components/Resources/Graph.vue'
@@ -50,11 +50,12 @@ describe('Graph.vue', () => {
   })
 
   it('renders again when the time prop is replaced by a plain object', async () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    vi.spyOn(console, 'log').mockImplementation(() => {})
+    // tests/setup.ts fails the test on any Vue warning, including
+    // "Invalid watch source".
+    const consoleLog = vi.spyOn(console, 'log').mockImplementation(() => {})
     const wrapper = mount(Graph, {
       props: { definition: 'mib2.bits', resourceId: 'node[1].nodeSnmp[]', time: timeFrom(0), label: 'rtr', isSingleGraph: false },
-      global: { plugins: [createTestingPinia(), PrimeVue] }
+      global: { plugins: [createTestingPinia(), PrimeVue], stubs: { RouterLink: RouterLinkStub }}
     })
     await flushPromises()
     const store = useGraphStore()
@@ -63,6 +64,6 @@ describe('Graph.vue', () => {
     await wrapper.setProps({ time: timeFrom(7200) })
     await flushPromises()
     expect(store.getDefinitionData).toHaveBeenCalledTimes(2)
-    expect(warn.mock.calls.flat().join(' ')).not.toContain('Invalid watch source')
+    expect(consoleLog).toHaveBeenCalled()
   })
 })

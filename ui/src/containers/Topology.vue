@@ -342,7 +342,7 @@ import { focusSubgraph, highestDegreeVertexId } from '@/components/Topology/focu
 import { searchFieldLabel, searchTopology, type SearchMatch } from '@/components/Topology/search'
 import type { CanvasNode } from '@/types/topology'
 import { nodeActionLinks } from '@/components/Topology/nodeActions'
-import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
+import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 
 const store = useTopologyStore()
 const { showToast } = useOnmsToast()

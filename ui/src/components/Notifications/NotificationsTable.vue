@@ -115,11 +115,12 @@
         </template>
       </OnmsColumn>
       <OnmsColumn
-        v-if="!showAckColumns && canAcknowledgeNotifications"
+        v-if="showActions"
         header="Actions"
       >
         <template #body="{ data }">
           <OnmsButton
+            v-if="!data.ackUser"
             variant="text"
             label="Acknowledge"
             :aria-label="`Acknowledge notification ${data.id}`"
@@ -153,7 +154,7 @@ import useSnackbar from '@/composables/useSnackbar'
 import useRole from '@/composables/useRole'
 import { saveBlobAsFile } from '@/services/eventConfigService'
 import { useMenuStore } from '@/stores/menuStore'
-import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
+import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 import { MessageSeverity } from '@/types'
 import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationsStore } from '@/stores/notificationsStore'
@@ -169,12 +170,27 @@ const { withSpinner, report } = useActionFeedback()
 const EXPORT_LIMIT = 1000
 
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
-const showAckColumns = computed<boolean>(() => store.preset === 'allAcknowledged')
+// From the ack type, not the preset name, so every preset of a kind gets the same columns.
+// Acknowledged rows have a responder to show; outstanding ones can be acknowledged. The `all`
+// type mixes the two, so it has both, and the Acknowledge button only on outstanding rows.
+const showAckColumns = computed<boolean>(() => store.acktype !== 'unack')
+const showActions = computed<boolean>(() => store.acktype !== 'ack' && canAcknowledgeNotifications.value)
+
+const emptyMessage = computed<string>(() => {
+  switch (store.acktype) {
+    case 'ack':
+      return 'No acknowledged notifications found.'
+    case 'all':
+      return 'No notifications found.'
+  }
+
+  return 'No outstanding notifications found.'
+})
 
 const emptyListContent = computed(() => ({
   msg: store.awaitingUser
     ? 'Enter a user ID to see their outstanding notifications.'
-    : store.preset === 'allAcknowledged' ? 'No acknowledged notifications found.' : 'No outstanding notifications found.'
+    : emptyMessage.value
 }))
 
 const severityMap: Record<string, OnmsTagSeverity> = {

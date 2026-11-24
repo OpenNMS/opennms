@@ -21,8 +21,9 @@
 ///
 
 import API from '@/services'
+import { NodeNotificationStatus } from '@/types'
 import { useAuthStore } from '@/stores/authStore'
-import { NotificationBrowseResult, NotificationQueryPreset, OnmsNotification } from '@/types/notifications'
+import { NotificationAckType, NotificationBrowseResult, NotificationQueryPreset, OnmsNotification } from '@/types/notifications'
 import { createFailureResult, createResultWithPayload, createSuccessResponse, ValidationResult, ValidationResultWithPayload } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -39,9 +40,24 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
   const first = ref(0)
   const loading = ref(false)
 
+  // The Node Details notifications box's slice: the server's counts of one node's notifications,
+  // stamped with the node, as the alarm store's nodeAlarmStatus is. Apart from the page's query.
+  const nodeNotificationStatus = ref<NodeNotificationStatus | undefined>(undefined)
+  const nodeNotificationStatusNodeId = ref<string | undefined>(undefined)
+  // The node whose latest fetch failed, if any; kept by node id so one node's failure never reads
+  // as another's.
+  const nodeNotificationStatusFailedNodeId = ref<string | undefined>(undefined)
+  let nodeNotificationStatusRequestId = 0
+
   const currentUser = computed<string>(() => authStore.whoAmI.id)
 
-  const acktype = computed<'unack' | 'ack'>(() => (preset.value === 'allAcknowledged' || preset.value === 'yourAcknowledged' ? 'ack' : 'unack'))
+  const acktype = computed<NotificationAckType>(() => {
+    if (preset.value === 'all') {
+      return 'all'
+    }
+
+    return preset.value === 'allAcknowledged' || preset.value === 'yourAcknowledged' ? 'ack' : 'unack'
+  })
 
   const effectiveUser = computed<string | null>(() => {
     if (preset.value === 'yourOutstanding' || preset.value === 'yourAcknowledged') {
@@ -72,6 +88,8 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
         return 'All Outstanding Notifications'
       case 'allAcknowledged':
         return 'All Acknowledged Notifications'
+      case 'all':
+        return 'All Notifications'
       case 'userSearch':
         return userFilter.value ? `Outstanding Notifications for '${userFilter.value}'` : 'Outstanding Notifications for User'
     }
@@ -219,6 +237,38 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
     return reload.success ? createSuccessResponse() : { ...createSuccessResponse(), errors: [reload.message] }
   }
 
+  /**
+   * Fetch the counts of one node's notifications. Replaced only on success, so check
+   * `nodeNotificationStatusNodeId` before showing them for a node, and
+   * `nodeNotificationStatusFailedNodeId` to tell one still loading from one that failed.
+   */
+  const getNodeNotificationStatus = async (nodeId: string): Promise<ValidationResultWithPayload<NodeNotificationStatus>> => {
+    const requestId = ++nodeNotificationStatusRequestId
+
+    // A fetch for another node starts afresh; a refresh of the failed node keeps saying so.
+    if (nodeNotificationStatusFailedNodeId.value !== nodeId) {
+      nodeNotificationStatusFailedNodeId.value = undefined
+    }
+
+    const result = await API.getNodeNotificationStatus(nodeId)
+
+    if (requestId !== nodeNotificationStatusRequestId) {
+      return createResultWithPayload(false, 'Superseded by a newer request')
+    }
+
+    if (!result.success || !result.payload) {
+      nodeNotificationStatusFailedNodeId.value = nodeId
+
+      return createResultWithPayload(false, result.message)
+    }
+
+    nodeNotificationStatus.value = result.payload
+    nodeNotificationStatusNodeId.value = nodeId
+    nodeNotificationStatusFailedNodeId.value = undefined
+
+    return result
+  }
+
   return {
     preset,
     userFilter,
@@ -230,6 +280,7 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
     first,
     loading,
     currentUser,
+    acktype,
     title,
     load,
     applyPreset,
@@ -238,6 +289,10 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
     clearNodeFilter,
     onPage,
     fetchForExport,
-    acknowledge
+    acknowledge,
+    nodeNotificationStatus,
+    nodeNotificationStatusNodeId,
+    nodeNotificationStatusFailedNodeId,
+    getNodeNotificationStatus
   }
 })

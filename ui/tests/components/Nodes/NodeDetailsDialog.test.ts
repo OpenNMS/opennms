@@ -75,6 +75,33 @@ describe('NodeDetailsDialog.vue', () => {
     expect(wrapper.emitted('close')).toBeTruthy()
   })
 
+  describe('identity rows', () => {
+    // The value shown beside a label.
+    const value = (overrides: object, label: string) =>
+      mountIt(true, { ...node, ...overrides }).findAll('.onms-row')
+        .map(r => r.text().trim())
+        .find(r => r.startsWith(label))
+        ?.slice(label.length).trim()
+
+    it('labels the location as the monitoring location', () => {
+      expect(value({}, 'Monitoring Location')).toBe('Default')
+    })
+
+    it('shows the foreign source and foreign id', () => {
+      expect(value({}, 'FS:FID')).toBe('fs:fid')
+    })
+
+    // A node that is not from a requisition has neither, and the dialog showed 'null:null'.
+    it.each([
+      ['both are null', { foreignSource: null, foreignId: null }, '--:--'],
+      ['both are empty', { foreignSource: '', foreignId: '' }, '--:--'],
+      ['only the foreign id is missing', { foreignId: null }, 'fs:--'],
+      ['only the foreign source is missing', { foreignSource: undefined }, '--:fid']
+    ])('shows -- for each missing part when %s', (_, overrides, expected) => {
+      expect(value(overrides, 'FS:FID')).toBe(expected)
+    })
+  })
+
   // The legacy node page's Asset Information box showed the description and comments.
   describe('asset rows', () => {
     const rows = (assetRecord: object) => {

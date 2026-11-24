@@ -33,6 +33,7 @@ import {
   hasIngressFlow,
   ipInterfaceStatus,
   matchesSearchTerm,
+  monitoredServiceStatus,
   snmpIfStatusText,
   snmpInterfaceFlowGraphsTooltip,
   snmpInterfaceFlows,
@@ -386,6 +387,29 @@ describe('Nodes utils test', () => {
 
     test.each([[null], [undefined], ['']])('reads %s as Unknown', (code) => {
       expect(ipInterfaceStatus(code)).toBe('Unknown')
+    })
+  })
+
+  describe('monitoredServiceStatus', () => {
+    test.each([
+      ['A', 'Managed'],
+      ['U', 'Unmanaged'],
+      ['D', 'Deleted'],
+      ['F', 'Forced Unmanaged'],
+      ['N', 'Not Monitored'],
+      ['R', 'Rescan to Resume'],
+      ['S', 'Rescan to Suspend'],
+      ['X', 'Remotely Monitored']
+    ])('reads %s as "%s"', (code, label) => {
+      expect(monitoredServiceStatus(code)).toBe(label)
+    })
+
+    test('names an undefined code', () => {
+      expect(monitoredServiceStatus('Q')).toBe('Unknown (Q)')
+    })
+
+    test.each([[null], [undefined], ['']])('reads %s as Unknown', (code) => {
+      expect(monitoredServiceStatus(code)).toBe('Unknown')
     })
   })
 

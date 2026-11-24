@@ -9,6 +9,7 @@ import { createResultWithPayload } from '@/types/validation'
 vi.mock('@/services', () => ({
   default: {
     browseNotifications: vi.fn(),
+    getNodeNotificationStatus: vi.fn(),
     acknowledgeNotification: vi.fn(),
     getNodeById: vi.fn()
   }
@@ -174,6 +175,28 @@ describe('useNotificationsStore', () => {
       expect(store.title).toBe('All Acknowledged Notifications')
     })
 
+    // Every notification, outstanding and acknowledged, whoever it was sent to.
+    it('all should query every notification, for no particular user', async () => {
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
+
+      await store.applyPreset('all')
+
+      expect(API.browseNotifications).toHaveBeenCalledWith(
+        expect.objectContaining({ acktype: 'all', user: null, excludeUser: null })
+      )
+      expect(store.title).toBe('All Notifications')
+    })
+
+    it('all narrowed to a node names the node in its title', async () => {
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
+      vi.mocked(API.getNodeById).mockResolvedValue({ id: 146, label: 'router-146' } as never)
+
+      await store.applyQuery('all', '146')
+
+      expect(API.browseNotifications).toHaveBeenCalledWith(expect.objectContaining({ acktype: 'all', nodeId: '146' }))
+      expect(store.title).toBe('All Notifications for Node router-146')
+    })
+
     it('userSearch should filter outstanding notifications by the given user', async () => {
       vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
 
@@ -243,6 +266,11 @@ describe('useNotificationsStore', () => {
 
       await store.applyPreset('teamOutstanding')
       expect(API.browseNotifications).not.toHaveBeenCalled()
+
+      // all is not user-scoped, so it needs no user
+      vi.mocked(API.browseNotifications).mockResolvedValue(loaded(mockResult))
+      expect((await store.applyPreset('all')).success).toBe(true)
+      expect(API.browseNotifications).toHaveBeenCalledTimes(1)
     })
 
     it('should clamp to the last valid page when the ack empties the current page', async () => {
@@ -486,6 +514,64 @@ describe('useNotificationsStore', () => {
 
       expect(result.success).toBe(false)
       expect(API.browseNotifications).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('getNodeNotificationStatus', () => {
+    const status = { user: 'admin', yourOutstanding: 2, allOutstanding: 5, total: 40 }
+    const ok = (payload = status) => ({ success: true, message: '', payload }) as never
+    const failed = { success: false, message: 'nope' } as never
+    const pending = () => new Promise(() => undefined) as never
+
+    it('publishes the counts, stamped with the node id, leaving the page\'s query alone', async () => {
+      vi.mocked(API.getNodeNotificationStatus).mockResolvedValue(ok())
+
+      const result = await store.getNodeNotificationStatus('42')
+
+      expect(API.getNodeNotificationStatus).toHaveBeenCalledWith('42')
+      expect(result.success).toBe(true)
+      expect(store.nodeNotificationStatus).toEqual(status)
+      expect(store.nodeNotificationStatusNodeId).toBe('42')
+      expect(store.nodeFilter).toBeNull()
+      expect(API.browseNotifications).not.toHaveBeenCalled()
+    })
+
+    it('keeps the previous counts and marks the node failed when a fetch fails', async () => {
+      vi.mocked(API.getNodeNotificationStatus).mockResolvedValueOnce(ok()).mockResolvedValueOnce(failed)
+
+      await store.getNodeNotificationStatus('42')
+      const result = await store.getNodeNotificationStatus('99')
+
+      expect(result.success).toBe(false)
+      expect(store.nodeNotificationStatusNodeId).toBe('42')
+      expect(store.nodeNotificationStatus).toEqual(status)
+      expect(store.nodeNotificationStatusFailedNodeId).toBe('99')
+    })
+
+    it('clears another node\'s failure as soon as a fetch for a new node starts', async () => {
+      vi.mocked(API.getNodeNotificationStatus).mockResolvedValueOnce(failed).mockImplementationOnce(pending)
+
+      await store.getNodeNotificationStatus('42')
+      void store.getNodeNotificationStatus('99')
+
+      expect(store.nodeNotificationStatusFailedNodeId).toBeUndefined()
+    })
+
+    it('discards a superseded fetch', async () => {
+      let resolve42: (value: unknown) => void = () => undefined
+      vi.mocked(API.getNodeNotificationStatus)
+        .mockImplementationOnce(() => new Promise((r) => {
+          resolve42 = r
+        }) as never)
+        .mockResolvedValueOnce(ok({ ...status, total: 7 }))
+
+      const call42 = store.getNodeNotificationStatus('42')
+      await store.getNodeNotificationStatus('99')
+      resolve42(ok())
+
+      expect((await call42).success).toBe(false)
+      expect(store.nodeNotificationStatusNodeId).toBe('99')
+      expect(store.nodeNotificationStatus?.total).toBe(7)
     })
   })
 })

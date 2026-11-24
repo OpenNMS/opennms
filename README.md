@@ -47,6 +47,6 @@ Build OpenNMS
 
 For details on how to build OpenNMS, see [Build OpenNMS from source][].
 
-[OpenNMS]:           http://www.opennms.com/
-[Build OpenNMS from source]:  docs/modules/development/pages/build-from-source.adoc
-[Install OpenNMS]:  docs/modules/deployment/pages/core/getting-started.adoc
+[OpenNMS]:           https://www.opennms.com/
+[Build OpenNMS from source]:  https://docs.opennms.com/horizon/latest/development/build-from-source.html
+[Install OpenNMS]:  https://docs.opennms.com/horizon/latest/deployment/core/install.html

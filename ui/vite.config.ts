@@ -22,6 +22,10 @@
 
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { extname, resolve, sep } from 'node:path'
+import { request as httpRequest } from 'node:http'
+import { request as httpsRequest } from 'node:https'
+import type { IncomingMessage } from 'node:http'
+import { isIP } from 'node:net'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 import { loadEnv } from 'vite'
@@ -53,7 +57,7 @@ const pluginDevServer = (extensionId: string, distDir: string): PluginOption => 
       // Accept: */* GET (a <script type="module"> request) — so match on
       // req.originalUrl, which connect preserves through the rewrite,
       // instead of a mount prefix.
-      const prefix = `/plugin-modules/${extensionId}/`
+      const prefix = `${server.config.base}plugin-modules/${extensionId}/`
       return () => {
         server.middlewares.use((req, res, next) => {
           const urlPath = (req.originalUrl ?? req.url ?? '').split('?')[0]
@@ -74,6 +78,82 @@ const pluginDevServer = (extensionId: string, distDir: string): PluginOption => 
   }
 }
 
+// Requests to the instance keep the browser's Host header, so the instance's saved login request
+// points back at the dev server. Node would check an https certificate against that header; name
+// the target instead ('' for an IP, which is checked against the address).
+const devTargetServername = (target: string) => {
+  const host = new URL(target).hostname.replace(/^\[|\]$/g, '')
+  return isIP(host) ? '' : host
+}
+
+// An https instance builds absolute redirects (the post-login one) as https://<dev host>/...,
+// which the http dev server can't answer; make those relative.
+const devLocation = (location: string, host?: string) => {
+  const u = URL.parse(location)
+  return u && host && u.host === host ? u.pathname + u.search + u.hash : location
+}
+
+// `pnpm dev` only: the dev server serves the SPA itself, so a page request without a session never
+// reaches the server's login redirect. On a 401, send that request to the server instead and return
+// its redirect and session cookie, so login comes back to the page as it does in production.
+const devLoginRedirect = (target: string, insecure: boolean): PluginOption => ({
+  name: 'onms-dev-login-redirect',
+  apply: 'serve',
+  configureServer(server) {
+    // Returned hook: runs after Vite's host check (a DNS-rebinding request must not reach the
+    // instance) and after the SPA html fallback, so match on req.originalUrl. The router uses hash
+    // history, so the SPA has no other page URLs.
+    return () => {
+      server.middlewares.use((req, res, next) => {
+        const path = (req.originalUrl ?? req.url ?? '').split('?')[0]
+        if (req.method !== 'GET' || !/^\/opennms\/ui\/(index\.html)?$/.test(path)) {
+          return next()
+        }
+        let done = false
+        const proceed = () => {
+          if (!done) {
+            done = true
+            next()
+          }
+        }
+        const ask = (url: string, onResponse: (r: IncomingMessage) => void) => {
+          const u = new URL(url, target)
+          const r = (u.protocol === 'https:' ? httpsRequest : httpRequest)(u, {
+            headers: { host: req.headers.host ?? '', cookie: req.headers.cookie ?? '', accept: req.headers.accept ?? '' },
+            servername: devTargetServername(target),
+            rejectUnauthorized: !insecure,
+            timeout: 5000
+          }, (r) => {
+            r.resume()
+            onResponse(r)
+          })
+          // instance not reachable: serve the page and let its API calls fail visibly
+          r.on('timeout', () => r.destroy())
+          r.on('error', proceed)
+          r.end()
+        }
+        ask('/opennms/rest/whoami', (whoami) => {
+          if (whoami.statusCode !== 401) {
+            return proceed()
+          }
+          ask('/opennms/ui/index.html', (page) => {
+            if (done || page.statusCode !== 302 || !page.headers.location) {
+              return proceed()
+            }
+            done = true
+            res.statusCode = 302
+            res.setHeader('Location', devLocation(page.headers.location, req.headers.host))
+            if (page.headers['set-cookie']) {
+              res.setHeader('Set-Cookie', page.headers['set-cookie'])
+            }
+            res.end()
+          })
+        })
+      })
+    }
+  }
+})
+
 export default defineConfig(({ mode }) => {
   // loadEnv, not dotenv: it reads the same file set Vite gives app code for
   // import.meta.env (.env, .env.local, .env.[mode], .env.[mode].local, real
@@ -81,8 +161,34 @@ export default defineConfig(({ mode }) => {
   // gates in src (e.g. the VITE_EXAMPLE_PLUGIN route in src/main/main.ts).
   // '' = no VITE_ prefix filter; __dirname matches envDir below.
   const env = loadEnv(mode, __dirname, '')
+  const devProxyTarget = env.VITE_DEV_PROXY_TARGET || 'http://localhost:8980'
+  const devProxyInsecure = env.VITE_DEV_PROXY_INSECURE === 'true'
 
   return {
+    // Dev server: serve the SPA at its deployed path and proxy the rest of /opennms to a running
+    // instance, so the browser sees one origin and the server's session cookie and login redirects work.
+    base: '/opennms/ui/',
+    server: {
+      port: 3001,
+      strictPort: true,
+      proxy: {
+        // everything under /opennms except the SPA itself (/opennms/ui/...); /opennms/ui/assets/ is
+        // the deployed build, where the menu on legacy pages loads its fonts from
+        '^/opennms(?![^/?]|/ui/(?!assets/))': {
+          target: devProxyTarget,
+          ws: true,
+          secure: !devProxyInsecure,
+          ssl: { servername: devTargetServername(devProxyTarget) },
+          configure: (proxy) => {
+            proxy.on('proxyRes', (proxyRes, req) => {
+              if (proxyRes.headers.location) {
+                proxyRes.headers.location = devLocation(proxyRes.headers.location, req.headers.host)
+              }
+            })
+          }
+        }
+      }
+    },
     css: {
       preprocessorOptions: {
         scss: {
@@ -114,6 +220,7 @@ export default defineConfig(({ mode }) => {
         }
       }),
       svgLoader(),
+      devLoginRedirect(devProxyTarget, devProxyInsecure),
       // Gated to match the VITE_EXAMPLE_PLUGIN-gated route in src/main/main.ts
       ...(env.VITE_EXAMPLE_PLUGIN === 'true'
         ? [pluginDevServer('exampleUiExtension', resolve(__dirname, 'packages/onms-ui-example-plugin/dist'))]
@@ -129,6 +236,7 @@ export default defineConfig(({ mode }) => {
     test: {
       dir: './tests',
       globals: true,
+      setupFiles: [fileURLToPath(new URL('./tests/setup.ts', import.meta.url))],
       environment: 'happy-dom',
       css: {
         include: /.+/

@@ -251,6 +251,32 @@ export const ipInterfaceStatus = (isManaged?: string | null) => {
 }
 
 /**
+ * The ifservices status codes, as the legacy availability box worded them. Only 'A' has a figure;
+ * every other code is a reason there is none.
+ *
+ * The source of truth is OnmsMonitoredService.STATUS_MAP (opennms-model). Keep these in step with it.
+ */
+export const MONITORED_SERVICE_STATUS_LABELS: Record<string, string> = {
+  A: 'Managed',
+  U: 'Unmanaged',
+  D: 'Deleted',
+  F: 'Forced Unmanaged',
+  N: 'Not Monitored',
+  R: 'Rescan to Resume',
+  S: 'Rescan to Suspend',
+  X: 'Remotely Monitored'
+}
+
+/** The label for one ifservices status code; an unrecognised code reads 'Unknown (X)' as above. */
+export const monitoredServiceStatus = (code?: string | null) => {
+  if (!code) {
+    return 'Unknown'
+  }
+
+  return MONITORED_SERVICE_STATUS_LABELS[code] ?? `Unknown (${code})`
+}
+
+/**
  * Which directions of flow data an interface carries, as a label that doubles as the Flows
  * column's sort key -- '' (none) < 'Egress' < 'Ingress' < 'Ingress/Egress' sorts the interfaces
  * with flows together at one end, which is the point of sorting that column.

@@ -55,6 +55,10 @@ describe('nodeActionLinks', () => {
     expect(names.indexOf('surveillance-categories')).toBe(names.indexOf('availability') - 1)
   })
 
+  it('links Availability to the Vue Node Availability page', () => {
+    expect(mapLink('availability', node)).toBe('ui/#/node/42/availability')
+  })
+
   it('links Surveillance Categories to the category edit page for the node', () => {
     expect(mapLink('surveillance-categories', node, ADMIN)).toBe('admin/categories.htm?edit&node=42')
   })

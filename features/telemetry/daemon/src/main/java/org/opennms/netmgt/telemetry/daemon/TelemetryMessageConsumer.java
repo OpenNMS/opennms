@@ -45,6 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Sets;
 
 
@@ -61,6 +63,10 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     // Actual adapters implementing the logic
     private final Set<Adapter> adapters = Sets.newHashSet();
 
+    private final String messagesReceivedName;
+
+    private Meter messagesReceived;
+
     public TelemetryMessageConsumer(QueueConfig queueConfig, TelemetrySinkModule sinkModule) throws Exception {
         this(queueConfig,
                 queueConfig.getAdapters(),
@@ -73,10 +79,13 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
         this.queueDef = Objects.requireNonNull(queueDef);
         this.sinkModule = Objects.requireNonNull(sinkModule);
         this.adapterDefs = new ArrayList(adapterDefs);
+        this.messagesReceivedName = MetricRegistry.name("consumers", queueDef.getName(), "messagesReceived");
     }
 
     @PostConstruct
     public void init() throws Exception {
+        messagesReceived = telemetryRegistry.getMetricRegistry().meter(messagesReceivedName);
+
         // Pre-emptively instantiate the adapters
         for (AdapterDefinition adapterDef : adapterDefs) {
             final Adapter adapter;
@@ -97,6 +106,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     public void handleMessage(TelemetryProtos.TelemetryMessageLog messageLog) {
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Telemetryd.LOG_PREFIX)) {
             LOG.trace("Received message log: {}", messageLog);
+            messagesReceived.mark(messageLog.getMessageCount());
             // Handle the message with all of the adapters
             for (Adapter adapter : adapters) {
                 try {
@@ -112,6 +122,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     @PreDestroy
     public void destroy() {
         adapters.forEach((adapter) -> adapter.destroy());
+        telemetryRegistry.getMetricRegistry().remove(messagesReceivedName);
     }
 
     @Override

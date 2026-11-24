@@ -34,9 +34,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+
 public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(SinkDispatchingSyslogReceiver.class);
+
+    public static final String UDP_PACKETS_RECEIVED = "udp.packetsReceived";
+
+    public static final String TCP_PACKETS_RECEIVED = "tcp.packetsReceived";
 
     @Autowired
     private DistPollerDao m_distPollerDao;
@@ -55,8 +62,19 @@ public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
      */
     private volatile SyslogTcpListener m_tcpListener;
 
-    public SinkDispatchingSyslogReceiver(SyslogdConfig config) {
+    private final MetricRegistry m_metricRegistry;
+
+    /** Marked once per UDP datagram. */
+    protected final Meter m_udpPacketsReceived;
+
+    /** Marked once per framed message on the TCP listener. */
+    private final Meter m_tcpPacketsReceived;
+
+    public SinkDispatchingSyslogReceiver(SyslogdConfig config, MetricRegistry metricRegistry) {
         m_config = Objects.requireNonNull(config);
+        m_metricRegistry = Objects.requireNonNull(metricRegistry);
+        m_udpPacketsReceived = m_metricRegistry.meter(UDP_PACKETS_RECEIVED);
+        m_tcpPacketsReceived = m_metricRegistry.meter(TCP_PACKETS_RECEIVED);
     }
 
     @Override
@@ -74,7 +92,7 @@ public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
         try {
             final SyslogTcpConfig tcpConfig = m_config.getTcpConfig();
             if (tcpConfig != null && tcpConfig.isEnabled()) {
-                m_tcpListener = new SyslogTcpListener(tcpConfig, m_config.getListenAddress(), m_dispatcher);
+                m_tcpListener = new SyslogTcpListener(tcpConfig, m_config.getListenAddress(), m_dispatcher, m_tcpPacketsReceived);
                 m_tcpListener.start();
             }
         } catch (Throwable e) {
@@ -115,5 +133,9 @@ public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
 
     public void setMessageDispatcherFactory(MessageDispatcherFactory messageDispatcherFactory) {
         m_messageDispatcherFactory = messageDispatcherFactory;
+    }
+
+    public MetricRegistry getMetricRegistry() {
+        return m_metricRegistry;
     }
 }

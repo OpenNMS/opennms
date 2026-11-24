@@ -23,7 +23,6 @@
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import PrimeVue from 'primevue/config'
-import { OnmsTooltip } from '@opennms/onms-ui'
 import { ConfigurationHelper } from '../src/components/Configuration/ConfigurationHelper'
 import { RequisitionTypes, RequisitionData, ErrorStrings, VMWareFields } from '../src/components/Configuration/copy/requisitionTypes'
 import { test, expect, describe, it } from 'vitest'
@@ -53,7 +52,6 @@ const mockProps = {
 const wrapper = mount(ConfigurationTable, {
   global: {
     plugins: [createTestingPinia(), PrimeVue],
-    directives: { 'onms-tooltip': OnmsTooltip },
     stubs: ['router-link']
   },
   propsData: mockProps
@@ -62,7 +60,6 @@ const wrapper = mount(ConfigurationTable, {
 const provisionDConfig = mount(ProvisionDConfig, {
   global: {
     plugins: [createTestingPinia(), PrimeVue],
-    directives: { 'onms-tooltip': OnmsTooltip },
     stubs: ['router-link']
   }
 })

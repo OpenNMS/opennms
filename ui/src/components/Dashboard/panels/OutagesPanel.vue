@@ -66,7 +66,7 @@ import { onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getCurrentOutages, outageServiceName } from '@/services/outageService'
 import { Outage } from '@/types'
-import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
+import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 import { buildFilterClauses } from '../filter'
 
 const props = defineProps<PanelComponentProps>()
