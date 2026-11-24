@@ -432,10 +432,6 @@ public abstract class EventConstants {
      * OpenNMS finished starting all services.
      */
     public static final String OPENNMS_STARTED_UEI = "uei.opennms.org/internal/opennmsStarted";
-    /**
-     * OpenNMS is about to stop its services.
-     */
-    public static final String OPENNMS_STOPPING_UEI = "uei.opennms.org/internal/opennmsStopping";
 
     /*
      * Reportd UEIs.

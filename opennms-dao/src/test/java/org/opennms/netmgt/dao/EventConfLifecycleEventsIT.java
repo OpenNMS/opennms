@@ -24,9 +24,7 @@ package org.opennms.netmgt.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.opennms.netmgt.events.api.EventConstants.OPENNMS_STARTED_UEI;
-import static org.opennms.netmgt.events.api.EventConstants.OPENNMS_STOPPING_UEI;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -43,8 +41,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * The lifecycle events (NMS-9486) are added by a Liquibase changeset, so check that a migrated database
- * defines them in the internal source with a valid order and a parseable definition.
+ * The started event (NMS-9486) is added by a Liquibase changeset, so check that a migrated database
+ * defines it in the internal source with a valid order and a parseable definition.
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -64,19 +62,17 @@ public class EventConfLifecycleEventsIT {
     private DataSource m_dataSource;
 
     @Test
-    public void lifecycleEventsAreDefinedInTheInternalSource() {
+    public void startedEventIsDefinedInTheInternalSource() {
         final JdbcTemplate jdbc = new JdbcTemplate(m_dataSource);
-        for (final String uei : List.of(OPENNMS_STARTED_UEI, OPENNMS_STOPPING_UEI)) {
-            final Map<String, Object> row = jdbc.queryForMap(
-                    "SELECT s.name, e.event_order, e.enabled, e.xml_content FROM eventconf_events e "
-                            + "JOIN eventconf_sources s ON s.id = e.source_id WHERE e.uei = ?", uei);
-            assertEquals(INTERNAL_SOURCE, row.get("name"));
-            assertNotNull(row.get("event_order"));
-            assertEquals(Boolean.TRUE, row.get("enabled"));
-            final Event event = JaxbUtils.unmarshal(Event.class, (String) row.get("xml_content"));
-            assertEquals(uei, event.getUei());
-            assertEquals("Normal", event.getSeverity());
-        }
+        final Map<String, Object> row = jdbc.queryForMap(
+                "SELECT s.name, e.event_order, e.enabled, e.xml_content FROM eventconf_events e "
+                        + "JOIN eventconf_sources s ON s.id = e.source_id WHERE e.uei = ?", OPENNMS_STARTED_UEI);
+        assertEquals(INTERNAL_SOURCE, row.get("name"));
+        assertNotNull(row.get("event_order"));
+        assertEquals(Boolean.TRUE, row.get("enabled"));
+        final Event event = JaxbUtils.unmarshal(Event.class, (String) row.get("xml_content"));
+        assertEquals(OPENNMS_STARTED_UEI, event.getUei());
+        assertEquals("Normal", event.getSeverity());
 
         final Integer stored = jdbc.queryForObject(
                 "SELECT COUNT(*) FROM eventconf_events e JOIN eventconf_sources s ON s.id = e.source_id WHERE s.name = ?",

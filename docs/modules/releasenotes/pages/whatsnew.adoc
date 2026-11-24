@@ -246,13 +246,10 @@ Previously, provisioning detected LDAP but never polled it, so after upgrading, 
 If you customized `etc/poller-configuration.xml`, the upgrade keeps your copy and LDAP stays unpolled; to poll it, copy the `LDAP` `service` and `monitor` elements from `share/etc-pristine/poller-configuration.xml` into your file.
 To keep LDAP unpolled on an install that uses the shipped file, set the `LDAP` service's `status` to `off`.
 
-=== Startup and shutdown events
-{page-component-title} now sends `uei.opennms.org/internal/opennmsStarted` when all of its services have started, and `uei.opennms.org/internal/opennmsStopping` when it begins to shut down.
-The started event carries the version, the startup time, and a `previousShutdown` parameter: `clean` when the previous run sent its stopping event, `unclean` when it ended without one (for example a crash, a forced kill, or a power loss), and `unknown` when no earlier lifecycle event is stored.
-The stopping event carries the version, the uptime, and the reason for the shutdown: `shutdown signal` when the process receives SIGTERM, which is how `opennms stop`, systemd, and `docker stop` all stop it, `JMX stop request` when the `Manager` MBean is stopped over JMX, and `service startup failed` when a service fails to start.
-If the stopping event cannot be stored within 5 seconds, for example because the database is unavailable, the shutdown continues without it and the next start reports `unclean`.
-`previousShutdown` only reflects runs that finished starting: after a run that fails or crashes during startup, the next start can still report `clean`.
-No notification is configured for these events by default; to be notified of unexpected restarts, create a notification for `opennmsStarted` that matches `previousShutdown` equal to `unclean`.
+=== Startup event
+{page-component-title} now sends `uei.opennms.org/internal/opennmsStarted` when all of its services have started.
+The event carries the version and the startup time in seconds, measured from the start of the JVM.
+No notification is configured for this event by default; to be notified when {page-component-title} restarts, create a notification for `opennmsStarted`.
 
 == Breaking changes
 
