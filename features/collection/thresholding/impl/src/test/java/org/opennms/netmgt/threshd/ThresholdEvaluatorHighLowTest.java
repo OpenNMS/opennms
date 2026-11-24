@@ -715,7 +715,8 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
 
     @Test
     public void testPaddedCustomUeisAreSentTrimmed() {
-        final ThresholdEvaluatorStateHighLow item = highThresholdState(" uei.opennms.org/custom/t ", "\tuei.opennms.org/custom/r\n");
+        final ThresholdEvaluatorStateHighLow item =
+                highThresholdState(" uei.opennms.org/custom/t ", "\tuei.opennms.org/custom/r\n");
 
         assertEquals("uei.opennms.org/custom/t", eventFor(item, Status.TRIGGERED, 100.0).getUei());
         assertEquals("uei.opennms.org/custom/r", eventFor(item, Status.RE_ARMED, 94.0).getUei());
@@ -729,7 +730,8 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
         assertEquals(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, eventFor(item, Status.RE_ARMED, 94.0).getUei());
     }
 
-    private static ThresholdEvaluatorStateHighLow highThresholdState(final String triggeredUei, final String rearmedUei) {
+    private static ThresholdEvaluatorStateHighLow highThresholdState(final String triggeredUei,
+                                                                     final String rearmedUei) {
         final Threshold threshold = new Threshold();
         threshold.setType(ThresholdType.HIGH);
         threshold.setDsName("ds-name");
@@ -742,8 +744,10 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
         return new ThresholdEvaluatorStateHighLow(new ThresholdConfigWrapper(threshold), MockSession.getSession());
     }
 
-    private static Event eventFor(final ThresholdEvaluatorStateHighLow item, final Status status, final double dsValue) {
-        final ThresholdEvaluatorState.ThresholdValues thresholdValues = mock(ThresholdEvaluatorState.ThresholdValues.class);
+    private static Event eventFor(final ThresholdEvaluatorStateHighLow item, final Status status,
+                                  final double dsValue) {
+        final ThresholdEvaluatorState.ThresholdValues thresholdValues =
+                mock(ThresholdEvaluatorState.ThresholdValues.class);
         when(thresholdValues.getThresholdValue()).thenReturn(99.0);
         when(thresholdValues.getRearm()).thenReturn(95.0);
         when(thresholdValues.getTrigger()).thenReturn(1);

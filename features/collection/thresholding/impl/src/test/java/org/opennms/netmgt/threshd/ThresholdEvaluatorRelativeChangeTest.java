@@ -341,7 +341,8 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         when(thresholdValues.getRearm()).thenReturn(95.0);
         when(thresholdValues.getTrigger()).thenReturn(1);
 
-        ThresholdEvaluatorStateRelativeChange item = new ThresholdEvaluatorStateRelativeChange(new ThresholdConfigWrapper(threshold), MockSession.getSession());
+        ThresholdEvaluatorStateRelativeChange item = new ThresholdEvaluatorStateRelativeChange(
+                new ThresholdConfigWrapper(threshold), MockSession.getSession());
         Event event = item.getEventForState(Status.TRIGGERED, new Date(), 100.0, thresholdValues, null);
         assertEquals(EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
     }

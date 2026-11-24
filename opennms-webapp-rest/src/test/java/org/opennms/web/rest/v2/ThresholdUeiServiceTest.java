@@ -259,7 +259,8 @@ public class ThresholdUeiServiceTest {
 
     /** Parses through JAXB, as thresholds.xml is read: the fields are filled without calling the setters. */
     private static Threshold parsedHighThreshold(final String triggeredUei) {
-        return JaxbUtils.unmarshal(Threshold.class, "<threshold xmlns=\"http://xmlns.opennms.org/xsd/config/thresholding\""
+        return JaxbUtils.unmarshal(Threshold.class,
+                "<threshold xmlns=\"http://xmlns.opennms.org/xsd/config/thresholding\""
                 + " type=\"high\" ds-type=\"node\" value=\"1\" rearm=\"0\" trigger=\"1\" ds-name=\"x\""
                 + " triggeredUEI=\"" + triggeredUei + "\"/>");
     }
