@@ -72,6 +72,7 @@ const zenithConnectEnabled = () => useMenuStore().mainMenu?.zenithConnectEnabled
 const snmpRoleMsg = 'Must have the proper SNMP role(s) to access SNMP Config.'
 const thresholdRoleMsg = 'Must have the admin role to access Threshold Configuration.'
 const httpCollectionRoleMsg = 'Must have the admin role to access the HTTP Data Collection Configuration.'
+const jdbcRoleMsg = 'Must have the admin role to access JDBC Data Collection.'
 
 // SNMP Config auto-lookup mode. This sets the store to ensure the lookup tab is active and in lookup mode.
 // Then SnmpConfigLookupTab will get the 'ipAddress' and 'location' query params and perform the lookup.
@@ -537,6 +538,49 @@ const router = createRouter({
       name: 'HTTP Collection URI Edit',
       component: () => import('@/containers/HttpUriEdit.vue'),
       beforeEnter: requireRole('adminRole', httpCollectionRoleMsg)
+    },
+    {
+      path: '/jdbc-data-collection',
+      name: 'JDBC Data Collection',
+      component: () => import('@/containers/JdbcDataCollection.vue'),
+      beforeEnter: requireRole('adminRole', jdbcRoleMsg)
+    },
+    {
+      // Not '/jdbc-data-collection/source/create', so a source named 'create' stays reachable.
+      path: '/jdbc-data-collection/create-source',
+      name: 'JDBC Source Create',
+      component: () => import('@/containers/JdbcSourceCreate.vue'),
+      beforeEnter: requireRole('adminRole', jdbcRoleMsg)
+    },
+    {
+      path: '/jdbc-data-collection/source/:id',
+      name: 'JDBC Source Detail',
+      component: () => import('@/containers/JdbcSourceDetail.vue'),
+      beforeEnter: requireRole('adminRole', jdbcRoleMsg)
+    },
+    {
+      path: '/jdbc-data-collection/source/:id/create-collection',
+      name: 'JDBC Collection Create',
+      component: () => import('@/containers/JdbcCollectionEdit.vue'),
+      beforeEnter: requireRole('adminRole', jdbcRoleMsg)
+    },
+    {
+      path: '/jdbc-data-collection/source/:id/collection/:name/edit',
+      name: 'JDBC Collection Edit',
+      component: () => import('@/containers/JdbcCollectionEdit.vue'),
+      beforeEnter: requireRole('adminRole', jdbcRoleMsg)
+    },
+    {
+      path: '/jdbc-data-collection/source/:id/collection/:name/query/create',
+      name: 'JDBC Query Create',
+      component: () => import('@/containers/JdbcQueryEdit.vue'),
+      beforeEnter: requireRole('adminRole', jdbcRoleMsg)
+    },
+    {
+      path: '/jdbc-data-collection/source/:id/collection/:name/query/:index(\\d+)/edit',
+      name: 'JDBC Query Edit',
+      component: () => import('@/containers/JdbcQueryEdit.vue'),
+      beforeEnter: requireRole('adminRole', jdbcRoleMsg)
     },
     {
       path: '/mib-compiler',

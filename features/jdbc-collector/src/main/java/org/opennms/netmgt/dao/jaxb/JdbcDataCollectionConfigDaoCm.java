@@ -31,13 +31,12 @@ import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 
-import org.json.JSONObject;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.exception.ConfigConversionException;
 import org.opennms.features.config.exception.ConfigNotFoundException;
-import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.EventType;
+import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollection;
@@ -76,38 +75,17 @@ public class JdbcDataCollectionConfigDaoCm extends AbstractCmJaxbConfigDao<JdbcD
 
     /**
      * Registers one handler for all configurations of the schema, so configurations created after startup are
-     * tracked and validated too. Replaces the per-configuration handlers of the base class.
+     * tracked too. Replaces the per-configuration handlers of the base class. The configurations are validated by
+     * {@link JdbcDataCollectionConfigValidator}, which the configuration manager runs on every write.
      */
     @Override
     @PostConstruct
     public void postConstruct() {
         final ConfigUpdateInfo allConfigs = new ConfigUpdateInfo(CONFIG_NAME, ConfigUpdateInfo.WILDCARD_ID);
-        // addValidationCallback() would only cover the configuration 'default'
-        configurationManagerService.registerEventHandler(EventType.VALIDATE, allConfigs, getValidationCallback());
         final Consumer<ConfigUpdateInfo> reload = this::onConfigChanged;
         configurationManagerService.registerEventHandler(EventType.CREATE, allConfigs, reload);
         configurationManagerService.registerEventHandler(EventType.UPDATE, allConfigs, reload);
         configurationManagerService.registerEventHandler(EventType.DELETE, allConfigs, info -> invalidate());
-    }
-
-    /**
-     * Rejects configurations that pass the schema but that the collector can't read, e.g. a column type such as
-     * {@code timeticks} that the schema allows but {@link org.opennms.netmgt.collection.api.AttributeType} doesn't know.
-     */
-    @Override
-    public Consumer<ConfigUpdateInfo> getValidationCallback() {
-        return configUpdateInfo -> {
-            final JSONObject json = configUpdateInfo.getConfigJson();
-            if (json == null) {
-                throw new ValidationException(String.format("%s config %s is empty.",
-                        configUpdateInfo.getConfigName(), configUpdateInfo.getConfigId()));
-            }
-            try {
-                ConfigConvertUtil.jsonToObject(json.toString(), JdbcDataCollectionConfig.class);
-            } catch (final ConfigConversionException e) {
-                throw new ValidationException(ConfigConvertUtil.rootCauseMessage(e));
-            }
-        };
     }
 
     private void onConfigChanged(final ConfigUpdateInfo info) {
@@ -180,7 +158,7 @@ public class JdbcDataCollectionConfigDaoCm extends AbstractCmJaxbConfigDao<JdbcD
                 LOG.debug("Configuration {} was deleted while merging.", configId);
                 continue;
             } catch (ConfigConversionException e) {
-                // e.g. imported by the upgrade, which can't run the validation callback; don't let it break the others
+                // e.g. stored before a schema change; don't let it break the others
                 LOG.error("Configuration {} of {} can not be read and is ignored: {}", configId, CONFIG_NAME, ConfigConvertUtil.rootCauseMessage(e));
                 continue;
             }
@@ -194,6 +172,42 @@ public class JdbcDataCollectionConfigDaoCm extends AbstractCmJaxbConfigDao<JdbcD
             result.merge(config);
         }
         return result;
+    }
+
+    /**
+     * @return a private copy of a stored configuration, safe to modify; the instance {@link #getConfig(String)}
+     *         returns is shared with the collector
+     * @throws ConfigNotFoundException when no configuration with that id is stored
+     */
+    public JdbcDataCollectionConfig copyOfConfig(final String configId) {
+        if (!configurationManagerService.getConfigIds(CONFIG_NAME).contains(configId)) {
+            throw new ConfigNotFoundException("NOT_FOUND: configName: " + CONFIG_NAME + " configId: " + configId);
+        }
+        return ConfigConvertUtil.jsonToObject(ConfigConvertUtil.objectToJson(getConfig(configId)), JdbcDataCollectionConfig.class);
+    }
+
+    /**
+     * Stores a new configuration.
+     *
+     * @throws org.opennms.features.config.exception.ConfigAlreadyExistsException when the id is taken
+     * @throws org.opennms.features.config.exception.ValidationException when the schema rejects it
+     */
+    public void createConfig(final String configId, final JdbcDataCollectionConfig config) {
+        configurationManagerService.registerConfiguration(CONFIG_NAME, configId, new JsonAsString(ConfigConvertUtil.objectToJson(config)));
+    }
+
+    /**
+     * Replaces a stored configuration in full. Unlike {@link #updateConfig(String, JdbcDataCollectionConfig)}, which
+     * merges the top-level keys, this also removes the last collection or the repository.
+     *
+     * @throws org.opennms.features.config.exception.ValidationException when the schema rejects it
+     */
+    public void replaceConfig(final String configId, final JdbcDataCollectionConfig config) {
+        updateConfig(configId, ConfigConvertUtil.objectToJson(config), true);
+    }
+
+    public void deleteConfig(final String configId) {
+        configurationManagerService.unregisterConfiguration(CONFIG_NAME, configId);
     }
 
     @Override

@@ -116,6 +116,10 @@
          headers). Only the admin role can read or change it, the same as /api/v2/httpcollection. -->
     <intercept-url pattern="/rest/cm/http-datacollection-config/**" access="hasAnyRole('ROLE_ADMIN')"/>
     <intercept-url pattern="/rest/cm/http-datacollection-config.*" access="hasAnyRole('ROLE_ADMIN')"/>
+    <!-- The jdbc-datacollection-config CM configurations hold the SQL the JDBC collector runs. Only the admin role can
+         read or change them, the same as /api/v2/jdbc-datacollection. -->
+    <intercept-url pattern="/rest/cm/jdbc-datacollection-config/**" access="hasAnyRole('ROLE_ADMIN')"/>
+    <intercept-url pattern="/rest/cm/jdbc-datacollection-config.*" access="hasAnyRole('ROLE_ADMIN')"/>
 
 
     <!-- Calls to health/overview are always accepted -->
@@ -401,6 +405,21 @@
     <intercept-url pattern="/api/v2/datacollectionconf.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/datacollectionconf/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/datacollectionconf.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+
+    <!-- JDBC data collection configuration holds the SQL the collector runs; admin-only in every method
+         (the service also asserts it in code for the reads, the download and the upload). -->
+    <intercept-url pattern="/api/v2/jdbc-datacollection/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection.*" method="GET" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection/**" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection.*" method="HEAD" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/jdbc-datacollection.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
 
     <!-- MIB compiler manages files on the server filesystem; admin-only -->
     <intercept-url pattern="/api/v2/mibs/**" method="GET" access="hasAnyRole('ROLE_ADMIN')" />

@@ -197,6 +197,20 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <!-- JdbcDataCollectionConfigRestService.jdbcDataCollectionConfigDao: the DAO lives in the jdbc-collector and
+         extends AbstractCmJaxbConfigDao of the config service; webapp-rest declares both as provided. -->
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.jdbc-collector</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config.service</groupId>
+      <artifactId>org.opennms.features.config.service.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>org.opennms.features.surveillance-views</artifactId>
