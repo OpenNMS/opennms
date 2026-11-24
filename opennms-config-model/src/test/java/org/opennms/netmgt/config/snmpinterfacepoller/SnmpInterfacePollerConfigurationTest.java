@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class SnmpInterfacePollerConfigurationTest extends XmlTestNoCastor<SnmpInterfacePollerConfiguration> {
+public class SnmpInterfacePollerConfigurationTest extends XmlTest<SnmpInterfacePollerConfiguration> {
 
     public SnmpInterfacePollerConfigurationTest(SnmpInterfacePollerConfiguration sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/snmp-interface-poller-configuration.xsd");

@@ -26,12 +26,12 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.wsman.WSManConstants;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.config.wsman.Collection.IncludeAllSystemDefinitions;
 
-public class WsmanDatacollectionConfigTest extends XmlTestNoCastor<WsmanDatacollectionConfig> {
+public class WsmanDatacollectionConfigTest extends XmlTest<WsmanDatacollectionConfig> {
 
     public WsmanDatacollectionConfigTest(WsmanDatacollectionConfig sampleObject, Object sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

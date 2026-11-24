@@ -46,7 +46,6 @@ const mountMenubar = async () => {
     attachTo: document.body,
     global: {
       plugins: [PrimeVue, createTestingPinia({ stubActions: false })],
-      directives: { 'onms-tooltip': {}},
       stubs: {
         UserNotificationsMenuItem: NotificationsStub,
         UserSelfServiceMenuItem: SelfServiceStub

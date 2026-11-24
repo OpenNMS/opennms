@@ -1,0 +1,41 @@
+= LDAP Detector
+:description: Learn how the LdapDetector in OpenNMS {page-component-title} finds LDAP services for monitoring in your network.
+
+The LdapDetector finds LDAP directory services for monitoring in your network.
+It opens a TCP connection to the configured port, and detects the service when an LDAP client connection to that port succeeds.
+The detector does not bind or search, so it does not need credentials.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.simple.LdapDetector`
+|===
+
+== Configuration and use
+
+The LdapDetector uses the xref:reference:provisioning/detectors.adoc#ref-detector-provisioning-common-parameters[common configuration parameters].
+
+.Parameters for the LdapDetector
+[options="header"]
+[cols="1,4,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| TCP port of the LDAP service.
+| 389
+|===
+
+== Example configuration
+
+The following detector finds LDAP services on the default port:
+
+[source, xml]
+----
+<detector name="LDAP" class="org.opennms.netmgt.provision.detector.simple.LdapDetector">
+    <parameter key="port" value="389"/>
+</detector>
+----

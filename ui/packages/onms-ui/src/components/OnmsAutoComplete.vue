@@ -11,6 +11,7 @@
     :forceSelection="forceSelection"
     :fluid="fluid"
     :dropdown="dropdown"
+    :completeOnFocus="completeOnFocus"
     :multiple="multiple"
     :pt="unsafePt as never"
     @update:modelValue="emit('update:modelValue', $event)"
@@ -62,6 +63,7 @@ withDefaults(defineProps<{
   // explicit false would break that inheritance
   fluid?: boolean
   dropdown?: boolean
+  completeOnFocus?: boolean
   // multiple: undefined preserves PrimeVue's default; when true, the model
   // switches to an array of selected values (chips mode)
   multiple?: boolean
@@ -77,6 +79,7 @@ withDefaults(defineProps<{
   forceSelection: false,
   fluid: undefined,
   dropdown: undefined,
+  completeOnFocus: false,
   multiple: undefined,
   unsafePt: undefined
 })

@@ -1,0 +1,116 @@
+<template>
+  <div class="group-header">
+    <div class="left">
+      <OnmsButton
+        variant="text"
+        data-test="threshold-group-back"
+        @click="router.push('/threshold-config')"
+      >
+        <OnmsIcon :icon="ArrowBack" />
+        Go Back
+      </OnmsButton>
+      <div class="titles">
+        <h2 data-test="threshold-group-name">
+          {{ group.name }}
+          <OnmsIconButton
+            :icon="InfoIcon"
+            iconSize="1.2em"
+            class="info-icon-button"
+            title="About threshold groups"
+            aria-label="About threshold groups"
+            data-test="threshold-group-info-icon"
+            @click="isHelpVisible = true"
+          />
+        </h2>
+        <p class="subtitle" data-test="threshold-group-repository">{{ group.rrdRepository }}</p>
+      </div>
+      <OnmsTag v-if="group.readOnly" value="Read only" data-test="threshold-group-readonly" />
+    </div>
+
+    <div class="right">
+      <OnmsButton
+        variant="outlined"
+        data-test="threshold-group-edit"
+        :disabled="group.readOnly"
+        @click="emit('edit')"
+      >
+        Edit group
+      </OnmsButton>
+      <OnmsButton
+        variant="outlined"
+        severity="danger"
+        data-test="threshold-group-delete"
+        :disabled="group.readOnly"
+        @click="emit('delete')"
+      >
+        Delete group
+      </OnmsButton>
+    </div>
+
+    <ThresholdHelpDialog
+      :visible="isHelpVisible"
+      title="Threshold groups"
+      :text="GROUP_HELP"
+      @close="isHelpVisible = false"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import ThresholdHelpDialog from '@/components/ThresholdConfiguration/Common/ThresholdHelpDialog.vue'
+import { GROUP_HELP } from '@/lib/thresholdHelpText'
+import type { ThresholdGroup } from '@/types/thresholdConfig'
+import { OnmsButton, OnmsIcon, OnmsIconButton, OnmsTag } from '@opennms/onms-ui'
+import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
+
+defineProps<{
+  group: ThresholdGroup
+}>()
+
+const emit = defineEmits<{
+  edit: []
+  delete: []
+}>()
+
+const router = useRouter()
+const isHelpVisible = ref(false)
+</script>
+
+<style lang="scss" scoped>
+@use '@/components/ThresholdConfiguration/Common/info-icon-button' as *;
+
+.info-icon-button {
+  @include info-icon-button;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+  margin-bottom: 1.25em;
+
+  .left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .titles h2 {
+    margin: 0;
+  }
+
+  .subtitle {
+    margin: 0;
+    color: var(--p-text-muted-color);
+  }
+
+  .right {
+    display: flex;
+    gap: 0.5em;
+  }
+}
+</style>

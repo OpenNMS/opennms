@@ -24,12 +24,15 @@ package org.opennms.web.rest.v1;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,8 +40,11 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.category.AvailabilityNode;
@@ -127,6 +133,61 @@ public class AvailabilityRestServiceIT extends AbstractSpringJerseyRestTestCase 
         JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 
+    /**
+     * The window parameters are plumbing tests, not arithmetic tests. In the populated database no
+     * interface is managed, so getPercentAvailabilityInWindow matches no row and every figure is
+     * window-independent -- a windowed request cannot show different numbers here. The arithmetic is
+     * covered against real windows by CategoryModelIT.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeWithWindowMatchesUnwindowed() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        final long end = System.currentTimeMillis();
+        final long start = end - 86_400_000L;
+
+        MockHttpServletRequest request = createRequest(m_servletContext, GET,
+                "/availability/nodes/" + nodeId, parseParamData("start=" + start + "&end=" + end),
+                getUser(), getUserRoles());
+        request.addHeader("Accept", MediaType.APPLICATION_JSON);
+        final String json = sendRequest(request, 200);
+
+        final JSONObject expectedObject = new JSONObject(
+                IOUtils.toString(new FileInputStream("src/test/resources/v1/availability_node.json")));
+        JSONAssert.assertEquals(expectedObject, new JSONObject(json), true);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeWithOnlyEndDefaultsStart() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        sendRequest(GET, "/availability/nodes/" + nodeId,
+                parseParamData("end=" + System.currentTimeMillis()), 200);
+    }
+
+    /**
+     * 400 rather than 500 is the point of this test: it is what proves the window is validated
+     * before getNode's catch-all, which rewraps everything as a 500. An empty window would otherwise
+     * reach getPercentAvailabilityInWindow, which divides by the window length.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeRejectsEmptyWindow() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        final long now = System.currentTimeMillis();
+        sendRequest(GET, "/availability/nodes/" + nodeId,
+                parseParamData("start=" + now + "&end=" + now), 400);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeRejectsInvertedWindow() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        final long now = System.currentTimeMillis();
+        sendRequest(GET, "/availability/nodes/" + nodeId,
+                parseParamData("start=" + now + "&end=" + (now - 3_600_000L)), 400);
+    }
+
     @Test
     @JUnitTemporaryDatabase
     public void testGetAvailabilityNode() throws Exception {
@@ -142,5 +203,175 @@ public class AvailabilityRestServiceIT extends AbstractSpringJerseyRestTestCase 
         AvailabilityNode restNode = getXmlObject(JaxbUtils.getContextFor(AvailabilityNode.class), url, 200, AvailabilityNode.class);
         Assert.assertNotNull(restNode);
         Assert.assertTrue(an.toString() + " != " + restNode.toString(), an.equals(restNode));
+    }
+
+    /**
+     * Paging is over the node's interfaces in address order (IPv4 before IPv6), and
+     * ipinterfaceCount is the total either way, for a paginator.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodePagesInterfaces() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+
+        final JSONObject first = getNodeJson(nodeId, "limit=2&offset=0");
+        Assert.assertEquals(4, first.getInt("ipinterfaceCount"));
+        Assert.assertEquals(List.of("192.168.1.1", "192.168.1.2"), addresses(first));
+
+        final JSONObject second = getNodeJson(nodeId, "limit=2&offset=2");
+        Assert.assertEquals(4, second.getInt("ipinterfaceCount"));
+        Assert.assertEquals(List.of("192.168.1.3", "fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5"), addresses(second));
+
+        // The node's own figures cover every interface, whichever page was asked for.
+        Assert.assertEquals(first.getDouble("availability"), second.getDouble("availability"), 0.0);
+        Assert.assertEquals(first.getInt("service-count"), second.getInt("service-count"));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodePastTheLastPageIsEmpty() throws Exception {
+        final JSONObject past = getNodeJson(m_populator.getNode1().getId(), "limit=2&offset=10");
+
+        Assert.assertEquals(4, past.getInt("ipinterfaceCount"));
+        Assert.assertTrue(addresses(past).isEmpty());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeRejectsNegativePaging() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        sendRequest(GET, "/availability/nodes/" + nodeId, parseParamData("limit=-1"), 400);
+        sendRequest(GET, "/availability/nodes/" + nodeId, parseParamData("offset=-1"), 400);
+    }
+
+    /**
+     * An interface with no monitored services has nothing for the availability panel to show, which
+     * drops it. Paged over every interface, a page of such interfaces came back empty -- here the
+     * unmonitored 192.168.1.0 sorts first and would fill the start of page 1 -- so withServices leaves
+     * them out before counting and paging.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeWithServicesPagesOnlyMonitoredInterfaces() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        m_template.execute(status -> {
+            final OnmsNode node = m_populator.getNodeDao().get(nodeId);
+            m_populator.getIpInterfaceDao().save(new OnmsIpInterface("192.168.1.0", node));
+            m_populator.getIpInterfaceDao().flush();
+            return null;
+        });
+
+        final JSONObject all = getNodeJson(nodeId, "limit=2&offset=0");
+        Assert.assertEquals(5, all.getInt("ipinterfaceCount"));
+        Assert.assertEquals(List.of("192.168.1.0", "192.168.1.1"), addresses(all));
+
+        final JSONObject monitored = getNodeJson(nodeId, "limit=2&offset=0&withServices=true");
+        Assert.assertEquals(4, monitored.getInt("ipinterfaceCount"));
+        Assert.assertEquals(List.of("192.168.1.1", "192.168.1.2"), addresses(monitored));
+    }
+
+    // offset + limit overflows an int here; the remaining interfaces come back, not a 500.
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeWithAHugeLimit() throws Exception {
+        final JSONObject node = getNodeJson(m_populator.getNode1().getId(), "limit=2147483647&offset=1");
+
+        Assert.assertEquals(4, node.getInt("ipinterfaceCount"));
+        Assert.assertEquals(List.of("192.168.1.2", "192.168.1.3", "fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5"), addresses(node));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeReportsServiceStatus() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        final int forcedId = m_template.execute(status -> {
+            final OnmsMonitoredService svc = m_populator.getMonitoredServiceDao()
+                    .get(nodeId, InetAddressUtils.addr("192.168.1.1"), "SNMP");
+            svc.setStatus("F");
+            m_populator.getMonitoredServiceDao().saveOrUpdate(svc);
+            m_populator.getMonitoredServiceDao().flush();
+            return svc.getId();
+        });
+
+        final JSONObject node = getNodeJson(nodeId, "");
+        int seen = 0;
+        final JSONArray interfaces = node.getJSONArray("ipinterfaces");
+        for (int i = 0; i < interfaces.length(); i++) {
+            final JSONArray services = interfaces.getJSONObject(i).getJSONArray("services");
+            for (int j = 0; j < services.length(); j++) {
+                final JSONObject svc = services.getJSONObject(j);
+                Assert.assertEquals(svc.getInt("id") == forcedId ? "F" : "A", svc.getString("status"));
+                seen++;
+            }
+        }
+        Assert.assertEquals(6, seen);
+    }
+
+    /**
+     * Each interface carries its ipinterface.ismanaged code, so a client can name an unmanaged
+     * interface ("Forced Unmanaged") rather than show the -1 of its availability as "Not Monitored".
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeReportsInterfaceIsManaged() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        final int forcedId = m_template.execute(status -> {
+            final OnmsIpInterface iface = m_populator.getIpInterfaceDao()
+                    .findByNodeIdAndIpAddress(nodeId, "192.168.1.2");
+            iface.setIsManaged("F");
+            m_populator.getIpInterfaceDao().saveOrUpdate(iface);
+            m_populator.getIpInterfaceDao().flush();
+            return iface.getId();
+        });
+
+        final JSONArray interfaces = getNodeJson(nodeId, "").getJSONArray("ipinterfaces");
+        Assert.assertEquals(4, interfaces.length());
+        for (int i = 0; i < interfaces.length(); i++) {
+            final JSONObject iface = interfaces.getJSONObject(i);
+            Assert.assertEquals(iface.getInt("id") == forcedId ? "F" : "M", iface.getString("is-managed"));
+        }
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeManagedServiceCountIgnoresPaging() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        final long expected = m_template.execute(status -> m_populator.getNodeDao().get(nodeId).getIpInterfaces().stream()
+                .filter(iface -> "M".equals(iface.getIsManaged()))
+                .flatMap(iface -> iface.getMonitoredServices().stream())
+                .filter(svc -> "A".equals(svc.getStatus()))
+                .count());
+        Assert.assertTrue(expected > 0);
+
+        Assert.assertEquals(expected, getNodeJson(nodeId, "").getLong("managed-service-count"));
+        Assert.assertEquals(expected, getNodeJson(nodeId, "limit=1&offset=0").getLong("managed-service-count"));
+        Assert.assertEquals(expected, getNodeJson(nodeId, "limit=1&offset=1").getLong("managed-service-count"));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeReportsOverallThresholds() throws Exception {
+        final JSONObject node = getNodeJson(m_populator.getNode1().getId(), "");
+        Assert.assertEquals(99.99, node.getDouble("normal-threshold"), 0.0001);
+        Assert.assertEquals(97.0, node.getDouble("warning-threshold"), 0.0001);
+    }
+
+    private JSONObject getNodeJson(final int nodeId, final String query) throws Exception {
+        final MockHttpServletRequest request = createRequest(m_servletContext, GET,
+                "/availability/nodes/" + nodeId, parseParamData(query), getUser(), getUserRoles());
+        // The harness sets the parameters but not the query string, and with more than one parameter
+        // CXF does not see them all without it.
+        request.setQueryString(query);
+        request.addHeader("Accept", MediaType.APPLICATION_JSON);
+        return new JSONObject(sendRequest(request, 200));
+    }
+
+    private static List<String> addresses(final JSONObject node) {
+        final List<String> result = new ArrayList<>();
+        final JSONArray interfaces = node.optJSONArray("ipinterfaces");
+        for (int i = 0; interfaces != null && i < interfaces.length(); i++) {
+            result.add(interfaces.getJSONObject(i).getString("address"));
+        }
+        return result;
     }
 }

@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class AlarmDataXmlTest extends XmlTestNoCastor<AlarmData> {
+public class AlarmDataXmlTest extends XmlTest<AlarmData> {
     public AlarmDataXmlTest(AlarmData sampleObject, Object sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);
     }

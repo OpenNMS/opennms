@@ -1,0 +1,1094 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- Native-inet IP filtering: a garbage-tolerant cast function plus
+         expression indexes over the text ipaddr columns. IplikeSqlTranslator
+         emits predicates over opennms_safe_inet(ipaddr) so PostgreSQL answers
+         iplike filter expressions through these indexes instead of evaluating
+         iplike() per row. The stored values stay text; IPv6 addresses carrying
+         a zone id (which the inet type cannot represent) index as the
+         zone-stripped address, and match expressions that constrain the zone
+         are not translated and call iplike() instead. -->
+
+    <!-- Not runOnChange: the indexes below are built from this function, and
+         replacing it does not rebuild them. A change to its body needs a new
+         changeset that also reindexes every *_safe_inet_idx below. -->
+    <changeSet author="mmassengill" id="37.0.0-opennms-safe-inet-function">
+        <createProcedure>
+CREATE OR REPLACE FUNCTION opennms_safe_inet(i_ipaddress text) RETURNS inet AS $safeinet$
+-- the zone id is stripped for IPv6 only: zone ids are IPv6-only, and
+-- iplike() rejects IPv4 values that carry one. Leading zeros in IPv4
+-- octets are accepted (010 is 10), as iplike() does.
+SELECT CASE
+  WHEN i_ipaddress ~ '^0*(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.0*(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}$'
+  THEN i_ipaddress::inet
+  WHEN split_part(i_ipaddress, '%', 1) ~ '^[0-9a-fA-F]{1,4}(:[0-9a-fA-F]{1,4}){7}$'
+  THEN split_part(i_ipaddress, '%', 1)::inet
+  ELSE NULL
+END
+$safeinet$ LANGUAGE sql IMMUTABLE PARALLEL SAFE RETURNS NULL ON NULL INPUT;
+        </createProcedure>
+        <rollback>
+            <sql>DROP FUNCTION IF EXISTS opennms_safe_inet(text);</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="mmassengill" id="37.0.0-ipinterface-safe-inet-index">
+        <sql>CREATE INDEX IF NOT EXISTS ipinterface_safe_inet_idx ON ipinterface (opennms_safe_inet(ipaddr));</sql>
+        <rollback>
+            <sql>DROP INDEX IF EXISTS ipinterface_safe_inet_idx;</sql>
+        </rollback>
+    </changeSet>
+
+    <!-- Plain rather than partial, so ANALYZE collects statistics on the
+         expression and the planner estimates multi-range filters well.
+         Both tables are small and see few inserts. -->
+    <changeSet author="mmassengill" id="37.0.0-alarms-safe-inet-index">
+        <sql>CREATE INDEX IF NOT EXISTS alarms_safe_inet_idx ON alarms (opennms_safe_inet(ipaddr));</sql>
+        <rollback>
+            <sql>DROP INDEX IF EXISTS alarms_safe_inet_idx;</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="mmassengill" id="37.0.0-notifications-safe-inet-index">
+        <sql>CREATE INDEX IF NOT EXISTS notifications_safe_inet_idx ON notifications (opennms_safe_inet(interfaceid));</sql>
+        <rollback>
+            <sql>DROP INDEX IF EXISTS notifications_safe_inet_idx;</sql>
+        </rollback>
+    </changeSet>
+
+    <!-- Partial: most events carry no ipaddr, and skipping them keeps the
+         per-insert index-maintenance cost on this high-churn table low.
+         Translated predicates always include "ipaddr IS NOT NULL" so the
+         planner can prove this index applicable.
+         The existing events_ipaddr_idx btree deliberately stays: the v1
+         event-list exact-interface filter (IPADDR = ?), ORDER BY ipaddr
+         sorting, and the REST v2 ipinterface join still compare the text
+         column directly and would regress to sequential scans without it. -->
+    <changeSet author="mmassengill" id="37.0.0-events-safe-inet-index">
+        <sql>CREATE INDEX IF NOT EXISTS events_safe_inet_idx ON events (opennms_safe_inet(ipaddr)) WHERE ipaddr IS NOT NULL;</sql>
+        <rollback>
+            <sql>DROP INDEX IF EXISTS events_safe_inet_idx;</sql>
+        </rollback>
+    </changeSet>
+
+    <!-- ANALYZE collects no statistics for a partial index's expression.
+         Without them the planner assumes each translated range matches 0.5%
+         of events, abandons the index for filters with many ranges, and
+         JIT-compiles the predicate. -->
+    <changeSet author="mmassengill" id="37.0.0-events-safe-inet-statistics">
+        <sql>CREATE STATISTICS IF NOT EXISTS events_safe_inet_stats ON (opennms_safe_inet(ipaddr)) FROM events;</sql>
+        <rollback>
+            <sql>DROP STATISTICS IF EXISTS events_safe_inet_stats;</sql>
+        </rollback>
+    </changeSet>
+
+    <!-- The new expression statistics and index statistics stay empty until
+         the next ANALYZE, which install -dis only runs with the vacuum flag. -->
+    <changeSet author="mmassengill" id="37.0.0-safe-inet-analyze">
+        <sql>ANALYZE ipinterface; ANALYZE alarms; ANALYZE notifications; ANALYZE events;</sql>
+        <rollback/>
+    </changeSet>
+
+    <!-- Users, groups, security roles and on-call roles, until now kept in users.xml, groups.xml and
+         security-roles.properties. Mapped by the entities in org.opennms.netmgt.model.usermgmt.
+
+         Two kinds of "role" live here: security roles (ROLE_ADMIN, ...), the Spring Security authorities
+         granted to users, and on-call roles, the notification rotas of groups.xml.
+
+         The on-call schedule strings (duty schedules, begins/ends/day) are kept in their XML formats, so the
+         migration from the files is a lossless copy and the existing parsers keep working. -->
+
+    <!-- The row versions of the four aggregates (users, groups, security roles, on-call roles) all come from this one
+         sequence, so a version is unique across the four tables and is never reused, even by an object that is
+         deleted and created again under the same name.
+         The sequence stops at the largest integer, like the version columns, so running out fails as a sequence limit. -->
+    <changeSet author="stheleman" id="37.0.0-usermgmt-row-version-sequence">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="usermgmt_row_version_seq"/>
+            </not>
+        </preConditions>
+
+        <createSequence sequenceName="usermgmt_row_version_seq" startValue="1" incrementBy="1" maxValue="2147483647"/>
+
+        <rollback>
+            <dropSequence sequenceName="usermgmt_row_version_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- Security roles: the built-in ones (seeded below; SecurityRoleDao refuses to delete them) and custom ones -->
+    <changeSet author="stheleman" id="37.0.0-security-roles-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="security_roles"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="security_roles">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <!-- the full authority name, ROLE_ included -->
+            <column name="name" type="varchar(128)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_security_roles_name"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="builtin" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_time" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp with time zone"/>
+            <!-- from usermgmt_row_version_seq, kept by the triggers of 37.0.0-usermgmt-row-versions; the REST ETag -->
+            <column name="version" type="integer" defaultValueComputed="nextval('usermgmt_row_version_seq')">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="security_roles_id_seq" startValue="1" incrementBy="1"/>
+
+        <rollback>
+            <dropTable tableName="security_roles"/>
+            <dropSequence sequenceName="security_roles_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- The built-in security roles; must match SecurityRoles.BUILTIN_ROLES (SecurityRoleDaoIT checks).
+         Seeds only an empty table, which it always is here: the changeset above just created it. -->
+    <changeSet author="stheleman" id="37.0.0-security-roles-builtin">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM security_roles
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_USER"/>
+            <column name="description" value="Default permissions for a new user to interact with the web UI. Allows users to escalate and acknowledge alarms and notifications."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_ADMIN"/>
+            <column name="description" value="Permissions to create, read, update, and delete items via the web UI and the REST API (see ROLE_FILESYSTEM_EDITOR for exceptions)."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_READONLY"/>
+            <column name="description" value="Permissions only to read information in the web UI. Does not allow user to change alarm states or notifications."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_DASHBOARD"/>
+            <column name="description" value="Permissions only to view the dashboard."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_DELEGATE"/>
+            <column name="description" value="Permissions to perform actions (such as acknowledging an alarm) on behalf of another user."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_RTC"/>
+            <column name="description" value="Permissions to exchange information with the Real-Time Console for availability calculations."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_PROVISION"/>
+            <column name="description" value="Permissions to use the provisioning system and configure SNMP to access management information from devices."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_REST"/>
+            <column name="description" value="Permissions to interact with the REST API."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_ASSET_EDITOR"/>
+            <column name="description" value="Permissions only to update asset records from nodes."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_FILESYSTEM_EDITOR"/>
+            <column name="description" value="Permissions only to view and update file configuration data via the REST API."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_MOBILE"/>
+            <column name="description" value="Permissions to use the OpenNMS COMPASS mobile application to acknowledge alarms and notifications via the REST API."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_JMX"/>
+            <column name="description" value="Permissions to retrieve JMX metrics."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_MINION"/>
+            <column name="description" value="Minimum permissions required for a Minion to operate."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_REPORT_DESIGNER"/>
+            <column name="description" value="Permissions to manage reports in the web UI and REST API."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_FLOW_MANAGER"/>
+            <column name="description" value="Permissions to edit flow classifications."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+        <insert tableName="security_roles">
+            <column name="id" valueComputed="nextval('security_roles_id_seq')"/>
+            <column name="name" value="ROLE_DEVICE_CONFIG_BACKUP"/>
+            <column name="description" value="Permissions to view and trigger device configuration backups."/>
+            <column name="builtin" valueBoolean="true"/>
+        </insert>
+
+        <rollback>
+            <delete tableName="security_roles"><where>builtin = true</where></delete>
+        </rollback>
+    </changeSet>
+
+    <!-- Users -->
+    <changeSet author="stheleman" id="37.0.0-users-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="users">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <!-- case-sensitive, as in users.xml -->
+            <column name="username" type="varchar(256)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_users_username"/>
+            </column>
+            <column name="full_name" type="varchar(256)"/>
+            <column name="comments" type="text"/>
+            <column name="password_hash" type="varchar(512)"/>
+            <column name="password_salted" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tui_pin" type="varchar(32)"/>
+            <column name="time_zone_id" type="varchar(64)"/>
+            <column name="created_time" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp with time zone"/>
+            <!-- from usermgmt_row_version_seq, kept by the triggers of 37.0.0-usermgmt-row-versions; the REST ETag -->
+            <column name="version" type="integer" defaultValueComputed="nextval('usermgmt_row_version_seq')">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="users_id_seq" startValue="1" incrementBy="1"/>
+
+        <rollback>
+            <dropTable tableName="users"/>
+            <dropSequence sequenceName="users_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- How users are reached, at most one contact per type -->
+    <changeSet author="stheleman" id="37.0.0-user-contacts-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_contacts"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="user_contacts">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="contact_type" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="info" type="varchar(256)"/>
+            <column name="service_provider" type="varchar(256)"/>
+        </createTable>
+
+        <createSequence sequenceName="user_contacts_id_seq" startValue="1" incrementBy="1"/>
+
+        <addForeignKeyConstraint baseTableName="user_contacts" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_user_contacts_user_id" onDelete="CASCADE"/>
+
+        <!-- deferred, so a contact can be replaced by one of the same type in a single transaction -->
+        <addUniqueConstraint tableName="user_contacts" columnNames="user_id, contact_type"
+                             constraintName="uk_user_contacts_user_type"
+                             deferrable="true" initiallyDeferred="true"/>
+
+        <!-- the ContactType enum -->
+        <sql>
+            ALTER TABLE user_contacts ADD CONSTRAINT ck_user_contacts_contact_type
+                CHECK (contact_type IN ('email', 'pagerEmail', 'xmppAddress', 'microblog', 'numericPage', 'textPage', 'workPhone', 'mobilePhone', 'homePhone', 'snmpTrap'))
+        </sql>
+
+        <rollback>
+            <dropTable tableName="user_contacts"/>
+            <dropSequence sequenceName="user_contacts_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- The duty schedules of a user, in order, in the users.xml format (MoTuWe800-1700) -->
+    <changeSet author="stheleman" id="37.0.0-user-duty-schedules-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_duty_schedules"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="user_duty_schedules">
+            <column name="user_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="schedule" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="user_duty_schedules" columnNames="user_id, position" constraintName="pk_user_duty_schedules"/>
+
+        <addForeignKeyConstraint baseTableName="user_duty_schedules" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_user_duty_schedules_user_id" onDelete="CASCADE"/>
+
+        <rollback>
+            <dropTable tableName="user_duty_schedules"/>
+        </rollback>
+    </changeSet>
+
+    <!-- The security roles granted to each user -->
+    <changeSet author="stheleman" id="37.0.0-user-security-roles-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_security_roles"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="user_security_roles">
+            <column name="user_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="user_security_roles" columnNames="user_id, role_id" constraintName="pk_user_security_roles"/>
+
+        <addForeignKeyConstraint baseTableName="user_security_roles" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_user_security_roles_user_id" onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="user_security_roles" baseColumnNames="role_id"
+                                 referencedTableName="security_roles" referencedColumnNames="id"
+                                 constraintName="fk_user_security_roles_role_id" onDelete="CASCADE"/>
+
+        <createIndex tableName="user_security_roles" indexName="idx_user_security_roles_role_id">
+            <column name="role_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="user_security_roles"/>
+        </rollback>
+    </changeSet>
+
+    <!-- Groups of users. category_group.groupId refers to groups by name, without a foreign key, as before -->
+    <changeSet author="stheleman" id="37.0.0-groups-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="groups"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="groups">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_groups_name"/>
+            </column>
+            <column name="default_map" type="varchar(256)"/>
+            <column name="comments" type="text"/>
+            <column name="created_time" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp with time zone"/>
+            <!-- from usermgmt_row_version_seq, kept by the triggers of 37.0.0-usermgmt-row-versions; the REST ETag -->
+            <column name="version" type="integer" defaultValueComputed="nextval('usermgmt_row_version_seq')">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="groups_id_seq" startValue="1" incrementBy="1"/>
+
+        <rollback>
+            <dropTable tableName="groups"/>
+            <dropSequence sequenceName="groups_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- groups.name has 256 characters, and category_group.groupid (1.10.1) held 64 -->
+    <changeSet author="stheleman" id="37.0.0-category-group-groupid-length">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">SELECT count(*) FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'category_group' AND column_name = 'groupid' AND character_maximum_length &lt; 256</sqlCheck>
+        </preConditions>
+
+        <modifyDataType tableName="category_group" columnName="groupid" newDataType="varchar(256)"/>
+
+        <!-- Kept at 256: names longer than 64 may be stored by now, and the 36.x code works with the wider column -->
+        <rollback/>
+    </changeSet>
+
+    <!-- The members of each group, in order -->
+    <changeSet author="stheleman" id="37.0.0-group-members-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="group_members"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="group_members">
+            <column name="group_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="group_members" columnNames="group_id, position" constraintName="pk_group_members"/>
+
+        <addForeignKeyConstraint baseTableName="group_members" baseColumnNames="group_id"
+                                 referencedTableName="groups" referencedColumnNames="id"
+                                 constraintName="fk_group_members_group_id" onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="group_members" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_group_members_user_id" onDelete="CASCADE"/>
+
+        <!-- deferred: Hibernate reorders members by rewriting user_id position by position, so two
+             members briefly share a user until the statement for the other position runs -->
+        <addUniqueConstraint tableName="group_members" columnNames="group_id, user_id"
+                             constraintName="uk_group_members_group_user"
+                             deferrable="true" initiallyDeferred="true"/>
+
+        <createIndex tableName="group_members" indexName="idx_group_members_user_id">
+            <column name="user_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="group_members"/>
+        </rollback>
+    </changeSet>
+
+    <!-- The duty schedules of a group, in order, in the groups.xml format (MoTuWe800-1700) -->
+    <changeSet author="stheleman" id="37.0.0-group-duty-schedules-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="group_duty_schedules"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="group_duty_schedules">
+            <column name="group_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="schedule" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="group_duty_schedules" columnNames="group_id, position" constraintName="pk_group_duty_schedules"/>
+
+        <addForeignKeyConstraint baseTableName="group_duty_schedules" baseColumnNames="group_id"
+                                 referencedTableName="groups" referencedColumnNames="id"
+                                 constraintName="fk_group_duty_schedules_group_id" onDelete="CASCADE"/>
+
+        <rollback>
+            <dropTable tableName="group_duty_schedules"/>
+        </rollback>
+    </changeSet>
+
+    <!-- On-call roles: the notification rotas of groups.xml -->
+    <changeSet author="stheleman" id="37.0.0-oncall-roles-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="oncall_roles"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="oncall_roles">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_oncall_roles_name"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="membership_group_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <!-- optional: the user notified when nobody is scheduled; without one, nobody is notified then -->
+            <column name="supervisor_user_id" type="integer"/>
+            <column name="created_time" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp with time zone"/>
+            <!-- from usermgmt_row_version_seq, kept by the triggers of 37.0.0-usermgmt-row-versions; the REST ETag -->
+            <column name="version" type="integer" defaultValueComputed="nextval('usermgmt_row_version_seq')">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="oncall_roles_id_seq" startValue="1" incrementBy="1"/>
+
+        <!-- RESTRICT: a group or user a role depends on cannot be deleted; groups.xml allowed both. A supervisor is
+             changed or removed on the role before the user can be deleted. -->
+        <addForeignKeyConstraint baseTableName="oncall_roles" baseColumnNames="membership_group_id"
+                                 referencedTableName="groups" referencedColumnNames="id"
+                                 constraintName="fk_oncall_roles_membership_group_id" onDelete="RESTRICT"/>
+
+        <addForeignKeyConstraint baseTableName="oncall_roles" baseColumnNames="supervisor_user_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_oncall_roles_supervisor_user_id" onDelete="RESTRICT"/>
+
+        <createIndex tableName="oncall_roles" indexName="idx_oncall_roles_membership_group_id">
+            <column name="membership_group_id"/>
+        </createIndex>
+
+        <createIndex tableName="oncall_roles" indexName="idx_oncall_roles_supervisor_user_id">
+            <column name="supervisor_user_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="oncall_roles"/>
+            <dropSequence sequenceName="oncall_roles_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- Who is on call for a role, and when -->
+    <changeSet author="stheleman" id="37.0.0-oncall-schedules-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="oncall_schedules"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="oncall_schedules">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="oncall_role_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <!-- the user on call: the name attribute of the groups.xml schedule -->
+            <column name="user_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="schedule_type" type="varchar(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="oncall_schedules_id_seq" startValue="1" incrementBy="1"/>
+
+        <addForeignKeyConstraint baseTableName="oncall_schedules" baseColumnNames="oncall_role_id"
+                                 referencedTableName="oncall_roles" referencedColumnNames="id"
+                                 constraintName="fk_oncall_schedules_oncall_role_id" onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="oncall_schedules" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_oncall_schedules_user_id" onDelete="CASCADE"/>
+
+        <sql>
+            ALTER TABLE oncall_schedules ADD CONSTRAINT ck_oncall_schedules_schedule_type
+                CHECK (schedule_type IN ('specific', 'daily', 'weekly', 'monthly'))
+        </sql>
+
+        <createIndex tableName="oncall_schedules" indexName="idx_oncall_schedules_oncall_role_id">
+            <column name="oncall_role_id"/>
+        </createIndex>
+
+        <createIndex tableName="oncall_schedules" indexName="idx_oncall_schedules_user_id">
+            <column name="user_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="oncall_schedules"/>
+            <dropSequence sequenceName="oncall_schedules_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- The intervals of each on-call schedule, in order -->
+    <changeSet author="stheleman" id="37.0.0-oncall-schedule-times-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="oncall_schedule_times"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="oncall_schedule_times">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="schedule_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <!-- the optional id attribute of the groups.xml time -->
+            <column name="time_id" type="varchar(64)"/>
+            <!-- weekday or day of month, for weekly and monthly schedules -->
+            <column name="day" type="varchar(16)"/>
+            <!-- dd-MMM-yyyy HH:mm:ss for specific schedules, HH:mm:ss otherwise -->
+            <column name="begins" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ends" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="oncall_schedule_times_id_seq" startValue="1" incrementBy="1"/>
+
+        <addForeignKeyConstraint baseTableName="oncall_schedule_times" baseColumnNames="schedule_id"
+                                 referencedTableName="oncall_schedules" referencedColumnNames="id"
+                                 constraintName="fk_oncall_schedule_times_schedule_id" onDelete="CASCADE"/>
+
+        <createIndex tableName="oncall_schedule_times" indexName="idx_oncall_schedule_times_schedule_id">
+            <column name="schedule_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="oncall_schedule_times"/>
+            <dropSequence sequenceName="oncall_schedule_times_id_seq"/>
+        </rollback>
+    </changeSet>
+
+    <!-- A version counter for the user data, so the in-memory caches of DbUserManager and DbGroupManager see
+         changes from any writer (the webapp, the password CLI, the upgrade tasks). The "users" row covers the
+         users and the security roles; the "groups" row covers the groups and the on-call roles. -->
+    <changeSet author="stheleman" id="37.0.0-usermgmt-version">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="usermgmt_version"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="usermgmt_version">
+            <column name="name" type="varchar(16)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="version" type="bigint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <insert tableName="usermgmt_version">
+            <column name="name" value="users"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+        <insert tableName="usermgmt_version">
+            <column name="name" value="groups"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+
+        <createProcedure>
+CREATE OR REPLACE FUNCTION usermgmt_increment_version() RETURNS trigger AS $$
+BEGIN
+    UPDATE usermgmt_version SET version = version + 1 WHERE name = TG_ARGV[0];
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <sql>
+CREATE TRIGGER security_roles_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON security_roles FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('users');
+CREATE TRIGGER users_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON users FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('users');
+CREATE TRIGGER user_contacts_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON user_contacts FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('users');
+CREATE TRIGGER user_duty_schedules_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON user_duty_schedules FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('users');
+CREATE TRIGGER user_security_roles_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON user_security_roles FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('users');
+CREATE TRIGGER groups_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON groups FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
+CREATE TRIGGER group_members_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON group_members FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
+CREATE TRIGGER group_duty_schedules_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON group_duty_schedules FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
+CREATE TRIGGER oncall_roles_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON oncall_roles FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
+CREATE TRIGGER oncall_schedules_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON oncall_schedules FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
+CREATE TRIGGER oncall_schedule_times_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON oncall_schedule_times FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
+        </sql>
+
+        <rollback>
+            <sql>
+DROP TRIGGER IF EXISTS security_roles_version ON security_roles;
+DROP TRIGGER IF EXISTS users_version ON users;
+DROP TRIGGER IF EXISTS user_contacts_version ON user_contacts;
+DROP TRIGGER IF EXISTS user_duty_schedules_version ON user_duty_schedules;
+DROP TRIGGER IF EXISTS user_security_roles_version ON user_security_roles;
+DROP TRIGGER IF EXISTS groups_version ON groups;
+DROP TRIGGER IF EXISTS group_members_version ON group_members;
+DROP TRIGGER IF EXISTS group_duty_schedules_version ON group_duty_schedules;
+DROP TRIGGER IF EXISTS oncall_roles_version ON oncall_roles;
+DROP TRIGGER IF EXISTS oncall_schedules_version ON oncall_schedules;
+DROP TRIGGER IF EXISTS oncall_schedule_times_version ON oncall_schedule_times;
+DROP FUNCTION IF EXISTS usermgmt_increment_version();
+            </sql>
+            <dropTable tableName="usermgmt_version"/>
+        </rollback>
+    </changeSet>
+
+    <!-- A version on every row of the four aggregates, kept by triggers (not by JPA) so every writer is covered:
+         the webapp, the password CLI and the upgrade tasks. The REST API uses it as the ETag, and the order
+         of the locks (users, then groups) keeps concurrent writers from deadlocking. A row version is a number
+         from usermgmt_row_version_seq, a new one whenever the row changes and never one that was used before,
+         by any object. A row version moves when the row changed, when a row of a child table changed, and, for
+         the username and group name, when a row that shows the name changed. A bump of a row that is being deleted finds nothing to update. -->
+    <changeSet author="stheleman" id="37.0.0-usermgmt-row-versions">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1">SELECT count(*) FROM pg_proc WHERE proname = 'usermgmt_bump_row_version' AND pronamespace = current_schema()::regnamespace</sqlCheck>
+            </not>
+        </preConditions>
+
+        <createProcedure>
+-- BEFORE UPDATE of a parent row: a changed row gets a new version from the sequence. A statement that sets the
+-- version to another value (the child triggers do, with version + 1) is a change, and the value it sets is replaced;
+-- an UPDATE that changes nothing, including one that sets the version to its current value, keeps the version.
+CREATE OR REPLACE FUNCTION usermgmt_bump_row_version() RETURNS trigger AS $$
+BEGIN
+    IF NEW.version IS DISTINCT FROM OLD.version
+       OR (row_to_json(NEW)::jsonb - 'version') IS DISTINCT FROM (row_to_json(OLD)::jsonb - 'version') THEN
+        NEW.version := nextval('usermgmt_row_version_seq');
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <createProcedure>
+-- AFTER a change to a child row: bumps the parent. TG_ARGV[0] is the parent table, TG_ARGV[1] the FK column.
+CREATE OR REPLACE FUNCTION usermgmt_bump_parent() RETURNS trigger AS $$
+DECLARE
+    new_id integer;
+    old_id integer;
+BEGIN
+    -- an UPDATE that changes nothing is no change of the parent
+    IF TG_OP = 'UPDATE' AND NEW IS NOT DISTINCT FROM OLD THEN
+        RETURN NULL;
+    END IF;
+    IF TG_OP &lt;&gt; 'DELETE' THEN
+        new_id := (to_jsonb(NEW) -&gt;&gt; TG_ARGV[1])::integer;
+        EXECUTE format('UPDATE %I SET version = version + 1 WHERE id = $1', TG_ARGV[0]) USING new_id;
+    END IF;
+    IF TG_OP &lt;&gt; 'INSERT' THEN
+        old_id := (to_jsonb(OLD) -&gt;&gt; TG_ARGV[1])::integer;
+        IF old_id IS DISTINCT FROM new_id THEN
+            EXECUTE format('UPDATE %I SET version = version + 1 WHERE id = $1', TG_ARGV[0]) USING old_id;
+        END IF;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <createProcedure>
+-- oncall_schedule_times reaches its on-call role through its schedule, which is gone when the role is deleted
+CREATE OR REPLACE FUNCTION usermgmt_bump_oncall_role_of_time() RETURNS trigger AS $$
+BEGIN
+    -- an UPDATE that changes nothing is no change of the on-call role
+    IF TG_OP = 'UPDATE' AND NEW IS NOT DISTINCT FROM OLD THEN
+        RETURN NULL;
+    END IF;
+    IF TG_OP &lt;&gt; 'DELETE' THEN
+        UPDATE oncall_roles SET version = version + 1
+         WHERE id = (SELECT oncall_role_id FROM oncall_schedules WHERE id = NEW.schedule_id);
+    END IF;
+    IF TG_OP &lt;&gt; 'INSERT' AND (TG_OP = 'DELETE' OR OLD.schedule_id IS DISTINCT FROM NEW.schedule_id) THEN
+        UPDATE oncall_roles SET version = version + 1
+         WHERE id = (SELECT oncall_role_id FROM oncall_schedules WHERE id = OLD.schedule_id);
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <createProcedure>
+-- a renamed user: the groups it is a member of and the on-call roles it supervises or is scheduled in show the name
+CREATE OR REPLACE FUNCTION usermgmt_bump_for_username() RETURNS trigger AS $$
+BEGIN
+    UPDATE groups SET version = version + 1
+     WHERE id IN (SELECT group_id FROM group_members WHERE user_id = NEW.id);
+    UPDATE oncall_roles SET version = version + 1
+     WHERE supervisor_user_id = NEW.id
+        OR id IN (SELECT oncall_role_id FROM oncall_schedules WHERE user_id = NEW.id);
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <createProcedure>
+-- a renamed group: the on-call roles that use it as membership group show the name
+CREATE OR REPLACE FUNCTION usermgmt_bump_for_group_name() RETURNS trigger AS $$
+BEGIN
+    UPDATE oncall_roles SET version = version + 1 WHERE membership_group_id = NEW.id;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <sql>
+CREATE TRIGGER users_row_version BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_row_version();
+CREATE TRIGGER groups_row_version BEFORE UPDATE ON groups FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_row_version();
+CREATE TRIGGER oncall_roles_row_version BEFORE UPDATE ON oncall_roles FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_row_version();
+CREATE TRIGGER security_roles_row_version BEFORE UPDATE ON security_roles FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_row_version();
+
+CREATE TRIGGER user_contacts_bump_parent AFTER INSERT OR UPDATE OR DELETE ON user_contacts FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_parent('users', 'user_id');
+CREATE TRIGGER user_duty_schedules_bump_parent AFTER INSERT OR UPDATE OR DELETE ON user_duty_schedules FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_parent('users', 'user_id');
+CREATE TRIGGER user_security_roles_bump_parent AFTER INSERT OR UPDATE OR DELETE ON user_security_roles FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_parent('users', 'user_id');
+CREATE TRIGGER group_members_bump_parent AFTER INSERT OR UPDATE OR DELETE ON group_members FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_parent('groups', 'group_id');
+CREATE TRIGGER group_duty_schedules_bump_parent AFTER INSERT OR UPDATE OR DELETE ON group_duty_schedules FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_parent('groups', 'group_id');
+CREATE TRIGGER oncall_schedules_bump_parent AFTER INSERT OR UPDATE OR DELETE ON oncall_schedules FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_parent('oncall_roles', 'oncall_role_id');
+CREATE TRIGGER oncall_schedule_times_bump_parent AFTER INSERT OR UPDATE OR DELETE ON oncall_schedule_times FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_oncall_role_of_time();
+
+-- Hibernate's UPDATE lists every column, so UPDATE OF alone would fire on every save: the WHEN clauses matter
+CREATE TRIGGER users_username_bump AFTER UPDATE OF username ON users FOR EACH ROW WHEN (OLD.username IS DISTINCT FROM NEW.username) EXECUTE PROCEDURE usermgmt_bump_for_username();
+CREATE TRIGGER groups_name_bump AFTER UPDATE OF name ON groups FOR EACH ROW WHEN (OLD.name IS DISTINCT FROM NEW.name) EXECUTE PROCEDURE usermgmt_bump_for_group_name();
+        </sql>
+
+        <rollback>
+            <sql>
+DROP TRIGGER IF EXISTS users_row_version ON users;
+DROP TRIGGER IF EXISTS groups_row_version ON groups;
+DROP TRIGGER IF EXISTS oncall_roles_row_version ON oncall_roles;
+DROP TRIGGER IF EXISTS security_roles_row_version ON security_roles;
+DROP TRIGGER IF EXISTS user_contacts_bump_parent ON user_contacts;
+DROP TRIGGER IF EXISTS user_duty_schedules_bump_parent ON user_duty_schedules;
+DROP TRIGGER IF EXISTS user_security_roles_bump_parent ON user_security_roles;
+DROP TRIGGER IF EXISTS group_members_bump_parent ON group_members;
+DROP TRIGGER IF EXISTS group_duty_schedules_bump_parent ON group_duty_schedules;
+DROP TRIGGER IF EXISTS oncall_schedules_bump_parent ON oncall_schedules;
+DROP TRIGGER IF EXISTS oncall_schedule_times_bump_parent ON oncall_schedule_times;
+DROP TRIGGER IF EXISTS users_username_bump ON users;
+DROP TRIGGER IF EXISTS groups_name_bump ON groups;
+DROP FUNCTION IF EXISTS usermgmt_bump_row_version();
+DROP FUNCTION IF EXISTS usermgmt_bump_parent();
+DROP FUNCTION IF EXISTS usermgmt_bump_oncall_role_of_time();
+DROP FUNCTION IF EXISTS usermgmt_bump_for_username();
+DROP FUNCTION IF EXISTS usermgmt_bump_for_group_name();
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <!-- Set once the user data of this database is initialized: by UsersGroupsXmlMigratorOffline (also when it
+         copies no users, or finds data already there) or by DefaultUsersSeedOffline. The seed adds the default
+         users only to a database without this row, so a site that has no local users (LDAP, RADIUS or SSO only)
+         or that deleted them does not get admin/admin back on its next upgrade. -->
+    <changeSet author="stheleman" id="37.0.0-usermgmt-initialized">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="usermgmt_initialized"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="usermgmt_initialized">
+            <column name="initialized_time" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <!-- the upgrade task (or "liquibase") that initialized the data -->
+            <column name="initialized_by" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- a database that already has users (builds of the feature branch) is initialized -->
+        <sql>
+INSERT INTO usermgmt_initialized (initialized_by) SELECT 'liquibase' WHERE EXISTS (SELECT 1 FROM users);
+        </sql>
+
+        <rollback>
+            <dropTable tableName="usermgmt_initialized"/>
+        </rollback>
+    </changeSet>
+
+    <!-- Releases 31 to 36 HTML-encoded contact values in Contact.setInfo, and notifd copied the value it used into
+         usersnotified.contactinfo: a user's contact, or the address of a destination path's email target, which notifd
+         also puts through setInfo. Contact values are stored raw now and encoded on output, so the old rows would show
+         entities such as o&#39;brien@example.org. Decode them once, like the users migration does with
+         HtmlEncoding.decodeHtmlEncoded: &amp; is replaced last, so the replacements together decode in a single pass
+         (&amp;lt; becomes &lt;). This runs before OpenNMS 37 starts, so no row holds a raw value written by 37. Rows
+         that earlier releases recorded raw change only if they contain one of the five entities, which an address or
+         a number does not. -->
+    <changeSet author="stheleman" id="37.0.0-usersnotified-decode-contactinfo">
+        <sql><![CDATA[
+UPDATE usersnotified
+   SET contactinfo = replace(replace(replace(replace(replace(contactinfo, '&lt;', '<'), '&gt;', '>'), '&#34;', '"'), '&#39;', ''''), '&amp;', '&')
+ WHERE contactinfo LIKE '%&%'
+   AND replace(replace(replace(replace(replace(contactinfo, '&lt;', '<'), '&gt;', '>'), '&#34;', '"'), '&#39;', ''''), '&amp;', '&') <> contactinfo;
+        ]]></sql>
+
+        <!-- the decoding cannot be undone -->
+        <rollback/>
+    </changeSet>
+
+    <!-- The category authorizations of a group live in category_group, outside the groups table, and its groupid is
+         the group name (no foreign key). Every writer of them (the v2 API, v1 /rest/groups/{g}/categories and
+         /rest/categories/{c}/groups/{g}, deleting a category, which cascades, node categories) must make a stale group
+         editor get 412, so a change moves the version of the named group: usermgmt_bump_row_version replaces the
+         version + 1 with the next sequence value. An update that changes no column returns early and does not bump.
+         A name of no group updates no row.
+
+         The usermgmt_version counters tell the in-memory user and group managers that data they cache changed: a
+         manager refuses to save when the groups counter moved since it read, and reloads instead. The managers cache
+         no category authorizations, so a category_group change must not move the counter, or every writer of
+         category_group that bypasses the managers would make the next group save through a manager fail with "User
+         data was changed by another process". So groups_version, which moves the groups counter, now fires on an
+         UPDATE of the data columns only: the version bumps of the triggers (version = version + 1) do not move it.
+         Each child table of a group has a counter trigger of its own, and a user rename, which bumps the groups that
+         show the name, moves the users counter, which the group manager also follows. A column added to groups must
+         be added to the list of groups_version: UserMgmtRowVersionIT checks that it lists every column but version.
+
+         Lock order: writers that call UserMgmtVersionDao.lockAll() take the 'users' and then the 'groups' counter
+         before any row. A BEFORE statement trigger takes both counters in that order before any category_group row is
+         touched, and the row trigger takes the 'groups' counter before it locks a groups row. Deleting a category
+         locks its categories row before the cascade reaches category_group, and a v2 group write that holds the
+         counters and authorizes the group for that same category waits on that row (the foreign key check): a
+         deadlock. So a category delete takes the counters, in the same order, before any categories row is locked.
+         A transaction that updates a category row and then its authorizations takes the row first, so it can still
+         deadlock with a concurrent delete of that same category; PostgreSQL then aborts one of them. Every category
+         delete holds both counters until it commits. -->
+    <changeSet author="stheleman" id="37.0.0-category-group-version">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1">SELECT count(*) FROM pg_proc WHERE proname = 'usermgmt_bump_for_category_group' AND pronamespace = current_schema()::regnamespace</sqlCheck>
+            </not>
+        </preConditions>
+
+        <createProcedure>
+CREATE OR REPLACE FUNCTION usermgmt_bump_for_category_group() RETURNS trigger AS $$
+BEGIN
+    PERFORM 1 FROM usermgmt_version WHERE name = 'groups' FOR UPDATE;
+    IF TG_OP = 'UPDATE' AND NEW IS NOT DISTINCT FROM OLD THEN
+        RETURN NULL;
+    END IF;
+    IF TG_OP &lt;&gt; 'DELETE' THEN
+        UPDATE groups SET version = version + 1 WHERE name = NEW.groupid;
+    END IF;
+    IF TG_OP &lt;&gt; 'INSERT' AND (TG_OP = 'DELETE' OR OLD.groupid IS DISTINCT FROM NEW.groupid) THEN
+        UPDATE groups SET version = version + 1 WHERE name = OLD.groupid;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <createProcedure>
+CREATE OR REPLACE FUNCTION usermgmt_lock_for_category_group() RETURNS trigger AS $$
+BEGIN
+    -- the order of UserMgmtVersionDao.lockAll(): users, then groups
+    PERFORM 1 FROM usermgmt_version WHERE name = 'users' FOR UPDATE;
+    PERFORM 1 FROM usermgmt_version WHERE name = 'groups' FOR UPDATE;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <sql>
+DROP TRIGGER groups_version ON groups;
+CREATE TRIGGER groups_version AFTER INSERT OR UPDATE OF id, name, default_map, comments, created_time, last_modified OR DELETE OR TRUNCATE ON groups FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
+CREATE TRIGGER category_group_lock_versions BEFORE INSERT OR UPDATE OR DELETE ON category_group FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_lock_for_category_group();
+CREATE TRIGGER category_group_bump_group AFTER INSERT OR UPDATE OR DELETE ON category_group FOR EACH ROW EXECUTE PROCEDURE usermgmt_bump_for_category_group();
+CREATE TRIGGER categories_lock_versions BEFORE DELETE ON categories FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_lock_for_category_group();
+        </sql>
+
+        <rollback>
+            <sql>
+DROP TRIGGER IF EXISTS categories_lock_versions ON categories;
+DROP TRIGGER IF EXISTS category_group_bump_group ON category_group;
+DROP TRIGGER IF EXISTS category_group_lock_versions ON category_group;
+DROP FUNCTION IF EXISTS usermgmt_bump_for_category_group();
+DROP FUNCTION IF EXISTS usermgmt_lock_for_category_group();
+DROP TRIGGER groups_version ON groups;
+CREATE TRIGGER groups_version AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON groups FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_increment_version('groups');
+            </sql>
+        </rollback>
+    </changeSet>
+
+    <!-- A v2 group lists its categories by name, so renaming a category changes every group authorized for it, but no
+         category_group row: the version of those groups moves as for a category_group change. Without it, a stale
+         editor could save a name that now belongs to another category with a still-valid ETag. Lock order as above:
+         a rename locks its categories row, which a v2 group write waits on (the foreign key check) while it holds the
+         counters, so the counters are taken before the row, as for a delete. Hibernate writes every column of a
+         category it updates, so any category update through Hibernate takes the counters. -->
+    <changeSet author="stheleman" id="37.0.0-category-rename-version">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1">SELECT count(*) FROM pg_proc WHERE proname = 'usermgmt_bump_for_category_rename' AND pronamespace = current_schema()::regnamespace</sqlCheck>
+            </not>
+        </preConditions>
+
+        <createProcedure>
+CREATE OR REPLACE FUNCTION usermgmt_bump_for_category_rename() RETURNS trigger AS $$
+BEGIN
+    UPDATE groups SET version = version + 1 WHERE name IN (SELECT groupid FROM category_group WHERE categoryid = NEW.categoryid);
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+        </createProcedure>
+
+        <sql>
+DROP TRIGGER categories_lock_versions ON categories;
+CREATE TRIGGER categories_lock_versions BEFORE UPDATE OF categoryname OR DELETE ON categories FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_lock_for_category_group();
+CREATE TRIGGER categories_rename_bump_groups AFTER UPDATE OF categoryname ON categories FOR EACH ROW WHEN (OLD.categoryname IS DISTINCT FROM NEW.categoryname) EXECUTE PROCEDURE usermgmt_bump_for_category_rename();
+        </sql>
+
+        <rollback>
+            <sql>
+DROP TRIGGER IF EXISTS categories_rename_bump_groups ON categories;
+DROP FUNCTION IF EXISTS usermgmt_bump_for_category_rename();
+DROP TRIGGER categories_lock_versions ON categories;
+CREATE TRIGGER categories_lock_versions BEFORE DELETE ON categories FOR EACH STATEMENT EXECUTE PROCEDURE usermgmt_lock_for_category_group();
+            </sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

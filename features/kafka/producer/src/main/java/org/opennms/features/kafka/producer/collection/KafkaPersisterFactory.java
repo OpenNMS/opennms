@@ -51,7 +51,9 @@ public class KafkaPersisterFactory implements PersisterFactory {
     private ConfigurationAdmin configAdmin;
     private String topicName;
     private boolean disableMetricsSplitting = false;
+    private boolean useJson = false;
     private String metricFilter;
+    private MetricTopicRouter metricTopicRouter;
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository, boolean dontPersistCounters,
@@ -66,7 +68,9 @@ public class KafkaPersisterFactory implements PersisterFactory {
         persister.setProducer(producer);
         persister.setTopicName(topicName);
         persister.setDisableMetricsSplitting(disableMetricsSplitting);
+        persister.setUseJson(useJson);
         persister.setMetricFilter(metricFilter);
+        persister.setMetricTopicRouter(metricTopicRouter);
         return persister;
     }
 
@@ -129,12 +133,41 @@ public class KafkaPersisterFactory implements PersisterFactory {
         this.topicName = topicName;
     }
 
+    /** The topic handed to every persister created by this factory, i.e. the one actually in use. */
+    public String getTopicName() {
+        return topicName;
+    }
+
 
     public void setDisableMetricsSplitting(boolean disableMetricsSplitting) {
         this.disableMetricsSplitting = disableMetricsSplitting;
     }
 
+    public boolean isDisableMetricsSplitting() {
+        return disableMetricsSplitting;
+    }
+
+    public void setUseJson(boolean useJson) {
+        this.useJson = useJson;
+    }
+
+    public boolean isUseJson() {
+        return useJson;
+    }
+
     public void setMetricFilter(String metricFilter) {
         this.metricFilter = metricFilter;
+    }
+
+    public void setMetricTopicRouter(MetricTopicRouter metricTopicRouter) {
+        this.metricTopicRouter = metricTopicRouter;
+    }
+
+    /**
+     * The metric filter expression handed to every persister created by this factory,
+     * i.e. the filter that is actually running, as opposed to the one currently in the configuration.
+     */
+    public String getMetricFilter() {
+        return metricFilter;
     }
 }

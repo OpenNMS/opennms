@@ -27,14 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
-
 
 /**
  * <p>OutageDao interface.</p>
@@ -111,18 +109,6 @@ public interface OutageDao extends LegacyOnmsDao<OnmsOutage, Integer> {
      * @return A list of outages.
      */
     List<OutageSummary> getNodeOutageSummaries(int rows);
-
-    /**
-     * Retrieves heatmap elements for a given combination of database columns.
-     *
-     * @param entityNameColumn the entity's name column
-     * @param entityIdColumn the entity's id column
-     * @param restrictionColumn a column used for a restriction of the results
-     * @param restrictionValue the value that must match against the restrictionColumn
-     * @param groupByColumns columns used for the SQL group-by clause
-     * @return the heatmap elements for this query
-     */
-    List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, String restrictionColumn, String restrictionValue, String... groupByColumns);
 
     Collection<OnmsOutage> getStatusChangesForApplicationIdBetween(final Date startDate, final Date endDate, final Integer applicationId);
 }

@@ -35,7 +35,11 @@ export interface SnmpDataCollectionStoreState {
   isLoading: boolean
   uploadedSourceNames: SnmpDataCollectionSourceNamesAndIds[]
   activeTab: number
+  // The last search on the Find by Name tab. The tab runs it again when the page opens again.
+  definitionSearch: { kind: SnmpDefinitionKind, name: string } | null
 }
+
+export type SnmpDefinitionKind = 'systemdefs' | 'mibgroups' | 'resourcetypes'
 
 export interface SnmpCollectionSource {
   id: number
@@ -252,7 +256,7 @@ export interface SnmpCollectionMibGroupPayload {
   ifType: string
   mibGroupNames: string
   mibObjects: string
-  mibObjProperties: string
+  mibObjProperties: string | null
   enabled: boolean
 }
 

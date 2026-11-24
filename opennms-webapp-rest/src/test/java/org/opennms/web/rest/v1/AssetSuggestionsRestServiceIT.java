@@ -37,6 +37,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.api.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,6 +122,27 @@ public class AssetSuggestionsRestServiceIT extends AbstractSpringJerseyRestTestC
     public void testSuggestions() throws Exception {
         String xml = sendRequest(GET, "/assets/suggestions", 200);
         Assert.assertTrue(xml.contains("<suggestion>Boston</suggestion>"));
+    }
+
+    /**
+     * Suggestions list every distinct stored value, so they must not include asset credentials.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testSuggestionsExcludeCredentials() throws Exception {
+        m_template.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                final OnmsAssetRecord asset = m_databasePopulator.getNode1().getAssetRecord();
+                asset.setPassword("secretPass");
+                asset.setEnable("secretEnable");
+                asset.setSnmpcommunity("secretComm");
+                m_databasePopulator.getNodeDao().update(m_databasePopulator.getNode1());
+                m_databasePopulator.getNodeDao().flush();
+            }
+        });
+        String xml = sendRequest(GET, "/assets/suggestions", 200);
+        Assert.assertFalse(xml.contains("secret"));
     }
 
     /**

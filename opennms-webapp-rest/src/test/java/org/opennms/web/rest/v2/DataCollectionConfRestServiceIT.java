@@ -686,9 +686,21 @@ public class DataCollectionConfRestServiceIT {
                 "Invalid snmpCollectionSourceId: null. It must be a positive integer.",
                 respBad1.getEntity()
         );
+        // The collector does not trim ifType list items or match leading zeros.
+        for (final String badIfType : List.of("6, 22", "06", "Ethernet")) {
+            SnmpCollectionMibGroupDto badIfTypeReq = new SnmpCollectionMibGroupDto();
+            badIfTypeReq.setName("if-mib-bad-iftype");
+            badIfTypeReq.setIfType(badIfType);
+            badIfTypeReq.setMibObjects("[]");
+            badIfTypeReq.setEnabled(true);
+            Response badIfTypeResp = dataCollectionConfRestApi.addMibGroupToSnmpCollectionSources(
+                    src.getId(), badIfTypeReq, securityContext);
+            Assert.assertEquals(badIfType, Response.Status.BAD_REQUEST.getStatusCode(), badIfTypeResp.getStatus());
+        }
+
         SnmpCollectionMibGroupDto addReq = new SnmpCollectionMibGroupDto();
         addReq.setName("if-mib-interfaces");
-        addReq.setIfType("Ethernet");
+        addReq.setIfType("6");
         addReq.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
         addReq.setMibObjects("ifIndex,ifDescr,ifOperStatus");
         addReq.setMibObjProperties("{\"property\":\"value\"}");
@@ -723,7 +735,7 @@ public class DataCollectionConfRestServiceIT {
 
         SnmpCollectionMibGroupDto created = (SnmpCollectionMibGroupDto) resultList.get(0);
         Assert.assertEquals("if-mib-interfaces", created.getName());
-        Assert.assertEquals("Ethernet", created.getIfType());
+        Assert.assertEquals("6", created.getIfType());
         Assert.assertEquals("IF-MIB::ifEntry,IF-MIB::ifXEntry", created.getMibGroupNames());
         Assert.assertEquals("ifIndex,ifDescr,ifOperStatus", created.getMibObjects());
         Assert.assertEquals("{\"property\":\"value\"}", created.getMibObjProperties());
@@ -902,11 +914,17 @@ public class DataCollectionConfRestServiceIT {
 
         SnmpCollectionMibGroupDto updateReq = new SnmpCollectionMibGroupDto();
         updateReq.setName("if-mib-interfaces-updated");
-        updateReq.setIfType("EthernetUpdated");
+        updateReq.setIfType("6,22");
         updateReq.setMibGroupNames("IF-MIB::ifEntry");
         updateReq.setMibObjects("ifIndex,ifDescr");
         updateReq.setEnabled(true);
         updateReq.setMibObjProperties("{\"updated\":\"true\"}");
+
+        updateReq.setIfType("6, 22");
+        Response respBadIfType = dataCollectionConfRestApi.updateMibGroupInSnmpCollectionSources(
+                src.getId(), group.getId(), updateReq, securityContext);
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), respBadIfType.getStatus());
+        updateReq.setIfType("6,22");
 
         Response respOk = dataCollectionConfRestApi.updateMibGroupInSnmpCollectionSources(
                 src.getId(), group.getId(), updateReq, securityContext);
@@ -924,7 +942,7 @@ public class DataCollectionConfRestServiceIT {
 
         SnmpCollectionMibGroupDto updated = (SnmpCollectionMibGroupDto) list.get(0);
         Assert.assertEquals("if-mib-interfaces-updated", updated.getName());
-        Assert.assertEquals("EthernetUpdated", updated.getIfType());
+        Assert.assertEquals("6,22", updated.getIfType());
         Assert.assertEquals("IF-MIB::ifEntry", updated.getMibGroupNames());
         Assert.assertEquals("ifIndex,ifDescr", updated.getMibObjects());
         Assert.assertEquals("{\"updated\":\"true\"}", updated.getMibObjProperties());

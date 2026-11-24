@@ -29,7 +29,7 @@ opennms:stress-metrics --help
 
 == Interpreting the Output
 
-The statistics output by the tool can be be interpreted as follows:
+The statistics output by the tool can be interpreted as follows:
 
 numeric-attributes-generated::
   The number of numeric attributes that were sent to the persistence layer.

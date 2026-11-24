@@ -13,6 +13,7 @@
   <tx:annotation-driven />
 
   <bean id="measurementsRestService" class="org.opennms.web.rest.v1.MeasurementsRestService"/>
+  <bean id="snmpInterfaceMetricsRestService" class="org.opennms.web.rest.v2.SnmpInterfaceMetricsRestService"/>
   <bean name="timeformatService" class="org.opennms.features.timeformat.impl.DefaultTimeformatService" />
   <import resource="classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml"/>
   <import resource="classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"/>

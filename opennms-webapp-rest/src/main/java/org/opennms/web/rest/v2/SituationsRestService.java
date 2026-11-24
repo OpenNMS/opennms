@@ -21,6 +21,16 @@
  */
 package org.opennms.web.rest.v2;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.search.ConditionType;
@@ -34,18 +44,27 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.web.rest.support.Aliases;
 import org.opennms.web.rest.support.CriteriaBehavior;
 import org.opennms.web.rest.support.CriteriaBehaviors;
+import org.opennms.web.rest.model.v2.AlarmCollectionDTO;
+import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.SearchPropertyCollection;
 import org.opennms.web.rest.support.SecurityHelper;
+import org.opennms.web.rest.support.StringCollection;
+import org.opennms.web.rest.v2.model.AlarmMemoRequest;
+import org.opennms.web.rest.v2.model.AlarmPropertyUpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Context;
@@ -69,7 +88,29 @@ import java.util.stream.Collectors;
 @Component
 @Path("situations")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-@Tag(name = "Situation", description = "Alarms API")
+@Tag(name = "Situation", description = """
+        Situations API. A situation is an alarm that correlates other alarms: it carries `isSituation`
+        and a `relatedAlarms` list and lives in the same table as ordinary alarms, so every alarm
+        operation applies to it as well. This resource narrows the collection reads to alarms where
+        `isSituation` is true and adds the membership and workflow actions.
+
+        Membership changes are applied by publishing a `uei.opennms.org/alarms/situation` event and
+        letting alarmd act on it, so the handler returns before the change is visible. A read issued
+        immediately afterwards can still show the previous membership.
+
+        An alarm may belong to at most one situation. Alarms already held by another situation are
+        silently skipped rather than reported, so a 200 does not by itself mean every id in
+        `alarmIdList` was taken.
+
+        `GET /situations/{id}` and the per-alarm actions under `/situations/{id}` are not restricted
+        to situations: they resolve any alarm id. Acting on a situation alarm does not cascade to its
+        members, so acknowledging or clearing a situation leaves the correlated alarms as they were.
+
+        Five operations here are the inherited alarm operations, and they carry the alarm wording and
+        an `_1`-suffixed operationId: `GET /situations/{id}` (`getAlarmById_1`), `POST /situations`
+        (`createAlarm_1`), the form and JSON variants of `PUT /situations/{id}`
+        (`updateAlarmProperties_1`, `replaceAlarm_1`) and `DELETE /situations/{id}` (`deleteAlarm_1`).
+        Creating and deleting are not implemented on either path.""")
 public class SituationsRestService extends AlarmRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SituationsRestService.class);
@@ -95,6 +136,63 @@ public class SituationsRestService extends AlarmRestService {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "List situations",
+            description = """
+        Return a page of alarms whose `isSituation` is true. The restriction is added to whatever `_s`
+        supplies, so `_s` narrows the set of situations rather than widening it to ordinary alarms.
+        Only `isSituation` has a registered query behaviour on this resource. Other `alarm.*` properties
+        still pass through to the criteria and filter normally; only terms that need a registered type
+        conversion, such as `alarm.severity`, fail with 500.
+
+        `relatedAlarms` holds a summary of each member alarm. The situation itself carries the highest
+        severity of its members at the time the correlating event was sent.
+
+        Example query: `_s=alarm.isSituation==true&orderBy=lastEventTime&order=desc`.""",
+            operationId = "getSituations")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "A page of situations.",
+                    headers = @Header(name = "Content-Range", description = "Range of rows returned and the total, as `items <from>-<to>/<total>`.",
+                            schema = @Schema(type = "string", example = "items 0-0/1")),
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = AlarmCollectionDTO.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 1,
+                      "count": 1,
+                      "offset": 0,
+                      "alarm": [
+                        {
+                          "id": 4552,
+                          "uei": "uei.opennms.org/alarms/situation",
+                          "location": "Default",
+                          "reductionKey": "uei.opennms.org/alarms/situation:de4b1c3d-e028-4712-aafc-ea5304d61b7b",
+                          "type": 3,
+                          "count": 1,
+                          "severity": "NORMAL",
+                          "firstEventTime": 1787727667348,
+                          "lastEventTime": 1787727667348,
+                          "description": "Link flapping on the north uplink",
+                          "logMessage": "Created situation with 2 alarms",
+                          "relatedAlarms": [
+                            {
+                              "id": 4549,
+                              "type": 2,
+                              "severity": "NORMAL",
+                              "reductionKey": "uei.opennms.org/nodes/nodeDown::4",
+                              "label": "OpenNMS-defined node event: nodeDown"
+                            }
+                          ],
+                          "affectedNodeCount": 1
+                        }
+                      ]
+                    }"""))),
+            @ApiResponse(responseCode = "204", description = "No situation matched. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "`_s` named a property that is not registered on this resource.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "could not resolve property: bogusprop of: org.opennms.netmgt.model.OnmsAlarm")))
+    })
+    @Override
     public Response get(@Context UriInfo uriInfo,
                         @Context SearchContext searchContext) {
         return super.get(uriInfo, searchContext);
@@ -103,6 +201,38 @@ public class SituationsRestService extends AlarmRestService {
     @POST
     @Path("create")
     @Transactional
+    @Operation(
+            summary = "Create a situation from a set of alarms",
+            description = """
+        Correlate two or more alarms into a new situation. A random UUID is used as the situation id
+        and appears in the reduction key of the situation alarm as
+        `uei.opennms.org/alarms/situation:<uuid>`.
+
+        An id that names no alarm fails the whole call with 500 when the loaded proxy is first touched.
+        Ids whose alarm already belongs to another situation are dropped from the set; if fewer than two
+        alarms survive, nothing is created and the call answers 204.
+
+        The situation is created by publishing an event, so the call returns before the situation alarm
+        exists. `description` is stored as given and `diagnosticText`, when present, is appended to it
+        wrapped in a `<p>Diagnostic: ...</p>` element. `feedback` is accepted and not used.""",
+            operationId = "createSituation")
+    @RequestBody(required = true, description = "Alarms to correlate, plus the text to describe the situation with.",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = SituationPayload.class),
+                    examples = @ExampleObject(value = """
+                    {
+                      "alarmIdList": [4549, 4550],
+                      "diagnosticText": "Both alarms follow the same uplink flap.",
+                      "description": "Link flapping on the north uplink",
+                      "feedback": null
+                    }""")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The correlating event was published. The situation alarm appears shortly afterwards."),
+            @ApiResponse(responseCode = "204", description = "Fewer than two of the ids resolved to an alarm that is free to correlate. Nothing was created."),
+            @ApiResponse(responseCode = "500", description = "The body could not be deserialised.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "No content to map to Object due to end of input")))
+    })
     public Response create(@Context UriInfo uriInfo, SituationPayload payload) throws InterruptedException {
         String situationId = UUID.randomUUID().toString();
         return handleAssociation(
@@ -117,6 +247,35 @@ public class SituationsRestService extends AlarmRestService {
     @POST
     @Path("associateAlarm")
     @Transactional
+    @Operation(
+            summary = "Add alarms to an existing situation",
+            description = """
+        Add the alarms in `alarmIdList` to the situation named by `situationId`. The new membership is
+        the union of the current members and the ids that resolved, so this never removes anything.
+
+        An id that names no alarm fails the whole call with 500 when the loaded proxy is first touched.
+        Ids whose alarm already belongs to another situation are dropped. When the union equals the
+        current membership the call answers 204 and no event is published.
+
+        The change is applied by publishing an event, so the call returns before the membership is
+        visible. `feedback` is accepted and not used.""",
+            operationId = "associateSituationAlarms")
+    @RequestBody(required = true, description = "Situation to add to, and the alarms to add.",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = AlarmAddRemoveRequest.class),
+                    examples = @ExampleObject(value = """
+                    {
+                      "situationId": 4552,
+                      "alarmIdList": [4551],
+                      "feedback": null
+                    }""")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The membership event was published."),
+            @ApiResponse(responseCode = "204", description = "The membership would not change. No event was published."),
+            @ApiResponse(responseCode = "400", description = "`situationId` names no alarm, or names an alarm that is not a situation.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Invalid situation ID: 999999")))
+    })
     public Response associateAlarm(@Context UriInfo uriInfo,
                                    AlarmAddRemoveRequest request) throws InterruptedException {
 
@@ -147,6 +306,32 @@ public class SituationsRestService extends AlarmRestService {
     @DELETE
     @Path("removeAlarm")
     @Transactional
+    @Operation(
+            summary = "Remove alarms from a situation",
+            description = """
+        Drop the alarms in `alarmIdList` from the situation named by `situationId`. Removing every
+        member is allowed and leaves the situation alarm in place with no members.
+
+        Unlike the add operation this does not report an unusable `situationId`: an id that names no
+        alarm, or names an alarm that is not a situation, answers 204 in the same way as a request that
+        would change nothing.
+
+        The change is applied by publishing an event, so the call returns before the membership is
+        visible. The request body is read from a DELETE. `feedback` is accepted and not used.""",
+            operationId = "removeSituationAlarms")
+    @RequestBody(required = true, description = "Situation to remove from, and the alarms to remove.",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = AlarmAddRemoveRequest.class),
+                    examples = @ExampleObject(value = """
+                    {
+                      "situationId": 4552,
+                      "alarmIdList": [4551],
+                      "feedback": null
+                    }""")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The membership event was published."),
+            @ApiResponse(responseCode = "204", description = "The membership would not change, or `situationId` does not name a situation. No event was published.")
+    })
     public Response removeAlarm(@Context UriInfo uriInfo,
                                 AlarmAddRemoveRequest request) {
         OnmsAlarm situationAlarm = getDao().get(request.getSituationId());
@@ -164,6 +349,36 @@ public class SituationsRestService extends AlarmRestService {
     @POST
     @Path("clear")
     @Transactional
+    @Operation(
+            summary = "Clear one alarm",
+            description = """
+        Set the severity of a single alarm to Cleared through the acknowledgement DAO. Despite the
+        path and the field name, `situationId` is read as the id of the alarm to clear: any alarm id is
+        accepted, and the alarm does not have to be a situation. `alarmIdList` is ignored here.
+
+        The acknowledgement is recorded against the authenticated user.""",
+            operationId = "clearSituationAlarm")
+    @RequestBody(required = true, description = "The alarm to clear, in `situationId`.",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = AlarmAddRemoveRequest.class),
+                    examples = @ExampleObject(value = """
+                    {
+                      "situationId": 4552,
+                      "alarmIdList": [],
+                      "feedback": null
+                    }""")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The alarm was cleared."),
+            @ApiResponse(responseCode = "400", description = "`situationId` was absent or named no alarm.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = {
+                                    @ExampleObject(name = "absent", value = "Unable to determine alarm ID to update based on query path."),
+                                    @ExampleObject(name = "unknown", value = "Unable to locate alarm with ID '999999'")
+                            })),
+            @ApiResponse(responseCode = "403", description = "The authenticated user may not clear alarms.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
+    })
     public Response doAction(
             AlarmAddRemoveRequest req,
             @Context SecurityContext secCtx) {
@@ -196,6 +411,39 @@ public class SituationsRestService extends AlarmRestService {
     @Path("alarms/clear")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Transactional
+    @Operation(
+            summary = "Remove alarms from a situation and clear them",
+            description = """
+        Drop the alarms in `alarmIdList` from the situation named by `situationId`, then set each of
+        those alarms to Cleared.
+
+        The removal runs first and decides whether the clear happens at all: when the removal would
+        change nothing the call answers 204 and no alarm is cleared. Ids in `alarmIdList` that are not
+        members of the situation are still cleared, as long as at least one id causes the membership to
+        change.
+
+        The removal is published as an event while the clear is applied directly, so the two halves do
+        not become visible at the same time.""",
+            operationId = "removeAndClearSituationAlarms")
+    @RequestBody(required = true, description = "Situation to remove from, and the alarms to remove and clear.",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = AlarmAddRemoveRequest.class),
+                    examples = @ExampleObject(value = """
+                    {
+                      "situationId": 4552,
+                      "alarmIdList": [4550],
+                      "feedback": null
+                    }""")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The removal event was published and the listed alarms were cleared."),
+            @ApiResponse(responseCode = "204", description = "The membership would not change. Nothing was removed and nothing was cleared."),
+            @ApiResponse(responseCode = "400", description = "`situationId` names no alarm, or names an alarm that is not a situation.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Invalid situation ID: 999999"))),
+            @ApiResponse(responseCode = "403", description = "The authenticated user may not clear alarms.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
+    })
     public Response removeAndClear(
             AlarmAddRemoveRequest req,
             @Context SecurityContext secCtx,
@@ -233,7 +481,27 @@ public class SituationsRestService extends AlarmRestService {
 
     @POST
     @Path("accepted/{id}")
-    public Response acceptSituation(@PathParam("id") Integer id) {
+    @Operation(
+            summary = "Mark a situation accepted",
+            description = """
+        Record that an operator accepts the correlation, by publishing a situation event whose
+        `situationStatus` parameter is `ACCEPTED`. The membership is republished unchanged.
+
+        Acceptance is read back from the `situationStatus` parameter of the last event on the
+        situation, so a later membership change overwrites it and the situation can be accepted again.
+        Calling this on an already accepted situation answers 304.""",
+            operationId = "acceptSituation")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The acceptance event was published."),
+            @ApiResponse(responseCode = "304", description = "The last event on the situation already reports it accepted. No body is returned."),
+            @ApiResponse(responseCode = "404", description = "The id names no alarm, or names an alarm that is not a situation.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Situation not found: 999999")))
+    })
+    public Response acceptSituation(
+            @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                    description = "Database id of the situation alarm.", example = "4552")
+            @PathParam("id") Integer id) {
         if (id == null) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Situation ID is required")
@@ -274,6 +542,382 @@ public class SituationsRestService extends AlarmRestService {
         );
 
         return Response.ok().build();
+    }
+
+
+    @GET
+    @Path("count")
+    @Produces({MediaType.TEXT_PLAIN})
+    @Operation(
+            summary = "Count situations",
+            description = """
+        Return the number of alarms whose `isSituation` is true, as a plain-text integer. The response
+        is `text/plain` only, so a request that asks solely for `application/json` is answered with
+        404. `limit` is ignored, but a non-zero `offset` reaches the count query and fails with 500.
+
+        Example query: `_s=alarm.isSituation==true`.""",
+            operationId = "getSituationCount")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The number of matching situations.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "1"))),
+            @ApiResponse(responseCode = "404", description = "The request did not accept `text/plain`. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "`_s` named a property that is not registered on this resource.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "could not resolve property: bogusprop of: org.opennms.netmgt.model.OnmsAlarm")))
+    })
+    @Override
+    public Response getCount(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
+        return super.getCount(uriInfo, searchContext);
+    }
+
+    @GET
+    @Path("properties")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "List the properties situations can be queried on",
+            description = """
+        Return the same property list as `GET /alarms/properties`. Only `alarm.isSituation` is
+        registered as a query behaviour on this resource, so most of the listed properties cannot be
+        used in `_s` here. `q` filters the list by a case-insensitive substring of the name and a `q`
+        that matches nothing yields 200 with an empty list.""",
+            operationId = "getSituationProperties")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The matching query properties.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = SearchPropertyCollection.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 1,
+                      "count": 1,
+                      "offset": 0,
+                      "searchProperty": [
+                        {
+                          "id": "isSituation",
+                          "name": "Is Situation",
+                          "type": "BOOLEAN",
+                          "orderBy": true,
+                          "iplike": false
+                        }
+                      ]
+                    }""")))
+    })
+    @Override
+    public Response getProperties(@Parameter(in = ParameterIn.QUERY, name = "q",
+            description = "Case-insensitive substring of the property name.", example = "situation")
+                                  @QueryParam("q") final String query) {
+        return super.getProperties(query);
+    }
+
+    @GET
+    @Path("properties/{propertyId}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "List the values a query property takes",
+            description = """
+        Return the distinct values of one query property over the alarm table, not restricted to
+        situations. The element type follows the property type, and a property whose type has no value
+        listing, such as `isSituation`, answers 204. `propertyId` is the unprefixed id from
+        `GET /situations/properties`.""",
+            operationId = "getSituationPropertyValues")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The distinct values of the property.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = StringCollection.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "totalCount": 7,
+                      "count": 7,
+                      "offset": 0,
+                      "value": [1, 2, 3, 4, 5, 6, 7]
+                    }"""))),
+            @ApiResponse(responseCode = "204", description = "The property has a type with no value listing, such as BOOLEAN. No body is returned."),
+            @ApiResponse(responseCode = "404", description = "No query property has that id. No body is returned.")
+    })
+    @Override
+    public Response getPropertyValues(
+            @Parameter(in = ParameterIn.PATH, name = "propertyId", required = true,
+                    description = "Unprefixed property id from `GET /situations/properties`.", example = "severity")
+            @PathParam("propertyId") final String propertyId,
+            @Parameter(in = ParameterIn.QUERY, name = "q",
+                    description = "Substring the value must contain. Database-backed properties match case-insensitively; only fixed value lists are case-sensitive.", example = "situation")
+            @QueryParam("q") final String query,
+            @Parameter(in = ParameterIn.QUERY, name = "limit",
+                    description = "Maximum number of values returned. Applies only to values read from the database.",
+                    example = "25")
+            @QueryParam("limit") final Integer limit) {
+        return super.getPropertyValues(propertyId, query, limit);
+    }
+
+    @POST
+    @Path("{id}")
+    @Operation(
+            summary = "Rejected: situations cannot be created at a chosen id",
+            description = "Always answers 404.",
+            operationId = "createSituationWithId",
+            parameters = @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                    description = "Alarm database id. The value is not read: every request to this path is answered with 404.",
+                    example = "4241"))
+    @ApiResponses(@ApiResponse(responseCode = "404", description = "Always. No body is returned."))
+    @Override
+    public Response createSpecific() {
+        return super.createSpecific();
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Operation(
+            summary = "Update properties of several situations",
+            description = """
+        Apply the form parameters to every situation matching `_s`. The default `limit` of 10 applies to
+        the selection, so a call without an explicit `limit` touches at most 10 situations. The batch
+        runs in one transaction and stops at the first failure, leaving earlier situations already
+        changed.
+
+        Example query: `_s=alarm.isSituation==true`.""",
+            operationId = "updateSituations")
+    @RequestBody(required = true, description = "Alarm properties to apply, form-encoded.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(implementation = AlarmPropertyUpdateRequest.class),
+                    examples = @ExampleObject(value = "ack=true")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Every selected situation was updated. No body is returned."),
+            @ApiResponse(responseCode = "404", description = "No situation matched `_s`. No body is returned."),
+            @ApiResponse(responseCode = "500", description = "`_s` named a property that is not registered on this resource.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "could not resolve property: bogusprop of: org.opennms.netmgt.model.OnmsAlarm"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
+    })
+    @Override
+    public Response updateMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo,
+                               @Context final SearchContext searchContext, final MultivaluedMapImpl params) {
+        return super.updateMany(securityContext, uriInfo, searchContext, params);
+    }
+
+    @DELETE
+    @Operation(
+            summary = "Not implemented: delete several situations",
+            description = """
+        Deleting alarms is not implemented. When `_s` selects at least one situation the handler answers
+        501 without deleting anything; when nothing matches it answers 404 instead.
+
+        Example query: `_s=alarm.isSituation==true`.""",
+            operationId = "deleteSituations")
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = "No situation matched `_s`. No body is returned."),
+            @ApiResponse(responseCode = "501", description = "Delete is not implemented. No body is returned.")
+    })
+    @Override
+    public Response deleteMany(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo,
+                               @Context final SearchContext searchContext) {
+        return super.deleteMany(securityContext, uriInfo, searchContext);
+    }
+
+    @PUT
+    @Path("{id}/memo")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Operation(
+            summary = "Set the sticky memo on a situation",
+            description = """
+        Replace the sticky memo on the alarm row. The lookup is not restricted to situations. `body` is
+        required; when `user` is omitted the authenticated user is recorded as the author.""",
+            operationId = "updateSituationMemo")
+    @RequestBody(required = true, description = "Memo text and optional author, form-encoded.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(implementation = AlarmMemoRequest.class),
+                    examples = @ExampleObject(value = "body=Correlation+confirmed+by+the+NOC.&user=admin")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The memo was written. No body is returned."),
+            @ApiResponse(responseCode = "400", description = "`body` was absent.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Body cannot be null."))),
+            @ApiResponse(responseCode = "404", description = "No alarm has that id.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Alarm not found."))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
+    })
+    @Override
+    public Response updateMemo(@Context final SecurityContext securityContext,
+                               @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                       description = "Database id of the situation alarm.", example = "4552")
+                               @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
+        return super.updateMemo(securityContext, alarmId, params);
+    }
+
+    @PUT
+    @Path("{id}/journal")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Operation(
+            summary = "Set the journal note on a situation",
+            description = """
+        Replace the journal note, which is keyed on the reduction key rather than on the alarm row. A
+        situation reduction key contains the situation UUID, so the note follows that situation only.
+        `body` is required.""",
+            operationId = "updateSituationJournal")
+    @RequestBody(required = true, description = "Journal text and optional author, form-encoded.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(implementation = AlarmMemoRequest.class),
+                    examples = @ExampleObject(value = "body=Escalated+to+the+transport+team.&user=admin")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The journal note was written. No body is returned."),
+            @ApiResponse(responseCode = "400", description = "`body` was absent.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Body cannot be null."))),
+            @ApiResponse(responseCode = "404", description = "No alarm has that id.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Alarm not found."))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
+    })
+    @Override
+    public Response updateJournal(@Context final SecurityContext securityContext,
+                                  @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                          description = "Database id of the situation alarm.", example = "4552")
+                                  @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
+        return super.updateJournal(securityContext, alarmId, params);
+    }
+
+    @DELETE
+    @Path("{id}/memo")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Operation(
+            summary = "Remove the sticky memo from a situation",
+            description = """
+        Remove the note attached to the alarm row. Removing one that is not set still answers 204. No
+        request body is read, although the handler declares
+        `application/x-www-form-urlencoded`.""",
+            operationId = "deleteSituationMemo")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The sticky memo is gone, whether or not one was set. No body is returned."),
+            @ApiResponse(responseCode = "404", description = "No alarm has that id.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Alarm not found."))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
+    })
+    @Override
+    public Response removeMemo(@Context final SecurityContext securityContext,
+                               @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                       description = "Database id of the situation alarm.", example = "4552")
+                               @PathParam("id") final Integer alarmId) {
+        return super.removeMemo(securityContext, alarmId);
+    }
+
+    @DELETE
+    @Path("{id}/journal")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Operation(
+            summary = "Remove the journal note from a situation",
+            description = """
+        Remove the note keyed on the reduction key. Removing one that is not set still answers 204. No
+        request body is read, although the handler declares
+        `application/x-www-form-urlencoded`.""",
+            operationId = "deleteSituationJournal")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The journal note is gone, whether or not one was set. No body is returned."),
+            @ApiResponse(responseCode = "404", description = "No alarm has that id.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Alarm not found."))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
+    })
+    @Override
+    public Response removeJournal(@Context final SecurityContext securityContext,
+                                  @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                          description = "Database id of the situation alarm.", example = "4552")
+                                  @PathParam("id") final Integer alarmId) {
+        return super.removeJournal(securityContext, alarmId);
+    }
+
+    @POST
+    @Path("{id}/ticket/create")
+    @Operation(
+            summary = "Create the trouble ticket for a situation",
+            description = """
+        Ask the configured ticketer plugin to raise a ticket for the alarm, asynchronously. Members of
+        the situation are not ticketed.
+
+        Gated on `opennms.alarmTroubleTicketEnabled` being `true`. With the ticketer disabled every
+        call answers 501, including a call naming an alarm that does not exist, because the gate is
+        checked before the alarm is looked up.""",
+            operationId = "createSituationTicket")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "The request was handed to the ticketer plugin. No body is returned."),
+            @ApiResponse(responseCode = "501", description = "The ticketer plugin is disabled.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
+    })
+    @Override
+    public Response createTicket(@Context final SecurityContext securityContext,
+                                 @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                         description = "Database id of the situation alarm.", example = "4552")
+                                 @PathParam("id") final Integer alarmId) throws Exception {
+        return super.createTicket(securityContext, alarmId);
+    }
+
+    @POST
+    @Path("{id}/ticket/update")
+    @Operation(
+            summary = "Refresh the trouble ticket for a situation",
+            description = """
+        Ask the configured ticketer plugin to re-read the ticket from the helpdesk system and write the
+        current state back onto the alarm, asynchronously.
+
+        Gated on `opennms.alarmTroubleTicketEnabled` being `true`; with the ticketer disabled every
+        call answers 501.""",
+            operationId = "updateSituationTicket")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "The request was handed to the ticketer plugin. No body is returned."),
+            @ApiResponse(responseCode = "501", description = "The ticketer plugin is disabled.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
+    })
+    @Override
+    public Response updateTicket(@Context final SecurityContext securityContext,
+                                 @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                         description = "Database id of the situation alarm.", example = "4552")
+                                 @PathParam("id") final Integer alarmId) throws Exception {
+        return super.updateTicket(securityContext, alarmId);
+    }
+
+    @POST
+    @Path("{id}/ticket/close")
+    @Operation(
+            summary = "Close the trouble ticket for a situation",
+            description = """
+        Ask the configured ticketer plugin to close the ticket recorded on the alarm, asynchronously.
+
+        Gated on `opennms.alarmTroubleTicketEnabled` being `true`; with the ticketer disabled every
+        call answers 501.""",
+            operationId = "closeSituationTicket")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "The request was handed to the ticketer plugin. No body is returned."),
+            @ApiResponse(responseCode = "501", description = "The ticketer plugin is disabled.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "AlarmTroubleTicketer is not enabled. Cannot perform operation"))),
+            @ApiResponse(responseCode = "403", description = "The caller holds `ROLE_READONLY`, or named somebody other than themselves in `ackUser` without holding `ROLE_ADMIN` or `ROLE_DELEGATE`.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "User 'operator', is not allowed to perform updates to alarms as user 'admin'")))
+    })
+    @Override
+    public Response closeTicket(@Context final SecurityContext securityContext,
+                                @Parameter(in = ParameterIn.PATH, name = "id", required = true,
+                                        description = "Database id of the situation alarm.", example = "4552")
+                                @PathParam("id") final Integer alarmId) throws Exception {
+        return super.closeTicket(securityContext, alarmId);
     }
 
     private void clearAlarm(OnmsAlarm alarm, String user) {

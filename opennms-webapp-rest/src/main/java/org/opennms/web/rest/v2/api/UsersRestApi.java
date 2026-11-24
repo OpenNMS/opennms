@@ -1,0 +1,165 @@
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
+package org.opennms.web.rest.v2.api;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+
+import org.opennms.web.rest.v2.model.UserDto;
+import org.opennms.web.rest.v2.model.UserPasswordRequest;
+import org.opennms.web.rest.v2.model.UserRenameRequest;
+import org.opennms.web.rest.v2.model.UserWriteRequest;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+/**
+ * Versioned user management API backed by the database. Password hashes are
+ * never returned; admin-only (enforced by Spring Security and in-code).
+ */
+@Path("users")
+@Tag(name = "Users", description = "User Management API")
+public interface UsersRestApi {
+
+    String IF_MATCH_DESCRIPTION = "Optional. The `ETag` the user had when it was read; the write is refused with 412 if the user has changed since. A weak tag (`W/\"7\"`) or a comma-separated list of tags is accepted; `*` matches any existing user. If the user does not exist, the answer is 412 rather than 404.";
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "List all users", operationId = "listUsers")
+    Response listUsers(@Context SecurityContext securityContext,
+            @Parameter(description = "Optional. `summary` lists only the `userId` and `fullName` of each user, in the same order; any other value is a 400.")
+            @QueryParam("view") String view);
+
+    @GET
+    @Path("{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get one user", operationId = "getUser")
+    Response getUser(@Context SecurityContext securityContext, @PathParam("userId") String userId);
+
+    @GET
+    @Path("available-roles")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "List the assignable security roles", operationId = "listAvailableRoles")
+    Response listAvailableRoles(@Context SecurityContext securityContext);
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Create a user", operationId = "createUser")
+    Response createUser(@Context SecurityContext securityContext, UserWriteRequest request);
+
+    @PUT
+    @Path("{userId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Update a user's details (contact types and password not covered here are preserved)", operationId = "updateUser")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response updateUser(@Context SecurityContext securityContext, @Context HttpHeaders headers, @PathParam("userId") String userId, UserDto user);
+
+    @PUT
+    @Path("{userId}/password")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Set a user's password (stored salted)", operationId = "setUserPassword")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response setPassword(@Context SecurityContext securityContext, @Context HttpHeaders headers, @PathParam("userId") String userId, UserPasswordRequest body);
+
+    @POST
+    @Path("{userId}/rename")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Rename a user (also updates group memberships)", operationId = "renameUser")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response renameUser(@Context SecurityContext securityContext, @Context HttpHeaders headers, @PathParam("userId") String userId, UserRenameRequest body);
+
+    @DELETE
+    @Path("{userId}")
+    @Operation(summary = "Delete a user (also removes group memberships; rejected while a destination path names the user; admin, rtc and the last user with ROLE_ADMIN are protected)", operationId = "deleteUser")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response deleteUser(@Context SecurityContext securityContext, @Context HttpHeaders headers, @PathParam("userId") String userId);
+
+    @GET
+    @Path("item")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get one user by query parameter (for ids a path cannot carry)", operationId = "getUserByQuery")
+    Response getUserByQuery(@Context SecurityContext securityContext, @QueryParam("userId") String userId);
+
+    @PUT
+    @Path("item")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Update a user by query parameter (for ids a path cannot carry)", operationId = "updateUserByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response updateUserByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("userId") String userId, UserDto user);
+
+    @PUT
+    @Path("item/password")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Set a user's password by query parameter (for ids a path cannot carry)", operationId = "setUserPasswordByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response setUserPasswordByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("userId") String userId, UserPasswordRequest body);
+
+    @POST
+    @Path("item/rename")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Rename a user by query parameter (for ids a path cannot carry)", operationId = "renameUserByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response renameUserByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("userId") String userId, UserRenameRequest body);
+
+    @DELETE
+    @Path("item")
+    @Operation(summary = "Delete a user by query parameter (for ids a path cannot carry)", operationId = "deleteUserByQuery")
+    @Parameters({
+            @Parameter(name = "If-Match", in = ParameterIn.HEADER, description = IF_MATCH_DESCRIPTION, schema = @Schema(type = "string"), example = "\"7\"")
+    })
+    Response deleteUserByQuery(@Context SecurityContext securityContext, @Context HttpHeaders headers, @QueryParam("userId") String userId);
+}

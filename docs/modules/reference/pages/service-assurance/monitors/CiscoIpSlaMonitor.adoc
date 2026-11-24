@@ -3,7 +3,7 @@
 :description: Learn how to configure and use the CiscoIpSlaMonitor in OpenNMS {page-component-title} to monitor IP SLA configurations on your Cisco devices.
 
 Use this monitor to monitor IP SLA configurations on your Cisco devices.
-This monitor supports the following SNMP OIDS from http://www.circitor.fr/Mibs/Html/C/CISCO-RTTMON-MIB.php[CISCO-RTT-MON-MIB]:
+This monitor supports the following SNMP OIDs from http://www.circitor.fr/Mibs/Html/C/CISCO-RTTMON-MIB.php[CISCO-RTT-MON-MIB]:
 
   RTT_ADMIN_TAG_OID = .1.3.6.1.4.1.9.9.42.1.2.1.1.3
   RTT_OPER_STATE_OID = .1.3.6.1.4.1.9.9.42.1.2.9.1.10
@@ -86,7 +86,7 @@ ip sla schedule 1 life forever start-time now
 
 WARNING: It's not possible to reconfigure an IP SLA entry.
 To change parameters, you have to delete the whole configuration and reconfigure it with your new parameters.
-Back up your Cisco configuration manually, or see http://www.shrubbery.net/rancid/[RANCID].
+Back up your Cisco configuration manually, or with xref:operation:deep-dive/device-config-backup/introduction.adoc[Device Configuration Backup].
 
 To monitor both of the entries, the configuration in `poller-configuration.xml` requires two service definition entries.
 

@@ -1,0 +1,8 @@
+<wsman-config xmlns="http://xmlns.opennms.org/xsd/config/wsman" retry="2" timeout="1500">
+  <definition ssl="false" port="5985" kerberos-encryption="true">
+    <specific>127.0.0.1</specific>
+  </definition>
+  <definition ssl="false" port="5985" gss-auth="true">
+    <specific>127.0.0.2</specific>
+  </definition>
+</wsman-config>

@@ -38,8 +38,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean name="webEventRepository" class="org.opennms.web.event.DaoWebEventRepository"/>
   <bean name="webNotificationRepository" class="org.opennms.web.notification.DaoWebNotificationRepository"/>
   <bean name="webOutageRepository" class="org.opennms.web.outage.DaoWebOutageRepository"/>
-  <bean name="webGroupRepository" class="org.opennms.web.group.DefaultWebGroupRepository">
-  </bean>
   <!-- Surveillance View beans -->
   <bean id="surveillanceService" class="org.opennms.web.svclayer.support.DefaultSurveillanceService">
     <property name="nodeDao" ref="nodeDao"/>
@@ -109,17 +107,17 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="resourceDao" ref="resourceDao"/>
     <property name="rrdDao" ref="rrdDao"/>
   </bean>
-  <bean id="kscReportFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+  <bean id="graphCollectionConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod">
-      <value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.init</value>
+      <value>org.opennms.netmgt.config.GraphCollectionConfigFactory.init</value>
     </property>
   </bean>
-  <bean id="kscReportFactory" class="org.opennms.netmgt.config.KSC_PerformanceReportFactory" depends-on="kscReportFactory-init" factory-method="getInstance"/>
-  <bean id="kscReportService" class="org.opennms.web.svclayer.support.DefaultKscReportService">
+  <bean id="graphCollectionConfigFactory" class="org.opennms.netmgt.config.GraphCollectionConfigFactory" depends-on="graphCollectionConfigFactory-init" factory-method="getInstance"/>
+  <bean id="graphCollectionService" class="org.opennms.web.svclayer.support.DefaultGraphCollectionService">
     <property name="resourceService" ref="resourceService"/>
-    <property name="kscReportFactory" ref="kscReportFactory"/>
+    <property name="graphCollectionConfigFactory" ref="graphCollectionConfigFactory"/>
   </bean>
-  <onmsgi:service interface="org.opennms.web.svclayer.api.KscReportService" ref="kscReportService" />
+  <onmsgi:service interface="org.opennms.web.svclayer.api.GraphCollectionService" ref="graphCollectionService" />
   <bean id="groupDao" class="org.opennms.netmgt.config.GroupManagerGroupDao">
     <property name="groupManager" ref="groupManager"/>
   </bean>
@@ -180,10 +178,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean id="rtcService" class="org.opennms.web.svclayer.support.DefaultRtcService">
     <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
     <property name="outageDao" ref="outageDao"/>
-  </bean>
-  <bean id="statisticsReportService" class="org.opennms.web.svclayer.support.DefaultStatisticsReportService">
-    <property name="statisticsReportDao" ref="statisticsReportDao"/>
-    <property name="resourceDao" ref="resourceDao"/>
   </bean>
   <bean id="foreignSourceAndRequisitionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
   <onmsgi:service interface="org.opennms.web.svclayer.api.RequisitionAccessService" ref="foreignSourceAndRequisitionAccessService" />

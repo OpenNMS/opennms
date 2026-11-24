@@ -33,7 +33,7 @@
       <tbody>
         <tr
           v-for="index in rowIndices"
-          :key="graphData.timestamps[index]"
+          :key="index"
         >
           <td class="time-cell">{{ displayRawValues ? graphData.timestamps[index] : displayTime(index) }}</td>
           <td

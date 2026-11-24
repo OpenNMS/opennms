@@ -26,6 +26,7 @@
 <% pageContext.setAttribute("nodeId", request.getParameter("node")); %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Modify")
           .headTitle("Asset")
@@ -67,7 +68,7 @@
         <div growl></div>
 
         <h4>
-          Node: <strong><a href="element/node.jsp?node=${nodeId}">{{ nodeLabel }}</a></strong>
+          Node: <strong><a href="${ElementConstants.NODE_DETAILS_URI}${nodeId}">{{ nodeLabel }}</a></strong>
         </h4>
         <p>
           Last modified by {{ (master['lastModifiedBy'] || 'no one') }} at {{ master['lastModifiedDate'] | onmsDate }}
@@ -110,9 +111,15 @@
                         <%-- Password fields --%>
                         <%-- Set `autocomplete="new-password"` to prevent autocomplete.
                              See MDN: https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion#preventing_autofilling_with_autocompletenew-password --%>
-                        <input type="password" class="form-control" ng-model="asset[field.model]" ng-if="field.type=='password'"
+                        <input type="password" class="form-control" id="{{ field.model }}" name="{{ field.model }}" ng-model="asset[field.model]" ng-if="field.type=='password'" placeholder="{{ field.placeholder }}"
+                               ng-disabled="cleared[field.model]"
                                ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}"
                                autocomplete="new-password">
+                        <%-- Password fields are write-only, so an empty input keeps the stored value. Use this check box to remove it. --%>
+                        <div class="form-check mt-1" ng-if="field.type=='password'">
+                          <input class="form-check-input" type="checkbox" id="{{ field.model }}-clear" ng-model="cleared[field.model]">
+                          <label class="form-check-label" for="{{ field.model }}-clear">Clear the stored value</label>
+                        </div>
                         <%-- Textarea fields --%>
                         <textarea class="form-control" style="height: 20em;" ng-model="asset[field.model]" ng-if="field.type=='textarea'"
                                   ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}"></textarea>

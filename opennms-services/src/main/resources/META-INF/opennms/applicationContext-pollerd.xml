@@ -38,6 +38,23 @@
       <property name="network" ref="pollableNetwork" />
       <property name="pollerConfig" ref="pollerConfig" />
       <property name="eventIpcManager" ref="eventIpcManager"/>
+      <property name="metricRegistry" ref="pollerdMetricRegistry"/>
     </bean>
-    
+
+    <bean id="pollerdMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+    <bean id="pollerdMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
+      <constructor-arg ref="pollerdMetricRegistry"/>
+    </bean>
+
+    <bean id="pollerdMetricRegistryDomainedJmxReporterBuilder" factory-bean="pollerdMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+      <constructor-arg value="org.opennms.netmgt.poller"/>
+    </bean>
+
+    <bean id="pollerdMetricRegistryJmxReporter"
+          factory-bean="pollerdMetricRegistryDomainedJmxReporterBuilder"
+          factory-method="build"
+          init-method="start"
+          destroy-method="stop" />
+
 </beans>

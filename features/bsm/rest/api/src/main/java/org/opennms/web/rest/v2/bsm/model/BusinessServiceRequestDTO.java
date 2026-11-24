@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opennms.web.rest.v2.bsm.model.edge.AbstractEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ApplicationEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeRequestDTO;
@@ -47,31 +48,42 @@ import com.google.common.collect.Maps;
 
 @XmlRootElement(name = "business-service")
 @XmlAccessorType(XmlAccessType.NONE)
+@Schema(description = """
+        A business service to create or replace. `child-edges`, `ip-service-edges` and
+        `reduction-key-edges` are applied; `application-edges` is accepted by the parser but not
+        applied.""")
 public class BusinessServiceRequestDTO {
 
+    @Schema(description = "Display name of the business service.", example = "Storefront")
     @XmlElement(name = "name")
     private String m_name;
 
+    @Schema(description = "Free-form key/value metadata. Serialized as `{\"attribute\":[{\"key\":\"...\",\"value\":\"...\"}]}`, not as a plain map; a plain map fails with a 500.")
     @XmlElement(name = "attributes", required = false)
     @XmlJavaTypeAdapter(JAXBMapAdapter.class)
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
 
+    @Schema(description = "Edges pointing at monitored IP services.")
     @XmlElement(name="ip-service-edge")
     @XmlElementWrapper(name="ip-service-edges")
     private List<IpServiceEdgeRequestDTO> m_ipServices = Lists.newArrayList();
 
+    @Schema(description = "Edges pointing at other business services. The resulting graph has to stay acyclic.")
     @XmlElement(name="child-edge")
     @XmlElementWrapper(name="child-edges")
     private List<ChildEdgeRequestDTO> m_childServices = Lists.newArrayList();
 
+    @Schema(description = "Edges listening on raw alarm reduction keys.")
     @XmlElement(name="reduction-key-edge")
     @XmlElementWrapper(name="reduction-key-edges")
     private List<ReductionKeyEdgeRequestDTO> reductionKeys = Lists.newArrayList();
 
+    @Schema(description = "Edges pointing at applications. Read back on the response; not applied from a request body.")
     @XmlElement(name="application-edge")
     @XmlElementWrapper(name="application-edges")
     private List<ApplicationEdgeRequestDTO> m_applications = Lists.newArrayList();
 
+    @Schema(description = "Function turning the mapped edge severities into this service's operational status.")
     @XmlElement(name="reduce-function")
     private ReduceFunctionDTO reduceFunction;
 

@@ -23,6 +23,8 @@ package org.opennms.features.kafka.producer.collection;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
@@ -35,13 +37,12 @@ import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class KafkaPersister implements Persister {
 
@@ -49,7 +50,13 @@ public class KafkaPersister implements Persister {
 
     private static final int MAX_BUFFER_SIZE_CONFIGURED = 921600;
 
-    private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
+    // NumericAttribute.type must always print: GAUGE is the zero enum value, which the
+    // printer would otherwise omit, leaving gauges without a type key while counters keep theirs
+    private static final JsonFormat.Printer JSON_PRINTER = JsonFormat.printer()
+            .omittingInsignificantWhitespace()
+            .includingDefaultValueFields(Collections.singleton(
+                    CollectionSetProtos.NumericAttribute.getDescriptor()
+                            .findFieldByNumber(CollectionSetProtos.NumericAttribute.TYPE_FIELD_NUMBER)));
 
     private CollectionSetMapper collectionSetMapper;
 
@@ -61,7 +68,11 @@ public class KafkaPersister implements Persister {
 
     private Boolean disableMetricsSplitting = false;
 
-    private Expression metricFilterExpression;
+    private boolean useJson = false;
+
+    private MetricFilter metricFilter;
+
+    private MetricTopicRouter metricTopicRouter;
 
     public KafkaPersister(ServiceParameters params) {
         m_params = params;
@@ -74,19 +85,51 @@ public class KafkaPersister implements Persister {
     /** {@inheritDoc} */
     @Override
     public void visitCollectionSet(CollectionSet collectionSet) {
-        CollectionSetProtos.CollectionSet collectionSetProto = collectionSetMapper
-                .buildCollectionSetProtos(collectionSet, m_params);
-        if (collectionSetProto != null) {
-            // Apply filtering if configured
-            CollectionSetProtos.CollectionSet filteredCollectionSetProto = applyMetricFilter(collectionSetProto);
+        // With metric routing disabled the router resolves every resource to topicName, so this
+        // yields a single group and behaves exactly as the un-routed path did.
+        final Map<String, CollectionSetProtos.CollectionSet> collectionSetProtosByTopic = collectionSetMapper
+                .buildCollectionSetProtosByTopic(collectionSet, m_params, metricTopicRouter, topicName);
+        if (collectionSetProtosByTopic == null) {
+            return;
+        }
+        for (final Map.Entry<String, CollectionSetProtos.CollectionSet> entry : collectionSetProtosByTopic.entrySet()) {
+            final CollectionSetProtos.CollectionSet collectionSetProto = entry.getValue();
+            if (collectionSetProto == null) {
+                continue;
+            }
+            // Apply filtering if configured. The filter is evaluated per resource, so filtering
+            // each group is equivalent to filtering the CollectionSet as a whole.
+            final CollectionSetProtos.CollectionSet filteredCollectionSetProto = metricFilter != null
+                    ? metricFilter.apply(collectionSetProto) : collectionSetProto;
             if (filteredCollectionSetProto != null && filteredCollectionSetProto.getResourceCount() > 0) {
-                bisectAndSendMessageToKafka(filteredCollectionSetProto);
+                countRoutedResources(entry.getKey(), filteredCollectionSetProto.getResourceCount());
+                bisectAndSendMessageToKafka(filteredCollectionSetProto, entry.getKey());
             }
         }
     }
 
+    private void countRoutedResources(final String topic, final int resourceCount) {
+        if (metricTopicRouter == null || !metricTopicRouter.isEnabled()) {
+            return;
+        }
+        metricTopicRouter.getMetricRegistry()
+                .counter(MetricTopicRouter.METRIC_ROUTED_PREFIX + "." + topic)
+                .inc(resourceCount);
+    }
+
+    /**
+     * Retained for callers - and tests - that send to the persister's configured topic.
+     */
     void bisectAndSendMessageToKafka(CollectionSetProtos.CollectionSet collectionSetProto) {
-        if (!getDisableMetricsSplitting() && checkForMaxSize(collectionSetProto.toByteArray().length)) {
+        bisectAndSendMessageToKafka(collectionSetProto, topicName);
+    }
+
+    void bisectAndSendMessageToKafka(CollectionSetProtos.CollectionSet collectionSetProto, String topic) {
+        final byte[] payload = serializeCollectionSet(collectionSetProto);
+        if (payload == null) {
+            return;
+        }
+        if (!getDisableMetricsSplitting() && checkForMaxSize(payload.length)) {
             if(collectionSetProto.getResourceCount() == 1) {
                 /// Handle the case where resource is only one with too many attributes that can cross max buffer size.
                 CollectionSetProtos.CollectionSetResource collectionSetResource = collectionSetProto.getResource(0);
@@ -96,7 +139,7 @@ public class KafkaPersister implements Persister {
                     numericResourceBuilder.mergeFrom(collectionSetResource).clearString();
                     CollectionSetProtos.CollectionSet collectionSetWithNumeric = CollectionSetProtos.CollectionSet.newBuilder()
                             .addResource(numericResourceBuilder).setTimestamp(collectionSetProto.getTimestamp()).build();
-                    bisectNumericAttributes(collectionSetWithNumeric);
+                    bisectNumericAttributes(collectionSetWithNumeric, topic);
                 }
                 if(collectionSetResource.getStringList().size() > 0) {
                     // Handle string attributes only
@@ -104,7 +147,7 @@ public class KafkaPersister implements Persister {
                     stringResourceBuilder.mergeFrom(collectionSetResource).clearNumeric();
                     CollectionSetProtos.CollectionSet collectionSetWithStringAttributes = CollectionSetProtos.CollectionSet.newBuilder()
                             .addResource(stringResourceBuilder).setTimestamp(collectionSetProto.getTimestamp()).build();
-                    bisectStringAttributes(collectionSetWithStringAttributes);
+                    bisectStringAttributes(collectionSetWithStringAttributes, topic);
                 }
             } else {
                 // Divide resources into two in recursive way.
@@ -113,26 +156,35 @@ public class KafkaPersister implements Persister {
 
                 CollectionSetProtos.CollectionSet firstPartCollectionSet = CollectionSetProtos.CollectionSet.newBuilder()
                         .mergeFrom(collectionSetProto).clearResource().addAllResource(subList.next()).build();
-                bisectAndSendMessageToKafka(firstPartCollectionSet);
+                bisectAndSendMessageToKafka(firstPartCollectionSet, topic);
 
                 CollectionSetProtos.CollectionSet secondPartCollectionSet = CollectionSetProtos.CollectionSet.newBuilder()
                         .mergeFrom(collectionSetProto).clearResource().addAllResource(subList.next()).build();
-                bisectAndSendMessageToKafka(secondPartCollectionSet);
+                bisectAndSendMessageToKafka(secondPartCollectionSet, topic);
             }
         } else {
-            sendMessageToKafka(collectionSetProto);
+            sendMessageToKafka(collectionSetProto, payload, topic);
         }
     }
 
-    private void bisectNumericAttributes(CollectionSetProtos.CollectionSet collectionSetProto) {
+    private void bisectNumericAttributes(CollectionSetProtos.CollectionSet collectionSetProto, String topic) {
         // Divide numeric attributes into two in recursive way
-        if (checkForMaxSize(collectionSetProto.toByteArray().length)) {
+        final byte[] payload = serializeCollectionSet(collectionSetProto);
+        if (payload == null) {
+            return;
+        }
+        final boolean oversized = checkForMaxSize(payload.length);
+        if (oversized && collectionSetProto.getResource(0).getNumericCount() > 1) {
             Iterator<List<CollectionSetProtos.NumericAttribute>> subList = Iterables.partition(collectionSetProto.getResource(0).getNumericList(),
                     (collectionSetProto.getResource(0).getNumericCount() + 1) / 2).iterator();
-            bisectNumericAttributes(buildCollectionSetWithNumericAttributes(collectionSetProto, subList.next()));
-            bisectNumericAttributes(buildCollectionSetWithNumericAttributes(collectionSetProto, subList.next()));
+            bisectNumericAttributes(buildCollectionSetWithNumericAttributes(collectionSetProto, subList.next()), topic);
+            bisectNumericAttributes(buildCollectionSetWithNumericAttributes(collectionSetProto, subList.next()), topic);
         } else {
-            sendMessageToKafka(collectionSetProto);
+            if (oversized) {
+                LOG.warn("A single attribute encodes to {} bytes, exceeding the maximum of {} bytes; it cannot be split further and will be sent as-is",
+                        payload.length, MAX_BUFFER_SIZE_CONFIGURED);
+            }
+            sendMessageToKafka(collectionSetProto, payload, topic);
         }
     }
 
@@ -147,15 +199,24 @@ public class KafkaPersister implements Persister {
         return collectionSetBuilder.build();
     }
 
-    private void bisectStringAttributes(CollectionSetProtos.CollectionSet collectionSetProto) {
+    private void bisectStringAttributes(CollectionSetProtos.CollectionSet collectionSetProto, String topic) {
         // Divide string attributes into two in recursive way
-        if (checkForMaxSize(collectionSetProto.toByteArray().length)) {
+        final byte[] payload = serializeCollectionSet(collectionSetProto);
+        if (payload == null) {
+            return;
+        }
+        final boolean oversized = checkForMaxSize(payload.length);
+        if (oversized && collectionSetProto.getResource(0).getStringCount() > 1) {
             Iterator<List<CollectionSetProtos.StringAttribute>> subList = Iterables.partition(collectionSetProto.getResource(0).getStringList(),
                     (collectionSetProto.getResource(0).getStringCount() + 1) / 2).iterator();
-            bisectStringAttributes(buildCollectionSetWithStringAttributes(collectionSetProto, subList.next()));
-            bisectStringAttributes(buildCollectionSetWithStringAttributes(collectionSetProto, subList.next()));
+            bisectStringAttributes(buildCollectionSetWithStringAttributes(collectionSetProto, subList.next()), topic);
+            bisectStringAttributes(buildCollectionSetWithStringAttributes(collectionSetProto, subList.next()), topic);
         } else {
-            sendMessageToKafka(collectionSetProto);
+            if (oversized) {
+                LOG.warn("A single attribute encodes to {} bytes, exceeding the maximum of {} bytes; it cannot be split further and will be sent as-is",
+                        payload.length, MAX_BUFFER_SIZE_CONFIGURED);
+            }
+            sendMessageToKafka(collectionSetProto, payload, topic);
         }
     }
 
@@ -173,16 +234,40 @@ public class KafkaPersister implements Persister {
     boolean checkForMaxSize(int length) {
         return length > MAX_BUFFER_SIZE_CONFIGURED;
     }
-    
-    private void sendMessageToKafka( CollectionSetProtos.CollectionSet collectionSetProto) {
+
+    /**
+     * Renders the collection set exactly as it would be forwarded when {@code metrics.useJson} is enabled.
+     */
+    public static String toJson(CollectionSetProtos.CollectionSet collectionSetProto) throws InvalidProtocolBufferException {
+        return JSON_PRINTER.print(collectionSetProto);
+    }
+
+    /**
+     * Serialize the CollectionSet with the configured output format:
+     * JSON when useJson is enabled, protobuf otherwise.
+     * Returns null if the CollectionSet could not be serialized.
+     */
+    byte[] serializeCollectionSet(CollectionSetProtos.CollectionSet collectionSetProto) {
+        if (useJson) {
+            try {
+                return toJson(collectionSetProto).getBytes(StandardCharsets.UTF_8);
+            } catch (InvalidProtocolBufferException e) {
+                LOG.error("Failed to serialize collection set with {} resources (key {}) to JSON, it will not be forwarded",
+                        collectionSetProto.getResourceCount(), deriveKeyFromCollectionSet(collectionSetProto), e);
+                return null;
+            }
+        }
+        return collectionSetProto.toByteArray();
+    }
+
+    private void sendMessageToKafka(CollectionSetProtos.CollectionSet collectionSetProto, byte[] payload, String topic) {
         // If no resources should be persisted, do not send an empty CollectionSet
         if (collectionSetProto.getResourceCount() == 0) {
             return;
         }
         // Derive key, it will be nodeId for all resources except for response time, it would be IpAddress
         final String key = deriveKeyFromCollectionSet(collectionSetProto);
-        final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topicName, key,
-                collectionSetProto.toByteArray());
+        final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, key, payload);
         producer.send(record, (recordMetadata, e) -> {
             if (e != null) {
                 LOG.warn("Failed to send record to producer: {}.", record, e);
@@ -223,6 +308,10 @@ public class KafkaPersister implements Persister {
 
     public void setCollectionSetMapper(CollectionSetMapper collectionSetMapper) {
         this.collectionSetMapper = collectionSetMapper;
+    }
+
+    public void setMetricTopicRouter(MetricTopicRouter metricTopicRouter) {
+        this.metricTopicRouter = metricTopicRouter;
     }
 
     @Override
@@ -278,171 +367,26 @@ public class KafkaPersister implements Persister {
         return disableMetricsSplitting;
     }
 
+    public void setUseJson(boolean useJson) {
+        this.useJson = useJson;
+    }
+
     public void setMetricFilter(final String metricFilter) {
-        if (Strings.isNullOrEmpty(metricFilter)) {
-            metricFilterExpression = null;
-        } else {
-            metricFilterExpression = SPEL_PARSER.parseExpression(metricFilter);
-        }
+        this.metricFilter = MetricFilter.parse(metricFilter);
+    }
+
+    public MetricFilter getMetricFilter() {
+        return metricFilter;
     }
 
     /**
-     * Apply metric filter to the CollectionSet.
-     * Filters resources based on the configured SpEL expression.
-     * If no filter is configured, returns the original CollectionSet unchanged.
+     * @deprecated the SpEL root object moved to {@link MetricFilter.ResourceFilterContext}; this alias only
+     * keeps external code compiling.
      */
-    private CollectionSetProtos.CollectionSet applyMetricFilter(final CollectionSetProtos.CollectionSet collectionSet) {
-        if (metricFilterExpression == null) {
-            // No filter configured, return original
-            return collectionSet;
-        }
-
-        // Filter resources based on the expression
-        final CollectionSetProtos.CollectionSet.Builder filteredBuilder = CollectionSetProtos.CollectionSet.newBuilder()
-                .setTimestamp(collectionSet.getTimestamp());
-
-        for (CollectionSetProtos.CollectionSetResource resource : collectionSet.getResourceList()) {
-            if (shouldForwardResource(resource)) {
-                filteredBuilder.addResource(resource);
-            }
-        }
-
-        return filteredBuilder.build();
-    }
-
-    /**
-     * Evaluate whether a resource should be forwarded based on the metrics filter.
-     */
-    private boolean shouldForwardResource(final CollectionSetProtos.CollectionSetResource resource) {
-        try {
-            // Create a context object with accessible properties for SpEL evaluation
-            final ResourceFilterContext context = new ResourceFilterContext(resource);
-            final Boolean result = metricFilterExpression.getValue(context, Boolean.class);
-            return result != null && result;
-        } catch (Exception e) {
-            LOG.error("Metric filter '{}' failed to evaluate for resource. The resource will be forwarded anyways.", metricFilterExpression.getExpressionString(), e);
-            return true; // Forward on error to avoid data loss
-        }
-    }
-
-    /**
-     * Context object that exposes resource properties for SpEL filtering.
-     * Provides access to node properties (nodeId, nodeLabel, foreignSource, foreignId, location)
-     * and resource properties (resourceType, resourceName).
-     */
-    public static class ResourceFilterContext {
-        private final CollectionSetProtos.CollectionSetResource resource;
-
+    @Deprecated
+    public static class ResourceFilterContext extends MetricFilter.ResourceFilterContext {
         public ResourceFilterContext(CollectionSetProtos.CollectionSetResource resource) {
-            this.resource = resource;
-        }
-
-        public Long getNodeId() {
-            if (resource.hasNode()) {
-                return resource.getNode().getNodeId();
-            } else if (resource.hasInterface() && resource.getInterface().hasNode()) {
-                return resource.getInterface().getNode().getNodeId();
-            } else if (resource.hasGeneric() && resource.getGeneric().hasNode()) {
-                return resource.getGeneric().getNode().getNodeId();
-            } else if (resource.hasResponse() && resource.getResponse().hasNode()) {
-                return resource.getResponse().getNode().getNodeId();
-            }
-            return null;
-        }
-
-        public String getNodeLabel() {
-            String nodeLabel = null;
-            if (resource.hasNode() && !resource.getNode().getNodeLabel().isEmpty()) {
-                nodeLabel = resource.getNode().getNodeLabel();
-            } else if (resource.hasInterface() && resource.getInterface().hasNode() && !resource.getInterface().getNode().getNodeLabel().isEmpty()) {
-                nodeLabel = resource.getInterface().getNode().getNodeLabel();
-            } else if (resource.hasGeneric() && resource.getGeneric().hasNode() && !resource.getGeneric().getNode().getNodeLabel().isEmpty()) {
-                nodeLabel = resource.getGeneric().getNode().getNodeLabel();
-            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getNode().getNodeLabel().isEmpty()) {
-                nodeLabel = resource.getResponse().getNode().getNodeLabel();
-            }
-            return nodeLabel;
-        }
-
-        public String getForeignSource() {
-            String foreignSource = null;
-            if (resource.hasNode() && !resource.getNode().getForeignSource().isEmpty()) {
-                foreignSource = resource.getNode().getForeignSource();
-            } else if (resource.hasInterface() && resource.getInterface().hasNode() && !resource.getInterface().getNode().getForeignSource().isEmpty()) {
-                foreignSource = resource.getInterface().getNode().getForeignSource();
-            } else if (resource.hasGeneric() && resource.getGeneric().hasNode() && !resource.getGeneric().getNode().getForeignSource().isEmpty()) {
-                foreignSource = resource.getGeneric().getNode().getForeignSource();
-            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getNode().getForeignSource().isEmpty()) {
-                foreignSource = resource.getResponse().getNode().getForeignSource();
-            }
-            return foreignSource;
-        }
-
-        public String getForeignId() {
-            String foreignId = null;
-            if (resource.hasNode() && !resource.getNode().getForeignId().isEmpty()) {
-                foreignId = resource.getNode().getForeignId();
-            } else if (resource.hasInterface() && resource.getInterface().hasNode() && !resource.getInterface().getNode().getForeignId().isEmpty()) {
-                foreignId = resource.getInterface().getNode().getForeignId();
-            } else if (resource.hasGeneric() && resource.getGeneric().hasNode() && !resource.getGeneric().getNode().getForeignId().isEmpty()) {
-                foreignId = resource.getGeneric().getNode().getForeignId();
-            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getNode().getForeignId().isEmpty()) {
-                foreignId = resource.getResponse().getNode().getForeignId();
-            }
-            return foreignId;
-        }
-
-        public String getLocation() {
-            String location = null;
-            if (resource.hasNode() && !resource.getNode().getLocation().isEmpty()) {
-                location = resource.getNode().getLocation();
-            } else if (resource.hasInterface() && resource.getInterface().hasNode() && !resource.getInterface().getNode().getLocation().isEmpty()) {
-                location = resource.getInterface().getNode().getLocation();
-            } else if (resource.hasGeneric() && resource.getGeneric().hasNode() && !resource.getGeneric().getNode().getLocation().isEmpty()) {
-                location = resource.getGeneric().getNode().getLocation();
-            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getLocation().isEmpty()) {
-                location = resource.getResponse().getLocation();
-            }
-            return location;
-        }
-
-        public String getResourceTypeName() {
-            if (resource.hasResponse()) {
-                return "responseTime";
-            } else if (resource.hasGeneric()) {
-                return resource.getGeneric().getType();
-            } else {
-                return resource.getResourceTypeName();
-            }
-        }
-
-        public String getResourceName() {
-            if (!resource.getResourceName().isEmpty()) {
-                return resource.getResourceName();
-            }
-            return null;
-        }
-
-        public Integer getIfIndex() {
-            if (resource.hasInterface()) {
-                return resource.getInterface().getIfIndex();
-            }
-            return null;
-        }
-
-        public String getResourceId() {
-            return resource.getResourceId();
-        }
-
-        public String getInstance() {
-            if (resource.hasGeneric()) {
-                return resource.getGeneric().getInstance();
-            } else if (resource.hasInterface()) {
-                return resource.getInterface().getInstance();
-            } else if (resource.hasResponse()) {
-                return resource.getResponse().getInstance();
-            }
-            return null;
+            super(resource);
         }
     }
 }

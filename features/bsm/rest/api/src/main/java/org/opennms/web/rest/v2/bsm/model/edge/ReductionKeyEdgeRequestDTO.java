@@ -21,15 +21,20 @@
  */
 package org.opennms.web.rest.v2.bsm.model.edge;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="reduction-key-edge")
+@Schema(description = "An edge listening on one raw alarm reduction key.")
 public class ReductionKeyEdgeRequestDTO extends AbstractEdgeRequestDTO {
     private String reductionKey;
 
     private String friendlyName;
 
+    @Schema(description = "Alarm reduction key to listen on. Matched as an opaque string and not "
+            + "validated against existing alarms.",
+            example = "uei.opennms.org/nodes/nodeDown::1", required = true)
     @XmlElement(name="reduction-key",required = true)
     public String getReductionKey() {
         return reductionKey;
@@ -39,6 +44,7 @@ public class ReductionKeyEdgeRequestDTO extends AbstractEdgeRequestDTO {
         this.reductionKey = reductionKey;
     }
 
+    @Schema(description = "Label shown for this edge in the UI.", example = "core switch down")
     @XmlElement(name="friendly-name",required = false)
     public String getFriendlyName() {
         return friendlyName;

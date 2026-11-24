@@ -33,6 +33,7 @@ public class WsmanEndpointUtils {
     private static final String URL = "url";
     private static final String SERVER_VERSION = "server-version";
     private static final String GSS_AUTH = "gss-auth";
+    private static final String KERBEROS_ENCRYPTION = "kerberos-encryption";
     private static final String STRICT_SSL = "strict-ssl";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
@@ -46,8 +47,12 @@ public class WsmanEndpointUtils {
         attributes.put(URL, endpoint.getUrl().toString());
         attributes.put(SERVER_VERSION, endpoint.getServerVersion().toString());
         attributes.put(GSS_AUTH, Boolean.toString(endpoint.isGSSAuth()));
+        attributes.put(KERBEROS_ENCRYPTION, Boolean.toString(endpoint.isKerberosEncryption()));
         attributes.put(STRICT_SSL, Boolean.toString(endpoint.isStrictSSL()));
-        if (endpoint.isBasicAuth()) {
+        // Credentials are carried whenever they are set, not only for basic authentication:
+        // with gss-auth or kerberos-encryption they are the Kerberos principal and password
+        // used to obtain the ticket, and isBasicAuth() is false in that case.
+        if (endpoint.getUsername() != null && endpoint.getPassword() != null) {
             attributes.put(USERNAME, endpoint.getUsername());
             attributes.put(PASSWORD, endpoint.getPassword());
         }
@@ -72,6 +77,9 @@ public class WsmanEndpointUtils {
         if (Boolean.parseBoolean(attributes.get(GSS_AUTH))) {
             builder.withGSSAuth();
         }
+        if (Boolean.parseBoolean(attributes.get(KERBEROS_ENCRYPTION))) {
+            builder.withKerberosEncryption();
+        }
         builder.withStrictSSL(Boolean.parseBoolean(attributes.get(STRICT_SSL)));
         if (attributes.containsKey(USERNAME)) {
             builder.withBasicAuth(attributes.get(USERNAME), attributes.get(PASSWORD));
@@ -89,6 +97,23 @@ public class WsmanEndpointUtils {
             builder.withReceiveTimeout(Integer.parseInt(attributes.get(RECEIVE_TIMEOUT)));
         }
         return builder.build();
+    }
+
+    /**
+     * Returns a copy of the endpoint whose HTTP connection and receive timeouts are both
+     * set to the given value, so that no single exchange with the host outlives the
+     * caller's own time budget.
+     */
+    public static WSManEndpoint withTimeouts(WSManEndpoint endpoint, int timeoutMillis) {
+        final Map<String, String> attributes = toMap(endpoint);
+        attributes.put(CONNECTION_TIMEOUT, Integer.toString(timeoutMillis));
+        attributes.put(RECEIVE_TIMEOUT, Integer.toString(timeoutMillis));
+        try {
+            return fromMap(attributes);
+        } catch (MalformedURLException e) {
+            // The URL came from a valid endpoint
+            throw new IllegalStateException(e);
+        }
     }
 
 }

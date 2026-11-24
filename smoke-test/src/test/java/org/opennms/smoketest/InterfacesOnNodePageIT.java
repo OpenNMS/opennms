@@ -29,8 +29,7 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import org.opennms.smoketest.ui.NodeDetailsPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +98,7 @@ public class InterfacesOnNodePageIT extends OpenNMSSeleniumIT {
             LOG.debug("interface created!");
         }
 
-        driver.get(getBaseUrlInternal() + "opennms/element/node.jsp?node=SmokeTests:TestMachine1");
+        new NodeDetailsPage(this).open("SmokeTests:TestMachine1");
     }
 
     /**
@@ -119,23 +118,25 @@ public class InterfacesOnNodePageIT extends OpenNMSSeleniumIT {
      */
     @Test
     public void testNodePage() throws Exception {
-        // Verify main banner
-        Assert.assertEquals("TestMachine1", findElementByCss("h5 div.NPnode strong").getText());
+        final NodeDetailsPage nodePage = new NodeDetailsPage(this);
 
-        // Verify IP Interfaces
-        List<WebElement> elements = driver.findElements(By.cssSelector("div.tab-pane.ng-scope.active td.ng-binding"));
-        Assert.assertEquals("10.10.10.10", elements.get(0).getText());
-        Assert.assertEquals("test-machine1.local", elements.get(1).getText());
+        // Verify main banner
+        nodePage.waitForLabel("TestMachine1");
+
+        // Verify IP Interfaces: IP Address, IP Host Name, ...
+        List<String> cells = nodePage.getFirstRowCells("ip-interfaces-table");
+        Assert.assertEquals("10.10.10.10", cells.get(0));
+        Assert.assertEquals("test-machine1.local", cells.get(1));
 
         // Click on SNMP Interfaces Tab
-        findElementByLink("SNMP Interfaces").click();
+        nodePage.showSnmpInterfaces();
 
-        // Verify SNMP Interfaces
-        elements = driver.findElements(By.cssSelector("div.tab-pane.ng-scope.active td.ng-binding"));
-        Assert.assertEquals("1", elements.get(0).getText());
-        Assert.assertEquals("eth1", elements.get(1).getText());
-        Assert.assertEquals("eth1", elements.get(2).getText());
-        Assert.assertEquals("LAN Access 1", elements.get(3).getText());
+        // Verify SNMP Interfaces: Index, Name, Status, Alias, Speed, Descr, ...
+        cells = nodePage.getFirstRowCells("snmp-interfaces-table");
+        Assert.assertEquals("1", cells.get(0));
+        Assert.assertEquals("eth1", cells.get(1));
+        Assert.assertEquals("LAN Access 1", cells.get(3));
+        Assert.assertEquals("eth1", cells.get(5));
     }
 
 }

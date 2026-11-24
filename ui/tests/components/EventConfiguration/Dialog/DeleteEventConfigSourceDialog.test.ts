@@ -38,6 +38,7 @@ describe('DeleteEventConfigSourceDialog', () => {
           enabled: true,
           eventCount: 5,
           fileOrder: 1,
+          evaluationOrder: 1,
           uploadedBy: 'test-user',
           createdTime: new Date('2025-10-01T12:00:00Z'),
           lastModified: new Date('2025-10-02T12:00:00Z')
@@ -50,6 +51,10 @@ describe('DeleteEventConfigSourceDialog', () => {
       isLoading: false,
       activeTab: 0,
       uploadedSources: [],
+      orderedSources: [],
+      catchAllSource: null,
+      isSavingSourceOrder: false,
+      sourcesReorderMode: false,
       uploadedEventConfigFilesReportDialogState: { visible: false },
       changeEventConfigSourceStatusDialogState: { visible: false, eventConfigSource: null },
       createEventConfigSourceDialogState: { visible: false }
@@ -124,6 +129,10 @@ describe('DeleteEventConfigSourceDialog', () => {
       isLoading: false,
       activeTab: 0,
       uploadedSources: [],
+      orderedSources: [],
+      catchAllSource: null,
+      isSavingSourceOrder: false,
+      sourcesReorderMode: false,
       uploadedEventConfigFilesReportDialogState: { visible: false },
       changeEventConfigSourceStatusDialogState: { visible: false, eventConfigSource: null },
       createEventConfigSourceDialogState: { visible: false }

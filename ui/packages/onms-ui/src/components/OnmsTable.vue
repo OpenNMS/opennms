@@ -13,16 +13,20 @@
     :stripedRows="stripedRows"
     :size="size"
     :scrollable="scrollable"
+    :selectionMode="selectionMode"
     :scrollHeight="scrollHeight"
     :tableStyle="tableStyle"
     :editMode="editMode"
     :editingRows="editingRows"
     :expandedRows="expandedRows"
+    :rowClass="rowClass"
+    :loading="loading"
     :virtualScrollerOptions="virtualScrollerOptions"
     :pt="pt as never"
     @page="emit('page', $event)"
     @sort="emit('sort', $event)"
     @row-edit-save="emit('row-edit-save', $event)"
+    @row-click="emit('row-click', $event)"
     @update:first="emit('update:first', $event)"
     @update:rows="emit('update:rows', $event)"
     @update:expandedRows="emit('update:expandedRows', $event as any)"
@@ -50,7 +54,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import DataTable from 'primevue/datatable'
-import type { OnmsTablePageEvent, OnmsTableRowEditSaveEvent, OnmsTableSortEvent } from '../types'
+import type { OnmsTablePageEvent, OnmsTableRowClickEvent, OnmsTableRowEditSaveEvent, OnmsTableSortEvent } from '../types'
 
 // Seam wrapper (NMS-20081) around PrimeVue DataTable. Columns are declared
 // with OnmsColumn children in the default slot (OnmsColumn is a typed
@@ -77,6 +81,7 @@ const props = withDefaults(defineProps<{
   stripedRows?: boolean
   size?: 'small' | 'large'
   scrollable?: boolean
+  selectionMode?: 'single' | 'multiple'
   scrollHeight?: string
   tableStyle?: string | Record<string, string>
   editMode?: 'row'
@@ -84,6 +89,12 @@ const props = withDefaults(defineProps<{
   // PrimeVue accepts either an array of row instances or an object keyed by
   // dataKey (its DataTableExpandedRows shape) when a table uses dataKey.
   expandedRows?: any[] | Record<string, boolean>
+  // Per-row CSS classes, as PrimeVue's own (data) => class signature. Returns a
+  // class string or a Vue class object; undefined leaves the row unclassed.
+  rowClass?: (data: any) => string | Record<string, boolean> | undefined
+  // Masks the table body with a spinner. Scoped to the table rather than the
+  // page, unlike the app-wide useSpinner/Spinner overlay.
+  loading?: boolean
   // Narrowed from PrimeVue's virtualScrollerOptions object: row height in px
   virtualScrollItemSize?: number
   unsafePt?: unknown
@@ -101,11 +112,14 @@ const props = withDefaults(defineProps<{
   stripedRows: false,
   size: undefined,
   scrollable: false,
+  selectionMode: undefined,
   scrollHeight: undefined,
   tableStyle: undefined,
   editMode: undefined,
   editingRows: undefined,
   expandedRows: undefined,
+  rowClass: undefined,
+  loading: false,
   virtualScrollItemSize: undefined,
   unsafePt: undefined
 })
@@ -114,6 +128,7 @@ const emit = defineEmits<{
   page: [event: OnmsTablePageEvent]
   sort: [event: OnmsTableSortEvent]
   'row-edit-save': [event: OnmsTableRowEditSaveEvent]
+  'row-click': [event: OnmsTableRowClickEvent]
   'update:first': [value: number]
   'update:rows': [value: number]
   'update:expandedRows': [value: any[] | Record<string, boolean>]

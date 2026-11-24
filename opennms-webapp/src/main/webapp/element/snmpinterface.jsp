@@ -50,10 +50,11 @@
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Snmp Interface")
           .breadcrumb("Search", "element/index.jsp")
-          .breadcrumb("Node", "element/node.jsp?node=" + nodeId)
+          .breadcrumb("Node", ElementConstants.NODE_DETAILS_URI + nodeId)
           .breadcrumb("SnmpInterface")
           .build(request);
 %>
@@ -76,7 +77,7 @@ function doDelete() {
 }
 %>
 
-<h4>Interface: <%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : intf_db.getSnmpIfDescription()%></h4>
+<h4>Interface: <%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : WebSecurityUtils.sanitizeString(intf_db.getSnmpIfDescription())%></h4>
 
 <%
 if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
@@ -135,7 +136,7 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
       <table class="table table-sm">
         <tr>
           <th>Node</th>
-          <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(node.getLabel())%></a></td>
+          <td><a href="<%= ElementConstants.NODE_DETAILS_URI %><%=intf_db.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(node.getLabel())%></a></td>
         </tr>
         <tr>
           <th>Interface Index</th>

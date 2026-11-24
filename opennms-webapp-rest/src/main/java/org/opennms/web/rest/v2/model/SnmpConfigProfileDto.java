@@ -22,11 +22,22 @@
 
 package org.opennms.web.rest.v2.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opennms.web.svclayer.model.SnmpInfo;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 
+@Schema(description = """
+        An SNMP profile expressed with the flatter `SnmpInfo` field names, plus the profile's label and
+        filter. `toSnmpProfile` converts it to the `SnmpProfile` bean that `POST /snmp-config/profile`
+        consumes.""")
 public class SnmpConfigProfileDto extends SnmpInfo {
+    @Schema(description = "Profile label. Identifies the profile for update and delete.",
+            example = "edge-switches", required = true)
     protected String label;
+
+    @Schema(description = "Filter expression deciding which interfaces the profile is tried against. "
+            + "Empty means every interface.",
+            example = "iphostname LIKE '%edge%'")
     protected String filterExpression;
 
     public String getLabel() {

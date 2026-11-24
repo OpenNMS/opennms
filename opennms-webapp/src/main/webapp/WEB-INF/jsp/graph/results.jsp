@@ -30,6 +30,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.utils.AngularJsUtils" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Results")
           .headTitle("Resource Graphs")
@@ -38,14 +39,14 @@
           .breadcrumb("Resource Graphs", "graph/index.jsp")
           .breadcrumb("Results")
           .scrollSpy("#results-sidebar")
-          .ngApp("onms-ksc")
+          .ngApp("onms-graph-results")
           .flags("renderGraphs")
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
-    <jsp:param name="asset" value="add-to-ksc" />
+    <jsp:param name="asset" value="graph-results" />
 </jsp:include>
 
 <div id="graph-results">
@@ -59,10 +60,11 @@
         <c:set var="showCustom">style="display: none;"</c:set>
     </c:if>
     <div id="customTimeForm" class="mb-3" name="customTimeForm" ${showCustom}>
-        <form role="form" class="form top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get">
+        <%-- The hidden fields contain request values. ng-non-bindable stops AngularJS from evaluating {{...}} in these values. --%>
+        <form role="form" class="form top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get" ng-non-bindable>
             <c:if test="${empty results.generatedId && empty results.nodeCriteria}">
                 <c:forEach var="resultSet" items="${results.graphResultSets}">
-                    <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
+                    <input type="hidden" name="resourceId" value="${fn:escapeXml(resultSet.resource.id)}"/>
                 </c:forEach>
             </c:if>
             <c:if test="${not empty results.generatedId}">
@@ -75,7 +77,7 @@
                 <input type="hidden" name="reports" value="<c:out value="${report}"/>"/>
             </c:forEach>
             <input type="hidden" name="relativetime" value="custom"/>
-            <input type="hidden" name="zoom" value="<c:out value="${param.zoom}"/>"/>
+            <input type="hidden" name="zoom" value="${param.zoom == 'true'}"/>
 
             <div class="form-row form-group mb-1">
                 <label class="col-form-label col-lg-1 col-md-2 col-4">Start Time</label>
@@ -165,7 +167,7 @@
 <c:set var="showFootnote1" value="false"/>
 
 
-<div class="row" ng-controller="AddToKscCtrl">
+<div class="row" ng-controller="AddToGraphCollectionCtrl">
 
     <div class="col-md-10" ng-controller="graphSearchBoxCtrl" id="search-graphs">
         <form class="form-inline pull-right mb-4">
@@ -191,14 +193,15 @@
 	<c:forEach var="resultSet" items="${results.graphResultSets}">
     <div class="card text-center" id="panel-resource${resultSet.index}">
       <div class="card-header">
-        <span>
-            ${resultSet.resource.parent.resourceType.label}:
+        <%-- Resource labels can come from device data. ng-non-bindable stops AngularJS from evaluating them. --%>
+        <span ng-non-bindable>
+            <c:out value="${resultSet.resource.parent.resourceType.label}"/>:
             <c:choose>
                 <c:when test="${(!empty resultSet.resource.parent.link) && loggedIn}">
                     <a href="<c:url value='${resultSet.resource.parent.link}'/>"><c:out value="${resultSet.resource.parent.label}"/></a>
                 </c:when>
                 <c:otherwise>
-                    ${resultSet.resource.parent.label}
+                    <c:out value="${resultSet.resource.parent.label}"/>
                 </c:otherwise>
             </c:choose>
 
@@ -210,7 +213,7 @@
                         Resource:
                     </c:when>
                     <c:otherwise>
-                        ${resultSet.resource.resourceType.label}:
+                        <c:out value="${resultSet.resource.resourceType.label}"/>:
                     </c:otherwise>
                 </c:choose>
                 <c:choose>
@@ -218,7 +221,7 @@
                         <a href="<c:url value='${resultSet.resource.link}'/>"><c:out value="${resultSet.resource.label}"/></a>
                     </c:when>
                     <c:otherwise>
-                        ${resultSet.resource.label}
+                        <c:out value="${resultSet.resource.label}"/>
                     </c:otherwise>
                 </c:choose>
             </c:if>
@@ -260,10 +263,11 @@
                         <c:param name="resourceId" value="${resultSet.resource.id}"/>
                     </c:url>
                     <!-- graph-search div should be immediate parent to graph-container as search depends on this. -->
-                    <div class="graph-search" ng-show="enableGraph" ng-controller="graphSearchCtrl" resourceid ="${resultSet.resource.id}" graphname="${graph.name}" graphtitle = "${graph.title}">
-	                    <div class="graph-aux-controls" style="padding-bottom: 5px" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
+                    <%-- Resource IDs can contain device data. Do not put them in attributes that AngularJS compiles. --%>
+                    <div class="graph-search" ng-show="enableGraph" ng-controller="graphSearchCtrl" graphname="${fn:escapeXml(graph.name)}" graphtitle = "${fn:escapeXml(graph.title)}">
+	                    <div class="graph-aux-controls" style="padding-bottom: 5px">
                             <a style="padding-right: 3px" title="Add ${graph.title} to Graph Collection">
-                                <button type="button" class="btn btn-secondary btn-sm" ng-click="open('${resultSet.resource.id}','${resultSet.resource.label}','${graph.name}','${graph.title}')">
+                                <button type="button" class="btn btn-secondary btn-sm" ng-click="open('${AngularJsUtils.escapeString(resultSet.resource.id)}','${AngularJsUtils.escapeString(resultSet.resource.label)}','${AngularJsUtils.escapeString(graph.name)}','${AngularJsUtils.escapeString(graph.title)}')">
                                     <i class="fas fa-plus" aria-hidden="true"></i>
                                 </button>
                             </a>
@@ -285,7 +289,8 @@
                               </a>
                             </div>
 	                    </div> <!-- graph-aux-controls -->
-                        <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom}"></div>
+                        <%-- onms-graph reads data-resource-id. ng-non-bindable stops AngularJS from evaluating it. --%>
+                        <div class="graph-container" ng-non-bindable data-graph-zoomable="true" data-resource-id="${fn:escapeXml(resultSet.resource.id)}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom == 'true'}"></div>
                         <br/><br/>
                     </div>
                 </c:forEach>
@@ -310,14 +315,14 @@
 	</div> <!-- col-md-10 -->
 
 	<div class="col-md-2">
-	<div id="results-sidebar" class="resource-graphs-sidebar d-print-none d-none d-sm-block d-md-block sidebar-fixed">
+	<div id="results-sidebar" class="resource-graphs-sidebar d-print-none d-none d-sm-block d-md-block sidebar-fixed" ng-non-bindable>
         <ul class="nav flex-column">
             <c:forEach var="resourceType" items="${results.resourceTypes}">
             <li class="nav-item">
-                <a class="nav-link" target="_self" href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${results.graphResultMap[resourceType][0].index}" data-target="#panel-resource${results.graphResultMap[resourceType][0].index}">${resourceType}</a>
+                <a class="nav-link" target="_self" href="${fn:escapeXml(requestScope['javax.servlet.forward.request_uri'])}?${fn:escapeXml(pageContext.request.queryString)}#panel-resource${results.graphResultMap[resourceType][0].index}" data-target="#panel-resource${results.graphResultMap[resourceType][0].index}"><c:out value="${resourceType}"/></a>
                 <ul class="nav">
                     <c:forEach var="resultSet" items="${results.graphResultMap[resourceType]}">
-                    <li class="nav-item"><a class="nav-link" target="_self" href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}">${resultSet.resource.label}</a></li>
+                    <li class="nav-item"><a class="nav-link" target="_self" href="${fn:escapeXml(requestScope['javax.servlet.forward.request_uri'])}?${fn:escapeXml(pageContext.request.queryString)}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}"><c:out value="${resultSet.resource.label}"/></a></li>
                     </c:forEach>
                 </ul>
             </li>

@@ -112,7 +112,10 @@ export default tseslint.config(
           { name: 'primevue/card', message: 'Use OnmsCard from @opennms/onms-ui.' },
           { name: 'primevue/checkbox', message: 'Use OnmsCheckbox from @opennms/onms-ui.' },
           { name: 'primevue/chip', message: 'Use OnmsChip from @opennms/onms-ui.' },
+          { name: 'primevue/colorpicker', message: 'Use OnmsColorPicker from @opennms/onms-ui.' },
           { name: 'primevue/column', message: 'Use OnmsColumn from @opennms/onms-ui.' },
+          { name: 'primevue/confirmdialog', message: 'Use OnmsConfirmationDialog from @opennms/onms-ui.' },
+          { name: 'primevue/contextmenu', message: 'Use OnmsContextMenu from @opennms/onms-ui.' },
           { name: 'primevue/datatable', message: 'Use OnmsTable from @opennms/onms-ui.' },
           { name: 'primevue/datepicker', message: 'Use OnmsDatePicker from @opennms/onms-ui.' },
           { name: 'primevue/dialog', message: 'Use OnmsDialog from @opennms/onms-ui.' },
@@ -124,6 +127,8 @@ export default tseslint.config(
           { name: 'primevue/listbox', message: 'Use OnmsListbox from @opennms/onms-ui.' },
           { name: 'primevue/menu', message: 'Use OnmsMenu from @opennms/onms-ui.' },
           { name: 'primevue/menuitem', message: 'Use the OnmsMenuItem type from @opennms/onms-ui.' },
+          { name: 'primevue/paginator', message: 'Use OnmsPaginator from @opennms/onms-ui (or OnmsTable\'s built-in paginator).' },
+          { name: 'primevue/menubar', message: 'Use OnmsMenubar from @opennms/onms-ui.' },
           { name: 'primevue/multiselect', message: 'Use OnmsMultiSelect from @opennms/onms-ui.' },
           { name: 'primevue/panel', message: 'Use OnmsPanel from @opennms/onms-ui.' },
           { name: 'primevue/password', message: 'Use OnmsPassword from @opennms/onms-ui.' },
@@ -131,6 +136,8 @@ export default tseslint.config(
           { name: 'primevue/progressspinner', message: 'Use OnmsSpinner from @opennms/onms-ui.' },
           { name: 'primevue/radiobutton', message: 'Use OnmsRadioButton from @opennms/onms-ui.' },
           { name: 'primevue/select', message: 'Use OnmsSelect from @opennms/onms-ui.' },
+          { name: 'primevue/selectbutton', message: 'Use OnmsSelectButton from @opennms/onms-ui.' },
+          { name: 'primevue/slider', message: 'Use OnmsSlider from @opennms/onms-ui.' },
           { name: 'primevue/tab', message: 'Use OnmsTab from @opennms/onms-ui.' },
           { name: 'primevue/tablist', message: 'Use OnmsTabList from @opennms/onms-ui.' },
           { name: 'primevue/tabpanel', message: 'Use OnmsTabPanel from @opennms/onms-ui.' },
@@ -138,11 +145,15 @@ export default tseslint.config(
           { name: 'primevue/tabs', message: 'Use OnmsTabs from @opennms/onms-ui.' },
           { name: 'primevue/tag', message: 'Use OnmsTag from @opennms/onms-ui.' },
           { name: 'primevue/textarea', message: 'Use OnmsTextarea from @opennms/onms-ui.' },
-          { name: 'primevue/tieredmenu', message: 'No seam wrapper yet — SideMenu.vue is the only sanctioned use (inline-disabled). Talk to the UI team.' },
+          { name: 'primevue/tieredmenu', message: 'Use OnmsTieredMenu from @opennms/onms-ui. SideMenu.vue drives TieredMenu internals directly and stays inline-disabled.' },
           { name: 'primevue/toast', message: 'Use OnmsToastHost / useOnmsToast from @opennms/onms-ui.' },
           { name: 'primevue/toasteventbus', message: 'Use useOnmsToast from @opennms/onms-ui.' },
+          { name: 'primevue/togglebutton', message: 'Use OnmsToggleButton from @opennms/onms-ui.' },
           { name: 'primevue/toggleswitch', message: 'Use OnmsToggleSwitch from @opennms/onms-ui.' },
-          { name: 'primevue/tooltip', message: 'Use the OnmsTooltip directive from @opennms/onms-ui, registered as v-onms-tooltip.' }
+          { name: 'primevue/tooltip', message: 'Use the OnmsTooltip directive from @opennms/onms-ui, registered as v-onms-tooltip.' },
+          { name: 'primevue/useconfirm', message: 'Use OnmsConfirmationDialog from @opennms/onms-ui — confirmation is prop-driven, not a service.' },
+          { name: 'primevue/usetoast', message: 'Use useOnmsToast from @opennms/onms-ui.' },
+          { name: 'primevue/virtualscroller', message: 'Use OnmsVirtualScroller from @opennms/onms-ui.' }
         ]
       }]
     }

@@ -70,17 +70,16 @@
 	
 %>
 
-<c:url var="nodeLink" value="element/node.jsp">
-  <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
-</c:url>
+<c:url var="nodeLink" value='<%= ElementConstants.NODE_DETAILS_URI + nodeId %>'/>
 <c:url var="interfaceLink" value="element/interface.jsp">
   <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
   <c:param name="intf" value="<%=WebSecurityUtils.sanitizeString(ipAddr)%>"/>
 </c:url>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
-          .headTitle(WebSecurityUtils.sanitizeString(ipAddr))
+          .headTitleText(ipAddr)
           .breadcrumb("Search", "element/index.jsp")
           .breadcrumb("Node", "${nodeLink}")
           .breadcrumb("Interface", "${interfaceLink}")

@@ -22,10 +22,21 @@
 package org.opennms.openapi;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.ws.rs.Path;
 
 import org.junit.Test;
 
@@ -58,6 +69,27 @@ public class OpenApiDocsContentTest {
         assertHasPath(document, "/requisitions");
         // org.opennms.features.measurements.rest
         assertHasPath(document, "/measurements");
+        // org.opennms.features.device-config.rest, an OSGi service read through its interface
+        assertHasPath(document, "/device-config");
+        assertHasPath(document, "/device-config/latest");
+        assertHasPath(document, "/device-config/backup");
+        assertSchemaPropertyType(document, "DeviceConfigDTO", "lastBackupDate", "integer");
+
+        // WireFormatModelResolver: JAXB names on the wire, not bean names
+        assertSchemaProperty(document, "RequisitionNode", "meta-data", true);
+        assertSchemaProperty(document, "RequisitionNode", "metaData", false);
+
+        // an XmlJavaTypeAdapter decides the wire type: OnmsSnmpInterface.node is an OnmsNode
+        // in Java, an integer in JSON
+        assertSchemaPropertyType(document, "OnmsSnmpInterface", "nodeId", "integer");
+        assertSchemaPropertyType(document, "Event", "interface", "string");
+
+        // the runtime resolves enum names through Jackson 1, which uses Enum.name(),
+        // so XmlEnumValue spellings such as "v2-inform" never appear on the wire
+        assertSchemaPropertyEnum(document, "SnmpTrapSink", "version", "V1", "V2c", "V3", "V2_INFORM", "V3_INFORM");
+
+        // an XML default has to be one of the values the JSON API accepts
+        assertSchemaPropertyDefault(document, "SyslogDestination", "ip-protocol", "UDP");
 
         assertPathCountAtLeast(document, "v1", 180);
     }
@@ -81,7 +113,72 @@ public class OpenApiDocsContentTest {
         // org.opennms.features.geolocation.rest
         assertHasPath(document, "/geolocation");
 
+        assertSchemaProperty(document, "OnmsMonitoringLocation", "location-name", true);
+
         assertPathCountAtLeast(document, "v2", 200);
+    }
+
+    /** Swagger UI shows the tag groups in list order, so the OSGi tags must not trail the webapp tags. */
+    @Test
+    public void tagsAreSortedByName() throws Exception {
+        for (final OpenApiDocGenerator.Api api : OpenApiDocGenerator.Api.values()) {
+            final List<String> names = new ArrayList<>();
+            load(api.getFileName()).path("tags").forEach(tag -> names.add(tag.path("name").asText()));
+            final List<String> sorted = new ArrayList<>(names);
+            sorted.sort(String.CASE_INSENSITIVE_ORDER);
+            assertFalse("no tags in " + api.getFileName(), names.isEmpty());
+            assertEquals("tag order in " + api.getFileName(), sorted, names);
+        }
+    }
+
+    /**
+     * Karaf serves the OSGi services with Jackson 2, which writes a Date as epoch milliseconds,
+     * but the generator documents it as a date-time string unless the property says otherwise.
+     * Check every schema that an OSGi operation reaches, directly or through $ref.
+     */
+    @Test
+    public void osgiSchemasDocumentDatesAsEpochMillis() throws Exception {
+        final List<String> dateTimes = new ArrayList<>();
+        for (final OpenApiDocGenerator.Api api : OpenApiDocGenerator.Api.values()) {
+            final JsonNode document = load(api.getFileName());
+            for (final Class<?> resource : api.getOsgiResourceClasses()) {
+                final String prefix = "/" + resource.getAnnotation(Path.class).value().replaceAll("^/+|/+$", "");
+                final Deque<String> refs = new ArrayDeque<>();
+                document.get("paths").fields().forEachRemaining(path -> {
+                    if (path.getKey().equals(prefix) || path.getKey().startsWith(prefix + "/")) {
+                        findDateTimes(path.getValue(), api.getFileName() + " " + path.getKey(), refs, dateTimes);
+                    }
+                });
+                final Set<String> visited = new HashSet<>();
+                while (!refs.isEmpty()) {
+                    final String schema = refs.pop();
+                    if (visited.add(schema)) {
+                        findDateTimes(document.at("/components/schemas/" + schema),
+                                api.getFileName() + " " + schema, refs, dateTimes);
+                    }
+                }
+            }
+        }
+        assertTrue("these OSGi properties are documented as date-time, but Jackson 2 sends epoch milliseconds."
+                        + " Annotate them @Schema(type = \"integer\", format = \"int64\"): " + dateTimes,
+                dateTimes.isEmpty());
+    }
+
+    private static void findDateTimes(final JsonNode node, final String location, final Deque<String> refs,
+                                      final List<String> dateTimes) {
+        if (node.isArray()) {
+            node.forEach(element -> findDateTimes(element, location, refs, dateTimes));
+        } else if (node.isObject()) {
+            final String ref = node.path("$ref").asText();
+            if (ref.startsWith("#/components/schemas/")) {
+                refs.push(ref.substring("#/components/schemas/".length()));
+            }
+            if ("date-time".equals(node.path("format").asText())) {
+                dateTimes.add(location);
+            }
+            node.fields().forEachRemaining((Map.Entry<String, JsonNode> field) ->
+                    findDateTimes(field.getValue(), location + "/" + field.getKey(), refs, dateTimes));
+        }
     }
 
     /** A tripwire for mass loss of endpoints, not an exact count; raise it if the API grows. */
@@ -99,6 +196,50 @@ public class OpenApiDocsContentTest {
     private static void assertBasicAuth(final JsonNode document) {
         assertEquals("http", document.at("/components/securitySchemes/basicAuth/type").asText());
         assertEquals("basic", document.at("/components/securitySchemes/basicAuth/scheme").asText());
+    }
+
+    private static void assertSchemaProperty(final JsonNode document, final String schema, final String property,
+                                             final boolean expected) {
+        final JsonNode node = document.at("/components/schemas/" + schema + "/properties/" + property);
+        assertEquals(schema + (expected ? " should document " : " should not document ") + property,
+                expected, node.isObject());
+    }
+
+    private static void assertSchemaPropertyType(final JsonNode document, final String schema, final String property,
+                                                final String expected) {
+        final JsonNode node = property(document, schema, property);
+        assertEquals(schema + "." + property + " type", expected, node.path("type").asText());
+    }
+
+    private static void assertSchemaPropertyEnum(final JsonNode document, final String schema, final String property,
+                                                 final String... expected) {
+        final JsonNode values = property(document, schema, property).path("enum");
+        final List<String> actual = new ArrayList<>();
+        values.forEach(value -> actual.add(value.asText()));
+        assertEquals(schema + "." + property + " values", Arrays.asList(expected), actual);
+    }
+
+    private static void assertSchemaPropertyDefault(final JsonNode document, final String schema, final String property,
+                                                    final String expected) {
+        final JsonNode node = property(document, schema, property);
+        assertEquals(schema + "." + property + " default", expected, node.path("default").asText());
+        assertTrue(schema + "." + property + " default must be one of its values",
+                contains(node.path("enum"), expected));
+    }
+
+    private static boolean contains(final JsonNode values, final String expected) {
+        for (final JsonNode value : values) {
+            if (expected.equals(value.asText())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static JsonNode property(final JsonNode document, final String schema, final String name) {
+        final JsonNode node = document.at("/components/schemas/" + schema + "/properties/" + name);
+        assertTrue(schema + " should document " + name, node.isObject());
+        return node;
     }
 
     private static void assertHasPath(final JsonNode document, final String path) {

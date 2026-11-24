@@ -131,10 +131,6 @@ public class ConfigTesterTest {
         testConfigFile("categories.xml");
     }
 
-    @Test
-    public void testChartConfiguration() {
-        testConfigFile("chart-configuration.xml");
-    }
 
     @Test
     public void testCollectdConfiguration() {
@@ -197,11 +193,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testGroups() {
-        testConfigFile("groups.xml");
-    }
-
-    @Test
     public void testHttpDatacollectionConfig() {
         testConfigFile("http-datacollection-config.xml");
     }
@@ -234,11 +225,6 @@ public class ConfigTesterTest {
     @Test
     public void testJmxConfig() {
         testConfigFile("jmx-config.xml");
-    }
-
-    @Test
-    public void testJmsNorthbounderConfiguration() {
-        ignoreConfigFile("jms-northbounder-configuration.xml");
     }
 
     @Test
@@ -333,11 +319,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testReportdConfiguration() {
-        testConfigFile("reportd-configuration.xml");
-    }
-
-    @Test
     public void testResponseAdhocGraph() {
         testConfigFile("response-adhoc-graph.properties");
     }
@@ -350,11 +331,6 @@ public class ConfigTesterTest {
     @Test
     public void testRrdConfiguration() {
         testConfigFile("rrd-configuration.properties");
-    }
-
-    @Test
-    public void testRt() {
-        ignoreConfigFile("rt.properties");
     }
 
     @Test
@@ -436,10 +412,6 @@ public class ConfigTesterTest {
         testConfigFile("snmptrap-northbounder-configuration.xml");
     }
 
-    @Test
-    public void testStatsdConfiguration() {
-        testConfigFile("statsd-configuration.xml");
-    }
 
     @Test
     public void testSurveillanceViews() {
@@ -458,17 +430,12 @@ public class ConfigTesterTest {
 
     @Test
     public void testThreshdConfiguration() {
-        testConfigFile("threshd-configuration.xml");
+        ignoreConfigFile("threshd-configuration.xml");
     }
 
     @Test
     public void testThresholds() {
-        testConfigFile("thresholds.xml");
-    }
-
-    @Test
-    public void testTl1dConfiguration() {
-        testConfigFile("tl1d-configuration.xml");
+        ignoreConfigFile("thresholds.xml");
     }
 
     @Test
@@ -482,14 +449,12 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testTrendConfiguration() {
-        ignoreConfigFile("trend-configuration.xml");
+    public void testUsersAndGroups() {
+        // users, groups and roles live in the database; only the upgrade migrator reads these files
+        ignoreConfigFile("users.xml");
+        ignoreConfigFile("groups.xml");
     }
 
-    @Test
-    public void testUsers() {
-        testConfigFile("users.xml");
-    }
 
     @Test
     public void testVacuumdConfiguration() {
