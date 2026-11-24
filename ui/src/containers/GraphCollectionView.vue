@@ -15,11 +15,13 @@
           </div>
         </div>
         <div class="header-actions">
-          <DownloadButton
+          <OnmsIconButton
             v-if="collection?.graphs.length"
-            format="PDF"
+            variant="outlined"
+            :icon="PdfIcon"
+            tooltip="Download the graphs of this collection as a PDF"
+            tooltipPosition="bottom"
             data-test="gc-pdf-download"
-            title="Download the graphs of this collection as a PDF"
             @click="downloadPdf"
           />
           <router-link v-if="isStored" to="/graph-collections">
@@ -88,14 +90,13 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { OnmsButton, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton, OnmsSelect, useOnmsToast } from '@opennms/onms-ui'
+import PdfIcon from '@opennms/onms-ui/icons/file/Pdf.vue'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import FormField from '@/components/Common/FormField.vue'
 import TableCard from '@/components/Common/TableCard.vue'
-import DownloadButton from '@/components/Common/DownloadButton.vue'
 import { exportGraphsToPdf } from '@/components/Resources/utils/graphExport'
-import useSnackbar from '@/composables/useSnackbar'
 import GraphCollectionGrid from '@/components/GraphCollections/GraphCollectionGrid.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useRole from '@/composables/useRole'
@@ -144,7 +145,7 @@ const refreshFailed = ref(false)
 const isStored = computed(() => !!props.id)
 
 const graphsRef = ref<HTMLElement | null>(null)
-const { showSnackBar } = useSnackbar()
+const { showToast } = useOnmsToast()
 
 const downloadPdf = () => {
   if (!graphsRef.value) {
@@ -153,7 +154,7 @@ const downloadPdf = () => {
   const exported = exportGraphsToPdf(graphsRef.value, collection.value?.title || 'Graph Collection',
     canvas => canvas.closest<HTMLElement>('[data-pdf-caption]')?.dataset.pdfCaption)
   if (!exported) {
-    showSnackBar({ msg: 'No graphs are ready to export yet.' })
+    showToast({ message: 'No graphs are ready to export yet.', severity: 'info' })
   }
 }
 
@@ -279,19 +280,10 @@ watch(() => [props.id, props.kind, props.source, route.query.timespan, route.que
     margin-bottom: 0.5rem;
   }
 
-  // every header action is as tall as the labeled download button
   .header-actions {
     display: flex;
-    align-items: stretch;
+    align-items: center;
     gap: 0.5rem;
-
-    > a {
-      display: flex;
-    }
-
-    :deep(.p-button) {
-      min-height: var(--onms-action-button-height, 3.5rem);
-    }
   }
 
   .card-title {

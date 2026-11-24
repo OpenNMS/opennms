@@ -12,10 +12,11 @@
           @updateTime="updateTime"
         />
         <div class="controls-right" v-if="!singleGraphDefinition">
-          <DownloadButton
-            format="PDF"
+          <OnmsIconButton
+            variant="outlined"
+            :icon="PdfIcon"
+            tooltip="Download the graphs currently loaded on this page as a PDF"
             data-test="pdf-download-btn"
-            title="Download the graphs currently loaded on this page as a PDF"
             @click="downloadPdf"
           />
           <FormField class="search-input">
@@ -42,8 +43,8 @@
 </template>
 
 <script setup lang="ts">
-import { OnmsInputText } from '@opennms/onms-ui'
-import DownloadButton from '@/components/Common/DownloadButton.vue'
+import { OnmsIconButton, OnmsInputText } from '@opennms/onms-ui'
+import PdfIcon from '@opennms/onms-ui/icons/file/Pdf.vue'
 import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import { useDebounceFn, useScroll } from '@vueuse/core'
 import { useRouter } from 'vue-router'
