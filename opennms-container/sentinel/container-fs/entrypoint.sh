@@ -437,8 +437,6 @@ function applyFeatureBootTemplates() {
 
     # health.sh needs the health REST service. The image ships health.boot, but an etc
     # volume reused from an older image does not have it, so write it on every start.
-    # Same name as the shipped file, so there is only ever one entry. To disable the
-    # service, add "!opennms-health-rest-service" to another file in featuresBoot.d.
     apply_template "health.boot"
 
     # Exclusions apply across all boot files, so writing the JMS default next to an

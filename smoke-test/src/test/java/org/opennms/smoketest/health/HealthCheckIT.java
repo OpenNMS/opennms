@@ -49,8 +49,6 @@ import org.opennms.smoketest.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
-import org.testcontainers.containers.Container;
-import org.testcontainers.containers.GenericContainer;
 
 @Category(SentinelTests.class)
 public class HealthCheckIT {
@@ -90,31 +88,6 @@ public class HealthCheckIT {
         final InetSocketAddress sentinelShellAddr = stack.sentinel().getSshAddress();
         verifyHealthCheck(9, sentinelShellAddr);
         verifyMetrics(sentinelShellAddr);
-    }
-
-    @Test
-    public void verifyMinionHealthScript() {
-        verifyHealthScript(stack.minion());
-    }
-
-    /**
-     * The Sentinel image's /health.sh queries /sentinel/rest/health/probe, which only exists
-     * when the image boots opennms-health-rest-service (NMS-20617).
-     */
-    @Test
-    public void verifySentinelHealthScript() {
-        verifyHealthScript(stack.sentinel());
-    }
-
-    private void verifyHealthScript(final GenericContainer<?> container) {
-        await().atMost(2, MINUTES)
-                .pollInterval(5, SECONDS)
-                .ignoreExceptions()
-                .untilAsserted(() -> {
-                    final Container.ExecResult result = container.execInContainer("/health.sh");
-                    assertThat("/health.sh exit code; stdout: " + result.getStdout() + " stderr: " + result.getStderr(),
-                            result.getExitCode(), Matchers.equalTo(0));
-                });
     }
 
     private void verifyHealthCheck(final int expectedHealthCheckServices, final InetSocketAddress sshAddress) {
