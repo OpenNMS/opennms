@@ -21,10 +21,14 @@
  */
 package org.opennms.features.config.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -38,6 +42,7 @@ import org.opennms.features.config.exception.ConfigRuntimeException;
 import org.opennms.features.config.exception.SchemaAlreadyExistsException;
 import org.opennms.features.config.exception.SchemaNotFoundException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
+import org.opennms.features.config.service.api.ConfigValidator;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.EventType;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -53,9 +58,32 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
     private final static Logger LOG = LoggerFactory.getLogger(ConfigurationManagerServiceImpl.class);
     private final ConfigStoreDao<JSONObject> configStoreDao;
     private final EventHandlerManager eventHandlerManager = new EventHandlerManager();
+    /** configName -> the validators of its configurations */
+    private final Map<String, List<ConfigValidator>> validators = new HashMap<>();
 
+    /**
+     * Uses the {@link ConfigValidator}s found with {@link ServiceLoader}.
+     */
     public ConfigurationManagerServiceImpl(final ConfigStoreDao<JSONObject> configStoreDao) {
+        this(configStoreDao, ServiceLoader.load(ConfigValidator.class, ConfigValidator.class.getClassLoader()));
+    }
+
+    ConfigurationManagerServiceImpl(final ConfigStoreDao<JSONObject> configStoreDao, final Iterable<ConfigValidator> validators) {
         this.configStoreDao = configStoreDao;
+        for (final ConfigValidator validator : validators) {
+            LOG.info("Configurations of {} are validated by {}.", validator.getConfigName(), validator.getClass().getName());
+            this.validators.computeIfAbsent(validator.getConfigName(), k -> new ArrayList<>()).add(validator);
+        }
+    }
+
+    /**
+     * Runs the {@link ConfigValidator}s of the schema, then the {@link EventType#VALIDATE} handlers.
+     */
+    private void validate(final ConfigUpdateInfo info) {
+        for (final ConfigValidator validator : this.validators.getOrDefault(info.getConfigName(), List.of())) {
+            validator.validate(info);
+        }
+        this.eventHandlerManager.callEventHandlers(EventType.VALIDATE, info);
     }
 
     @Override
@@ -129,7 +157,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
             }
         }
 
-        this.eventHandlerManager.callEventHandlers(EventType.VALIDATE, new ConfigUpdateInfo(configName, configId, new JSONObject(configObject.toString())));
+        validate(new ConfigUpdateInfo(configName, configId, new JSONObject(configObject.toString())));
         configStoreDao.addConfig(configName, configId, new JSONObject(configObject.toString()));
         LOG.info("ConfigurationManager.registeredConfiguration(configName={}, configId={}, config={});", configName, configId, configObject);
 
@@ -165,7 +193,7 @@ public class ConfigurationManagerServiceImpl implements ConfigurationManagerServ
             configObject.keySet().forEach(key -> configToUpdate.put(key, configObject.get(key)));
         }
 
-        this.eventHandlerManager.callEventHandlers(EventType.VALIDATE, new ConfigUpdateInfo(configName, configId, configToUpdate));
+        validate(new ConfigUpdateInfo(configName, configId, configToUpdate));
         configStoreDao.updateConfigs(configName, configData.get());
         this.eventHandlerManager.callEventHandlers(EventType.UPDATE, new ConfigUpdateInfo(configName, configId));
     }

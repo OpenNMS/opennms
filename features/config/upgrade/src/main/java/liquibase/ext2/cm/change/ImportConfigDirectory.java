@@ -27,7 +27,9 @@ import static liquibase.ext2.cm.change.ImportConfigurationUtil.importConfig;
 
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
@@ -59,9 +61,9 @@ import liquibase.util.file.FilenameUtils;
  * <p>A file named {@code default.xml} becomes the configuration {@code default.d}, because the id
  * {@code default} belongs to the primary file of the schema.</p>
  *
- * <p>With {@code failOnError="false"} a file that can't be imported (e.g. it doesn't obey the schema) doesn't stop
- * the upgrade: the error is logged, nothing is stored for it, the file stays where it is, and the other files are
- * still imported.</p>
+ * <p>With {@code failOnError="false"} a file that can't be imported (e.g. it doesn't obey the schema, or a validator
+ * of the schema rejects it or its name) doesn't stop the upgrade: the error is logged, nothing is stored for it, the
+ * file stays where it is, and the other files are still imported.</p>
  */
 @DatabaseChange(name = "importConfigDir", description = "Imports all xml configurations of a directory.", priority = ChangeMetaData.PRIORITY_DATABASE)
 public class ImportConfigDirectory extends AbstractCmChange {
@@ -79,6 +81,8 @@ public class ImportConfigDirectory extends AbstractCmChange {
     private Path archivePath;
     /** configId -> file, sorted by configId */
     private Map<String, Resource> configResources = new TreeMap<>();
+    /** the configIds that were stored */
+    private final Set<String> importedConfigIds = new TreeSet<>();
 
     @Override
     public ValidationErrors validate(CmDatabase db, ValidationErrors validationErrors) {
@@ -149,7 +153,8 @@ public class ImportConfigDirectory extends AbstractCmChange {
         if (this.configResources.isEmpty()) {
             return String.format("No configuration files found in %s for schema=%s.", this.dirPath, this.schemaId);
         }
-        return String.format("Imported configurations %s from %s for schema=%s.", this.configResources.keySet(), this.dirPath, this.schemaId);
+        return String.format("Imported configurations %s of %s from %s for schema=%s.", this.importedConfigIds,
+                this.configResources.keySet(), this.dirPath, this.schemaId);
     }
 
     @Override
@@ -166,6 +171,7 @@ public class ImportConfigDirectory extends AbstractCmChange {
             final String etcRelativePath = dir + "/" + entry.getValue().getFilename();
             try {
                 importConfig(cm, entry.getValue(), new ConfigUpdateInfo(schemaId, entry.getKey()), archivePath, etcRelativePath);
+                importedConfigIds.add(entry.getKey());
             } catch (RuntimeException e) {
                 if (!Boolean.FALSE.equals(this.failOnError)) {
                     throw e;
