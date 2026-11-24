@@ -364,6 +364,18 @@ public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean
     }
     
     
+    /**
+     * Returns the executor registered under the given name, or {@code null} when no
+     * executor with that name has been added. Unlike {@link #getExecutor(String)} this
+     * never falls back to the default executor.
+     *
+     * @param name the executor name
+     * @return the registered executor, or {@code null}
+     */
+    public final Executor getRegisteredExecutor(String name) {
+        return m_taskExecutors.get(name);
+    }
+
     public final Executor getExecutor(String name) {
         Executor executor = m_taskExecutors.get(name);
         if (executor == null) {

@@ -150,7 +150,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                     RrdGraphAttribute rrdGraphAttribute = resource.getRrdGraphAttributes().get(source.getAttribute());
 
                     if (rrdGraphAttribute == null && !Strings.isNullOrEmpty(source.getFallbackAttribute())) {
-                        LOG.error("No attribute with name '{}', using fallback-attribute with name '{}'", source.getAttribute(), source.getFallbackAttribute());
+                        LOG.debug("No attribute with name '{}', using fallback-attribute with name '{}'", source.getAttribute(), source.getFallbackAttribute());
                         source.setAttribute(source.getFallbackAttribute());
                         source.setFallbackAttribute(null);
                         rrdGraphAttribute = resource.getRrdGraphAttributes().get(source.getAttribute());

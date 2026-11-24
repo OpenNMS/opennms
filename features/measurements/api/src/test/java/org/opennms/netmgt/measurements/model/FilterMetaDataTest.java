@@ -26,14 +26,14 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.netmgt.measurements.api.Filter;
 import org.opennms.netmgt.measurements.api.FilterInfo;
 import org.opennms.netmgt.measurements.api.FilterParam;
 
 import com.google.common.collect.RowSortedTable;
 
-public class FilterMetaDataTest extends XmlTestNoCastor<FilterMetaData> {
+public class FilterMetaDataTest extends XmlTest<FilterMetaData> {
 
     @FilterInfo(name="noop", description="does nothing", backend="java")
     private static class MyNoOpFilter implements Filter {

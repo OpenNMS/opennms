@@ -8,7 +8,6 @@ MYDIR="$(cd "$MYDIR" || exit 1; pwd)"
 
 PROJECT="opennms"
 REPO=""
-VERSION="$("${MYDIR}/pom2version.sh" "${MYDIR}/../../pom.xml")"
 
 case "${CIRCLE_BRANCH}" in
   develop)
@@ -30,14 +29,6 @@ case "${CIRCLE_BRANCH}" in
 esac
 
 OPTS=(--verbose --no-wait-for-sync --republish --error-retry-max 3)
-
-cloudsmith push raw \
-  "${OPTS[@]}" \
-  --version "${VERSION}" \
-  --name "${REPO}/minion-config-schema.yml" \
-  --description "minion-config-schema.yml for version ${VERSION} in the ${REPO} repository" \
-  "${PROJECT}/config-schema" \
-  "/tmp/artifacts/yml/minion-config-schema.yml"
 
 for FILE in /tmp/artifacts/rpm/*.rpm; do
   cloudsmith push rpm "${OPTS[@]}" "${PROJECT}/$REPO/any-distro/any-version" "$FILE"

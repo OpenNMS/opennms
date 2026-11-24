@@ -23,7 +23,6 @@
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import PrimeVue from 'primevue/config'
-import { OnmsTooltip } from '@opennms/onms-ui'
 import { nextTick } from 'vue'
 import { describe, expect, test } from 'vitest'
 import dateFormatDirective from '@/directives/v-date'
@@ -63,8 +62,7 @@ const mountDiffContent = (backups: DeviceConfigBackup[]) => {
     global: {
       plugins: [createTestingPinia(), PrimeVue],
       directives: {
-        date: dateFormatDirective,
-        'onms-tooltip': OnmsTooltip
+        date: dateFormatDirective
       },
       stubs: {
         DCBDiff: true

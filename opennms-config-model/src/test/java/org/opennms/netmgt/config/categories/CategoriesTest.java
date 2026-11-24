@@ -28,9 +28,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class CategoriesTest extends XmlTestNoCastor<Catinfo> {
+public class CategoriesTest extends XmlTest<Catinfo> {
 
     public CategoriesTest(final Catinfo sampleObject, final Object sampleXml, final String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

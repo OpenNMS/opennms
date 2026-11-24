@@ -97,7 +97,12 @@ public class AsyncPollingEngine {
 
     private void processPollResult(PollableService svc, PollStatus status) {
         // Trigger the run, and feed the result back instantly
-        svc.doRunWithPreemptivePollStatus(status);
+        try {
+            svc.doRunWithPreemptivePollStatus(status);
+        } catch (Throwable t) {
+            // Nobody observes the completion stage, so log here or the failure is lost
+            LOG.error("Failed to process the poll result {} for {}", status, svc, t);
+        }
     }
 
     public long getNumPollsInFlight() {

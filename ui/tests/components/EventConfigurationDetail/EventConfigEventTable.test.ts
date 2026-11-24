@@ -11,13 +11,22 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
 const mockPush = vi.fn()
+const routeLeaveGuards: Array<(...args: unknown[]) => unknown> = []
 vi.mock('vue-router', () => ({
-  useRouter: () => ({ push: mockPush })
+  useRouter: () => ({ push: mockPush }),
+  onBeforeRouteLeave: (guard: (...args: unknown[]) => unknown) => routeLeaveGuards.push(guard)
 }))
 
+const mockConfirmLeave = vi.fn()
 const stubs = {
   DeleteEventConfigEventDialog: { name: 'DeleteEventConfigEventDialog', template: '<div class="delete-event-dialog-stub"></div>' },
-  ChangeEventConfigEventStatusDialog: { name: 'ChangeEventConfigEventStatusDialog', template: '<div class="change-status-dialog-stub"></div>' }
+  ChangeEventConfigEventStatusDialog: { name: 'ChangeEventConfigEventStatusDialog', template: '<div class="change-status-dialog-stub"></div>' },
+  StagedReorderList: {
+    name: 'StagedReorderList',
+    props: ['items', 'itemNoun', 'saving'],
+    template: '<div class="staged-reorder-stub"></div>',
+    methods: { confirmLeave: (...args: unknown[]) => mockConfirmLeave(...args) }
+  }
 }
 
 describe('EventConfigEventTable.vue', () => {
@@ -38,6 +47,7 @@ describe('EventConfigEventTable.vue', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
     vi.useFakeTimers()
+    routeLeaveGuards.length = 0
 
     mockEvent = {
       id: 1,
@@ -65,6 +75,8 @@ describe('EventConfigEventTable.vue', () => {
     store.onEventsSortChange = vi.fn().mockResolvedValue(undefined)
     store.showChangeEventConfigEventStatusDialog = vi.fn()
     store.showDeleteEventConfigEventDialog = vi.fn()
+    store.startEventsReorder = vi.fn()
+    store.stopEventsReorder = vi.fn()
 
     modificationStore = useEventModificationStore()
     modificationStore.setSelectedEventConfigSource = vi.fn()
@@ -83,11 +95,58 @@ describe('EventConfigEventTable.vue', () => {
       expect(wrapper.find('.event-config-event-table').exists()).toBe(true)
       expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(true)
+      expect(wrapper.find('[data-test="reorder-events-button"]').exists()).toBe(true)
     })
 
     it('renders the child dialogs', () => {
       expect(wrapper.findComponent({ name: 'DeleteEventConfigEventDialog' }).exists()).toBe(true)
       expect(wrapper.findComponent({ name: 'ChangeEventConfigEventStatusDialog' }).exists()).toBe(true)
+    })
+  })
+
+  describe('Reorder mode', () => {
+    it('offers the evaluation-order explanation on the Order header', async () => {
+      store.events = [mockEvent]
+      await nextTick()
+      expect(wrapper.find('[data-test="order-info"]').exists()).toBe(true)
+    })
+
+    it('the header button enters the events reorder mode', async () => {
+      await wrapper.find('[data-test="reorder-events-button"]').trigger('click')
+      expect(store.startEventsReorder).toHaveBeenCalled()
+    })
+
+    it('replaces the table with the staged reorder list and hides search/refresh', async () => {
+      store.events = [mockEvent]
+      store.eventsReorderMode = true
+      await nextTick()
+
+      expect(wrapper.find('.staged-reorder-stub').exists()).toBe(true)
+      expect(wrapper.find('[data-test="event-config-event-table"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="search-input"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="reorder-events-button"]').exists()).toBe(false)
+      // the reorder list carries its own intro
+      expect(wrapper.find('[data-test="order-info"]').exists()).toBe(false)
+    })
+
+    it('leaving the route outside reorder mode passes without asking', async () => {
+      expect(routeLeaveGuards.length).toBe(1)
+      expect(await routeLeaveGuards[0]()).toBe(true)
+      expect(mockConfirmLeave).not.toHaveBeenCalled()
+    })
+
+    it('leaving the route in reorder mode passes the reorder list answer through', async () => {
+      store.eventsReorderMode = true
+      await nextTick()
+      mockConfirmLeave.mockResolvedValue(false)
+      expect(await routeLeaveGuards[0]()).toBe(false)
+      expect(store.stopEventsReorder).not.toHaveBeenCalled()
+
+      mockConfirmLeave.mockResolvedValue(true)
+      expect(await routeLeaveGuards[0]()).toBe(true)
+      // an allowed leave ends the mode so the page does not reopen mid-reorder
+      expect(store.stopEventsReorder).toHaveBeenCalled()
     })
   })
 
@@ -123,7 +182,7 @@ describe('EventConfigEventTable.vue', () => {
       const header = wrapper.find('[data-test="order-header"]')
       expect(header.exists()).toBe(true)
       expect(header.text()).toBe('Order')
-      expect(header.attributes('title')).toContain('evaluated first')
+      expect(header.find('[data-test="order-info"]').exists()).toBe(true)
       expect(wrapper.findAll('tbody tr')[0].text()).toContain('7')
     })
 

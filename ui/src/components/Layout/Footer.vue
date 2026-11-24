@@ -1,7 +1,7 @@
 <template>
   <div class="footer">
     <p>
-      OpenNMS <a href="../about/index.jsp">Copyright</a> © {{ mainMenu.copyrightDates || '--' }}
+      OpenNMS <a href="#/about">Copyright</a> © {{ mainMenu.copyrightDates || '--' }}
       <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
       OpenNMS&reg; is a registered trademark of
       <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
@@ -43,8 +43,6 @@ const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
   display: block;
   text-align: center;
   min-height: var(--onms-footer-height);
-  margin-left: -1rem;
-  margin-right: -1rem;
   padding: 0.5rem 0.5rem;
   border-top: 1px solid rgba(0, 0, 0, .125);
   background-color: var(--p-content-background);

@@ -26,11 +26,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
 import com.google.common.collect.Lists;
 
-public class SnmpMetadataConfigTest  extends XmlTestNoCastor<SnmpMetadataConfig> {
+public class SnmpMetadataConfigTest  extends XmlTest<SnmpMetadataConfig> {
 
     public SnmpMetadataConfigTest(SnmpMetadataConfig sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/snmp-metadata-adapter-configuration.xsd");

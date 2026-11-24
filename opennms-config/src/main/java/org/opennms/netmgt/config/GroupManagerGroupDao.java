@@ -29,9 +29,11 @@ import java.util.Map;
 
 import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.core.xml.MarshallingExceptionTranslator;
+import org.opennms.netmgt.config.api.GroupConfig;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
+import org.opennms.netmgt.model.OnmsGroup;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
@@ -45,7 +47,7 @@ import org.springframework.util.Assert;
 public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     private static final GroupManagerConfigObjectExceptionTranslator CONFIG_OBJECT_EXCEPTION_TRANSLATOR = new GroupManagerConfigObjectExceptionTranslator();
     
-    private GroupManager m_groupManager;
+    private GroupConfig m_groupManager;
     
     /** {@inheritDoc} */
     @Override
@@ -227,16 +229,6 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
 
     /** {@inheritDoc} */
     @Override
-    public void renameGroup(String oldName, String newName) {
-        try {
-            m_groupManager.renameGroup(oldName, newName);
-        } catch (Throwable e) {
-            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("renaming group from '" + oldName + "' to '" + newName + "'", e);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void renameUser(String oldName, String newName) {
         try {
             m_groupManager.renameUser(oldName, newName);
@@ -252,6 +244,26 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
             m_groupManager.saveGroup(name, details);
         } catch (Throwable e) {
             throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("saving group '" + name + "' with details " + details, e);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getVersion() {
+        try {
+            return m_groupManager.getVersion();
+        } catch (Throwable e) {
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("reading the groups version", e);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void saveGroup(final OnmsGroup group, final long readVersion) {
+        try {
+            m_groupManager.save(group, readVersion);
+        } catch (Throwable e) {
+            throw CONFIG_OBJECT_EXCEPTION_TRANSLATOR.translate("saving group '" + group.getName() + "'", e);
         }
     }
 
@@ -304,18 +316,18 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     /**
      * <p>getGroupManager</p>
      *
-     * @return a {@link org.opennms.netmgt.config.GroupManager} object.
+     * @return a {@link org.opennms.netmgt.config.api.GroupConfig} object.
      */
-    public GroupManager getGroupManager() {
+    public GroupConfig getGroupManager() {
         return m_groupManager;
     }
 
     /**
      * <p>setGroupManager</p>
      *
-     * @param groupManager a {@link org.opennms.netmgt.config.GroupManager} object.
+     * @param groupManager a {@link org.opennms.netmgt.config.api.GroupConfig} object.
      */
-    public void setGroupManager(GroupManager groupManager) {
+    public void setGroupManager(GroupConfig groupManager) {
         m_groupManager = groupManager;
     }
     

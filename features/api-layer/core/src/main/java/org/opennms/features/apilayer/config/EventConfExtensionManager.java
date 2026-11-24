@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import org.opennms.core.xml.JaxbUtils;
@@ -69,7 +68,6 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
     private final EventConfEventDao eventConfEventDao;
     private final EventConfGlobalSecurityDao eventConfGlobalSecurityDao;
     private final SessionUtils sessionUtils;
-    private final ExecutorService executor;
     private volatile EventConfSource pluginSource;
 
     public EventConfExtensionManager(EventConfDao eventConfDao, EventConfSourceDao eventConfSourceDao, EventConfEventDao eventConfEventDao, EventConfGlobalSecurityDao eventConfGlobalSecurityDao, SessionUtils sessionUtils) {
@@ -79,15 +77,17 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         this.eventConfEventDao = Objects.requireNonNull(eventConfEventDao);
         this.eventConfGlobalSecurityDao = Objects.requireNonNull(eventConfGlobalSecurityDao);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
-        this.executor = EventConfServiceHelper.createEventConfExecutor("integration-api-eventconf-%d");
         LOG.debug("EventConfExtensionManager initialized.");
     }
+
+    /** An event definition together with the plugin extension that provides it, for error logging. */
+    private record PluginEventDefinition(EventConfExtension extension, EventDefinition definition) {}
 
     @Override
     protected Events getConfigForExtensions(Set<EventConfExtension> extensions) {
         final List<Event> orderedEvents = extensions.stream()
-                .flatMap(ext -> ext.getEventDefinitions().stream())
-                .sorted(Comparator.comparing(EventDefinition::getPriority))
+                .flatMap(ext -> ext.getEventDefinitions().stream().map(def -> new PluginEventDefinition(ext, def)))
+                .sorted(Comparator.comparing(p -> p.definition().getPriority()))
                 .map(EventConfExtensionManager::toEvent)
                 .toList();
         // Re-build the events
@@ -101,7 +101,7 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         LOG.debug("Event configuration changed. Syncing to database and triggering reload.");
         boolean changesApplied = syncEventsToDatabase();
         if (changesApplied) {
-            EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao, executor);
+            EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
         } else {
             LOG.debug("No changes to sync, skipping reload.");
         }
@@ -234,9 +234,20 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         return source;
     }
 
-    public void destroy() {
-        if (executor != null) {
-            executor.shutdown();
+
+    /**
+     * Converts one plugin event definition, and logs the plugin and the definition when it is invalid. The
+     * exception is still thrown, so an invalid definition still blocks all plugin event definitions; the log
+     * tells the user which plugin to fix or remove.
+     */
+    private static Event toEvent(final PluginEventDefinition p) {
+        try {
+            return toEvent(p.definition());
+        } catch (RuntimeException e) {
+            LOG.error("Plugin extension {} has an invalid event definition (uei '{}', event-label '{}'). Until this plugin"
+                    + " is fixed or removed, changes to plugin event definitions are not applied.",
+                    p.extension().getClass().getName(), p.definition().getUei(), p.definition().getLabel(), e);
+            throw e;
         }
     }
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useDashboardStore } from '@/stores/dashboardStore'
 import { createDefaultLayout } from '@/components/Dashboard/defaultLayout'
@@ -17,6 +17,10 @@ describe('useDashboardStore', () => {
     setActivePinia(createPinia())
     store = useDashboardStore()
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('starts with the factory default and a clean slate', () => {
@@ -39,6 +43,7 @@ describe('useDashboardStore', () => {
   })
 
   it('load failure keeps the current layout, dirty flag and flags an error', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     const before = store.layout
     store.isDirty = true
     vi.mocked(getSystemDashboard).mockRejectedValue(new Error('500'))
@@ -48,6 +53,7 @@ describe('useDashboardStore', () => {
     expect(store.layout).toBe(before)
     expect(store.isDirty).toBe(true)
     expect(store.loadError).toBe(true)
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('load bumps the layout revision so the grid rebuilds', async () => {
@@ -67,6 +73,7 @@ describe('useDashboardStore', () => {
   })
 
   it('save clears dirty on success and keeps it on failure', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     store.isDirty = true
     vi.mocked(saveSystemDashboard).mockResolvedValue()
     expect(await store.save()).toBe(true)
@@ -76,6 +83,7 @@ describe('useDashboardStore', () => {
     vi.mocked(saveSystemDashboard).mockRejectedValue(new Error('boom'))
     expect(await store.save()).toBe(false)
     expect(store.isDirty).toBe(true)
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('addPanel places the new panel below everything and marks dirty', () => {

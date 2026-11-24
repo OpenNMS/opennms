@@ -26,6 +26,8 @@ import {
   SnmpIfStatus,
   SnmpInterface
 } from '@/types'
+import type { OnmsTagSeverity } from '@opennms/onms-ui'
+import { encodeFiqlPattern } from '@/lib/fiql'
 import { isNumber } from '@/lib/utils'
 import { normalizeMacSearch, type InterfaceListMode } from './hooks/useInterfaceListing'
 
@@ -59,6 +61,22 @@ export const hasEgressFlow = (node: Node) => {
   return node.lastEgressFlow && isNumber(node.lastEgressFlow)
 }
 
+// How old a node's last flow may be and still count, matching the server's default for
+// org.opennms.features.telemetry.maxFlowAgeSeconds (7 days).
+export const MAX_FLOW_AGE_MS = 7 * 24 * 60 * 60 * 1000
+
+const isRecentFlow = (lastFlow: unknown, now: number) =>
+  isNumber(lastFlow) && lastFlow > 0 && now - lastFlow < MAX_FLOW_AGE_MS
+
+/**
+ * Whether the node has flow data, as the legacy node page's "flow data" badge decided it: a flow
+ * in either direction within the last 7 days. This mirrors OnmsNode.getHasFlows, which the REST
+ * payload does not carry, with the server's default settings; it will disagree only where an
+ * admin changed maxFlowAgeSeconds or set ingressAndEgressRequired.
+ */
+export const hasRecentFlows = (node: Node, now = Date.now()): boolean =>
+  isRecentFlow(node.lastIngressFlow, now) || isRecentFlow(node.lastEgressFlow, now)
+
 export const defaultColumns: NodeColumnSelectionItem[] = [
   { id: 'id', label: 'ID', selected: false, order: 0 },
   { id: 'label', label: 'Node Label', selected: true, order: 1 },
@@ -91,37 +109,22 @@ export const getNodeStatusString = (node: Node) => {
   }
 }
 
-// Characters that make a value unsafe to splice raw into the FIQL attribute-narrowing term below:
-// - '%' / '_' are SQL-LIKE wildcards to the server's FIQL '==*value*' match (literal), while
-//   useInterfaceListing.ts's client-side matchesSnmpParm() treats them as SQL-LIKE wildcards — the
-//   server narrowing would no longer be a superset of the client match.
-// - ',' / ';' are FIQL set operators (OR / AND). sanitizeSearchTerm neutralizes them in other FIQL
-//   builders by replacing them with spaces, but doing that here has the same superset problem as
-//   '%'/'_': the narrowing sent to the server would search for something other than the exact
-//   value, so it could exclude rows the client-side match still considers a hit.
-// - '(' / ')' are FIQL grouping delimiters. Left in raw, they can produce an unbalanced FIQL
-//   expression that fails to parse server-side — surfacing client-side as "No interfaces".
-// If the value contains any of these, omit the attribute narrowing entirely; the node.id scoping
-// alone still limits the fetch to the current page, and exact contains/equals semantics are
-// re-applied client-side anyway (see buildSnmpNarrowing below).
-const UNSAFE_NARROWING_CHARS = /[%_,;()]/
-
 // Build the FIQL narrowing expression passed to nodeStore.getSnmpInterfacesForNodes so we only
 // fetch the SNMP interfaces relevant to the active maclike/snmpParm mode (see
-// getNodeSnmpInterfaceQuery).
+// getNodeSnmpInterfaceQuery). The narrowing must return every interface that the client-side match
+// (useInterfaceListing.ts's matchesSnmpParm) accepts. It does: both treat '*' as a wildcard and
+// every other character as literal, and both ignore case (ilike, see SnmpInterfaceRestService).
+// encodeFiqlPattern keeps '*' and encodes the FIQL characters (',' ';' '(' ')') and the URL
+// characters ('&' '#' '+' space). The node.id scoping limits the fetch to the current page, and
+// the client-side match then applies the exact contains/equals rule.
 export const buildSnmpNarrowing = (mode: InterfaceListMode): string | undefined => {
   if (mode.mode === 'maclike') {
-    // normalizeMacSearch strips every non-hex character, so the result can never contain any of
-    // UNSAFE_NARROWING_CHARS above — no further guard needed here.
+    // normalizeMacSearch strips every non-hex character, so the value needs no encoding.
     return `physAddr==*${normalizeMacSearch(mode.mac)}*`
   }
 
   if (mode.mode === 'snmpParm') {
-    if (UNSAFE_NARROWING_CHARS.test(mode.value)) {
-      return undefined
-    }
-
-    return `${mode.attr}==*${mode.value}*`
+    return `${mode.attr}==*${encodeFiqlPattern(mode.value)}*`
   }
 
   return undefined
@@ -142,9 +145,8 @@ export type SnmpInterfaceStatus = 'UP' | 'DOWN' | 'DISABLED' | 'TESTING' | 'UNKN
 /**
  * Status shown in the SNMP interfaces table.
  *
- * This is deliberately finer-grained than setStylesForSnmpInterfaces() in the JSP interfaces
- * page (core/web-assets/src/main/assets/js/apps/onms-interfaces/onms-interfaces-app/index.js),
- * which had only up / down / unknown and folded every non-up ifAdminStatus into 'unknown'. An
+ * This is deliberately finer-grained than the legacy node page's AngularJS interfaces table, which
+ * had only up / down / unknown and folded every non-up ifAdminStatus into 'unknown'. An
  * interface that is administratively down was deliberately turned off, and one under test is
  * mid-change; neither is unknown, and neither is a fault. Separating them leaves UNKNOWN meaning
  * what it says: the agent gave us no ifAdminStatus, or one outside the MIB's range.
@@ -249,6 +251,32 @@ export const ipInterfaceStatus = (isManaged?: string | null) => {
 }
 
 /**
+ * The ifservices status codes, as the legacy availability box worded them. Only 'A' has a figure;
+ * every other code is a reason there is none.
+ *
+ * The source of truth is OnmsMonitoredService.STATUS_MAP (opennms-model). Keep these in step with it.
+ */
+export const MONITORED_SERVICE_STATUS_LABELS: Record<string, string> = {
+  A: 'Managed',
+  U: 'Unmanaged',
+  D: 'Deleted',
+  F: 'Forced Unmanaged',
+  N: 'Not Monitored',
+  R: 'Rescan to Resume',
+  S: 'Rescan to Suspend',
+  X: 'Remotely Monitored'
+}
+
+/** The label for one ifservices status code; an unrecognised code reads 'Unknown (X)' as above. */
+export const monitoredServiceStatus = (code?: string | null) => {
+  if (!code) {
+    return 'Unknown'
+  }
+
+  return MONITORED_SERVICE_STATUS_LABELS[code] ?? `Unknown (${code})`
+}
+
+/**
  * Which directions of flow data an interface carries, as a label that doubles as the Flows
  * column's sort key -- '' (none) < 'Egress' < 'Ingress' < 'Ingress/Egress' sorts the interfaces
  * with flows together at one end, which is the point of sorting that column.
@@ -350,3 +378,17 @@ export const formatIfSpeed = (ifSpeed: number | null | undefined) => {
 
   return `${ifSpeed} bps`
 }
+
+// The tag colour for an event or alarm severity (any case); grey for one it does not know.
+const SEVERITY_TAGS: Record<string, OnmsTagSeverity> = {
+  critical: 'danger',
+  major: 'danger',
+  minor: 'warn',
+  warning: 'warn',
+  normal: 'success',
+  cleared: 'success',
+  indeterminate: 'secondary'
+}
+
+export const severityTag = (severity: string | undefined): OnmsTagSeverity =>
+  SEVERITY_TAGS[(severity ?? '').toLowerCase()] ?? 'secondary'

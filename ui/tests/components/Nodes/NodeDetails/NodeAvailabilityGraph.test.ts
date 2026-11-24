@@ -1,0 +1,578 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
+import NodeAvailabilityGraph from '@/components/Nodes/NodeDetails/NodeAvailabilityGraph.vue'
+import { LOADING_DELAY_MS } from '@/components/Nodes/hooks/useDelayedLoading'
+import { NodeAvailability } from '@/types/index'
+import { NodeOutageTimeline } from '@/types/nodeAvailabilityTimeline'
+import { createTestingPinia } from '@pinia/testing'
+import { flushPromises, mount, RouterLinkStub, VueWrapper } from '@vue/test-utils'
+import PrimeVue from 'primevue/config'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+const { push } = vi.hoisted(() => ({ push: vi.fn() }))
+
+vi.mock('vue-router', () => ({
+  useRoute: () => ({ params: { id: '101' }}),
+  useRouter: () => ({ push })
+}))
+
+vi.mock('@/services/index', () => ({
+  default: {
+    getNodeAvailabilityPercentage: vi.fn(),
+    getNodeOutageTimeline: vi.fn()
+  }
+}))
+
+import API from '@/services/index'
+
+const getTimeline = vi.mocked(API.getNodeOutageTimeline)
+const getAvailability = vi.mocked(API.getNodeAvailabilityPercentage)
+
+const HOUR = 3_600_000
+
+// The panel derives its window from the clock at setup, so the fixtures have to be anchored to the
+// same clock: a fixed timestamp would fall outside the window and every bar would be dropped.
+let NOW = Date.now()
+
+const availabilityDoc = (overrides: Partial<NodeAvailability> = {}): NodeAvailability => ({
+  availability: 98.76,
+  id: 101,
+  'service-count': 2,
+  'service-down-count': 0,
+  ipinterfaces: [
+    {
+      address: '192.168.1.1',
+      availability: 99.5,
+      id: 1,
+      services: [
+        { id: 10, name: 'ICMP', serviceId: 1, availability: 99.5 },
+        { id: 11, name: 'SNMP', serviceId: 2, availability: 97.0 }
+      ]
+    }
+  ],
+  ...overrides
+})
+
+const timelineDoc = (overrides: Partial<NodeOutageTimeline> = {}): NodeOutageTimeline => ({
+  nodeId: 101,
+  start: NOW - 24 * HOUR,
+  end: NOW,
+  nodeCreateTime: NOW - 400 * HOUR,
+  count: 1,
+  outage: [
+    {
+      id: 3543,
+      ifServiceId: 11,
+      ipInterfaceId: 1,
+      ipAddress: '192.168.1.1',
+      serviceId: 2,
+      serviceName: 'SNMP',
+      ifLostService: NOW - 6 * HOUR,
+      ifRegainedService: NOW - 5 * HOUR
+    }
+  ],
+  ...overrides
+})
+
+const TimeControlsStub = {
+  name: 'TimeControls',
+  template: '<button @click="$emit(\'updateTime\', payload)">range</button>',
+  props: ['label', 'initialLabel'],
+  emits: ['updateTime'],
+  computed: {
+    payload() {
+      return {
+        startTime: Math.floor((NOW - HOUR) / 1000),
+        endTime: Math.floor(NOW / 1000),
+        format: 'hours',
+        range: { unit: 'hours', amount: 1 }
+      }
+    }
+  }
+}
+
+const NO_NODE = Symbol('no node')
+
+const mountPanel = (
+  nodeId: string | typeof NO_NODE = '101',
+  stubs: Record<string, unknown> = {}
+) =>
+  mount(NodeAvailabilityGraph, {
+    props: {
+      baseHref: '/opennms/',
+      node: (nodeId === NO_NODE ? {} : { id: nodeId }) as any
+    },
+    global: {
+      plugins: [createTestingPinia({ createSpy: vi.fn, stubActions: false }), PrimeVue],
+      stubs: { TimeControls: true, RouterLink: RouterLinkStub, ...stubs }
+    }
+  })
+
+describe('NodeAvailabilityGraph.vue', () => {
+  let wrapper: VueWrapper<any>
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    NOW = Date.now()
+    getAvailability.mockResolvedValue(availabilityDoc())
+    getTimeline.mockResolvedValue(timelineDoc())
+  })
+
+  afterEach(() => {
+    wrapper?.unmount()
+    vi.useRealTimers()
+  })
+
+  // The window itself is the composable's; the heading names it. See useNodeAvailability.test.ts.
+  it('names the default range in the heading', async () => {
+    wrapper = mountPanel()
+    await flushPromises()
+
+    // The label the picker shows before anything is picked.
+    expect(wrapper.text()).toContain('last day')
+  })
+
+  it('renders the card element', async () => {
+    wrapper = mountPanel()
+    await flushPromises()
+    expect(wrapper.find('.card').exists()).toBe(true)
+  })
+
+  it('renders the node availability figure', async () => {
+    wrapper = mountPanel()
+    await flushPromises()
+    expect(wrapper.get('[data-test="node-availability"]').text()).toBe('98.76%')
+  })
+
+  describe('availability badges', () => {
+    const levels = () => wrapper.findAll('[data-test="timeline-service-row"]')
+      .map(row => row.find('[data-test="availability-badge"]').attributes('data-level'))
+
+    it('classes the service and node figures by the thresholds', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({
+        availability: 99.995,
+        'normal-threshold': 99.99,
+        'warning-threshold': 97,
+        'managed-service-count': 3,
+        ipinterfaces: [{
+          address: '192.168.1.1', availability: 99.5, id: 1,
+          services: [
+            { id: 10, name: 'A', serviceId: 1, availability: 99.995 },
+            { id: 11, name: 'B', serviceId: 2, availability: 98 },
+            { id: 12, name: 'C', serviceId: 3, availability: 50 }
+          ]
+        }]
+      }))
+
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(levels()).toEqual(['normal', 'warning', 'critical'])
+      expect(wrapper.get('[data-test="node-availability"]').attributes('data-level')).toBe('normal')
+    })
+
+    it('shows the status label and no level for a service that is not managed', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({
+        'normal-threshold': 99.99,
+        'warning-threshold': 97,
+        ipinterfaces: [{
+          address: '192.168.1.1', availability: 99.5, id: 1,
+          services: [{ id: 10, name: 'ICMP', serviceId: 1, availability: 99.5, status: 'F' }]
+        }]
+      }))
+
+      wrapper = mountPanel()
+      await flushPromises()
+
+      const badge = wrapper.get('[data-test="timeline-service-row"] .availability-badge')
+      expect(badge.text()).toBe('Forced Unmanaged')
+      expect(badge.attributes('data-level')).toBeUndefined()
+    })
+
+    it('shows the placeholder before data arrives', () => {
+      getAvailability.mockReturnValue(new Promise(() => {}) as any)
+      getTimeline.mockReturnValue(new Promise(() => {}) as any)
+
+      wrapper = mountPanel()
+
+      expect(wrapper.get('[data-test="node-availability"]').text()).toBe('—')
+    })
+  })
+
+  // The previous version computed 100 * undefined on first paint.
+  it('never renders NaN, before or after the fetch resolves', async () => {
+    getAvailability.mockReturnValue(new Promise(() => {}) as any)
+    getTimeline.mockReturnValue(new Promise(() => {}) as any)
+
+    wrapper = mountPanel()
+    expect(wrapper.text()).not.toContain('NaN')
+
+    await flushPromises()
+    expect(wrapper.text()).not.toContain('NaN')
+  })
+
+  // Two placeholder cells shipped to develop in the previous version.
+  it('renders no placeholder text', async () => {
+    wrapper = mountPanel()
+    await flushPromises()
+    expect(wrapper.text()).not.toContain('XXX')
+  })
+
+  // The previous version rendered the axis image once per interface.
+  it('renders exactly one time axis regardless of interface count', async () => {
+    getAvailability.mockResolvedValue(availabilityDoc({
+      ipinterfaces: [
+        {
+          address: '192.168.1.1', availability: 99.5, id: 1,
+          services: [{ id: 10, name: 'ICMP', serviceId: 1, availability: 99.5 }]
+        },
+        {
+          address: '192.168.1.2', availability: 100, id: 2,
+          services: [{ id: 12, name: 'ICMP', serviceId: 1, availability: 100 }]
+        }
+      ]
+    }))
+
+    wrapper = mountPanel()
+    await flushPromises()
+
+    expect(wrapper.findAll('[data-test="timeline-axis"]')).toHaveLength(1)
+    expect(wrapper.findAll('[data-test="timeline-service-row"]')).toHaveLength(2)
+  })
+
+  it('shows an error state when either document fails', async () => {
+    getTimeline.mockResolvedValue(null)
+
+    wrapper = mountPanel()
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="availability-error"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="availability-timeline"]').exists()).toBe(false)
+  })
+
+  // A capped result would otherwise be drawn as if it described the whole window.
+  it('says so when the server truncated the outages', async () => {
+    getTimeline.mockResolvedValue(timelineDoc({ truncated: true, count: 1 }))
+
+    wrapper = mountPanel()
+    await flushPromises()
+
+    const notice = wrapper.get('[data-test="availability-truncated"]').text()
+    expect(notice).toContain('1')
+    expect(notice).toContain('most recent')
+    // The strip is still drawn; the notice qualifies it rather than replacing it.
+    expect(wrapper.find('[data-test="availability-timeline"]').exists()).toBe(true)
+  })
+
+  it('shows no truncation notice for a complete result', async () => {
+    wrapper = mountPanel()
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="availability-truncated"]').exists()).toBe(false)
+  })
+
+  it('shows an empty state when the node has no monitored services', async () => {
+    getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaces: [] }))
+
+    wrapper = mountPanel()
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="availability-empty"]').exists()).toBe(true)
+  })
+
+  // The panel is mounted behind the page's nodeLoaded gate, so this is defensive -- but the empty
+  // state is a claim about the node's services, and it must not be made before anything was asked.
+  it('claims nothing before a fetch has completed', async () => {
+    wrapper = mountPanel(NO_NODE)
+    await flushPromises()
+
+    expect(wrapper.find('[data-test="availability-empty"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="availability-error"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="availability-timeline"]').exists()).toBe(false)
+  })
+
+  it('does not show a spinner for a fast fetch', async () => {
+    wrapper = mountPanel()
+    await flushPromises()
+    expect(wrapper.findComponent({ name: 'OnmsSpinner' }).exists()).toBe(false)
+  })
+
+  it('shows a spinner once a fetch outlasts the delay', async () => {
+    vi.useFakeTimers()
+    getAvailability.mockReturnValue(new Promise(() => {}) as any)
+    getTimeline.mockReturnValue(new Promise(() => {}) as any)
+
+    wrapper = mountPanel()
+    expect(wrapper.findComponent({ name: 'OnmsSpinner' }).exists()).toBe(false)
+
+    vi.advanceTimersByTime(LOADING_DELAY_MS + 10)
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.findComponent({ name: 'OnmsSpinner' }).exists()).toBe(true)
+  })
+
+  it('links each outage segment to its detail page and describes it', async () => {
+    wrapper = mountPanel()
+    await flushPromises()
+
+    const segment = wrapper.get('[data-test="outage-segment"]')
+    expect(segment.attributes('href')).toBe('/opennms/outage/detail.htm?id=3543')
+
+    const label = segment.attributes('aria-label') ?? ''
+    expect(label).toContain('Outage 3543')
+    expect(label).toContain('SNMP')
+    expect(label).toContain('192.168.1.1')
+  })
+
+  // The service type id now comes from the availability payload, so the panel no longer depends
+  // on nodeListStore.getServiceTypeByName -- which is populated at app start and is therefore a
+  // race on a cold deep link, producing '#' links.
+  it('builds service links without any nodeListStore seeding', async () => {
+    wrapper = mountPanel()
+    await flushPromises()
+
+    const hrefs = wrapper.findAll('.service-link').map(a => a.attributes('href'))
+    expect(hrefs).toHaveLength(2)
+    hrefs.forEach(href => expect(href).not.toBe('#'))
+    expect(hrefs[0]).toContain('service=1')
+    expect(hrefs[1]).toContain('service=2')
+  })
+
+  // Green on an unmonitored strip would claim a full window of uptime for a service nothing was
+  // watching. The legacy availability box leaves the same rows empty.
+  it('does not paint an unmonitored service as available', async () => {
+    getAvailability.mockResolvedValue(availabilityDoc({
+      ipinterfaces: [{
+        address: '192.168.1.1', availability: 100, id: 1,
+        services: [
+          { id: 10, name: 'ICMP', serviceId: 1, availability: 100 },
+          { id: 11, name: 'OpenNMS-DB', serviceId: 2, availability: -1 }
+        ]
+      }]
+    }))
+
+    wrapper = mountPanel()
+    await flushPromises()
+
+    const strips = wrapper.findAll('[data-test="timeline-strip"]')
+    expect(strips[0].classes()).not.toContain('strip--unmonitored')
+    expect(strips[1].classes()).toContain('strip--unmonitored')
+    expect(wrapper.text()).toContain('Not Monitored')
+  })
+
+  it('encodes a scope-qualified IPv6 address in the links it builds', async () => {
+    getAvailability.mockResolvedValue(availabilityDoc({
+      ipinterfaces: [{
+        address: 'fe80::1%eth0', availability: 100, id: 1,
+        services: [{ id: 10, name: 'ICMP', serviceId: 1, availability: 100 }]
+      }]
+    }))
+
+    wrapper = mountPanel()
+    await flushPromises()
+
+    expect(wrapper.get('.service-link').attributes('href')).toContain('intf=fe80%3A%3A1%25eth0')
+  })
+
+  // The heading should name the range the way the picker's own button does, rather than
+  // reconstructing it from unit and amount, which pluralised 'Last hour' as 'last 1 hours'.
+  it('names the selected range the way the picker does', async () => {
+    wrapper = mountPanel('101', { TimeControls: TimeControlsStub })
+    await flushPromises()
+
+    await wrapper.get('[data-test="availability-range"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('last hour')
+    expect(wrapper.text()).not.toContain('last 1 hours')
+  })
+
+  /*
+   * The page rebuilds this panel for each node rather than feeding it a new id, so a range held in
+   * the component is lost the moment the user moves on. It lives in the node store instead. These
+   * mount twice against ONE pinia, which is what a node change actually does.
+   */
+  describe('range persistence across a node change', () => {
+    const mountWith = (pinia: ReturnType<typeof createTestingPinia>, nodeId: string) =>
+      mount(NodeAvailabilityGraph, {
+        props: { baseHref: '/opennms/', node: { id: nodeId } as any },
+        global: {
+          plugins: [pinia, PrimeVue],
+          stubs: { TimeControls: TimeControlsStub, RouterLink: RouterLinkStub }
+        }
+      })
+
+    it('seeds the picker with the carried range, so the button does not contradict it', async () => {
+      const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+
+      const first = mountWith(pinia, '101')
+      await flushPromises()
+      await first.get('[data-test="availability-range"]').trigger('click')
+      await flushPromises()
+      first.unmount()
+
+      const second = mountWith(pinia, '202')
+      await flushPromises()
+
+      expect(second.findComponent({ name: 'TimeControls' }).props('initialLabel')).toBe('Last hour')
+      second.unmount()
+    })
+
+    it('starts from the default range when nothing has been picked', async () => {
+      const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: false })
+
+      const w = mountWith(pinia, '101')
+      await flushPromises()
+
+      expect(w.findComponent({ name: 'TimeControls' }).props('initialLabel')).toBe('Last day')
+      w.unmount()
+    })
+  })
+
+  // The panel shows at most 8 rows: a heading per interface plus one per service.
+  describe('row limit', () => {
+    // A roster for a node with `interfaces` interfaces of `services` services each, of which the
+    // server sends `sent` interfaces.
+    const roster = (interfaces: number, services: number, sent = Math.min(interfaces, 4)) => availabilityDoc({
+      ipinterfaceCount: interfaces,
+      'service-count': interfaces * services,
+      ipinterfaces: Array.from({ length: sent }, (_, i) => ({
+        address: `10.0.0.${i + 1}`,
+        availability: 100,
+        id: i + 1,
+        services: Array.from({ length: services }, (_, j) => ({
+          id: 100 * (i + 1) + j,
+          name: `SVC${j}`,
+          serviceId: j + 1,
+          availability: 100
+        }))
+      }))
+    })
+
+    const rowCount = () => wrapper.findAll('.interface-row').length + wrapper.findAll('[data-test="timeline-service-row"]').length
+
+    // Each interface takes at least two rows, so no more than 4 can show.
+    it('asks for no more interfaces than can show, leaving out those without services', async () => {
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(getAvailability.mock.calls[0][3]).toEqual({ limit: 4, offset: 0, withServices: true })
+    })
+
+    it.each([
+      ['1 interface with 7 services', 1, 7],
+      ['2 interfaces with 3 services each', 2, 3],
+      ['4 interfaces with 1 service each', 4, 1]
+    ])('shows every row, and no message, for %s (8 rows)', async (_title, interfaces, services) => {
+      getAvailability.mockResolvedValue(roster(interfaces, services))
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(rowCount()).toBe(8)
+      expect(wrapper.find('[data-test="availability-partial"]').exists()).toBe(false)
+    })
+
+    it.each([
+      ['1 interface with 8 services', 1, 8, 8],
+      ['2 interfaces with 4 services each', 2, 4, 8],
+      ['3 interfaces with 3 services each', 3, 3, 8],
+      // After 7 rows a second heading would fit, but none of its services: it is left out.
+      ['2 interfaces with 6 services each', 2, 6, 7]
+    ])('shows the first rows and a message for %s', async (_title, interfaces, services, shown) => {
+      getAvailability.mockResolvedValue(roster(interfaces, services))
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(rowCount()).toBe(shown)
+      expect(wrapper.find('[data-test="availability-partial"]').exists()).toBe(true)
+    })
+
+    it('names the node\'s totals in the message and links to the Availability page', async () => {
+      getAvailability.mockResolvedValue(roster(4, 6))
+      wrapper = mountPanel()
+      await flushPromises()
+
+      const message = wrapper.get('[data-test="availability-partial"]')
+      expect(message.text()).toBe('Node has 4 monitored interfaces and 24 services, only some shown here. View them all on the Availability page.')
+      expect(message.findComponent(RouterLinkStub).props('to'))
+        .toEqual({ name: 'Node Availability', params: { id: '101' }})
+    })
+
+    it('words one interface and one service in the singular', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaceCount: 1, 'service-count': 9 }))
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(wrapper.get('[data-test="availability-partial"]').text()).toContain('Node has 1 monitored interface and 9 services')
+    })
+
+    // Only the rows are cut: the figure is the node's.
+    it('keeps the node\'s availability figure', async () => {
+      getAvailability.mockResolvedValue({ ...roster(4, 6), availability: 91.25 })
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(wrapper.get('[data-test="node-availability"]').text()).toBe('91.25%')
+    })
+
+    it('says the node has no monitored services only when its total is 0', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({ ipinterfaceCount: 0, 'service-count': 0, ipinterfaces: [] }))
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="availability-empty"]').exists()).toBe(true)
+      expect(wrapper.find('[data-test="availability-partial"]').exists()).toBe(false)
+    })
+
+    // Without ipinterfaceCount the panel counts what it would show itself.
+    it('without a count from the server, counts only interfaces with services', async () => {
+      getAvailability.mockResolvedValue(availabilityDoc({
+        'service-count': 0,
+        ipinterfaces: [{ address: '10.0.0.1', availability: 100, id: 1, services: [] }]
+      }))
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="availability-empty"]').exists()).toBe(true)
+    })
+
+    it('shows no message when the load fails', async () => {
+      getAvailability.mockResolvedValue(false)
+      wrapper = mountPanel()
+      await flushPromises()
+
+      expect(wrapper.find('[data-test="availability-partial"]').exists()).toBe(false)
+    })
+  })
+
+  // The Vue Availability page, which lists every interface and service.
+  it('sends its View Availability button to the Availability page for the node', async () => {
+    push.mockClear()
+    wrapper = mountPanel()
+    await flushPromises()
+
+    await wrapper.find('[data-test="availability-details-button"]').trigger('click')
+
+    expect(push).toHaveBeenCalledWith({ name: 'Node Availability', params: { id: '101' }})
+  })
+})

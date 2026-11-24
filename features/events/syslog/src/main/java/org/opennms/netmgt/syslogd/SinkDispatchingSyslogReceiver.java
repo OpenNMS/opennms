@@ -27,15 +27,23 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.config.syslogd.SyslogTcpConfig;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+
 public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(SinkDispatchingSyslogReceiver.class);
+
+    public static final String UDP_PACKETS_RECEIVED = "udp.packetsReceived";
+
+    public static final String TCP_PACKETS_RECEIVED = "tcp.packetsReceived";
 
     @Autowired
     private DistPollerDao m_distPollerDao;
@@ -47,8 +55,26 @@ public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
 
     protected AsyncDispatcher<SyslogConnection> m_dispatcher;
 
-    public SinkDispatchingSyslogReceiver(SyslogdConfig config) {
+    /**
+     * The TCP socket, when one is configured. It shares this receiver's dispatcher rather
+     * than being a receiver of its own: the Sink API names its metrics after the module
+     * id, so a second dispatcher for the same module throws and takes its listener down.
+     */
+    private volatile SyslogTcpListener m_tcpListener;
+
+    private final MetricRegistry m_metricRegistry;
+
+    /** Marked once per UDP datagram. */
+    protected final Meter m_udpPacketsReceived;
+
+    /** Marked once per framed message on the TCP listener. */
+    private final Meter m_tcpPacketsReceived;
+
+    public SinkDispatchingSyslogReceiver(SyslogdConfig config, MetricRegistry metricRegistry) {
         m_config = Objects.requireNonNull(config);
+        m_metricRegistry = Objects.requireNonNull(metricRegistry);
+        m_udpPacketsReceived = m_metricRegistry.meter(UDP_PACKETS_RECEIVED);
+        m_tcpPacketsReceived = m_metricRegistry.meter(TCP_PACKETS_RECEIVED);
     }
 
     @Override
@@ -59,10 +85,30 @@ public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
         // Create an asynchronous dispatcher
         final SyslogSinkModule syslogSinkModule = new SyslogSinkModule(m_config, m_distPollerDao);
         m_dispatcher = m_messageDispatcherFactory.createAsyncDispatcher(syslogSinkModule);
+
+        // Nothing about the TCP configuration may take the receiver down, because the UDP
+        // loop below it is what installs already depend on. Still null-tolerant despite the
+        // interface default, since a mock does not run default methods.
+        try {
+            final SyslogTcpConfig tcpConfig = m_config.getTcpConfig();
+            if (tcpConfig != null && tcpConfig.isEnabled()) {
+                m_tcpListener = new SyslogTcpListener(tcpConfig, m_config.getListenAddress(), m_dispatcher, m_tcpPacketsReceived);
+                m_tcpListener.start();
+            }
+        } catch (Throwable e) {
+            LOG.error("Syslog TCP ingestion is misconfigured and will not be started. UDP is unaffected.", e);
+        }
     }
 
     @Override
     public void stop() throws InterruptedException {
+        // Before the dispatcher, so that nothing is still being handed to a dispatcher
+        // that has already been closed.
+        if (m_tcpListener != null) {
+            m_tcpListener.stop();
+            m_tcpListener = null;
+        }
+
         try {
             if (m_dispatcher != null) {
                 m_dispatcher.close();
@@ -73,11 +119,23 @@ public abstract class SinkDispatchingSyslogReceiver implements SyslogReceiver {
         }
     }
 
+    /**
+     * The TCP socket this receiver opened, or null when TCP is not configured or not
+     * started. Exposed for tests and for callers that report listener state.
+     */
+    public SyslogTcpListener getTcpListener() {
+        return m_tcpListener;
+    }
+
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         m_distPollerDao = distPollerDao;
     }
 
     public void setMessageDispatcherFactory(MessageDispatcherFactory messageDispatcherFactory) {
         m_messageDispatcherFactory = messageDispatcherFactory;
+    }
+
+    public MetricRegistry getMetricRegistry() {
+        return m_metricRegistry;
     }
 }

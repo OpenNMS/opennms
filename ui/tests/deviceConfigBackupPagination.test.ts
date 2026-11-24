@@ -31,10 +31,10 @@
 // exactly the behavior under test. Only the HTTP boundary (API.getDeviceConfigBackups)
 // is mocked.
 
-import { mount } from '@vue/test-utils'
+import { mount, RouterLinkStub } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import PrimeVue from 'primevue/config'
-import { OnmsMenu, OnmsSearchInput, OnmsTable, OnmsTooltip } from '@opennms/onms-ui'
+import { OnmsMenu, OnmsSearchInput, OnmsTable } from '@opennms/onms-ui'
 import dateFormatDirective from '@/directives/v-date'
 import DCBTable from '@/components/Device/DCBTable.vue'
 import DCBSearch from '@/components/Device/DCBSearch.vue'
@@ -55,8 +55,10 @@ const mountOpts = {
   global: {
     plugins: [PrimeVue],
     directives: {
-      date: dateFormatDirective,
-      'onms-tooltip': OnmsTooltip
+      date: dateFormatDirective
+    },
+    stubs: {
+      RouterLink: RouterLinkStub
     }
   }
 }

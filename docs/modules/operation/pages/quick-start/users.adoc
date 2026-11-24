@@ -20,17 +20,16 @@ You will need this account for the next step in this guide.
 Follow these steps to create your user account:
 
 . Click menu:Administration[Configure OpenNMS] in the side menu.
-. Under OpenNMS System, click *Configure Users, Groups and On-Call Roles*.
-. On the Users and Groups page, click *Configure Users*.
+. Under OpenNMS System, click *Configure Users*.
 . Click *Add New User*.
-. Specify a user ID and password, confirm the password, and click *OK*.
+. On the *User* tab, specify a user ID and password, and confirm the password.
 . Enter your information:
-** In the User Information section, type your name in the *Full Name* box.
-** In the Security Roles section, select `ROLE_ADMIN` in the *Available Roles* list and click *Add >>*.
+** Type your name in the *Full Name* field.
+** In the *Security Roles* field, select `ROLE_ADMIN`.
 *** (Optional) Add xref:deep-dive/user-management/security-roles.adoc[other security roles].
-** In the Notification Information section, type your email address in the *Email* box.
+** Type your email address in the *Email* field.
 *** (Optional) Add other contact information (for example, a mobile phone number) as desired.
-. Click *Finish* at the bottom of the screen to create the account.
+. Click *Add User* at the bottom of the page to create the account.
 
 WARNING: Do not delete the default `admin` and `rtc` user accounts.
 The `rtc` user account is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.

@@ -21,11 +21,15 @@
  */
 package org.opennms.netmgt.scheduler;
 
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.concurrent.FixedThreadPools;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.PausableFiber;
 import org.slf4j.Logger;
@@ -39,18 +43,28 @@ public class LegacyPriorityExecutor implements PausableFiber {
     private static final long MAX_DELAY_MS = 60000;
 
     private final String m_parent;
-    private final ExecutorService priorityJobPoolExecutor;
+    private final ThreadPoolExecutor priorityJobPoolExecutor;
+    private final LogPreservingThreadFactory m_threadFactory;
     private final DelayQueue<PriorityReadyRunnable> priorityQueue;
+    // jobs queued or handed to the pool that have not started running; an
+    // equal job is not accepted again, which bounds the backlog when a cycle
+    // outlasts its interval
+    private final Set<PriorityReadyRunnable> m_pending = ConcurrentHashMap.newKeySet();
     private final ExecutorService m_worker = Executors.newSingleThreadExecutor();
     private volatile int m_status;
     public LegacyPriorityExecutor(String parent, Integer poolSize, Integer queueSize) {
         m_parent=parent;
         m_status = START_PENDING;
-        priorityJobPoolExecutor = Executors.newFixedThreadPool(poolSize, new LogPreservingThreadFactory(parent, poolSize));
+        m_threadFactory = new LogPreservingThreadFactory(parent, poolSize);
+        priorityJobPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(poolSize, m_threadFactory);
         priorityQueue = new DelayQueue<>();
     }
 
     public synchronized void addPriorityReadyRunnable(PriorityReadyRunnable job) {
+        if (!m_pending.add(job)) {
+            LOG.debug("addPriorityReadyRunnable: Skipped {}, an equal job is still pending", job.getInfo());
+            return;
+        }
         priorityQueue.add(job);
         if (LOG.isInfoEnabled()) {
             LOG.info("addPriorityReadyRunnable: Added {}, total in queue: {}", job.getInfo(), priorityQueue.size());
@@ -140,11 +154,16 @@ public class LegacyPriorityExecutor implements PausableFiber {
                     if (executable.isReady()) {
                         executable.setPriority(0);
                         executable.setDelayUntil(0);
-                        priorityJobPoolExecutor.execute(executable);
+                        final PriorityReadyRunnable job = executable;
+                        priorityJobPoolExecutor.execute(() -> {
+                            m_pending.remove(job);
+                            job.run();
+                        });
                     } else {
                         executable.setPriority(executable.getPriority() + 1);
                         executable.applyBackoffDelay(BASE_DELAY_MS, MAX_DELAY_MS);
-                        addPriorityReadyRunnable(executable);
+                        // still pending, so requeue directly past the duplicate check
+                        priorityQueue.add(executable);
                     }
                 } catch (InterruptedException e) {
                     break;
@@ -176,6 +195,53 @@ public class LegacyPriorityExecutor implements PausableFiber {
     @Override
     public String getName() {
         return  priorityJobPoolExecutor.toString();
+    }
+
+    /**
+     * Resizes the pool that runs priority jobs, see {@link LegacyScheduler#setThreads(int)}.
+     * The job queue is unbounded; the {@code queueSize} constructor argument is not used.
+     *
+     * @param threads the wanted pool size; values below one are applied as one
+     */
+    public synchronized void setThreads(final int threads) {
+        FixedThreadPools.resize(priorityJobPoolExecutor, m_threadFactory, m_parent + " priority executor", threads);
+    }
+
+    /**
+     * @return the current size of the pool that runs priority jobs
+     */
+    public int getThreads() {
+        return priorityJobPoolExecutor.getCorePoolSize();
+    }
+
+    public int getActiveThreads() {
+        return priorityJobPoolExecutor.getActiveCount();
+    }
+
+    public int getPoolThreads() {
+        return priorityJobPoolExecutor.getPoolSize();
+    }
+
+    public long getTaskCount() {
+        return priorityJobPoolExecutor.getTaskCount();
+    }
+
+    public long getCompletedTaskCount() {
+        return priorityJobPoolExecutor.getCompletedTaskCount();
+    }
+
+    /**
+     * @return jobs that are ready to run and waiting for a free pool thread
+     */
+    public int getReadyQueueSize() {
+        return priorityJobPoolExecutor.getQueue().size();
+    }
+
+    /**
+     * @return jobs waiting in the delay queue, including those backing off after not being ready
+     */
+    public int getDelayedQueueSize() {
+        return priorityQueue.size();
     }
 
 }

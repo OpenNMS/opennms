@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -36,6 +37,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -337,6 +339,59 @@ public class AlarmDaoIT implements InitializingBean {
 		Assert.assertEquals(node.getLabel(), sum.getNodeLabel());
 		Assert.assertEquals(alarm.getSeverity().getId(), sum.getMaxSeverity().getId());
 		Assert.assertNotSame("N/A", sum.getFuzzyTimeDown());
+	}
+
+	@Test
+	@Transactional
+	public void testUnacknowledgedCountsBySeverity() {
+		final OnmsNode node = m_nodeDao.findAll().iterator().next();
+		// The populator may have left alarms of its own on the node; count from what is there.
+		final Map<OnmsSeverity, Long> before = new HashMap<>(m_alarmDao.getUnacknowledgedCountsBySeverity(node.getId()));
+
+		saveAlarm(node, OnmsSeverity.MAJOR, false, "major-1");
+		saveAlarm(node, OnmsSeverity.MAJOR, false, "major-2");
+		saveAlarm(node, OnmsSeverity.WARNING, false, "warning-1");
+		// Acknowledged: not counted.
+		saveAlarm(node, OnmsSeverity.CRITICAL, true, "critical-1");
+
+		final Map<OnmsSeverity, Long> expected = new HashMap<>(before);
+		expected.merge(OnmsSeverity.MAJOR, 2L, Long::sum);
+		expected.merge(OnmsSeverity.WARNING, 1L, Long::sum);
+		assertEquals(expected, new HashMap<>(m_alarmDao.getUnacknowledgedCountsBySeverity(node.getId())));
+		assertTrue(expected.values().stream().allMatch(count -> count > 0));
+
+		// Another node's counts do not include them.
+		final OnmsNode other = m_nodeDao.findAll().stream().filter(n -> !n.getId().equals(node.getId())).findFirst().orElseThrow();
+		assertNull(m_alarmDao.getUnacknowledgedCountsBySeverity(other.getId()).get(OnmsSeverity.MAJOR));
+	}
+
+	private void saveAlarm(final OnmsNode node, final OnmsSeverity severity, final boolean acknowledged, final String reductionKey) {
+		final OnmsEvent event = new OnmsEvent();
+		event.setEventLog("Y");
+		event.setEventDisplay("Y");
+		event.setEventCreateTime(new Date());
+		event.setDistPoller(m_distPollerDao.whoami());
+		event.setEventTime(new Date());
+		event.setEventSeverity(severity.getId());
+		event.setEventUei("uei://org/opennms/test/AlarmDaoIT");
+		event.setEventSource("test");
+		m_eventDao.save(event);
+
+		final OnmsAlarm alarm = new OnmsAlarm();
+		alarm.setNode(node);
+		alarm.setUei(event.getEventUei());
+		alarm.setReductionKey(reductionKey);
+		alarm.setSeverity(severity);
+		alarm.setFirstEventTime(event.getEventTime());
+		alarm.setLastEvent(event);
+		alarm.setCounter(1);
+		alarm.setDistPoller(m_distPollerDao.whoami());
+		if (acknowledged) {
+			alarm.setAlarmAckTime(new Date());
+			alarm.setAlarmAckUser("admin");
+		}
+		m_alarmDao.save(alarm);
+		m_alarmDao.flush();
 	}
 
 	@Test

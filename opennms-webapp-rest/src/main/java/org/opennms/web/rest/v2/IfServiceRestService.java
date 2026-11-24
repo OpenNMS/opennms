@@ -88,6 +88,9 @@ import org.opennms.web.rest.support.StringCollection;
 @Transactional
 @Tag(name = "IfServices", description = "Monitored Services API")
 public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMonitoredService,MonitoredServiceDTO,SearchBean,Integer,String> {
+
+    /** Written only by collectd; a PUT naming them is ignored (and logged) rather than applied. */
+    static final Set<String> COLLECTD_OWNED_PROPERTIES = Set.of("collectLastGood", "collectLastFail");
     @Autowired
     private MonitoredServiceDao m_dao;
 
@@ -182,6 +185,8 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
         dto.setQualifier(entity.getQualifier());
         dto.setLastFail(entity.getLastFail());
         dto.setLastGood(entity.getLastGood());
+        dto.setCollectLastFail(entity.getCollectLastFail());
+        dto.setCollectLastGood(entity.getCollectLastGood());
         dto.setStatusLong(entity.getStatusLong());
         dto.setIpInterfaceId(entity.getIpInterfaceId());
         dto.setIpAddress(entity.getIpAddress().getHostAddress());
@@ -208,6 +213,7 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
         service.setQualifier(dto.getQualifier());
         service.setLastFail(dto.getLastFail());
         service.setLastGood(dto.getLastGood());
+        // collectLastGood/collectLastFail are owned by collectd and are never taken from a request
 
         return service;
     }
@@ -221,7 +227,7 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
             applicationsOriginal.addAll(targetObject.getApplications());
         }
 
-        RestUtils.setBeanProperties(targetObject, params);
+        RestUtils.setBeanProperties(targetObject, params, COLLECTD_OWNED_PROPERTIES);
         getDao().update(targetObject);
 
         Set<OnmsApplication> changedApplications = Sets.symmetricDifference(applicationsOriginal, targetObject.getApplications());
@@ -268,6 +274,8 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
                                 "serviceType": { "id": 2, "name": "HTTP-8080" },
                                 "lastGood": 1787727384331,
                                 "lastFail": 1787685424834,
+                                "collectLastGood": 1787727300512,
+                                "collectLastFail": 1787640005120,
                                 "ipInterfaceId": 2,
                                 "ipAddress": "127.0.0.1",
                                 "nodeId": 2,
@@ -283,6 +291,8 @@ public class IfServiceRestService extends AbstractDaoRestServiceWithDTO<OnmsMoni
                                 <serviceType id="2"><name>HTTP-8080</name></serviceType>
                                 <lastFail>2026-08-25T15:17:04.834-04:00</lastFail>
                                 <lastGood>2026-08-26T03:11:24.562-04:00</lastGood>
+                                <collectLastFail>2026-08-25T02:40:05.120-04:00</collectLastFail>
+                                <collectLastGood>2026-08-26T03:15:00.512-04:00</collectLastGood>
                                 <statusLong>Managed</statusLong>
                                 <ipInterfaceId>2</ipInterfaceId>
                                 <ipAddress>127.0.0.1</ipAddress>

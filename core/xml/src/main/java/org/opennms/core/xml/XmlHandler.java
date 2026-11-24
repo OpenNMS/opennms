@@ -27,7 +27,11 @@ import java.io.StringWriter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 /**
  * Fast XML marshaling and unmarshaling.
@@ -44,6 +48,7 @@ public class XmlHandler<U> {
     private final Class<U> clazz;
     private final Marshaller marshaller;
     private final Unmarshaller unmarshaller;
+    private final XMLInputFactory xmlInputFactory;
 
     public XmlHandler(Class<U> clazz) {
         this.clazz = clazz;
@@ -61,6 +66,11 @@ public class XmlHandler<U> {
         } catch (JAXBException e) {
             throw new RuntimeException("An error was encountered while setting the event handler", e);
         }
+        // Use the same StAX parser as unmarshal(Reader), but disable DTD processing and external
+        // entities. A crafted IPC message then cannot cause an XXE.
+        this.xmlInputFactory = XMLInputFactory.newInstance();
+        xmlInputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        xmlInputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
     }
 
     public String marshal(U obj) {
@@ -70,14 +80,27 @@ public class XmlHandler<U> {
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
-        return jaxbWriter.toString();
+        // MOXy writes each half of a surrogate pair as its own character reference (NMS-19814)
+        return SurrogateCharacterReferences.repair(jaxbWriter.toString());
     }
 
     public U unmarshal(String xml) {
-        try (final StringReader sr = new StringReader(xml)) {
-            return clazz.cast(unmarshaller.unmarshal(sr));
+        XMLStreamReader reader = null;
+        try {
+            reader = xmlInputFactory.createXMLStreamReader(new StringReader(SurrogateCharacterReferences.repair(xml)));
+            return clazz.cast(unmarshaller.unmarshal(reader));
+        } catch (XMLStreamException e) {
+            throw new RuntimeException(new UnmarshalException(e));
         } catch (JAXBException e) {
             throw new RuntimeException(e);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (XMLStreamException e) {
+                    // The reader holds no resources that need a close.
+                }
+            }
         }
     }
 }

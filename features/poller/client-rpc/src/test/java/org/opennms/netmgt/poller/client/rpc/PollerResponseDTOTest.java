@@ -30,11 +30,11 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.poller.PollStatus;
 
-public class PollerResponseDTOTest extends XmlTestNoCastor<PollerResponseDTO> {
+public class PollerResponseDTOTest extends XmlTest<PollerResponseDTO> {
 
     public PollerResponseDTOTest(PollerResponseDTO sampleObject, String sampleXml) {
         super(sampleObject, sampleXml, null);

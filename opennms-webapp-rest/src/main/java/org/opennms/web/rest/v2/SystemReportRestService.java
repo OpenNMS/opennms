@@ -23,15 +23,23 @@ package org.opennms.web.rest.v2;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
@@ -40,6 +48,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.cxf.helpers.CastUtils;
+import org.apache.cxf.message.Message;
+import org.apache.cxf.phase.PhaseInterceptorChain;
 import org.opennms.systemreport.SystemReport;
 import org.opennms.systemreport.SystemReportFormatter;
 import org.opennms.systemreport.SystemReportPlugin;
@@ -51,8 +62,7 @@ import org.springframework.stereotype.Component;
 /**
  * Backs the Generate System Report page: the set of report plugins (data
  * sources) and formatters (output types), and generation of the report itself,
- * streamed back as a file attachment. Replaces the legacy SystemReportController
- * / FormatterView path.
+ * streamed back as a file attachment.
  */
 @Component
 @Path("system-report")
@@ -76,39 +86,89 @@ public class SystemReportRestService {
                 .collect(Collectors.toList());
     }
 
+    /** Name of the cookie set when a form-posted report starts streaming, so the page can re-enable its button. */
+    static final String DOWNLOAD_COOKIE = "systemReportDownload";
+
+    static final int DOWNLOAD_COOKIE_MAX_AGE = 300;
+
+    private static final Pattern DOWNLOAD_TOKEN = Pattern.compile("^[A-Za-z0-9_-]{1,64}$");
+
+    // Formatters and plugins are shared singletons from the service registry and
+    // keep per-report state, so only one report is generated at a time.
+    private final ReentrantLock m_generateLock = new ReentrantLock();
+
     @GET
     @Path("formatters")
     public List<FormatterDTO> getFormatters() {
         return m_systemReport.getFormatters().stream()
-                .filter(SystemReportFormatter::isVisible)
+                .filter(SystemReportRestService::isDownloadable)
                 .map(FormatterDTO::new)
                 .collect(Collectors.toList());
     }
 
+    private static boolean isDownloadable(final SystemReportFormatter formatter) {
+        return formatter.isVisible() && formatter.needsOutputStream() && formatter.getContentType() != null;
+    }
+
     /**
-     * Generate the report and stream it back as a file attachment. Mirrors the
-     * legacy FormatterView: resolve the formatter, run the selected plugins in
-     * order, and write to the response. Only stream-producing formatters are
-     * downloadable; a non-streaming one (e.g. FTP upload) is rejected here.
+     * Generate the report and stream it back as a file attachment: resolve the
+     * formatter, run the selected plugins in order, and write to the response.
      */
     @POST
     @Path("generate")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response generate(final GenerateRequest request) {
-        if (request == null || request.getFormatter() == null || request.getFormatter().isBlank()) {
+        if (request == null) {
+            throw badRequest("A formatter is required.");
+        }
+        return generate(request.getFormatter(), request.getPlugins(), request.getOutput()).build();
+    }
+
+    /**
+     * Form-post variant used by the web UI, so the browser streams the download to
+     * disk. A valid downloadToken is echoed back in a short-lived cookie once the
+     * response starts.
+     */
+    @POST
+    @Path("generate")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response generateFromForm(@FormParam("formatter") final String formatter,
+                                     @FormParam("plugins") final List<String> plugins,
+                                     @FormParam("output") final String output,
+                                     @FormParam("downloadToken") final String downloadToken,
+                                     @Context final HttpServletRequest servletRequest) {
+        // a form post needs no CORS preflight, so refuse ones a browser marks as coming from another site
+        if (servletRequest != null && "cross-site".equalsIgnoreCase(servletRequest.getHeader("Sec-Fetch-Site"))) {
+            throw new WebApplicationException(Response.status(Status.FORBIDDEN).type(MediaType.TEXT_PLAIN)
+                    .entity("Cross-site report requests are not allowed.").build());
+        }
+        final Response.ResponseBuilder builder = generate(formatter, plugins, output);
+        if (downloadToken != null && DOWNLOAD_TOKEN.matcher(downloadToken).matches()) {
+            final String contextPath = servletRequest == null ? "" : servletRequest.getContextPath();
+            final boolean secure = servletRequest != null && servletRequest.isSecure();
+            // long enough to outlast background-tab timer throttling (about one run a minute in Chrome)
+            builder.cookie(new NewCookie(DOWNLOAD_COOKIE, downloadToken,
+                    contextPath.isEmpty() ? "/" : contextPath, null, null, DOWNLOAD_COOKIE_MAX_AGE, secure));
+        }
+        return builder.build();
+    }
+
+    private Response.ResponseBuilder generate(final String formatterName, final List<String> pluginNames, final String output) {
+        if (formatterName == null || formatterName.isBlank()) {
             throw badRequest("A formatter is required.");
         }
         final SystemReportFormatter formatter = m_systemReport.getFormatters().stream()
                 .filter(SystemReportFormatter::isVisible)
-                .filter(f -> f.getName().equals(request.getFormatter()))
+                .filter(f -> f.getName().equals(formatterName))
                 .findFirst()
-                .orElseThrow(() -> badRequest("Unknown formatter '" + request.getFormatter() + "'."));
-        if (!formatter.needsOutputStream() || formatter.getContentType() == null) {
-            throw badRequest("Formatter '" + request.getFormatter() + "' does not produce a downloadable report.");
+                .orElseThrow(() -> badRequest("Unknown formatter '" + formatterName + "'."));
+        if (!isDownloadable(formatter)) {
+            throw badRequest("Formatter '" + formatterName + "' does not produce a downloadable report.");
         }
 
-        final List<String> selected = request.getPlugins() == null ? List.of() : request.getPlugins();
+        final List<String> selected = pluginNames == null ? List.of() : pluginNames;
         final List<SystemReportPlugin> plugins = m_systemReport.getPlugins().stream()
                 .filter(SystemReportPlugin::isVisible)
                 .filter(p -> selected.contains(p.getName()))
@@ -117,14 +177,23 @@ public class SystemReportRestService {
             throw badRequest("Select at least one report plugin.");
         }
 
-        final String fileName = fileName(request.getOutput(), formatter.getExtension());
-        final StreamingOutput body = output -> {
+        final String fileName = fileName(output, formatter.getExtension());
+        disableResponseCompression();
+        final StreamingOutput body = out -> {
+            if (!m_generateLock.tryLock()) {
+                // nothing has been written yet, so this still becomes a plain 503
+                throw new WebApplicationException(Response.status(Status.SERVICE_UNAVAILABLE).type(MediaType.TEXT_PLAIN)
+                        .entity("Another system report is being generated. Try again once it finishes.").build());
+            }
             try {
-                formatter.setOutputStream(output);
+                formatter.setOutputStream(out);
                 formatter.begin();
+                // commit the headers now, so the browser hands the response to its download
+                // manager and leaving the page no longer cancels it
+                out.flush();
                 for (final SystemReportPlugin plugin : plugins) {
                     formatter.write(plugin);
-                    output.flush();
+                    out.flush();
                 }
                 formatter.end();
             } catch (final Exception e) {
@@ -132,21 +201,34 @@ public class SystemReportRestService {
                 // this can only truncate the download; log it for the operator.
                 LOG.warn("Error generating system report with formatter '{}'", formatter.getName(), e);
                 throw new WebApplicationException(e);
+            } finally {
+                formatter.setOutputStream(null);
+                m_generateLock.unlock();
             }
         };
 
         return Response.ok(body, formatter.getContentType())
-                .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
-                .build();
+                .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
     }
 
-    // Matches FormatterView.getFileName: use the sanitized basename of the
-    // requested name, else a default derived from the formatter's extension.
-    private static String fileName(final String output, final String extension) {
-        if (output != null && !output.matches("^\\s*$")) {
-            return new File(output).getName().replaceAll("[^\\w\\.]", "");
+    // CXF's gzip interceptor holds back the first ~1 KB, and with it the headers, which defeats
+    // the early flush; it only skips a response whose request had no Accept-Encoding.
+    // The zip is already compressed, so nothing is lost.
+    private static void disableResponseCompression() {
+        final Message message = PhaseInterceptorChain.getCurrentMessage();
+        if (message == null || message.getExchange() == null || message.getExchange().getInMessage() == null) {
+            return;
         }
-        return "opennms-system-report." + extension;
+        final Map<String, List<String>> headers = CastUtils.cast((Map<?, ?>) message.getExchange().getInMessage().get(Message.PROTOCOL_HEADERS));
+        if (headers != null) {
+            headers.keySet().removeIf(HttpHeaders.ACCEPT_ENCODING::equalsIgnoreCase);
+        }
+    }
+
+    // The sanitized basename of the requested name, else a default from the formatter's extension.
+    static String fileName(final String output, final String extension) {
+        final String cleaned = output == null ? "" : new File(output.trim()).getName().replaceAll("[^\\w\\.]", "");
+        return cleaned.isEmpty() || cleaned.matches("^\\.+$") ? "opennms-system-report." + extension : cleaned;
     }
 
     private static WebApplicationException badRequest(final String message) {

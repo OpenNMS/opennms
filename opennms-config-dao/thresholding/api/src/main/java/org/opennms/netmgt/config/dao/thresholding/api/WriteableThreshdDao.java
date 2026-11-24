@@ -21,11 +21,39 @@
  */
 package org.opennms.netmgt.config.dao.thresholding.api;
 
+import java.util.concurrent.locks.Lock;
+import java.util.function.Consumer;
+
 import org.opennms.netmgt.config.dao.common.api.WriteableDao;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 
-/**
- * Marker interface.
- */
 public interface WriteableThreshdDao extends WriteableDao<ThreshdConfiguration>, ReadableThreshdDao {
+    /**
+     * A lock guarding the configuration held by this DAO. Implementations that only ever replace the published
+     * configuration (never mutate it) do not need readers to take this.
+     */
+    Lock getReadLock();
+
+    /**
+     * A lock guarding the configuration held by this DAO. Every read-modify-write cycle against
+     * {@link #getWriteableConfig()} must hold this for its whole duration, otherwise a concurrent writer
+     * (or a reload triggered by one) silently discards the mutation.
+     */
+    Lock getWriteLock();
+
+    /**
+     * Run a mutation against the writeable configuration while holding the write lock, then persist it with
+     * {@link #saveConfig()} from inside the consumer. This is the only place the configuration may be modified;
+     * implementations may pass a private draft that becomes visible to readers only once the save succeeds.
+     * Callers must not retain the reference beyond the consumer.
+     */
+    default void withWriteLock(Consumer<ThreshdConfiguration> consumerWithLock) {
+        getWriteLock().lock();
+
+        try {
+            consumerWithLock.accept(getWriteableConfig());
+        } finally {
+            getWriteLock().unlock();
+        }
+    }
 }

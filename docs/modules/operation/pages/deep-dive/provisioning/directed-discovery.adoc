@@ -51,6 +51,60 @@ Before adding nodes to a requisition, you must <<quick-start/inventory.adoc#requ
 . Click *Return* to view the list of nodes in the requisition.
 . Click *Synchronize* to add the new nodes to the {page-component-title} database.
 
+[[requisition-node-parent]]
+== Set a node's parent
+
+You can assign a parent node to each node in a requisition.
+{page-component-title} uses this relationship to build the critical path of the child node, which xref:deep-dive/service-assurance/path-outages.adoc[path outages] use to suppress notifications for nodes that are unreachable because their parent is down.
+
+Identify the parent node with one of the following values:
+
+Parent Foreign Source:: The requisition that contains the parent node.
+Leave it blank when the parent is in the same requisition as the child node.
+Parent Foreign ID:: The foreign ID of the parent node.
+This is the most reliable way to identify the parent.
+Parent Node Label:: The label of the parent node.
+Use it only when you do not set a parent foreign ID.
+The label must match exactly one node in {page-component-title}; if it matches no node or several nodes, the relationship is ignored.
+
+To set a node's parent through the requisition UI, follow these steps:
+
+. Make sure that the parent node is already provisioned, or that it is in the same requisition as the child node.
+. Click menu:Manage Inventory[Provisioning Requisitions] in the side menu.
+. Click *Edit* beside the requisition that contains the child node.
+. Click *Edit* beside the child node.
+. On the *Path Outage* tab, set either *Parent Foreign ID* or *Parent Node Label*.
+If the parent node is in a different requisition, also set *Parent Foreign Source*.
+. Click *Save*, then click *Return* to go back to the requisition.
+. Repeat these steps for each child node.
+. Click *Synchronize* to apply the changes.
+
+In a requisition XML file or through the xref:development:rest/requisitions.adoc[requisitions REST API], use the `parent-foreign-source`, `parent-foreign-id`, and `parent-node-label` attributes of the `node` element:
+
+[source, xml]
+----
+<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" foreign-source="Network-ACME">
+   <node foreign-id="default-gw-01" node-label="default-gw-01">
+      <interface ip-addr="192.168.1.1" snmp-primary="P">
+         <monitored-service service-name="ICMP"/>
+      </interface>
+   </node>
+   <node foreign-id="node-01" node-label="node-01" parent-foreign-id="default-gw-01"> <1>
+      <interface ip-addr="192.168.1.10" snmp-primary="P">
+         <monitored-service service-name="ICMP"/>
+      </interface>
+   </node>
+</model-import>
+----
+<1> `node-01` depends on `default-gw-01`; `parent-foreign-source` is omitted because both nodes are in the `Network-ACME` requisition.
+
+Provisiond resolves the parent relationships in the relate phase, after it has imported all nodes of the requisition.
+The critical path of the child node is the parent's primary SNMP interface (`snmp-primary="P"`) with the ICMP service.
+If the parent has no primary SNMP interface, {page-component-title} uses an interface on the parent that has the ICMP service.
+Make sure that the interface the parent is reachable through from {page-component-title} is the primary interface; otherwise the path outage calculation uses the wrong address.
+
+To finish the setup, xref:deep-dive/service-assurance/path-outages.adoc[enable path outages] in the poller configuration.
+
 == Add nodes via REST API
 
 You can use the REST API to add nodes to your {page-component-title} database.

@@ -34,12 +34,13 @@ import org.opennms.netmgt.xml.eventconf.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -64,6 +65,7 @@ public class EventConfServiceHelper {
      */
     public static Long saveEvent(EventConfEventDao eventConfEventDao, EventConfSource source,
                                   Event event, String username, Date timestamp) {
+        requireUei(event);
         EventConfEvent eventConfEvent = new EventConfEvent();
         eventConfEvent.setSource(source);
         // Appended events are evaluated last within their source (allocation locks the source row)
@@ -78,6 +80,55 @@ public class EventConfServiceHelper {
         eventConfEvent.setLastModified(timestamp);
         eventConfEvent.setModifiedBy(username);
         return eventConfEventDao.save(eventConfEvent);
+    }
+
+    /**
+     * Rejects an event definition without a UEI. Parsing trims the UEI (see the eventconf package's
+     * StringTrimAdapter) and {@link Event#setUei} trims it too, so a UEI of only whitespace arrives here
+     * as empty.
+     *
+     * @param event the event definition about to be stored
+     * @throws IllegalArgumentException if the UEI is null or blank
+     */
+    public static void requireUei(final Event event) {
+        if (isBlankUei(event.getUei())) {
+            throw new IllegalArgumentException("Event 'uei' is required");
+        }
+    }
+
+    /**
+     * The one test for a missing UEI, for the storage checks and the REST layer. It is the same rule that
+     * {@link Event#setUei} applies: trim with {@link String#trim()}, then test with {@link String#isBlank()}.
+     * trim() removes control characters but keeps Unicode spaces, and isBlank() does the opposite, so a UEI
+     * of only control characters or only Unicode spaces is blank.
+     *
+     * @param uei the UEI to test
+     * @return true if the UEI is null or blank
+     */
+    public static boolean isBlankUei(final String uei) {
+        return uei == null || uei.trim().isBlank();
+    }
+
+    /**
+     * Rejects a list of event definitions if any of them has no UEI, naming every such event by its
+     * 1-based position in the list and, when it has one, its event-label, so a whole file can be fixed
+     * after one failed upload.
+     *
+     * @param events the event definitions about to be stored, in file order
+     * @throws IllegalArgumentException if any UEI is null or blank
+     */
+    public static void requireUeis(final List<Event> events) {
+        final List<String> missing = new ArrayList<>();
+        for (int i = 0; i < events.size(); i++) {
+            final Event event = events.get(i);
+            if (isBlankUei(event.getUei())) {
+                final String label = event.getEventLabel();
+                missing.add("#" + (i + 1) + (label == null || label.isBlank() ? "" : " (event-label '" + label + "')"));
+            }
+        }
+        if (!missing.isEmpty()) {
+            throw new IllegalArgumentException("Events with no 'uei', by position: " + String.join(", ", missing));
+        }
     }
 
     /**
@@ -97,31 +148,65 @@ public class EventConfServiceHelper {
                 dbEvents.size(), (endTime - startTime), (fetchedAt - startTime), (endTime - fetchedAt));
     }
 
+    /** True while a reload task is queued but has not yet begun reading the database. */
+    private static final AtomicBoolean RELOAD_QUEUED = new AtomicBoolean(false);
+
     /**
-     * Reloads all enabled events from the database into memory asynchronously.
+     * The single lane every reload runs on. Serialized publishes keep the coalescing below correct:
+     * the queued task that justified skipping a request is always also the last to publish.
+     */
+    private static final ExecutorService RELOAD_EXECUTOR = Executors.newSingleThreadExecutor(
+            new ThreadFactoryBuilder().setNameFormat("eventconf-reload-%d").setDaemon(true).build());
+
+    /**
+     * Reloads all enabled events from the database into memory asynchronously, on the shared
+     * serialized reload executor.
+     * <p>
+     * Bursts of mutations (for example several single-event moves in a row) are coalesced: while a
+     * queued reload has not started reading yet, it will observe this mutation's committed state
+     * too, so a second reload would only rebuild the same result. The flag is cleared before the
+     * read begins, so a mutation that commits any later always gets a fresh reload.
+     * <p>
+     * Call this only after the mutation has committed (outside its transaction): the coalescing
+     * argument above rests on the queued reload being able to see the caller's changes.
      *
      * @param eventConfEventDao The DAO for retrieving EventConfEvent entities
      * @param eventConfDao The DAO for loading events into memory
-     * @param executor The ExecutorService to use for async execution
      */
     public static void reloadEventsFromDBAsync(EventConfEventDao eventConfEventDao,
                                                  EventConfDao eventConfDao,
-                                                 EventConfGlobalSecurityDao eventConfGlobalSecurityDao,
-                                                 ExecutorService executor) {
-        executor.execute(() -> reloadEventsFromDB(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao));
+                                                 EventConfGlobalSecurityDao eventConfGlobalSecurityDao) {
+        reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao, RELOAD_EXECUTOR);
     }
 
     /**
-     * Creates a single-threaded executor with a custom thread factory for EventConf operations.
-     *
-     * @param threadNameFormat The format string for thread names (e.g., "load-eventConf-%d")
-     * @return A configured ExecutorService
+     * Visible for testing. Production callers use the public overload: the coalescing flag is
+     * global, so it is only correct when every reload shares one serialized executor.
      */
-    public static ExecutorService createEventConfExecutor(String threadNameFormat) {
-        ThreadFactory threadFactory = new ThreadFactoryBuilder()
-                .setNameFormat(threadNameFormat)
-                .build();
-        return Executors.newSingleThreadExecutor(threadFactory);
+    static void reloadEventsFromDBAsync(EventConfEventDao eventConfEventDao,
+                                                 EventConfDao eventConfDao,
+                                                 EventConfGlobalSecurityDao eventConfGlobalSecurityDao,
+                                                 ExecutorService executor) {
+        if (!RELOAD_QUEUED.compareAndSet(false, true)) {
+            LOG.debug("An event configuration reload is already queued, coalescing this request");
+            return;
+        }
+        try {
+            executor.execute(() -> {
+                RELOAD_QUEUED.set(false);
+                try {
+                    reloadEventsFromDB(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
+                } catch (Exception e) {
+                    // not retried; the next mutation queues a fresh reload
+                    LOG.error("Reloading the event configuration from the database failed; "
+                            + "the in-memory configuration is stale until the next change triggers a reload", e);
+                }
+            });
+        } catch (RuntimeException e) {
+            // a rejected execution (e.g. on shutdown) queued nothing, so the flag is released
+            RELOAD_QUEUED.set(false);
+            throw e;
+        }
     }
 
     /**
@@ -142,6 +227,7 @@ public class EventConfServiceHelper {
                                                                       String username,
                                                                       Date timestamp,
                                                                       int startOrder) {
+        requireUeis(events);
         final AtomicInteger nextOrder = new AtomicInteger(startOrder);
         return events.stream().map(parsed -> {
             EventConfEvent event = new EventConfEvent();

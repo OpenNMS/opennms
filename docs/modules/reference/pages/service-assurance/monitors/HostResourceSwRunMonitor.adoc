@@ -8,7 +8,7 @@ The test matches a given process as hrSwRunName against the numeric value of the
 
 This monitor uses SNMP to accomplish its work.
 Therefore, systems against which you use it must have an SNMP agent supporting the HOST-RESOURCES-MIB installed and configured.
-Most modern SNMP agents, including most distributions of the Net-SNMP agent and the SNMP service that ship with Microsoft Windows, support this MIB.
+Most modern SNMP agents, including most distributions of the Net-SNMP agent and the SNMP service that ships with Microsoft Windows, support this MIB.
 Out-of-the-box support for HOST-RESOURCES-MIB among commercial Unix operating systems may be somewhat spotty.
 
 == Monitor facts
@@ -102,5 +102,5 @@ Define the configuration in `poller-configuration.xml` as follows:
 <monitor service="Process-httpd" class-name="org.opennms.netmgt.poller.monitors.HostResourceSwRunMonitor"/>
 ----
 <1> Name of the process on the system.
-<2> Test if the process is in a valid state (in other words, have a `run-level` no higher than `notRunnable(3)`.
+<2> Test if the process is in a valid state (in other words, have a `run-level` no higher than `notRunnable(3)`).
 <3> If the `httpd` process runs multiple times, the test is done for each instance of the process.

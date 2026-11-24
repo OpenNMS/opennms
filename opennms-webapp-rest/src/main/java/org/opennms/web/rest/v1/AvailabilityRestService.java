@@ -28,6 +28,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
+import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -314,7 +316,13 @@ public class AvailabilityRestService extends OnmsRestService {
         to contain the node; membership is checked before the node is loaded.
 
         The result is the same payload as `GET /availability/nodes/{nodeId}`: the category only acts as a
-        membership check and does not restrict which of the node's services are reported.
+        membership check and does not restrict which of the node's services are reported. The thresholds are the
+        category's; the figures are not restricted to its services.
+
+        `normal-threshold` and `warning-threshold` come from the path's category in `categories.xml`. When it
+        does not define them they are null in JSON and omitted in XML. `managed-service-count`, the number of
+        services with status `A` on managed interfaces, covers every interface of the node. Each interface carries
+        its `is-managed` code and each service its `status` code, as on `GET /availability/nodes/{nodeId}`.
 
         A node id that is not in the category, or that does not exist, is reported as 500 rather than 404.""",
             operationId = "getAvailabilityCategoryNode"
@@ -330,16 +338,22 @@ public class AvailabilityRestService extends OnmsRestService {
                       "availability": 99.92797222222222,
                       "service-count": 1,
                       "service-down-count": 0,
+                      "managed-service-count": 1,
+                      "normal-threshold": 99.99,
+                      "warning-threshold": 97.0,
+                      "ipinterfaceCount": 1,
                       "ipinterfaces": [
                         {
                           "id": 1,
                           "address": "127.0.0.4",
+                          "is-managed": "M",
                           "availability": 99.92797222222222,
                           "services": [
                             {
                               "up": true,
                               "id": 1022,
                               "name": "HTTP-8080",
+                              "status": "A",
                               "availability": 99.92797222222222
                             }
                           ]
@@ -372,7 +386,7 @@ public class AvailabilityRestService extends OnmsRestService {
             if (node == null) {
                 throw getException(Status.NOT_FOUND, "Node {} was not found for category {}.", Long.toString(nodeId), categoryName);
             }
-            return getAvailabilityNode(node.getId().intValue());
+            return getAvailabilityNode(node.getId().intValue(), null, null, 0, 0, false, category);
         } catch (final Exception e) {
             LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
             throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data for category {} : {}", categoryName, e.getMessage());
@@ -386,6 +400,20 @@ public class AvailabilityRestService extends OnmsRestService {
             description = """
         Return the node's availability broken down by IP interface and monitored service. `up` on a service
         reflects the current service status, not the availability figure next to it.
+
+        Interfaces are ordered by address (IPv4 before IPv6). `limit` and `offset` page through them, and only
+        the page's interfaces and services have their availability computed -- each figure is a query of its
+        own, so a node with many interfaces is far cheaper a page at a time. `ipinterfaceCount` is the node's
+        total, for a paginator; the node's own figures and service counts always cover every interface,
+        and so does `managed-service-count`, the number of services with status `A` on managed interfaces
+        (the services the figures count), whatever the paging.
+        `normal-threshold` and `warning-threshold` come from `categories.xml` (Overall Service Availability).
+        When it does not define them they are null in JSON and omitted in XML. Each service carries its
+        `status` code. Each interface carries its `is-managed` code, from `ipinterface.ismanaged` (`M` managed,
+        `U` unmanaged, `F` forced unmanaged, `N` not monitored, `D` deleted); only a managed interface has an
+        availability figure, so for another one this code says why it has none.
+        `withServices=true` leaves out interfaces with no monitored services before counting and paging,
+        for a caller that shows only monitored interfaces and would otherwise get short or empty pages.
 
         With neither `start` nor `end`, the figures are the rolling last-24-hours values, unchanged. Supplying
         either one computes the figures over that window instead; the missing bound defaults to now, or to 24
@@ -406,16 +434,22 @@ public class AvailabilityRestService extends OnmsRestService {
                       "availability": 99.92797222222222,
                       "service-count": 1,
                       "service-down-count": 0,
+                      "managed-service-count": 1,
+                      "normal-threshold": 99.99,
+                      "warning-threshold": 97.0,
+                      "ipinterfaceCount": 1,
                       "ipinterfaces": [
                         {
                           "id": 1,
                           "address": "127.0.0.4",
+                          "is-managed": "M",
                           "availability": 99.92797222222222,
                           "services": [
                             {
                               "up": true,
                               "id": 1022,
                               "name": "HTTP-8080",
+                              "status": "A",
                               "availability": 99.92797222222222
                             }
                           ]
@@ -425,7 +459,7 @@ public class AvailabilityRestService extends OnmsRestService {
                             @Content(mediaType = MediaType.APPLICATION_XML,
                                     schema = @Schema(implementation = AvailabilityNode.class))
                     }),
-            @ApiResponse(responseCode = "400", description = "The requested window is empty or inverted.",
+            @ApiResponse(responseCode = "400", description = "The requested window is empty or inverted, or `limit` or `offset` is negative.",
                     content = @Content(mediaType = MediaType.TEXT_PLAIN,
                             schema = @Schema(type = "string"),
                             examples = @ExampleObject(value = "start (1787727543996) must be strictly before end (1787641143996)."))),
@@ -443,16 +477,28 @@ public class AvailabilityRestService extends OnmsRestService {
             @QueryParam("start") final Long start,
             @Parameter(description = "Window end, epoch milliseconds. Defaults to now when only "
                     + "`start` is given.", example = "1787727543996")
-            @QueryParam("end") final Long end) {
+            @QueryParam("end") final Long end,
+            @Parameter(description = "Most interfaces to return; 0 or absent for all of them.", example = "10")
+            @QueryParam("limit") final Integer limit,
+            @Parameter(description = "Interfaces to skip, in address order.", example = "0")
+            @QueryParam("offset") final Integer offset,
+            @Parameter(description = "Only interfaces with at least one monitored service, both in the page "
+                    + "and in `ipinterfaceCount`.", example = "true")
+            @QueryParam("withServices") final Boolean withServices) {
 
         // Resolved and validated before the try: the catch-all below rewraps every exception,
         // including a WebApplicationException, as a 500.
         final Date[] window = resolveWindow(start, end);
+        if ((limit != null && limit < 0) || (offset != null && offset < 0)) {
+            throw getException(Status.BAD_REQUEST, "limit and offset must not be negative.");
+        }
+        final int pageOffset = offset == null ? 0 : offset;
+        final int pageLimit = limit == null ? 0 : limit;
 
         try {
             final AvailabilityNode avail = (window == null)
-                    ? getAvailabilityNode(nodeId)
-                    : getAvailabilityNode(nodeId, window[0], window[1]);
+                    ? getAvailabilityNode(nodeId, null, null, pageOffset, pageLimit, Boolean.TRUE.equals(withServices))
+                    : getAvailabilityNode(nodeId, window[0], window[1], pageOffset, pageLimit, Boolean.TRUE.equals(withServices));
             if (avail == null) {
                 throw getException(Status.NOT_FOUND, "Node {} was not found.", Integer.toString(nodeId));
             }
@@ -472,6 +518,24 @@ public class AvailabilityRestService extends OnmsRestService {
      * @param end window end, ignored when start is null
      */
     AvailabilityNode getAvailabilityNode(final int id, final Date start, final Date end) throws Exception {
+        return getAvailabilityNode(id, start, end, 0, 0, false);
+    }
+
+    /**
+     * @param offset interfaces to skip, in address order
+     * @param limit most interfaces to include, or 0 for all of them
+     * @param withServices count and page only the interfaces with at least one monitored service
+     */
+    AvailabilityNode getAvailabilityNode(final int id, final Date start, final Date end, final int offset, final int limit,
+            final boolean withServices) throws Exception {
+        return getAvailabilityNode(id, start, end, offset, limit, withServices, CategoryModel.OVERALL_AVAILABILITY_CATEGORY);
+    }
+
+    /**
+     * @param thresholdCategory category whose normal and warning thresholds are reported on the node
+     */
+    AvailabilityNode getAvailabilityNode(final int id, final Date start, final Date end, final int offset, final int limit,
+            final boolean withServices, final String thresholdCategory) throws Exception {
 
         final OnmsNode dbNode = m_nodeDao.get(id);
         initialize(dbNode);
@@ -487,7 +551,23 @@ public class AvailabilityRestService extends OnmsRestService {
                 : CategoryModel.getNodeAvailability(id, start, end);
 
         final AvailabilityNode node = new AvailabilityNode(dbNode, nodeAvail);
-        for (final OnmsIpInterface iface : dbNode.getIpInterfaces()) {
+        final CategoryModel model = CategoryModel.getInstance();
+        node.setThresholds(model.getCategoryNormalThreshold(thresholdCategory),
+                model.getCategoryWarningThreshold(thresholdCategory));
+
+        // In address order, so a page is stable from one request to the next. Only the page's
+        // interfaces are evaluated below: every figure is a query of its own.
+        final List<OnmsIpInterface> interfaces = new ArrayList<>(dbNode.getIpInterfaces());
+        if (withServices) {
+            interfaces.removeIf(iface -> iface.getMonitoredServices().isEmpty());
+        }
+        interfaces.sort(Comparator.comparing(OnmsIpInterface::getIpAddress, new InetAddressComparator()));
+        node.setIpInterfaceCount((long) interfaces.size());
+        final int from = Math.min(offset, interfaces.size());
+        // Not from + limit, which overflows for a large limit: compare against what is left instead.
+        final int to = (limit > 0 && limit < interfaces.size() - from) ? from + limit : interfaces.size();
+
+        for (final OnmsIpInterface iface : interfaces.subList(from, to)) {
             final String addr = str(iface.getIpAddress());
             final double ifaceAvail = (start == null)
                     ? CategoryModel.getInterfaceAvailability(id, addr)

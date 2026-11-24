@@ -1,9 +1,11 @@
 {
     "availability": 100.0,
     "id": 1,
+    "ipinterfaceCount": 4,
     "ipinterfaces": [
         {
             "address": "192.168.1.1",
+            "is-managed": "M",
             "availability": 100.0,
             "id": 1,
             "services": [
@@ -12,19 +14,22 @@
                     "name": "ICMP",
                     "serviceId": 1,
                     "availability": -1.0,
-                    "up": true
+                    "up": true,
+                    "status": "A"
                 },
                 {
                     "id": 3,
                     "name": "SNMP",
                     "serviceId": 2,
                     "availability": -1.0,
-                    "up": true
+                    "up": true,
+                    "status": "A"
                 }
             ]
         },
         {
             "address": "192.168.1.2",
+            "is-managed": "M",
             "availability": 100.0,
             "id": 4,
             "services": [
@@ -33,19 +38,22 @@
                     "name": "ICMP",
                     "serviceId": 1,
                     "availability": -1.0,
-                    "up": true
+                    "up": true,
+                    "status": "A"
                 },
                 {
                     "id": 6,
                     "name": "HTTP",
                     "serviceId": 3,
                     "availability": -1.0,
-                    "up": true
+                    "up": true,
+                    "status": "A"
                 }
             ]
         },
         {
             "address": "192.168.1.3",
+            "is-managed": "M",
             "availability": 100.0,
             "id": 7,
             "services": [
@@ -54,12 +62,14 @@
                     "name": "ICMP",
                     "serviceId": 1,
                     "availability": -1.0,
-                    "up": true
+                    "up": true,
+                    "status": "A"
                 }
             ]
         },
         {
             "address": "fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5",
+            "is-managed": "M",
             "availability": 100.0,
             "id": 9,
             "services": [
@@ -68,11 +78,15 @@
                     "name": "ICMP",
                     "serviceId": 1,
                     "availability": -1.0,
-                    "up": true
+                    "up": true,
+                    "status": "A"
                 }
             ]
         }
     ],
     "service-count": 6,
-    "service-down-count": 0
+    "service-down-count": 0,
+    "managed-service-count": 6,
+    "normal-threshold": 99.99,
+    "warning-threshold": 97.0
 }

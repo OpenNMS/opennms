@@ -45,6 +45,9 @@ export const isNonEmptyString = (value?: any) => {
   return isString(value) && (value as string)?.length > 0
 }
 
+/** '1 service', '3 services': the count and the noun, singular for exactly 1. */
+export const plural = (count: number, singular: string, pluralForm = `${singular}s`) => `${count} ${count === 1 ? singular : pluralForm}`
+
 export const ellipsify = (text: string, count: number) => {
   const ellipsis = '\u2026' // Unicode for "..."
 
@@ -53,6 +56,15 @@ export const ellipsify = (text: string, count: number) => {
   }
 
   return text
+}
+
+/** The text of an HTML fragment, without its markup -- for a tooltip or a title attribute. */
+export const htmlToText = (html?: string | null): string => {
+  if (!html) {
+    return ''
+  }
+
+  return (new DOMParser().parseFromString(html, 'text/html').body.textContent ?? '').replace(/\s+/g, ' ').trim()
 }
 
 /**
@@ -72,3 +84,6 @@ export const hasNonEmptyProperty = (obj?: any) => {
 }
 
 export const VENDOR_OPENNMS = 'opennms'
+
+/** Pinned event-conf source that is always evaluated last and cannot be reordered. */
+export const EVENT_CONF_CATCH_ALL_SOURCE = 'opennms.catch-all.events'

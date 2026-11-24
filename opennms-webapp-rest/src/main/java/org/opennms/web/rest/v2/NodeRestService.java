@@ -24,6 +24,7 @@ package org.opennms.web.rest.v2;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,16 +66,24 @@ import org.apache.cxf.jaxrs.ext.search.SearchContext;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.utils.IplikeSqlTranslator;
 import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.NotificationDao;
+import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
+import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.OnmsPathOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
@@ -88,6 +97,9 @@ import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.support.SearchPropertyCollection;
 import org.opennms.web.rest.support.StringCollection;
+import org.opennms.web.rest.v2.model.NodeAlarmStatusDto;
+import org.opennms.web.rest.v2.model.NodeCriticalPathDto;
+import org.opennms.web.rest.v2.model.NodeNotificationStatusDto;
 import org.opennms.web.rest.v2.model.NodeServiceTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,6 +132,23 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         "physAddr", "snmpphysaddr"
     );
 
+    /**
+     * Prepare a FIQL value for an {@code ilike ?} SQL parameter. When the value has a FIQL '*'
+     * wildcard ({@code wildcard == true}), CXF has already escaped '\', '%' and '_' and changed
+     * '*' to '%', so the value is used as it is. Without a wildcard, CXF does not escape the value,
+     * so escape the LIKE characters here: an exact search for "Gi0_1" must not also match "Gi0X1".
+     */
+    private static Object toIlikeParameter(final Object value, final boolean wildcard) {
+        if (wildcard || !(value instanceof String)) {
+            return value;
+        }
+        return escapeLikeCharacters((String)value);
+    }
+
+    private static String escapeLikeCharacters(final String value) {
+        return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
+    }
+
     @Autowired
     private MonitoringLocationDao m_locationDao;
 
@@ -128,6 +157,15 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
 
     @Autowired
     private NodeDao m_dao;
+
+    @Autowired
+    private PathOutageDao m_pathOutageDao;
+
+    @Autowired
+    private AlarmDao m_alarmDao;
+
+    @Autowired
+    private NotificationDao m_notificationDao;
 
     @Autowired
     @Qualifier("eventProxy")
@@ -259,12 +297,13 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
                 // alias is never joined, so the default Hibernate property restriction must not be added
                 // (it would cause a QueryException: could not resolve property: snmpInterface).
                 CriteriaBehavior<?> snmpStringBehavior = new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
+                    final Object pattern = toIlikeParameter(v, w);
                     switch (c) {
                     case EQUALS:
-                        b.sql(String.format("{alias}.nodeid in (select snmpinterface.nodeid from snmpinterface where snmpinterface.snmpcollect != 'D' and snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
+                        b.sql(String.format("{alias}.nodeid in (select snmpinterface.nodeid from snmpinterface where snmpinterface.snmpcollect != 'D' and snmpinterface.%s ilike ?)", dbCol), pattern, Type.STRING);
                         break;
                     case NOT_EQUALS:
-                        b.sql(String.format("{alias}.nodeid not in (select snmpinterface.nodeid from snmpinterface where snmpinterface.snmpcollect != 'D' and snmpinterface.%s ilike ?)", dbCol), v, Type.STRING);
+                        b.sql(String.format("{alias}.nodeid not in (select snmpinterface.nodeid from snmpinterface where snmpinterface.snmpcollect != 'D' and snmpinterface.%s ilike ?)", dbCol), pattern, Type.STRING);
                         break;
                     default:
                         throw new IllegalArgumentException("Illegal condition type when filtering snmpInterface." + key + ": " + c);
@@ -294,9 +333,10 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             "union select nodeId from cdpelement where cdpglobaldeviceid ilike ? " +
             "union select nodeId from lldplink where lldpportid ilike ? or lldpportdescr ilike ? " +
             "union select nodeId from lldpelement where lldpsysname ilike ?)";
-        CriteriaBehavior<?> topologyBehavior = new CriteriaBehavior<>((String)null, String::new, (b,v,c,w) ->
-            b.sql(topologySql, new Object[]{v, v, v, v, v}, new Type[]{Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING})
-        );
+        CriteriaBehavior<?> topologyBehavior = new CriteriaBehavior<>((String)null, String::new, (b,v,c,w) -> {
+            final Object pattern = toIlikeParameter(v, w);
+            b.sql(topologySql, new Object[]{pattern, pattern, pattern, pattern, pattern}, new Type[]{Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING});
+        });
         topologyBehavior.setSkipPropertyByDefault(true);
         map.put("topology", topologyBehavior);
 
@@ -311,12 +351,24 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
                 return;
             }
             final String pattern = ((String)v).replaceAll("%", "*");
+            // translatable patterns become native-inet range predicates the
+            // database answers through an expression index; the rest keep iplike()
+            final String nativePredicate = IplikeSqlTranslator.toSqlPredicate(pattern, "ipaddr");
+            final String match = nativePredicate != null ? nativePredicate : "iplike(ipaddr, ?)";
             switch (c) {
             case EQUALS:
-                b.sql("{alias}.nodeid in (select nodeid from ipinterface where iplike(ipaddr, ?))", pattern, Type.STRING);
+                if (nativePredicate != null) {
+                    b.sql("{alias}.nodeid in (select nodeid from ipinterface where " + match + ")");
+                } else {
+                    b.sql("{alias}.nodeid in (select nodeid from ipinterface where " + match + ")", pattern, Type.STRING);
+                }
                 break;
             case NOT_EQUALS:
-                b.sql("{alias}.nodeid not in (select nodeid from ipinterface where iplike(ipaddr, ?))", pattern, Type.STRING);
+                if (nativePredicate != null) {
+                    b.sql("{alias}.nodeid not in (select nodeid from ipinterface where " + match + ")");
+                } else {
+                    b.sql("{alias}.nodeid not in (select nodeid from ipinterface where " + match + ")", pattern, Type.STRING);
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Illegal condition type for iplike expression: " + c);
@@ -329,6 +381,8 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         // Mirrors the legacy node-list MAC-like search — colons and dashes are stripped,
         // then an ANYWHERE ilike is applied. Uses a SQL subquery because snmpinterface is a child
         // association and cannot be aliased against the root criteria here.
+        // As in the legacy search, a value without a FIQL '*' is not escaped: '%' and '_' are SQL
+        // LIKE wildcards. (With a '*', CXF escapes '%' and '_' and they are literals.)
         CriteriaBehavior<?> maclikeBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
             if (v == null) {
                 return;
@@ -988,6 +1042,174 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             })
             .collect(Collectors.toList());
         return Response.ok(result).build();
+    }
+
+    @GET
+    @Path("{nodeCriteria}/criticalPath")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional(readOnly = true)
+    @Operation(
+            summary = "Get the critical path of a node",
+            description = """
+        Return the critical path configured for the node: its own row in the `pathoutage` table, as set
+        through the path outage configuration. This is what the legacy node page shows as "Path Outage -
+        Critical Path". The configured default critical path is not reported here; a node with no row of
+        its own answers 204.
+
+        Readable by anyone who may read the node, unlike `/notification-config/path-outages`, which lists
+        every node's critical path for administrators.""",
+            operationId = "NodeRestServiceGETCriticalPathByNodeId")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The node's critical path.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = NodeCriticalPathDto.class),
+                            examples = @ExampleObject(value = """
+                    {"criticalPathIp": "10.0.0.3", "criticalPathServiceName": "ICMP"}"""))),
+            @ApiResponse(responseCode = "204", description = "The node has no critical path of its own."),
+            @ApiResponse(responseCode = "404", description = "No such node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found.")))
+    })
+    public Response getCriticalPath(
+            @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("nodeCriteria") final String nodeCriteria) {
+        final OnmsNode node = m_dao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.NOT_FOUND, "Node {} was not found.", nodeCriteria);
+        }
+
+        // As PathOutageManagerDaoImpl.getPrettyCriticalPath, which the legacy node page uses.
+        final OnmsPathOutage pathOutage = m_pathOutageDao.get(node.getId());
+        if (pathOutage == null) {
+            return Response.noContent().build();
+        }
+
+        final NodeCriticalPathDto result = new NodeCriticalPathDto();
+        result.setCriticalPathIp(InetAddressUtils.str(pathOutage.getCriticalPathIp()));
+        result.setCriticalPathServiceName(pathOutage.getCriticalPathServiceName());
+        return Response.ok(result).build();
+    }
+
+    @GET
+    @Path("{nodeCriteria}/alarmStatus")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional(readOnly = true)
+    @Operation(
+            summary = "Get a summary of a node's unacknowledged problem alarms",
+            description = """
+        Return how many of the node's problem alarms are unacknowledged, how many are unacknowledged at each
+        severity, and the highest unacknowledged severity. A problem alarm is one above Normal severity.
+
+        The figures come from one grouped count on the server, so the answer stays small however many alarms
+        the node has. Use `GET /alarms` with a node filter for the alarms themselves.""",
+            operationId = "NodeRestServiceGETAlarmStatusByNodeId")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The node's alarm summary.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = NodeAlarmStatusDto.class),
+                            examples = @ExampleObject(value = """
+                    {"severity": "MAJOR", "unacknowledgedCount": 2,
+                     "unacknowledgedBySeverity": {"CRITICAL": 0, "MAJOR": 1, "MINOR": 1, "WARNING": 0}}"""))),
+            @ApiResponse(responseCode = "404", description = "No such node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found.")))
+    })
+    public Response getAlarmStatus(
+            @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("nodeCriteria") final String nodeCriteria) {
+        final OnmsNode node = m_dao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.NOT_FOUND, "Node {} was not found.", nodeCriteria);
+        }
+        final int nodeId = node.getId();
+
+        // The legacy node page's status box loaded every alarm and counted them; here the database counts. One
+        // grouped count gives every figure: the count for each severity, their total, and the highest severity
+        // that has any.
+        final Map<OnmsSeverity, Long> unacknowledged = m_alarmDao.getUnacknowledgedCountsBySeverity(nodeId);
+        final Map<String, Long> unacknowledgedBySeverity = new LinkedHashMap<>();
+        OnmsSeverity worstUnacknowledged = OnmsSeverity.NORMAL;
+        long unacknowledgedCount = 0;
+        for (final OnmsSeverity severity : PROBLEM_SEVERITIES) {
+            final long count = unacknowledged.getOrDefault(severity, 0L);
+            unacknowledgedBySeverity.put(severity.name(), count);
+            unacknowledgedCount += count;
+            if (count > 0 && worstUnacknowledged == OnmsSeverity.NORMAL) {
+                worstUnacknowledged = severity;
+            }
+        }
+
+        final NodeAlarmStatusDto result = new NodeAlarmStatusDto();
+        result.setSeverity(worstUnacknowledged.name());
+        result.setUnacknowledgedCount(unacknowledgedCount);
+        result.setUnacknowledgedBySeverity(unacknowledgedBySeverity);
+        return Response.ok(result).build();
+    }
+
+    // The severities above Normal, highest first: indeterminate, cleared and normal alarms are not problems.
+    private static final List<OnmsSeverity> PROBLEM_SEVERITIES = List.of(
+            OnmsSeverity.CRITICAL, OnmsSeverity.MAJOR, OnmsSeverity.MINOR, OnmsSeverity.WARNING);
+
+    @GET
+    @Path("{nodeCriteria}/notificationStatus")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional(readOnly = true)
+    @Operation(
+            summary = "Get a count of a node's notifications",
+            description = """
+        Return how many notifications the node has: the outstanding ones sent to the caller, all the outstanding
+        ones, and all of them, outstanding and acknowledged. Outstanding is not yet acknowledged.
+
+        The figures match the totals of `GET /rest/notifications` with a `node.id` filter: `answeredBy=null` and
+        `usersNotified.userId=<caller>`, `answeredBy=null`, and no other filter. A notification sent to the
+        caller by more than one method is counted once.""",
+            operationId = "NodeRestServiceGETNotificationStatusByNodeId")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The node's notification counts.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = NodeNotificationStatusDto.class),
+                            examples = @ExampleObject(value = """
+                    {"user": "admin", "yourOutstanding": 2, "allOutstanding": 5, "total": 40}"""))),
+            @ApiResponse(responseCode = "404", description = "No such node.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Node 999999 was not found.")))
+    })
+    public Response getNotificationStatus(
+            @Context final SecurityContext securityContext,
+            @Parameter(in = ParameterIn.PATH, name = "nodeCriteria",
+                    description = "Node database id, or `foreignSource:foreignId`.", example = "257")
+            @PathParam("nodeCriteria") final String nodeCriteria) {
+        final OnmsNode node = m_dao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.NOT_FOUND, "Node {} was not found.", nodeCriteria);
+        }
+        final int nodeId = node.getId();
+        final String user = securityContext.getUserPrincipal().getName();
+
+        final NodeNotificationStatusDto result = new NodeNotificationStatusDto();
+        result.setUser(user);
+        // A notification has one usersNotified row per user and method, so the join is counted over distinct
+        // notifications, as the v1 summary and the list are.
+        result.setYourOutstanding(m_notificationDao.countMatching(nodeNotifications(nodeId)
+                .isNull("answeredBy")
+                .alias("usersNotified", "usersNotified")
+                .eq("usersNotified.userId", user)
+                .distinct()
+                .toCriteria()));
+        result.setAllOutstanding(m_notificationDao.countMatching(nodeNotifications(nodeId).isNull("answeredBy").toCriteria()));
+        result.setTotal(m_notificationDao.countMatching(nodeNotifications(nodeId).toCriteria()));
+        return Response.ok(result).build();
+    }
+
+    private static CriteriaBuilder nodeNotifications(final int nodeId) {
+        return new CriteriaBuilder(OnmsNotification.class)
+                .alias("node", "node")
+                .eq("node.id", nodeId);
     }
 
     @Path("{nodeCriteria}/ipinterfaces")

@@ -47,6 +47,8 @@ export interface OnmsColumnProps {
   header?: string
   /** Enables click-to-sort on this column's header */
   sortable?: boolean
+  /** Sort key when it differs from `field`: a property path, or a function of the row */
+  sortField?: string | ((item: any) => string)
   style?: string | Record<string, string>
   bodyStyle?: string | Record<string, string>
   class?: string

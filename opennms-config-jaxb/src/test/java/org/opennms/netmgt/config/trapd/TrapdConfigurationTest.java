@@ -34,10 +34,10 @@ import java.util.Collection;
 
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.xml.JaxbUtils;
 
-public class TrapdConfigurationTest extends XmlTestNoCastor<TrapdConfiguration> {
+public class TrapdConfigurationTest extends XmlTest<TrapdConfiguration> {
 
 	public TrapdConfigurationTest(final TrapdConfiguration sampleObject,
 			final Object sampleXml, final String schemaFile) {

@@ -1,4 +1,4 @@
-= WS-Manangement WQL Detector
+= WS-Management WQL Detector
 :description: Learn how the WSManWQLDetector in OpenNMS {page-component-title} attempts to connect to the agent defined in `wsman-config.xml` and issues a WQL query.
 
 The WSManWQLDetector attempts to connect to the agent defined in `wsman-config.xml` and issues a WQL query.
@@ -37,7 +37,7 @@ Connection details, credentials, and Kerberos settings for the target come from 
 
 | serviceName
 | A custom service name to identify this service.
-| WsManWQLService
+| WSManWQL
 |===
 
 == Examples

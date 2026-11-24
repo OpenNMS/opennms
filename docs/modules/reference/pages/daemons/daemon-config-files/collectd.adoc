@@ -16,10 +16,9 @@ Collects xref:operation:deep-dive/performance-data-collection/introduction.adoc[
 
 | collectd-configuration.xml
 | This file defines which collections are being collected and assigned to which nodes. +
-Restart is required in case new collectors are created or removed. +
-The reload event loads changed configuration parameters of existing collectors but will not load new collectors.
+A reload event re-reads the file, loads new collectors, drops removed ones, reschedules every service against the new packages, and resizes the collection thread pool to the configured `threads` value.
 | yes
-| yes
+| no
 
 | datacollection-config.xml
 | Schema for SNMP data collection imports. +

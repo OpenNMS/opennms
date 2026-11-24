@@ -221,6 +221,17 @@ export interface Node {
   sysLocation: string
 }
 
+/**
+ * Outcome of a filter-rule node lookup. `invalid` is the server rejecting the rule
+ * itself (HTTP 400), which the caller shows as such; `too-many` is a rule that
+ * matched more nodes than the caller asked to receive, with the count; `failed`
+ * is anything else.
+ */
+export type NodeFilterRuleResult =
+  | { nodes: Node[] }
+  | { error: 'invalid' | 'failed' }
+  | { error: 'too-many', count: number }
+
 export interface NodeColumnSelectionItem {
   id: string
   label: string
@@ -254,6 +265,9 @@ export interface Alarm {
   count: number
   lastEventTime: number
   logMessage: string
+  // Both absent while the alarm is unacknowledged: the REST API omits null fields.
+  ackTime?: number
+  ackUser?: string
 }
 
 export interface Event {
@@ -350,6 +364,41 @@ export interface IpInterface {
   snmpPrimary: string
   hostName: string
 }
+// A monitored service on a node and the address it runs on, from /api/v2/ifservices: what the
+// Node Details Services menu links to.
+export interface NodeLinkService {
+  serviceName: string
+  ipAddress: string
+}
+
+// GET /api/v2/nodes/{id}/criticalPath: the node's own row in the pathoutage table.
+// GET /api/v2/nodes/{id}/alarmStatus: the node's unacknowledged problem alarms (above Normal), counted
+// on the server.
+export interface NodeAlarmStatus {
+  // Highest unacknowledged problem severity, as an OnmsSeverity name; NORMAL when there is none.
+  severity: string
+  unacknowledgedCount: number
+  // Unacknowledged problem alarms at each severity above Normal (CRITICAL, MAJOR, MINOR and WARNING,
+  // each present, 0 when there are none).
+  unacknowledgedBySeverity: Record<string, number>
+}
+
+// GET /api/v2/nodes/{id}/notificationStatus: the node's notifications, counted on the server.
+export interface NodeNotificationStatus {
+  // The user `yourOutstanding` counts for: the one logged in.
+  user: string
+  // Outstanding (not acknowledged) and sent to that user; one sent by several methods counts once.
+  yourOutstanding: number
+  allOutstanding: number
+  // Outstanding and acknowledged.
+  total: number
+}
+
+export interface NodeCriticalPath {
+  criticalPathIp: string | null
+  criticalPathServiceName: string | null
+}
+
 export interface MonitoredService {
   id: number
   lastGood?: Date | null
@@ -400,6 +449,12 @@ export interface Category {
   name: string
 }
 
+// The page a node slice holds: what its query asked for. A limit of 0 is every row.
+export interface NodePage {
+  offset: number
+  limit: number
+}
+
 export interface QueryParameters {
   limit?: number
   offset?: number
@@ -435,12 +490,18 @@ export interface NodeAvailabilityService {
   serviceId: number
   availability: number
   up?: boolean
+  // The ifservices status code. Absent from an older server, which returns every service and gives
+  // -1 to one that is not managed. Null in JSON when the server has no status for it.
+  status?: string | null
 }
 
 export interface NodeAvailabilityInterface {
   address: string
   availability: number
   id: number
+  // The ipinterface.ismanaged code (M managed, F forced unmanaged, ...). Only a managed interface has
+  // a figure. Absent from an older server; null in JSON when the interface has no code.
+  'is-managed'?: string | null
   services: NodeAvailabilityService[]
 }
 
@@ -450,6 +511,15 @@ export interface NodeAvailability {
   ipinterfaces: NodeAvailabilityInterface[]
   'service-count': number
   'service-down-count': number
+  // The node's total interfaces, when `ipinterfaces` may hold only a page of them.
+  ipinterfaceCount?: number
+  // Managed services on managed interfaces, over every interface, whatever page of them
+  // `ipinterfaces` holds. Null in JSON (absent in XML) when the server did not count them.
+  'managed-service-count'?: number | null
+  // From categories.xml. When the category does not define them both are null in JSON and absent in
+  // XML; an older server sends neither.
+  'normal-threshold'?: number | null
+  'warning-threshold'?: number | null
 }
 
 export interface FileEditorResponseLog {
@@ -732,6 +802,12 @@ export interface AssetFilter {
   value: string
 }
 
+/**
+ * A choice of the Node List's Flows filter. Ingress and Egress together mean either kind; Both and
+ * No Flows each stand alone (see components/Nodes/NodeList/flowFilter.ts).
+ */
+export type FlowFilter = 'Ingress' | 'Egress' | 'Both' | 'No Flows'
+
 /** All components of a node list query */
 export interface NodeQueryFilter {
   searchTerm: string
@@ -739,7 +815,7 @@ export interface NodeQueryFilter {
   selectedCategories: Category[]
   selectedCategories2?: Category[]
   selectedServices?: string[]
-  selectedFlows: string[]
+  selectedFlows: FlowFilter[]
   selectedMonitoringLocations: MonitoringLocation[]
   ipAddress?: string
   macAddress?: string

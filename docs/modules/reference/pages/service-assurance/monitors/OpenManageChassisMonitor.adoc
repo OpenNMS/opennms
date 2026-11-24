@@ -31,7 +31,7 @@ As this monitor uses SNMP, the queried nodes must have proper SNMP configuration
 | From snmp-config.xml
 |===
 
-This monitor implements the <<reference:service-assurance/introduction.adoc#<ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 

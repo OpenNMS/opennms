@@ -1,7 +1,7 @@
 
 = User-Defined Links
 
-User-defined links (UDLs) for the enlinkd topology can be be queried, added, modified, or deleted via REST endpoints.
+User-defined links (UDLs) for the enlinkd topology can be queried, added, modified, or deleted via REST endpoints.
 
 == GETs (reading UDLs)
 

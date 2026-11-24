@@ -52,12 +52,17 @@ public class AvailabilityMonitoredService {
     @XmlAttribute(name="up")
     private final boolean up;
 
+    /** Service status code from ifservices: A managed, F forced unmanaged, and so on. */
+    @XmlAttribute(name="status")
+    private final String m_status;
+
     public AvailabilityMonitoredService() {
         m_id = -1;
         m_name = "";
         m_serviceId = -1;
         m_availability = -1d;
         this.up = false;
+        m_status = null;
     }
 
     public AvailabilityMonitoredService(final OnmsMonitoredService svc, final double availability, final boolean up) {
@@ -66,6 +71,7 @@ public class AvailabilityMonitoredService {
         m_serviceId = svc.getServiceId();
         m_availability = availability;
         this.up = up;
+        m_status = svc.getStatus();
     }
 
     public Integer getId() {
@@ -88,6 +94,10 @@ public class AvailabilityMonitoredService {
         return m_serviceId;
     }
 
+    public String getStatus() {
+        return m_status;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -96,6 +106,7 @@ public class AvailabilityMonitoredService {
             .append("up", this.isUp())
             .append("name", this.getName())
             .append("serviceId", this.getServiceId())
+            .append("status", this.getStatus())
             .toString();
     }
 

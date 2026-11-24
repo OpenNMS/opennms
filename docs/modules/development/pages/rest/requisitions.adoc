@@ -14,6 +14,8 @@ Note that anything that says it adds, deletes, or modifies a node, interface, or
 That will happen upon import or synchronization.
 
 You may write requisition data if the authenticated user is assigned the provision, rest, or admin roles.
+You may read requisition data only if the authenticated user is assigned the provision or admin roles.
+Requisitions can contain asset credentials, so the rest role alone cannot read them.
 
 == GETs
 

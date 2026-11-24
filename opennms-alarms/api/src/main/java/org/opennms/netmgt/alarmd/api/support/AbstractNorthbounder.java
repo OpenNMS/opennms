@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.alarmd.api.support;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
@@ -45,6 +46,7 @@ import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.core.utils.StringUtils;
+import org.opennms.core.xml.SurrogateCharacterReferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -403,10 +405,13 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable, St
             Marshaller marshaller = ONMS_EVENT_PARM_CONTEXT.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-            marshaller.marshal(rootElement, sw);
+            // MOXy splits surrogate pairs into two character references (NMS-19814)
+            final SurrogateCharacterReferences.RepairingWriter repairing = SurrogateCharacterReferences.repairing(sw);
+            marshaller.marshal(rootElement, repairing);
+            repairing.finish();
             LOG.debug("Adding eventParmsXML mapping with contents {}.", sw);
             mapping.put("eventParmsXml", sw);
-        } catch (JAXBException e) {
+        } catch (JAXBException | IOException e) {
             LOG.error("Error marshalling event params to XML for alarm ID: {}", alarm.getId(), e);
         }
     }

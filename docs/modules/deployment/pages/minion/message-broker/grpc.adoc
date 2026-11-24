@@ -110,7 +110,7 @@ config:update<5>
 <1> Enable TLS for the gRPC server. 
 <2> Set the path to your CA certificate file.
 <3> Set the path to your client certificate file.
-<4> Set the path client certificate key file.
+<4> Set the path to your client certificate key file.
 <5> Save and update the configuration.
 
 This is optional, and you can set a maximum message size for gRPC.

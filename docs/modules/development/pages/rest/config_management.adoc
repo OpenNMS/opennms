@@ -126,6 +126,9 @@ You can also target a single element using a cURL command:
 [source]
 curl -X PUT -u 'admin:admin' https://opennms.example.com/opennms/rest/cm/provisiond/default -H 'Content-type: application/json' --data '{ "rescanThreads": 150 }'
 
+Each successful update sends a `reloadDaemonConfig` event to Provisiond.
+Provisiond rebuilds its requisition import schedule and resizes its import, scan, write, and rescan thread pools to the new values without a restart.
+
 ==== Scheduled requisition imports
 
 Each entry in the `requisition-def` array may carry a `cron-schedule` value that tells Provisiond when to pull and import that requisition.
