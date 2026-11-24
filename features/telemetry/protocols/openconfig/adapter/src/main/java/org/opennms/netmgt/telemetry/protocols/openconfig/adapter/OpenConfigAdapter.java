@@ -55,6 +55,12 @@ public class OpenConfigAdapter extends AbstractScriptedCollectionAdapter {
     private final String DEFAULT_MODE = "gnmi";
     private final String JTI_MODE = "jti";
 
+    /** Agent protocol in gNMI mode, published as {@code agent_protocol} on Kafka. */
+    public static final String GNMI_AGENT_PROTOCOL = "GNMI";
+
+    /** Agent protocol in JTI mode, published as {@code agent_protocol} on Kafka. */
+    public static final String JTI_AGENT_PROTOCOL = "JTI";
+
     private CollectionAgentFactory collectionAgentFactory;
 
     private InterfaceToNodeCache interfaceToNodeCache;
@@ -108,6 +114,12 @@ public class OpenConfigAdapter extends AbstractScriptedCollectionAdapter {
 
     public void setTransactionTemplate(TransactionOperations transactionTemplate) {
         this.transactionTemplate = transactionTemplate;
+    }
+
+    @Override
+    public String getAgentProtocol() {
+        // Same rule as handleCollectionMessage: JTI only when configured, gNMI otherwise.
+        return JTI_MODE.equalsIgnoreCase(mode) ? JTI_AGENT_PROTOCOL : GNMI_AGENT_PROTOCOL;
     }
 
     public String getMode() {

@@ -48,6 +48,14 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractSnmpCollector extends AbstractServiceCollector {
 
+    /** Agent protocol of this collector, published as {@code agent_protocol} on Kafka. */
+    public static final String AGENT_PROTOCOL = "SNMP";
+
+    @Override
+    public String getAgentProtocol() {
+        return AGENT_PROTOCOL;
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSnmpCollector.class);
 
     /**

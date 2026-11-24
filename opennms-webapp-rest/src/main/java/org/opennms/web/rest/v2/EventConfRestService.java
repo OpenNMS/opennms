@@ -509,9 +509,10 @@ public class EventConfRestService implements EventConfRestApi {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(Map.of("error", "The 'enabled' flag must be provided (true/false).")).build();
         }
-        if (EventConfServiceHelper.isBlankUei(payload.getEvent().getUei())) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "Event 'uei' is required")).build();
+        try {
+            validateEventDefinition(payload.getEvent());
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", ex.getMessage())).build();
         }
         try {
             eventConfPersistenceService.updateEventConfEvent(sourceId, eventId, payload, getUsername(securityContext));
@@ -929,6 +930,17 @@ public class EventConfRestService implements EventConfRestApi {
         if (event == null) {
             throw new IllegalArgumentException("Event payload is missing");
         }
+        validateEventDefinition(event);
+    }
+
+    /**
+     * The checks every event definition written through add, upsert or edit must pass. The UI's event form
+     * requires the same fields.
+     *
+     * @param event the event definition from the request, not null
+     * @throws IllegalArgumentException naming the first missing field: uei, then event-label, then severity
+     */
+    private void validateEventDefinition(final Event event) {
         if (EventConfServiceHelper.isBlankUei(event.getUei())) {
             throw new IllegalArgumentException("Event 'uei' is required");
         }

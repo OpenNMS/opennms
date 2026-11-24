@@ -69,8 +69,17 @@ public class EventConfRestServiceUeiTest {
     }
 
     private static Event parse(final String ueiElementContent) {
-        return JaxbUtils.unmarshal(Event.class, "<event xmlns=\"" + NS + "\"><uei>" + ueiElementContent + "</uei>"
-                + "<event-label>Label</event-label><descr>d</descr><severity>Normal</severity></event>");
+        return parse(ueiElementContent, "Label", "Normal");
+    }
+
+    /** A null argument leaves that element out. */
+    private static Event parse(final String uei, final String label, final String severity) {
+        return JaxbUtils.unmarshal(Event.class, "<event xmlns=\"" + NS + "\">"
+                + (uei == null ? "" : "<uei>" + uei + "</uei>")
+                + (label == null ? "" : "<event-label>" + label + "</event-label>")
+                + "<descr>d</descr>"
+                + (severity == null ? "" : "<severity>" + severity + "</severity>")
+                + "</event>");
     }
 
     private static EventConfEventEditRequest edit(final Event event) {
@@ -85,6 +94,39 @@ public class EventConfRestServiceUeiTest {
         final Response resp = rest.updateEventConfEvent(1L, 2L, edit(parse("  \n ")), null);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
         assertEquals(Map.of("error", "Event 'uei' is required"), resp.getEntity());
+        verifyNoInteractions(persistence);
+    }
+
+    @Test
+    public void editWithBlankEventLabelIsRejectedBeforeTheService() throws Exception {
+        final Response resp =
+                rest.updateEventConfEvent(1L, 2L, edit(parse("uei.opennms.org/ok", "  ", "Normal")), null);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertEquals(Map.of("error", "Event 'event-label' is required"), resp.getEntity());
+        verifyNoInteractions(persistence);
+    }
+
+    @Test
+    public void editWithoutSeverityIsRejectedBeforeTheService() throws Exception {
+        final Response resp = rest.updateEventConfEvent(1L, 2L, edit(parse("uei.opennms.org/ok", "Label", null)), null);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertEquals(Map.of("error", "Event 'severity' is required"), resp.getEntity());
+        verifyNoInteractions(persistence);
+    }
+
+    @Test
+    public void editReportsTheUeiFirstWhenSeveralFieldsAreBlank() throws Exception {
+        final Response resp = rest.updateEventConfEvent(1L, 2L, edit(parse("  ", " ", null)), null);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertEquals(Map.of("error", "Event 'uei' is required"), resp.getEntity());
+        verifyNoInteractions(persistence);
+    }
+
+    @Test
+    public void editReportsTheEventLabelBeforeTheSeverity() throws Exception {
+        final Response resp = rest.updateEventConfEvent(1L, 2L, edit(parse("uei.opennms.org/ok", " ", null)), null);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertEquals(Map.of("error", "Event 'event-label' is required"), resp.getEntity());
         verifyNoInteractions(persistence);
     }
 
