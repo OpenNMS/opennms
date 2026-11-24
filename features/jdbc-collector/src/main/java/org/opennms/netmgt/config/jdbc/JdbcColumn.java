@@ -21,6 +21,9 @@
  */
 package org.opennms.netmgt.config.jdbc;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -29,6 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.opennms.netmgt.collection.adapters.AttributeTypeAdapter;
 import org.opennms.netmgt.collection.api.AttributeType;
 
 @XmlRootElement(name="column")
@@ -36,16 +40,22 @@ public class JdbcColumn implements Serializable, Comparable<JdbcColumn> {
 
     private static final long serialVersionUID = 2519632811400677757L;
 
+    private static final AttributeTypeAdapter TYPE_ADAPTER = new AttributeTypeAdapter();
+
     @XmlAttribute(name="name", required=true)
+    @JsonProperty("name")
     private String m_columnName;
     
     @XmlAttribute(name="data-source-name", required=false)
+    @JsonProperty("data-source-name")
     private String m_dataSourceName;
 
-    @XmlAttribute(name="type", required=true)    
+    @XmlAttribute(name="type", required=true)
+    @JsonIgnore // written as its lower-case name, see getTypeName()
     private AttributeType m_dataType;
 
     @XmlAttribute(name="alias", required=true)
+    @JsonProperty("alias")
     private String m_alias;
     
     @XmlTransient
@@ -82,6 +92,26 @@ public class JdbcColumn implements Serializable, Comparable<JdbcColumn> {
 
     public void setAlias(String alias) {
         m_alias = alias;
+    }
+
+    /**
+     * The type as stored in the configuration manager: the same lower-case name the XML uses.
+     */
+    @JsonProperty("type")
+    private String getTypeName() {
+        return m_dataType == null ? null : m_dataType.getName();
+    }
+
+    @JsonProperty("type")
+    private void setTypeName(final String typeName) {
+        // Fail like the XML adapter does: the schema allows type names that AttributeType doesn't know.
+        try {
+            m_dataType = TYPE_ADAPTER.unmarshal(typeName);
+        } catch (final IllegalArgumentException e) {
+            throw e;
+        } catch (final Exception e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        }
     }
 
     @Override

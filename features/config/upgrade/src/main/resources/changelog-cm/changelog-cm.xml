@@ -12,4 +12,5 @@
     <include file="changelog-cm/33.0.0/changelog-cm.xml"/>
     <include file="changelog-cm/36.0.0/changelog-cm.xml"/>
     <include file="changelog-cm/36.0.1/changelog-cm.xml"/>
+    <include file="changelog-cm/37.0.0/changelog-cm.xml"/>
 </databaseChangeLog>

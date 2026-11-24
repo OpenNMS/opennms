@@ -219,7 +219,7 @@ public class ConfigTesterTest {
 
     @Test
     public void testJdbcDatacollectionConfig() {
-        testConfigFile("jdbc-datacollection-config.xml");
+        ignoreConfigFile("jdbc-datacollection-config.xml");
     }
 
     @Test
