@@ -20,80 +20,55 @@
 /// License.
 ///
 
-import useSnackbar from '@/composables/useSnackbar'
-import useSpinner from '@/composables/useSpinner'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { SCVCredentials } from '@/types/scv'
+import { createFailureResult, createResultWithPayload, createSuccessResponse, ValidationResult, ValidationResultWithPayload } from '@/types/validation'
 import { rest } from './axiosInstances'
 
-const { showSnackBar } = useSnackbar()
-const { startSpinner, stopSpinner } = useSpinner()
 const endpoint = '/scv'
 
-const getAliases = async (): Promise<string[]> => {
+const getAliases = async (): Promise<ValidationResultWithPayload<string[]>> => {
   try {
-    startSpinner()
     const resp = await rest.get(endpoint)
-    return resp.data
+    return createResultWithPayload(true, '', resp.data as string[])
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to return aliases.' })
-    return []
-  } finally {
-    stopSpinner()
+    return createResultWithPayload<string[]>(false, 'Failed to return aliases.')
   }
 }
 
-const getCredentialsByAlias = async (alias: string): Promise<SCVCredentials | null> => {
+const getCredentialsByAlias = async (alias: string): Promise<ValidationResultWithPayload<SCVCredentials>> => {
   try {
-    startSpinner()
     const resp = await rest.get(`${endpoint}/${alias}`)
-    return resp.data
+    return createResultWithPayload(true, '', resp.data as SCVCredentials)
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to retrieve credentials.' })
-    return null
-  } finally {
-    stopSpinner()
+    return createResultWithPayload<SCVCredentials>(false, 'Failed to retrieve credentials.')
   }
 }
 
-const getAllCredentials = async (): Promise<SCVCredentials[] | null> => {
+const getAllCredentials = async (): Promise<ValidationResultWithPayload<SCVCredentials[]>> => {
   try {
-    startSpinner()
     const resp = await rest.get(`${endpoint}/${SCV_GET_ALL_ALIAS}`)
-    return resp.data
+    return createResultWithPayload(true, '', resp.data as SCVCredentials[])
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to retrieve credentials.' })
-    return null
-  } finally {
-    stopSpinner()
+    return createResultWithPayload<SCVCredentials[]>(false, 'Failed to retrieve credentials.')
   }
 }
 
-const addCredentials = async (credentials: SCVCredentials): Promise<number | null> => {
+const addCredentials = async (credentials: SCVCredentials): Promise<ValidationResult> => {
   try {
-    startSpinner()
-    const resp = await rest.post(endpoint, credentials)
-    showSnackBar({ msg: 'Credentials added.' })
-    return resp.status
+    await rest.post(endpoint, credentials)
+    return createSuccessResponse()
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to add credentials.' })
-    return null
-  } finally {
-    stopSpinner()
+    return createFailureResult('Failed to add credentials.')
   }
 }
 
-const updateCredentials = async (credentials: SCVCredentials): Promise<number | null> => {
+const updateCredentials = async (credentials: SCVCredentials): Promise<ValidationResult> => {
   try {
-    startSpinner()
-    const resp = await rest.put(`${endpoint}/${credentials.alias}`, credentials)
-    showSnackBar({ msg: 'Credentials updated.' })
-    return resp.status
+    await rest.put(`${endpoint}/${credentials.alias}`, credentials)
+    return createSuccessResponse()
   } catch (_err) {
-    showSnackBar({ msg: 'Failed to update credentials.' })
-    return null
-  } finally {
-    stopSpinner()
+    return createFailureResult('Failed to update credentials.')
   }
 }
 

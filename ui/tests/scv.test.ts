@@ -32,11 +32,11 @@ import { nextTick } from 'vue'
 
 vi.mock('@/services', () => ({
   default: {
-    getAliases: vi.fn().mockResolvedValue([]),
-    getAllCredentials: vi.fn().mockResolvedValue([]),
-    getCredentialsByAlias: vi.fn().mockResolvedValue(null),
-    addCredentials: vi.fn().mockResolvedValue(true),
-    updateCredentials: vi.fn().mockResolvedValue(true)
+    getAliases: vi.fn().mockResolvedValue({ success: true, message: '', payload: [] }),
+    getAllCredentials: vi.fn().mockResolvedValue({ success: true, message: '', payload: [] }),
+    getCredentialsByAlias: vi.fn().mockResolvedValue({ success: false, message: 'Failed to retrieve credentials.' }),
+    addCredentials: vi.fn().mockResolvedValue({ success: true, message: '' }),
+    updateCredentials: vi.fn().mockResolvedValue({ success: true, message: '' })
   }
 }))
 

@@ -15,9 +15,11 @@
 import { computed, ref, watch } from 'vue'
 
 import { OnmsListbox } from '@opennms/onms-ui'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useScvStore } from '@/stores/scvStore'
 
 const scvStore = useScvStore()
+const { withSpinner, report } = useActionFeedback()
 const selectedAlias = ref<string | null>(null)
 const aliases = computed<string[]>(() => scvStore.aliases)
 const isEditing = computed<boolean>(() => scvStore.isEditing)
@@ -30,7 +32,7 @@ const listStyle = 'max-height: calc(100vh - 210px)'
 // FeatherListItem behavior that reloaded on every click.
 let loadedAlias: string | null = null
 
-const onChange = (newValue: unknown) => {
+const onChange = async (newValue: unknown) => {
   const value = newValue as string | null
   const alias = value ?? loadedAlias
   if (!alias) {
@@ -38,7 +40,8 @@ const onChange = (newValue: unknown) => {
   }
   loadedAlias = alias
   selectedAlias.value = alias
-  scvStore.getCredentialsByAlias(alias)
+  const result = await withSpinner(() => scvStore.getCredentialsByAlias(alias))
+  report(result)
 }
 
 // The highlight only applies while an alias is being edited; clear it when the

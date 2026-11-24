@@ -182,6 +182,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
 
+import useActionFeedback from '@/composables/useActionFeedback'
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_SNMP_V3_AUTH_PROTOCOL, DEFAULT_SNMP_V3_PRIVACY_PROTOCOL } from '@/lib/constants'
 import {
@@ -207,6 +208,7 @@ import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
 
 const store = useTrapdConfigStore()
 const { showSnackBar } = useSnackbar()
+const { withSpinner, report } = useActionFeedback()
 const createEmptySelectItem = (): ISelectItemType => (undefined as unknown as ISelectItemType)
 const id = ref<string | undefined>(undefined)
 const securityName = ref<string>('')
@@ -386,8 +388,8 @@ watch(
   }, { deep: true, immediate: true }
 )
 
-onMounted(() => {
-  scvStore.populate()
+onMounted(async () => {
+  report(await withSpinner(() => scvStore.populate()))
 })
 </script>
 

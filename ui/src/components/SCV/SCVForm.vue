@@ -99,6 +99,7 @@ import { computed, ref } from 'vue'
 
 import { OnmsButton, OnmsIcon, OnmsInputText } from '@opennms/onms-ui'
 import Add from '@opennms/onms-ui/icons/action/Add.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
@@ -107,6 +108,7 @@ import FormField from '@/components/Common/FormField.vue'
 import SCVAttribute from './SCVAttribute.vue'
 
 const scvStore = useScvStore()
+const { withSpinner, report } = useActionFeedback()
 const keyError = ref(false)
 const dbCredentials = computed<SCVCredentials>(() => scvStore.dbCredentials)
 const aliases = computed<string[]>(() => scvStore.aliases)
@@ -161,8 +163,14 @@ const updateAlias: UpdateModelFunction = (val: string) => {
 
 const updateUsername: UpdateModelFunction = (val: string) => scvStore.setValue({ username: val })
 const updatePassword: UpdateModelFunction = (val: string) => scvStore.setValue({ password: val })
-const addCredentials = () => scvStore.addCredentials()
-const updateCredentials = () => scvStore.updateCredentials()
+const addCredentials = async () => {
+  const result = await withSpinner(() => scvStore.addCredentials())
+  report(result, 'Credentials added.')
+}
+const updateCredentials = async () => {
+  const result = await withSpinner(() => scvStore.updateCredentials())
+  report(result, 'Credentials updated.')
+}
 const clearCredentials = () => scvStore.clearCredentials()
 const addAttribute = () => scvStore.addAttribute()
 </script>

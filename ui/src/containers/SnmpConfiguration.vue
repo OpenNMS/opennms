@@ -21,6 +21,7 @@ import { computed, onMounted } from 'vue'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import SnmpConfigTabContainer from '@/components/SnmpConfiguration/SnmpConfigTabContainer.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useMenuStore } from '@/stores/menuStore'
 import { useScvStore } from '@/stores/scvStore'
 import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
@@ -29,6 +30,7 @@ import { BreadCrumb } from '@/types'
 const store = useSnmpConfigStore()
 const menuStore = useMenuStore()
 const scvStore = useScvStore()
+const { withSpinner, report } = useActionFeedback()
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
@@ -42,8 +44,10 @@ onMounted(async () => {
   store.resetState()
   store.fetchMonitoringLocations()
   store.populateSnmpConfig()
-  scvStore.getAliases()
-  scvStore.populate()
+  await withSpinner(async () => {
+    report(await scvStore.getAliases())
+    report(await scvStore.populate())
+  })
 })
 </script>
 
