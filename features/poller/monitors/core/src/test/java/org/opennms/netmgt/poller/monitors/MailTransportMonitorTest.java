@@ -137,8 +137,9 @@ public class MailTransportMonitorTest {
 
             assertPollConnectsTo(first, second);
             assertPollConnectsTo(second, first);
+        } finally {
+            MockLogAppender.resetState();
         }
-        MockLogAppender.resetState();
     }
 
     @Test
@@ -159,8 +160,9 @@ public class MailTransportMonitorTest {
 
             assertPollConnectsTo(first, second);
             assertPollConnectsTo(second, first);
+        } finally {
+            MockLogAppender.resetState();
         }
-        MockLogAppender.resetState();
     }
 
     /**
