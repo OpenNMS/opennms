@@ -327,6 +327,26 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
     }
     
     @Test
+    public void testWhitespaceOnlyCustomUeiFallsBackToDefault() {
+        Threshold threshold = new Threshold();
+        threshold.setType(ThresholdType.RELATIVE_CHANGE);
+        threshold.setDsName("ds-name");
+        threshold.setDsType("node");
+        threshold.setValue("99.0");
+        threshold.setRearm("95.0");
+        threshold.setTrigger("1");
+        threshold.setTriggeredUEI("  \t ");
+        ThresholdEvaluatorState.ThresholdValues thresholdValues = mock(ThresholdEvaluatorState.ThresholdValues.class);
+        when(thresholdValues.getThresholdValue()).thenReturn(99.0);
+        when(thresholdValues.getRearm()).thenReturn(95.0);
+        when(thresholdValues.getTrigger()).thenReturn(1);
+
+        ThresholdEvaluatorStateRelativeChange item = new ThresholdEvaluatorStateRelativeChange(new ThresholdConfigWrapper(threshold), MockSession.getSession());
+        Event event = item.getEventForState(Status.TRIGGERED, new Date(), 100.0, thresholdValues, null);
+        assertEquals(EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
+    }
+
+    @Test
     public void testNegativeNumberTriggers() {
         Threshold threshold = new Threshold();
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
