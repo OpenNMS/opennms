@@ -21,6 +21,7 @@
 ///
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
 import { listMetricEntities, queryMetricSeries } from '@/services/metricChartService'
 import { invalidateKpiSources } from '@/services/topnService'
 import { rest } from '@/services/axiosInstances'
@@ -38,6 +39,7 @@ const tree = { data: { resource: [
 
 describe('metricChartService', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.clearAllMocks()
     invalidateKpiSources()
     vi.mocked(rest.get).mockResolvedValue(tree)

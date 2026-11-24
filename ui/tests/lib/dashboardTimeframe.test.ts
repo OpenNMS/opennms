@@ -21,18 +21,15 @@
 ///
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { timeframeRange } from '@/lib/dashboardTimeframe'
-import { timeframeOptions, refreshOptions } from '@/lib/dashboardTimeframe'
+import { refreshOptions, timeframeOptions, timeframeRange } from '@/lib/dashboardTimeframe'
 import { TimeframePreset } from '@/types/dashboard'
 
-const HOUR = 3_600_000
-const DAY = 24 * HOUR
+const DAY = 24 * 3_600_000
 
 describe('timeframeRange', () => {
   beforeEach(() => {
-    // a fixed noon so start-of-day math is unambiguous
     vi.useFakeTimers()
-    vi.setSystemTime(new Date(2026, 6, 15, 12, 0, 0))
+    vi.setSystemTime(new Date(Date.parse('2026-07-15T12:00:00Z')))
   })
 
   afterEach(() => {
@@ -40,7 +37,18 @@ describe('timeframeRange', () => {
   })
 
   const at = (preset: TimeframePreset, from: string | null = null, to: string | null = null) =>
-    timeframeRange({ preset, from, to })
+    timeframeRange({ preset, from, to }, Date.now(), 'UTC')
+
+  const NY = 'America/New_York'
+  const ny = (preset: TimeframePreset, now: string) => {
+    const { start, end } = timeframeRange({ preset, from: null, to: null }, Date.parse(now), NY)
+    return { start: new Date(start).toISOString(), end: new Date(end).toISOString() }
+  }
+  const utc = (preset: TimeframePreset, now: string) => {
+    const { start, end } = timeframeRange({ preset, from: null, to: null }, Date.parse(now), 'UTC')
+    return { start: new Date(start).toISOString(), end: new Date(end).toISOString() }
+  }
+  const iso = (s: string) => new Date(Date.parse(s)).toISOString()
 
   it('last 24 hours ends now and spans one day', () => {
     const { start, end } = at(TimeframePreset.Last24h)
@@ -48,24 +56,59 @@ describe('timeframeRange', () => {
     expect(end - start).toBe(DAY)
   })
 
-  it('today starts at midnight', () => {
-    const { start, end } = at(TimeframePreset.Today)
-    expect(new Date(start).getHours()).toBe(0)
-    expect(end).toBe(Date.now())
-    expect(end - start).toBe(12 * HOUR)
+  it('last 7 and 30 days are rolling windows', () => {
+    const week = at(TimeframePreset.Last7Days)
+    expect(week.end - week.start).toBe(7 * DAY)
+    const month = at(TimeframePreset.Last30Days)
+    expect(month.end - month.start).toBe(30 * DAY)
   })
 
-  it('yesterday is the full previous day', () => {
-    const { start, end } = at(TimeframePreset.Yesterday)
-    expect(end - start).toBe(DAY)
-    expect(new Date(start).getDate()).toBe(14)
-    expect(new Date(end).getHours()).toBe(0)
+  describe('calendar presets in America/New_York, two days after the DST start', () => {
+    const now = '2026-03-10T16:00:00Z'
+
+    it('today starts at local midnight', () => {
+      expect(ny(TimeframePreset.Today, now)).toEqual({ start: iso('2026-03-10T04:00:00Z'), end: iso(now) })
+    })
+
+    it('yesterday is the previous local day', () => {
+      expect(ny(TimeframePreset.Yesterday, now)).toEqual({ start: iso('2026-03-09T04:00:00Z'), end: iso('2026-03-10T04:00:00Z') })
+    })
+
+    it('this week starts on Monday', () => {
+      expect(ny(TimeframePreset.ThisWeek, now)).toEqual({ start: iso('2026-03-09T04:00:00Z'), end: iso(now) })
+    })
+
+    it('last week spans the DST change', () => {
+      expect(ny(TimeframePreset.LastWeek, now)).toEqual({ start: iso('2026-03-02T05:00:00Z'), end: iso('2026-03-09T04:00:00Z') })
+    })
+
+    it('this month starts on the first', () => {
+      expect(ny(TimeframePreset.ThisMonth, now)).toEqual({ start: iso('2026-03-01T05:00:00Z'), end: iso(now) })
+    })
+
+    it('last month is the previous calendar month', () => {
+      expect(ny(TimeframePreset.LastMonth, now)).toEqual({ start: iso('2026-02-01T05:00:00Z'), end: iso('2026-03-01T05:00:00Z') })
+    })
+
+    it('on a Sunday this week started the previous Monday', () => {
+      expect(ny(TimeframePreset.ThisWeek, '2026-03-08T15:00:00Z').start).toBe(iso('2026-03-02T05:00:00Z'))
+    })
   })
 
-  it('last week is the seven days before the last seven', () => {
-    const { start, end } = at(TimeframePreset.LastWeek)
-    expect(end).toBe(Date.now() - 7 * DAY)
-    expect(end - start).toBe(7 * DAY)
+  describe('calendar presets in UTC across a year boundary', () => {
+    const now = '2026-01-05T12:00:00Z'
+
+    it('this week starts on the Monday it is', () => {
+      expect(utc(TimeframePreset.ThisWeek, now).start).toBe(iso('2026-01-05T00:00:00Z'))
+    })
+
+    it('last week starts in the previous year', () => {
+      expect(utc(TimeframePreset.LastWeek, now)).toEqual({ start: iso('2025-12-29T00:00:00Z'), end: iso('2026-01-05T00:00:00Z') })
+    })
+
+    it('last month is December', () => {
+      expect(utc(TimeframePreset.LastMonth, now)).toEqual({ start: iso('2025-12-01T00:00:00Z'), end: iso('2026-01-01T00:00:00Z') })
+    })
   })
 
   it('custom uses the given range and falls back when absent', () => {
@@ -79,7 +122,7 @@ describe('timeframeRange', () => {
   })
 
   it('an unknown preset behaves like last 24 hours', () => {
-    const { start, end } = timeframeRange({ preset: 'bogus' as TimeframePreset, from: null, to: null })
+    const { start, end } = timeframeRange({ preset: 'bogus' as TimeframePreset, from: null, to: null }, Date.now(), 'UTC')
     expect(end - start).toBe(DAY)
   })
 })

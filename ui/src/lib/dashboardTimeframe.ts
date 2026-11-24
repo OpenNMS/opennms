@@ -20,6 +20,9 @@
 /// License.
 ///
 
+import { startOfDay, startOfMonth, startOfWeek, subDays, subMonths, subWeeks } from 'date-fns'
+import { fromZonedTime, toZonedTime } from 'date-fns-tz'
+import { displayTimeZone } from '@/lib/displayTimeZone'
 import { TimeframePreset, type Timeframe } from '@/types/dashboard'
 
 export const timeframeOptions: { label: string; value: TimeframePreset }[] = [
@@ -43,31 +46,36 @@ export const refreshOptions: { label: string; value: number }[] = [
   { label: 'Every 5 minutes', value: 300 }
 ]
 
-export const timeframeRange = (tf: Timeframe): { start: number; end: number } => {
-  const now = Date.now()
-  const hour = 3_600_000
-  const day = 24 * hour
-  const startOfDay = () => {
-    const d = new Date()
-    d.setHours(0, 0, 0, 0)
-    return d.getTime()
-  }
+export const timeframeRange = (
+  tf: Timeframe,
+  now: number = Date.now(),
+  zone: string = displayTimeZone()
+): { start: number; end: number } => {
+  const day = 24 * 3_600_000
+  // calendar math runs on the zone's wall-clock fields, then maps back to an instant
+  const local = (): Date => toZonedTime(now, zone)
+  const instant = (d: Date): number => fromZonedTime(d, zone).getTime()
+  const todayStart = (): number => instant(startOfDay(local()))
+  const weekStart = (): Date => startOfWeek(local(), { weekStartsOn: 1 })
+  const monthStart = (): Date => startOfMonth(local())
+
   switch (tf.preset) {
     case TimeframePreset.Today:
-      return { start: startOfDay(), end: now }
+      return { start: todayStart(), end: now }
     case TimeframePreset.Yesterday:
-      return { start: startOfDay() - day, end: startOfDay() }
+      return { start: instant(subDays(startOfDay(local()), 1)), end: todayStart() }
     case TimeframePreset.ThisWeek:
-      return { start: now - 7 * day, end: now }
+      return { start: instant(weekStart()), end: now }
     case TimeframePreset.LastWeek:
-      return { start: now - 14 * day, end: now - 7 * day }
+      return { start: instant(subWeeks(weekStart(), 1)), end: instant(weekStart()) }
     case TimeframePreset.Last7Days:
       return { start: now - 7 * day, end: now }
     case TimeframePreset.Last30Days:
-    case TimeframePreset.ThisMonth:
       return { start: now - 30 * day, end: now }
+    case TimeframePreset.ThisMonth:
+      return { start: instant(monthStart()), end: now }
     case TimeframePreset.LastMonth:
-      return { start: now - 60 * day, end: now - 30 * day }
+      return { start: instant(subMonths(monthStart(), 1)), end: instant(monthStart()) }
     case TimeframePreset.Custom:
       return { start: tf.from ? Date.parse(tf.from) : now - day, end: tf.to ? Date.parse(tf.to) : now }
     case TimeframePreset.Last24h:
