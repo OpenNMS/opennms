@@ -21,14 +21,17 @@
 ///
 
 import { describe, expect, test } from 'vitest'
+import { reactive } from 'vue'
 import {
+  cloneState,
   htmlToText,
   ellipsify,
   hasNonEmptyProperty,
   isConvertibleToInteger,
   isNumber,
   isString,
-  plural
+  plural,
+  shallowEqual
 } from '@/lib/utils'
 
 describe('lib/utils test', () => {
@@ -120,5 +123,60 @@ describe('plural', () => {
     [3, 'child', 'children', '3 children']
   ])('%i %s', (count, singular, pluralForm, expected) => {
     expect(plural(count, singular, pluralForm)).toBe(expected)
+  })
+})
+
+describe('shallowEqual', () => {
+  test('equal when the same keys hold equal primitives', () => {
+    expect(shallowEqual({ a: 1, b: 'x', c: true, d: undefined }, { d: undefined, c: true, b: 'x', a: 1 })).toBe(true)
+    expect(shallowEqual({ a: NaN }, { a: NaN })).toBe(true)
+    expect(shallowEqual({}, {})).toBe(true)
+  })
+
+  test('not equal when a value differs', () => {
+    expect(shallowEqual({ a: 1 }, { a: 2 })).toBe(false)
+    expect(shallowEqual({ a: 1 }, { a: '1' })).toBe(false)
+  })
+
+  test('not equal when the keys differ, even when the extra key is undefined', () => {
+    expect(shallowEqual({ a: 1 }, { a: 1, b: 2 })).toBe(false)
+    expect(shallowEqual({ a: 1, b: undefined }, { a: 1 })).toBe(false)
+    expect(shallowEqual({ a: undefined }, { b: undefined })).toBe(false)
+  })
+
+  test('compares nested objects by reference', () => {
+    const nested = { x: 1 }
+
+    expect(shallowEqual({ a: nested }, { a: nested })).toBe(true)
+    expect(shallowEqual({ a: { x: 1 }}, { a: { x: 1 }})).toBe(false)
+  })
+})
+
+describe('cloneState', () => {
+  test('deep-copies plain data', () => {
+    const date = new Date(0)
+    const original = { name: 'pkg', services: [{ name: 'ICMP', params: [{ key: 'a', value: 1 }] }], when: date }
+    const copy = cloneState(original)
+
+    expect(copy).toEqual(original)
+    expect(copy).not.toBe(original)
+    expect(copy.services[0]).not.toBe(original.services[0])
+    expect(copy.services[0].params[0]).not.toBe(original.services[0].params[0])
+    expect(copy.when).not.toBe(date)
+    expect(copy.when.getTime()).toBe(0)
+  })
+
+  test('copies reactive state, including proxies held inside plain arrays', () => {
+    const state = reactive({ services: [{ name: 'ICMP' }, { name: 'HTTP' }] })
+    // an array spread from a reactive array holds reactive proxies, and Vue stores it raw
+    state.services = [...state.services, { name: 'SSH' }]
+
+    expect(() => structuredClone(state)).toThrow()
+
+    const copy = cloneState(state)
+
+    expect(copy).toEqual({ services: [{ name: 'ICMP' }, { name: 'HTTP' }, { name: 'SSH' }] })
+    copy.services[0].name = 'changed'
+    expect(state.services[0].name).toBe('ICMP')
   })
 })

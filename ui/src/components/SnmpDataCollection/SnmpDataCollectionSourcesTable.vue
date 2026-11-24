@@ -165,7 +165,7 @@ import {
 import DownloadIcon from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import MenuIcon from '@opennms/onms-ui/icons/navigation/MoreHoriz.vue'
 import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
-import { debounce } from 'lodash'
+import { useDebounceFn } from '@vueuse/core'
 import useSnackbar from '@/composables/useSnackbar'
 import {
   deleteSnmpCollectionSources,
@@ -291,7 +291,7 @@ const onPage = (event: OnmsTablePageEvent) => {
   }
 }
 
-const debouncedSearch = debounce((value: string) => {
+const debouncedSearch = useDebounceFn((value: string) => {
   store.onChangeSourcesSearchTerm(value)
 }, 500)
 

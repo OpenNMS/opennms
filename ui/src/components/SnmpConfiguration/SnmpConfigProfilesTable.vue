@@ -90,7 +90,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
-import { debounce } from 'lodash'
+import { useDebounceFn } from '@vueuse/core'
 import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIcon, OnmsIconButton, OnmsSearchInput, OnmsTable } from '@opennms/onms-ui'
 import IconAdd from '@opennms/onms-ui/icons/action/Add.vue'
 import IconDelete from '@opennms/onms-ui/icons/action/Delete.vue'
@@ -191,7 +191,7 @@ const onCreateProfile = () => {
   store.setActiveAdvancedSubtab(AdvancedSubtabs.Profiles)
 }
 
-const updateDebouncedSearchTerm = debounce((value: string) => {
+const updateDebouncedSearchTerm = useDebounceFn((value: string) => {
   debouncedSearchTerm.value = value
   firstRow.value = 0 // Reset to first page when searching
 }, 200)

@@ -158,7 +158,7 @@
 <script setup lang="ts">
 import { computed, ref, useId } from 'vue'
 
-import { debounce } from 'lodash'
+import { useDebounceFn } from '@vueuse/core'
 import { isPluginSourced } from '@/lib/snmpDataCollectionHelpers'
 import {
   OnmsButton,
@@ -243,7 +243,7 @@ const onPage = (event: OnmsTablePageEvent) => {
   }
 }
 
-const debouncedSearch = debounce((value: string) => {
+const debouncedSearch = useDebounceFn((value: string) => {
   store.onChangeMibGroupsSearchTerm(value)
 }, 500)
 

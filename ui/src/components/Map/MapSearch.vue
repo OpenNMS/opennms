@@ -43,7 +43,7 @@
 >
 import { computed, ref, watch, watchEffect } from 'vue'
 
-import { debounce } from 'lodash'
+import { useDebounceFn } from '@vueuse/core'
 import { OnmsAutoComplete, OnmsIcon } from '@opennms/onms-ui'
 import IconCancel from '@opennms/onms-ui/icons/navigation/Cancel.vue'
 import IconSearch from '@opennms/onms-ui/icons/action/Search.vue'
@@ -81,7 +81,7 @@ const resetLabelsAndSearch = (value: string) => {
   search(value)
 }
 
-const search = debounce(async (value: string) => {
+const search = useDebounceFn(async (value: string) => {
   if (!value) {
     return
   }

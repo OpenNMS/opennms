@@ -91,7 +91,7 @@ License.
 <script setup lang="ts">
 import { computed, onMounted, onScopeDispose, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { debounce } from 'lodash'
+import { useDebounceFn } from '@vueuse/core'
 import { OnmsButton, OnmsListbox, OnmsSearchInput } from '@opennms/onms-ui'
 import TableCard from '@/components/Common/TableCard.vue'
 import { searchNodes } from '@/services/graphCollectionsService'
@@ -160,7 +160,7 @@ const search = async () => {
   totalNodes.value = result.totalCount
 }
 
-const debouncedSearch = debounce(search, SEARCH_DEBOUNCE_MS)
+const debouncedSearch = useDebounceFn(search, SEARCH_DEBOUNCE_MS)
 
 const onFilter = (value: unknown) => {
   filter.value = String(value ?? '')

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { sortPredicate } from '@/lib/sorting'
+import { compareBy, compareValues, sortPredicate } from '@/lib/sorting'
 import { SORT } from '@/types'
 import { ISortObject } from '@/types'
 
@@ -230,5 +230,48 @@ describe('sorting', () => {
         })
       })
     })
+  })
+})
+
+describe('compareValues', () => {
+  it('sorts numbers numerically', () => {
+    expect([10, 9, 100, 1].sort(compareValues)).toEqual([1, 9, 10, 100])
+  })
+
+  it('sorts strings by code unit, uppercase before lowercase', () => {
+    expect(['banana', 'apple', 'Cherry'].sort(compareValues)).toEqual(['Cherry', 'apple', 'banana'])
+  })
+
+  it('puts null, undefined and NaN after everything else', () => {
+    expect([undefined, 2, null, NaN, 1].sort(compareValues).slice(0, 2)).toEqual([1, 2])
+    expect(compareValues(null, undefined)).toBe(0)
+    expect(compareValues(undefined, 1)).toBe(1)
+    expect(compareValues(1, null)).toBe(-1)
+  })
+
+  it('returns 0 for equal values', () => {
+    expect(compareValues('a', 'a')).toBe(0)
+    expect(compareValues(3, 3)).toBe(0)
+  })
+})
+
+describe('compareBy', () => {
+  const items = [{ id: 10, name: 'b' }, { id: 9, name: 'a' }, { id: undefined, name: 'c' }, { id: 100, name: 'b' }]
+
+  it('sorts ascending by default, missing values last', () => {
+    expect([...items].sort(compareBy('id')).map(item => item.id)).toEqual([9, 10, 100, undefined])
+  })
+
+  it('sorts descending with SORT.DESCENDING, missing values first', () => {
+    expect([...items].sort(compareBy('id', SORT.DESCENDING)).map(item => item.id)).toEqual([undefined, 100, 10, 9])
+  })
+
+  it('treats any other direction as ascending', () => {
+    expect([...items].sort(compareBy('id', SORT.NONE)).map(item => item.id)).toEqual([9, 10, 100, undefined])
+  })
+
+  it('keeps equal items in their original order', () => {
+    expect([...items].sort(compareBy('name')).map(item => item.id)).toEqual([9, 10, 100, undefined])
+    expect([...items].sort(compareBy('name', SORT.DESCENDING)).map(item => item.id)).toEqual([undefined, 10, 100, 9])
   })
 })

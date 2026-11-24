@@ -169,7 +169,7 @@ import {
 import Edit from '@opennms/onms-ui/icons/action/Edit.vue'
 import MenuIcon from '@opennms/onms-ui/icons/navigation/MoreHoriz.vue'
 import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
-import { debounce } from 'lodash'
+import { useDebounceFn } from '@vueuse/core'
 import EmptyList from '../../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
 import DeleteConfirmationDialog from '../../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
@@ -233,7 +233,7 @@ const onPage = (event: OnmsTablePageEvent) => {
   }
 }
 
-const debouncedSearch = debounce((value: string) => {
+const debouncedSearch = useDebounceFn((value: string) => {
   store.onChangeSystemDefsSearchTerm(value)
 }, 500)
 
