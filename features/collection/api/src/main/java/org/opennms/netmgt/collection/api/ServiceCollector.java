@@ -160,4 +160,15 @@ public interface ServiceCollector {
    */
    Map<String, Object> unmarshalParameters(Map<String, String> parameters);
 
+   /**
+    * Returns the protocol this collector collects with, for example {@code SNMP}.
+    * Collectd passes it to the persisters as the {@code AGENT_PROTOCOL} service parameter.
+    * Collectors that build metric identifiers prefix them with this value and {@code _}.
+    * This call will always be performed in OpenNMS.
+    * @return the protocol, or {@code null} if the collector declares none
+    */
+   default String getAgentProtocol() {
+       return null;
+   }
+
 }
