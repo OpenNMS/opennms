@@ -26,6 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
@@ -83,6 +84,18 @@ public class ThresholdingJsonCompatibilityTest {
                     ThresholdingConfig.class);
             assertThat(config.getGroup("g").getThresholds().get(0).getFilterOperator(), equalTo(FilterOperator.AND));
         }
+    }
+
+    @Test
+    public void paddedUeisInStoredJsonAreReadTrimmed() {
+        // The store fills the fields directly, so this is the path the setters never see.
+        final ThresholdingConfig config = ConfigConvertUtil.jsonToObject(
+                "{\"group\":[{\"name\":\"g\",\"rrdRepository\":\"/r\",\"threshold\":[{\"ds-name\":\"x\","
+                        + "\"triggeredUEI\":\" uei.opennms.org/t \",\"rearmedUEI\":\"   \"}]}]}",
+                ThresholdingConfig.class);
+        final Threshold threshold = config.getGroup("g").getThresholds().get(0);
+        assertThat(threshold.getTriggeredUEI(), equalTo(Optional.of("uei.opennms.org/t")));
+        assertThat(threshold.getRearmedUEI(), equalTo(Optional.empty()));
     }
 
     @Test

@@ -550,8 +550,8 @@ public interface EventConfRestApi {
         Update an eventConf event by sourceId and eventId.
         `event` is required: the whole definition is replaced from it, and `enabled` is applied with it.
         Whitespace around the event's `uei` is removed before it is stored.
-        A body without `event` or `enabled`, or with a blank `uei`, fails with a 400. An unknown sourceId
-        or eventId fails with a 404.""",
+        A body without `event` or `enabled`, or with a blank `uei`, `event-label` or `severity`, fails
+        with a 400. An unknown sourceId or eventId fails with a 404.""",
             operationId = "updateEventConfEvent"
     )
     @ApiResponses(value = {
@@ -559,7 +559,9 @@ public interface EventConfRestApi {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "object"),
                             examples = @ExampleObject(value = "{\"message\": \"EventConfEvent updated successfully.\"}"))),
-            @ApiResponse(responseCode = "400", description = "The body has no `event` or `enabled`, or the event's `uei` is blank",
+            @ApiResponse(responseCode = "400",
+                    description = "The body has no `event` or `enabled`, or the event's `uei`, `event-label` or"
+                            + " `severity` is blank",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(type = "object"),
                             examples = @ExampleObject(value = "{\"error\": \"Event 'uei' is required\"}"))),
