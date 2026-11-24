@@ -47,12 +47,12 @@ License.
         v-for="row in rows"
         :key="row.nodeId"
         class="nodes-alarms__row"
-        :style="shade ? { backgroundColor: severityTint(row.maxSeverity) } : undefined"
+        :class="shade ? severityTintClass(row.maxSeverity) : undefined"
       >
-        <span
+        <SeverityIcon
           class="nodes-alarms__sev"
-          :style="{ backgroundColor: severityColor(row.maxSeverity) }"
-          :title="severityLabel(row.maxSeverity)"
+          :severity="row.maxSeverity"
+          size="small"
         />
         <router-link
           class="nodes-alarms__node"
@@ -73,7 +73,8 @@ import type { PanelComponentProps } from '@/types/dashboard'
 import { getNodeAlarmSummaries } from '@/services/alarmService'
 import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 import { resolveFilterToNodeIdSet } from '@/services/dashboardFilterService'
-import { isActionableSeverity, severityColor, severityLabel, severityTint } from '../severity'
+import SeverityIcon from '@/components/Common/SeverityIcon.vue'
+import { isProblemSeverity, severityTintClass } from '@/lib/severity'
 
 interface NodeAlarmRow {
   nodeId: number
@@ -108,7 +109,7 @@ const load = async () => {
     return
   }
   const all = (summaries ?? [])
-    .filter(s => isActionableSeverity(s.maxSeverity))
+    .filter(s => isProblemSeverity(s.maxSeverity))
     .filter(s => filterIds === null || filterIds.has(s.nodeId))
   rows.value = all.slice(0, MAX_ROWS)
   loading.value = false
@@ -142,9 +143,6 @@ watch([() => props.refreshTick, () => props.filter], load, { deep: true })
 
   &__sev {
     flex: 0 0 auto;
-    width: 0.5rem;
-    height: 1.1rem;
-    border-radius: 2px;
   }
 
   &__node {

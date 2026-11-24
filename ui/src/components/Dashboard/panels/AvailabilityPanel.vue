@@ -60,9 +60,11 @@ License.
           <tr
             v-for="cat in section.categories"
             :key="section.name + '/' + cat.name"
-            :class="{ 'avail__total': isTotal(section) }"
-            :style="shade && !isTotal(section) ? { backgroundColor: severityTint(cat.availabilityClass) } : undefined"
-          >
+            :class="[
+              { 'avail__total': isTotal(section) },
+              shade && !isTotal(section) ? severityTintClass(availabilityLevel(cat.availabilityClass)) : undefined
+            ]"
+            >
             <td class="avail__cat">
               <a
                 v-if="!isTotal(section)"
@@ -72,10 +74,12 @@ License.
               <template v-else>{{ cat.name }}</template>
             </td>
             <td class="avail__num">{{ cat.outageText }}</td>
-            <td
-              class="avail__num"
-              :style="{ color: severityColor(cat.availabilityClass) }"
-            >{{ cat.availabilityText }}</td>
+            <td class="avail__num">
+              <AvailabilityBadge
+                :text="cat.availabilityText"
+                :level="isTotal(section) ? undefined : availabilityLevel(cat.availabilityClass)"
+              />
+            </td>
           </tr>
         </template>
       </tbody>
@@ -87,7 +91,9 @@ License.
 import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getAvailability, type AvailabilitySection } from '@/services/availabilityService'
-import { severityColor, severityTint } from '../severity'
+import AvailabilityBadge from '@/components/Nodes/AvailabilityBadge.vue'
+import type { AvailabilityClass } from '@/components/Nodes/availabilityTimelineModel'
+import { severityTintClass } from '@/lib/severity'
 
 const props = defineProps<PanelComponentProps>()
 
@@ -96,6 +102,12 @@ const shade = computed(() => !!props.options?.shade)
 const loading = ref(true)
 const disconnected = ref(false)
 const allSections = ref<AvailabilitySection[]>([])
+
+// RTC reports Normal/Warning/Critical; anything else (Unknown, empty) has no level.
+const availabilityLevel = (c: string | undefined): AvailabilityClass | undefined => {
+  const level = (c ?? '').toLowerCase()
+  return level === 'normal' || level === 'warning' || level === 'critical' ? level : undefined
+}
 
 // The REST response already includes a "Total" section holding the real
 // "Overall Service Availability" row — render it as the bold total (don't add

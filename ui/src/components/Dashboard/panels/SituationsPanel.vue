@@ -49,12 +49,12 @@ License.
         v-for="s in situations"
         :key="s.id"
         class="situations__row"
-        :style="shade ? { backgroundColor: severityTint(s.severity) } : undefined"
+        :class="shade ? severityTintClass(s.severity) : undefined"
       >
-        <span
+        <SeverityIcon
           class="situations__sev"
-          :style="{ backgroundColor: severityColor(s.severity) }"
-          :title="severityLabel(s.severity)"
+          :severity="s.severity"
+          size="small"
         />
         <a
           class="situations__title"
@@ -71,7 +71,8 @@ import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getPendingSituations, situationAlarmCount, type Situation } from '@/services/situationService'
 import { buildFilterClauses } from '@/services/dashboardFilterService'
-import { severityColor, severityLabel, severityTint } from '../severity'
+import SeverityIcon from '@/components/Common/SeverityIcon.vue'
+import { severityTintClass } from '@/lib/severity'
 
 const props = defineProps<PanelComponentProps>()
 
@@ -138,9 +139,6 @@ watch([() => props.refreshTick, () => props.filter], load, { deep: true })
 
   &__sev {
     flex: 0 0 auto;
-    width: 0.5rem;
-    height: 1.1rem;
-    border-radius: 2px;
   }
 
   &__title {

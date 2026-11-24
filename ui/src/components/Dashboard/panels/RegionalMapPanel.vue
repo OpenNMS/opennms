@@ -83,7 +83,7 @@ import type { PanelComponentProps } from '@/types/dashboard'
 import { useGeolocationStore } from '@/stores/geolocationStore'
 import { filterFiqlClauses } from '@/lib/dashboardFilter'
 import { resolveFilterNodeIds } from '@/services/dashboardFilterService'
-import { maxSeverity } from '../severity'
+import { highestSeverity } from '@/lib/severity'
 import CriticalIcon from '@/assets/Critical-icon.png'
 import MajorIcon from '@/assets/Major-icon.png'
 import MinorIcon from '@/assets/Minor-icon.png'
@@ -209,7 +209,7 @@ const load = async () => {
       continue
     }
     const cur = sevByNode.get(a.nodeId)
-    sevByNode.set(a.nodeId, cur ? maxSeverity([cur, a.severity]) : a.severity)
+    sevByNode.set(a.nodeId, cur ? (highestSeverity([cur, a.severity]) ?? a.severity) : a.severity)
   }
 
   const result: MapMarker[] = []
