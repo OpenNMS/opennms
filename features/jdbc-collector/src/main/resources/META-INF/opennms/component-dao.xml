@@ -10,6 +10,6 @@
 
   <context:annotation-config/>
 
-  <bean id="jdbcDataCollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.JdbcDataCollectionConfigDaoJaxb" />
+  <bean id="jdbcDataCollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.JdbcDataCollectionConfigDaoCm" />
 
 </beans>

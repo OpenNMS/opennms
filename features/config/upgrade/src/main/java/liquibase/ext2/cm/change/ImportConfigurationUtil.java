@@ -23,6 +23,7 @@ package liquibase.ext2.cm.change;
 
 import static liquibase.ext2.cm.change.ConfigFileUtil.asString;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -37,6 +38,7 @@ import org.opennms.features.config.exception.ConfigRuntimeException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -47,17 +49,31 @@ import liquibase.util.file.FilenameUtils;
 
 public class ImportConfigurationUtil {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RegisterSchema.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ImportConfigurationUtil.class);
 
     public static void importConfig(
             final ConfigurationManagerService configurationManagerService,
             final Resource configResource,
             final ConfigUpdateInfo configurationIdentifier,
             final Path archivePath) {
+        importConfig(configurationManagerService, configResource, configurationIdentifier, archivePath, configResource.getFilename());
+    }
+
+    /**
+     * @param etcRelativePath the path of the file relative to {@code etc/}, e.g. {@code jdbc-datacollection.d/mysql.xml}.
+     *                        A file imported from there is moved to the same relative path below the archive directory.
+     */
+    public static void importConfig(
+            final ConfigurationManagerService configurationManagerService,
+            final Resource configResource,
+            final ConfigUpdateInfo configurationIdentifier,
+            final Path archivePath,
+            final String etcRelativePath) {
         Objects.requireNonNull(configurationManagerService);
         Objects.requireNonNull(configResource);
         Objects.requireNonNull(configurationIdentifier);
         Objects.requireNonNull(archivePath);
+        Objects.requireNonNull(etcRelativePath);
         LOG.info("Importing configuration from {} for {}", configResource.getFilename(), configurationIdentifier);
         try {
             ConfigDefinition configDefinition = configurationManagerService
@@ -85,18 +101,39 @@ public class ImportConfigurationUtil {
             }
             configurationManagerService.registerConfiguration(configurationIdentifier, configObject);
             LOG.info("Configuration {} imported.", configurationIdentifier);
-            if(configResource.getURL().getFile().endsWith("/etc/" + configResource.getFilename())) {
-                Path etcFile = configResource.getFile().getAbsoluteFile().toPath();
-
-                // we imported a user defined config file => move to archive
-                // in order to prevent file exist exception, append data time sting at the end
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-                Path archiveFile = Path.of(archivePath.toString(), etcFile.getFileName() + "." + formatter.format(LocalDateTime.now()));
-                Files.move(etcFile, archiveFile);
-                LOG.info("Configuration file {} moved to {}", etcFile, archivePath);
-            }
         } catch (Exception e) {
             throw new ConfigRuntimeException("Error while importing config.", e);
+        }
+        // The configuration is stored now. Failing here would report a stored configuration as not imported,
+        // and a rerun of the changeset would fail because the configuration already exists.
+        archive(configResource, configurationIdentifier, archivePath, etcRelativePath);
+    }
+
+    private static void archive(
+            final Resource configResource,
+            final ConfigUpdateInfo configurationIdentifier,
+            final Path archivePath,
+            final String etcRelativePath) {
+        Path etcFile = null;
+        try {
+            if (!configResource.getURL().getFile().endsWith("/etc/" + etcRelativePath)) {
+                // a default from the class path or an archived file, nothing to move
+                return;
+            }
+            etcFile = configResource.getFile().getAbsoluteFile().toPath();
+
+            // we imported a user defined config file => move to archive
+            // in order to prevent file exist exception, append data time sting at the end
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+            Path archiveFile = Path.of(archivePath.toString(), etcRelativePath + "." + formatter.format(LocalDateTime.now()));
+            Files.createDirectories(archiveFile.getParent());
+            Files.move(etcFile, archiveFile);
+            LOG.info("Configuration file {} moved to {}", etcFile, archivePath);
+        } catch (IOException | RuntimeException e) {
+            LOG.warn("Configuration {} of schema {} was imported, but {} could not be moved to {}: {}. "
+                            + "The file is not read anymore, remove it manually.",
+                    configurationIdentifier.getConfigId(), configurationIdentifier.getConfigName(), etcFile != null ? etcFile : etcRelativePath, archivePath,
+                    ConfigConvertUtil.rootCauseMessage(e), e);
         }
     }
 }

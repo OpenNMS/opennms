@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.config.jdbc;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,9 +45,11 @@ public class JdbcDataCollectionConfig implements Serializable, Comparable<JdbcDa
     private static final JdbcDataCollection[] OF_DATA_COLLECTIONS = new JdbcDataCollection[0];
     
     @XmlElement(name="jdbc-collection")
+    @JsonProperty("jdbc-collection")
     private List<JdbcDataCollection> m_jdbcDataCollections = new ArrayList<>();
     
     @XmlAttribute(name="rrdRepository")
+    @JsonProperty("rrdRepository")
     private String m_rrdRepository;
     
     public JdbcDataCollectionConfig() {

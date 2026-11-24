@@ -21,6 +21,12 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <!-- The configuration manager backed DAO is only used on core. Minion receives the resolved collection with the collector request. -->
+            <Import-Package>
+              com.fasterxml.jackson.annotation;resolution:=optional,
+              org.opennms.features.config.*;resolution:=optional,
+              *
+            </Import-Package>
             <DynamicImport-Package>*</DynamicImport-Package>
           </instructions>
         </configuration>
@@ -98,6 +104,16 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config.service</groupId>
+      <artifactId>org.opennms.features.config.service.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
