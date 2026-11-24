@@ -21,7 +21,6 @@
 ///
 
 import { defineStore } from 'pinia'
-import { uniq } from 'lodash'
 import { filesToFolders } from '@/components/FileEditor/utils'
 import API from '@/services'
 import { FileEditorResponseLog } from '@/types'
@@ -57,7 +56,7 @@ export const useFileEditorStore = defineStore('fileEditorStore', () => {
     fileNames.value = resp
 
     // save folder file structure
-    const savedAndUnsavedFiles = uniq([...resp, ...unsavedFiles.value])
+    const savedAndUnsavedFiles = [...new Set([...resp, ...unsavedFiles.value])]
 
     const filteredFileNames = savedAndUnsavedFiles.filter((fileName) => {
       const searchValueLower = searchValue.value.toLowerCase()
@@ -94,7 +93,7 @@ export const useFileEditorStore = defineStore('fileEditorStore', () => {
   }
 
   const saveFolderFileStructure = (names: string[]) => {
-    const savedAndUnsavedFiles = uniq([...names, ...unsavedFiles.value])
+    const savedAndUnsavedFiles = [...new Set([...names, ...unsavedFiles.value])]
 
     const filteredFileNames = savedAndUnsavedFiles.filter((fileName) => {
       const searchVal = searchValue.value.toLowerCase()

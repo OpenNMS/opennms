@@ -29,8 +29,7 @@ import {
   Resource,
   ResourceDefinitionsApiResponse
 } from '@/types'
-import { uniq } from 'lodash'
-import { sortBy } from 'lodash'
+import { compareValues } from '@/lib/sorting'
 import { ref } from 'vue'
 
 export interface GraphDefinition {
@@ -81,15 +80,15 @@ export const useGraphStore = defineStore('graphStore', () => {
       }
 
       // sorts by preFabGraph order value
-      const sortedDefinitions = sortBy(
-        defs.map(definition => ({ name: definition, order: nameOrderMap.value.get(definition) })),
-        ['order']
-      ).map(definition => definition.name)
+      const sortedDefinitions = defs
+        .map(definition => ({ name: definition, order: nameOrderMap.value.get(definition) }))
+        .sort((a, b) => compareValues(a.order, b.order))
+        .map(definition => definition.name)
 
       idsWithDefinitions = [...idsWithDefinitions, { id, definitions: sortedDefinitions, label: getLabelFromId(id) }]
     }
 
-    const totalDefinitionsList = uniq(idsWithDefinitions.map(item => item.definitions).flat())
+    const totalDefinitionsList = [...new Set(idsWithDefinitions.flatMap(item => item.definitions))]
 
     definitionsList.value = totalDefinitionsList
     definitions.value = idsWithDefinitions

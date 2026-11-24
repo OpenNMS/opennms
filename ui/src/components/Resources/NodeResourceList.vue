@@ -33,7 +33,6 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { groupBy } from 'lodash'
 import { OnmsButton, OnmsCheckbox } from '@opennms/onms-ui'
 import { useGraphStore } from '@/stores/graphStore'
 import { useResourceStore } from '@/stores/resourceStore'
@@ -50,7 +49,10 @@ const router = useRouter()
 const selectedResourceObject = ref<any>({})
 
 const resources = computed<Resource[]>(() => resourceStore.nodeResource.children?.resource || [])
-const groupedResourcesObject = computed<GroupedResourcesObject>(() => groupBy(resources.value, 'typeLabel'))
+const groupedResourcesObject = computed<GroupedResourcesObject>(() => resources.value.reduce<GroupedResourcesObject>((groups, resource) => {
+  (groups[resource.typeLabel] ??= []).push(resource)
+  return groups
+}, {}))
 const resourceIsSelected = computed<boolean>(() => Object.values(selectedResourceObject.value).includes(true))
 
 const selectCheckbox = (resourceId: string) => selectedResourceObject.value[resourceId] = !selectedResourceObject.value[resourceId]

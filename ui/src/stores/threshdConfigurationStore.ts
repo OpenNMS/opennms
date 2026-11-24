@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { cloneDeep } from 'lodash'
+import { cloneState } from '@/lib/utils'
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { THRESHOLDING_GROUP_PARAMETER, ThreshdServiceStatus } from '@/lib/thresholdValidator'
@@ -182,7 +182,7 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
       return createFailureResult('No threshd package is loaded.')
     }
 
-    const pkg = cloneDeep(currentPackage.value)
+    const pkg = cloneState(currentPackage.value)
 
     if (index === null) {
       pkg.services.push(service)
@@ -200,7 +200,7 @@ export const useThreshdConfigurationStore = defineStore('threshdConfigurationSto
       return createFailureResult('No such service.')
     }
 
-    const pkg = cloneDeep(currentPackage.value)
+    const pkg = cloneState(currentPackage.value)
     pkg.services.splice(index, 1)
     return writePackage(pkg)
   }

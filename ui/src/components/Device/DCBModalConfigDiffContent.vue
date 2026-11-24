@@ -80,7 +80,7 @@
 import { computed, onMounted, ref } from 'vue'
 
 import { diffLines } from 'diff'
-import { orderBy } from 'lodash'
+import { compareValues } from '@/lib/sorting'
 import { OnmsCheckbox, OnmsChip, OnmsIconButton } from '@opennms/onms-ui'
 import Restore from '@opennms/onms-ui/icons/action/Restore.vue'
 import Download from '@opennms/onms-ui/icons/action/DownloadFile.vue'
@@ -120,9 +120,9 @@ const orderByDates = () => {
   // must have both configs to order
   if (config1.value && config2.value) {
     // order so that config1 is the 'previous' or 'older' version
-    const orderedByDate = orderBy([config1.value, config2.value], 'lastBackupDate', 'asc')
-    config1.value = orderedByDate[0]
-    config2.value = orderedByDate[1]
+    if (compareValues(config1.value.lastBackupDate, config2.value.lastBackupDate) > 0) {
+      [config1.value, config2.value] = [config2.value, config1.value]
+    }
   }
 }
 

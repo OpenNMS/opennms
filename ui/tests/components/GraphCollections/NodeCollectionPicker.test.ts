@@ -67,9 +67,8 @@ describe('syntheticCollectionRoute', () => {
 describe('NodeCollectionPicker.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // lodash's debounce reads the clock as well as setting timers; setImmediate stays real so
-    // flushPromises keeps working
-    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] })
+    // the debounce only sets timers; setImmediate stays real so flushPromises keeps working
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
     searchNodes.mockImplementation(async (term: string) =>
       term ? found([{ id: 7, label: 'rtr-01' }]) : found([{ id: 7, label: 'rtr-01' }, { id: 2, label: 'switch-02' }]))
     getResources.mockResolvedValue({

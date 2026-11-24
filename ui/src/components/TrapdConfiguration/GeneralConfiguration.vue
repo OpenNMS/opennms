@@ -174,9 +174,9 @@
 <script setup lang="ts">
 import { ref, watch, watchEffect } from 'vue'
 
-import { isEqual } from 'lodash'
 import { OnmsButton, OnmsIcon, OnmsInputNumber, OnmsInputText, OnmsMessageDialog, OnmsToggleSwitch } from '@opennms/onms-ui'
 import FormField from '../Common/FormField.vue'
+import { shallowEqual } from '@/lib/utils'
 import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_TRAPD_BATCH_INTERVAL, DEFAULT_TRAPD_BATCH_SIZE, DEFAULT_TRAPD_BIND_ADDRESS, DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE, DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP, DEFAULT_TRAPD_PORT, DEFAULT_TRAPD_QUEUE_SIZE, DEFAULT_TRAPD_THREADS, DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND } from '@/lib/constants'
@@ -285,7 +285,7 @@ const loadInitialConfig = () => {
 
 watchEffect(() => {
   trapConfigError.value = validateInputs()
-  isSaveDisabled.value = Object.keys(trapConfigError.value).length > 0 || isEqual({
+  isSaveDisabled.value = Object.keys(trapConfigError.value).length > 0 || shallowEqual({
     snmpTrapPort: Number(port.value),
     snmpTrapAddress: bindAddress.value,
     newSuspectOnTrap: newSuspectOnTrap.value,

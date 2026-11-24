@@ -131,7 +131,8 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 
-import { cloneDeep, debounce } from 'lodash'
+import { useDebounceFn } from '@vueuse/core'
+import { cloneState } from '@/lib/utils'
 import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsIcon, OnmsIconButton, OnmsSearchInput, OnmsTable, OnmsTag } from '@opennms/onms-ui'
 import IconAdd from '@opennms/onms-ui/icons/action/Add.vue'
 import IconDelete from '@opennms/onms-ui/icons/action/Delete.vue'
@@ -239,14 +240,14 @@ const onCreateDefinition = () => {
 
 const onDefinitionEdit = (definition?: SnmpDefinition) => {
   if (definition) {
-    store.setCurrentDefinition(cloneDeep(definition))
+    store.setCurrentDefinition(cloneState(definition))
     store.setDefinitionCreateEditMode(SnmpConfigEditMode.Edit)
   }
 }
 
 const onDefinitionDelete = (definition?: SnmpDefinition) => {
   if (definition) {
-    definitionToDelete.value = cloneDeep(definition)
+    definitionToDelete.value = cloneState(definition)
     showDeleteConfirmation.value = true
   }
 }
@@ -289,7 +290,7 @@ const cancelDelete = () => {
   definitionToDelete.value = null
 }
 
-const updateDebouncedSearchTerm = debounce((value: string) => {
+const updateDebouncedSearchTerm = useDebounceFn((value: string) => {
   debouncedSearchTerm.value = value
   firstRow.value = 0 // Reset to first page when searching
 }, 200)

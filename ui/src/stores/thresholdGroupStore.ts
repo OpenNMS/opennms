@@ -22,7 +22,7 @@
 
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { cloneDeep } from 'lodash'
+import { cloneState } from '@/lib/utils'
 import { ThresholdDefinitionKind, FilterOperator, ThresholdType } from '@/lib/thresholdValidator'
 import API from '@/services'
 import type { ValidationResult } from '@/types/validation'
@@ -174,7 +174,7 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
       return createFailureResult('No threshold group is loaded.')
     }
 
-    const group = cloneDeep(currentGroup.value)
+    const group = cloneState(currentGroup.value)
     const definitions = definitionsIn(group, kind)
 
     if (index === null) {
@@ -195,7 +195,7 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
       return createFailureResult('No such threshold.')
     }
 
-    const group = cloneDeep(currentGroup.value)
+    const group = cloneState(currentGroup.value)
     definitionsIn(group, kind).splice(index, 1)
     return writeGroup(group)
   }
@@ -250,7 +250,7 @@ export const useThresholdGroupStore = defineStore('thresholdGroupStore', () => {
 
     const definitions = definitionsOf(kind)
 
-    return definitions && index >= 0 && index < definitions.length ? cloneDeep(definitions[index]) : null
+    return definitions && index >= 0 && index < definitions.length ? cloneState(definitions[index]) : null
   }
 
   const resetState = (): void => {
