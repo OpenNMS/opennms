@@ -96,6 +96,14 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpCollector extends AbstractRemoteServiceCollector {
 
+    /** Agent protocol of this collector, published as {@code agent_protocol} on Kafka. */
+    public static final String AGENT_PROTOCOL = "HTTP";
+
+    @Override
+    public String getAgentProtocol() {
+        return AGENT_PROTOCOL;
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(HttpCollector.class);
 
     private static final String HTTP_COLLECTION_KEY = "httpCollection";

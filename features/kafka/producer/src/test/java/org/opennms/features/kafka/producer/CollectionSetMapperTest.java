@@ -32,8 +32,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -42,19 +46,42 @@ import org.opennms.core.collection.test.MockCollectionAgent;
 import org.opennms.features.kafka.producer.collection.CollectionSetMapper;
 import org.opennms.features.kafka.producer.collection.MetricTopicRouter;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
+import org.opennms.netmgt.collectd.IfInfo;
+import org.opennms.netmgt.collectd.IfResourceType;
+import org.opennms.netmgt.collectd.MibPropertyAttributeType;
+import org.opennms.netmgt.collectd.NumericAttributeType;
+import org.opennms.netmgt.collectd.OnmsSnmpCollection;
+import org.opennms.netmgt.collectd.SnmpCollectionAgent;
+import org.opennms.netmgt.collectd.SnmpCollectionSet;
+import org.opennms.netmgt.collectd.SnmpIfData;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.support.CollectionAttributeWrapper;
+import org.opennms.netmgt.collection.support.CollectionSetVisitorWrapper;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.LatencyTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
+import org.opennms.netmgt.config.datacollection.MibObjProperty;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 
 public class CollectionSetMapperTest {
 
@@ -314,5 +341,228 @@ public class CollectionSetMapperTest {
                 .thenAnswer(invocation -> ((Supplier<?>) invocation.getArgument(0)).get());
 
         return new CollectionSetMapper(nodeDao, sessionUtils, Mockito.mock(ResourceDao.class));
+    }
+
+    private CollectionSetProtos.CollectionSetResource mapInterfaceResource(String agentProtocol,
+            java.util.function.BiConsumer<CollectionSetBuilder, InterfaceLevelResource> fill) throws UnknownHostException {
+        final CollectionSetMapper mapper = new CollectionSetMapper(Mockito.mock(NodeDao.class), Mockito.mock(SessionUtils.class), Mockito.mock(ResourceDao.class));
+        final CollectionAgent agent = new MockCollectionAgent(1, "test", InetAddress.getLocalHost());
+        final InterfaceLevelResource r = new InterfaceLevelResource(new NodeLevelResource(1), "25");
+        final CollectionSetBuilder builder = new CollectionSetBuilder(agent).withTimestamp(new Date(2));
+        fill.accept(builder, r);
+        final CollectionSetProtos.CollectionSet proto = mapper.buildCollectionSetProtos(builder.build(),
+                ServiceParameters.forAgentProtocol(agentProtocol));
+        assertThat(proto.getResourceList(), Matchers.hasSize(1));
+        return proto.getResource(0);
+    }
+
+    private static List<String> agentProtocols(CollectionSetProtos.CollectionSetResource resource) {
+        return resource.getStringList().stream().filter(a -> "agent_protocol".equals(a.getName()))
+                .map(CollectionSetProtos.StringAttribute::getValue).collect(Collectors.toList());
+    }
+
+    @Test
+    public void testSnmpIdentifierIsNormalized() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource("SNMP", (b, r) ->
+                b.withIdentifiedNumericAttribute(r, "mib2-X-interfaces", "ifHCInOctets", 10, AttributeType.COUNTER,
+                        "SNMP_.1.3.6.1.2.1.31.1.1.1.6.512"));
+        assertEquals(".1.3.6.1.2.1.31.1.1.1.6.512", resource.getNumeric(0).getMetricId());
+        assertEquals(List.of("SNMP"), agentProtocols(resource));
+    }
+
+    @Test
+    public void testIdentifiedStringAttributeGetsMetricId() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource("SNMP", (b, r) ->
+                b.withIdentifiedStringAttribute(r, "g", "ifAlias", "uplink", "SNMP_.1.3.6.1.2.1.31.1.1.1.18.512"));
+        final CollectionSetProtos.StringAttribute alias = resource.getStringList().stream()
+                .filter(a -> "ifAlias".equals(a.getName())).findFirst().get();
+        assertEquals(".1.3.6.1.2.1.31.1.1.1.18.512", alias.getMetricId());
+        assertEquals(List.of("SNMP"), agentProtocols(resource));
+    }
+
+    @Test
+    public void testProtocolWithoutIdentifierPublishesOnlyAgentProtocol() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource("HTTP", (b, r) ->
+                b.withNumericAttribute(r, "group1", "documentCount", 105, AttributeType.GAUGE));
+        assertEquals("", resource.getNumeric(0).getMetricId());
+        assertEquals(List.of("HTTP"), agentProtocols(resource));
+    }
+
+    @Test
+    public void testNoProtocolPublishesNeither() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource(null, (b, r) ->
+                b.withIdentifiedNumericAttribute(r, "g", "a", 1, AttributeType.GAUGE, "SNMP_.1.3.6.1.2.1.1"));
+        assertEquals("", resource.getNumeric(0).getMetricId());
+        assertEquals(List.of(), agentProtocols(resource));
+    }
+
+    @Test
+    public void testPrefixedAttributeNameIsNotAnIdentifier() throws UnknownHostException {
+        // Without an identifier the attribute name stands in for it; a name that happens
+        // to start with the protocol prefix must not become a metric_id.
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource("SNMP", (b, r) ->
+                b.withNumericAttribute(r, "group1", "SNMP_session_up", 1, AttributeType.GAUGE));
+        assertEquals("", resource.getNumeric(0).getMetricId());
+        assertEquals(List.of("SNMP"), agentProtocols(resource));
+    }
+
+    @Test
+    public void testIdentifierOfAnotherProtocolIsIgnored() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource("JMX", (b, r) ->
+                b.withIdentifiedNumericAttribute(r, "g", "a", 1, AttributeType.GAUGE, "SNMP_.1.3.6.1.2.1.1"));
+        assertEquals("", resource.getNumeric(0).getMetricId());
+        assertEquals(List.of("JMX"), agentProtocols(resource));
+    }
+
+    @Test
+    public void testLowercaseBmpIdentifierIsNotPublished() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource("BMP", (b, r) ->
+                b.withIdentifiedNumericAttribute(r, "bmp", "rejected", 3, AttributeType.COUNTER, "bmp_10.0.0.1_rejected"));
+        assertEquals("", resource.getNumeric(0).getMetricId());
+        assertEquals(List.of("BMP"), agentProtocols(resource));
+    }
+
+    @Test
+    public void testExistingAgentProtocolIsKept() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSetResource resource = mapInterfaceResource("SNMP", (b, r) -> b
+                .withStringAttribute(r, "g", "agent_protocol", "CUSTOM")
+                .withIdentifiedNumericAttribute(r, "g", "a", 1, AttributeType.GAUGE, "SNMP_.1.3.6.1.2.1.1"));
+        assertEquals(List.of("CUSTOM"), agentProtocols(resource));
+    }
+
+    private static final int IF_INDEX = 25;
+    private static final String IF_HC_IN_OCTETS = ".1.3.6.1.2.1.31.1.1.1.6";
+    private static final AttributeGroupType IF_GROUP = new AttributeGroupType("mib2-X-interfaces", AttributeGroupType.IF_TYPE_ALL);
+
+    /** Collects ifHCInOctets on one interface with the real SNMP collector classes. */
+    private static final class SnmpFixture {
+        final SnmpCollectionAgent agent = Mockito.mock(SnmpCollectionAgent.class);
+        final ServiceParameters params = ServiceParameters.forAgentProtocol("SNMP");
+        final OnmsSnmpCollection collection;
+        final SnmpCollectionSet collectionSet;
+        final IfResourceType ifResourceType;
+        final IfInfo ifInfo;
+
+        SnmpFixture() {
+            final OnmsNode node = new OnmsNode();
+            node.setId(1);
+            final OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, IF_INDEX);
+            snmpInterface.setIfName("eth0");
+            snmpInterface.setCollectionEnabled(true);
+            final SnmpIfData ifData = new SnmpIfData(snmpInterface);
+
+            when(agent.getNodeId()).thenReturn(1);
+            when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get("1"));
+            when(agent.getSnmpInterfaceInfo(any(IfResourceType.class)))
+                    .thenAnswer(invocation -> Set.of(new IfInfo(invocation.getArgument(0), agent, ifData)));
+
+            final LocationAwareSnmpClient client = Mockito.mock(LocationAwareSnmpClient.class);
+            collection = new OnmsSnmpCollection(agent, params, Mockito.mock(DataCollectionConfigDao.class), client);
+            collectionSet = new SnmpCollectionSet(agent, collection, client);
+            collectionSet.setCollectionTimestamp(new Date(2));
+            ifResourceType = collection.getIfResourceType(agent);
+            ifInfo = (IfInfo) ifResourceType.findResource(new SnmpInstId(IF_INDEX));
+
+            final MibObject mibObject = new MibObject();
+            mibObject.setOid(IF_HC_IN_OCTETS);
+            mibObject.setInstance(MibObject.INSTANCE_IFINDEX);
+            mibObject.setAlias("ifHCInOctets");
+            mibObject.setType("counter");
+            new NumericAttributeType(ifResourceType, collection.getName(), mibObject, IF_GROUP).storeResult(collectionSet, null,
+                    new SnmpResult(SnmpObjId.get(IF_HC_IN_OCTETS), new SnmpInstId(IF_INDEX), SnmpUtils.getValueFactory().getCounter32(10)));
+        }
+
+        /** The node resource is always part of the set; return the only interface resource. */
+        CollectionSetProtos.CollectionSetResource mapToInterfaceResource() {
+            final CollectionSetMapper mapper = new CollectionSetMapper(Mockito.mock(NodeDao.class), Mockito.mock(SessionUtils.class), Mockito.mock(ResourceDao.class));
+            final List<CollectionSetProtos.CollectionSetResource> interfaces = mapper.buildCollectionSetProtos(collectionSet, params)
+                    .getResourceList().stream().filter(CollectionSetProtos.CollectionSetResource::hasInterface).collect(Collectors.toList());
+            assertThat(interfaces, Matchers.hasSize(1));
+            return interfaces.get(0);
+        }
+    }
+
+    @Test
+    public void testSnmpPropertyAttributeIsPublishedWithoutMetricId() {
+        final SnmpFixture snmp = new SnmpFixture();
+        // What the SNMP property extenders add: an attribute whose type has no MIB object.
+        final MibObjProperty property = new MibObjProperty();
+        property.setAlias("vendorName");
+        property.setGroupName(IF_GROUP.getName());
+        snmp.ifInfo.setAttributeValue(new MibPropertyAttributeType(snmp.ifResourceType, property, IF_GROUP),
+                SnmpUtils.getValueFactory().getOctetString("acme".getBytes()));
+
+        final CollectionSetProtos.CollectionSetResource resource = snmp.mapToInterfaceResource();
+        assertEquals(IF_INDEX, resource.getInterface().getIfIndex());
+        assertEquals(IF_HC_IN_OCTETS + "." + IF_INDEX, resource.getNumeric(0).getMetricId());
+        final CollectionSetProtos.StringAttribute vendorName = resource.getStringList().stream()
+                .filter(a -> "vendorName".equals(a.getName())).findFirst().get();
+        assertEquals("acme", vendorName.getValue());
+        assertEquals("", vendorName.getMetricId());
+        assertEquals(List.of("SNMP"), agentProtocols(resource));
+    }
+
+    @Test
+    public void testSnmpAliasedResourceDoesNotBreakTheCollectionSet() {
+        final SnmpFixture snmp = new SnmpFixture();
+        // The SNMP collector creates an aliased resource for each interface that returns ifAlias.
+        snmp.collection.getAliasAttributeTypes(snmp.agent).get(0).storeResult(snmp.collectionSet, null,
+                new SnmpResult(SnmpObjId.get(".1.3.6.1.2.1.31.1.1.1.18"), new SnmpInstId(IF_INDEX),
+                        SnmpUtils.getValueFactory().getOctetString("uplink".getBytes())));
+        assertThat(snmp.collection.getIfAliasResourceType(snmp.agent).getResources(), Matchers.hasSize(1));
+
+        // The mapper does not publish aliased resources, so only the interface remains.
+        final CollectionSetProtos.CollectionSetResource resource = snmp.mapToInterfaceResource();
+        assertEquals(IF_INDEX, resource.getInterface().getIfIndex());
+        assertEquals(IF_HC_IN_OCTETS + "." + IF_INDEX, resource.getNumeric(0).getMetricId());
+        assertEquals(List.of("SNMP"), agentProtocols(resource));
+    }
+
+    /** Maps one numeric attribute on an interface whose identifier comes from the given supplier. */
+    private static CollectionSetProtos.CollectionSet mapWithIdentifier(String ifInstance, Supplier<String> identifier) throws UnknownHostException {
+        final CollectionAgent agent = new MockCollectionAgent(1, "test", InetAddress.getLocalHost());
+        final CollectionSet real = new CollectionSetBuilder(agent).withTimestamp(new Date(2))
+                .withNumericAttribute(new InterfaceLevelResource(new NodeLevelResource(1), ifInstance), "g", "a", 1, AttributeType.GAUGE)
+                .build();
+        final CollectionSet collectionSet = Mockito.mock(CollectionSet.class);
+        when(collectionSet.getCollectionTimestamp()).thenReturn(real.getCollectionTimestamp());
+        Mockito.doAnswer(invocation -> {
+            real.visit(new CollectionSetVisitorWrapper(invocation.<CollectionSetVisitor>getArgument(0)) {
+                @Override
+                public void visitAttribute(CollectionAttribute attribute) {
+                    super.visitAttribute(new CollectionAttributeWrapper(attribute) {
+                        @Override
+                        public String getMetricIdentifier() {
+                            return identifier.get();
+                        }
+                    });
+                }
+            });
+            return null;
+        }).when(collectionSet).visit(any(CollectionSetVisitor.class));
+        final CollectionSetMapper mapper = new CollectionSetMapper(Mockito.mock(NodeDao.class), Mockito.mock(SessionUtils.class), Mockito.mock(ResourceDao.class));
+        return mapper.buildCollectionSetProtos(collectionSet, ServiceParameters.forAgentProtocol("SNMP"));
+    }
+
+    @Test
+    public void testFailingIdentifierPublishesAttributeWithoutMetricId() throws UnknownHostException {
+        final CollectionSetProtos.CollectionSet proto = mapWithIdentifier("25", () -> {
+            throw new IllegalStateException("no identifier");
+        });
+        assertThat(proto.getResourceList(), Matchers.hasSize(1));
+        assertEquals("a", proto.getResource(0).getNumeric(0).getName());
+        assertEquals("", proto.getResource(0).getNumeric(0).getMetricId());
+    }
+
+    @Test
+    public void testIdentifierIsNotComputedForUnpublishedResources() throws UnknownHostException {
+        final AtomicInteger calls = new AtomicInteger();
+        // An interface resource without an instance is not published.
+        final CollectionSetProtos.CollectionSet proto = mapWithIdentifier(null, () -> {
+            calls.incrementAndGet();
+            return "SNMP_.1.3.6.1.2.1.1";
+        });
+        assertThat(proto.getResourceList(), Matchers.hasSize(0));
+        assertEquals(0, calls.get());
     }
 }
