@@ -14,7 +14,7 @@ Any other JDBC drivers must be manually loaded to collect from other types of da
 | Class Name            | `org.opennms.netmgt.collectd.JdbcCollector`
 | Package               | core
 | Supported on Minion   | Yes (see limitations)
-| Configuration         | Stored in the database, configuration name `jdbc-datacollection-config` (see <<jdbc-collection-storage>>)
+| Configuration         | Stored in the database; see <<jdbc-collection-storage, JDBC collection configuration>>
 |===
 
 === Limitations on Minion
@@ -66,57 +66,97 @@ Instead, you must use the service parameters to set the JDBC connection settings
 
 == JDBC collection configuration
 
-Understanding xref:operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
+Understanding xref:operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types[resource types] helps when defining JDBC collections.
 
 [[jdbc-collection-storage]]
 === Storage
 
-JDBC collections are stored in the database, as the configuration `jdbc-datacollection-config` of the xref:development:rest/config_management.adoc[Config Management REST API].
-This configuration can have several configuration IDs, each with a list of `jdbc-collection` entries.
-The collector merges all IDs into one list: `default` first, then the other IDs in alphabetical order.
-If a collection name appears more than once, the first one is used and the others are ignored with a warning in the log.
+JDBC collections are stored in the database and are created and edited through the <<jdbc-collection-ui, web UI>> or the xref:development:rest/jdbc-datacollection-rest-api.adoc[JDBC Data Collection REST API].
+Editing `$\{OPENNMS_HOME}/etc/jdbc-datacollection-config.xml` or the files in `$\{OPENNMS_HOME}/etc/jdbc-datacollection.d/` has no effect: their contents are migrated into the database during the upgrade (see <<jdbc-collection-upgrade>>), and the files are no longer read.
 
-A change takes effect with the next collection; no restart or reload event is needed.
-The REST API rejects a configuration with a column `type` that {page-component-title} does not support (for example, `timeticks`).
+The configuration is split into sources:
 
-To read and change the collections, use the Config Management REST API, for example:
+* The source `default` holds what used to be `jdbc-datacollection-config.xml`.
+* Every former file `jdbc-datacollection.d/<name>.xml` became a source named `<name>`, such as `postgresql` or `mysql`.
+* A source holds JDBC collections and an RRD repository.
+* A collection holds the RRD step and round robin archives, and the SQL queries to run.
+* A query holds the SQL statement and the result columns to store.
 
-[source, console]
-----
-curl -u admin:admin https://opennms.example.com/opennms/rest/cm/jdbc-datacollection-config <1>
-curl -u admin:admin https://opennms.example.com/opennms/rest/cm/jdbc-datacollection-config/postgresql <2>
-curl -X PUT -u admin:admin 'https://opennms.example.com/opennms/rest/cm/jdbc-datacollection-config/postgresql?replace=true' \
-     -H 'Content-type: application/json' --data @postgresql.json <3>
-curl -X POST -u admin:admin https://opennms.example.com/opennms/rest/cm/jdbc-datacollection-config/my-collections \
-     -H 'Content-type: application/json' --data @my-collections.json <4>
-----
-<1> List the configuration IDs.
-<2> Read one configuration as JSON.
-<3> Replace a configuration.
-<4> Add a configuration with a new ID.
+A collectd service selects one collection through its `collection` parameter.
+The collector merges all sources into one list: `default` first, then the other sources sorted by ID.
+A collection name must therefore be unique across all sources.
+If a collection name appears in more than one source, the collector uses the first one and ignores the others; the web UI marks an ignored collection.
+The collector uses the RRD repository of the first source that sets one, normally `default`, for all collections.
 
+The collector reads the configuration on every collection, so a saved change applies from the next collection on; no reload or restart is needed.
+
+Reading and changing the configuration requires the `ROLE_ADMIN` role, because it holds the SQL statements that the collector runs.
+
+NOTE: The configuration is also available as `jdbc-datacollection-config` in the xref:development:rest/config_management.adoc[Config Management REST API] at `/rest/cm/jdbc-datacollection-config`, where each source is a configuration ID.
+
+[[jdbc-collection-ui]]
+=== Manage JDBC collections in the web UI
+
+. Log in to the web UI as a user with the `ROLE_ADMIN` role.
+. Click menu:Administration[Configure JDBC Data Collection] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then click menu:Performance Measurement[Configure JDBC Data Collection].
+
+The page has two tabs:
+
+Sources::
+Lists the sources in the order the collector merges them.
+Click *New source* to create a source, or open a source to edit it.
+Any source except `default` can be deleted together with all of its collections.
+
+Import::
+Upload a file to store it as a source: an XML file in the format of the former `jdbc-datacollection.d/*.xml` files, for example a file from `$\{OPENNMS_HOME}/etc_archive/`, or a JSON file downloaded from a source.
+The source ID is taken from the *Source id* field or, when it is empty, from the file name; a timestamp suffix of an archived file, such as `mysql.xml.20261110120000`, is removed.
+An existing source is replaced only when *Replace an existing source* is enabled.
+
+The page of a source shows its RRD repository, which you can change, and its collections.
+Use *Download XML* or *Download JSON* to download the source as a file, and *Delete source* to delete it.
+For each collection, the *Used by* column lists the collectd services that use it, as `package/service`.
+A collection that is ignored because an earlier source defines a collection of the same name is marked `Ignored: also defined in '<source>'`.
+
+Open a collection to edit its name, its RRD step and round robin archives (for example, `RRA:AVERAGE:0.5:1:2016`), and its queries.
+For each query you set:
+
+* A name that is unique within the collection.
+* The recheck interval, in milliseconds.
+* The interface type, such as `ignore` for node-level values or `all`.
+* A resource type and an instance column, set together for a query that returns more than one row; each row becomes a resource of that type, identified by the value of the instance column.
+* The SQL statement.
+* The columns to store, each with its name, the column label in the result set if it differs from the name, its type (`gauge`, `counter` or `string`), and an alias of at most 19 characters that is unique within the query.
+
+These rules apply to collections:
+
+* Renaming a collection does not change the `collection` parameter of the collectd services that use it.
+Update the services in `collectd-configuration.xml` as well.
+* Deleting a collection that collectd services use stops these services from collecting; the confirmation dialog lists them.
+
+[[jdbc-collection-upgrade]]
 === Upgrade from XML files
 
 Earlier versions read the collections from `$\{OPENNMS_HOME}/etc/jdbc-datacollection-config.xml` and `$\{OPENNMS_HOME}/etc/jdbc-datacollection.d/*.xml`.
 The upgrade imports these files once:
 
-* `jdbc-datacollection-config.xml` becomes the configuration ID `default`.
-* Each `jdbc-datacollection.d/<name>.xml` becomes the configuration ID `<name>`, for example, `postgresql.xml` becomes `postgresql`.
+* `jdbc-datacollection-config.xml` becomes the source `default`.
+* Each `jdbc-datacollection.d/<name>.xml` becomes the source `<name>`, for example, `postgresql.xml` becomes `postgresql`.
 `jdbc-datacollection.d/default.xml` becomes `default.d`, because `default` belongs to `jdbc-datacollection-config.xml`.
 * Imported files are moved to `$\{OPENNMS_HOME}/etc_archive/`, with a timestamp appended to the file name.
 If a file can't be moved, it is still imported, the log shows a warning, and you have to remove the file from `$\{OPENNMS_HOME}/etc/` yourself.
 * A file that does not follow the schema `jdbc-datacollection.xsd`, or that {page-component-title} can't use (for example, a column `type` such as `timeticks` that the collector does not support), is not imported, and the upgrade continues.
-* A file in `jdbc-datacollection.d/` whose name does not make a valid configuration ID is not imported either.
+* A file in `jdbc-datacollection.d/` whose name does not make a valid source ID is not imported either.
 A valid ID starts with a letter or a digit and contains only letters, digits, `.`, `_` and `-`.
 * In these cases the log names the file and the error, and the file stays in `$\{OPENNMS_HOME}/etc/`.
-Correct or rename the file and add it with the REST API.
+Correct or rename the file and upload it on the *Import* tab of the web UI or with the REST API.
 
 IMPORTANT: After the upgrade, {page-component-title} does not read `jdbc-datacollection-config.xml` and the files in `jdbc-datacollection.d/`.
 New or changed files in these locations have no effect.
 
-=== Collection definition
+=== XML format
 
-The XML files and the JSON of the REST API share the same structure.
+The *Import* tab and *Download XML* use the format of the former `jdbc-datacollection.d/*.xml` files.
 This snippet provides a sample collection definition named `opennms-stats` in XML:
 
 [source, xml]
@@ -142,7 +182,7 @@ This snippet provides a sample collection definition named `opennms-stats` in XM
 </jdbc-collection>
 ----
 
-Once the definition is stored, you can test it using the `collect` command in the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell]:
+Once the collection is saved, you can test it using the `collect` command in the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell]:
 
 [source, console]
 ----
@@ -161,7 +201,7 @@ opennms:collect -l MINION org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 co
 To schedule the collection, add a service to a package in `$\{OPENNMS_HOME}/etc/collectd-configuration.xml` and a matching `collector` entry.
 Collectd collects only from IP interfaces that are in the package and have a monitored service with the same name, for example one added through a requisition or a detector.
 
-This example, based on the `PostgreSQL` service in the default configuration, collects the `PostgreSQL` collection from the configuration ID `postgresql`:
+This example, based on the `PostgreSQL` service in the default configuration, collects the `PostgreSQL` collection from the source `postgresql`:
 
 [source, xml]
 ----
