@@ -83,7 +83,7 @@ import { Alarm, SORT } from '@/types/index'
 import NodeDetailsPanel from '@/components/Nodes/NodeDetailsPanel.vue'
 import NodeDownloadDropdown from '@/components/Nodes/NodeDownloadDropdown.vue'
 import { useRecordDownload } from './hooks/useRecordDownload'
-import { severityTag } from '@/components/Nodes/utils'
+import { severityTag } from '@/lib/severity'
 import useActiveNodeId from './hooks/useActiveNodeId'
 import useNodeTablePaging from './hooks/useNodeTablePaging'
 
