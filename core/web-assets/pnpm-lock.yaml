@@ -182,8 +182,8 @@ importers:
         specifier: ^3.7.2
         version: 3.7.2
       moment:
-        specifier: ^2.29.1
-        version: 2.30.1
+        specifier: ^2.31.0
+        version: 2.31.0
       popper.js:
         specifier: ^1.16.1
         version: 1.16.1
@@ -192,10 +192,10 @@ importers:
         version: 0.14.1
       tempusdominus-bootstrap-4:
         specifier: ^5.39.2
-        version: 5.39.2(bootstrap@4.6.2(jquery@3.7.1)(popper.js@1.16.1))(jquery@3.7.1)(moment-timezone@0.5.48)(moment@2.30.1)(popper.js@1.16.1)(tempusdominus-core@5.19.3(jquery@3.7.1)(moment-timezone@0.5.48)(moment@2.30.1))
+        version: 5.39.2(bootstrap@4.6.2(jquery@3.7.1)(popper.js@1.16.1))(jquery@3.7.1)(moment-timezone@0.5.48)(moment@2.31.0)(popper.js@1.16.1)(tempusdominus-core@5.19.3(jquery@3.7.1)(moment-timezone@0.5.48)(moment@2.31.0))
       tempusdominus-core:
         specifier: ^5.19.3
-        version: 5.19.3(jquery@3.7.1)(moment-timezone@0.5.48)(moment@2.30.1)
+        version: 5.19.3(jquery@3.7.1)(moment-timezone@0.5.48)(moment@2.31.0)
       ui-bootstrap4:
         specifier: ^3.0.7
         version: 3.0.7
@@ -3958,8 +3958,8 @@ packages:
   moment-timezone@0.5.48:
     resolution: {integrity: sha512-f22b8LV1gbTO2ms2j2z13MuPogNoh5UzxL3nzNAYKGraILnbGc9NEE6dyiiiLv46DGRb8A4kg8UKWLjPthxBHw==}
 
-  moment@2.30.1:
-    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
+  moment@2.31.0:
+    resolution: {integrity: sha512-0acOTfMiWOheYS4eoWb80yYMb/JLvVv9SHbs2PehaDzfUG0Bw855SKyk0IKTnPGa5+U2bmi3W68l1+sGLX/pvw==}
 
   move-concurrently@1.0.1:
     resolution: {integrity: sha512-hdrFxZOycD/g6A6SoI2bB5NA/5NEqD0569+S47WZhPvm46sD50ZHdYaFmnua5lndde9rCHGjmfK7Z8BuCt/PcQ==}
@@ -9902,9 +9902,9 @@ snapshots:
 
   moment-timezone@0.5.48:
     dependencies:
-      moment: 2.30.1
+      moment: 2.31.0
 
-  moment@2.30.1: {}
+  moment@2.31.0: {}
 
   move-concurrently@1.0.1:
     dependencies:
@@ -11073,19 +11073,19 @@ snapshots:
       minizlib: 3.1.0
       yallist: 5.0.0
 
-  tempusdominus-bootstrap-4@5.39.2(bootstrap@4.6.2(jquery@3.7.1)(popper.js@1.16.1))(jquery@3.7.1)(moment-timezone@0.5.48)(moment@2.30.1)(popper.js@1.16.1)(tempusdominus-core@5.19.3(jquery@3.7.1)(moment-timezone@0.5.48)(moment@2.30.1)):
+  tempusdominus-bootstrap-4@5.39.2(bootstrap@4.6.2(jquery@3.7.1)(popper.js@1.16.1))(jquery@3.7.1)(moment-timezone@0.5.48)(moment@2.31.0)(popper.js@1.16.1)(tempusdominus-core@5.19.3(jquery@3.7.1)(moment-timezone@0.5.48)(moment@2.31.0)):
     dependencies:
       bootstrap: 4.6.2(jquery@3.7.1)(popper.js@1.16.1)
       jquery: 3.7.1
-      moment: 2.30.1
+      moment: 2.31.0
       moment-timezone: 0.5.48
       popper.js: 1.16.1
-      tempusdominus-core: 5.19.3(jquery@3.7.1)(moment-timezone@0.5.48)(moment@2.30.1)
+      tempusdominus-core: 5.19.3(jquery@3.7.1)(moment-timezone@0.5.48)(moment@2.31.0)
 
-  tempusdominus-core@5.19.3(jquery@3.7.1)(moment-timezone@0.5.48)(moment@2.30.1):
+  tempusdominus-core@5.19.3(jquery@3.7.1)(moment-timezone@0.5.48)(moment@2.31.0):
     dependencies:
       jquery: 3.7.1
-      moment: 2.30.1
+      moment: 2.31.0
       moment-timezone: 0.5.48
 
   terser-webpack-plugin@1.4.6(webpack@4.47.0):
