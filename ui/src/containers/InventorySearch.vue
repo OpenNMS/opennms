@@ -6,15 +6,17 @@
   </div>
 
   <div class="inventory-search">
-    <div class="card search-panel">
-      <div class="page-header">
-        <h2 class="headline3" data-test="search-title">Search for Nodes</h2>
+    <div class="page-header">
+      <div class="title-row">
+        <h1 class="page-title" data-test="search-title">Search for Nodes</h1>
         <AboutDialogButton title="Search Inventory">
           <InventorySearchHelp />
         </AboutDialogButton>
       </div>
-      <p class="subtitle">Search the inventory and open the matching nodes in the node list.</p>
+      <p class="page-subtitle">Search the inventory and open the matching nodes in the node list.</p>
+    </div>
 
+    <div class="card search-panel">
       <div class="criteria-grid">
         <SearchField
           class="criterion"
@@ -22,9 +24,10 @@
           for="search-nodename"
           testId="name"
           help="Substring match on the node label; use * as a wildcard (e.g. core* or *sw*)."
-          @search="goToNodes({ nodename: form.nodename })"
+          :error="errors.name"
+          @search="search('name', 'nodename', { nodename: form.nodename })"
         >
-          <OnmsInputText id="search-nodename" v-model="form.nodename" fluid data-test="nodename-input" />
+          <OnmsInputText id="search-nodename" v-model="form.nodename" fluid :invalid="!!errors.name" data-test="nodename-input" />
         </SearchField>
 
         <SearchField
@@ -33,9 +36,10 @@
           for="search-iplike"
           testId="iplike"
           help="Flexible address match: * is any octet, a-b is a range and commas list values (e.g. 10.1.1-3,5.*). IPv4 or IPv6."
-          @search="goToNodes({ iplike: form.iplike })"
+          :error="errors.iplike"
+          @search="search('iplike', 'iplike', { iplike: form.iplike })"
         >
-          <OnmsInputText id="search-iplike" v-model="form.iplike" placeholder="*.*.*.* or *:*:*:*:*:*:*:*" fluid data-test="iplike-input" />
+          <OnmsInputText id="search-iplike" v-model="form.iplike" placeholder="*.*.*.* or *:*:*:*:*:*:*:*" fluid :invalid="!!errors.iplike" data-test="iplike-input" />
         </SearchField>
 
         <SearchField
@@ -44,11 +48,12 @@
           for="search-mib2-value"
           testId="system"
           help="Match an SNMP MIB-2 system value. 'contains' is a substring match; 'equals' is exact."
-          @search="goToNodes({ mib2Parm: form.mib2Parm, mib2ParmMatchType: form.mib2ParmMatchType, mib2ParmValue: form.mib2ParmValue })"
+          :error="errors.system"
+          @search="search('system', 'mib2ParmValue', { mib2Parm: form.mib2Parm, mib2ParmMatchType: form.mib2ParmMatchType, mib2ParmValue: form.mib2ParmValue })"
         >
           <OnmsSelect v-model="form.mib2Parm" :options="SYSTEM_ATTRIBUTES" optionLabel="label" optionValue="value" data-test="mib2-parm" />
           <OnmsSelect v-model="form.mib2ParmMatchType" :options="MATCH_TYPES" optionLabel="label" optionValue="value" data-test="mib2-match" />
-          <OnmsInputText id="search-mib2-value" v-model="form.mib2ParmValue" fluid data-test="mib2-value" />
+          <OnmsInputText id="search-mib2-value" v-model="form.mib2ParmValue" fluid :invalid="!!errors.system" data-test="mib2-value" />
         </SearchField>
 
         <SearchField
@@ -57,11 +62,12 @@
           for="search-snmp-value"
           testId="interface"
           help="Match an SNMP interface value (ifAlias, ifName or ifDescr). 'contains' is a substring match; 'equals' is exact."
-          @search="goToNodes({ snmpParm: form.snmpParm, snmpParmMatchType: form.snmpParmMatchType, snmpParmValue: form.snmpParmValue })"
+          :error="errors.interface"
+          @search="search('interface', 'snmpParmValue', { snmpParm: form.snmpParm, snmpParmMatchType: form.snmpParmMatchType, snmpParmValue: form.snmpParmValue })"
         >
           <OnmsSelect v-model="form.snmpParm" :options="INTERFACE_ATTRIBUTES" optionLabel="label" optionValue="value" data-test="snmp-parm" />
           <OnmsSelect v-model="form.snmpParmMatchType" :options="MATCH_TYPES" optionLabel="label" optionValue="value" data-test="snmp-match" />
-          <OnmsInputText id="search-snmp-value" v-model="form.snmpParmValue" fluid data-test="snmp-value" />
+          <OnmsInputText id="search-snmp-value" v-model="form.snmpParmValue" fluid :invalid="!!errors.interface" data-test="snmp-value" />
         </SearchField>
 
         <SearchField
@@ -70,16 +76,19 @@
           for="search-location"
           testId="location"
           help="Restrict results to nodes monitored from the selected location."
-          @search="goToNodes({ monitoringLocation: form.monitoringLocation })"
+          :error="errors.location"
+          @search="search('location', 'monitoringLocation', { monitoringLocation: form.monitoringLocation })"
         >
           <OnmsSelect
             v-model="form.monitoringLocation"
             inputId="search-location"
             :options="locationOptions"
+            :loading="loadingOptions"
             optionLabel="label"
             optionValue="value"
             filter
             fluid
+            :invalid="!!errors.location"
             data-test="location-select"
           />
         </SearchField>
@@ -90,16 +99,19 @@
           for="search-service"
           testId="service"
           help="Restrict results to nodes that provide the selected monitored service."
-          @search="goToNodes({ monitoredService: form.monitoredService })"
+          :error="errors.service"
+          @search="search('service', 'monitoredService', { monitoredService: form.monitoredService })"
         >
           <OnmsSelect
             v-model="form.monitoredService"
             inputId="search-service"
             :options="serviceOptions"
+            :loading="loadingOptions"
             optionLabel="label"
             optionValue="value"
             filter
             fluid
+            :invalid="!!errors.service"
             data-test="service-select"
           />
         </SearchField>
@@ -110,9 +122,10 @@
           for="search-mac"
           testId="mac"
           help="Case-insensitive partial match on interface MAC addresses; separators are optional. The first six hex digits identify the vendor."
-          @search="goToNodes({ maclike: form.maclike })"
+          :error="errors.mac"
+          @search="search('mac', 'maclike', { maclike: form.maclike })"
         >
-          <OnmsInputText id="search-mac" v-model="form.maclike" fluid data-test="mac-input" />
+          <OnmsInputText id="search-mac" v-model="form.maclike" fluid :invalid="!!errors.mac" data-test="mac-input" />
         </SearchField>
 
         <SearchField
@@ -121,9 +134,10 @@
           for="search-fs"
           testId="fs"
           help="Exact match on the provisioning foreign source name."
-          @search="goToNodes({ foreignSource: form.foreignSource })"
+          :error="errors.fs"
+          @search="search('fs', 'foreignSource', { foreignSource: form.foreignSource })"
         >
-          <OnmsInputText id="search-fs" v-model="form.foreignSource" fluid data-test="fs-input" />
+          <OnmsInputText id="search-fs" v-model="form.foreignSource" fluid :invalid="!!errors.fs" data-test="fs-input" />
         </SearchField>
 
         <SearchField
@@ -153,9 +167,10 @@
           for="search-topology"
           testId="topology"
           help="Substring match on CDP/LLDP neighbour data discovered by Enhanced Linkd."
-          @search="goToNodes({ topology: form.topology })"
+          :error="errors.topology"
+          @search="search('topology', 'topology', { topology: form.topology })"
         >
-          <OnmsInputText id="search-topology" v-model="form.topology" fluid data-test="topology-input" />
+          <OnmsInputText id="search-topology" v-model="form.topology" fluid :invalid="!!errors.topology" data-test="topology-input" />
         </SearchField>
 
         <SearchField
@@ -164,10 +179,11 @@
           for="search-field-value"
           testId="field"
           help="Search any asset inventory field by its exact value (no wildcards)."
-          @search="goToNodes({ assetColumn: form.assetField, assetValue: form.assetFieldValue })"
+          :error="errors.field"
+          @search="search('field', 'assetFieldValue', { assetColumn: form.assetField, assetValue: form.assetFieldValue })"
         >
           <OnmsSelect v-model="form.assetField" :options="ASSET_FIELDS" optionLabel="label" optionValue="value" filter data-test="field-select" />
-          <OnmsInputText id="search-field-value" v-model="form.assetFieldValue" placeholder="Exact value" fluid data-test="field-value" />
+          <OnmsInputText id="search-field-value" v-model="form.assetFieldValue" placeholder="Exact value" fluid :invalid="!!errors.field" data-test="field-value" />
         </SearchField>
       </div>
 
@@ -180,10 +196,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { OnmsInputText, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsInputText, OnmsSelect, useOnmsToast } from '@opennms/onms-ui'
 
 import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
@@ -199,14 +215,18 @@ import {
   SYSTEM_ATTRIBUTES
 } from '@/components/InventorySearch/options'
 import API from '@/services'
+import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
 const router = useRouter()
+const menuStore = useMenuStore()
+const { showToast } = useOnmsToast()
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
-const breadcrumbs: BreadCrumb[] = [
-  { label: 'Home', to: '/' },
-  { label: 'Search Inventory', to: '/inventory-search' }
-]
+const breadcrumbs = computed<BreadCrumb[]>(() => [
+  { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
+  { label: 'Search Inventory', to: '#', position: 'last' }
+])
 
 const form = reactive({
   nodename: '',
@@ -228,7 +248,14 @@ const form = reactive({
   assetFieldValue: ''
 })
 
+type FormKey = keyof typeof form
+
+// per-criterion inline error, keyed by the SearchField testId
+const errors = reactive<Record<string, string | undefined>>({})
+const requiredFields: Record<string, FormKey> = {}
+
 const locationOptions = ref<Option[]>([])
+const loadingOptions = ref(true)
 const serviceOptions = ref<Option[]>([])
 
 // Route the chosen criterion into the node list, which already tracks these
@@ -243,26 +270,56 @@ const goToNodes = (query: Record<string, string>) => {
   router.push({ path: '/nodes', query: cleaned })
 }
 
+// Each criterion searches on its own; refuse a blank value inline rather than
+// silently listing every node.
+const search = (criterion: string, required: FormKey, query: Record<string, string>) => {
+  requiredFields[criterion] = required
+  if (String(form[required] ?? '').trim() === '') {
+    errors[criterion] = criterion === 'location' || criterion === 'service' ? 'Select a value to search for.' : 'Enter a value to search for.'
+    return
+  }
+  errors[criterion] = undefined
+  goToNodes(query)
+}
+
+watch(form, () => {
+  for (const [criterion, key] of Object.entries(requiredFields)) {
+    if (errors[criterion] && String(form[key] ?? '').trim() !== '') {
+      errors[criterion] = undefined
+    }
+  }
+})
+
 onMounted(async () => {
-  const locations = await API.getMonitoringLocations()
-  if (locations) {
-    locationOptions.value = locations.location
-      .map(loc => loc.name)
+  try {
+    const [locations, services] = await Promise.all([API.getMonitoringLocations(), API.getServiceTypes()])
+    if (locations) {
+      locationOptions.value = locations.location
+        .map(loc => loc.name)
+        .filter((name): name is string => !!name)
+        .map(name => ({ label: name, value: name }))
+    } else {
+      showToast({ message: 'Failed to load monitoring locations.', severity: 'error' })
+    }
+    serviceOptions.value = services
+      .map(svc => svc.name)
       .filter((name): name is string => !!name)
       .map(name => ({ label: name, value: name }))
+  } finally {
+    loadingOptions.value = false
   }
-  const services = await API.getServiceTypes()
-  serviceOptions.value = services
-    .map(svc => svc.name)
-    .filter((name): name is string => !!name)
-    .map(name => ({ label: name, value: name }))
 })
 </script>
 
 <style scoped lang="scss">
 .inventory-search {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0 2px 2rem 2px;
+
   .card {
-    padding: 1rem 1.25rem;
+    padding: 1.5rem;
   }
 
   // fill the content width so the two columns use the horizontal space and
@@ -272,15 +329,20 @@ onMounted(async () => {
     max-width: 90rem;
   }
 
-  .page-header {
+  .title-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    gap: 0.25rem;
   }
 
-  .subtitle {
-    margin: 0 0 1rem 0;
+  .page-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .page-subtitle {
+    margin: 0.25rem 0 0 0;
     color: var(--p-text-muted-color);
   }
 

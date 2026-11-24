@@ -85,7 +85,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         clickMenuItem("Inventory", "Search Inventory");
         // now the Vue page (ui/index.html)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//h2[text()='Search for Nodes']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@class='page-title' and text()='Search for Nodes']")));
 
         // Monitoring Menu
         clickMenuItem("Monitoring", "Applications");

@@ -1,7 +1,15 @@
 import InventorySearch from '@/containers/InventorySearch.vue'
+import API from '@/services'
+import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+const { showToast } = vi.hoisted(() => ({ showToast: vi.fn() }))
+vi.mock('@opennms/onms-ui', async importOriginal => ({
+  ...(await importOriginal<typeof import('@opennms/onms-ui')>()),
+  useOnmsToast: () => ({ showToast })
+}))
 
 const push = vi.fn()
 vi.mock('vue-router', () => ({
@@ -18,8 +26,8 @@ vi.mock('@/services', () => ({
 const mountPage = async () => {
   const wrapper = mount(InventorySearch, {
     global: {
-      plugins: [PrimeVue],
-      stubs: { BreadCrumbs: true }
+      plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn })],
+      stubs: { BreadCrumbs: true, RouterLink: true }
     }
   })
   await flushPromises()
@@ -48,11 +56,33 @@ describe('InventorySearch.vue', () => {
     expect(push).toHaveBeenCalledWith({ path: '/nodes', query: { nodename: 'core' }})
   })
 
-  it('drops a blank criterion so it does not over-filter', async () => {
+  it('refuses a blank criterion inline and clears the error once a value is entered', async () => {
     const wrapper = await mountPage()
     await wrapper.find('[data-test="criterion-iplike"]').trigger('submit')
 
-    expect(push).toHaveBeenCalledWith({ path: '/nodes', query: {}})
+    expect(push).not.toHaveBeenCalled()
+    expect(wrapper.find('[data-test="criterion-iplike"] .field-error').text()).toBe('Enter a value to search for.')
+
+    await wrapper.find('[data-test="iplike-input"]').setValue('10.*.*.*')
+    expect(wrapper.find('[data-test="criterion-iplike"] .field-error').exists()).toBe(false)
+
+    await wrapper.find('[data-test="criterion-iplike"]').trigger('submit')
+    expect(push).toHaveBeenCalledWith({ path: '/nodes', query: { iplike: '10.*.*.*' }})
+  })
+
+  it('asks for a selection when no location is chosen', async () => {
+    const wrapper = await mountPage()
+    await wrapper.find('[data-test="criterion-location"]').trigger('submit')
+
+    expect(push).not.toHaveBeenCalled()
+    expect(wrapper.find('[data-test="criterion-location"] .field-error').text()).toBe('Select a value to search for.')
+  })
+
+  it('reports a failed location load with a toast', async () => {
+    vi.mocked(API.getMonitoringLocations).mockResolvedValueOnce(false)
+    await mountPage()
+
+    expect(showToast).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }))
   })
 
   it('routes the system-attribute search with the mib2 query keys', async () => {

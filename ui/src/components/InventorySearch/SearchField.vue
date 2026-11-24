@@ -1,43 +1,43 @@
 <template>
-  <form class="search-field" :data-test="`criterion-${testId}`" @submit.prevent="emit('search')">
-    <div class="field-label">
-      <label :for="props.for">{{ label }}</label>
-      <OnmsIconButton
-        v-if="help"
-        :icon="InfoIcon"
-        iconSize="1rem"
-        variant="text"
-        :tooltip="help"
-        :title="help"
-        :aria-label="`Help: ${label}`"
-        class="field-help"
-        :data-test="`${testId}-help`"
-      />
-    </div>
-    <div class="field-control">
-      <slot />
-      <OnmsIconButton
-        :icon="SearchIcon"
-        variant="filled"
-        type="submit"
-        :aria-label="`Search by ${label.toLowerCase()}`"
-        class="field-search"
-        :data-test="`${testId}-search`"
-      />
-    </div>
+  <form
+    class="search-field"
+    :data-test="`criterion-${testId}`"
+    novalidate
+    @submit.prevent="emit('search')"
+  >
+    <FormField
+      :label="label"
+      :for="props.for"
+      :info="help"
+      :error="error"
+    >
+      <div class="field-control">
+        <slot />
+        <OnmsIconButton
+          :icon="SearchIcon"
+          variant="filled"
+          type="submit"
+          :aria-label="`Search by ${label.toLowerCase()}`"
+          class="field-search"
+          :data-test="`${testId}-search`"
+        />
+      </div>
+    </FormField>
   </form>
 </template>
 
 <script setup lang="ts">
 import { OnmsIconButton } from '@opennms/onms-ui'
-import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import SearchIcon from '@opennms/onms-ui/icons/action/Search.vue'
+
+import FormField from '@/components/Common/FormField.vue'
 
 const props = defineProps<{
   label: string
   for?: string
   // hover help describing what the field searches
   help?: string
+  error?: string
   testId: string
 }>()
 
@@ -48,25 +48,6 @@ const emit = defineEmits<{
 
 <style scoped lang="scss">
 .search-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-
-  .field-label {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-
-    label {
-      font-weight: 600;
-    }
-
-    .field-help {
-      // pull the small info icon tight against the label
-      margin: 0;
-    }
-  }
-
   .field-control {
     display: flex;
     align-items: stretch;
