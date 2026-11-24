@@ -49,10 +49,11 @@ const router = useRouter()
 const selectedResourceObject = ref<any>({})
 
 const resources = computed<Resource[]>(() => resourceStore.nodeResource.children?.resource || [])
+// No prototype, so a type labelled 'constructor' or '__proto__' gets its own group like any other.
 const groupedResourcesObject = computed<GroupedResourcesObject>(() => resources.value.reduce<GroupedResourcesObject>((groups, resource) => {
   (groups[resource.typeLabel] ??= []).push(resource)
   return groups
-}, {}))
+}, Object.create(null)))
 const resourceIsSelected = computed<boolean>(() => Object.values(selectedResourceObject.value).includes(true))
 
 const selectCheckbox = (resourceId: string) => selectedResourceObject.value[resourceId] = !selectedResourceObject.value[resourceId]

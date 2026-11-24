@@ -41,8 +41,9 @@ const isMissing = (value: unknown) => value === null || value === undefined || (
 
 /**
  * Ascending comparator for `Array.prototype.sort`: numbers numerically, strings by code unit (so
- * uppercase sorts before lowercase), and null, undefined and NaN after everything else. Matches the
- * ordering lodash's `orderBy`/`sortBy` used, which these replaced.
+ * uppercase sorts before lowercase), and null, undefined and NaN after everything else, keeping
+ * their input order among themselves. For values that are present this is the order lodash's
+ * `orderBy`/`sortBy` used; lodash also ordered the missing values (null, then undefined, then NaN).
  */
 export const compareValues = (a: unknown, b: unknown): number => {
   const aMissing = isMissing(a)
@@ -57,8 +58,8 @@ export const compareValues = (a: unknown, b: unknown): number => {
 
 /**
  * Comparator that orders objects by one property with `compareValues`, descending when `direction`
- * is `SORT.DESCENDING` ('desc') and ascending otherwise. Descending reverses the whole order, so
- * missing values come first.
+ * is `SORT.DESCENDING` ('desc') and ascending otherwise. Descending reverses the order of the values
+ * that are present and puts the missing ones first, still in their input order.
  *
  * `[...items].sort(compareBy('name'))`
  */
