@@ -178,10 +178,6 @@
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
 
-  <bean id="provisiondConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="file:${opennms.home}/etc/provisiond-configuration.xml" />
-  </bean>
-
   <bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
     <property name="schedulerName" value="provisiond" />
   </bean>
