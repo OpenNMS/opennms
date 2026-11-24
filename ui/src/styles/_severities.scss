@@ -42,8 +42,8 @@ $opacity: 0.2;
 $solid: 1;
 
 .critical {
-  background-color: utils.alpha(variables.$error, $solid);
-  color: var(variables.$error) !important;
+  background-color: utils.alpha(variables.$critical, $solid);
+  color: var(variables.$critical) !important;
 }
 
 .major {
@@ -68,8 +68,8 @@ $solid: 1;
 }
 
 .normal {
-  background-color: utils.alpha(variables.$success, $solid);
-  color: var(variables.$success) !important;
+  background-color: utils.alpha(variables.$normal, $solid);
+  color: var(variables.$normal) !important;
 }
 
 .unacknowledged,
@@ -85,8 +85,8 @@ $solid: 1;
 
 // with opacity
 .critical-color {
-  background-color: utils.alpha(variables.$error, $opacity);
-  color: var(variables.$error) !important;
+  background-color: utils.alpha(variables.$critical, $opacity);
+  color: var(variables.$critical) !important;
 }
 
 .major-color {
@@ -111,8 +111,8 @@ $solid: 1;
 }
 
 .normal-color {
-  background-color: utils.alpha(variables.$success, $opacity);
-  color: var(variables.$success) !important;
+  background-color: utils.alpha(variables.$normal, $opacity);
+  color: var(variables.$normal) !important;
 }
 
 .cleared-color,
@@ -124,4 +124,34 @@ $solid: 1;
 .unrecognized-color,
 .severity_undefined-color {
   border: 1px solid var(variables.$border-on-surface);
+}
+
+// A translucent tint of the severity color, for panels and banners (see severityTintClass in lib/severity)
+
+.severity-tint--critical {
+  background-color: color-mix(in srgb, var(--onms-critical) 20%, transparent);
+}
+
+.severity-tint--major {
+  background-color: color-mix(in srgb, var(--onms-major) 20%, transparent);
+}
+
+.severity-tint--minor {
+  background-color: color-mix(in srgb, var(--onms-minor) 20%, transparent);
+}
+
+.severity-tint--warning {
+  background-color: color-mix(in srgb, var(--onms-warning) 20%, transparent);
+}
+
+.severity-tint--normal {
+  background-color: color-mix(in srgb, var(--onms-normal) 20%, transparent);
+}
+
+.severity-tint--indeterminate {
+  background-color: color-mix(in srgb, var(--onms-indeterminate) 20%, transparent);
+}
+
+.severity-tint--cleared {
+  background-color: color-mix(in srgb, var(--onms-cleared) 20%, transparent);
 }
