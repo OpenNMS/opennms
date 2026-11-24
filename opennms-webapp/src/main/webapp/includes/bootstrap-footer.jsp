@@ -73,7 +73,7 @@
 
         <footer id="footer" class="card-footer">
             <p>
-                OpenNMS <a href="about/index.jsp">Copyright</a> &copy; 1999-2026
+                OpenNMS <a href="ui/index.html#/about">Copyright</a> &copy; 1999-2026
                 <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
                 OpenNMS&reg; is a registered trademark of
                 <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>

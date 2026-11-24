@@ -906,6 +906,10 @@ if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c StartAttachListener)" 
 	ADDITIONAL_MANAGER_OPTIONS+=("-XX:+StartAttachListener")
 fi
 
+if [ "$(echo "${ADDITIONAL_MANAGER_OPTIONS[@]}" | grep -c UseBASE64Intrinsics)" -eq 0 ]; then
+	ADDITIONAL_MANAGER_OPTIONS+=("-XX:-UseBASE64Intrinsics")
+fi
+
 if (( ${#ADDITIONAL_MANAGER_OPTIONS[@]} )); then
 	MANAGER_OPTIONS+=("${ADDITIONAL_MANAGER_OPTIONS[@]}")
 fi
@@ -1179,7 +1183,14 @@ case "$COMMAND" in
 		;;
 
 	ssh)
-		karafSshPort="$(grep "^sshPort" "${OPENNMS_HOME}/etc/org.apache.karaf.shell.cfg" | cut -d= -f2)"
+		karafSshPort="$(grep "^sshPort" "${OPENNMS_HOME}/etc/org.apache.karaf.shell.cfg" | cut -d= -f2 | tr -d "[:blank:]")"
+		# The container image sets sshPort to a Karaf env placeholder (env:OPENNMS_KARAF_SSH_PORT with a default); resolve it the way Karaf does
+		envPlaceholder='^\$\{env:([A-Za-z_][A-Za-z0-9_]*)(:-([^}]*))?\}$'
+		if [[ "$karafSshPort" =~ $envPlaceholder ]]; then
+			envName="${BASH_REMATCH[1]}"
+			envDefault="${BASH_REMATCH[3]}"
+			karafSshPort="${!envName:-${envDefault:-8101}}"
+		fi
 		karafUser="$(grep "^karaf.local.user" "${OPENNMS_HOME}/etc/system.properties" | cut -d= -f2 | tr -d "[:blank:]")"
 		printf 'Trying to establish SSH connection to OpenNMS Karaf Shell (%s@localhost:%s)... ' "$karafUser" "$karafSshPort"
 		ssh -o NoHostAuthenticationForLocalhost=yes -o HostKeyAlgorithms=+ssh-dss -l "$karafUser" -p "$karafSshPort" localhost

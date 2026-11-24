@@ -24,33 +24,64 @@
 // problems before submitting. These must stay in sync with UsersRestService,
 // GroupsRestService and OnCallRolesRestService (INVALID_NAME/INVALID_COMMENTS).
 
-const INVALID_NAME = /[&<>"`':/\\%?#\s]/
+const INVALID_NAME = /[&<>"`':/\\%?#\s\p{Z}\p{C}]/u
 const INVALID_COMMENTS = /[&<>"`']/
+// UserMgmtValidation.FREE_TEXT_LENGTH: comments longer than this are rejected, counted in code points once trimmed
+export const FREE_TEXT_LENGTH = 4096
 const EMAIL_SHAPE = /[^\s@]+@[^\s@]+/
+// ReservedNames.USER_IDS and GROUP_NAMES: the names no user, or no group, may have. The browser resolves . and ..
+// away in a URL path, and the others are endpoints of their own under /users or /groups
+export const RESERVED_USER_IDS = ['.', '..', 'item', 'available-roles']
+export const RESERVED_GROUP_NAMES = ['.', '..', 'item', 'available-categories']
+export const RESERVED_ONCALL_ROLE_NAMES = ['.', '..', 'item', 'calendar', 'schedule-settings']
 
 /**
- * Validates a user-id, group name or on-call role name.
+ * Validates a new user-id or group name, as UserMgmtValidation.validateName does.
  * Returns a problem description, or null when the value is acceptable.
  * Emptiness is not checked here; required-ness is a per-form concern.
+ *
+ * @param reserved the reserved names of its collection: RESERVED_USER_IDS or RESERVED_GROUP_NAMES
  */
-export const validateAdminName = (value: string, label: string): string | null => {
+export const validateAdminName = (value: string, label: string, reserved: string[]): string | null => {
   const trimmed = value.trim()
   if (!trimmed) {
     return null
   }
   if (INVALID_NAME.test(trimmed)) {
-    return `The ${label} must not contain markup, whitespace, or the characters : / \\ % ? #`
+    return `The ${label} must not contain markup, whitespace, control or invisible characters, or the characters : / \\ % ? #`
   }
-  if (trimmed === '.' || trimmed === '..') {
-    return `The ${label} must not be a dot segment.`
+  if (reserved.includes(trimmed)) {
+    return `The ${label} "${trimmed}" is reserved.`
   }
   return null
 }
 
-/** Group comments may not contain HTML markup characters. */
+/**
+ * A new or renamed user-id or group name that equals a reserved name ignoring case, but not exactly,
+ * would be mistaken for the system entry; the server refuses it. The exact name is not flagged here:
+ * it is a duplicate, which the server reports as such.
+ */
+export const validateReservedName = (value: string, reserved: string[], label: 'user-id' | 'group name'): string | null => {
+  const trimmed = value.trim()
+  const lower = trimmed.toLowerCase()
+  if (reserved.some(name => name.toLowerCase() === lower && name !== trimmed)) {
+    return `The ${label} "${trimmed}" is reserved.`
+  }
+  return null
+}
+
+/**
+ * User and group comments may not contain HTML markup characters nor exceed FREE_TEXT_LENGTH
+ * characters. Callers skip this for a stored value sent back unchanged, as the server does.
+ */
 export const validateAdminComments = (value: string): string | null => {
   if (value && INVALID_COMMENTS.test(value)) {
     return 'The comments must not contain the characters & < > " ` \''
+  }
+  // the server counts code points, not UTF-16 units. JS trim() also strips Unicode whitespace such as
+  // NBSP, which Java's String.trim() keeps, so the counts can differ for such padding; the server decides.
+  if (Array.from(value.trim()).length > FREE_TEXT_LENGTH) {
+    return `The comments must not be longer than ${FREE_TEXT_LENGTH} characters.`
   }
   return null
 }
@@ -65,6 +96,18 @@ export const isPathAddressable = (name: string): boolean => !/[/\\%]/.test(name)
 
 /** Field hint for a name that fails isPathAddressable. */
 export const UNADDRESSABLE_NAME_HINT = 'The name must not contain / \\ or %'
+
+// The mismatch message of a password and its confirmation, for the create form and the change-password
+// dialog. An empty confirmation is not a mismatch yet: the user has not typed it.
+export const validatePasswordConfirmation = (password: string, confirmation: string): string | null =>
+  confirmation && password !== confirmation ? 'Passwords do not match' : null
+
+/**
+ * The TUI PIN is dialled on a phone keypad: digits only, as UsersRestService checks a new or changed one.
+ * Returns a problem description, or null when the value is empty or acceptable.
+ */
+export const validateTuiPin = (value: string): string | null =>
+  /^\d*$/.test(value.trim()) ? null : 'The telephone PIN must contain only digits.'
 
 /**
  * Loose shape check: every comma-separated recipient must contain a
@@ -98,4 +141,29 @@ export const isValidNotifdDuration = (value: string | undefined | null): boolean
     return true
   }
   return /^\d+(\.\d+)?(us|ms|s|m|h|d)?$/i.test(trimmed)
+}
+
+// OnCallScheduleValidator.validateName: letters or digits first, then letters, marks, digits and _ . ( ) -,
+// with single spaces between words. The server does not trim, so neither does this.
+const ONCALL_ROLE_NAME = /^[\p{L}\p{Nd}][\p{L}\p{M}\p{Nd}_.()-]*(?: [\p{L}\p{M}\p{Nd}_.()-]+)*$/u
+const ONCALL_ROLE_NAME_LENGTH = 256
+
+/**
+ * Validates an on-call role name as OnCallScheduleValidator.validateName does.
+ * Returns a problem description, or null when the name is acceptable.
+ */
+export const validateOnCallRoleName = (value: string): string | null => {
+  if (!value) {
+    return 'An on-call role name is required.'
+  }
+  if (!ONCALL_ROLE_NAME.test(value)) {
+    return 'The on-call role name must start with a letter or digit and contain only letters, digits, the characters _ - . ( ) and single spaces between words.'
+  }
+  if (Array.from(value).length > ONCALL_ROLE_NAME_LENGTH) {
+    return `The on-call role name must not be longer than ${ONCALL_ROLE_NAME_LENGTH} characters.`
+  }
+  if (RESERVED_ONCALL_ROLE_NAMES.includes(value)) {
+    return `The on-call role name "${value}" is reserved.`
+  }
+  return null
 }

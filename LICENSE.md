@@ -3,8 +3,8 @@ OpenNMS License
 
 This file is part of OpenNMS(R).
 
-Copyright (C) 1999-2024 The OpenNMS Group, Inc.
-OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
+Copyright (C) 1999-2026 The OpenNMS Group, Inc.
+OpenNMS(R) is Copyright (C) 1999-2026 The OpenNMS Group, Inc.
 
 OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 
@@ -20,74 +20,47 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with OpenNMS(R).  If not, see:
-     http://www.gnu.org/licenses/
+     https://www.gnu.org/licenses/
 
 For more information contact:
     OpenNMS(R) Licensing <license@opennms.com>
-    http://www.opennms.com/
+    https://www.opennms.com/
 
 Special Cases
 =============
 
-The following files have special cases in their licensing.  For details,
-view the header in each file:
+The following files and directories have special cases in their licensing.
+For details, view the header in each file:
 
-* container/bridge/src/main/java/org/opennms/container/web/bridge/internal/BridgeActivator.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/AbstractActivator.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/AbstractHttpActivator.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/DispatcherServlet.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/EventDispatcher.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/HttpServiceController.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/context/ExtServletContext.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/context/ServletContextImpl.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/context/ServletContextManager.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/dispatch/Dispatcher.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/dispatch/FilterPipeline.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/dispatch/HttpFilterChain.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/dispatch/InvocationFilterChain.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/dispatch/NotFoundFilterChain.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/dispatch/ServletPipeline.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/handler/AbstractHandler.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/handler/FilterConfigImpl.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/handler/FilterHandler.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/handler/HandlerRegistry.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/handler/ServletConfigImpl.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/handler/ServletHandler.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/handler/ServletHandlerRequest.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/listener/AbstractListenerManager.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/listener/HttpSessionAttributeListenerManager.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/listener/HttpSessionListenerManager.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/listener/ServletContextAttributeListenerManager.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/listener/ServletRequestAttributeListenerManager.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/listener/ServletRequestListenerManager.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/logger/AbstractLogger.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/logger/ConsoleLogger.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/logger/LogServiceLogger.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/logger/NopLogger.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/logger/SystemLogger.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/service/DefaultHttpContext.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/service/HttpServiceFactory.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/service/HttpServiceImpl.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/service/ResourceServlet.java
-* container/bridge/src/main/java/org/opennms/container/web/felix/base/internal/util/MimeTypes.java
 * container/karaf/src/main/filtered-resources/etc/custom.properties
-* container/servlet/src/main/java/org/opennms/container/web/DispatcherTracker.java
-* container/servlet/src/main/java/org/opennms/container/web/ProxyFilter.java
 * container/servlet/src/main/java/org/opennms/container/web/WebAppListener.java
-* container/standalone/src/main/distribution/etc/startup.properties
-* container/standalone/src/main/distribution/etc/system.properties
-* container/standalone/src/main/filtered-resources/etc/custom.properties
+* core/ipc/sink/kafka/itests/src/test/java/org/apache/camel/blueprint/BlueprintCamelStateService.java
+* core/ipc/sink/kafka/server/src/main/java/org/opennms/core/ipc/sink/kafka/server/offset/KafkaOffsetProvider.java
+* core/jstl-support/src/main/java/org/apache/taglibs/standard/lang/
+* core/jstl-support/src/test/java/org/apache/taglibs/standard/lang/
 * core/snmp/impl-snmp4j/src/main/java/org/opennms/netmgt/snmp/snmp4j/Integer32IgnoreTooManyBytes.java
 * core/soa/src/main/java/org/opennms/core/soa/support/OnmsOSGiBridgeActivator.java
 * core/test-api/dns/src/main/java/org/opennms/core/test/dns/DNSServer.java
+* features/dnsresolver/netty/src/main/java/org/opennms/netmgt/dnsresolver/netty/CaffeineDnsCache.java
+* features/dnsresolver/netty/src/test/java/org/opennms/netmgt/dnsresolver/netty/CaffeineDnsCacheTest.java
+* features/events/syslog/src/test/java/org/opennms/netmgt/syslogd/SyslogClient.java
+* features/measurements/impl/src/main/java/org/opennms/netmgt/measurements/filters/impl/holtwinters/
 * features/nrtg/config.properties
+* features/osgi-jsr223/src/main/java/org/opennms/features/osgi/script/
+* features/prometheus-collector/src/main/java/org/hawkular/
+  (except agent/prometheus/types/MetricVisitor.java and
+  agent/prometheus/walkers/MetricCollectingWalker.java, which are
+  OpenNMS code under the AGPL)
+* features/prometheus-collector/src/test/java/org/hawkular/
+* features/reporting/jasper-reports-compiler/src/main/java/org/opennms/reporting/jasperreports/compiler/CustomJRJdtCompiler.java
+* features/vaadin-components/extender-service/src/main/java/org/opennms/vaadin/extender/Constants.java
+* features/vaadin-components/extender-service/src/main/java/org/opennms/vaadin/extender/VaadinResourceService.java
+* features/vaadin-components/extender-service/src/main/java/org/opennms/vaadin/extender/internal/Activator.java
+* features/vaadin-components/extender-service/src/main/java/org/opennms/vaadin/extender/internal/extender/PaxVaadinBundleTracker.java
+* features/vaadin-components/extender-service/src/main/java/org/opennms/vaadin/extender/internal/servlet/VaadinResourceServlet.java
 * integrations/opennms-vmware/src/main/java/org/opennms/netmgt/collectd/VmwareCimCollector.java
 * integrations/opennms-vmware/src/main/java/org/opennms/netmgt/poller/monitors/VmwareCimMonitor.java
 * integrations/opennms-vmware/src/main/java/org/opennms/protocols/vmware/VmwareViJavaAccess.java
 * integrations/opennms-vmware/src/test/java/org/opennms/netmgt/collectd/vmware/VmwareViJavaAccessTest.java
 * maven/conf/logging/simplelogger.properties
-* opennms-services/src/main/java/org/opennms/netmgt/xmlrpcd/TimeoutSecureXmlRpcClient.java
-* opennms-services/src/main/java/org/opennms/netmgt/xmlrpcd/TimeoutSecureXmlRpcTransport.java
-* opennms-services/src/main/java/org/opennms/netmgt/xmlrpcd/TimeoutSecureXmlRpcTransportFactory.java
-* opennms-services/src/test/java/org/opennms/netmgt/syslogd/SyslogClient.java
-
+* opennms-correlation/drools-correlation-engine/src/main/java/org/opennms/netmgt/correlation/drools/DroolsStreamUtils.java

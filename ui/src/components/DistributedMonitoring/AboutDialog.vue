@@ -1,5 +1,5 @@
 <template>
-  <AboutDialogButton title="Minions and Locations" class="about-dialog">
+  <AboutDialogButton title="Minions and Locations">
     <div class="help-section" data-test="about-minions">
       <div class="section-heading">Minions</div>
       <div class="section-title">Status</div>

@@ -1,0 +1,51 @@
+<template>
+  <div
+    v-if="hasIngressFlow(node) || hasEgressFlow(node)"
+    v-onms-tooltip.top="flowTooltipTitle(node)"
+    class="pointer"
+  >
+    <OnmsIcon v-if="hasIngressFlow(node)" :icon="ArrowBack" class="flow-icon" />
+    <br v-if="hasIngressFlow(node) && hasEgressFlow(node)" style="height: 40px" />
+    <OnmsIcon v-if="hasEgressFlow(node)" :icon="ArrowBack" class="flow-icon egress" />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { PropType } from 'vue'
+import { OnmsIcon } from '@opennms/onms-ui'
+import ArrowBack from '@opennms/onms-ui/icons/navigation/ArrowBack.vue'
+import { hasIngressFlow, hasEgressFlow } from '@/components/Nodes/utils'
+import { Node } from '@/types/index'
+
+defineProps({
+  node: {
+    required: true,
+    type: Object as PropType<Node>
+  }
+})
+
+const flowTooltipTitle = (node: Node) => {
+  if (hasIngressFlow(node) && hasEgressFlow(node)) {
+    return 'Has Ingress/Egress Flows'
+  } else if (hasIngressFlow(node)) {
+    return 'Has Ingress Flows'
+  } else if (hasEgressFlow(node)) {
+    return 'Has Egress Flows'
+  }
+  return ''
+}
+</script>
+
+<style lang="scss" scoped>
+.flow-icon {
+  font-size: 1.5em;
+
+  &.egress {
+    transform: scaleX(-1);
+  }
+}
+
+.pointer {
+  cursor: pointer;
+}
+</style>

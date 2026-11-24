@@ -24,7 +24,10 @@ import {
   getNodes,
   getNodesByFilterRule,
   getNodeById,
+  lookupNodeById,
+  resolveNodeId,
   getNodeAlarmStatus,
+  getNodeNotificationStatus,
   getNodeCriticalPath,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
@@ -45,6 +48,14 @@ import {
   listMonitoringLocations,
   updateMonitoringLocation
 } from './monitoringLocationAdminService'
+import {
+  createApplication,
+  deleteApplication,
+  getApplicationMembers,
+  listApplicationSummaries,
+  searchServiceCandidates,
+  updateApplicationMembers
+} from './applicationAdminService'
 import { getServiceTypes } from './serviceTypes'
 import { getProvisionDService, putProvisionDService } from './configurationService'
 import {
@@ -91,13 +102,34 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import { addZenithRegistration, getZenithRegistrations } from './zenithConnectService'
+import {
+  createThresholdGroup,
+  createThreshdPackage,
+  deleteThresholdGroup,
+  deleteThreshdPackage,
+  downloadThresholdingConfiguration,
+  downloadThreshdConfiguration,
+  getThresholdGroup,
+  getThresholdGroups,
+  getThresholdingMetadata,
+  getThreshdConfiguration,
+  getThreshdPackage,
+  getThreshdPackages,
+  updateThresholdGroup,
+  updateThreshdConfiguration,
+  updateThreshdPackage,
+  uploadThresholdingConfiguration,
+  uploadThreshdConfiguration
+} from './thresholdConfigurationService'
 import { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
+import { getAbout } from './aboutService'
 import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from './wsmanAdminService'
 import {
   createManagedUser,
   deleteManagedUser,
   getAvailableUserRoles,
+  getManagedUserSummaries,
   getManagedUsers,
   renameManagedUser,
   setManagedUserPassword,
@@ -144,19 +176,47 @@ import {
 import {
   createManagedGroup,
   deleteManagedGroup,
+  getAvailableGroupCategories,
   getGroupMemberCandidates,
   getManagedGroups,
   renameManagedGroup,
   updateManagedGroup
 } from './groupAdminService'
+import {
+  createManagedOnCallRole,
+  deleteManagedOnCallRole,
+  getManagedOnCallRoles,
+  getOnCallScheduleSettings,
+  previewOnCallCalendar,
+  renameManagedOnCallRole,
+  updateManagedOnCallRole
+} from './onCallRoleAdminService'
 
 export default {
+  createThresholdGroup,
+  createThreshdPackage,
+  deleteThresholdGroup,
+  deleteThreshdPackage,
+  downloadThresholdingConfiguration,
+  downloadThreshdConfiguration,
+  getThresholdGroup,
+  getThresholdGroups,
+  getThresholdingMetadata,
+  getThreshdConfiguration,
+  getThreshdPackage,
+  getThreshdPackages,
+  updateThresholdGroup,
+  updateThreshdConfiguration,
+  updateThreshdPackage,
+  uploadThresholdingConfiguration,
+  uploadThreshdConfiguration,
   getMinionNodeIds,
   getCoreVersion,
   listMinions,
   deleteMinion,
   getMinion,
   search,
+  getAbout,
   getSystemReportPlugins,
   getSystemReportFormatters,
   generateSystemReport,
@@ -167,7 +227,10 @@ export default {
   getEvents,
   modifyAlarm,
   getNodeById,
+  lookupNodeById,
+  resolveNodeId,
   getNodeAlarmStatus,
+  getNodeNotificationStatus,
   getNodeCriticalPath,
   getNodeOutages,
   getOutages,
@@ -193,6 +256,12 @@ export default {
   getNodeCountByLocation,
   getPerspectiveOutageCount,
   listMonitoringLocations,
+  listApplicationSummaries,
+  createApplication,
+  deleteApplication,
+  getApplicationMembers,
+  updateApplicationMembers,
+  searchServiceCandidates,
   updateMonitoringLocation,
   getLog,
   getLogs,
@@ -241,6 +310,7 @@ export default {
   createManagedUser,
   deleteManagedUser,
   getAvailableUserRoles,
+  getManagedUserSummaries,
   getManagedUsers,
   renameManagedUser,
   setManagedUserPassword,
@@ -272,10 +342,18 @@ export default {
   validateNotificationRule,
   createManagedGroup,
   deleteManagedGroup,
+  getAvailableGroupCategories,
   getGroupMemberCandidates,
   getManagedGroups,
   renameManagedGroup,
   updateManagedGroup,
+  createManagedOnCallRole,
+  deleteManagedOnCallRole,
+  getManagedOnCallRoles,
+  getOnCallScheduleSettings,
+  previewOnCallCalendar,
+  renameManagedOnCallRole,
+  updateManagedOnCallRole,
   getWsmanConfig,
   getWsmanDataCollection,
   getWsmanStatus,

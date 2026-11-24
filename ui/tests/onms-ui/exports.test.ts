@@ -73,10 +73,12 @@ const EXPECTED_RUNTIME_EXPORTS = [
   'OnmsTextarea',
   'OnmsTieredMenu',
   'OnmsToastHost',
+  'OnmsToggleButton',
   'OnmsToggleSwitch',
   'OnmsTooltip',
   'OnmsVirtualScroller',
   'releaseActiveToast',
+  'toTimeOnlyDate',
   'useOnmsChromeless',
   'useOnmsChromelessHost',
   'useOnmsToast'

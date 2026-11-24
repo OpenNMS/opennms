@@ -148,6 +148,7 @@ export default tseslint.config(
           { name: 'primevue/tieredmenu', message: 'Use OnmsTieredMenu from @opennms/onms-ui. SideMenu.vue drives TieredMenu internals directly and stays inline-disabled.' },
           { name: 'primevue/toast', message: 'Use OnmsToastHost / useOnmsToast from @opennms/onms-ui.' },
           { name: 'primevue/toasteventbus', message: 'Use useOnmsToast from @opennms/onms-ui.' },
+          { name: 'primevue/togglebutton', message: 'Use OnmsToggleButton from @opennms/onms-ui.' },
           { name: 'primevue/toggleswitch', message: 'Use OnmsToggleSwitch from @opennms/onms-ui.' },
           { name: 'primevue/tooltip', message: 'Use the OnmsTooltip directive from @opennms/onms-ui, registered as v-onms-tooltip.' },
           { name: 'primevue/useconfirm', message: 'Use OnmsConfirmationDialog from @opennms/onms-ui — confirmation is prop-driven, not a service.' },

@@ -18,6 +18,23 @@ never caught by the build.
 build describes whatever the ReST annotations now say. To read a document without
 a running instance, unpack it from this module's jar.
 
+== What the documents describe
+
+Each document has two sources:
+
+* The CXF resource classes in the webapp, found by scanning the base packages that
+  `applicationContext-cxf-rest-v*.xml` also scans.
+* The OSGi ReST services that a Blueprint `<service>` publishes into the same path with an
+  `application-path` property: `/rest` for v1, `/api/v2` for v2. `OpenApiDocGenerator.Api`
+  lists their interfaces. `OpenApiResourceCoverageTest` reads the Blueprint files and fails
+  when a published service is neither listed nor in its `NOT_YET_DOCUMENTED` set.
+
+Karaf serves the OSGi services with Jersey and Jackson 2, but the generator models every schema
+the way the webapp's Jackson 1 / JAXB provider serializes it. That is correct only for OSGi DTOs
+with no JAXB or Jackson 1 annotations. Jackson 2 writes a `Date` as epoch milliseconds, so
+annotate each `Date` property of an OSGi DTO `@Schema(type = "integer", format = "int64")`.
+`OpenApiDocsContentTest` fails when an OSGi schema has a `date-time` property.
+
 == How the documents are served
 
 `servers[0].url` holds the literal `__OPENNMS_BASE_URI__`, standing in for the

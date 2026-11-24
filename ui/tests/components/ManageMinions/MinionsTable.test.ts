@@ -1,7 +1,7 @@
 import MinionsTable from '@/components/ManageMinions/MinionsTable.vue'
 import { useMinionAdminStore } from '@/stores/minionAdminStore'
 import { createTestingPinia } from '@pinia/testing'
-import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
+import { flushPromises, mount, RouterLinkStub, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -36,7 +36,7 @@ const mountTable = (props: Record<string, unknown> = {}) => {
     props: { now: NOW, ...props },
     global: {
       plugins: [PrimeVue, createTestingPinia({ createSpy: vi.fn, stubActions: true })],
-      stubs: { MinionDeleteDialog: DeleteDialogStub, TableCard: { template: '<div><slot /></div>' }},
+      stubs: { RouterLink: RouterLinkStub, MinionDeleteDialog: DeleteDialogStub, TableCard: { template: '<div><slot /></div>' }},
       directives: { 'onms-tooltip': TooltipStub }
     }
   })
@@ -91,11 +91,10 @@ describe('MinionsTable.vue', () => {
     expect(ctx.wrapper.find('[data-test="empty-list"]').text()).toContain('Failed to load minions')
   })
 
-  it('has no Edit action or editor dialog, only Delete', async () => {
+  it('has no Edit action, only Delete', async () => {
     ctx.store.minions = [minion('m1', { status: 'down' })] as any
     await ctx.wrapper.vm.$nextTick()
     expect(ctx.wrapper.find('[data-test="edit-minion-button"]').exists()).toBe(false)
-    expect(ctx.wrapper.findComponent({ name: 'MinionEditorDialog' }).exists()).toBe(false)
     const del = ctx.wrapper.find('[data-test="delete-minion-button"]')
     expect(del.exists()).toBe(true)
     expect(del.attributes('aria-label')).toBe('Delete m1')
@@ -107,7 +106,7 @@ describe('MinionsTable.vue', () => {
     await ctx.wrapper.vm.$nextTick()
     const link = ctx.wrapper.find('[data-test="minion-node-link"]')
     expect(link.exists()).toBe(true)
-    expect(link.attributes('href')).toContain('element/node.jsp?node=42')
+    expect(link.findComponent(RouterLinkStub).props('to')).toEqual({ name: 'Node Details', params: { id: '42' }})
   })
 
   it('renders the status as an uppercase tag, unrecognised and missing states in the unknown colour', async () => {

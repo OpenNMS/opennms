@@ -615,7 +615,7 @@ public final class BroadcastEventProcessor implements EventListener {
                             }
                         } catch (Throwable e) {
                             LOG.error("Could not get destination path for {}, please check the destinationPath.xml for errors.", notification.getDestinationPath(), e);
-                            return;
+                            continue;
                         }
                         final String initialDelay = path.getInitialDelay().orElse(Path.DEFAULT_INITIAL_DELAY);
                         Target[] targets = path.getTargets().toArray(new Target[0]);
@@ -627,11 +627,11 @@ public final class BroadcastEventProcessor implements EventListener {
                             if (getUserCount(targets, escalations) == 0) {
                                 LOG.warn("The path {} assigned to notification {} has no targets or escalations specified, not sending notice.", notification.getDestinationPath(), notification.getName());
                                 sendNotifEvent(EventConstants.NOTIFICATION_WITHOUT_USERS, "The path " + notification.getDestinationPath() + " assigned to notification " + notification.getName() + " has no targets or escalations specified.", "The message of the notification is as follows: " + paramMap.get(NotificationManager.PARAM_TEXT_MSG));
-                                return;
+                                continue;
                             }
                         } catch (Throwable e) {
                             LOG.error("Failed to get count of users in destination path {}, exiting notification.", notification.getDestinationPath(), e);
-                            return;
+                            continue;
                         }
 
                         try {
@@ -639,7 +639,7 @@ public final class BroadcastEventProcessor implements EventListener {
                             getNotificationManager().insertNotice(noticeId, paramMap, queueID, notification);
                         } catch (SQLException e) {
                             LOG.error("Failed to enter notification into database, exiting this notification", e);
-                            return;
+                            continue;
                         }
 
                         long startTime = System.currentTimeMillis() + TimeConverter.convertToMillis(initialDelay);

@@ -42,6 +42,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.model.OnmsUser;
+import org.opennms.smoketest.ui.NodeDetailsPage;
 import org.openqa.selenium.By;
 
 /**
@@ -100,8 +101,7 @@ public class ServicePageIT extends OpenNMSSeleniumIT {
     }
 
     private void openServicePage() {
-        driver.get(buildUrlInternal("element/node.jsp?node=" + NODE));
-        findElementByLink("ICMP").click();
+        new NodeDetailsPage(this).open(NODE).clickService("ICMP");
         // every user sees the Meta-Data link, so the service page has loaded
         findElementByLink("Meta-Data");
     }
@@ -117,7 +117,8 @@ public class ServicePageIT extends OpenNMSSeleniumIT {
         JAXB.marshal(user, xml);
         sendPost("rest/users?hashPassword=true", xml.toString(), 201);
 
-        // UserFactory checks users.xml for changes at most once per second, so a new user cannot log in at once.
+        // The user manager checks the database for changes at most once per second, so a new user cannot log in
+        // at once.
         await().atMost(30, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS)
                 .until(() -> given().auth().preemptive().basic(username, password)
                         .get(buildUrlExternal("rest/whoami")).getStatusCode() != 401);

@@ -280,14 +280,16 @@ public class EventQueryServlet extends HttpServlet {
         // be lenient to handle the inputs easier
         // read the java.util.Calendar javadoc for more info
         cal.setLenient(true);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
 
-        // hour, from 1-12
+        // hour, from 1-12; Calendar.HOUR is 0-11, so 12 AM/PM must map to 0
         String hourString = WebSecurityUtils.sanitizeString(request.getParameter(prefix + "hour"));
         if (hourString == null) {
             throw new MissingParameterException(prefix + "hour", this.getRequiredDateFields(prefix));
         }
 
-        cal.set(Calendar.HOUR, WebSecurityUtils.safeParseInt(hourString));
+        cal.set(Calendar.HOUR, WebSecurityUtils.safeParseInt(hourString) % 12);
 
         // minute, from 0-59
         String minuteString = WebSecurityUtils.sanitizeString(request.getParameter(prefix + "minute"));

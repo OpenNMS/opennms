@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest'
 import { createSnmpCollectionSource, findMibGroupsByName, findSystemDefsByName } from '@/services/snmpDataCollectionService'
 import { v2 } from '@/services/axiosInstances'
 
@@ -37,6 +37,10 @@ vi.mock('@/services/axiosInstances', () => ({
 describe('snmpDataCollectionService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   describe('createSnmpCollectionSource', () => {
@@ -78,7 +82,6 @@ describe('snmpDataCollectionService', () => {
         'Error creating SNMP data collection source:',
         expect.any(Error)
       )
-      consoleSpy.mockRestore()
     })
   })
 
@@ -104,9 +107,11 @@ describe('snmpDataCollectionService', () => {
     })
 
     it('rethrows other errors', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.get).mockRejectedValue({ response: { status: 500 }})
 
       await expect(findMibGroupsByName('mib2-interfaces')).rejects.toEqual({ response: { status: 500 }})
+      expect(consoleError).toHaveBeenCalled()
     })
   })
 })

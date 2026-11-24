@@ -38,6 +38,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Application Status")
           .breadcrumb("Application Status")
@@ -125,9 +126,7 @@
             <%
                 for(final Map.Entry<OnmsMonitoredService, Map<String, Double>> serviceEntry : statuses.entrySet()) {
             %>
-            <c:url var="nodeLink" value="element/node.jsp">
-                <c:param name="node" value="<%= WebSecurityUtils.sanitizeString(serviceEntry.getKey().getIpInterface().getNode().getNodeId())%>"/>
-            </c:url>
+            <c:url var="nodeLink" value='<%= ElementConstants.NODE_DETAILS_URI + WebSecurityUtils.sanitizeString(serviceEntry.getKey().getIpInterface().getNode().getNodeId()) %>'/>
             <c:url var="interfaceLink" value="element/interface.jsp">
                 <c:param name="node" value="<%= WebSecurityUtils.sanitizeString(serviceEntry.getKey().getIpInterface().getNode().getNodeId())%>"/>
                 <c:param name="intf" value="<%= WebSecurityUtils.sanitizeString(serviceEntry.getKey().getIpAddressAsString()) %>"/>

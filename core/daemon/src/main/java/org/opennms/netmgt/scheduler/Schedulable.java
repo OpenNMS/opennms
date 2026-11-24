@@ -34,16 +34,17 @@ public abstract class Schedulable implements ReadyRunnable {
     private LegacyScheduler m_scheduler;
 
     /**
-     * The interval, default value 30 minutes
+     * The interval, default value 30 minutes.
+     * Volatile: written by reload/event threads, read by scheduler threads.
      */
-    private long m_poll_interval = 1800000;
+    private volatile long m_poll_interval = 1800000;
     /**
      * The initial sleep time, default value 10 minutes
      */
     private long m_initial_sleep_time = 600000;
 
-    private boolean m_suspendCollection = false;
-    private boolean m_unschedule = false;
+    private volatile boolean m_suspendCollection = false;
+    private volatile boolean m_unschedule = false;
     
     /**
      * Constructs a new Schedulable

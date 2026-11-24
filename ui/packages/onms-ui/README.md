@@ -169,11 +169,17 @@ Where these diverge from PrimeVue, deliberately:
   top-level items in a row, each opening its nested `items` as a dropdown. It
   takes the same `OnmsMenuItem` model, forwards `#item`, and adds `#start` and
   `#end` for content around the items. An item with `target: '_blank'` gets
-  `rel="noopener noreferrer"`, which PrimeVue does not add.
+  `rel="noopener noreferrer"`, which PrimeVue does not add. `collapsed` forces
+  the hamburger button (`true`) or the full row (`false`) for a bar whose room
+  depends on its row rather than on the viewport; left out, PrimeVue switches at
+  its 960px viewport breakpoint.
 - **`OnmsPaginator`** (added later, NMS-20303) is paging controls on their own,
   for content that is not an `OnmsTable` (which has its own). `page` emits the
   same `OnmsTablePageEvent` as `OnmsTable`, rather than PrimeVue's
-  `PageState`.
+  `PageState`. `pageReport` adds text after the rows-per-page dropdown, with
+  PrimeVue's placeholders (`{first}`, `{last}`, `{totalRecords}`, ...), for a
+  page whose unit is not one row each, e.g.
+  `'Interfaces {first}–{last} of {totalRecords}'`.
 - **`OnmsColorPicker`** is a composite, not a thin wrapper: a swatch grid in an
   `OnmsPopover` with PrimeVue's spectrum picker behind a "Custom" toggle, since
   4.5.5 offers no swatch surface. `format` is baked to `'hex'` and the value
@@ -186,6 +192,15 @@ Where these diverge from PrimeVue, deliberately:
   (`OnmsTable`'s `virtualScrollItemSize` remains the table case). Its `#item`
   slot exposes `{ item, index }` rather than forwarding PrimeVue's internal
   `options` bookkeeping.
+- **`OnmsToggleButton`** (added later, NMS-20449) is one on/off button that
+  stays pressed, for a set of choices where more than one can be on (several
+  of them side by side) or none at all. `label` is the text for both states;
+  `onLabel` / `offLabel` override it per state. Without any of them the
+  button has no text, where PrimeVue would show "Yes" / "No". `onIcon` /
+  `offIcon` take an icon component rather than PrimeVue's CSS class string.
+  The icon gets `onms-toggle-button-icon` plus `--on` / `--off`, and the
+  wrapper leaves its color to the consumer. `change` emits the new value, not
+  the DOM event, matching `OnmsSelectButton`.
 
 ## Icons
 
@@ -202,9 +217,9 @@ import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 // then: <OnmsIcon :icon="DeleteIcon" />
 ```
 
-The 12 category directories (`account`, `action`, `communication`, `content`,
+The 13 category directories (`account`, `action`, `communication`, `content`,
 `datavis`, `file`, `hardware`, `medical`, `navigation`, `network`,
-`notification`, `status`) are part of the path. They matter: several basenames
+`notification`, `severity`, `status`) are part of the path. They matter: several basenames
 (`Server`, `Cloud`, `Security`, `Group`, `Build`, `Code`, `Cancel`, …) appear in
 more than one category, so the category is what disambiguates them.
 
@@ -366,6 +381,20 @@ call site holding its bounds in a nullable ref. `TimeControls` relies on this:
 it cross-wires its two pickers (`:maxDate="endDateRef"` / `:minDate="startDateRef"`)
 so a range cannot invert, and both refs start out null.
 
+### Time-only values and daylight saving (NMS-20534)
+
+A time-only value is a `Date` whose date part means nothing, but PrimeVue builds
+a typed time, and a spinner step on an empty picker, on **today's** date. On the
+day the browser's clocks go forward, 02:30 does not exist and became 03:30. In
+time-only mode the wrapper (a subclass of PrimeVue's DatePicker, still named
+`DatePicker`) puts those values on a fixed day instead: 10 January 2000, on which
+no time zone changed its clocks.
+
+A spinner step on a picker that already has a value keeps that value's date, so
+a consumer should start its time-only values on the same day. The barrel exports
+the rule as `toTimeOnlyDate(hours, minutes, seconds = 0)`: use it rather than
+`new Date()` or a day of your own.
+
 ## Runtime exposure for plugins
 
 This package's barrel export (`packages/onms-ui/src/index.ts`) **is** the
@@ -397,7 +426,7 @@ component-library version the host is actually running.
 For the full plugin-developer walkthrough — the externals contract, the
 module contract (`window[extensionId]`, derived from the module URL's
 second-to-last path segment), the version handshake, and the dev harness
-(`VITE_EXAMPLE_PLUGIN=true pnpm dev`, then open `/example-plugin`) — see
+(`VITE_EXAMPLE_PLUGIN=true pnpm dev`, then open `/opennms/ui/#/example-plugin`) — see
 [`packages/onms-ui-example-plugin`](../onms-ui-example-plugin/README.md), a
 real externalized plugin built with the toolchain a third-party author would
 use.
@@ -414,7 +443,11 @@ is in a text field. The state is module-level, like `useOnmsToast`, so host
 and plugins share it through `window.OnmsUI`.
 
 `useOnmsChromelessHost()` is for the host only: `App.vue` calls it once to
-sync routes marked `meta.chromeless` and install the Escape handler.
+sync routes marked `meta.chromeless` and install the Escape handler. Its optional
+third argument, `{ isForced: () => boolean }`, is for embedding the app in an
+iframe: it is re-read on each route change, and while it returns true the app
+is always chromeless and both Escape and `exitChromeless()` are ignored.
+Without it, behavior is unchanged.
 
 ## Sanctioned direct-PrimeVue exceptions
 

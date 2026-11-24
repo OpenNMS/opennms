@@ -67,7 +67,7 @@ public class WhoamiRestService {
         filtered against the set OpenNMS knows about, so a role granted by an external authentication
         source that OpenNMS does not define is not listed.
 
-        `internal` says whether the principal is defined in users.xml. `email` and `fullName` are present
+        `internal` says whether the principal is a user of OpenNMS (stored in its database). `email` and `fullName` are present
         only for internal users, and only when the corresponding field is set.""",
             operationId = "whoami"
     )
@@ -100,7 +100,7 @@ public class WhoamiRestService {
         userInfo.put("roles", userRoles);
         userInfo.put("internal", false);
 
-        // Check if the user exists in users.xml, if so it is an internal
+        // Check if the user exists in the user data, if so it is an internal
         // user and email, full name, etc. can be populated
         try {
             final OnmsUser onmsUser = userManager.getOnmsUser(userName);

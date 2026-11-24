@@ -17,15 +17,14 @@ You must have the following before you start to use the Prometheus RemoteWrite p
 
 == Deployment
 
+{page-component-title} includes the Prometheus RemoteWrite plugin.
+You do not need to download the plugin.
+The plugin is not active until you complete the steps in this section.
+
 To use the Prometheus RemoteWrite plugin, follow these steps:
 
 . Start your Prometheus remote-write compatible time series store (see the https://docs.victoriametrics.com/[VictoriaMetrics documentation], https://grafana.com/docs/mimir/latest/[Mimir documentation], or https://cortexmetrics.io/docs/getting-started/[Cortex documentation] for instructions).
 If your aim is to get up to speed quickly in a test environment, you can use Docker Compose to deploy a https://github.com/opennms-forge/stack-play/tree/master/standalone-cortex-minimal[minimal, standalone Cortex node].
-. Download the plugin's `.kar` file from https://github.com/OpenNMS-Plugins/opennms-prometheus-remotewrite-plugin/releases[GitHub].
-. Copy the `.kar` file into `$\{OPENNMS_HOME}/deploy`.
-ifeval::["{page-component-title}" == "Horizon"]
-If you run {page-component-title} in a container, see xref:deployment:core/install.adoc#docker-install-plugins[Install plugins from KAR files].
-endif::[]
 . Enable and configure time series database plugins in `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`:
 +
 [source, properties]
@@ -90,9 +89,29 @@ NOTE: The URL paths shown above are for VictoriaMetrics single-node. For Cortex,
 . Edit or create `$\{OPENNMS_HOME}/etc/featuresBoot.d/prometheus-remotewrite.boot` to configure the plugin to remain installed after {page-component-title} restarts:
 +
 [source, properties]
-opennms-plugins-prometheus-remotewrite wait-for-kar=opennms-prometheus-remotewrite-plugin
+opennms-plugins-prometheus-remotewrite
 
 . Restart the {page-component-title} service.
+
+[[prometheus-remotewrite-upgrade]]
+=== Upgrade from a manual installation
+
+Earlier releases did not include the plugin.
+If you copied the plugin's `.kar` file into `$\{OPENNMS_HOME}/deploy`, do these steps after the upgrade:
+
+. Remove the plugin's `.kar` file from `$\{OPENNMS_HOME}/deploy`.
+. Remove `wait-for-kar=opennms-prometheus-remotewrite-plugin` from `$\{OPENNMS_HOME}/etc/featuresBoot.d/prometheus-remotewrite.boot`.
++
+If the boot file has the old Cortex names, replace the line `opennms-plugins-cortex-tss wait-for-kar=opennms-cortex-tss-plugin` with this line:
++
+[source, properties]
+opennms-plugins-prometheus-remotewrite
+
+. Restart the {page-component-title} service.
+
+If the `.kar` file stays in `$\{OPENNMS_HOME}/deploy`, two versions of the plugin are available.
+{page-component-title} then starts the highest version, which can be the version from the `.kar` file.
+Remove the `.kar` file to make sure that the version from the release is in use.
 
 == Validation
 

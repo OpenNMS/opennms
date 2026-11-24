@@ -1,6 +1,5 @@
 import StagedReorderList from '@/components/Common/StagedReorderList.vue'
 import { EventConfigSource } from '@/types/eventConfig'
-import { OnmsTooltip } from '@opennms/onms-ui'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -83,7 +82,6 @@ describe('StagedReorderList.vue', () => {
       },
       global: {
         plugins: [PrimeVue],
-        directives: { 'onms-tooltip': OnmsTooltip },
         stubs
       }
     })

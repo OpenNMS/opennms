@@ -66,6 +66,13 @@ public class XmlSystemReportFormatter extends AbstractSystemReportFormatter impl
     }
 
     @Override
+    public void begin() {
+        super.begin();
+        // a report that aborted before end() must not leave its handler for the next one
+        m_handler = null;
+    }
+
+    @Override
     public void write(final SystemReportPlugin plugin) {
         if (plugin.getFullOutputOnly()) return;
         
@@ -131,6 +138,8 @@ public class XmlSystemReportFormatter extends AbstractSystemReportFormatter impl
             } catch (final Exception e) {
                 LOG.warn("Unable to end document.", e);
             }
+            // this instance is reused; the next report must not write to this report's stream
+            m_handler = null;
         }
     }
 }

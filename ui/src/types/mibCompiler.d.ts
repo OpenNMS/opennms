@@ -44,6 +44,21 @@ export interface MibEventsPreview extends MibParseResult {
   eventCount?: number
   suggestedFileName?: string
   eventsXml?: string
+  /** generated UEIs that other event sources already define, mapped to those sources in evaluation order */
+  existingUeis?: Record<string, MibEventSource[]>
+}
+
+/** an event source that already defines a generated UEI */
+export interface MibEventSource {
+  name: string
+  /** whether the source has an enabled definition of the UEI; disabled definitions are not loaded */
+  enabled: boolean
+}
+
+/** a generated UEI and the other event sources that define it */
+export interface MibDuplicateUei {
+  uei: string
+  sources: MibEventSource[]
 }
 
 export interface MibDataCollectionPreview extends MibParseResult {

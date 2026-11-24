@@ -96,7 +96,7 @@ public class NodeGeolocationSearchProvider implements SearchProvider {
                         new Matcher("Country", geolocation.getCountry()),
                         new Matcher("City", geolocation.getCity()),
                         new Matcher("State", geolocation.getState()),
-                        new Matcher("Zip", geolocation.getZip()),
+                        new Matcher("Postal Code", geolocation.getZip()),
                         new Matcher("Address 1", geolocation.getAddress1()),
                         new Matcher("Address 2", geolocation.getAddress2())
                 );

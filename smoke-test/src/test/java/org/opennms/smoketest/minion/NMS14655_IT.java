@@ -33,6 +33,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opennms.smoketest.containers.MinionContainer;
+import org.opennms.smoketest.junit.ContainerRule;
 import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.MinionProfile;
 import org.opennms.smoketest.stacks.StackModel;
@@ -46,7 +47,6 @@ import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 public class NMS14655_IT {
     private static final Logger LOG = LoggerFactory.getLogger(NMS14655_IT.class);
 
-    @ClassRule
     public static final MinionContainer MINION_CONTAINER = new MinionContainer(StackModel.newBuilder().build(), MinionProfile.newBuilder()
             .withId("00000000-0000-0000-0000-000000ddba11")
             .withLocation("Fulda")
@@ -58,6 +58,9 @@ public class NMS14655_IT {
                 }
             })
             .build());
+
+    @ClassRule
+    public static final ContainerRule MINION_RULE = ContainerRule.of(MINION_CONTAINER);
 
     @Test
     public void verifyStartup() {

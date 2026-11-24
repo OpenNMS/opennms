@@ -24,6 +24,7 @@ package org.opennms.netmgt.dao.hibernate;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +57,19 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
     public OnmsAlarm findByReductionKey(String reductionKey) {
         String hql = "from OnmsAlarm as alarms where alarms.reductionKey = ?1";
         return super.findUnique(hql, reductionKey);
+    }
+
+    @Override
+    public Map<OnmsSeverity, Long> getUnacknowledgedCountsBySeverity(final int nodeId) {
+        final List<Object[]> rows = findObjects(Object[].class,
+                "SELECT alarm.severity, count(*) FROM OnmsAlarm AS alarm "
+                + "WHERE alarm.node.id = ?1 AND alarm.alarmAckTime IS NULL "
+                + "GROUP BY alarm.severity", nodeId);
+        final Map<OnmsSeverity, Long> counts = new EnumMap<>(OnmsSeverity.class);
+        for (final Object[] row : rows) {
+            counts.put((OnmsSeverity) row[0], ((Number) row[1]).longValue());
+        }
+        return counts;
     }
 
     /** {@inheritDoc} */

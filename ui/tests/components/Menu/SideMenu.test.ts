@@ -70,10 +70,9 @@ const testMainMenu = {
       id: 'info',
       name: 'Info',
       url: null,
-      locationMatch: null,
       roles: null,
       items: [
-        { id: 'nodes', name: 'Nodes', url: 'nodelist.htm', locationMatch: null, roles: null }
+        { id: 'nodes', name: 'Nodes', url: 'nodelist.htm', roles: null }
       ]
     },
     {
@@ -81,7 +80,6 @@ const testMainMenu = {
       name: 'Topology',
       action: 'link',
       url: 'topology.jsp',
-      locationMatch: null,
       roles: null
     }
   ]
