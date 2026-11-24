@@ -57,12 +57,16 @@ describe('daemonService', () => {
     // preference; the set is the hand-maintained union of handler subscriptions
     const names = RELOADABLE_DAEMONS.map(d => d.name)
     expect(new Set(names).size).toBe(names.length)
-    for (const name of ['Ackd', 'Alarmd', 'Bsmd', 'Collectd', 'Discovery', 'Enlinkd', 'Eventd', 'Notifd',
-      'PerspectivePoller', 'Pollerd', 'Provisiond', 'Reportd', 'Scriptd', 'Statsd', 'Syslogd',
-      'Telemetryd', 'Threshd', 'Ticketd', 'Tl1d', 'Translator', 'Trapd', 'Vacuumd']) {
-      expect(names).toContain(name)
-    }
+    expect([...names].sort()).toEqual(['Ackd', 'Alarmd', 'Bsmd', 'Collectd', 'Discovery', 'Enlinkd', 'Eventd',
+      'Notifd', 'PerspectivePoller', 'Pollerd', 'Provisiond', 'Scriptd', 'SnmpPoller', 'Syslogd', 'Telemetryd',
+      'Threshd', 'Ticketd', 'Translator', 'Trapd', 'Vacuumd'])
     const labels = RELOADABLE_DAEMONS.map(d => d.label)
     expect(labels).toEqual([...labels].sort((a, b) => a.localeCompare(b)))
+  })
+
+  it('flags the daemons whose reload handler does not report the outcome', () => {
+    const withOutcome = (outcome: string) => RELOADABLE_DAEMONS.filter(d => d.outcome === outcome).map(d => d.name)
+    expect(withOutcome('none')).toEqual(['Enlinkd', 'Scriptd', 'Threshd', 'Ticketd'])
+    expect(withOutcome('successOnly')).toEqual(['PerspectivePoller'])
   })
 })

@@ -7,14 +7,23 @@
       </AboutDialogButton>
     </div>
     <p class="subtitle">
-      Reload a daemon's configuration without restarting OpenNMS. The reload runs asynchronously;
-      the daemon reports the outcome as a <em>reloadDaemonConfigSuccessful</em> or
-      <em>reloadDaemonConfigFailed</em> event.
+      Reload a daemon's configuration without restarting OpenNMS. The reload runs asynchronously.
+      Daemons marked <em>Reported</em> answer with a <em>reloadDaemonConfigSuccessful</em> or
+      <em>reloadDaemonConfigFailed</em> event. For the others, check the daemon's log to confirm the reload.
     </p>
 
     <OnmsTable :value="RELOADABLE_DAEMONS" dataKey="name" data-test="daemons-table">
       <OnmsColumn field="label" header="Daemon" />
       <OnmsColumn field="description" header="Reload applies" />
+      <OnmsColumn header="Result event">
+        <template #body="{ data }">
+          <OnmsTag
+            :value="OUTCOME_TAGS[data.outcome as ReloadOutcome].label"
+            :severity="OUTCOME_TAGS[data.outcome as ReloadOutcome].severity"
+            :data-test="`outcome-${data.name}`"
+          />
+        </template>
+      </OnmsColumn>
       <OnmsColumn header="Actions">
         <template #body="{ data }">
           <OnmsButton
@@ -49,12 +58,29 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsTable, useOnmsToast } from '@opennms/onms-ui'
+import { OnmsButton, OnmsColumn, OnmsConfirmationDialog, OnmsTable, OnmsTag, useOnmsToast } from '@opennms/onms-ui'
 
 import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import TableCard from '@/components/Common/TableCard.vue'
 import DaemonManagementAbout from '@/components/DaemonManagement/DaemonManagementAbout.vue'
-import { RELOADABLE_DAEMONS, ReloadableDaemon, reloadDaemon } from '@/services/daemonService'
+import { RELOADABLE_DAEMONS, ReloadableDaemon, ReloadOutcome, reloadDaemon } from '@/services/daemonService'
+
+const OUTCOME_TAGS: Record<ReloadOutcome, { label: string, severity: 'success' | 'warn' }> = {
+  reported: { label: 'Reported', severity: 'success' },
+  successOnly: { label: 'Success only, check the log', severity: 'warn' },
+  none: { label: 'Not reported, check the log', severity: 'warn' }
+}
+
+const requestedMessage = (daemon: ReloadableDaemon): string => {
+  switch (daemon.outcome) {
+    case 'reported':
+      return `Reload requested for ${daemon.label}. The daemon reports the outcome as an event.`
+    case 'successOnly':
+      return `Reload requested for ${daemon.label}. It reports success even when the reload fails; check its log to confirm.`
+    default:
+      return `Reload requested for ${daemon.label}. It does not report the outcome; check its log to confirm.`
+  }
+}
 
 const { showToast } = useOnmsToast()
 
@@ -90,7 +116,7 @@ const confirmReload = async () => {
   try {
     await reloadDaemon(daemon.name)
     showToast({
-      message: `Reload requested for ${daemon.label}. The daemon reports the outcome as an event.`,
+      message: requestedMessage(daemon),
       severity: 'success',
       timeout: 8000
     })

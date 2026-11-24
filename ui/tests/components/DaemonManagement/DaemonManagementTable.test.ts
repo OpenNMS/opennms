@@ -76,6 +76,28 @@ describe('DaemonManagementTable.vue', () => {
     expect(wrapper.findAll('[data-test^="reload-"]')).toHaveLength(RELOADABLE_DAEMONS.length)
   })
 
+  it('tags each daemon with whether it reports the reload result', async () => {
+    const wrapper = await mountTable()
+    expect(wrapper.find('[data-test="outcome-Pollerd"]').text()).toBe('Reported')
+    expect(wrapper.find('[data-test="outcome-Enlinkd"]').text()).toBe('Not reported, check the log')
+    expect(wrapper.find('[data-test="outcome-PerspectivePoller"]').text()).toBe('Success only, check the log')
+  })
+
+  it('points to the log when the daemon does not report the outcome', async () => {
+    vi.mocked(reloadDaemon).mockResolvedValue()
+    const wrapper = await mountTable()
+
+    await wrapper.find('[data-test="reload-Threshd"]').trigger('click')
+    await wrapper.find('.ok-btn').trigger('click')
+    await flushPromises()
+
+    expect(reloadDaemon).toHaveBeenCalledWith('Threshd')
+    expect(showToast).toHaveBeenCalledWith(expect.objectContaining({
+      severity: 'success',
+      message: expect.stringContaining('does not report the outcome; check its log')
+    }))
+  })
+
   it('asks for confirmation and only reloads after OK', async () => {
     vi.mocked(reloadDaemon).mockResolvedValue()
     const wrapper = await mountTable()
