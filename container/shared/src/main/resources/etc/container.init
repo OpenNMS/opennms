@@ -46,7 +46,7 @@ fi
 # of $JAVA_OPTS as the final part of Karaf's initialization.
 
 # shellcheck disable=SC2034
-EXTRA_JAVA_OPTS="$JAVA_OPTS $EXTRA_JAVA_OPTS"
+EXTRA_JAVA_OPTS="-XX:-UseBASE64Intrinsics $JAVA_OPTS $EXTRA_JAVA_OPTS"
 unset JAVA_OPTS
 
 # always dump heap if we OOM
@@ -136,6 +136,13 @@ case "$COMMAND" in
 
 		if ! check_upgrade_files; then
 			exit $?
+		fi
+
+		# karaf.clean.cache removes data/cache but not data/kar, so the deployer would skip the .kar files
+		if [ -x "$CONTAINER_HOME/bin/_clean-kar-storage.sh" ]; then
+			"$CONTAINER_HOME/bin/_clean-kar-storage.sh" "$CONTAINER_HOME" || true
+		else
+			echo "WARNING: $CONTAINER_HOME/bin/_clean-kar-storage.sh not found, the .kar files in data/kar will not be installed again" >&2
 		fi
 
 		if [ ! -d "$CONTAINER_HOME/data/tmp" ]; then

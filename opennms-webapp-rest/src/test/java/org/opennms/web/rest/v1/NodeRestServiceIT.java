@@ -625,7 +625,9 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String url = "/nodes/1/ipinterfaces";
         String xml = sendRequest(GET, url, parseParamData("ipAddr=*.*.*.11&comparator=iplike"), 200);
         assertTrue(xml.contains("count=\"1\""));
-        
+
+        // The iplike comparator accepts only a column name as the parameter name.
+        sendRequest(GET, url, parseParamData("lower(ipAddr)=*.*.*.11&comparator=iplike"), 400);
     }
 
     @Test

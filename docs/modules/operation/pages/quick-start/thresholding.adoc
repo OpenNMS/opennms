@@ -21,13 +21,13 @@ This threshold tells {page-component-title} to create an event when the number o
 
 . Click menu:Administration[Configure OpenNMS] in the side menu.
 . Under Performance Measurement, click *Configure Thresholds*.
-A list of preconfigured threshold groups appears.
+The *Groups* tab lists the preconfigured threshold groups.
 +
 For information on how to create a threshold group, see xref:deep-dive/thresholds/thresh-group.adoc[] in the Deep Dive section.
 
-. Click *Edit* beside the `netsnmp` group.
-. Click *Create New Threshold* at the bottom of the Basic Thresholds area.
-. Set the following parameters and click *Save*:
+. Click the `netsnmp` group.
+. In the Basic thresholds area, click *Create new threshold*.
+. Set the following parameters and click *Create Threshold*:
 +
 [caption=]
 .Basic threshold configuration settings
@@ -44,6 +44,10 @@ For information on how to create a threshold group, see xref:deep-dive/threshold
 For this tutorial, we have provided the datasource for logged-in users.
 For information on how to determine a metric's datasource, see <<deep-dive/thresholds/datasource.adoc#datasource-determine, Determine the datasource>> in the Deep Dive section.
 | hrSystemNumUsers
+
+| Datasource type
+| The type of resource the datasource belongs to: `node` for node-level data, `if` for interface-level data, or a generic resource type from `datacollection-config.xml`.
+| node
 
 | Datasource label
 | Optional text label.
@@ -77,7 +81,15 @@ If left blank, it defaults to the standard thresholding UEIs.
 | Re-armed UEI
 | A custom unique event identifier (UEI) sent into the events system when the threshold is re-armed.
 | _Leave blank._
+
+| Relaxed
+| Evaluates the threshold even when some of the referenced values are unknown.
+| _Off._
 |===
++
+The threshold takes effect on {page-component-title} as soon as you save it (Sentinel picks up changes with a delay; see xref:deep-dive/thresholds/thresholding.adoc#threshold-configuration[Threshold configuration]).
+The default `netsnmp` threshd package already applies the `netsnmp` group to the SNMP service of nodes running a Net-SNMP agent, so you do not need to configure a package for this example.
+For your own groups, see xref:deep-dive/thresholds/thresh-package.adoc[].
 
 == Test the threshold
 
@@ -100,10 +112,10 @@ NOTE: Expression-based thresholds work only if the datasources in question are i
 
 To view the CPU usage threshold, follow these steps:
 
-. Click the *gear* symbol in the top-right of the screen.
+. Click menu:Administration[Configure OpenNMS] in the side menu.
 . Under Performance Measurement, click *Configure Thresholds*.
-. Click *Edit* beside the `netsnmp` group.
-. In the Expression-Based Thresholds area, view the first threshold (with the description "Trigger an alert when five ...").
+. Click the `netsnmp` group.
+. In the Expression-based thresholds area, view the first threshold (with the description "Trigger an alert when five ...").
 
 The following table describes the parameters and their suggested configurations:
 
@@ -162,6 +174,10 @@ If left blank, it defaults to the standard thresholding UEIs.
 | Re-armed UEI
 | A custom unique event identifier (UEI) that is sent into the events system when the threshold is re-armed.
 | _Leave blank._
+
+| Relaxed
+| Evaluates the expression even when some of the referenced values are unknown.
+| _Off._
 |===
 
 . SNMP does not report in decimals, which is why the expression divides the `loadavg5` by 100.
@@ -172,5 +188,6 @@ Refer to xref:deep-dive/thresholds/thresholding.adoc[] in the Deep Dive section 
 
 * <<deep-dive/thresholds/datasource.adoc#ga-threshold-metadata, Using metadata in a threshold>>.
 * <<deep-dive/thresholds/thresh-group.adoc#threshold-group, Creating a threshold group>>.
+* <<deep-dive/thresholds/thresh-package.adoc#threshd-package, Applying thresholds with a threshd package>>.
 * <<deep-dive/thresholds/troubleshoot.adoc#troubleshoot-thresholds, Troubleshooting and managing thresholds>>.
 * <<deep-dive/thresholds/datasource.adoc#thresholding-response-times, Thresholding on response times from polled services>>.

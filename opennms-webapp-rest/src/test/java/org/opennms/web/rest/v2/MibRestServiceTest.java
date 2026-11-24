@@ -37,6 +37,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public class MibRestServiceTest {
 
@@ -57,6 +58,8 @@ public class MibRestServiceTest {
         final MibFileService fileService = new MibFileService();
         fileService.setMibsRootDir(mibsRoot);
         fileService.setGraphTemplatesDir(tempFolder.newFolder("graphs"));
+        // a Mockito mock returns an empty map: no other source defines any UEI
+        fileService.setEventConfPersistenceService(mock(EventConfPersistenceService.class));
         restService = new MibRestService();
         restService.setMibFileService(fileService);
     }
@@ -137,6 +140,26 @@ public class MibRestServiceTest {
         assertEquals("IF-MIB.mib", entity.get("targetFile"));
 
         assertEquals(200, restService.compileMibFile("IF-MIB.txt", true).getStatus());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testFindExistingUeis() {
+        // no other source defines the UEI; no compiled MIB is needed
+        final String eventsXml = "<events xmlns=\"http://xmlns.opennms.org/xsd/eventconf\"><event>"
+                + "<uei>uei.opennms.org/traps/IF-MIB/linkDown</uei><event-label>linkDown</event-label>"
+                + "<descr>d</descr><logmsg dest=\"logndisplay\">m</logmsg><severity>Indeterminate</severity>"
+                + "</event></events>";
+        final Response ok = restService.findExistingUeis("IF-MIB.events", eventsXml);
+        assertEquals(200, ok.getStatus());
+        assertEquals(Map.of(), ok.getEntity());
+
+        assertEquals(400, restService.findExistingUeis(null, eventsXml).getStatus());
+        assertEquals(400, restService.findExistingUeis("IF-MIB.events", null).getStatus());
+        final Response invalid = restService.findExistingUeis("IF-MIB.events", "not xml");
+        assertEquals(400, invalid.getStatus());
+        // the body names the cause, which the UI shows
+        assertTrue(String.valueOf(((Map<String, Object>) invalid.getEntity()).get("error")).startsWith("The events XML is not valid"));
     }
 
     @Test

@@ -23,26 +23,13 @@
 import { MonitoringLocation } from '@/types'
 import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
 import { v2 } from './axiosInstances'
+import { serverErrorMessage } from './serviceHelpers'
 
 // PrimeVue Manage Monitoring Locations (NMS-20129). Reuses the existing v2
 // AbstractDaoRestService CRUD at /api/v2/monitoringLocations — no backend or
 // XML change. The v1 REST and the JSON contract stay as they are.
 
 const endpoint = '/monitoringLocations'
-
-// Only surface a server detail from a 4xx that looks like a short, plain message;
-// a 500 carries an HTML page or a raw persistence exception, neither for the user.
-const errorMessage = (err: any, fallback: string): string => {
-  const detail = err?.response?.data
-  const status = Number(err?.response?.status ?? 0)
-  if (typeof detail === 'string' && status >= 400 && status < 500) {
-    const trimmed = detail.trim()
-    if (trimmed && trimmed.length <= 200 && !/[<>]/.test(trimmed)) {
-      return trimmed
-    }
-  }
-  return fallback
-}
 
 // Bound the fetch instead of limit=0 (unbounded). Locations are few in practice,
 // so the cap is a safety net; the caller surfaces a note if it is ever hit.
@@ -67,7 +54,7 @@ const createMonitoringLocation = async (location: MonitoringLocation): Promise<V
     return createSuccessResponse()
   } catch (err: any) {
     console.error('Error creating monitoring location:', err)
-    return createFailureResult(errorMessage(err, `Failed to create monitoring location '${location['location-name']}'.`))
+    return createFailureResult(serverErrorMessage(err, `Failed to create monitoring location '${location['location-name']}'.`))
   }
 }
 
@@ -92,7 +79,7 @@ const updateMonitoringLocation = async (location: MonitoringLocation): Promise<V
     return createSuccessResponse()
   } catch (err: any) {
     console.error('Error updating monitoring location:', err)
-    return createFailureResult(errorMessage(err, `Failed to update monitoring location '${name}'.`))
+    return createFailureResult(serverErrorMessage(err, `Failed to update monitoring location '${name}'.`))
   }
 }
 
@@ -105,7 +92,7 @@ const deleteMonitoringLocation = async (name: string): Promise<ValidationResult>
     return createSuccessResponse()
   } catch (err: any) {
     console.error('Error deleting monitoring location:', err)
-    return createFailureResult(errorMessage(err, `Monitoring location '${name}' could not be deleted. Make sure no nodes are assigned to it.`))
+    return createFailureResult(serverErrorMessage(err, `Monitoring location '${name}' could not be deleted. Make sure no nodes are assigned to it.`))
   }
 }
 

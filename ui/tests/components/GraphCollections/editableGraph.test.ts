@@ -50,8 +50,19 @@ describe('editableGraph', () => {
     const [old, gone] = toEditableGraphs(stored, resolved)
     expect(toStoredGraph(old)).toEqual({
       kind: 'prefab', title: 'Old', resourceId: 'node[1].interfaceSnmp[eth0]', graphtype: 'mib2.bits', timespan: '7_day', extlink: null,
-      nodeId: null, nodeSource: null, domain: null, interfaceId: null
+      nodeId: null, nodeSource: null, domain: null, interfaceId: null, adhocState: null
     })
     expect(toStoredGraph(gone)).toMatchObject({ resourceId: null, nodeId: '9', nodeSource: null, domain: null, interfaceId: null })
+  })
+
+  it('stores an ad-hoc entry as its builder state alone', () => {
+    const [adhoc] = toEditableGraphs([
+      { kind: 'adhoc', title: 'CPU', resourceId: null, graphtype: null, timespan: '1_day', adhocState: 'nf=rtr&df=CpuRawUser&n=3' }
+    ], [{ index: 0, kind: 'adhoc', title: 'CPU', timespan: '1_day', graphtype: null, resourceId: null, adhocState: 'nf=rtr&df=CpuRawUser&n=3', valid: true, start: 0, end: 3600000 }])
+    expect(adhoc).toMatchObject({ kind: 'adhoc', adhocState: 'nf=rtr&df=CpuRawUser&n=3', valid: true })
+    expect(toStoredGraph({ ...adhoc, resourceId: 'node[1].nodeSnmp[]', graphtype: 'leftover', nodeId: '1' })).toEqual({
+      kind: 'adhoc', title: 'CPU', resourceId: null, graphtype: null, timespan: '1_day', adhocState: 'nf=rtr&df=CpuRawUser&n=3', extlink: null,
+      nodeId: null, nodeSource: null, domain: null, interfaceId: null
+    })
   })
 })

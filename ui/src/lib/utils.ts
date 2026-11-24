@@ -45,6 +45,9 @@ export const isNonEmptyString = (value?: any) => {
   return isString(value) && (value as string)?.length > 0
 }
 
+/** '1 service', '3 services': the count and the noun, singular for exactly 1. */
+export const plural = (count: number, singular: string, pluralForm = `${singular}s`) => `${count} ${count === 1 ? singular : pluralForm}`
+
 export const ellipsify = (text: string, count: number) => {
   const ellipsis = '\u2026' // Unicode for "..."
 

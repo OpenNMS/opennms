@@ -40,7 +40,7 @@ curl -u admin:admin "http://127.0.0.1:8980/opennms/api/v2/search?_s=router"
       {
         "identifier": "1",
         "label": "router-01",
-        "url": "element/node.jsp?node=1",
+        "url": "ui/index.html#/node/1",
         "matches": [{"id":"label","label":"Label","value":"router-01"}],
         "weight": 0
       }

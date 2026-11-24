@@ -24,26 +24,34 @@ package org.opennms.features.deviceconfig.rest.api;
 import java.util.Date;
 import java.util.Map;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * DTO for response value of DeviceConfigRestService.
  * 'final' properties are retrieved directly from 'device_config' table.
  * Other properties are calculated or from other data sources.
  * Configuration data itself is returned as text.
  */
+@Schema(description = "A stored device configuration with its backup status and schedule. Dates are epoch milliseconds.")
 public class DeviceConfigDTO {
     /** Database id of 'device_config' table entry */
+    @Schema(description = "Database id of the device config record.", example = "42")
     private long id;
 
     /** Name of monitored service */
+    @Schema(description = "Name of the `DeviceConfig` monitored service that retrieved the configuration.", example = "DeviceConfig-running")
     private String serviceName;
 
     /** IP address as a text string */
+    @Schema(description = "IP address of the interface.", example = "192.168.1.1")
     private String ipAddress;
 
     /** Date backup config data was last stored. */
+    @Schema(type = "integer", format = "int64", description = "When the stored configuration was first saved. A retrieval that finds the configuration unchanged does not move it.", example = "1787727308166")
     private Date lastBackupDate;
 
     /** Date of last backup attempt. */
+    @Schema(type = "integer", format = "int64", description = "When a backup of this record was last attempted.", example = "1787813708166")
     private Date lastUpdatedDate;
 
     /**
@@ -51,57 +59,75 @@ public class DeviceConfigDTO {
      * If the backup process succeeded but the configuration did not change, this date could be
      * more recent than 'createdTime'.
      */
+    @Schema(type = "integer", format = "int64", description = "When a backup last succeeded, or null if none has. Later than `lastBackupDate` when the configuration was retrieved again unchanged.", example = "1787813708166")
     private Date lastSucceededDate;
 
     /** Date backup last failed, or null if no backups failed. */
+    @Schema(type = "integer", format = "int64", description = "When a backup last failed, or null if none has.")
     private Date lastFailedDate;
 
     /** Encoding of the config, possible values include 'text', 'binary', 'ascii', 'json', 'xml'. */
+    @Schema(description = "Character set the configuration was decoded with, or `binary`, in which case `config` is hexadecimal.", example = "UTF-8")
     private String encoding;
 
     /** The device configuration type, either 'default' or 'running'. */
+    @Schema(description = "Configuration type, typically `default` or `running`.", example = "running")
     private String configType;
 
     /** Human-readable name for the configuration type, derived from the service name. */
+    @Schema(description = "Display name derived from `serviceName`: `DeviceConfig` and `DeviceConfig-default` become `Startup Configuration`, `DeviceConfig-running` becomes `Running Configuration`.", example = "Running Configuration")
     private String configName;
 
     /** Filename of the configuration data as received from the device. */
+    @Schema(description = "File name the device sent the configuration under.", example = "core-router-01-running.cfg")
     private String fileName;
 
     /** Configuration data as a string */
+    @Schema(description = "The configuration as text, or as a hexadecimal string when `encoding` is `binary`. Empty when no backup has succeeded.")
     private String config;
 
     /** Failure reason description, if there was a backup failure. */
+    @Schema(description = "Why the last backup failed, or null.")
     private String failureReason;
 
     /** Device name. Currently this is actually the nodeLabel. */
+    @Schema(description = "Device name; currently the node label.", example = "core-router-01")
     private String deviceName;
 
     /** Database id of corresponding node table entry. */
+    @Schema(description = "Database id of the IP interface.", example = "17")
     private Integer ipInterfaceId;
 
     /** Database id of corresponding node table entry. */
+    @Schema(description = "Database id of the node.", example = "5")
     private Integer nodeId;
 
     /** Label/name of the corresponding node object. */
+    @Schema(description = "Label of the node.", example = "core-router-01")
     private String nodeLabel;
 
     /** Location, from node. */
+    @Schema(description = "Monitoring location of the node.", example = "Default")
     private String location;
 
     /** Operating system of corresponding node. */
+    @Schema(description = "Operating system of the node.", example = "IOS-XE")
     private String operatingSystem;
 
     /** True if there are any successful backups */
+    @Schema(description = "True when `backupStatus` is `success`.", example = "true")
     private boolean isSuccessfulBackup;
 
     /** Description of most recent backup status. 'success', 'failure'. May add others like 'paused', 'storing'. */
+    @Schema(description = "Status of the last backup attempt.", allowableValues = {"none", "success", "failed"}, example = "success")
     private String backupStatus;
 
     /** Estimate of next scheduled backup date. */
+    @Schema(type = "integer", format = "int64", description = "Next scheduled backup across the services retrieving this configuration type, or absent when none is scheduled.", example = "1787875200000")
     private Date nextScheduledBackupDate;
 
     /** Friendly description of backup schedule interval, parsed from cron schedule data. */
+    @Schema(description = "Schedule of each service retrieving this configuration type, keyed by service name, as a readable description of its cron expression. `Never` when unscheduled.")
     private Map<String, String> scheduledInterval;
 
     public long getId() {
@@ -118,6 +144,7 @@ public class DeviceConfigDTO {
         this.serviceName = serviceName;
     }
 
+    @Schema(description = "Same as `isSuccessfulBackup`; both names are serialized.", example = "true")
     public boolean isSuccessfulBackup() {
         return this.isSuccessfulBackup;
     }

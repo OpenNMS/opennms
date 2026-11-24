@@ -81,7 +81,8 @@ public class UserSettingsFilter implements Filter {
             UserFactory.init();
             UserManager userFactory = UserFactory.getInstance();
             return Optional.ofNullable(userFactory.getUser(userId));
-        } catch (IOException e) {
+        } catch (IOException | RuntimeException e) {
+            // e.g. no user manager registered yet: the request goes on with the system time zone, it does not fail
             LOG.warn("Can not retrieve user - will use system default time zone settings", e);
             return Optional.empty();
         }

@@ -86,7 +86,7 @@ public class JavaSendMailer extends JavaMailer2 {
         m_config = config;
         try {
             m_session = Session.getInstance(createProps(useJmProps), createAuthenticator());
-            // JavaMailer2.getSession() callers (reportd) otherwise see a null session
+            // JavaMailer2.getSession() callers otherwise see a null session
             setSession(m_session);
             if (config.getSendmailMessage() != null) {
                 m_message = buildMimeMessage(config.getSendmailMessage());

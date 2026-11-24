@@ -41,8 +41,9 @@ License.
       </div>
 
       <div class="resource" data-test="atc-resource">
-        <span class="muted">Resource:</span> <strong>{{ resourceLabel }}</strong>
-        <span class="muted">Graph:</span> <strong>{{ graphtype }}</strong>
+        <template v-for="detail in details" :key="detail.label">
+          <span class="muted">{{ detail.label }}:</span> <strong>{{ detail.value }}</strong>
+        </template>
       </div>
 
       <FormField label="Title" for="atc-title" hint="Shown above the graph. Leave empty to use the graph's own title.">
@@ -109,12 +110,13 @@ const NEW_COLLECTION = 'new'
 
 const props = defineProps<{
   visible: boolean
-  resourceId: string
-  resourceLabel: string
-  /** The prefabricated graph name. */
-  graphtype: string
-  /** The graph's own title, offered as the default entry title. */
-  graphTitle: string
+  /**
+   * The entry to add, minus what the dialog asks for: its title is offered as the default
+   * entry title and its timespan is replaced by the chosen one.
+   */
+  graph: GraphCollectionGraph
+  /** What the entry is, for the user to check: the resource and graph name, or the series count. */
+  details: { label: string, value: string }[]
 }>()
 
 const emit = defineEmits<{
@@ -146,10 +148,12 @@ const targetCollection = computed(() =>
 
 // the legacy modal refused a graph already in the report; a second entry with another timespan is
 // a legitimate use, so this only says so
-const alreadyIn = computed(() =>
-  targetCollection.value?.graphs.some(g => g.resourceId === props.resourceId && g.graphtype === props.graphtype)
-    ? targetCollection.value.title
-    : '')
+const sameGraph = (g: GraphCollectionGraph) =>
+  props.graph.kind === 'adhoc'
+    ? g.kind === 'adhoc' && g.adhocState === props.graph.adhocState
+    : (g.kind ?? 'prefab') === 'prefab' && g.resourceId === props.graph.resourceId && g.graphtype === props.graph.graphtype
+
+const alreadyIn = computed(() => (targetCollection.value?.graphs.some(sameGraph) ? targetCollection.value.title : ''))
 
 const targetError = computed(() => submitted.value && !target.value ? 'Choose a collection.' : '')
 const newTitleError = computed(() =>
@@ -175,7 +179,7 @@ const load = async () => {
 }
 
 const reset = () => {
-  title.value = props.graphTitle
+  title.value = props.graph.title
   timespan.value = '1_day'
   target.value = null
   newTitle.value = ''
@@ -198,10 +202,9 @@ const submit = async () => {
     return
   }
   const graph: GraphCollectionGraph = {
-    kind: 'prefab',
+    ...props.graph,
+    kind: props.graph.kind ?? 'prefab',
     title: title.value.trim(),
-    resourceId: props.resourceId,
-    graphtype: props.graphtype,
     timespan: timespan.value
   }
   saving.value = true
@@ -220,7 +223,7 @@ const submit = async () => {
     return
   }
   const saved = result.payload.collection
-  showSuccess(`Added "${graph.title || props.graphtype}" to "${saved.title}".`)
+  showSuccess(`Added "${graph.title || props.graph.graphtype || 'the custom graph'}" to "${saved.title}".`)
   emit('added', saved)
   emit('update:visible', false)
 }

@@ -293,7 +293,11 @@ const notPicked = <T>(picked: T[], matches: T[], keysOf: (item: T) => string[]):
   return matches.filter(item => !keysOf(item).some(key => pickedKeys.has(key)))
 }
 
-export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
+/**
+ * The store is one graph's picker and query, so a page drawing several ad-hoc graphs at once (a
+ * graph collection) gives each its own instance under its own id. The builder page uses the default.
+ */
+export const defineAdhocGraphStore = (id: string) => defineStore(id, () => {
   // ---- Nodes ---------------------------------------------------------------
   /** The node box: a filter rule, or a label fragment (see looksLikeFilterRule). */
   const nodeFilter = ref('')
@@ -900,3 +904,7 @@ export const useAdhocGraphStore = defineStore('adhocGraphStore', () => {
     clearAll
   }
 })
+
+export const useAdhocGraphStore = defineAdhocGraphStore('adhocGraphStore')
+
+export type AdhocGraphStore = ReturnType<typeof useAdhocGraphStore>

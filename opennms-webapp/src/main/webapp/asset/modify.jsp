@@ -26,6 +26,7 @@
 <% pageContext.setAttribute("nodeId", request.getParameter("node")); %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Modify")
           .headTitle("Asset")
@@ -67,7 +68,7 @@
         <div growl></div>
 
         <h4>
-          Node: <strong><a href="element/node.jsp?node=${nodeId}">{{ nodeLabel }}</a></strong>
+          Node: <strong><a href="${ElementConstants.NODE_DETAILS_URI}${nodeId}">{{ nodeLabel }}</a></strong>
         </h4>
         <p>
           Last modified by {{ (master['lastModifiedBy'] || 'no one') }} at {{ master['lastModifiedDate'] | onmsDate }}

@@ -36,13 +36,17 @@ import org.opennms.core.xml.JacksonUtils;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao;
+import org.opennms.netmgt.config.threshd.Filter;
+import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 
 public class SentinelThreshdDaoTest {
     @Test
     public void canReadAndReload() throws IOException {
+        // A package is what distinguishes the two served configurations, and it is also what
+        // ThreshdConfiguration.equals() compares.
         ThreshdConfiguration configToServe = new ThreshdConfiguration();
-        configToServe.setThreads(5);
+        configToServe.addPackage(newPackage("one"));
 
         JsonStore mockJsonStore = mock(JsonStore.class);
         when(mockJsonStore.getLastUpdated(AbstractThreshdDao.JSON_STORE_KEY, ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
@@ -53,13 +57,21 @@ public class SentinelThreshdDaoTest {
         ReadableThreshdDao threshdDao = new SentinelThreshdDao(mockJsonStore);
         assertThat(threshdDao.getReadOnlyConfig(), equalTo(configToServe));
 
-        configToServe.setThreads(10);
+        configToServe.addPackage(newPackage("two"));
         when(mockJsonStore.getLastUpdated(AbstractThreshdDao.JSON_STORE_KEY, ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
                 .thenReturn(OptionalLong.of(System.currentTimeMillis()));
         when(mockJsonStore.get(AbstractThreshdDao.JSON_STORE_KEY, ConfigDaoConstants.JSON_KEY_STORE_CONTEXT))
                 .thenReturn(Optional.of(configToJson(configToServe)));
         threshdDao.reload();
         assertThat(threshdDao.getReadOnlyConfig(), equalTo(configToServe));
+    }
+
+    private static Package newPackage(String name) {
+        Package pkg = new Package();
+        pkg.setName(name);
+        // The schema requires a filter, and the JSON round trip dereferences it unconditionally.
+        pkg.setFilter(new Filter("IPADDR != '0.0.0.0'"));
+        return pkg;
     }
 
     private String configToJson(ThreshdConfiguration threshdConfiguration) throws IOException {

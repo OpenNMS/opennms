@@ -21,10 +21,25 @@
  */
 package org.opennms.core.criteria.restrictions;
 
+import java.util.regex.Pattern;
+
 public class IplikeRestriction extends AttributeValueRestriction {
+
+    /**
+     * The attribute of an iplike restriction is a column name that goes into the SQL text.
+     * It cannot be a bind parameter, thus it must be a plain identifier.
+     */
+    private static final Pattern COLUMN_NAME = Pattern.compile("[A-Za-z_][A-Za-z0-9_]*");
 
     public IplikeRestriction(final String attribute, final Object value) {
         super(RestrictionType.IPLIKE, attribute, value);
+    }
+
+    /**
+     * Returns true if the attribute is a plain column name that is safe to put into SQL text.
+     */
+    public static boolean isValidAttribute(final String attribute) {
+        return attribute != null && COLUMN_NAME.matcher(attribute).matches();
     }
 
     @Override

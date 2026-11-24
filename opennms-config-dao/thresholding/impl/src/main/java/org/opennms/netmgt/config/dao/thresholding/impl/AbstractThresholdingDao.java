@@ -22,6 +22,8 @@
 package org.opennms.netmgt.config.dao.thresholding.impl;
 
 import java.util.Objects;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
@@ -37,5 +39,19 @@ public abstract class AbstractThresholdingDao implements ReadableThresholdingDao
 
     AbstractThresholdingDao(JsonStore jsonStore) {
         this.jsonStore = Objects.requireNonNull(jsonStore);
+    }
+
+    /**
+     * Guards the configuration this DAO holds. Declared here so that both the CM-backed and the
+     * overrideable implementation share one lock; only the writeable DAO interfaces expose it.
+     */
+    private final ReentrantReadWriteLock configLock = new ReentrantReadWriteLock();
+
+    public Lock getReadLock() {
+        return configLock.readLock();
+    }
+
+    public Lock getWriteLock() {
+        return configLock.writeLock();
     }
 }

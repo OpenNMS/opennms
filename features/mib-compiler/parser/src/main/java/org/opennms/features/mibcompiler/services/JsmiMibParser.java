@@ -22,7 +22,6 @@
 package org.opennms.features.mibcompiler.services;
 
 import java.io.File;
-import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
@@ -76,7 +75,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class JsmiMibParser implements MibParser, Serializable {
+public class JsmiMibParser implements MibParser {
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(JsmiMibParser.class);
@@ -111,7 +110,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.MibParser#setMibDirectory(java.io.File)
+     * @see org.opennms.features.mibcompiler.api.MibParser#setMibDirectory(java.io.File)
      */
     @Override
     public void setMibDirectory(File mibDirectory) {
@@ -119,7 +118,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.MibParser#parseMib(java.io.File)
+     * @see org.opennms.features.mibcompiler.api.MibParser#parseMib(java.io.File)
      */
     @Override
     public boolean parseMib(File mibFile) {
@@ -175,7 +174,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.MibParser#getFormattedErrors()
+     * @see org.opennms.features.mibcompiler.api.MibParser#getFormattedErrors()
      */
     @Override
     public String getFormattedErrors() {
@@ -183,7 +182,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.MibParser#getMissingDependencies()
+     * @see org.opennms.features.mibcompiler.api.MibParser#getMissingDependencies()
      */
     @Override
     public List<String> getMissingDependencies() {
@@ -191,7 +190,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.services.MibParser#getMibName()
+     * @see org.opennms.features.mibcompiler.api.MibParser#getMibName()
      */
     @Override
     public String getMibName() {
@@ -199,7 +198,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.services.MibParser#getEvents(java.lang.String)
+     * @see org.opennms.features.mibcompiler.api.MibParser#getEvents(java.lang.String)
      */
     @Override
     public Events getEvents(String ueibase) {
@@ -220,7 +219,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.api.MibParser#getDataCollection()
+     * @see org.opennms.features.mibcompiler.api.MibParser#getDataCollection()
      */
     @Override
     public DatacollectionGroup getDataCollection() {
@@ -267,7 +266,7 @@ public class JsmiMibParser implements MibParser, Serializable {
 
 
     /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.api.MibParser#getPrefabGraphs()
+     * @see org.opennms.features.mibcompiler.api.MibParser#getPrefabGraphs()
      */
     @Override
     public List<PrefabGraph> getPrefabGraphs() {
@@ -555,8 +554,10 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @return the trap event UEI
      */
     protected String getTrapEventUEI(Notification trap, String ueibase) {
-        final StringBuilder buf = new StringBuilder(ueibase);
-        if (! ueibase.endsWith("/")) {
+        // whitespace around the base would end up inside the UEI, and a UEI never contains it
+        final String base = ueibase.trim();
+        final StringBuilder buf = new StringBuilder(base);
+        if (! base.endsWith("/")) {
             buf.append("/");
         }
         buf.append(trap.getId());

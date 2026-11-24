@@ -53,8 +53,10 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsPathOutage;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -662,6 +664,115 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, url, parseParamData("_s=assetRecord.building==A%252CX"), 204);
     }
 
+    /**
+     * NMS-18294: the Vue node list sends wildcard ("contains") searches with ',' and ';' in the
+     * value. It double-encodes the value and keeps '*' raw, for example
+     * label==*ABC%2520Systems.%252C%2520Inc.*. The value must match as a literal, and the
+     * characters must not act as FIQL OR / AND.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testWildcardSearchValueWithFiqlCharacters() throws Exception {
+        saveNode("ABC Systems., Inc.", "abc-inc", "Cisco IOS Software, C2960 (rev;2)");
+        saveNode("ABC Systems", "abc-decoy", "Cisco IOS Software");
+        saveNode("Inc. Holdings", "inc-decoy", "C2960 switch");
+        saveNode("Alpha;Beta", "semi", null);
+        saveNode("Alpha", "semi-decoy", null);
+
+        final String url = "/nodes";
+
+        // Comma in a label 'contains' search: only the exact literal matches, not
+        // "ABC Systems" OR "Inc."
+        String json = sendRequest(GET, url, parseParamData("_s=(label==*ABC%2520Systems.%252C%2520Inc.*);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"ABC Systems., Inc.\""));
+        assertFalse(json, json.contains("\"label\":\"ABC Systems\""));
+        assertFalse(json, json.contains("\"label\":\"Inc. Holdings\""));
+
+        // Semicolon in a label 'contains' search: not "Alpha" AND "Beta"
+        json = sendRequest(GET, url, parseParamData("_s=(label==*Alpha%253BBeta*);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"Alpha;Beta\""));
+        assertFalse(json, json.contains("\"label\":\"Alpha\""));
+
+        // Comma, semicolon and parentheses in a sysDescription 'contains' search
+        json = sendRequest(GET, url, parseParamData("_s=(node.sysDescription==*Software%252C%2520C2960%2520%2528rev%253B2%2529*);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"ABC Systems., Inc.\""));
+        assertFalse(json, json.contains("\"label\":\"ABC Systems\""));
+        assertFalse(json, json.contains("\"label\":\"Inc. Holdings\""));
+
+        // A raw '*' between encoded segments is still a wildcard
+        json = sendRequest(GET, url, parseParamData("_s=(node.sysDescription==*IOS*C2960%2520%2528rev*);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"ABC Systems., Inc.\""));
+
+        // The value is a literal: a comma value that is in no label matches nothing
+        sendRequest(GET, url, parseParamData("_s=(label==*ABC%2520Systems%252C%2520Holdings*);node.type!=D"), 204);
+
+        // Exact match (Criteria eq, no wildcard): a comma in foreignId is a literal, not
+        // foreignId 'a' OR foreignId 'b'
+        saveNode("Comma FID", "a,b", null);
+        saveNode("FID A", "a", null);
+        saveNode("FID B", "b", null);
+        json = sendRequest(GET, url, parseParamData("_s=(node.foreignId==a%252Cb);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"Comma FID\""));
+        assertFalse(json, json.contains("\"label\":\"FID A\""));
+        assertFalse(json, json.contains("\"label\":\"FID B\""));
+    }
+
+    /**
+     * The snmpInterface.* string searches use an "ilike ?" SQL subquery. A double-encoded ',' must
+     * arrive as a literal. Without a '*', '%' and '_' must also be literals: CXF escapes them
+     * only for a wildcard value, so NodeRestService escapes them for an exact value.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testSnmpInterfaceSearchValueWithFiqlAndLikeCharacters() throws Exception {
+        final NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode("SnmpMatchNode").setForeignSource("JUnit").setForeignId("snmp-match").setType(OnmsNode.NodeType.ACTIVE);
+        builder.addSnmpInterface(1).setIfName("Gi0_1").setIfAlias("uplink,core").setIfDescr("50%").setCollectionEnabled(true);
+        commitNode(builder.getCurrentNode());
+        builder.addNode("SnmpDecoyNode").setForeignSource("JUnit").setForeignId("snmp-decoy").setType(OnmsNode.NodeType.ACTIVE);
+        builder.addSnmpInterface(1).setIfName("Gi0X1").setIfAlias("uplink").setIfDescr("50 percent").setCollectionEnabled(true);
+        commitNode(builder.getCurrentNode());
+
+        final String url = "/nodes";
+
+        // Wildcard with a comma: not ifAlias *uplink* OR core*
+        String json = sendRequest(GET, url, parseParamData("_s=(snmpInterface.ifAlias==*uplink%252Ccore*);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"SnmpMatchNode\""));
+        assertFalse(json, json.contains("\"label\":\"SnmpDecoyNode\""));
+
+        // Exact with '_': must not match any one character ("Gi0X1")
+        json = sendRequest(GET, url, parseParamData("_s=(snmpInterface.ifName==Gi0_1);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"SnmpMatchNode\""));
+        assertFalse(json, json.contains("\"label\":\"SnmpDecoyNode\""));
+
+        // Exact matching stays case-insensitive
+        json = sendRequest(GET, url, parseParamData("_s=(snmpInterface.ifName==gi0_1);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"SnmpMatchNode\""));
+
+        // Exact with '%': must not match any text ("50 percent")
+        json = sendRequest(GET, url, parseParamData("_s=(snmpInterface.ifDescr==50%2525);node.type!=D"), 200);
+        assertTrue(json, json.contains("\"label\":\"SnmpMatchNode\""));
+        assertFalse(json, json.contains("\"label\":\"SnmpDecoyNode\""));
+    }
+
+    private void saveNode(final String label, final String foreignId, final String sysDescription) {
+        final NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode(label).setForeignSource("JUnit").setForeignId(foreignId).setType(OnmsNode.NodeType.ACTIVE);
+        final OnmsNode node = builder.getCurrentNode();
+        node.setSysDescription(sysDescription);
+        commitNode(node);
+    }
+
+    private void commitNode(final OnmsNode node) {
+        // Commit the fixture so the separate-session REST reads can see it (see
+        // testAssetFilterValueWithFiqlCharacters).
+        m_databasePopulator.getTransactionTemplate().execute(status -> {
+            m_databasePopulator.getNodeDao().save(node);
+            m_databasePopulator.getNodeDao().flush();
+            return null;
+        });
+    }
+
     @Test
     public void testMaclikeSearch() throws Exception {
         // Create a node with a known SNMP interface MAC (physical) address via the REST API
@@ -695,6 +806,11 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // NOT_EQUALS: the node does NOT have this MAC, so it appears in results
         sendRequest(GET, url, parseParamData("_s=maclike!=112233445566"), 200);
+
+        // As in the legacy search, '%' and '_' are SQL LIKE wildcards (double-encoded '%')
+        sendRequest(GET, url, parseParamData("_s=maclike==aabb%2525eeff"), 200);
+        sendRequest(GET, url, parseParamData("_s=maclike==aabb_cddeeff"), 200);
+        sendRequest(GET, url, parseParamData("_s=maclike==aabb%2525eeee"), 204);
     }
 
     @Test
@@ -767,41 +883,127 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // The populator's only alarm on node1 is Normal, which is not a problem.
         JSONObject status = new JSONObject(sendRequest(GET, url, 200));
         assertEquals("NORMAL", status.getString("severity"));
-        assertFalse(status.getBoolean("nodeDown"));
-        assertEquals(0, status.getLong("interfacesDown"));
-        assertEquals(0, status.getLong("servicesDown"));
-        assertEquals(0, status.getLong("acknowledgedCount"));
         assertEquals(0, status.getLong("unacknowledgedCount"));
+        assertUnacknowledgedBySeverity(status, 0, 0, 0, 0);
+        // Only the unacknowledged figures: the down and acknowledged counts are not part of it.
+        for (final String removed : new String[] { "nodeDown", "interfacesDown", "servicesDown", "acknowledgedCount" }) {
+            assertFalse(removed, status.has(removed));
+        }
 
         m_transactionTemplate.execute(s -> {
             saveAlarm("uei.opennms.org/nodes/nodeLostService", OnmsSeverity.MAJOR, false);
             saveAlarm("uei.opennms.org/nodes/nodeLostService", OnmsSeverity.MINOR, false);
-            // Acknowledged: counted, but does not raise the severity.
+            // Acknowledged: not counted, and does not raise the severity.
             saveAlarm("uei.opennms.org/nodes/interfaceDown", OnmsSeverity.CRITICAL, true);
-            // Cleared: not a problem, so the node is not down.
+            // Cleared: not a problem.
             saveAlarm("uei.opennms.org/nodes/nodeDown", OnmsSeverity.CLEARED, false);
             return null;
         });
 
         status = new JSONObject(sendRequest(GET, url, 200));
         assertEquals("MAJOR", status.getString("severity"));
-        assertFalse(status.getBoolean("nodeDown"));
-        assertEquals(1, status.getLong("interfacesDown"));
-        assertEquals(2, status.getLong("servicesDown"));
-        assertEquals(1, status.getLong("acknowledgedCount"));
         assertEquals(2, status.getLong("unacknowledgedCount"));
+        // The acknowledged critical and the cleared alarm are not in it.
+        assertUnacknowledgedBySeverity(status, 0, 1, 1, 0);
 
         m_transactionTemplate.execute(s -> {
             saveAlarm("uei.opennms.org/nodes/nodeDown", OnmsSeverity.MAJOR, false);
             return null;
         });
-        assertTrue(new JSONObject(sendRequest(GET, url, 200)).getBoolean("nodeDown"));
+        status = new JSONObject(sendRequest(GET, url, 200));
+        assertEquals(3, status.getLong("unacknowledgedCount"));
+        assertUnacknowledgedBySeverity(status, 0, 2, 1, 0);
+
+        m_transactionTemplate.execute(s -> {
+            saveAlarm("uei.opennms.org/test/warning", OnmsSeverity.WARNING, false);
+            saveAlarm("uei.opennms.org/test/critical", OnmsSeverity.CRITICAL, false);
+            return null;
+        });
+        final String body = sendRequest(GET, url, 200);
+        status = new JSONObject(body);
+        assertEquals("CRITICAL", status.getString("severity"));
+        assertEquals(5, status.getLong("unacknowledgedCount"));
+        assertUnacknowledgedBySeverity(status, 1, 2, 1, 1);
+        // Highest first. JSONObject does not keep the order, so look at the body itself.
+        assertTrue(body.indexOf("\"CRITICAL\"") < body.indexOf("\"MAJOR\"")
+                && body.indexOf("\"MAJOR\"") < body.indexOf("\"MINOR\"")
+                && body.indexOf("\"MINOR\"") < body.indexOf("\"WARNING\""));
 
         // Another node's alarms are not counted.
         final JSONObject node2 = new JSONObject(sendRequest(GET, "/nodes/" + m_databasePopulator.getNode2().getId() + "/alarmStatus", 200));
         assertEquals(0, node2.getLong("unacknowledgedCount"));
 
         sendRequest(GET, "/nodes/999999/alarmStatus", 404);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testNotificationStatus() throws Exception {
+        m_databasePopulator.populateDatabase();
+        final OnmsNode node1 = m_databasePopulator.getNode1();
+        final String url = "/nodes/" + node1.getId() + "/notificationStatus";
+
+        // The populator's one notification is on node1, outstanding, and sent to TestUser and TestUser2.
+        JSONObject status = new JSONObject(sendRequest(GET, url, 200));
+        assertEquals("admin", status.getString("user"));
+        assertEquals(0, status.getLong("yourOutstanding"));
+        assertEquals(1, status.getLong("allOutstanding"));
+        assertEquals(1, status.getLong("total"));
+
+        m_transactionTemplate.execute(s -> {
+            // Sent to the caller by two methods: one notification.
+            saveNotification(node1, false, "admin", "admin");
+            saveNotification(node1, false, "TestUser");
+            // Acknowledged: in the total only.
+            saveNotification(node1, true, "admin");
+            // Another node's.
+            saveNotification(m_databasePopulator.getNode2(), false, "admin");
+            return null;
+        });
+
+        status = new JSONObject(sendRequest(GET, url, 200));
+        assertEquals(1, status.getLong("yourOutstanding"));
+        assertEquals(3, status.getLong("allOutstanding"));
+        assertEquals(4, status.getLong("total"));
+
+        sendRequest(GET, "/nodes/999999/notificationStatus", 404);
+    }
+
+    private void saveNotification(final OnmsNode node, final boolean acknowledged, final String... users) {
+        final OnmsEvent event = m_databasePopulator.buildEvent(m_databasePopulator.getDistPollerDao().whoami());
+        m_databasePopulator.getEventDao().save(event);
+
+        final OnmsNotification notification = new OnmsNotification();
+        notification.setEvent(event);
+        notification.setNode(node);
+        notification.setTextMsg("Test notification");
+        notification.setPageTime(new Date());
+        if (acknowledged) {
+            notification.setAnsweredBy("admin");
+            notification.setRespondTime(new Date());
+        }
+        m_databasePopulator.getNotificationDao().save(notification);
+
+        // One row per user and method, as notifd writes them.
+        for (int i = 0; i < users.length; i++) {
+            final OnmsUserNotification delivery = new OnmsUserNotification();
+            delivery.setUserId(users[i]);
+            delivery.setMedia("media" + i);
+            delivery.setNotification(notification);
+            m_databasePopulator.getUserNotificationDao().save(delivery);
+        }
+        m_databasePopulator.getNotificationDao().flush();
+        m_databasePopulator.getUserNotificationDao().flush();
+    }
+
+    private static void assertUnacknowledgedBySeverity(final JSONObject status, final long critical, final long major,
+                                                       final long minor, final long warning) {
+        final JSONObject bySeverity = status.getJSONObject("unacknowledgedBySeverity");
+        assertEquals(4, bySeverity.length());
+        assertEquals(critical, bySeverity.getLong("CRITICAL"));
+        assertEquals(major, bySeverity.getLong("MAJOR"));
+        assertEquals(minor, bySeverity.getLong("MINOR"));
+        assertEquals(warning, bySeverity.getLong("WARNING"));
     }
 
     private void saveAlarm(final String uei, final OnmsSeverity severity, final boolean acknowledged) {

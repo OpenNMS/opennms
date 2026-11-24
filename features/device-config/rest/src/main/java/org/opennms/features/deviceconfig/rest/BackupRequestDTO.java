@@ -21,14 +21,21 @@
  */
 package org.opennms.features.deviceconfig.rest;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "A device config backup to trigger.")
 public class BackupRequestDTO {
 
+    @Schema(description = "IP address of the interface to back up.", required = true, example = "192.168.1.1")
     private String ipAddress;
 
+    @Schema(description = "Monitoring location of the interface.", required = true, example = "Default")
     private String location;
 
+    @Schema(description = "`DeviceConfig` service bound to the interface that defines how to retrieve the configuration.", required = true, example = "DeviceConfig-running")
     private String serviceName;
 
+    @Schema(description = "Wait for the retrieval to finish and report its failure, rather than returning once it is dispatched.", defaultValue = "false", example = "false")
     private Boolean blocking = false;
 
     public BackupRequestDTO(String ipAddress, String location, String serviceName) {

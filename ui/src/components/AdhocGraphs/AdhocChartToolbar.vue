@@ -48,6 +48,15 @@
           @click="emit('share')"
         />
         <OnmsIconButton
+          v-if="!viewOnly && canAddToCollection"
+          variant="outlined"
+          :icon="DashboardIcon"
+          tooltip="Add this graph to a graph collection"
+          :disabled="!canQuery"
+          data-test="toolbar-add-to-collection"
+          @click="emit('addToCollection')"
+        />
+        <OnmsIconButton
           v-if="!viewOnly"
           variant="outlined"
           :icon="CodeIcon"
@@ -156,6 +165,7 @@ import CancelIcon from '@opennms/onms-ui/icons/action/Cancel.vue'
 import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import RefreshIcon from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import CodeIcon from '@opennms/onms-ui/icons/action/Code.vue'
+import DashboardIcon from '@opennms/onms-ui/icons/action/Dashboard.vue'
 import PopOutIcon from '@opennms/onms-ui/icons/action/Expand.vue'
 import FullscreenIcon from '@opennms/onms-ui/icons/navigation/Fullscreen.vue'
 import FullscreenExitIcon from '@opennms/onms-ui/icons/navigation/FullscreenExit.vue'
@@ -178,10 +188,13 @@ withDefaults(defineProps<{
   expanded?: boolean
   /** Graph-only route: no editing controls, no expand/pop-out of its own. */
   viewOnly?: boolean
+  /** Whether this user may write graph collections; the button is hidden otherwise. */
+  canAddToCollection?: boolean
 }>(), {
   canRefresh: false,
   expanded: false,
-  viewOnly: false
+  viewOnly: false,
+  canAddToCollection: false
 })
 
 const emit = defineEmits<{
@@ -193,6 +206,7 @@ const emit = defineEmits<{
   popOut: []
   showDefinition: []
   share: []
+  addToCollection: []
   exportCsv: []
   exportPdf: []
 }>()

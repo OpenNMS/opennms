@@ -49,6 +49,13 @@ public class AvailabilityIpInterface {
     @XmlAttribute(name="availability")
     private final double m_availability;
 
+    /**
+     * The ipinterface.ismanaged code: M managed, U unmanaged, F forced unmanaged, and so on. Only a
+     * managed interface has an availability figure, so this says why another one has none.
+     */
+    @XmlAttribute(name="is-managed")
+    private final String m_isManaged;
+
     @XmlElementWrapper(name="services")
     @XmlElement(name="service")
     private final List<AvailabilityMonitoredService> m_services = new ArrayList<>();
@@ -57,12 +64,14 @@ public class AvailabilityIpInterface {
         m_id = -1;
         m_address = "";
         m_availability = -1d;
+        m_isManaged = null;
     }
 
     public AvailabilityIpInterface(final OnmsIpInterface iface, final double availability) {
         m_id = iface.getId();
         m_address = str(iface.getIpAddress());
         m_availability = availability;
+        m_isManaged = iface.getIsManaged();
     }
 
     public void addService(final AvailabilityMonitoredService service) {
@@ -81,6 +90,10 @@ public class AvailabilityIpInterface {
         return m_address;
     }
 
+    public String getIsManaged() {
+        return m_isManaged;
+    }
+
     public List<AvailabilityMonitoredService> getServices() {
         return m_services;
     }
@@ -91,6 +104,7 @@ public class AvailabilityIpInterface {
             .append("id", this.getId())
             .append("availability", this.getAvailability())
             .append("address", this.getAddress())
+            .append("isManaged", this.getIsManaged())
             .append("services", this.getServices())
             .toString();
     }

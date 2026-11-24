@@ -113,7 +113,8 @@ public abstract class AbstractRestIT extends OpenNMSSeleniumIT {
                 .then().log().status()
                 .assertThat().statusCode(201);
 
-        // UserFactory checks users.xml for changes at most once per second, so a new user cannot log in at once.
+        // The user manager checks the database for changes at most once per second, so a new user cannot log in
+        // at once.
         // Wait until the login is accepted. Some roles get 403 from whoami, so wait for any status other than 401.
         useCredentials(username, password);
         await().atMost(30, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS)

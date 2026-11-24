@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   classifyNodeText,
   composeFilterRule,
+  defineAdhocGraphStore,
   looksLikeFilterRule,
   nodeCriteriaOf,
   resourceShortId,
@@ -960,5 +961,28 @@ describe('useAdhocGraphStore', () => {
       expect(store.effectiveDatasources).toEqual([])
       expect(store.measurements).toBeNull()
     })
+  })
+})
+
+describe('defineAdhocGraphStore', () => {
+  it('gives each id its own picker and query, apart from the default store', async () => {
+    setActivePinia(createPinia())
+    vi.clearAllMocks()
+    getResourceForNode.mockImplementation(twoInterfaces)
+    getGraphMetrics.mockResolvedValue(null)
+
+    const first = defineAdhocGraphStore('adhocGraph:first')()
+    const second = defineAdhocGraphStore('adhocGraph:second')()
+    const shared = useAdhocGraphStore()
+    expect(new Set([first.$id, second.$id, shared.$id]).size).toBe(3)
+
+    await first.setPickedNodes([{ id: '1', label: 'switch-1' }])
+    expect(ids(first.effectiveNodes)).toEqual(['1'])
+    expect(second.effectiveNodes).toEqual([])
+    expect(shared.effectiveNodes).toEqual([])
+
+    await second.runQuery({ start: 0, end: 1, step: 1, source: [] } as never)
+    expect(second.queryError).toContain('Could not retrieve')
+    expect(first.queryError).toBe('')
   })
 })

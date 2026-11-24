@@ -76,10 +76,12 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
         Logging.putPrefix("icmp");
         try {
             final int pingerId = getPingerId();
+            final NativeDatagramPacket receiveBuffer = new NativeDatagramPacket(MAX_DATAGRAM_SIZE);
             while (!isFinished()) {
-                final NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
-                getPingSocket().receive(datagram);
+                receiveBuffer.setLength(MAX_DATAGRAM_SIZE);
+                getPingSocket().receive(receiveBuffer);
                 final long received = System.nanoTime();
+                final NativeDatagramPacket datagram = copyOf(receiveBuffer);
     
                 final ICMPv6Packet icmpPacket = new ICMPv6Packet(getIPPayload(datagram));
                 final V6PingReply echoReply = icmpPacket.getType() == Type.EchoReply ? new V6PingReply(icmpPacket, received) : null;

@@ -28,10 +28,8 @@
       <AddToGraphCollectionDialog
         v-if="addToCollectionOpen"
         :visible="addToCollectionOpen"
-        :resourceId="resourceId"
-        :resourceLabel="label"
-        :graphtype="definition"
-        :graphTitle="convertedGraphDataRef.title || definition"
+        :graph="{ kind: 'prefab', title: convertedGraphDataRef.title || definition, resourceId, graphtype: definition, timespan: '1_day' }"
+        :details="[{ label: 'Resource', value: label }, { label: 'Graph', value: definition }]"
         @update:visible="(value: boolean) => addToCollectionOpen = value"
       />
       <OnmsTabs value="0" class="graph-data-tabs">

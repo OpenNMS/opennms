@@ -1,4 +1,6 @@
 import NodeDetails from '@/containers/NodeDetails.vue'
+import API from '@/services'
+import { createResultWithPayload } from '@/types/validation'
 import { NodeDetailsTab, useNodeStore } from '@/stores/nodeStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { createTestingPinia } from '@pinia/testing'
@@ -6,15 +8,18 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { computed, ref } from 'vue'
+import { computed, markRaw, ref } from 'vue'
+import ChevronRight from '@opennms/onms-ui/icons/navigation/ChevronRight.vue'
+import ExpandLess from '@opennms/onms-ui/icons/navigation/ExpandLess.vue'
 
+const routerReplace = vi.fn()
 vi.mock('vue-router', () => ({
-  useRoute: vi.fn(() => ({
-    params: { id: '42' }
-  })),
-  useRouter: vi.fn(() => ({
-    push: vi.fn()
-  }))
+  useRoute: vi.fn(() => ({ params: { id: '42' }, query: {}})),
+  useRouter: vi.fn(() => ({ push: vi.fn(), replace: routerReplace }))
+}))
+
+vi.mock('@/services', () => ({
+  default: { resolveNodeId: vi.fn() }
 }))
 
 const canEditRequisitions = ref(true)
@@ -23,7 +28,7 @@ vi.mock('@/composables/useRole', () => ({
 }))
 
 describe('NodeDetails.vue', () => {
-  const mountComponent = (id = '42', loaded = false, tab: NodeDetailsTab = 'main') => {
+  const mountComponent = (id = '42', loaded = false, tab: NodeDetailsTab = 'monitoring') => {
     const pinia = createTestingPinia({ stubActions: false })
     setActivePinia(pinia)
 
@@ -56,15 +61,16 @@ describe('NodeDetails.vue', () => {
             template: '<div></div>',
             props: ['baseHref', 'node', 'snmpPrimaryIpAddress', 'existsInRequisition', 'services', 'triggerNodeInfo']
           },
-          NodeNotificationsPanel: true,
+          NodeNotificationsBox: true,
           NodeStatusBox: true,
           NodeScheduledOutagesBox: true,
           NodeCriticalPathPanel: true,
           AlarmsTable: true,
           NodeDetailsDialog: true,
+          NodeLookupMessage: true,
           EventsTable: true,
           OutagesTable: true,
-          NodeDetailsNetworkTab: true,
+          NodeDetailsNeighborsTab: true,
           InterfacesTabs: true
         }
       }
@@ -75,6 +81,7 @@ describe('NodeDetails.vue', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    routerReplace.mockClear()
     canEditRequisitions.value = true
   })
 
@@ -87,17 +94,147 @@ describe('NodeDetails.vue', () => {
 
     expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeDetailsLinks' }).exists()).toBe(false)
-    expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(false)
   })
 
-  // A 404 for a nonexistent node id leaves nothing to name in the heading.
-  it('titles the page N/A when the node could not be fetched', async () => {
-    const { wrapper } = mountComponent()
-    useNodeStore().nodeLoadFailed = true
+  it('shows Node Not Found, and no tabs, when the node does not exist', async () => {
+    const { wrapper, nodeStore } = mountComponent()
+    nodeStore.nodeLoadError = 'notFound'
     await flushPromises()
 
-    expect(wrapper.find('h2').text()).toBe('Node Details for N/A')
+    const message = wrapper.findComponent({ name: 'NodeLookupMessage' })
+    expect(message.exists()).toBe(true)
+    expect(message.props()).toEqual({ state: 'notFound', value: '42' })
+    expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).exists()).toBe(false)
+  })
+
+  // The room left for the link menus' dropdowns is for a node's page only; a short message is not
+  // put in a tall box.
+  it('keeps the tall minimum height for a node, not for a lookup message', async () => {
+    const notFound = mountComponent()
+    notFound.nodeStore.nodeLoadError = 'notFound'
+    await flushPromises()
+    expect(notFound.wrapper.classes()).not.toContain('onms-node-details--node')
+
+    const loaded = mountComponent('42', true)
+    await flushPromises()
+    expect(loaded.wrapper.classes()).toContain('onms-node-details--node')
+  })
+
+  it('shows Node Lookup Failed, and no tabs, when the node could not be loaded for another reason', async () => {
+    const { wrapper, nodeStore } = mountComponent()
+    nodeStore.nodeLoadError = 'failed'
+    await flushPromises()
+
+    const message = wrapper.findComponent({ name: 'NodeLookupMessage' })
+    expect(message.exists()).toBe(true)
+    expect(message.props()).toEqual({ state: 'error', value: '42' })
+    expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).exists()).toBe(false)
+  })
+
+  it('fetches the node again when the lookup message asks to retry after a failed load', async () => {
+    const { wrapper, nodeStore } = mountComponent()
+    nodeStore.nodeLoadError = 'failed'
+    await flushPromises()
+    expect(nodeStore.getNodeById).toHaveBeenCalledTimes(1)
+
+    wrapper.findComponent({ name: 'NodeLookupMessage' }).vm.$emit('retry')
+    await flushPromises()
+
+    expect(nodeStore.getNodeById).toHaveBeenCalledTimes(2)
+    expect(nodeStore.getNodeById).toHaveBeenLastCalledWith({ id: '42' })
+  })
+
+  it('shows Invalid Node ID, fetches nothing and mounts no tabs, for a bad id', async () => {
+    const { wrapper, nodeStore } = mountComponent('abc')
+    await flushPromises()
+
+    expect(wrapper.findComponent({ name: 'NodeLookupMessage' }).props()).toEqual({ state: 'invalid', value: 'abc' })
+    expect(nodeStore.getNodeById).not.toHaveBeenCalled()
+    expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).exists()).toBe(false)
+  })
+
+  it('replaces a non-canonical numeric id with the canonical one before fetching', async () => {
+    const { nodeStore } = mountComponent('007')
+    await flushPromises()
+
+    expect(routerReplace).toHaveBeenCalledWith({ name: 'Node Details', params: { id: '7' }, query: {}})
+    expect(nodeStore.getNodeById).not.toHaveBeenCalled()
+  })
+
+  it('resolves foreignSource:foreignId and replaces the route with the node id', async () => {
+    vi.mocked(API.resolveNodeId).mockResolvedValue(createResultWithPayload(true, '', '153'))
+    const { wrapper, nodeStore } = mountComponent('req3:1757365364177')
+
+    expect(wrapper.find('[data-test="node-details-resolving"]').exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).exists()).toBe(false)
+    await flushPromises()
+
+    expect(API.resolveNodeId).toHaveBeenCalledWith('req3:1757365364177')
+    expect(routerReplace).toHaveBeenCalledWith({ name: 'Node Details', params: { id: '153' }, query: {}})
+    expect(nodeStore.getNodeById).not.toHaveBeenCalled()
+  })
+
+  it('shows Node Not Found for an unknown foreign id', async () => {
+    vi.mocked(API.resolveNodeId).mockResolvedValue(createResultWithPayload(true, '', null))
+    const { wrapper } = mountComponent('req3:nope')
+    await flushPromises()
+
+    expect(wrapper.findComponent({ name: 'NodeLookupMessage' }).props()).toEqual({ state: 'notFound', value: 'req3:nope' })
+  })
+
+  it('shows Node Lookup Failed when the foreign id lookup errors', async () => {
+    vi.mocked(API.resolveNodeId).mockResolvedValue(createResultWithPayload<string | null>(false, 'Failed'))
+    const { wrapper } = mountComponent('req3:1')
+    await flushPromises()
+
+    expect(wrapper.findComponent({ name: 'NodeLookupMessage' }).props('state')).toBe('error')
+  })
+
+  it('looks the foreign id up again when the lookup message asks to retry', async () => {
+    vi.mocked(API.resolveNodeId).mockResolvedValue(createResultWithPayload<string | null>(false, 'Failed'))
+    const { wrapper } = mountComponent('req3:1')
+    await flushPromises()
+    expect(API.resolveNodeId).toHaveBeenCalledTimes(1)
+
+    wrapper.findComponent({ name: 'NodeLookupMessage' }).vm.$emit('retry')
+    await flushPromises()
+
+    expect(API.resolveNodeId).toHaveBeenCalledTimes(2)
+  })
+
+  // The store outlives the page: a failure left by an earlier visit must not show as Node Not
+  // Found while this one is still being fetched. getNodeById clears the flag synchronously, so
+  // the fetch has to start before the first render.
+  it('does not show Node Not Found on first render from an earlier visit\'s failure', () => {
+    const pinia = createTestingPinia({ stubActions: false })
+    setActivePinia(pinia)
+    useMenuStore().mainMenu = { homeUrl: '/home', baseHref: '/base' } as any
+    const nodeStore = useNodeStore()
+    nodeStore.nodeLoadError = 'notFound'
+    nodeStore.getNodeById = vi.fn(async () => {
+      nodeStore.nodeLoadError = null
+    })
+    nodeStore.getNodeSnmpPrimaryInterface = vi.fn().mockResolvedValue(undefined)
+    nodeStore.getNodeExistsInRequisition = vi.fn().mockResolvedValue(undefined)
+    nodeStore.getNodeCriticalPath = vi.fn().mockResolvedValue(undefined)
+    nodeStore.getNodeLinkServices = vi.fn().mockResolvedValue(undefined)
+
+    const wrapper = mount(NodeDetails, {
+      props: { id: '42' },
+      global: {
+        plugins: [PrimeVue, pinia],
+        stubs: {
+          BreadCrumbs: true,
+          NodeDetailsLinks: true,
+          NodeDetailsDialog: true,
+          NodeLookupMessage: true,
+          NodeDetailsMonitoringTab: true
+        }
+      }
+    })
+
+    expect(wrapper.findComponent({ name: 'NodeLookupMessage' }).exists()).toBe(false)
   })
 
   it('leaves the title unnamed while the node is still being fetched', async () => {
@@ -105,6 +242,13 @@ describe('NodeDetails.vue', () => {
     await flushPromises()
 
     expect(wrapper.find('h2').text()).toBe('Node Details for')
+  })
+
+  it('names the node by label and id in the title once it is loaded', async () => {
+    const { wrapper } = mountComponent('42', true)
+    await flushPromises()
+
+    expect(wrapper.find('h2').text()).toBe('Node Details for srv-42 (ID: 42)')
   })
 
   // The Update SNMP action needs the SNMP-primary address, which the node payload does not
@@ -122,6 +266,15 @@ describe('NodeDetails.vue', () => {
       .toBe('10.0.0.44')
   })
 
+  it('points the Nodes breadcrumb at the node list', async () => {
+    const { wrapper } = mountComponent('42', true)
+    await flushPromises()
+
+    const items = wrapper.findComponent({ name: 'BreadCrumbs' }).props('items') as Array<{ label: string, to: string }>
+
+    expect(items.find(i => i.label === 'Nodes')?.to).toBe('/nodes')
+  })
+
   it('renders the node panels once the node has loaded', async () => {
     const { wrapper } = mountComponent('42', true)
     await flushPromises()
@@ -129,7 +282,7 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'BreadCrumbs' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeDetailsHeader' }).exists()).toBe(true)
-    expect(wrapper.findComponent({ name: 'NodeNotificationsPanel' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'NodeNotificationsBox' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'InterfacesTabs' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeStatusBox' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'NodeScheduledOutagesBox' }).exists()).toBe(true)
@@ -137,28 +290,98 @@ describe('NodeDetails.vue', () => {
     expect(wrapper.findComponent({ name: 'AlarmsTable' }).exists()).toBe(true)
   })
 
-  describe('Main / Additional tabs', () => {
+  describe('System Information expander', () => {
+    const toggle = (wrapper: any) => wrapper.find('[data-test="node-system-info-toggle"]')
+    const toggleButton = (wrapper: any) => wrapper.findComponent({ name: 'OnmsIconButton' })
+    const panel = (wrapper: any) => wrapper.findComponent({ name: 'NodeSystemInfoPanel' })
+
+    it('is collapsed at first: a right chevron, and no panel', async () => {
+      const { wrapper } = mountComponent('42', true)
+      await flushPromises()
+
+      expect(toggle(wrapper).attributes('aria-expanded')).toBe('false')
+      expect(toggle(wrapper).attributes('aria-controls')).toBeUndefined()
+      expect(toggleButton(wrapper).props('icon')).toEqual(markRaw(ChevronRight))
+      expect(toggleButton(wrapper).props('tooltip')).toBe('View node system info')
+      expect(panel(wrapper).exists()).toBe(false)
+    })
+
+    it('opens the panel for the node, under the badges, and says it can hide it', async () => {
+      const { wrapper, nodeStore } = mountComponent('42', true)
+      await flushPromises()
+      await toggle(wrapper).trigger('click')
+
+      expect(nodeStore.nodeSystemInfoExpanded).toBe(true)
+      expect(panel(wrapper).props('node')).toEqual(nodeStore.node)
+      expect(panel(wrapper).attributes('id')).toBe('node-system-info')
+      expect(toggle(wrapper).attributes('aria-expanded')).toBe('true')
+      expect(toggle(wrapper).attributes('aria-controls')).toBe('node-system-info')
+      expect(toggleButton(wrapper).props('icon')).toEqual(markRaw(ExpandLess))
+      expect(toggleButton(wrapper).props('tooltip')).toBe('Hide node system info')
+    })
+
+    it('closes the panel again', async () => {
+      const { wrapper, nodeStore } = mountComponent('42', true)
+      await flushPromises()
+      await toggle(wrapper).trigger('click')
+      await toggle(wrapper).trigger('click')
+
+      expect(nodeStore.nodeSystemInfoExpanded).toBe(false)
+      expect(panel(wrapper).exists()).toBe(false)
+    })
+
+    // Kept in the store, so it is still open on the next node's page.
+    it('opens expanded when it was left open', async () => {
+      const { wrapper, nodeStore } = mountComponent('42', true)
+      nodeStore.nodeSystemInfoExpanded = true
+      await flushPromises()
+
+      expect(panel(wrapper).exists()).toBe(true)
+      expect(toggle(wrapper).attributes('aria-expanded')).toBe('true')
+    })
+
+    it('stays open on every tab', async () => {
+      const { wrapper, nodeStore } = mountComponent('42', true)
+      await flushPromises()
+      await toggle(wrapper).trigger('click')
+      nodeStore.nodeDetailsTab = 'events'
+      await flushPromises()
+
+      expect(panel(wrapper).exists()).toBe(true)
+    })
+
+    it('waits for the node', async () => {
+      const { wrapper, nodeStore } = mountComponent()
+      nodeStore.nodeSystemInfoExpanded = true
+      await flushPromises()
+
+      expect(toggle(wrapper).exists()).toBe(false)
+      expect(panel(wrapper).exists()).toBe(false)
+    })
+  })
+
+  describe('Monitoring / Events / Neighbors tabs', () => {
     const selectTab = async (wrapper: any, tab: NodeDetailsTab) => {
       wrapper.findComponent({ name: 'OnmsSelectButton' }).vm.$emit('update:modelValue', tab)
       await flushPromises()
     }
 
-    it('opens on Main, without mounting the Additional tables', async () => {
+    it('opens on Monitoring, without mounting the Events tables', async () => {
       const { wrapper } = mountComponent('42', true)
       await flushPromises()
 
-      expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).exists()).toBe(true)
-      expect(wrapper.findComponent({ name: 'NodeDetailsAdditionalTab' }).exists()).toBe(false)
+      expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'NodeDetailsEventsTab' }).exists()).toBe(false)
       expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(false)
       expect(wrapper.findComponent({ name: 'OutagesTable' }).exists()).toBe(false)
     })
 
-    it('shows events and outages on Additional, and keeps the header in view', async () => {
+    it('shows events and outages on Events, and keeps the header in view', async () => {
       const { wrapper, nodeStore } = mountComponent('42', true)
       await flushPromises()
-      await selectTab(wrapper, 'additional')
+      await selectTab(wrapper, 'events')
 
-      expect(nodeStore.nodeDetailsTab).toBe('additional')
+      expect(nodeStore.nodeDetailsTab).toBe('events')
       expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(true)
       expect(wrapper.findComponent({ name: 'OutagesTable' }).exists()).toBe(true)
       expect(wrapper.findComponent({ name: 'NodeAvailabilityGraph' }).exists()).toBe(false)
@@ -168,42 +391,42 @@ describe('NodeDetails.vue', () => {
       expect(wrapper.findComponent({ name: 'NodeDetailsLinks' }).exists()).toBe(true)
     })
 
-    // KeepAlive: going back to Main reuses the mounted tab rather than rebuilding it.
+    // KeepAlive: going back to Monitoring reuses the mounted tab rather than rebuilding it.
     it('keeps a tab mounted after switching away and back', async () => {
       const { wrapper } = mountComponent('42', true)
       await flushPromises()
-      const mainTabUid = wrapper.findComponent({ name: 'NodeDetailsMainTab' }).vm.$.uid
+      const mainTabUid = wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).vm.$.uid
 
-      await selectTab(wrapper, 'additional')
-      await selectTab(wrapper, 'main')
+      await selectTab(wrapper, 'events')
+      await selectTab(wrapper, 'monitoring')
 
-      expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).vm.$.uid).toBe(mainTabUid)
+      expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).vm.$.uid).toBe(mainTabUid)
     })
 
     it('opens on the tab last chosen, which the store keeps', async () => {
-      const { wrapper } = mountComponent('42', true, 'additional')
+      const { wrapper } = mountComponent('42', true, 'events')
       await flushPromises()
 
-      expect(wrapper.findComponent({ name: 'OnmsSelectButton' }).props('modelValue')).toBe('additional')
+      expect(wrapper.findComponent({ name: 'OnmsSelectButton' }).props('modelValue')).toBe('events')
       expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(true)
     })
 
-    it('shows the Network tab when chosen', async () => {
+    it('shows the Neighbors tab when chosen', async () => {
       const { wrapper } = mountComponent('42', true)
       await flushPromises()
-      await selectTab(wrapper, 'network')
+      await selectTab(wrapper, 'neighbors')
 
-      expect(wrapper.findComponent({ name: 'NodeDetailsNetworkTab' }).exists()).toBe(true)
-      expect(wrapper.findComponent({ name: 'NodeDetailsMainTab' }).exists()).toBe(false)
+      expect(wrapper.findComponent({ name: 'NodeDetailsNeighborsTab' }).exists()).toBe(true)
+      expect(wrapper.findComponent({ name: 'NodeDetailsMonitoringTab' }).exists()).toBe(false)
       expect(wrapper.findComponent({ name: 'EventsTable' }).exists()).toBe(false)
     })
 
-    it('offers Main, Additional and Network, in that order', async () => {
+    it('offers Monitoring, Events and Neighbors, in that order', async () => {
       const { wrapper } = mountComponent('42', true)
       await flushPromises()
 
       const options = wrapper.findComponent({ name: 'OnmsSelectButton' }).props('options') as Array<{ label: string }>
-      expect(options.map(o => o.label)).toEqual(['Main', 'Additional', 'Network'])
+      expect(options.map(o => o.label)).toEqual(['Monitoring', 'Events', 'Neighbors'])
     })
 
     it('puts the tab switch on the title row', async () => {
@@ -363,6 +586,23 @@ describe('NodeDetails.vue', () => {
       await flushPromises()
 
       expect(wrapper.findComponent({ name: 'NodeDetailsLinks' }).props('existsInRequisition')).toBe(true)
+    })
+
+    it('marks the links row once the check has answered for this node', async () => {
+      const { wrapper, nodeStore } = mountComponent('42', true)
+      await flushPromises()
+
+      const links = () => wrapper.findComponent({ name: 'NodeDetailsLinks' })
+      expect(links().attributes('data-requisition-checked')).toBeUndefined()
+
+      // An answer for another node, from before the user moved on, does not count.
+      nodeStore.existsInRequisitionNodeId = '41'
+      await flushPromises()
+      expect(links().attributes('data-requisition-checked')).toBeUndefined()
+
+      nodeStore.existsInRequisitionNodeId = '42'
+      await flushPromises()
+      expect(links().attributes('data-requisition-checked')).toBe('true')
     })
 
     it('does not ask before the node has loaded', async () => {

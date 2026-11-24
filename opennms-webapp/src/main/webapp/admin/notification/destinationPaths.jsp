@@ -25,6 +25,7 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
+		org.owasp.encoder.Encode,
 		org.opennms.netmgt.config.*,
 		org.opennms.netmgt.config.destinationPaths.*
 	"
@@ -130,7 +131,7 @@
                     <% Map<String, Path> pathsMap = new TreeMap<String, Path>(DestinationPathFactory.getInstance().getPaths());
                         for (String key : pathsMap.keySet()) {
                     %>
-                    <option VALUE=<%=key%>><%=key%>
+                    <option VALUE="<%=Encode.forHtmlAttribute(key)%>"><%=Encode.forHtml(key)%>
                     </option>
                     <% } %>
                 </select>

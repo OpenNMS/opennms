@@ -14,6 +14,9 @@ executors:
   integration-test-executor:
     machine:
       image: ubuntu-2204:2025.09.1
+  select-tests-executor:
+    docker:
+      - image: cimg/python:3.12.7
   smoke-test-executor:
     machine:
       image: ubuntu-2204:2025.09.1

@@ -2,6 +2,7 @@ import { OnmsMenubar, OnmsMenuItem } from '@opennms/onms-ui'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 
 const items: OnmsMenuItem[] = [
   {
@@ -62,6 +63,35 @@ describe('OnmsMenubar contract', () => {
     const pt = { root: { class: 'escape-hatch' }}
 
     expect(mountBar({ unsafePt: pt }).findComponent({ name: 'Menubar' }).props('pt')).toEqual(expect.objectContaining(pt))
+  })
+
+  describe('collapsed', () => {
+    const isMobile = (wrapper: ReturnType<typeof mountBar>) => wrapper.find('.p-menubar').classes('p-menubar-mobile')
+
+    it('leaves the viewport breakpoint to PrimeVue when it is left out', () => {
+      expect(mountBar().findComponent({ name: 'Menubar' }).props('breakpoint')).toBe('960px')
+    })
+
+    // PrimeVue sets the mobile state in its own mounted hook, so the class lands a tick later.
+    it('shows the hamburger when true and the full row when false, whatever the viewport', async () => {
+      const collapsed = mountBar({ collapsed: true })
+      const expanded = mountBar({ collapsed: false })
+      await nextTick()
+
+      expect(isMobile(collapsed)).toBe(true)
+      expect(isMobile(expanded)).toBe(false)
+    })
+
+    // PrimeVue reads its breakpoint only when it mounts, so a change has to reach it some other way.
+    it('follows a change after mounting', async () => {
+      const wrapper = mountBar({ collapsed: false })
+
+      await wrapper.setProps({ collapsed: true })
+      expect(isMobile(wrapper)).toBe(true)
+
+      await wrapper.setProps({ collapsed: false })
+      expect(isMobile(wrapper)).toBe(false)
+    })
   })
 
   // PrimeVue renders the target but no rel, so a new tab could reach back through window.opener.

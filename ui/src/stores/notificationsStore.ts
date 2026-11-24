@@ -21,8 +21,9 @@
 ///
 
 import API from '@/services'
+import { NodeNotificationStatus } from '@/types'
 import { useAuthStore } from '@/stores/authStore'
-import { NotificationBrowseResult, NotificationQueryPreset, OnmsNotification } from '@/types/notifications'
+import { NotificationAckType, NotificationBrowseResult, NotificationQueryPreset, OnmsNotification } from '@/types/notifications'
 import { createFailureResult, createResultWithPayload, createSuccessResponse, ValidationResult, ValidationResultWithPayload } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -32,18 +33,34 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
 
   const preset = ref<NotificationQueryPreset>('yourOutstanding')
   const userFilter = ref<string | null>(null)
+  const nodeFilter = ref<{ id: string, label: string | null } | null>(null)
   const notifications = ref([] as OnmsNotification[])
   const totalCount = ref(0)
   const rows = ref(10)
   const first = ref(0)
   const loading = ref(false)
 
+  // The Node Details notifications box's slice: the server's counts of one node's notifications,
+  // stamped with the node, as the alarm store's nodeAlarmStatus is. Apart from the page's query.
+  const nodeNotificationStatus = ref<NodeNotificationStatus | undefined>(undefined)
+  const nodeNotificationStatusNodeId = ref<string | undefined>(undefined)
+  // The node whose latest fetch failed, if any; kept by node id so one node's failure never reads
+  // as another's.
+  const nodeNotificationStatusFailedNodeId = ref<string | undefined>(undefined)
+  let nodeNotificationStatusRequestId = 0
+
   const currentUser = computed<string>(() => authStore.whoAmI.id)
 
-  const acktype = computed<'unack' | 'ack'>(() => (preset.value === 'allAcknowledged' ? 'ack' : 'unack'))
+  const acktype = computed<NotificationAckType>(() => {
+    if (preset.value === 'all') {
+      return 'all'
+    }
+
+    return preset.value === 'allAcknowledged' || preset.value === 'yourAcknowledged' ? 'ack' : 'unack'
+  })
 
   const effectiveUser = computed<string | null>(() => {
-    if (preset.value === 'yourOutstanding') {
+    if (preset.value === 'yourOutstanding' || preset.value === 'yourAcknowledged') {
       return currentUser.value || null
     }
     if (preset.value === 'userSearch') {
@@ -59,20 +76,31 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
   const effectiveExcludeUser = computed<string | null>(() =>
     preset.value === 'teamOutstanding' ? currentUser.value || null : null)
 
-  const title = computed<string>(() => {
+  const presetTitle = computed<string>(() => {
     switch (preset.value) {
       case 'yourOutstanding':
         return 'Your Outstanding Notifications'
+      case 'yourAcknowledged':
+        return 'Your Acknowledged Notifications'
       case 'teamOutstanding':
         return 'Outstanding Notifications Assigned to Anyone but You'
       case 'allOutstanding':
         return 'All Outstanding Notifications'
       case 'allAcknowledged':
         return 'All Acknowledged Notifications'
+      case 'all':
+        return 'All Notifications'
       case 'userSearch':
         return userFilter.value ? `Outstanding Notifications for '${userFilter.value}'` : 'Outstanding Notifications for User'
     }
     return 'Notifications'
+  })
+
+  const title = computed<string>(() => {
+    if (!nodeFilter.value) {
+      return presetTitle.value
+    }
+    return `${presetTitle.value} for Node ${nodeFilter.value.label ?? nodeFilter.value.id}`
   })
 
   // No snackbars here: actions return a ValidationResult and the calling
@@ -80,7 +108,8 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
   // widening a user-scoped query to everyone's notifications would be silently
   // wrong, so user-scoped presets refuse instead.
   const needsUser = computed<boolean>(() =>
-    preset.value === 'yourOutstanding' || preset.value === 'userSearch' || preset.value === 'teamOutstanding')
+    preset.value === 'yourOutstanding' || preset.value === 'yourAcknowledged' ||
+    preset.value === 'userSearch' || preset.value === 'teamOutstanding')
   const missingUser = computed<boolean>(() => needsUser.value && !effectiveUser.value && !effectiveExcludeUser.value)
 
   // Loads can overlap (preset buttons, Refresh, paging); only the latest may
@@ -105,6 +134,7 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
         acktype: acktype.value,
         user: effectiveUser.value,
         excludeUser: effectiveExcludeUser.value,
+        nodeId: nodeFilter.value?.id ?? null,
         limit: rows.value,
         offset: first.value
       })
@@ -130,6 +160,40 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
     return await load()
   }
 
+  // The label is only for display; a failed lookup (deleted node, server error) leaves the id in
+  // its place and does not stop the list from filtering.
+  const lookUpNodeLabel = async (id: string) => {
+    const node = await API.getNodeById(id)
+    if (nodeFilter.value?.id === id) {
+      nodeFilter.value = { id, label: node ? node.label ?? null : null }
+    }
+  }
+
+  // Sets or clears the node filter on the current view: the preset and any user search stay, which
+  // applyQuery (a whole new query) does not do. The page's node input and chip go through here.
+  const setNodeFilter = async (nodeId: string | null): Promise<ValidationResult> => {
+    // Look the label up only for a new node, or when the stored one is still unknown (a failed
+    // lookup is worth retrying); re-applying the same labelled node needs no request.
+    const needsLabel = !!nodeId && (nodeFilter.value?.id !== nodeId || nodeFilter.value.label === null)
+    if (nodeFilter.value?.id !== (nodeId ?? undefined)) {
+      nodeFilter.value = nodeId ? { id: nodeId, label: null } : null
+    }
+    first.value = 0
+    const [result] = await Promise.all([load(), needsLabel && nodeId ? lookUpNodeLabel(nodeId) : Promise.resolve()])
+    return result
+  }
+
+  // The Notifications page's deep link (?preset=&node=) and its own URL sync go through here.
+  const applyQuery = async (newPreset: NotificationQueryPreset, nodeId: string | null): Promise<ValidationResult> => {
+    preset.value = newPreset
+    userFilter.value = null
+    return await setNodeFilter(nodeId)
+  }
+
+  const clearNodeFilter = async (): Promise<ValidationResult> => {
+    return await setNodeFilter(null)
+  }
+
   const onPage = async (newFirst: number, newRows: number): Promise<ValidationResult> => {
     first.value = newFirst
     rows.value = newRows
@@ -151,6 +215,7 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
       acktype: acktype.value,
       user: effectiveUser.value,
       excludeUser: effectiveExcludeUser.value,
+      nodeId: nodeFilter.value?.id ?? null,
       limit,
       offset: 0
     })
@@ -172,9 +237,42 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
     return reload.success ? createSuccessResponse() : { ...createSuccessResponse(), errors: [reload.message] }
   }
 
+  /**
+   * Fetch the counts of one node's notifications. Replaced only on success, so check
+   * `nodeNotificationStatusNodeId` before showing them for a node, and
+   * `nodeNotificationStatusFailedNodeId` to tell one still loading from one that failed.
+   */
+  const getNodeNotificationStatus = async (nodeId: string): Promise<ValidationResultWithPayload<NodeNotificationStatus>> => {
+    const requestId = ++nodeNotificationStatusRequestId
+
+    // A fetch for another node starts afresh; a refresh of the failed node keeps saying so.
+    if (nodeNotificationStatusFailedNodeId.value !== nodeId) {
+      nodeNotificationStatusFailedNodeId.value = undefined
+    }
+
+    const result = await API.getNodeNotificationStatus(nodeId)
+
+    if (requestId !== nodeNotificationStatusRequestId) {
+      return createResultWithPayload(false, 'Superseded by a newer request')
+    }
+
+    if (!result.success || !result.payload) {
+      nodeNotificationStatusFailedNodeId.value = nodeId
+
+      return createResultWithPayload(false, result.message)
+    }
+
+    nodeNotificationStatus.value = result.payload
+    nodeNotificationStatusNodeId.value = nodeId
+    nodeNotificationStatusFailedNodeId.value = undefined
+
+    return result
+  }
+
   return {
     preset,
     userFilter,
+    nodeFilter,
     awaitingUser,
     notifications,
     totalCount,
@@ -182,11 +280,19 @@ export const useNotificationsStore = defineStore('notificationsStore', () => {
     first,
     loading,
     currentUser,
+    acktype,
     title,
     load,
     applyPreset,
+    applyQuery,
+    setNodeFilter,
+    clearNodeFilter,
     onPage,
     fetchForExport,
-    acknowledge
+    acknowledge,
+    nodeNotificationStatus,
+    nodeNotificationStatusNodeId,
+    nodeNotificationStatusFailedNodeId,
+    getNodeNotificationStatus
   }
 })
