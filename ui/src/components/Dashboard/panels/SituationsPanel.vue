@@ -70,7 +70,7 @@ License.
 import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getPendingSituations, situationAlarmCount, type Situation } from '@/services/situationService'
-import { buildFilterClauses } from '../filter'
+import { buildFilterClauses } from '@/services/dashboardFilterService'
 import { severityColor, severityLabel, severityTint } from '../severity'
 
 const props = defineProps<PanelComponentProps>()

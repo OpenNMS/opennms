@@ -21,7 +21,7 @@
 ///
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getNodeAlarmStatus, getNodeAvailabilityPercentage, getNodeCriticalPath, getNodeNotificationStatus, lookupNodeById, resolveNodeId } from '@/services/nodeService'
+import { getNodeAlarmStatus, getNodeIdsByIpAddress, getNodeIdsInCategory, getNodeAvailabilityPercentage, getNodeCriticalPath, getNodeNotificationStatus, lookupNodeById, resolveNodeId } from '@/services/nodeService'
 import { rest, v2 } from '@/services/axiosInstances'
 
 vi.mock('@/services/axiosInstances', () => ({
@@ -304,5 +304,39 @@ describe('nodeService.lookupNodeById', () => {
     const result = await lookupNodeById('42')
 
     expect(result.success).toBe(false)
+  })
+})
+
+describe('nodeService node id lookups', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('getNodeIdsInCategory searches by category name and returns numeric ids', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { node: [{ id: 3 }, { id: '7' }, { id: null }] }})
+
+    expect(await getNodeIdsInCategory('Routers')).toEqual([3, 7])
+    expect(v2.get).toHaveBeenCalledWith(`/nodes?_s=${encodeURIComponent('category.name==Routers')}&limit=0`)
+  })
+
+  it('getNodeIdsByIpAddress searches by interface address', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 200, data: { node: [{ id: 5 }] }})
+
+    expect(await getNodeIdsByIpAddress('10.0.0.1')).toEqual([5])
+    expect(v2.get).toHaveBeenCalledWith(`/nodes?_s=${encodeURIComponent('ipInterface.ipAddress==10.0.0.1')}&limit=0`)
+  })
+
+  it('both reject when the request fails', async () => {
+    vi.mocked(v2.get).mockRejectedValue(new Error('boom'))
+
+    await expect(getNodeIdsInCategory('Routers')).rejects.toThrow('boom')
+    await expect(getNodeIdsByIpAddress('10.0.0.1')).rejects.toThrow('boom')
+  })
+
+  it('both answer no ids for an empty body', async () => {
+    vi.mocked(v2.get).mockResolvedValue({ status: 204, data: '' })
+
+    expect(await getNodeIdsInCategory('Routers')).toEqual([])
+    expect(await getNodeIdsByIpAddress('10.0.0.1')).toEqual([])
   })
 })

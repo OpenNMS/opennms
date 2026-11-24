@@ -31,7 +31,9 @@ import {
   getNodeCriticalPath,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
-  getNodeAvailabilityPercentage
+  getNodeAvailabilityPercentage,
+  getNodeIdsInCategory,
+  getNodeIdsByIpAddress
 } from './nodeService'
 import { getNodeOutageTimeline } from './nodeAvailabilityTimelineService'
 import { getNodeOutages, getOutages } from './outageService'
@@ -223,6 +225,8 @@ export default {
   getInfo,
   getNodes,
   getNodesByFilterRule,
+  getNodeIdsInCategory,
+  getNodeIdsByIpAddress,
   getAlarms,
   getEvents,
   modifyAlarm,

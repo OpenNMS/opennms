@@ -20,16 +20,9 @@
 /// License.
 ///
 
-import { v2 } from '@/services/axiosInstances'
+import { getNodeIdsByIpAddress, getNodeIdsInCategory } from '@/services/nodeService'
+import { filterFiqlClauses, isFilterActive } from '@/lib/dashboardFilter'
 import type { DashboardFilter } from '@/types/dashboard'
-
-// Shared dashboard filter (NMS-10507): surveillance categories + IP match,
-// translated into FIQL for the node-scoped panels (alarms / situations /
-// outages). node.id and ipInterface.ipAddress both resolve on those entities;
-// node.categories.name does NOT, so categories are resolved to node ids first.
-
-export const isFilterActive = (filter: DashboardFilter): boolean =>
-  filter.surveillanceCategories.length > 0 || !!filter.ipMatch?.trim()
 
 // Cache per sorted category set for the life of the page; the membership of a
 // surveillance category rarely changes within a dashboard session.
@@ -49,11 +42,8 @@ export const resolveFilterNodeIds = async (filter: DashboardFilter): Promise<num
       let ok = true
       for (const category of categories) {
         try {
-          const resp = await v2.get(`/nodes?_s=${encodeURIComponent(`category.name==${category}`)}&limit=0`)
-          for (const node of resp.data?.node ?? []) {
-            if (node?.id != null) {
-              ids.add(Number(node.id))
-            }
+          for (const id of await getNodeIdsInCategory(category)) {
+            ids.add(id)
           }
         } catch {
           // a transient failure must not cache an empty set for the session; evict
@@ -68,28 +58,6 @@ export const resolveFilterNodeIds = async (filter: DashboardFilter): Promise<num
     })())
   }
   return nodeIdCache.get(key)!
-}
-
-// URLs have length limits, so cap the node-id OR-group; the panels are homepage
-// summaries, not exhaustive reports.
-const MAX_NODE_IDS = 300
-
-// FIQL fragments (already grouped) that constrain a node-scoped query to the
-// active filter. AND these into the panel's own `_s` with ';'.
-// `nodeIdProperty` is the FIQL path of the node id on the queried entity:
-// `node.id` where the node is an alias (alarms, outages), `id` on /nodes itself.
-export const filterFiqlClauses = (filter: DashboardFilter, nodeIds: number[] | null, nodeIdProperty = 'node.id'): string[] => {
-  const clauses: string[] = []
-  const ip = filter.ipMatch?.trim()
-  if (ip) {
-    clauses.push(`ipInterface.ipAddress==${ip}`)
-  }
-  if (nodeIds) {
-    // a category selected but matching no nodes must return nothing, not everything
-    const capped = nodeIds.slice(0, MAX_NODE_IDS)
-    clauses.push(capped.length ? `(${capped.map(id => `${nodeIdProperty}==${id}`).join(',')})` : `${nodeIdProperty}==-1`)
-  }
-  return clauses
 }
 
 // Convenience: resolve + build the clauses in one call.
@@ -108,16 +76,11 @@ export const resolveFilterToNodeIdSet = async (filter: DashboardFilter): Promise
   const ip = filter.ipMatch?.trim()
   let ipIds: Set<number> | null = null
   if (ip) {
-    ipIds = new Set()
     try {
-      const resp = await v2.get(`/nodes?_s=${encodeURIComponent(`ipInterface.ipAddress==${ip}`)}&limit=0`)
-      for (const node of resp.data?.node ?? []) {
-        if (node?.id != null) {
-          ipIds.add(Number(node.id))
-        }
-      }
+      ipIds = new Set(await getNodeIdsByIpAddress(ip))
     } catch {
       // an unresolvable ip clause must fail closed (match nothing), not open
+      ipIds = new Set()
     }
   }
   if (categoryIds && ipIds) {
