@@ -16,9 +16,11 @@ import { OnmsSearchInput } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { useDeviceStore } from '@/stores/deviceStore'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { DeviceConfigQueryParams } from '@/types/deviceConfig'
 
 const deviceStore = useDeviceStore()
+const { withSpinner } = useActionFeedback()
 const searchVal = ref<string | undefined>(undefined)
 
 const searchFilterHandler = (val = '') => {
@@ -39,7 +41,7 @@ const searchFilterHandler = (val = '') => {
 }
 
 // TODO: return scroll bar to top before running, so infinite scroll won't trigger after search
-const getDeviceConfigBackupsOnDebounce = useDebounceFn(() => deviceStore.getDeviceConfigBackups(), 1000)
+const getDeviceConfigBackupsOnDebounce = useDebounceFn(() => withSpinner(() => deviceStore.getDeviceConfigBackups()), 1000)
 </script>
 
 <style scoped lang="scss">

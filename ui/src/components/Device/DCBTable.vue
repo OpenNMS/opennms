@@ -200,6 +200,7 @@ import DCBModalConfigDiffContent from './DCBModalConfigDiffContent.vue'
 import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
 import DCBTableStatusDropdown from './DCBTableStatusDropdown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 
 enum DCBModalContentComponentNames {
@@ -209,6 +210,7 @@ enum DCBModalContentComponentNames {
 }
 
 const deviceStore = useDeviceStore()
+const { withSpinner, showSuccess, showError } = useActionFeedback()
 const dcbModalVisible = ref(false)
 const dcbModalContentComponentName = ref('')
 const all = ref(false)
@@ -252,7 +254,7 @@ const onPage = (event: OnmsTablePageEvent) => {
     limit: event.rows,
     offset: event.first
   })
-  deviceStore.getDeviceConfigBackups()
+  withSpinner(() => deviceStore.getDeviceConfigBackups())
 }
 
 const onSort = (event: OnmsTableSortEvent) => {
@@ -267,7 +269,7 @@ const onSort = (event: OnmsTableSortEvent) => {
   }
 
   deviceStore.updateDeviceConfigBackupQueryParams(newQueryParams)
-  deviceStore.getDeviceConfigBackups()
+  withSpinner(() => deviceStore.getDeviceConfigBackups())
 }
 
 const onSelectAll = (val: boolean) => {
@@ -293,8 +295,15 @@ const selectCheckbox = (config: DeviceConfigBackup) => {
   deviceStore.setSelectedIds(selectedDeviceConfigIds.value)
 }
 
-const onDownload = () => deviceStore.downloadSelectedDevices()
-const onBackupNow = () => deviceStore.backupSelectedDevices()
+const onDownload = () => withSpinner(() => deviceStore.downloadSelectedDevices())
+const onBackupNow = async () => {
+  const triggered = await withSpinner(() => deviceStore.backupSelectedDevices())
+  if (triggered) {
+    showSuccess('Device backup triggered.')
+  } else {
+    showError('Device backup not triggered.')
+  }
+}
 
 const onViewHistory = () => {
   dcbModalContentComponentName.value = DCBModalContentComponentNames.DCBModalViewHistoryContent

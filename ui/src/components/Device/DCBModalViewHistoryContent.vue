@@ -49,10 +49,12 @@ import Compare from '@/assets/Compare.vue'
 import DCBDiff from './DCBDiff.vue'
 import { DeviceConfigBackup } from '@/types/deviceConfig'
 import { useDeviceStore } from '@/stores/deviceStore'
+import useActionFeedback from '@/composables/useActionFeedback'
 
 const emit = defineEmits(['onCompare'])
 
 const deviceStore = useDeviceStore()
+const { withSpinner } = useActionFeedback()
 const selectedConfig = ref<DeviceConfigBackup>()
 const { historyModalBackups } = storeToRefs(deviceStore)
 
@@ -64,13 +66,13 @@ watch(historyModalBackups, (backups) => {
 
 const onDownload = () => {
   if (selectedConfig.value?.id) {
-    deviceStore.downloadByConfig([selectedConfig.value.id])
+    withSpinner(() => deviceStore.downloadByConfig([selectedConfig.value!.id]))
   }
 }
 
 const setSelectedConfig = (config: DeviceConfigBackup) => selectedConfig.value = config
 
-onMounted(() => deviceStore.getHistoryByIpInterface())
+onMounted(() => withSpinner(() => deviceStore.getHistoryByIpInterface()))
 </script>
 
 <style scoped lang="scss">

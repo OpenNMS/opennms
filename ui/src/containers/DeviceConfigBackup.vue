@@ -32,10 +32,12 @@ import DCBGroupFilters from '@/components/Device/DCBGroupFilters.vue'
 import DCBSearch from '@/components/Device/DCBSearch.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
 const deviceStore = useDeviceStore()
+const { withSpinner } = useActionFeedback()
 const menuStore = useMenuStore()
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
@@ -47,7 +49,7 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
   ]
 })
 
-onMounted(() => deviceStore.getDeviceConfigBackups(true))
+onMounted(() => withSpinner(() => deviceStore.getDeviceConfigBackups(true)))
 </script>
 
 <style scoped lang="scss">
