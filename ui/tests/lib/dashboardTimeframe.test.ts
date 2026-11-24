@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { timeframeRange } from '@/components/Dashboard/timeframe'
-import { timeframeOptions, refreshOptions } from '@/components/Dashboard/timeframe'
+import { timeframeRange } from '@/lib/dashboardTimeframe'
+import { timeframeOptions, refreshOptions } from '@/lib/dashboardTimeframe'
 import { TimeframePreset } from '@/types/dashboard'
 
 const HOUR = 3_600_000

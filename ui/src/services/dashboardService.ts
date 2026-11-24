@@ -24,7 +24,7 @@ import axios from 'axios'
 import { v2 } from './axiosInstances'
 import { getNewsFeed } from './newsfeedService'
 import type { DashboardLayout, DashboardPanel } from '@/types/dashboard'
-import { createDefaultLayout, NEWSFEED_PANEL_TYPE } from '@/components/Dashboard/defaultLayout'
+import { createDefaultLayout, NEWSFEED_PANEL_TYPE } from '@/lib/dashboardLayout'
 
 // Panel types removed from the product on purpose. Unlike an unknown type, these
 // are dropped from stored layouts so the next save removes them for good.

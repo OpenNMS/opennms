@@ -22,7 +22,7 @@
 import { rest } from './axiosInstances'
 import type { Timeframe } from '@/types/dashboard'
 import { findKpi, listKpiSources, type MeasurementSource } from './topnService'
-import { timeframeRange } from '@/components/Dashboard/timeframe'
+import { timeframeRange } from '@/lib/dashboardTimeframe'
 
 // Metric-chart panel: one entity x one metric over the resolved timeframe.
 // Metrics are the same registry the Top-N panel uses (TOPN_KPIS).

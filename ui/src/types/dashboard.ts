@@ -20,6 +20,8 @@
 /// License.
 ///
 
+import type { Component } from 'vue'
+
 // Type model for the configurable system-wide dashboard (NMS-19851).
 // The persisted layout document is intentionally self-describing so that
 // future per-user / multiple-named dashboards are additive (change `scope`),
@@ -105,4 +107,34 @@ export interface PanelComponentProps {
   timeframe: Timeframe
   // increments on each global refresh tick; panels watch this to refetch
   refreshTick: number
+}
+
+export interface PanelGridSize {
+  w: number
+  h: number
+}
+
+// A panel is self-contained: registering one entry here is all that's needed to
+// make it available in the "Add panel" picker. The registry is the single place
+// that grows as panels are added (NMS-4433 etc).
+export interface PanelDefinition {
+  type: string
+  title: string
+  category: 'status' | 'inventory' | 'info'
+  component: Component
+  defaultSize: PanelGridSize
+  minSize?: PanelGridSize
+  // default height behaviour; user can override per panel instance. 'fixed' =
+  // fixed grid height with scrollbar, 'auto' = grow/shrink to content.
+  defaultHeightMode?: PanelHeightMode
+  supportsTimeframe?: boolean // show timeframe control for this panel (user-requested)
+  supportedFilters?: FilterKey[] // filters this panel honors (NMS-10507)
+  // legacy deep-link the panel title opens (matches the front-page box headers)
+  titleHref?: string
+  renamable?: boolean // default true
+  collapsible?: boolean // default true (NMS-11946)
+  roles?: string[] // future: restrict visibility via useRole()
+  // not offered in the "Add panel" picker; still renders if a layout references
+  // it (dev/debug panels like 'sample')
+  hidden?: boolean
 }

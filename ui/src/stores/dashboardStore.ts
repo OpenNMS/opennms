@@ -22,7 +22,7 @@
 
 import { defineStore } from 'pinia'
 import type { DashboardFilter, DashboardLayout, DashboardPanel, PanelHeightMode, Timeframe } from '@/types/dashboard'
-import { createDefaultLayout, ROW_PX } from '@/components/Dashboard/defaultLayout'
+import { createDefaultLayout, ROW_PX } from '@/lib/dashboardLayout'
 import { getPanelDefinition } from '@/components/Dashboard/registry'
 import { getSystemDashboard, saveSystemDashboard } from '@/services/dashboardService'
 import { invalidateKpiSources } from '@/services/topnService'
