@@ -66,7 +66,7 @@
       >
         <div class="notification-dropdown-item-content dropdown-menu-wrapper">
           <div class="notification-dropdown-item-content-button">
-            <i :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase() ?? 'indeterminate'}`" />
+            <i :class="`notification-badge-pill badge-severity-${severityKey(item?.severity)}`" />
             <div class="full-width-left">
               <div>
                 <span class="font-weight-bold">{{ formatPageTime(item.pageTime) }}</span>
@@ -134,6 +134,7 @@ import IconNotificationsOff from '@opennms/onms-ui/icons/notification/Notificati
 import IconNotificationSelected from '@opennms/onms-ui/icons/notification/NotificationSelected.vue'
 import IconPerson from '@opennms/onms-ui/icons/action/Person.vue'
 import { navigateTo } from '@/lib/navigation'
+import { highestSeverity, severityKey } from '@/lib/severity'
 import { useMenuStore } from '@/stores/menuStore'
 import {
   MainMenu,
@@ -230,27 +231,22 @@ const notificationsShowMoreLink = computed<string>(() =>
 
 const userNotificationBadgeClass = computed<string>(() => {
   if (notificationSummary.value.userUnacknowledgedCount === 0) {
-    return 'badge-severity-cleared'
+    return 'badge-severity-none'
   }
 
-  if (!notificationSummary.value.userUnacknowledgedNotifications ||
-      !notificationSummary.value.userUnacknowledgedNotifications.notification) {
-    return 'badge-severity-indeterminate'
+  const list = notificationSummary.value.userUnacknowledgedNotifications?.notification
+
+  if (!list) {
+    return 'badge-severity-none'
   }
 
-  const severities = ['cleared', 'indeterminate', 'warning', 'minor', 'major', 'critical']
+  const highest = highestSeverity(list.map(n => n.severity ?? 'INDETERMINATE'))
 
-  const severityIndexList = notificationSummary.value.userUnacknowledgedNotifications
-    .notification.map(n => severities.indexOf(n.severity?.toLowerCase() ?? 'indeterminate')) || []
-
-  const maxSeverityIndex = Math.max.apply(Math, severityIndexList)
-  const maxSeverity = severities[maxSeverityIndex]
-
-  return `badge-severity-${maxSeverity}`
+  return `badge-severity-${severityKey(highest)}`
 })
 
 const teamNotificationBadgeClass = computed<string>(() =>
-  notificationSummary.value.teamUnacknowledgedCount === 0 ? 'badge-severity-cleared' : 'badge-info'
+  notificationSummary.value.teamUnacknowledgedCount === 0 ? 'badge-severity-none' : 'badge-info'
 )
 
 const computeLink = (url: string) => {
@@ -464,32 +460,34 @@ div.user-notification-badge-wrapper {
   background-color: #17a2b8;
 }
 
-.badge-severity-indeterminate {
-  background-color: #5dafdd;
-}
-
-.badge-severity-cleared {
-  background-color: #cdcdd0;
-}
-
-.badge-severity-normal {
-  background-color: #438953;
-}
-
-.badge-severity-warning {
-  background-color: #fff000;
-}
-
-.badge-severity-minor {
-  background-color: #ffd60a;
+.badge-severity-critical {
+  background-color: var(--onms-severity-critical-bg);
+  color: var(--onms-severity-critical-fg);
 }
 
 .badge-severity-major {
-  background-color: #ff9f0a;
+  background-color: var(--onms-severity-major-bg);
+  color: var(--onms-severity-major-fg);
 }
 
-.badge-severity-critical {
-  background-color: #df5251;
+.badge-severity-minor {
+  background-color: var(--onms-severity-minor-bg);
+  color: var(--onms-severity-minor-fg);
+}
+
+.badge-severity-warning {
+  background-color: var(--onms-severity-warning-bg);
+  color: var(--onms-severity-warning-fg);
+}
+
+.badge-severity-normal {
+  background-color: var(--onms-severity-normal-bg);
+  color: var(--onms-severity-normal-fg);
+}
+
+.badge-severity-none {
+  background-color: var(--onms-severity-none-bg);
+  color: var(--onms-severity-none-fg);
 }
 </style>
 
