@@ -58,6 +58,7 @@ import { useRouter } from 'vue-router'
 import CreateEventConfigurationDialog from '@/components/EventConfiguration/Dialog/CreateEventConfigurationDialog.vue'
 import EventConfigTabContainer from '@/components/EventConfiguration/EventConfigTabContainer.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { getDefaultEventConfigEvent } from '@/stores/eventConfigDetailStore'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
@@ -69,6 +70,7 @@ import ArrowDown from '@opennms/onms-ui/icons/navigation/ArrowDropDown.vue'
 
 const store = useEventConfigStore()
 const router = useRouter()
+const { showError } = useActionFeedback()
 const menuStore = useMenuStore()
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
@@ -104,7 +106,9 @@ const goToCreateEventConfig = () => {
 // the reorder editor lives on the View tab: starting it from the Upload tab switches there first
 const onReorderSources = async () => {
   store.activeTab = 0
-  await store.startSourcesReorder()
+  if (!(await store.startSourcesReorder())) {
+    showError('Failed to load the source order. Try again.')
+  }
 }
 </script>
 

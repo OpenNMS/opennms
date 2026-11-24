@@ -1,4 +1,3 @@
-import useSnackbar from '@/composables/useSnackbar'
 import { EVENT_CONF_CATCH_ALL_SOURCE } from '@/lib/utils'
 import {
   changeEventConfigSourceStatus,
@@ -154,12 +153,14 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     hideCreateEventConfigSourceDialog() {
       this.createEventConfigSourceDialogState.visible = false
     },
-    async startSourcesReorder() {
+    async startSourcesReorder(): Promise<boolean> {
       // the mode turns on only once the current order has loaded, so the editor never
       // opens on a stale previous list that the arriving fetch would then replace
-      if (await this.fetchOrderedSources()) {
+      const loaded = await this.fetchOrderedSources()
+      if (loaded) {
         this.sourcesReorderMode = true
       }
+      return loaded
     },
     stopSourcesReorder() {
       this.sourcesReorderMode = false
@@ -178,7 +179,6 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
         // without the current order there is nothing to edit: leave the mode instead of
         // showing an inexplicable empty list
         this.stopSourcesReorder()
-        useSnackbar().showSnackBar({ msg: 'Failed to load the source order. Try again.', error: true })
         return false
       } finally {
         this.isLoading = false

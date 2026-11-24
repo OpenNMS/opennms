@@ -568,8 +568,9 @@ describe('useEventConfigDetailStore', () => {
       store.selectedSource = mockSource
       vi.mocked(getOrderedEventConfigEvents).mockResolvedValue(orderedEvents)
 
-      await store.startEventsReorder()
+      const ok = await store.startEventsReorder()
 
+      expect(ok).toBe(true)
       expect(store.eventsReorderMode).toBe(true)
       expect(getOrderedEventConfigEvents).toHaveBeenCalledWith(mockSource.id)
       expect(store.orderedEvents).toEqual(orderedEvents)
@@ -578,17 +579,18 @@ describe('useEventConfigDetailStore', () => {
       expect(store.eventsReorderMode).toBe(false)
     })
 
-    it('fetchOrderedEvents failure leaves the reorder mode and says why', async () => {
+    it('fetchOrderedEvents failure leaves the reorder mode and returns false', async () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       store.selectedSource = mockSource
       vi.mocked(getOrderedEventConfigEvents).mockRejectedValue(new Error('boom'))
 
-      await store.startEventsReorder()
+      const ok = await store.startEventsReorder()
 
+      expect(ok).toBe(false)
       expect(store.orderedEvents).toEqual([])
       // an empty reorder view with no explanation is worse than no reorder view
       expect(store.eventsReorderMode).toBe(false)
-      expect(mockShowSnackBar).toHaveBeenCalledWith({ msg: 'Failed to load the event order. Try again.', error: true })
+      expect(mockShowSnackBar).not.toHaveBeenCalled()
       expect(consoleError).toHaveBeenCalled()
     })
 

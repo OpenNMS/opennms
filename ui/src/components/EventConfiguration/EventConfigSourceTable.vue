@@ -42,7 +42,7 @@
       filter-placeholder="Filter by name or vendor — several terms match any"
       :saving="store.isSavingSourceOrder"
       :save="store.saveSourcesOrder"
-      :refetch="store.fetchOrderedSources"
+      :refetch="refetchOrderedSources"
       @close="store.stopSourcesReorder()"
     >
       <template #item="{ item }">
@@ -190,6 +190,7 @@
 import { computed, onMounted, ref, useId } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
+import useActionFeedback from '@/composables/useActionFeedback'
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
@@ -222,6 +223,16 @@ import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialo
 
 const router = useRouter()
 const store = useEventConfigStore()
+const { showError } = useActionFeedback()
+
+// the list's Refresh button reloads the current order; a failed load needs saying
+const refetchOrderedSources = async () => {
+  const loaded = await store.fetchOrderedSources()
+  if (!loaded) {
+    showError('Failed to load the source order. Try again.')
+  }
+  return loaded
+}
 const searchId = useId()
 const emptyListContent = {
   msg: 'No results found.'

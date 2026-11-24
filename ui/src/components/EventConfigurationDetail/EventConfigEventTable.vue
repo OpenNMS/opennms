@@ -10,7 +10,7 @@
           variant="outlined"
           class="reorder-button"
           data-test="reorder-events-button"
-          @click="store.startEventsReorder()"
+          @click="onReorderEvents"
         >Reorder Events</OnmsButton>
         <div
           class="search-container"
@@ -52,7 +52,7 @@
       filter-placeholder="Filter by UEI or label — several terms match any"
       :saving="store.isSavingEventsOrder"
       :save="store.saveEventsOrder"
-      :refetch="store.fetchOrderedEvents"
+      :refetch="refetchOrderedEvents"
       @close="store.stopEventsReorder()"
     >
       <template #item="{ item }">
@@ -203,6 +203,7 @@
 import { computed, ref, useId } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
+import useActionFeedback from '@/composables/useActionFeedback'
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
@@ -234,6 +235,24 @@ import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventS
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
 
 const store = useEventConfigDetailStore()
+const { showError } = useActionFeedback()
+
+const orderLoadError = 'Failed to load the event order. Try again.'
+
+const onReorderEvents = async () => {
+  if (!(await store.startEventsReorder())) {
+    showError(orderLoadError)
+  }
+}
+
+// the list's Refresh button reloads the current order; a failed load needs saying
+const refetchOrderedEvents = async () => {
+  const loaded = await store.fetchOrderedEvents()
+  if (!loaded) {
+    showError(orderLoadError)
+  }
+  return loaded
+}
 const router = useRouter()
 const searchId = useId()
 const emptyListContent = {

@@ -1,4 +1,3 @@
-import useSnackbar from '@/composables/useSnackbar'
 import { listMibFiles } from '@/services/mibCompilerService'
 import { MibCompilerStoreState } from '@/types/mibCompiler'
 import { defineStore } from 'pinia'
@@ -10,16 +9,17 @@ export const useMibCompilerStore = defineStore('useMibCompilerStore', {
     isLoading: false
   }),
   actions: {
-    async fetchMibFiles() {
+    async fetchMibFiles(): Promise<boolean> {
       this.isLoading = true
       try {
         const response = await listMibFiles()
         this.pendingFiles = response.pending
         this.compiledFiles = response.compiled
+        return true
       } catch (error) {
         console.error('Error fetching MIB files:', error)
-        // an empty table after a failed load reads as "no MIB files"; say what happened
-        useSnackbar().showSnackBar({ msg: 'Failed to load the MIB files. Try again.', error: true })
+        // the caller says what happened: an empty table would read as "no MIB files"
+        return false
       } finally {
         this.isLoading = false
       }

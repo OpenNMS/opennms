@@ -5,10 +5,15 @@ import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { CreateEditMode } from '@/types'
 import { createTestingPinia } from '@pinia/testing'
-import { mount, VueWrapper } from '@vue/test-utils'
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+const showSnackBarMock = vi.hoisted(() => vi.fn())
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({ showSnackBar: showSnackBarMock })
+}))
 
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
@@ -37,7 +42,7 @@ describe('EventConfiguration.vue (container)', () => {
     setActivePinia(createTestingPinia({ createSpy: vi.fn, stubActions: false }))
     store = useEventConfigStore()
     store.showCreateEventConfigSourceDialog = vi.fn()
-    store.startSourcesReorder = vi.fn()
+    store.startSourcesReorder = vi.fn().mockResolvedValue(true)
     useMenuStore().mainMenu = { homeUrl: '/opennms' } as any
     modificationStore = useEventModificationStore()
     modificationStore.openCreateWithoutSource = vi.fn()
@@ -57,6 +62,19 @@ describe('EventConfiguration.vue (container)', () => {
   it('enters the sources reorder mode from the header button', async () => {
     await wrapper.find('[data-test="reorder-sources-button"]').trigger('click')
     expect(store.startSourcesReorder).toHaveBeenCalled()
+  })
+
+  it('shows the failure when the source order cannot be loaded', async () => {
+    vi.mocked(store.startSourcesReorder).mockResolvedValue(false)
+    await wrapper.find('[data-test="reorder-sources-button"]').trigger('click')
+    await flushPromises()
+    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Failed to load the source order. Try again.', error: true })
+  })
+
+  it('stays quiet when the source order loads', async () => {
+    await wrapper.find('[data-test="reorder-sources-button"]').trigger('click')
+    await flushPromises()
+    expect(showSnackBarMock).not.toHaveBeenCalled()
   })
 
   it('reorder from the Upload tab switches to the View tab first', async () => {

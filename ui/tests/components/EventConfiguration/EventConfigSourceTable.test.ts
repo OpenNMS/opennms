@@ -10,6 +10,11 @@ import { nextTick } from 'vue'
 
 const mockPush = vi.fn()
 const routeLeaveGuards: Array<(...args: unknown[]) => unknown> = []
+const showSnackBarMock = vi.hoisted(() => vi.fn())
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({ showSnackBar: showSnackBarMock })
+}))
+
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push: mockPush }),
   onBeforeRouteLeave: (guard: (...args: unknown[]) => unknown) => routeLeaveGuards.push(guard)
@@ -31,7 +36,7 @@ const stubs = {
   ChangeEventConfigSourceStatusDialog: { name: 'ChangeEventConfigSourceStatusDialog', template: '<div class="change-status-dialog-stub"></div>' },
   StagedReorderList: {
     name: 'StagedReorderList',
-    props: ['items', 'itemNoun', 'saving'],
+    props: ['items', 'itemNoun', 'saving', 'refetch'],
     template: '<div class="staged-reorder-stub"></div>',
     methods: { confirmLeave: (...args: unknown[]) => mockConfirmLeave(...args) }
   }
@@ -114,6 +119,25 @@ describe('EventConfigSourceTable.vue', () => {
       store.sources = [mockSource]
       await nextTick()
       expect(wrapper.find('[data-test="order-info"]').exists()).toBe(true)
+    })
+
+    it('the list refetch shows the failure when the order cannot be reloaded', async () => {
+      store.sources = [mockSource]
+      store.sourcesReorderMode = true
+      store.fetchOrderedSources = vi.fn().mockResolvedValue(false)
+      await nextTick()
+      await wrapper.findComponent({ name: 'StagedReorderList' }).props('refetch')()
+      expect(store.fetchOrderedSources).toHaveBeenCalled()
+      expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Failed to load the source order. Try again.', error: true })
+    })
+
+    it('the list refetch stays quiet when the order reloads', async () => {
+      store.sources = [mockSource]
+      store.sourcesReorderMode = true
+      store.fetchOrderedSources = vi.fn().mockResolvedValue(true)
+      await nextTick()
+      await wrapper.findComponent({ name: 'StagedReorderList' }).props('refetch')()
+      expect(showSnackBarMock).not.toHaveBeenCalled()
     })
 
     it('replaces the table with the staged reorder list and hides search/refresh', async () => {

@@ -83,11 +83,19 @@ const copyJson = async () => {
   }
 }
 
-const updateStatus = () => {
-  if (status.value.enabled) {
-    usageStatisticsStore.disableSharing()
+const updateStatus = async () => {
+  const enable = !status.value.enabled
+  const success = enable ? await usageStatisticsStore.enableSharing() : await usageStatisticsStore.disableSharing()
+
+  if (!success) {
+    showSnackBar({
+      msg: `Error attempting to ${enable ? 'enable' : 'disable'} Usage Statistics Sharing.`,
+      error: true
+    })
+  } else if (enable) {
+    showSnackBar({ msg: 'Usage Statistics Sharing is now enabled. Thank you for helping us improve OpenNMS.' })
   } else {
-    usageStatisticsStore.enableSharing()
+    showSnackBar({ msg: 'Usage Statistics Sharing is now disabled.' })
   }
 }
 </script>

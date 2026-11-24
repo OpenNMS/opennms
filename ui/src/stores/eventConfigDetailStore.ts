@@ -1,5 +1,4 @@
 import { Severity } from '@/components/EventConfigEventCreate/constants'
-import useSnackbar from '@/composables/useSnackbar'
 import {
   changeEventConfigEventStatus,
   changeEventConfigSourceStatus,
@@ -168,16 +167,18 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       this.changeEventConfigEventStatusDialogState.eventConfigEvent = eventConfigEvent
       this.changeEventConfigEventStatusDialogState.visible = true
     },
-    async startEventsReorder() {
+    async startEventsReorder(): Promise<boolean> {
       if (!this.selectedSource) {
         console.error('No source selected')
-        return
+        return false
       }
       // the mode turns on only once the current order has loaded, so the editor never
       // opens on a stale previous list that the arriving fetch would then replace
-      if (await this.fetchOrderedEvents()) {
+      const loaded = await this.fetchOrderedEvents()
+      if (loaded) {
         this.eventsReorderMode = true
       }
+      return loaded
     },
     stopEventsReorder() {
       this.eventsReorderMode = false
@@ -197,7 +198,6 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         // without the current order there is nothing to edit: leave the mode instead of
         // showing an inexplicable empty list
         this.stopEventsReorder()
-        useSnackbar().showSnackBar({ msg: 'Failed to load the event order. Try again.', error: true })
         return false
       } finally {
         this.isLoading = false

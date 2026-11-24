@@ -149,6 +149,13 @@ const menuStore = useMenuStore()
 const store = useMibCompilerStore()
 const snackbar = useSnackbar()
 
+// the store logs the failure; an empty table would read as "no MIB files"
+const loadMibFiles = async () => {
+  if (!(await store.fetchMibFiles())) {
+    snackbar.showSnackBar({ msg: 'Failed to load the MIB files. Try again.', error: true })
+  }
+}
+
 const activeTab = ref(0)
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 const breadcrumbs = computed<BreadCrumb[]>(() => ([
@@ -202,7 +209,7 @@ const deleteFile = async () => {
   try {
     await deleteMibFile(location, file.name)
     snackbar.showSnackBar({ msg: `'${file.name}' deleted successfully.` })
-    await store.fetchMibFiles()
+    await loadMibFiles()
   } catch (error: unknown) {
     snackbar.showSnackBar({ msg: getGeneralErrorMessage(error, `Failed to delete '${file.name}'.`), error: true })
   }
@@ -213,7 +220,7 @@ const doCompile = async (fileName: string, overwrite: boolean) => {
     const result = await compileMibFile(fileName, overwrite)
     if (result.success) {
       snackbar.showSnackBar({ msg: `'${fileName}' compiled successfully as '${result.targetFile}'.` })
-      await store.fetchMibFiles()
+      await loadMibFiles()
     } else {
       errorsDialog.fileName = fileName
       errorsDialog.result = result
@@ -254,7 +261,7 @@ const showGenerateFailure = (result: MibParseResult) => {
 }
 
 onMounted(async () => {
-  await store.fetchMibFiles()
+  await loadMibFiles()
 })
 </script>
 
