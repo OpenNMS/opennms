@@ -347,7 +347,7 @@ public class MibFileServiceTest {
 
         // blank UEIs are dropped, the rest is trimmed and de-duplicated
         final Map<String, List<MibEventSourceDto>> result = service.findExistingUeis("IF-MIB.events",
-                eventsXml(" uei.opennms.org/edited ", "uei.opennms.org/own", " ", "uei.opennms.org/edited"));
+                rawEventsXml(" uei.opennms.org/edited ", "uei.opennms.org/own", " ", "uei.opennms.org/edited"));
 
         // the target source is left out
         assertEquals(Map.of("uei.opennms.org/edited", List.of(new MibEventSourceDto("acme.events", false))), result);
@@ -392,6 +392,19 @@ public class MibFileServiceTest {
             events.addEvent(event);
         }
         return JaxbUtils.marshal(events);
+    }
+
+    /**
+     * An events document written by hand, so the UEIs reach the service exactly as given: Event.setUei()
+     * trims and rejects blank UEIs, but edited XML from the UI can still carry them.
+     */
+    private static String rawEventsXml(String... ueis) {
+        final StringBuilder xml = new StringBuilder("<events xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">");
+        for (final String uei : ueis) {
+            xml.append("<event><uei>").append(uei).append("</uei><event-label>label</event-label>")
+                    .append("<descr>descr</descr><logmsg>msg</logmsg><severity>Indeterminate</severity></event>");
+        }
+        return xml.append("</events>").toString();
     }
 
     @Test
