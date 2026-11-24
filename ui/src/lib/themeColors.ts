@@ -17,6 +17,8 @@
 /// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 /// either express or implied.  See the License for the specific
 /// language governing permissions and limitations under the
+/// License.
+///
 
 // Severity and theme colors live only in CSS custom properties; canvas code
 // (Chart.js, Topology) cannot use var(), so it reads the resolved value here.
