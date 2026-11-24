@@ -50,7 +50,7 @@ public class BasethresholddefUeiTest {
 
     @Test
     public void settersTreatBlankUeisAsAbsent() {
-        for (final String blank : new String[] {"   ", "\t\n", "\u0001", " ", " 　 "}) {
+        for (final String blank : new String[] {"   ", "\t\n", "\u0001", "\u2003", " \u3000 "}) {
             final Threshold threshold = new Threshold();
             threshold.setTriggeredUEI(blank);
             threshold.setRearmedUEI(blank);

@@ -123,6 +123,14 @@ public class EventConfRestServiceUeiTest {
     }
 
     @Test
+    public void editReportsTheEventLabelBeforeTheSeverity() throws Exception {
+        final Response resp = rest.updateEventConfEvent(1L, 2L, edit(parse("uei.opennms.org/ok", " ", null)), null);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertEquals(Map.of("error", "Event 'event-label' is required"), resp.getEntity());
+        verifyNoInteractions(persistence);
+    }
+
+    @Test
     public void editMapsOtherIllegalArgumentToServerError() throws Exception {
         doThrow(new IllegalArgumentException("from deep inside the update"))
                 .when(persistence).updateEventConfEvent(eq(1L), eq(2L), any(), anyString());

@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 import java.util.Date;
 
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -716,7 +717,7 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
     @Test
     public void testPaddedCustomUeisAreSentTrimmed() {
         final ThresholdEvaluatorStateHighLow item =
-                highThresholdState(" uei.opennms.org/custom/t ", "\tuei.opennms.org/custom/r\n");
+                highThresholdState(" uei.opennms.org/custom/t ", "  uei.opennms.org/custom/r  ");
 
         assertEquals("uei.opennms.org/custom/t", eventFor(item, Status.TRIGGERED, 100.0).getUei());
         assertEquals("uei.opennms.org/custom/r", eventFor(item, Status.RE_ARMED, 94.0).getUei());
@@ -724,23 +725,22 @@ public class ThresholdEvaluatorHighLowTest extends AbstractThresholdEvaluatorTes
 
     @Test
     public void testWhitespaceOnlyCustomUeisFallBackToDefaults() {
-        final ThresholdEvaluatorStateHighLow item = highThresholdState("   ", " \t ");
+        final ThresholdEvaluatorStateHighLow item = highThresholdState("   ", "  ");
 
         assertEquals(EventConstants.HIGH_THRESHOLD_EVENT_UEI, eventFor(item, Status.TRIGGERED, 100.0).getUei());
         assertEquals(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, eventFor(item, Status.RE_ARMED, 94.0).getUei());
     }
 
+    /**
+     * Builds the threshold from XML, as Threshd loads it from thresholds.xml or the config store: the UEI fields
+     * are filled without calling the setters, so this tests the trim the getters apply.
+     */
     private static ThresholdEvaluatorStateHighLow highThresholdState(final String triggeredUei,
                                                                      final String rearmedUei) {
-        final Threshold threshold = new Threshold();
-        threshold.setType(ThresholdType.HIGH);
-        threshold.setDsName("ds-name");
-        threshold.setDsType("node");
-        threshold.setValue("99.0");
-        threshold.setRearm("95.0");
-        threshold.setTrigger("1");
-        threshold.setTriggeredUEI(triggeredUei);
-        threshold.setRearmedUEI(rearmedUei);
+        final Threshold threshold = JaxbUtils.unmarshal(Threshold.class,
+                "<threshold xmlns=\"http://xmlns.opennms.org/xsd/config/thresholding\" type=\"high\""
+                        + " ds-name=\"ds-name\" ds-type=\"node\" value=\"99.0\" rearm=\"95.0\" trigger=\"1\""
+                        + " triggeredUEI=\"" + triggeredUei + "\" rearmedUEI=\"" + rearmedUei + "\"/>");
         return new ThresholdEvaluatorStateHighLow(new ThresholdConfigWrapper(threshold), MockSession.getSession());
     }
 
