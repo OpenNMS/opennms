@@ -28,13 +28,13 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 
-public class CollectorResponseDTOTest extends XmlTestNoCastor<CollectorResponseDTO> {
+public class CollectorResponseDTOTest extends XmlTest<CollectorResponseDTO> {
 
     public CollectorResponseDTOTest(CollectorResponseDTO sampleObject, Object sampleXml) {
         super(sampleObject, sampleXml, null);

@@ -81,15 +81,11 @@ import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.perspectivepolling.ApplicationServiceStatus;
 import org.opennms.netmgt.model.perspectivepolling.ApplicationStatus;
 import org.opennms.netmgt.model.perspectivepolling.Location;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.svclayer.model.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -144,14 +140,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
 	@Autowired
 	private PlatformTransactionManager m_transactionManager;
-
-    @Autowired
-    @Qualifier("deployed")
-    private ForeignSourceRepository m_deployedForeignSourceRepository;
-
-    @Autowired
-    @Qualifier("pending")
-    private ForeignSourceRepository m_pendingForeignSourceRepository;
 
     @Autowired
     private EntityScopeProvider m_entityScopeProvider;
@@ -996,27 +984,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     public List<OnmsMonitoringSystem> getMonitoringSystems() {
         return m_monitoringSystemDao.findAll().stream().sorted((a,b) -> a.getId().compareTo(b.getId())).collect(Collectors.toList());
-    }
-
-    public boolean nodeExistsInRequisition(final String foreignSource, final String foreignId) {
-        if (foreignSource == null || foreignId == null) {
-            return false;
-        }
-
-        Requisition requisition = m_pendingForeignSourceRepository.getRequisition(foreignSource);
-
-        if (requisition == null) {
-            requisition = m_deployedForeignSourceRepository.getRequisition(foreignSource);
-        }
-
-        if (requisition != null) {
-            for(RequisitionNode requisitionNode : requisition.getNodes()) {
-                if (foreignId.equals(requisitionNode.getForeignId())) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public List<String> getCategories() {

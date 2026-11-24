@@ -54,4 +54,21 @@ const withNodeFilter = (nodeId: string | number, queryParameters?: QueryParamete
   return { ...queryParameters, _s }
 }
 
-export { nodePageOf, queryParametersHandler, withNodeFilter }
+/**
+ * The server's message from a failed request, when it is fit to show a user: a 4xx whose body is a
+ * short plain-text message. A 5xx carries an HTML page or a raw persistence exception, so it gets the
+ * caller's fallback instead.
+ */
+const serverErrorMessage = (err: any, fallback: string): string => {
+  const detail = err?.response?.data
+  const status = Number(err?.response?.status ?? 0)
+  if (typeof detail === 'string' && status >= 400 && status < 500) {
+    const trimmed = detail.trim()
+    if (trimmed && trimmed.length <= 200 && !/[<>]/.test(trimmed)) {
+      return trimmed
+    }
+  }
+  return fallback
+}
+
+export { nodePageOf, queryParametersHandler, serverErrorMessage, withNodeFilter }

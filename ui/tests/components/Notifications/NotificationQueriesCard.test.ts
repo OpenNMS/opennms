@@ -53,17 +53,53 @@ describe('NotificationQueriesCard', () => {
   it('starts with the store preset selected and nothing else', () => {
     mountCard()
 
-    expect(pressed(wrapper, 'query-presets')).toEqual(['Your outstanding notifications'])
+    expect(pressed(wrapper, 'query-presets')).toEqual(['Your outstanding'])
     expect(pressed(wrapper, 'query-user-search')).toEqual([])
+  })
+
+  it('offers the six presets, in order', () => {
+    mountCard()
+    const labels = wrapper.find('[data-test="query-presets"]').findAll('button').map(b => b.text())
+
+    expect(labels).toEqual(['Your outstanding', 'Your acknowledged', 'Outstanding for anyone but you', 'All outstanding', 'All acknowledged', 'All'])
+  })
+
+  it('applies the all preset when All is chosen', async () => {
+    mountCard()
+
+    await clickOption(wrapper, 'query-presets', 'All')
+
+    expect(store.applyPreset).toHaveBeenCalledWith('all', undefined)
+    expect(pressed(wrapper, 'query-presets')).toEqual(['All'])
+  })
+
+  it('shows the node filter as a removable chip, and removing it clears the filter', async () => {
+    mountCard()
+    store.nodeFilter = { id: '16', label: 'Core-Router-01' }
+    vi.mocked(store.clearNodeFilter).mockResolvedValue(createSuccessResponse())
+    await flushPromises()
+
+    const chip = wrapper.find('[data-test="node-filter-chip"]')
+    expect(chip.text()).toContain('Node: Core-Router-01')
+
+    await wrapper.findComponent({ name: 'OnmsChip' }).vm.$emit('remove', new Event('click'))
+    await flushPromises()
+
+    expect(store.clearNodeFilter).toHaveBeenCalled()
+  })
+
+  it('shows no chip without a node filter', () => {
+    mountCard()
+    expect(wrapper.find('[data-test="node-filter-chip"]').exists()).toBe(false)
   })
 
   it('applies a preset when one is chosen', async () => {
     mountCard()
 
-    await clickOption(wrapper, 'query-presets', 'All acknowledged notifications')
+    await clickOption(wrapper, 'query-presets', 'All acknowledged')
 
     expect(store.applyPreset).toHaveBeenCalledWith('allAcknowledged', undefined)
-    expect(pressed(wrapper, 'query-presets')).toEqual(['All acknowledged notifications'])
+    expect(pressed(wrapper, 'query-presets')).toEqual(['All acknowledged'])
   })
 
   it('choosing user search with nothing typed enters the awaiting-user state, like Clear', async () => {
@@ -140,7 +176,7 @@ describe('NotificationQueriesCard', () => {
 
     // focusing the id field changes neither the highlight nor the query
     await wrapper.find('#notification-id-search').trigger('focusin')
-    expect(pressed(wrapper, 'query-presets')).toEqual(['Your outstanding notifications'])
+    expect(pressed(wrapper, 'query-presets')).toEqual(['Your outstanding'])
     expect(store.applyPreset).not.toHaveBeenCalled()
   })
 
@@ -232,6 +268,134 @@ describe('NotificationQueriesCard', () => {
     })
   })
 
+  describe('Filter by node', () => {
+    const enterNode = async (value: string) => {
+      const input = wrapper.find('#notification-node-search')
+      await input.setValue(value)
+      await input.trigger('keyup', { key: 'Enter' })
+      await flushPromises()
+    }
+
+    const mountWithNodeActions = () => {
+      mountCard()
+      vi.mocked(store.setNodeFilter).mockResolvedValue(createSuccessResponse())
+      vi.mocked(store.clearNodeFilter).mockResolvedValue(createSuccessResponse())
+    }
+
+    it('is a plain label, not part of the selection', async () => {
+      mountCard()
+      const label = wrapper.find('[data-test="node-search-label"]')
+
+      expect(label.element.tagName).toBe('LABEL')
+      expect(label.attributes('for')).toBe('notification-node-search')
+      expect(label.text()).toBe('Filter by node:')
+
+      await wrapper.find('#notification-node-search').trigger('focusin')
+      expect(pressed(wrapper, 'query-presets')).toEqual(['Your outstanding'])
+      expect(store.applyPreset).not.toHaveBeenCalled()
+    })
+
+    it('sits between the user search and the notification id field', () => {
+      mountCard()
+      const fields = wrapper.findAll('.query-searches .query-search').map(field =>
+        field.find('[data-test="query-user-search"], [data-test="node-search-label"], [data-test="notification-id-label"]').attributes('data-test'))
+
+      expect(fields).toEqual(['query-user-search', 'node-search-label', 'notification-id-label'])
+    })
+
+    it('filters the current view by the trimmed node id on Enter', async () => {
+      mountWithNodeActions()
+      store.preset = 'allAcknowledged'
+
+      await enterNode(' 153 ')
+
+      expect(store.setNodeFilter).toHaveBeenCalledWith('153')
+      expect(store.applyPreset).not.toHaveBeenCalled()
+      expect(showSnackBar).not.toHaveBeenCalled()
+    })
+
+    it('accepts leading zeros as the same id', async () => {
+      mountWithNodeActions()
+
+      await enterNode('007')
+
+      expect(store.setNodeFilter).toHaveBeenCalledWith('7')
+    })
+
+    it.each(['abc', '0', '00', '-1', '1.5'])('rejects "%s" with an error and applies nothing', async (value) => {
+      mountWithNodeActions()
+
+      await enterNode(value)
+
+      expect(store.setNodeFilter).not.toHaveBeenCalled()
+      expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Enter a node ID as a positive whole number, e.g. 42.', error: true })
+    })
+
+    it('rejects a node id too large to be exact, applying nothing', async () => {
+      mountWithNodeActions()
+
+      await enterNode('99999999999999999999')
+
+      expect(store.setNodeFilter).not.toHaveBeenCalled()
+      expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Enter a node ID as a positive whole number, e.g. 42.', error: true })
+    })
+
+    it('ignores Enter on an empty field', async () => {
+      mountWithNodeActions()
+
+      await enterNode('   ')
+
+      expect(store.setNodeFilter).not.toHaveBeenCalled()
+      expect(store.clearNodeFilter).not.toHaveBeenCalled()
+      expect(showSnackBar).not.toHaveBeenCalled()
+    })
+
+    it('clears the node filter from the input\'s clear button', async () => {
+      mountWithNodeActions()
+      await wrapper.find('#notification-node-search').setValue('153')
+
+      await wrapper.find('[data-test="node-search-input-clear"]').trigger('click')
+      await flushPromises()
+
+      expect(store.clearNodeFilter).toHaveBeenCalled()
+    })
+
+    it('follows the store filter: a deep link fills the input, removing it empties it', async () => {
+      mountCard()
+      const input = wrapper.find('#notification-node-search').element as HTMLInputElement
+
+      store.nodeFilter = { id: '16', label: 'x' }
+      await flushPromises()
+      expect(input.value).toBe('16')
+
+      store.nodeFilter = null
+      await flushPromises()
+      expect(input.value).toBe('')
+    })
+
+    it('keeps the user search when a node is applied in user-search mode', async () => {
+      mountWithNodeActions()
+      store.preset = 'userSearch'
+      store.userFilter = 'operator'
+
+      await enterNode('153')
+
+      expect(store.setNodeFilter).toHaveBeenCalledWith('153')
+      // the user search is neither re-run nor cleared by the component
+      expect(store.applyPreset).not.toHaveBeenCalled()
+      expect(store.userFilter).toBe('operator')
+    })
+
+    it('shows a failed node filter as an error snackbar', async () => {
+      mountWithNodeActions()
+      vi.mocked(store.setNodeFilter).mockResolvedValue({ success: false, message: 'Failed to load notifications.' })
+
+      await enterNode('153')
+
+      expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Failed to load notifications.', error: true })
+    })
+  })
+
   it('refresh re-runs the current query', async () => {
     mountCard()
 
@@ -245,7 +409,7 @@ describe('NotificationQueriesCard', () => {
     mountCard()
     vi.mocked(store.applyPreset).mockResolvedValue({ success: false, message: 'Failed to load notifications.' })
 
-    await clickOption(wrapper, 'query-presets', 'All outstanding notifications')
+    await clickOption(wrapper, 'query-presets', 'All outstanding')
 
     expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Failed to load notifications.', error: true })
   })

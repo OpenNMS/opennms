@@ -26,12 +26,18 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as additional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi10-3.6.8.b379-jre-25"
+ARG BASE_IMAGE="opennms/deploy-base:ubi10-3.7.0.b380-jre-25"
 
 FROM ${BASE_IMAGE} AS minion-base
 
 ADD --chown=10001:0 ./tarball-root/ /opt/minion/
 RUN rm /opt/minion/etc/org.opennms.features.telemetry.listeners-single-port-flows.cfg
+
+# Overlay container-specific etc config files. Added before the chmod below so they get the
+# same group permissions as the rest of etc: with an arbitrary UID in group 0 (OpenShift),
+# the entrypoint must be able to rewrite them.
+COPY --chown=10001:0 container-fs/etc/ /opt/minion/etc/
+
 RUN chmod -R g-w /opt/minion && \
     chmod -R g=u \
         /opt/minion/etc \
@@ -51,7 +57,7 @@ RUN chmod -R g-w /opt/minion && \
 ##
 FROM ${BASE_IMAGE}
 
-ARG REQUIRED_RPMS="hostname uuid"
+ARG REQUIRED_RPMS="hostname uuid gettext"
 
 # Collect generic steps in a layer for caching
 
@@ -88,13 +94,13 @@ COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yam
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
 COPY --chown=10001:0 --from=minion-base /opt /opt
 
-# Install confd.io configuration files and scripts and ensure they are executable
-COPY ./container-fs/confd/ /opt/minion/confd/
-RUN chmod +x /opt/minion/confd/scripts/*
-COPY ./minion-config-schema.yml /opt/minion/confd/
+# featuresBoot and telemetry listener templates. Kept outside /opt/minion/etc so a mounted or
+# persisted etc directory cannot hide them; the entrypoint applies them from here.
+COPY --chown=10001:0 container-fs/templates/ /opt/minion/container-fs/templates/
 
-# Create the directory for server certificates
-RUN install -d -m 750 /opt/minion/server-certs
+# Create the directory for server certificates. Owned by the runtime user (group 0 for
+# arbitrary UIDs) so certificates mounted as single files under it stay readable.
+RUN install -d -m 750 -o 10001 -g 0 /opt/minion/server-certs
 
 # Create prom-jmx-exporter folder
 RUN install -d -m 770 /opt/prom-jmx-exporter && chown 10001:0 /opt/prom-jmx-exporter

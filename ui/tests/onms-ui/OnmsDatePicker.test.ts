@@ -1,7 +1,7 @@
-import { OnmsDatePicker } from '@opennms/onms-ui'
+import { OnmsDatePicker, toTimeOnlyDate } from '@opennms/onms-ui'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // NOTE (PrimeVue-reality rule): installed primevue@4.5.5's DatePicker
 // extends BaseComponent, whose computed properties read `this.$primevue.config`
@@ -173,5 +173,63 @@ describe('OnmsDatePicker', () => {
 
     expect(wrapper.props('inputId')).toBe('range-start')
     expect(wrapper.get('input').attributes('id')).toBe('range-start')
+  })
+
+  // On 2026-03-08 New York's clocks skip 02:00-02:59. PrimeVue builds a time-only value on today's date, where 02:30
+  // would become 03:30; the wrapper puts it on a fixed day.
+  describe('time-only on the day the browser\'s clocks go forward', () => {
+    const zone = process.env.TZ
+    beforeEach(() => {
+      process.env.TZ = 'America/New_York'
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date('2026-03-08T12:00:00Z'))
+    })
+    afterEach(() => {
+      process.env.TZ = zone
+      vi.useRealTimers()
+    })
+
+    const lastEmitted = (wrapper: ReturnType<typeof mount>) => {
+      const emitted = wrapper.emitted('update:modelValue')!
+      return emitted[emitted.length - 1][0] as Date
+    }
+
+    it('keeps a typed time that the clocks skip today', async () => {
+      const wrapper = mount(OnmsDatePicker, { props: { timeOnly: true, hourFormat: '12' }, global: globalPlugins })
+      await wrapper.get('input').setValue('02:30 am')
+      expect(lastEmitted(wrapper)).toEqual(toTimeOnlyDate(2, 30))
+    })
+
+    it('keeps a typed time when the picker already has a value', async () => {
+      const wrapper = mount(OnmsDatePicker, {
+        props: { timeOnly: true, hourFormat: '24', modelValue: new Date(2026, 2, 8, 8, 0) },
+        global: globalPlugins
+      })
+      await wrapper.get('input').setValue('02:30')
+      const value = lastEmitted(wrapper)
+      expect([value.getHours(), value.getMinutes()]).toEqual([2, 30])
+    })
+
+    it('keeps a time set with the spinners on an empty picker', () => {
+      const wrapper = mount(OnmsDatePicker, { props: { timeOnly: true, hourFormat: '12' }, global: globalPlugins })
+      const inner = wrapper.findComponent({ name: 'DatePicker' }).vm as unknown as {
+        currentHour: number, currentMinute: number, pm: boolean, updateModelTime: () => void
+      }
+      inner.currentHour = 2
+      inner.currentMinute = 30
+      inner.pm = false
+      inner.updateModelTime()
+      expect(lastEmitted(wrapper)).toEqual(toTimeOnlyDate(2, 30))
+    })
+
+    it('leaves a date-and-time picker on the date it shows', async () => {
+      const wrapper = mount(OnmsDatePicker, {
+        props: { showTime: true, hourFormat: '24', modelValue: new Date(2026, 2, 9, 8, 0) },
+        global: globalPlugins
+      })
+      await wrapper.get('input').setValue('03/09/2026 09:15')
+      const value = lastEmitted(wrapper)
+      expect([value.getFullYear(), value.getMonth(), value.getDate(), value.getHours(), value.getMinutes()]).toEqual([2026, 2, 9, 9, 15])
+    })
   })
 })

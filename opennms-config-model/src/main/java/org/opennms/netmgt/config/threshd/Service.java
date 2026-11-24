@@ -37,6 +37,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Service for which thresholding is to be performed for
  *  addresses in this package
@@ -51,6 +53,7 @@ public class Service implements Serializable {
      * Service name
      */
     @XmlAttribute(name = "name", required = true)
+    @JsonProperty("name")
     private String m_name;
 
     /**
@@ -58,6 +61,7 @@ public class Service implements Serializable {
      *  checked
      */
     @XmlAttribute(name = "interval", required = true)
+    @JsonProperty("interval")
     private Long m_interval;
 
     /**
@@ -65,6 +69,7 @@ public class Service implements Serializable {
      *  specifically for UI purposes.
      */
     @XmlAttribute(name = "user-defined")
+    @JsonProperty("user-defined")
     private Boolean m_userDefined;
 
     /**
@@ -72,6 +77,7 @@ public class Service implements Serializable {
      *  checked against thresholds only if set to 'on'.
      */
     @XmlAttribute(name = "status")
+    @JsonProperty("status")
     private ServiceStatus m_status;
 
     /**
@@ -80,6 +86,7 @@ public class Service implements Serializable {
      *  thresholder.
      */
     @XmlElement(name = "parameter")
+    @JsonProperty("parameter")
     private List<Parameter> m_parameters = new ArrayList<>();
 
     public Service() {

@@ -12,5 +12,6 @@ Thresholding for streaming telemetry with <<deep-dive/telemetryd/introduction#ga
 When running on Sentinel, the thresholding state can be stored in either Cassandra or PostgreSQL.
 Given that Newts requires Cassandra, we recommend using Cassandra to minimize the load on PostgreSQL.
 
-Thresholding on Sentinel uses the same configuration files as {page-component-title} and operates similarly.
+Thresholding on Sentinel uses the same threshold configuration as {page-component-title} and operates similarly.
+Sentinel receives the configuration from {page-component-title}, so you manage it in the {page-component-title} web UI or REST API (see xref:deep-dive/thresholds/thresholding.adoc#threshold-configuration[Threshold configuration]).
 When a thresholding changes to or from `trigger` or `cleared`, an event is published which is processed by {page-component-title} and the alarm is created or updated.

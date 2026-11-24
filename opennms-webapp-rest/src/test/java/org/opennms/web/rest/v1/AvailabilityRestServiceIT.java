@@ -40,9 +40,11 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.category.AvailabilityNode;
@@ -276,6 +278,82 @@ public class AvailabilityRestServiceIT extends AbstractSpringJerseyRestTestCase 
 
         Assert.assertEquals(4, node.getInt("ipinterfaceCount"));
         Assert.assertEquals(List.of("192.168.1.2", "192.168.1.3", "fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5"), addresses(node));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeReportsServiceStatus() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        final int forcedId = m_template.execute(status -> {
+            final OnmsMonitoredService svc = m_populator.getMonitoredServiceDao()
+                    .get(nodeId, InetAddressUtils.addr("192.168.1.1"), "SNMP");
+            svc.setStatus("F");
+            m_populator.getMonitoredServiceDao().saveOrUpdate(svc);
+            m_populator.getMonitoredServiceDao().flush();
+            return svc.getId();
+        });
+
+        final JSONObject node = getNodeJson(nodeId, "");
+        int seen = 0;
+        final JSONArray interfaces = node.getJSONArray("ipinterfaces");
+        for (int i = 0; i < interfaces.length(); i++) {
+            final JSONArray services = interfaces.getJSONObject(i).getJSONArray("services");
+            for (int j = 0; j < services.length(); j++) {
+                final JSONObject svc = services.getJSONObject(j);
+                Assert.assertEquals(svc.getInt("id") == forcedId ? "F" : "A", svc.getString("status"));
+                seen++;
+            }
+        }
+        Assert.assertEquals(6, seen);
+    }
+
+    /**
+     * Each interface carries its ipinterface.ismanaged code, so a client can name an unmanaged
+     * interface ("Forced Unmanaged") rather than show the -1 of its availability as "Not Monitored".
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeReportsInterfaceIsManaged() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        final int forcedId = m_template.execute(status -> {
+            final OnmsIpInterface iface = m_populator.getIpInterfaceDao()
+                    .findByNodeIdAndIpAddress(nodeId, "192.168.1.2");
+            iface.setIsManaged("F");
+            m_populator.getIpInterfaceDao().saveOrUpdate(iface);
+            m_populator.getIpInterfaceDao().flush();
+            return iface.getId();
+        });
+
+        final JSONArray interfaces = getNodeJson(nodeId, "").getJSONArray("ipinterfaces");
+        Assert.assertEquals(4, interfaces.length());
+        for (int i = 0; i < interfaces.length(); i++) {
+            final JSONObject iface = interfaces.getJSONObject(i);
+            Assert.assertEquals(iface.getInt("id") == forcedId ? "F" : "M", iface.getString("is-managed"));
+        }
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeManagedServiceCountIgnoresPaging() throws Exception {
+        final int nodeId = m_populator.getNode1().getId();
+        final long expected = m_template.execute(status -> m_populator.getNodeDao().get(nodeId).getIpInterfaces().stream()
+                .filter(iface -> "M".equals(iface.getIsManaged()))
+                .flatMap(iface -> iface.getMonitoredServices().stream())
+                .filter(svc -> "A".equals(svc.getStatus()))
+                .count());
+        Assert.assertTrue(expected > 0);
+
+        Assert.assertEquals(expected, getNodeJson(nodeId, "").getLong("managed-service-count"));
+        Assert.assertEquals(expected, getNodeJson(nodeId, "limit=1&offset=0").getLong("managed-service-count"));
+        Assert.assertEquals(expected, getNodeJson(nodeId, "limit=1&offset=1").getLong("managed-service-count"));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNodeReportsOverallThresholds() throws Exception {
+        final JSONObject node = getNodeJson(m_populator.getNode1().getId(), "");
+        Assert.assertEquals(99.99, node.getDouble("normal-threshold"), 0.0001);
+        Assert.assertEquals(97.0, node.getDouble("warning-threshold"), 0.0001);
     }
 
     private JSONObject getNodeJson(final int nodeId, final String query) throws Exception {

@@ -117,7 +117,7 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
     <parameter key="rrd-base-name" value="dns-res-v6"/> <5>
     <parameter key="ds-name" value="dns-res-v6"/> <6>
     <parameter key="nameserver" value="{ipAddr}"/> <8>
-    <parameter key="lookup" value="\{nodelabel}"/> <7>
+    <parameter key="lookup" value="{nodeLabel}"/> <7>
 </service>
 
 <!-- Assigned service test if the node label is resolved for an AAAA record AND A record -->

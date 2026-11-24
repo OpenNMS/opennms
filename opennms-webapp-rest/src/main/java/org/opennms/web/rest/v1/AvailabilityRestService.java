@@ -316,7 +316,13 @@ public class AvailabilityRestService extends OnmsRestService {
         to contain the node; membership is checked before the node is loaded.
 
         The result is the same payload as `GET /availability/nodes/{nodeId}`: the category only acts as a
-        membership check and does not restrict which of the node's services are reported.
+        membership check and does not restrict which of the node's services are reported. The thresholds are the
+        category's; the figures are not restricted to its services.
+
+        `normal-threshold` and `warning-threshold` come from the path's category in `categories.xml`. When it
+        does not define them they are null in JSON and omitted in XML. `managed-service-count`, the number of
+        services with status `A` on managed interfaces, covers every interface of the node. Each interface carries
+        its `is-managed` code and each service its `status` code, as on `GET /availability/nodes/{nodeId}`.
 
         A node id that is not in the category, or that does not exist, is reported as 500 rather than 404.""",
             operationId = "getAvailabilityCategoryNode"
@@ -332,17 +338,22 @@ public class AvailabilityRestService extends OnmsRestService {
                       "availability": 99.92797222222222,
                       "service-count": 1,
                       "service-down-count": 0,
+                      "managed-service-count": 1,
+                      "normal-threshold": 99.99,
+                      "warning-threshold": 97.0,
                       "ipinterfaceCount": 1,
                       "ipinterfaces": [
                         {
                           "id": 1,
                           "address": "127.0.0.4",
+                          "is-managed": "M",
                           "availability": 99.92797222222222,
                           "services": [
                             {
                               "up": true,
                               "id": 1022,
                               "name": "HTTP-8080",
+                              "status": "A",
                               "availability": 99.92797222222222
                             }
                           ]
@@ -375,7 +386,7 @@ public class AvailabilityRestService extends OnmsRestService {
             if (node == null) {
                 throw getException(Status.NOT_FOUND, "Node {} was not found for category {}.", Long.toString(nodeId), categoryName);
             }
-            return getAvailabilityNode(node.getId().intValue());
+            return getAvailabilityNode(node.getId().intValue(), null, null, 0, 0, false, category);
         } catch (final Exception e) {
             LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
             throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data for category {} : {}", categoryName, e.getMessage());
@@ -393,7 +404,14 @@ public class AvailabilityRestService extends OnmsRestService {
         Interfaces are ordered by address (IPv4 before IPv6). `limit` and `offset` page through them, and only
         the page's interfaces and services have their availability computed -- each figure is a query of its
         own, so a node with many interfaces is far cheaper a page at a time. `ipinterfaceCount` is the node's
-        total, for a paginator; the node's own figures and service counts always cover every interface.
+        total, for a paginator; the node's own figures and service counts always cover every interface,
+        and so does `managed-service-count`, the number of services with status `A` on managed interfaces
+        (the services the figures count), whatever the paging.
+        `normal-threshold` and `warning-threshold` come from `categories.xml` (Overall Service Availability).
+        When it does not define them they are null in JSON and omitted in XML. Each service carries its
+        `status` code. Each interface carries its `is-managed` code, from `ipinterface.ismanaged` (`M` managed,
+        `U` unmanaged, `F` forced unmanaged, `N` not monitored, `D` deleted); only a managed interface has an
+        availability figure, so for another one this code says why it has none.
         `withServices=true` leaves out interfaces with no monitored services before counting and paging,
         for a caller that shows only monitored interfaces and would otherwise get short or empty pages.
 
@@ -416,17 +434,22 @@ public class AvailabilityRestService extends OnmsRestService {
                       "availability": 99.92797222222222,
                       "service-count": 1,
                       "service-down-count": 0,
+                      "managed-service-count": 1,
+                      "normal-threshold": 99.99,
+                      "warning-threshold": 97.0,
                       "ipinterfaceCount": 1,
                       "ipinterfaces": [
                         {
                           "id": 1,
                           "address": "127.0.0.4",
+                          "is-managed": "M",
                           "availability": 99.92797222222222,
                           "services": [
                             {
                               "up": true,
                               "id": 1022,
                               "name": "HTTP-8080",
+                              "status": "A",
                               "availability": 99.92797222222222
                             }
                           ]
@@ -505,6 +528,14 @@ public class AvailabilityRestService extends OnmsRestService {
      */
     AvailabilityNode getAvailabilityNode(final int id, final Date start, final Date end, final int offset, final int limit,
             final boolean withServices) throws Exception {
+        return getAvailabilityNode(id, start, end, offset, limit, withServices, CategoryModel.OVERALL_AVAILABILITY_CATEGORY);
+    }
+
+    /**
+     * @param thresholdCategory category whose normal and warning thresholds are reported on the node
+     */
+    AvailabilityNode getAvailabilityNode(final int id, final Date start, final Date end, final int offset, final int limit,
+            final boolean withServices, final String thresholdCategory) throws Exception {
 
         final OnmsNode dbNode = m_nodeDao.get(id);
         initialize(dbNode);
@@ -520,6 +551,9 @@ public class AvailabilityRestService extends OnmsRestService {
                 : CategoryModel.getNodeAvailability(id, start, end);
 
         final AvailabilityNode node = new AvailabilityNode(dbNode, nodeAvail);
+        final CategoryModel model = CategoryModel.getInstance();
+        node.setThresholds(model.getCategoryNormalThreshold(thresholdCategory),
+                model.getCategoryWarningThreshold(thresholdCategory));
 
         // In address order, so a page is stable from one request to the next. Only the page's
         // interfaces are evaluated below: every figure is a query of its own.

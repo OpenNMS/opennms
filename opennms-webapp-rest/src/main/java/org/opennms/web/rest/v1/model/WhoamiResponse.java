@@ -39,16 +39,16 @@ public class WhoamiResponse {
             example = "[\"ROLE_USER\",\"ROLE_ADMIN\"]", required = true)
     private List<String> roles;
 
-    @Schema(description = "True when the principal is defined in users.xml. False for principals supplied by an external "
+    @Schema(description = "True when the principal is a user of OpenNMS (stored in its database). False for principals supplied by an external "
             + "authentication source, in which case `email` and `fullName` are absent.",
             example = "true", required = true)
     private boolean internal;
 
-    @Schema(description = "Email address from users.xml. Omitted when empty or when the user is not internal.",
+    @Schema(description = "Email address of the OpenNMS user. Omitted when empty or when the user is not internal.",
             example = "admin@example.org")
     private String email;
 
-    @Schema(description = "Full name from users.xml. Omitted when empty or when the user is not internal.",
+    @Schema(description = "Full name of the OpenNMS user. Omitted when empty or when the user is not internal.",
             example = "Administrator")
     private String fullName;
 

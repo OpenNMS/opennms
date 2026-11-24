@@ -23,7 +23,7 @@
 import { startOfMinute, startOfHour, startOfDay, startOfMonth, startOfYear } from 'date-fns'
 import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import { displayTimeZone, formatInDisplayZone } from '@/lib/displayTimeZone'
-import { TimelineWindow } from './availabilityTimelineModel'
+import { TimelineWindow } from '@/components/Nodes/availabilityTimelineModel'
 
 export interface TimelineTick {
   epoch: number

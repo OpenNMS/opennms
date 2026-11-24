@@ -44,6 +44,8 @@ import dateFormatDirective from '../directives/v-date'
 import { addStylesheet, externalComponent, getJSPath } from '../components/Plugin/utils'
 import { setupPrimeVue } from '../theme/primevue-setup'
 import { useAppStore } from '@/stores/appStore'
+import { rest, restFile, v2 } from '@/services/axiosInstances'
+import { installRouterSessionHandling, installSessionExpiryInterceptor } from '@/services/sessionExpiry'
 
 // let plugins use state mngmnt / router
 (window as any).Vue = Vue;
@@ -57,6 +59,12 @@ import { useAppStore } from '@/stores/appStore'
 // (guarded by tests/onms-ui/exports.test.ts); the version marker is
 // window.OnmsUI.ONMS_UI_VERSION.
 ;(window as any).OnmsUI = OnmsUI
+
+// SPA only: on session expiry, reload during a route change so the server's login redirect brings
+// the user back here; otherwise show SessionExpiredDialog (in App.vue).
+// Not in the menu app: a reload of a JSP page shown after a form POST would post the form again.
+installSessionExpiryInterceptor(v2, rest, restFile)
+installRouterSessionHandling(router)
 
 // plugin scripts must be loaded before app to use their routes
 const baseRestUrl = import.meta.env.VITE_BASE_REST_URL
@@ -107,7 +115,7 @@ if (import.meta.env.DEV && import.meta.env.VITE_EXAMPLE_PLUGIN === 'true') {
     path: '/example-plugin',
     name: 'ExamplePluginDev',
     component: () => import('@/components/Plugin/Container.vue'),
-    props: { script: '/plugin-modules/exampleUiExtension/exampleUiExtension.es.js' }
+    props: { script: `${import.meta.env.BASE_URL}plugin-modules/exampleUiExtension/exampleUiExtension.es.js` }
   })
 }
 
@@ -119,14 +127,14 @@ if (import.meta.env.DEV && import.meta.env.VITE_EXAMPLE_PLUGIN === 'true') {
 // app mount — like production plugins above — so those routes exist before
 // first navigation. Enable by setting VITE_SERVICENOW_PLUGIN_DIST.
 if (import.meta.env.DEV && import.meta.env.VITE_SERVICENOW_PLUGIN_DIST) {
-  const script = '/plugin-modules/serviceNowUiExtension/serviceNowUiExtension.es.js'
+  const script = `${import.meta.env.BASE_URL}plugin-modules/serviceNowUiExtension/serviceNowUiExtension.es.js`
   router.addRoute({
     path: '/servicenow-plugin',
     name: 'Plugin-serviceNowUiExtension',
     component: () => import('@/components/Plugin/Container.vue'),
     props: { script }
   })
-  addStylesheet('/plugin-modules/serviceNowUiExtension/style.css')
+  addStylesheet(`${import.meta.env.BASE_URL}plugin-modules/serviceNowUiExtension/style.css`)
   try {
     await externalComponent(script)
   } catch (e) {

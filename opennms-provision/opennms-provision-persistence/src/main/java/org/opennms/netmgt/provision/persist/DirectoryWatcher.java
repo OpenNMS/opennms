@@ -153,16 +153,17 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
                         LOG.debug("{} is a directory, ignoring.", file);
                         continue;
                     }
+                    // Logged at debug: writing one file raises a MODIFY event for every buffer flushed.
                     if (kind == StandardWatchEventKinds.OVERFLOW) {
                         LOG.debug("overflow receiving, ignoring changes.");
                         continue;
                     } else if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                        LOG.info("file '{}' created. Ignoring...", fileName);
+                        LOG.debug("file '{}' created. Ignoring...", fileName);
                     } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                        LOG.info("file '{}' modified. Removing entry from cache.", fileName);
+                        LOG.debug("file '{}' modified. Removing entry from cache.", fileName);
                         m_contents.remove(fileName);
                     } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                        LOG.info("file '{}' deleted. Removing entry from cache.", fileName);
+                        LOG.debug("file '{}' deleted. Removing entry from cache.", fileName);
                         m_contents.remove(fileName);
                     }
                     // IMPORTANT: The key must be reset after processed

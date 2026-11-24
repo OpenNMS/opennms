@@ -24,8 +24,8 @@ import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { defineComponent, h, nextTick } from 'vue'
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { computed, defineComponent, h, nextTick } from 'vue'
+import { createRouter, createWebHashHistory, matchedRouteKey } from 'vue-router'
 import Topology from '@/containers/Topology.vue'
 import { useTopologyStore } from '@/stores/topologyStore'
 
@@ -122,7 +122,14 @@ const mountPage = async (source = 'custom') => {
   await router.push(`/topology/${source}`)
   await router.isReady()
   const wrapper = mount(Topology, {
-    global: { plugins: [PrimeVue, router, createTestingPinia({ stubActions: false })], stubs },
+    global: {
+      plugins: [PrimeVue, router, createTestingPinia({ stubActions: false })],
+      stubs,
+      // The page registers onBeforeRouteLeave/onBeforeRouteUpdate guards, which
+      // attach to the route record a <router-view> provides. Mounted directly,
+      // there is none, so provide the matched record the same way.
+      provide: { [matchedRouteKey as symbol]: computed(() => router.currentRoute.value.matched[0]) }
+    },
     attachTo: document.body
   })
   mounted.push(wrapper)
@@ -393,7 +400,7 @@ describe('Topology search', () => {
 
     const { wrapper } = await mountPage('layer2')
     const box = await suggest(wrapper, 'core')
-    box.vm.$emit('option-select', box.props('suggestions')[0])
+    box.vm.$emit('optionSelect', box.props('suggestions')[0])
     await flushPromises()
 
     expect(router.currentRoute.value.query.focus).toBe('a')
@@ -413,7 +420,7 @@ describe('Topology search', () => {
       { kind: 'node', label: 'edge-switch', node: expect.objectContaining({ id: 'n1' }) }
     ])
 
-    box.vm.$emit('option-select', box.props('suggestions')[0])
+    box.vm.$emit('optionSelect', box.props('suggestions')[0])
     await flushPromises()
 
     expect(store.selectedIds).toEqual(['n1'])
@@ -442,7 +449,7 @@ describe('Topology search', () => {
     const category = box.props('suggestions')[0]
     expect(category).toEqual({ kind: 'category', label: 'Core', canvasIds: ['a', 'b'] })
 
-    box.vm.$emit('option-select', category)
+    box.vm.$emit('optionSelect', category)
     await flushPromises()
 
     expect(store.selectedIds).toEqual(['a', 'b'])

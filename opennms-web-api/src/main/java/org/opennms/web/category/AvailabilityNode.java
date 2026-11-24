@@ -54,6 +54,29 @@ public class AvailabilityNode {
     private Long m_serviceDownCount;
 
     /**
+     * Services with status A (managed) on managed interfaces, across every interface of the node,
+     * whatever the paging: the services the availability figures count. Unset when the node was
+     * built from an RTC node.
+     * <p>
+     * The node figures also require {@code nodetype = 'A'} (an active node), which this count does
+     * not check. So a node of another type with managed services has a count above 0, but its
+     * figure is -1.
+     */
+    @XmlAttribute(name="managed-service-count")
+    private Long m_managedServiceCount;
+
+    /**
+     * Availability at or above this is normal; null when the category does not define it, which is
+     * written as null in JSON and omitted in XML.
+     */
+    @XmlAttribute(name="normal-threshold")
+    private Double m_normalThreshold;
+
+    /** Availability at or above this, but below normal, is a warning; null when not defined. */
+    @XmlAttribute(name="warning-threshold")
+    private Double m_warningThreshold;
+
+    /**
      * How many IP interfaces the node has in all (after the {@code withServices} filter), for a caller
      * that pages {@link #getIpInterfaces()}. Set on every response, paged or not.
      */
@@ -83,9 +106,15 @@ public class AvailabilityNode {
         m_availability = availability;
         m_serviceCount = 0l;
         m_serviceDownCount = 0l;
+        m_managedServiceCount = 0l;
         for (final OnmsIpInterface iface : node.getIpInterfaces()) {
+            // The availability queries match only a managed service on a managed interface.
+            final boolean ifaceManaged = "M".equals(iface.getIsManaged());
             for (final OnmsMonitoredService svc : iface.getMonitoredServices()) {
                 m_serviceCount++;
+                if (ifaceManaged && "A".equals(svc.getStatus())) {
+                    m_managedServiceCount++;
+                }
                 if (svc.isDown()) {
                     m_serviceDownCount++;
                 }
@@ -117,6 +146,27 @@ public class AvailabilityNode {
         return m_serviceDownCount;
     }
 
+    public Long getManagedServiceCount() {
+        return m_managedServiceCount;
+    }
+
+    public Double getNormalThreshold() {
+        return m_normalThreshold;
+    }
+
+    public Double getWarningThreshold() {
+        return m_warningThreshold;
+    }
+
+    /**
+     * @param normal the category's normal threshold; a negative value means undefined and is stored as null
+     * @param warning the category's warning threshold; a negative value means undefined and is stored as null
+     */
+    public void setThresholds(final double normal, final double warning) {
+        m_normalThreshold = normal < 0 ? null : normal;
+        m_warningThreshold = warning < 0 ? null : warning;
+    }
+
     public Long getIpInterfaceCount() {
         return m_ipInterfaceCount;
     }
@@ -132,6 +182,9 @@ public class AvailabilityNode {
             .append("availability", this.getAvailability())
             .append("serviceCount", this.getServiceCount())
             .append("serviceDownCount", this.getServiceDownCount())
+            .append("managedServiceCount", this.getManagedServiceCount())
+            .append("normalThreshold", this.getNormalThreshold())
+            .append("warningThreshold", this.getWarningThreshold())
             .append("ipInterfaceCount", this.getIpInterfaceCount())
             .append("ipInterfaces", this.getIpInterfaces())
             .toString();

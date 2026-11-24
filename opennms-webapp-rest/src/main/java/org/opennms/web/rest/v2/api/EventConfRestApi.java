@@ -549,22 +549,28 @@ public interface EventConfRestApi {
             description = """
         Update an eventConf event by sourceId and eventId.
         `event` is required: the whole definition is replaced from it, and `enabled` is applied with it.
-        A body carrying only `enabled` fails with a 500, as does an unknown sourceId or eventId.""",
+        Whitespace around the event's `uei` is removed before it is stored.
+        A body without `event` or `enabled`, or with a blank `uei`, fails with a 400. An unknown sourceId
+        or eventId fails with a 404.""",
             operationId = "updateEventConfEvent"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated successfully",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "EventConfEvent updated successfully."))),
-            @ApiResponse(responseCode = "400", description = "Invalid request",
+                            schema = @Schema(type = "object"),
+                            examples = @ExampleObject(value = "{\"message\": \"EventConfEvent updated successfully.\"}"))),
+            @ApiResponse(responseCode = "400", description = "The body has no `event` or `enabled`, or the event's `uei` is blank",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Request body cannot be null"))),
-            @ApiResponse(responseCode = "500", description = "Update failed, including when the event does not exist or the body omits `event`",
+                            schema = @Schema(type = "object"),
+                            examples = @ExampleObject(value = "{\"error\": \"Event 'uei' is required\"}"))),
+            @ApiResponse(responseCode = "404", description = "The source or the event does not exist",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(type = "string"),
-                            examples = @ExampleObject(value = "Unexpected error occurred: Failed to update EventConfEvent XML for eventId=4211")))
+                            schema = @Schema(type = "object"),
+                            examples = @ExampleObject(value = "{\"error\": \"EventConfEvent not found for eventId=4211\"}"))),
+            @ApiResponse(responseCode = "500", description = "Update failed",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(type = "object"),
+                            examples = @ExampleObject(value = "{\"error\": \"Unexpected error occurred: Failed to update EventConfEvent XML for eventId=4211\"}")))
     })
     Response updateEventConfEvent(
             @Parameter(description = "Identifier of the source owning the event.", example = "17", required = true)
@@ -1019,9 +1025,10 @@ public interface EventConfRestApi {
             summary = "Get a source's events with an exact UEI",
             description = """
         Returns the source's events whose UEI matches `uei` exactly (case-sensitive, no wildcards), in
-        evaluation order, as full records including `id` and `xmlContent`. This resolves an event's id
-        from its identity: pick among the results by comparing masks in `xmlContent`. For substring
-        search use `filter/{sourceId}/events`; for definitions without ids use `.../events/download`.""",
+        evaluation order. Whitespace around `uei` is ignored. The results are full records, including
+        `id` and `xmlContent`. This resolves an event's id from its identity: pick among the results by
+        comparing masks in `xmlContent`. For substring search use `filter/{sourceId}/events`; for
+        definitions without ids use `.../events/download`.""",
             operationId = "getEventConfSourceEventsByUei"
     )
     @ApiResponses(value = {

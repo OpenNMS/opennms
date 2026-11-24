@@ -1,0 +1,13 @@
+// Compact OnmsIconButton for the info icons that open a threshold help dialog.
+// Strips the button's padding so it sits inline with the title or text it
+// belongs to, and sizes it in em, so it scales with that text. Apply to a class
+// on the OnmsIconButton: the class falls through to the PrimeVue Button root,
+// so a scoped rule on it beats .p-button.
+@mixin info-icon-button {
+  margin-left: 0.3em;
+  vertical-align: -0.2em;
+  width: 1.2em;
+  min-width: 1.2em;
+  height: 1.2em;
+  padding: 0;
+}

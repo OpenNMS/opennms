@@ -17,15 +17,19 @@ To create a group of users, follow these steps:
 
 . Log in as a user with admin permissions.
 . Click menu:User Management[Manage Groups] in the side menu.
-. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Groups].
-. Click *Add New Group* and specify the its name and description.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click *Configure Groups*.
+. Click *Add New Group*.
+. On the *Group* tab, specify the group name and, optionally, comments.
 +
-NOTE: You cannot use angle brackets (`<>`), single (`'`) and double (`"`) quotation marks, or the ampersand symbol (`&`) in a group name.
+NOTE: A group name cannot contain whitespace, control characters, angle brackets (`<>`), single (`'`) and double (`"`) quotation marks, backticks, or any of the characters `& : / \ % ? #`.
+It cannot be `.`, `..`, `item` or `available-categories`, and it can be at most 256 characters long.
+The group name `Admin` is reserved.
 
-. Add a user to the group by selecting them from the Available Users list and clicking *>>* to move them to the Currently in Group list.
-. (Optional) Assign responsibility categories (Routers, Switches, Servers, and so on).
-. (Optional) Create a <<deep-dive/user-management/user-config.adoc#ga-user-schedule, duty schedule>>.
-. Click *Finish* to apply the changes.
+. Add users to the group: select them in the *Add users* field and click *Add*.
+. (Optional) Assign responsibility categories (Routers, Switches, Servers, and so on) on the *Categories* tab.
+. (Optional) Create a <<deep-dive/user-management/user-config.adoc#ga-user-schedule, duty schedule>> on the *Duty Schedules* tab.
+. Click *Add Group* to save the group.
+Click *Cancel* to discard your changes.
 
 NOTE: The order of users in a group is important.
 Notifications are sent to users in order from the top of the group membership list to the bottom.
@@ -37,15 +41,16 @@ To modify the users in a group, follow these steps:
 
 . Log in as a user with admin permissions.
 . Click menu:User Management[Manage Groups] in the side menu.
-. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Groups].
-. Find the group that you want to modify and click the *modify* symbol next to its name.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click *Configure Groups*.
+. Click the edit icon beside the group that you want to modify.
 . Modify the group membership as appropriate.
-** Add a user to the group by selecting them from the Available Users list and clicking *>>* to move them to the Currently in Group list.
-** Remove a user from the group by selecting them from the Currently in Group list and clicking *<<* to move them to the Available Users list.
-. Click *Finish* to apply the changes.
+** Add users to the group by selecting them in the *Add users* field and clicking *Add*.
+** Remove a user from the group by clicking the remove icon beside the user in the *Members* list.
+** Change the order of the members with the up and down icons.
+. Click *Save Group* to apply the changes.
 
 NOTE: The order of users in a group is important.
-Notifications are sent to users in chronological order, from the top of the group membership list to the bottom.
+Notifications are sent to users in order, from the top of the group membership list to the bottom.
 
 === Delete a group
 
@@ -53,9 +58,12 @@ To delete a group from your {page-component-title} instance, follow these steps:
 
 . Log in as a user with admin permissions.
 . Click menu:User Management[Manage Groups] in the side menu.
-. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Groups].
-. Find the group that you want to delete and click the *delete* symbol next to its name.
-. Click *OK* to confirm your decision.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click *Configure Groups*.
+. Click the delete icon beside the group that you want to delete.
+. Confirm the deletion.
+
+NOTE: You cannot delete a group while an on-call role uses it as its membership group, or while a destination path in `destinationPaths.xml` names it.
+The message names the roles or paths.
 
 IMPORTANT: If you delete a group, users do not receive a notification that it has been deleted.
 If the group is associated with a schedule, that schedule will also be deleted, and users previously included in the group will no longer receive notifications as configured in that schedule.

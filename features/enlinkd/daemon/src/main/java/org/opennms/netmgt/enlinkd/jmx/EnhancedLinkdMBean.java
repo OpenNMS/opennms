@@ -30,4 +30,39 @@ import org.opennms.netmgt.daemon.BaseOnmsMBean;
  * @version $Id: $
  */
 public interface EnhancedLinkdMBean extends BaseOnmsMBean {
+
+    /**
+     * @return the number of discovery tasks currently running
+     */
+    long getActiveThreads();
+
+    /**
+     * @return the cumulative number of discovery tasks handed to the thread pool since startup
+     */
+    long getTasksTotal();
+
+    /**
+     * @return the cumulative number of discovery tasks completed since startup
+     */
+    long getTasksCompleted();
+
+    /**
+     * @return the current number of threads in the pool
+     */
+    long getNumPoolThreads();
+
+    /**
+     * @return the configured core size of the thread pool
+     */
+    long getCorePoolThreads();
+
+    /**
+     * @return discovery tasks that are ready to run and waiting for a free thread
+     */
+    long getTaskQueuePendingCount();
+
+    /**
+     * @return discovery tasks waiting in the delay queue, including those backing off
+     */
+    long getTaskQueueDelayedCount();
 }

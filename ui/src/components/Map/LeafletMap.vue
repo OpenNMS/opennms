@@ -46,7 +46,6 @@
           >
             <MarkerPopup
               :baseHref="mainMenu.baseHref"
-              :baseNodeUrl="baseNodeUrl"
               :node="node"
               :ipAddress="ipAddressForNode(node)"
               :nodeLabelToAlarmSeverity="nodeLabelToAlarmSeverity"
@@ -155,7 +154,6 @@ const bounds = computed(() => {
 
 const nodeLabelAlarmSeverityMap = computed(() => mapStore.getNodeAlarmSeverityMap())
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
-const baseNodeUrl = computed<string>(() => `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}`)
 const ipInterfaces = computed<IpInterface[]>(() => ipInterfaceStore.ipInterfaces)
 
 // cached map of node id -> IpInterface list

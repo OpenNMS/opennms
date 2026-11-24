@@ -34,6 +34,23 @@ describe('OnmsPaginator contract', () => {
     expect(mountPaginator({ totalRecords: 5 }).find('.p-paginator').exists()).toBe(true)
   })
 
+  it('shows no page report unless one is given', () => {
+    const wrapper = mountPaginator()
+
+    expect(wrapper.find('.p-paginator-current').exists()).toBe(false)
+    expect(wrapper.findComponent({ name: 'Paginator' }).props('template'))
+      .toBe('FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown')
+  })
+
+  it('shows pageReport after the rows-per-page dropdown, with its placeholders filled in', () => {
+    const wrapper = mountPaginator({ first: 10, rowsPerPageOptions: [5, 10], pageReport: 'Interfaces {first}–{last} of {totalRecords}' })
+    const inner = wrapper.findComponent({ name: 'Paginator' })
+
+    expect(inner.props('template')).toBe('FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport')
+    expect(inner.props('currentPageReportTemplate')).toBe('Interfaces {first}–{last} of {totalRecords}')
+    expect(wrapper.find('.p-paginator-current').text()).toBe('Interfaces 11–20 of 25')
+  })
+
   it('passes unsafePt through as pt', () => {
     const pt = { root: { class: 'escape-hatch' }}
 
