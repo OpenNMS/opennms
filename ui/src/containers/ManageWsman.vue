@@ -116,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { OnmsConfirmationDialog, OnmsTab, OnmsTabList, OnmsTabPanel, OnmsTabPanels, OnmsTabs } from '@opennms/onms-ui'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
@@ -132,6 +132,7 @@ import WsmanDefinitionsTable from '@/components/ManageWsman/WsmanDefinitionsTabl
 import { configToInput } from '@/components/ManageWsman/wsmanForm'
 import WsmanHelpPanel from '@/components/ManageWsman/WsmanHelpPanel.vue'
 import WsmanReadinessBanner from '@/components/ManageWsman/WsmanReadinessBanner.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useMenuStore } from '@/stores/menuStore'
 import { useWsmanAdminStore } from '@/stores/wsmanAdminStore'
 import { BreadCrumb } from '@/types'
@@ -139,6 +140,7 @@ import { WsmanCollectionInfo, WsmanGroupInfo, WsmanSystemDefinitionInfo } from '
 
 const menuStore = useMenuStore()
 const store = useWsmanAdminStore()
+const { withSpinner, showError } = useActionFeedback()
 const activeTab = ref(0)
 const showDefaultsDialog = ref(false)
 const showDefinitionDialog = ref(false)
@@ -163,11 +165,11 @@ const showResetConfirm = ref(false)
 
 const requisitionsUrl = computed<string>(() => `${menuStore.mainMenu.baseHref ?? '/opennms/'}admin/ng-requisitions/index.jsp`)
 
-const runReadinessAction = (action: 'enable-polling' | 'rescan') => store.runReadinessAction(action)
+const runReadinessAction = (action: 'enable-polling' | 'rescan') => withSpinner(() => store.runReadinessAction(action))
 
 const confirmReset = async () => {
   showResetConfirm.value = false
-  report(await store.resetDataCollection())
+  report(await withSpinner(() => store.resetDataCollection()))
 }
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
@@ -178,7 +180,21 @@ const breadcrumbs = computed<BreadCrumb[]>(() => [
 ])
 
 onMounted(async () => {
-  await Promise.all([store.getConfig(), store.getDataCollection()])
+  await withSpinner(() => Promise.all([store.getConfig(), store.getDataCollection()]))
+})
+
+// The store only flags a failed read; the toast belongs to the page. This also
+// covers the re-reads the store does after a save.
+watch(() => store.loadError, (failed) => {
+  if (failed) {
+    showError('Failed to load the WS-Man configuration.')
+  }
+})
+
+watch(() => store.dataCollectionError, (failed) => {
+  if (failed) {
+    showError('Failed to load the WS-Man data collection configuration.')
+  }
 })
 
 const openDefinition = (index: number | null) => {
@@ -200,7 +216,7 @@ const confirmDelete = async () => {
   }
   const input = configToInput(store.config)
   input.definitions.splice(index, 1)
-  report(await store.saveConfig(input))
+  report(await withSpinner(() => store.saveConfig(input)))
 }
 
 const openDataCollectionEditor = (kind: DataCollectionKind, item: EditableObject) => {
@@ -236,12 +252,12 @@ const confirmDeleteDataCollection = async () => {
   } else {
     input.groups = remove(input.groups, target.item.name)
   }
-  report(await store.saveDataCollectionFile(target.item.source, input))
+  report(await withSpinner(() => store.saveDataCollectionFile(target.item.source, input)))
 }
 
 const syncDefinition = async (index: number) => {
   actionMessage.value = ''
-  const result = await store.syncDefinition(index)
+  const result = await withSpinner(() => store.syncDefinition(index))
   if (typeof result === 'string') {
     actionError.value = result
     return
@@ -273,7 +289,7 @@ const moveDefinition = async (index: number, delta: number) => {
   }
   const [moved] = input.definitions.splice(index, 1)
   input.definitions.splice(target, 0, moved)
-  report(await store.saveConfig(input))
+  report(await withSpinner(() => store.saveConfig(input)))
 }
 </script>
 

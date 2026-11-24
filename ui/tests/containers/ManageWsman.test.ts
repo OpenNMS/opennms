@@ -27,6 +27,10 @@ import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+const { showSnackBar, startSpinner, stopSpinner } = vi.hoisted(() => ({ showSnackBar: vi.fn(), startSpinner: vi.fn(), stopSpinner: vi.fn() }))
+vi.mock('@/composables/useSnackbar', () => ({ default: () => ({ showSnackBar }) }))
+vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner, stopSpinner }) }))
+
 const SETTINGS = {
   retry: 1, timeout: 30000, username: 'root', hasPassword: true, port: null, maxElements: null,
   ssl: true, strictSsl: false, path: '/wsman', productVendor: null, productVersion: null, gssAuth: null, kerberosEncryption: null
@@ -51,7 +55,10 @@ const mountPage = async (state: Record<string, unknown>) => {
 describe('ManageWsman.vue (container)', () => {
   // PrimeVue's TabList positions its ink bar from a timer it never clears; run it
   // out under fake timers before unmounting so nothing fires after teardown
-  beforeEach(() => vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] }))
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+  })
   afterEach(() => {
     vi.runOnlyPendingTimers()
     mounted.splice(0).forEach(w => w.unmount())
@@ -135,5 +142,32 @@ describe('ManageWsman.vue (container)', () => {
     const wrapper = await mountPage({ config: null, loadError: true })
     expect(wrapper.find('[data-test="load-error"]').exists()).toBe(true)
     expect(wrapper.find('[data-test="tab-defaults"]').exists()).toBe(false)
+  })
+
+  it('toasts each load failure once when its flag turns true', async () => {
+    await mountPage({ config: CONFIG, loadError: false, dataCollectionError: false })
+    const store = useWsmanAdminStore()
+    expect(showSnackBar).not.toHaveBeenCalled()
+
+    store.loadError = true
+    await flushPromises()
+    store.dataCollectionError = true
+    await flushPromises()
+
+    expect(showSnackBar).toHaveBeenCalledTimes(2)
+    expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Failed to load the WS-Man configuration.', error: true })
+    expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Failed to load the WS-Man data collection configuration.', error: true })
+  })
+
+  it('wraps the initial load and its own store actions in the spinner', async () => {
+    const wrapper = await mountPage({ config: CONFIG, loadError: false })
+    expect(startSpinner).toHaveBeenCalledTimes(1)
+    expect(stopSpinner).toHaveBeenCalledTimes(1)
+
+    const store = useWsmanAdminStore()
+    vi.mocked(store.resetDataCollection).mockResolvedValueOnce(null)
+    await (wrapper.vm as any).confirmReset()
+    expect(startSpinner).toHaveBeenCalledTimes(2)
+    expect(stopSpinner).toHaveBeenCalledTimes(2)
   })
 })

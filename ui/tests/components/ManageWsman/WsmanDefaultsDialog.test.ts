@@ -28,6 +28,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/stores/wsmanAdminStore')
 
+const { startSpinner, stopSpinner } = vi.hoisted(() => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() }))
+vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner, stopSpinner }) }))
+
 const DialogStub = {
   name: 'Dialog',
   props: ['visible', 'header', 'modal'],
@@ -91,5 +94,13 @@ describe('WsmanDefaultsDialog.vue', () => {
     await mountDialog()
     await wrapper.find('[data-test="path-input"]').setValue('wsman path')
     expect(wrapper.find('[data-test="save-button"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('wraps the save in the spinner', async () => {
+    await mountDialog()
+    await wrapper.find('[data-test="save-button"]').trigger('click')
+    await flushPromises()
+    expect(startSpinner).toHaveBeenCalledTimes(1)
+    expect(stopSpinner).toHaveBeenCalledTimes(1)
   })
 })
