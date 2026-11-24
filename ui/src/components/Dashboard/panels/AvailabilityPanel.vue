@@ -64,7 +64,7 @@ License.
               { 'avail__total': isTotal(section) },
               shade && !isTotal(section) ? severityTintClass(availabilityLevel(cat.availabilityClass)) : undefined
             ]"
-            >
+          >
             <td class="avail__cat">
               <a
                 v-if="!isTotal(section)"
@@ -77,7 +77,7 @@ License.
             <td class="avail__num">
               <AvailabilityBadge
                 :text="cat.availabilityText"
-                :level="isTotal(section) ? undefined : availabilityLevel(cat.availabilityClass)"
+                :level="availabilityLevel(cat.availabilityClass)"
               />
             </td>
           </tr>

@@ -25,6 +25,8 @@
 // onms-theme + PrimeVue's darkModeSelector key off.
 @import "@/styles/onms-theme";
 @import "@/styles/onms-tokens";
+// Global (unscoped) severity tint classes used by the dashboard panels.
+@import "@/styles/severity-tints";
 
 body {
   background: var($background);

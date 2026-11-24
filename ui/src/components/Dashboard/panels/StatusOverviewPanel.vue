@@ -152,7 +152,7 @@ const renderDonut = (
   const filtered = entries.filter(e => e.count > 0)
   const labels = filtered.map(e => e.label)
   const data = filtered.map(e => e.count)
-  const colors = filtered.map(e => readCssColor(severityColorVar(e.label)))
+  const colors = filtered.map(e => readCssColor(severityColorVar(e.label)) || readCssColor('--onms-cleared'))
 
   if (existing) {
     existing.data.labels = labels

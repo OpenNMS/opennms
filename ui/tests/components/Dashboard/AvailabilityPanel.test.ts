@@ -52,13 +52,21 @@ describe('Dashboard AvailabilityPanel', () => {
   it('gives only Normal/Warning/Critical classes a badge level', async () => {
     const wrapper = await mountPanel({ shade: true })
 
-    expect(wrapper.findAll('[data-test="availability-badge"]').map(b => b.attributes('data-level'))).toEqual(['normal', 'critical'])
+    expect(wrapper.findAll('[data-test="availability-badge"]').map(b => b.attributes('data-level'))).toEqual(['normal', 'critical', 'critical'])
     const rows = wrapper.findAll('tbody tr')
     expect(rows[2].text()).toContain('C-text')
     expect(rows[3].text()).toContain('D-text')
     for (const row of [rows[2], rows[3]]) {
       expect(row.classes().some(c => c.startsWith('severity-tint--'))).toBe(false)
     }
+  })
+
+  it('gives the total row its badge level but no tint', async () => {
+    const wrapper = await mountPanel({ shade: true })
+    const rows = wrapper.findAll('tbody tr')
+
+    expect(rows[4].find('[data-test="availability-badge"]').attributes('data-level')).toBe('critical')
+    expect(rows[4].classes().some(c => c.startsWith('severity-tint--'))).toBe(false)
   })
 
   it('tints classed rows when shading is on, and never the total row', async () => {

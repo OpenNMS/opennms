@@ -125,33 +125,3 @@ $solid: 1;
 .severity_undefined-color {
   border: 1px solid var(variables.$border-on-surface);
 }
-
-// A translucent tint of the severity color, for panels and banners (see severityTintClass in lib/severity)
-
-.severity-tint--critical {
-  background-color: color-mix(in srgb, var(--onms-critical) 20%, transparent);
-}
-
-.severity-tint--major {
-  background-color: color-mix(in srgb, var(--onms-major) 20%, transparent);
-}
-
-.severity-tint--minor {
-  background-color: color-mix(in srgb, var(--onms-minor) 20%, transparent);
-}
-
-.severity-tint--warning {
-  background-color: color-mix(in srgb, var(--onms-warning) 20%, transparent);
-}
-
-.severity-tint--normal {
-  background-color: color-mix(in srgb, var(--onms-normal) 20%, transparent);
-}
-
-.severity-tint--indeterminate {
-  background-color: color-mix(in srgb, var(--onms-indeterminate) 20%, transparent);
-}
-
-.severity-tint--cleared {
-  background-color: color-mix(in srgb, var(--onms-cleared) 20%, transparent);
-}

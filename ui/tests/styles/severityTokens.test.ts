@@ -37,6 +37,8 @@ const block = (css: string, selector: string): string => {
 
 const theme = read('onms-theme.scss')
 const severities = read('_severities.scss')
+const tints = read('_severity-tints.scss')
+const themes = read('themes.scss')
 const light = block(theme, '.open-light')
 const dark = block(theme, '.open-dark')
 
@@ -73,8 +75,13 @@ describe('severity classes', () => {
     expect(block(severities, '.normal-color')).toContain('$normal')
   })
 
-  it.each(['critical', 'major', 'minor', 'warning', 'normal', 'indeterminate', 'cleared'])('has .severity-tint--%s', (sev) => {
-    expect(severities).toContain(`.severity-tint--${sev} {`)
-    expect(block(severities, `.severity-tint--${sev}`)).toContain(`color-mix(in srgb, var(--onms-${sev}) 20%, transparent)`)
+  it.each(['critical', 'major', 'minor', 'warning', 'normal', 'indeterminate', 'cleared'])('has .severity-tint--%s in the global tint partial only', (sev) => {
+    expect(tints).toContain(`.severity-tint--${sev} {`)
+    expect(block(tints, `.severity-tint--${sev}`)).toContain(`color-mix(in srgb, var(--onms-${sev}) 20%, transparent)`)
+    expect(severities).not.toContain(`.severity-tint--${sev}`)
+  })
+
+  it('loads the tint partial globally from themes.scss', () => {
+    expect(themes).toMatch(/@(import|use) ["']@\/styles\/severity-tints["']/)
   })
 })
