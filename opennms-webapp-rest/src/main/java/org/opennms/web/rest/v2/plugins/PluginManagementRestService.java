@@ -145,7 +145,7 @@ public class PluginManagementRestService {
     }
 
     private PluginManagementRestService(final java.nio.file.Path opennmsHome) {
-        this(opennmsHome, new OsgiKarafBridge(opennmsHome.resolve("etc"), opennmsHome.resolve("data").resolve("kar")));
+        this(opennmsHome, new LazyKarafBridge(() -> new OsgiKarafBridge(opennmsHome.resolve("etc"), opennmsHome.resolve("data").resolve("kar"))));
     }
 
     PluginManagementRestService(final java.nio.file.Path opennmsHome, final KarafBridge bridge) {
