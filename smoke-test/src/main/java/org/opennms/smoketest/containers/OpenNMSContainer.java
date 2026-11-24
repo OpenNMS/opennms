@@ -441,23 +441,6 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
         @Override
         protected void waitUntilReady() {
-            try {
-                waitUntilReadyWrapped();
-            } catch (Exception e) {
-                var logs =
-                        "\n\t\t----------------------------------------------------------\n"
-                                + container.getLogs()
-                                .replaceFirst(
-                                        "(?ms).*?(^An error occurred while attempting to start the .*?)\\s*^\\[INFO\\].*",
-                                        "$1\n")
-                                .replaceAll("(?m)^", "\t\t")
-                                + "\t\t----------------------------------------------------------";
-
-                throw e;
-            }
-        }
-
-        protected void waitUntilReadyWrapped() {
             LOG.info("Waiting for startup to begin.");
             final Path managerLog = CONTAINER_LOG_DIR.resolve("manager.log");
             await("waiting for startup to begin")
