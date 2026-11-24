@@ -110,6 +110,10 @@ All three are required by the schema even for `relativeChange` and `absoluteChan
 
 `rearmedUEI` is dropped for `relativeChange` and `absoluteChange`, which never re-arm. `rearmingAbsoluteChange` keeps it.
 
+`triggeredUEI` and `rearmedUEI` are trimmed.
+A value that is blank after the trim means the threshold type's default UEI.
+This also applies to thresholds read from `thresholds.xml` and to thresholds from plugins.
+
 `dsName` is limited to 19 characters, which is the longest datasource name RRDtool can store.
 
 === Examples
