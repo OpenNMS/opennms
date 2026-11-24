@@ -97,6 +97,7 @@
 <c:set var="showParms" value="<%=showParms%>"/>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Detail")
           .headTitle("Events")
@@ -122,19 +123,19 @@
           <th class="col-1">Node</th>
           <td ${acknowledgeEvent ? '' : 'colspan="3"'} class="${acknowledgeEvent ? 'col-3' : 'col-7'}">
             <% if( event.getNodeId() > 0 ) { %>
-              <a href="element/node.jsp?node=<%=event.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(event.getNodeLabel())%></a>
+              <a href="<%= ElementConstants.NODE_DETAILS_URI %><%=event.getNodeId()%>"><%=WebSecurityUtils.sanitizeString(event.getNodeLabel())%></a>
             <% } else {%>
               &nbsp;
             <% } %>
           </td>
           <c:if test="${acknowledgeEvent}">
             <th class="col-1">Acknowledged&nbsp;By</th>
-            <td class="col-4"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp;"%></td>
+            <td class="col-4"><%=event.getAcknowledgeUser()!=null ? WebSecurityUtils.sanitizeString(event.getAcknowledgeUser()) : "&nbsp;"%></td>
           </c:if>
         </tr>
           <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
               <th class="col-1">Monitoring Location</th>
-              <td class="col-3"><%= event.getNodeLocation() %></td>
+              <td class="col-3"><%= WebSecurityUtils.sanitizeString(event.getNodeLocation()) %></td>
               <th class="col-1">&nbsp;</th>
               <td class="col-3">&nbsp;</td>
           </tr>
@@ -192,7 +193,7 @@
           </td>
           <c:if test="${provisioned}">
             <th class="col-1">Location&nbsp;Monitor&nbsp;ID</th>
-            <td colspan="3" class="col-7"><a href="distributed/locationMonitorDetails.htm?monitorId=<%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID)%>"><%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID) %></a></td>
+            <td colspan="3" class="col-7"><a href="distributed/locationMonitorDetails.htm?monitorId=<%= WebSecurityUtils.sanitizeString(parms.get(EventConstants.PARM_LOCATION_MONITOR_ID))%>"><%= WebSecurityUtils.sanitizeString(parms.get(EventConstants.PARM_LOCATION_MONITOR_ID)) %></a></td>
           </c:if>
         </tr>
 
@@ -200,7 +201,7 @@
           	<th class="col-1">UEI</th>
                 <td colspan="5" class="col-11">
           	<% if( event.getUei() != null ) { %>
-          	      <%=event.getUei()%>
+          	      <%=WebSecurityUtils.sanitizeString(event.getUei())%>
           	<% } else {%>
                 	&nbsp;
           	<% } %>
@@ -267,7 +268,7 @@
         <% if (event.getOperatorInstruction()==null) { %>
           No instructions available.
         <% } else { %>
-          <%=event.getOperatorInstruction()%>
+          <%=WebSecurityUtils.sanitizeString(event.getOperatorInstruction(), true)%>
         <% } %>
       </div>
     </div>
@@ -277,7 +278,7 @@
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <input type="hidden" name="actionCode" value="<%=action%>" />
         <input type="hidden" name="event" value="<%=event.getId()%>"/>
-        <input type="hidden" name="redirect" value="<%= "detail.jsp?" + request.getQueryString()%>" />
+        <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString("detail.jsp?" + request.getQueryString()) %>" />
         <input type="submit" value="<%=buttonName%>"/>
       </form>
     </c:if>

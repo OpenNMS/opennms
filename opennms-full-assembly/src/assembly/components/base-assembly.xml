@@ -16,12 +16,6 @@
       </includes>
       <unpackOptions>
         <excludes>
-          <!-- northbounders -->
-          <exclude>lib/*alarm-northbounder-jms*</exclude>
-
-          <!-- protocols -->
-          <exclude>etc/nsclient-config.xml</exclude>
-
           <!-- provisioning adapters -->
           <exclude>etc/*snmp-asset-adapter*</exclude>
           <exclude>lib/*snmp-asset-provisioning-adapter*</exclude>
@@ -31,10 +25,6 @@
           <exclude>etc/*wsman-asset-adapter*</exclude>
           <!-- not included in base assembly tar -->
           <!-- <exclude>lib/*wsman-asset-provisioning-adapter*</exclude> -->
-
-          <!-- ticketing plugins -->
-          <exclude>etc/rt.properties</exclude>
-          <exclude>lib/*integration-rt*</exclude>
         </excludes>
       </unpackOptions>
     </dependencySet>
@@ -86,13 +76,14 @@
         <include>THIRD-PARTY.txt</include>
       </includes>
     </fileSet>
-    <!-- Add the COPYING license file -->
+    <!-- Add the COPYING and LICENSE.md license files -->
     <fileSet>
       <directory>${project.parent.basedir}</directory>
       <filtered>false</filtered>
       <outputDirectory>licenses</outputDirectory>
       <includes>
         <include>COPYING</include>
+        <include>LICENSE.md</include>
       </includes>
     </fileSet>
     <!-- Put the Karaf 4 boot classpath files into /lib so that they are available in the OpenNMS classpath -->

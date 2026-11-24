@@ -24,9 +24,11 @@ package org.opennms.netmgt.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -179,6 +181,63 @@ public class MonitoredServiceDaoIT implements InitializingBean {
         final OnmsMonitoredService monSvc2 = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), monSvc.getIfIndex(), monSvc.getServiceId());
         assertNotNull(monSvc2);
 
+    }
+
+    /**
+     * The collection timestamps are written by primary key without loading the entity, and a
+     * key that matches no row updates nothing.
+     */
+    @Test
+    @Transactional
+    public void testUpdateCollectionTimestamps() {
+        final OnmsMonitoredService monSvc = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), "SNMP");
+        assertNotNull(monSvc);
+        assertNull(monSvc.getCollectLastGood());
+        assertNull(monSvc.getCollectLastFail());
+
+        final Date good = new Date(1_700_000_000_000L);
+        final Date fail = new Date(1_700_000_300_000L);
+        assertEquals(1, m_monitoredServiceDao.updateCollectLastGood(monSvc.getId(), good));
+        assertEquals(1, m_monitoredServiceDao.updateCollectLastFail(monSvc.getId(), fail));
+        assertEquals(0, m_monitoredServiceDao.updateCollectLastGood(Integer.MAX_VALUE, good));
+
+        // Bulk HQL bypasses the session cache, so clear it before reading the row back
+        m_monitoredServiceDao.flush();
+        m_monitoredServiceDao.clear();
+
+        final OnmsMonitoredService reloaded = m_monitoredServiceDao.get(monSvc.getId());
+        assertEquals(good, reloaded.getCollectLastGood());
+        assertEquals(fail, reloaded.getCollectLastFail());
+    }
+
+    /**
+     * The poller and provisiond load a service, change something, and save it. This entity has no
+     * dynamic update, so that save writes every column. A collect timestamp committed by collectd
+     * between their load and their save must survive: the columns are mapped updatable=false, so
+     * the flush leaves them alone even though the in-memory object still holds the older value.
+     */
+    @Test
+    @Transactional
+    public void testEntityFlushDoesNotClobberCollectionTimestamps() {
+        final OnmsMonitoredService monSvc = m_monitoredServiceDao.get(m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), "SNMP");
+        assertNotNull(monSvc);
+        assertNull(monSvc.getCollectLastGood());
+
+        // collectd records a collection while the poller holds a loaded copy with the old (null) value
+        final Date collected = new Date(1_700_000_000_000L);
+        assertEquals(1, m_monitoredServiceDao.updateCollectLastGood(monSvc.getId(), collected));
+        assertNull("the loaded copy still has the stale value", monSvc.getCollectLastGood());
+
+        // the poller's save: lastGood changes, and a full-column flush follows
+        final Date polled = new Date(1_700_000_060_000L);
+        monSvc.setLastGood(polled);
+        m_monitoredServiceDao.saveOrUpdate(monSvc);
+        m_monitoredServiceDao.flush();
+        m_monitoredServiceDao.clear();
+
+        final OnmsMonitoredService reloaded = m_monitoredServiceDao.get(monSvc.getId());
+        assertEquals(polled, reloaded.getLastGood());
+        assertEquals("collectd's timestamp must not be overwritten by the poller's flush", collected, reloaded.getCollectLastGood());
     }
 
 }

@@ -6,7 +6,11 @@
     :dataKey="dataKey"
     :filter="filter"
     :display="display"
+    :showToggleAll="showToggleAll"
+    :maxSelectedLabels="maxSelectedLabels"
     :placeholder="placeholder"
+    :inputId="inputId"
+    :fluid="fluid"
     :pt="unsafePt as never"
     @update:modelValue="emit('update:modelValue', $event)"
   />
@@ -23,7 +27,15 @@ withDefaults(defineProps<{
   dataKey?: string
   filter?: boolean
   display?: 'comma' | 'chip'
+  showToggleAll?: boolean
+  maxSelectedLabels?: number
   placeholder?: string
+  // PrimeVue MultiSelect exposes inputId (not labelId); forward it so a paired
+  // <label for> can associate with the control.
+  inputId?: string
+  // fluid: undefined lets a parent Fluid context be inherited; explicit false
+  // would break that inheritance.
+  fluid?: boolean
   unsafePt?: unknown
 }>(), {
   modelValue: undefined,
@@ -32,7 +44,11 @@ withDefaults(defineProps<{
   dataKey: undefined,
   filter: false,
   display: 'comma',
+  showToggleAll: true,
+  maxSelectedLabels: undefined,
   placeholder: undefined,
+  inputId: undefined,
+  fluid: undefined,
   unsafePt: undefined
 })
 

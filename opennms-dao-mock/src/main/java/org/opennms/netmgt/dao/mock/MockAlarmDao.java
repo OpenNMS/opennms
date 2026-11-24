@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.dao.mock;
 
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,9 +29,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.SituationSummary;
 
@@ -112,8 +113,11 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
     }
 
     @Override
-    public List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, boolean processAcknowledgedAlarms, String restrictionColumn, String restrictionValue, String... groupByColumns) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public Map<OnmsSeverity, Long> getUnacknowledgedCountsBySeverity(final int nodeId) {
+        return findAll().stream()
+                .filter(a -> a.getNode() != null && a.getNode().getId() != null && a.getNode().getId() == nodeId)
+                .filter(a -> a.getAlarmAckTime() == null)
+                .collect(Collectors.groupingBy(OnmsAlarm::getSeverity, () -> new EnumMap<>(OnmsSeverity.class), Collectors.counting()));
     }
 
     @Override

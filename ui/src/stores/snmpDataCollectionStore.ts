@@ -23,6 +23,7 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
     sourcesSearchTerm: '',
     uploadedSourceNames: [],
     activeTab: 0,
+    definitionSearch: null,
     sourcesSorting: {
       sortOrder: 'desc',
       sortKey: 'createdTime'

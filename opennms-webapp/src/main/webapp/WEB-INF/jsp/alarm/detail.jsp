@@ -28,6 +28,7 @@
         org.opennms.core.resource.Vault,
         org.opennms.core.utils.InetAddressUtils,
         org.opennms.core.utils.WebSecurityUtils,
+        org.owasp.encoder.Encode,
         org.opennms.web.controller.alarm.*,
         org.opennms.web.alarm.*,
         org.opennms.web.servlet.XssRequestWrapper,
@@ -37,9 +38,6 @@
         org.opennms.netmgt.model.TroubleTicketState,
         org.opennms.web.api.Authentication,
         org.opennms.web.api.Util,
-        org.apache.commons.configuration.Configuration,
-        org.apache.commons.configuration.ConfigurationException,
-        org.apache.commons.configuration.PropertiesConfiguration,
         org.opennms.web.element.NetworkElementFactory,
         java.util.stream.Collectors"
 %>
@@ -52,11 +50,12 @@
 <%!
     public String alarmTicketLink(OnmsAlarm alarm) {
         String template = System.getProperty("opennms.alarmTroubleTicketLinkTemplate");
+        String ticketId = WebSecurityUtils.sanitizeString(alarm.getTTicketId());
         if (template == null) {
-            return alarm.getTTicketId();
+            return ticketId;
         } else {
-            template = template.replaceAll("\\$\\{id\\}", alarm.getTTicketId());
-            return "<a href=\"" + template + "\">" + alarm.getTTicketId() + "</a>";
+            template = template.replace("${id}", Encode.forUriComponent(alarm.getTTicketId()));
+            return "<a href=\"" + Encode.forHtmlAttribute(template) + "\">" + ticketId + "</a>";
         }
     }
 
@@ -114,6 +113,7 @@
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.web.api.ElementConstants" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Detail")
           .headTitle("Alarms")
@@ -143,9 +143,7 @@
         <th class="col-2">Node</th>
         <td class="col-4">
             <% if (alarm.getNodeId() != null && alarm.getNodeId() > 0) {%>
-            <c:url var="nodeLink" value="element/node.jsp">
-                <c:param name="node" value="<%=String.valueOf(alarm.getNodeId())%>"/>
-            </c:url>
+            <c:url var="nodeLink" value='<%= ElementConstants.NODE_DETAILS_URI + alarm.getNodeId() %>'/>
             <a href="${nodeLink}"><c:out value="<%=alarm.getNodeLabel()%>"/></a>
             <% } else {%>
             &nbsp;
@@ -195,7 +193,7 @@
     </tr> 
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
         <th class="col-2">Monitoring Location</th>
-        <td class="col-4"><%= nodeLocation == null ? "&nbsp;" : nodeLocation %></td>
+        <td class="col-4"><%= nodeLocation == null ? "&nbsp;" : WebSecurityUtils.sanitizeString(nodeLocation) %></td>
 
         <th class="col-2">&nbsp;</th>
         <td class="col-4">&nbsp;</td>
@@ -206,7 +204,7 @@
         <th class="col-2">UEI</th>
         <td class="col-4">
             <% if (alarm.getUei() != null) {%>
-            <%=alarm.getUei()%>
+            <%=WebSecurityUtils.sanitizeString(alarm.getUei())%>
             <% } else {%>
             &nbsp;
             <% }%>
@@ -216,7 +214,7 @@
         <th class="col-2">Managed Object Type</th>
         <td class="col-4">
             <% if (alarm.getManagedObjectType() != null) {%>
-            <%=alarm.getManagedObjectType()%>
+            <%=WebSecurityUtils.sanitizeString(alarm.getManagedObjectType())%>
             <% } else {%>
             &nbsp;
             <% }%>
@@ -224,7 +222,7 @@
         <th class="col-2">Managed Object Instance</th>
         <td class="col-4">
             <% if (alarm.getManagedObjectInstance() != null) {%>
-            <%=alarm.getManagedObjectInstance()%>
+            <%=WebSecurityUtils.sanitizeString(alarm.getManagedObjectInstance())%>
             <% } else {%>
             &nbsp;
             <% }%>
@@ -321,7 +319,7 @@
                     </nobr>
                 </td>
                 <td class="divider" valign="middle">
-                    <a href="element/node.jsp?node=${relatedVar.nodeId}">${relatedVar.nodeLabel}</a>
+                    <a href="${ElementConstants.NODE_DETAILS_URI}${relatedVar.nodeId}"><c:out value="${relatedVar.nodeLabel}"/></a>
                 </td>
                 <td class="divider" valign="middle">
                         ${relatedVar.counter}
@@ -336,7 +334,7 @@
                     </c:if>
                 </td>
                 <td class="divider" valign="middle">
-                        ${relatedVar.logMsg}
+                        <%= WebSecurityUtils.sanitizeString(((OnmsAlarm) pageContext.getAttribute("relatedVar")).getLogMsg(), true) %>
                 </td>
             </tr>
         </c:forEach>
@@ -388,7 +386,7 @@
                     </nobr>
                 </td>
                 <td class="divider" valign="middle">
-                    <a href="element/node.jsp?node=${relatedVar.nodeId}">${relatedVar.nodeLabel}</a>
+                    <a href="${ElementConstants.NODE_DETAILS_URI}${relatedVar.nodeId}"><c:out value="${relatedVar.nodeLabel}"/></a>
                 </td>
                 <td class="divider" valign="middle">
                         ${relatedVar.counter}
@@ -403,7 +401,7 @@
                     </c:if>
                 </td>
                 <td class="divider" valign="middle">
-                        ${relatedVar.logMsg}
+                        <%= WebSecurityUtils.sanitizeString(((OnmsAlarm) pageContext.getAttribute("relatedVar")).getLogMsg(), true) %>
                 </td>
             </tr>
         </c:forEach>
@@ -438,10 +436,10 @@
                     </td>
                     <td rowspan="2"><%= entry.getSeverity().getLabel() %></td>
                     <td><onms:datetime date="<%= entry.getCreationTime() %>" /></td>
-                    <td style="width: auto"><%= entry.getUei() %></td>
+                    <td style="width: auto"><%= WebSecurityUtils.sanitizeString(entry.getUei()) %></td>
                 </tr>
                 <tr class="severity-<%=entry.getSeverity().getLabel().toLowerCase()%>">
-                    <td colspan="2"><%= entry.getLogMessage() %></td>
+                    <td colspan="2"><%= WebSecurityUtils.sanitizeString(entry.getLogMessage(), true) %></td>
                 </tr>
             <% } %>
         </tbody>
@@ -480,7 +478,7 @@
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
 	         <form class="form" method="post" action="alarm/saveStickyMemo.htm">
                  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-				<textarea <%=request.isUserInRole(Authentication.ROLE_READONLY)?"readonly":""%> class="w-100 mb-1" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
+				<textarea <%=request.isUserInRole(Authentication.ROLE_READONLY)?"readonly":""%> class="w-100 mb-1" name="stickyMemoBody" ><c:out value='<%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%>'/></textarea>
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
                 <input <%=request.isUserInRole(Authentication.ROLE_READONLY)?"disabled":""%> class="btn btn-sm btn-secondary" type="submit" value="Save" />
                 <input <%=request.isUserInRole(Authentication.ROLE_READONLY)?"disabled":""%> class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
@@ -492,7 +490,7 @@
 	         <br/>
         <% if (alarm.getStickyMemo() != null) { %>
 	         <div class="row">
-        <div class="col-md-4"><strong>Author:</strong><br/><%=(alarm.getStickyMemo().getAuthor() != null) ? alarm.getStickyMemo().getAuthor() : ""%></div>
+        <div class="col-md-4"><strong>Author:</strong><br/><%=(alarm.getStickyMemo().getAuthor() != null) ? WebSecurityUtils.sanitizeString(alarm.getStickyMemo().getAuthor()) : ""%></div>
         <div class="col-md-4"><strong>Updated:</strong><br/>
        		<span style="white-space:nowrap;"><onms:datetime date="<%=alarm.getStickyMemo().getUpdated()%>" /></span>
         </div>
@@ -518,7 +516,7 @@
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
             <form class="form" method="post" action="alarm/saveJournalMemo.htm">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                <textarea <%=request.isUserInRole(Authentication.ROLE_READONLY)?"readonly":""%> class="w-100 mb-1" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
+                <textarea <%=request.isUserInRole(Authentication.ROLE_READONLY)?"readonly":""%> class="w-100 mb-1" name="journalMemoBody" ><c:out value='<%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%>'/></textarea>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
                 <input <%=request.isUserInRole(Authentication.ROLE_READONLY)?"disabled":""%> class="btn btn-sm btn-secondary" type="submit" value="Save"/>
                 <input <%=request.isUserInRole(Authentication.ROLE_READONLY)?"disabled":""%> class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteJournalForm').submit();"/>
@@ -530,7 +528,7 @@
 	         <br/>
         <% if (alarm.getReductionKeyMemo() != null) { %>
         <div class="row">
-        <div class="col-md-4"><strong>Author:</strong><br/><%=(alarm.getReductionKeyMemo().getAuthor() != null) ? alarm.getReductionKeyMemo().getAuthor() : ""%></div>
+        <div class="col-md-4"><strong>Author:</strong><br/><%=(alarm.getReductionKeyMemo().getAuthor() != null) ? WebSecurityUtils.sanitizeString(alarm.getReductionKeyMemo().getAuthor()) : ""%></div>
         <div class="col-md-4"><strong>Updated:</strong><br/>
        		<span style="white-space:nowrap;"><onms:datetime date="<%=alarm.getReductionKeyMemo().getUpdated()%>" /></span>
         </div>
@@ -559,7 +557,7 @@
             <%if (alarm.getOperInstruct() == null) {%>
             No instructions available.
             <% } else {%>
-            <%=alarm.getOperInstruct()%>
+            <%=WebSecurityUtils.sanitizeString(alarm.getOperInstruct(), true)%>
             <% }%>
   </div>
 </div>
@@ -572,7 +570,7 @@
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="actionCode" value="<%=action%>" />
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
+                <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString("detail.htm" + "?" + request.getQueryString()) %>" />
                 <button class="form-control btn btn-secondary" type="submit">
                     <i class="<%=ackButtonIcon%>"></i> <%=ackButtonName%>
                 </button>
@@ -582,7 +580,7 @@
                 <form class="form-inline mr-1" method="post" action="alarm/changeSeverity?actionCode=<%=escalateAction%>">
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                    <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
+                    <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString("detail.htm" + "?" + request.getQueryString()) %>" />
                     <button class="form-control btn btn-secondary" type="submit">
                         <i class="fas fa-arrow-up"></i> Escalate
                     </button>
@@ -593,7 +591,7 @@
                 <form class="form-inline" method="post" action="alarm/changeSeverity?actionCode=<%=clearAction%>">
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                    <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
+                    <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString("detail.htm" + "?" + request.getQueryString()) %>" />
                     <button class="form-control btn btn-secondary" type="submit" value="Clear">
                         <i class="fas fa-thumbs-up"></i> Clear
                     </button>
@@ -607,21 +605,21 @@
             <form class="form-inline mr-1" method="post" action="alarm/ticket/create.htm">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
+                <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString("/alarm/detail.htm" + "?" + request.getQueryString()) %>" />
                 <form:input class="form-control btn btn-secondary" type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
             </form>
 
             <form class="form-inline mr-1" method="post" action="alarm/ticket/update.htm">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
+                <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString("/alarm/detail.htm" + "?" + request.getQueryString()) %>" />
                 <form:input class="form-control btn btn-secondary" type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null || alarm.getTTicketId() == null) %>"/>
             </form>
 
             <form class="form-inline" method="post" action="alarm/ticket/close.htm">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
-                <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
+                <input type="hidden" name="redirect" value="<%= WebSecurityUtils.sanitizeString("/alarm/detail.htm" + "?" + request.getQueryString()) %>" />
                 <form:input class="form-control btn btn-secondary" type="submit" value="Close Ticket" disabled="<%=((alarm.getTTicketState() == null) || ((alarm.getTTicketState() != TroubleTicketState.OPEN) && (alarm.getTTicketState() != TroubleTicketState.CLOSE_FAILED))) ? true : false %>" />
             </form>
             </div>

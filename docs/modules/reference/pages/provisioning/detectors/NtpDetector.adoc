@@ -1,0 +1,46 @@
+= NTP Detector
+:description: Learn how the NtpDetector in OpenNMS {page-component-title} finds NTP services for monitoring in your network.
+
+The NtpDetector finds Network Time Protocol (NTP) services for monitoring in your network.
+It sends an NTP request over UDP and detects the service when the interface replies with a packet that has the originate, receive, transmit, and reference timestamps set.
+
+== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.datagram.NtpDetector`
+|===
+
+== Configuration and use
+
+The NtpDetector uses the xref:reference:provisioning/detectors.adoc#ref-detector-provisioning-common-parameters[common configuration parameters].
+
+.Parameters for the NtpDetector
+[options="header"]
+[cols="1,4,1"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| UDP port to send the request to.
+| 123
+
+| ipToValidate
+| Accepted for compatibility with older configurations.
+The detector ignores it and validates replies against the interface address.
+| none
+|===
+
+== Example configuration
+
+The following detector finds NTP services and waits up to five seconds for a reply:
+
+[source, xml]
+----
+<detector name="NTP" class="org.opennms.netmgt.provision.detector.datagram.NtpDetector">
+    <parameter key="port" value="123"/>
+    <parameter key="timeout" value="5000"/>
+</detector>
+----

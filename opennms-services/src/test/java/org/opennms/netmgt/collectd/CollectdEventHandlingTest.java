@@ -62,6 +62,7 @@ public class CollectdEventHandlingTest {
         when(svc1.getAddress()).thenReturn(InetAddressUtils.ONE_TWENTY_SEVEN);
         when(svc1.getServiceName()).thenReturn("JMX");
         when(svc1.getCollectorUpdates()).thenReturn(svc1_udpates);
+        when(svc1.belongsOrIsMovingToNode(42)).thenReturn(true);
         collectd.getCollectableServices().add(svc1);
 
         CollectorUpdates svc2_udpates = new CollectorUpdates();
@@ -70,6 +71,7 @@ public class CollectdEventHandlingTest {
         when(svc2.getAddress()).thenReturn(InetAddressUtils.UNPINGABLE_ADDRESS);
         when(svc2.getServiceName()).thenReturn("WS-Man");
         when(svc2.getCollectorUpdates()).thenReturn(svc2_udpates);
+        when(svc2.belongsOrIsMovingToNode(43)).thenReturn(true);
         collectd.getCollectableServices().add(svc2);
     }
 
@@ -92,9 +94,10 @@ public class CollectdEventHandlingTest {
         assertFalse("deletion flag was set on svc2!", svc2.getCollectorUpdates().isDeletionFlagSet());
 
         verify(svc1, times(2)).getCollectorUpdates();
-        verify(svc1, times(3)).getNodeId();
+        verify(svc1, times(2)).getNodeId();
+        verify(svc1, times(1)).belongsOrIsMovingToNode(42);
         verify(svc2, times(1)).getCollectorUpdates();
-        verify(svc2, times(1)).getNodeId();
+        verify(svc2, times(1)).belongsOrIsMovingToNode(42);
     }
 
     @Test
@@ -119,10 +122,11 @@ public class CollectdEventHandlingTest {
 
         verify(svc1, times(2)).getCollectorUpdates();
         verify(svc1, times(2)).getAddress();
-        verify(svc1, times(3)).getNodeId();
+        verify(svc1, times(2)).getNodeId();
+        verify(svc1, times(1)).belongsOrIsMovingToNode(42);
         verify(svc2, times(1)).getAddress();
         verify(svc2, times(1)).getCollectorUpdates();
-        verify(svc2, times(1)).getNodeId();
+        verify(svc2, times(1)).belongsOrIsMovingToNode(42);
     }
 
     @Test
@@ -148,10 +152,11 @@ public class CollectdEventHandlingTest {
 
         verify(svc1, times(1)).getAddress();
         verify(svc1, times(1)).getCollectorUpdates();
-        verify(svc1, times(1)).getNodeId();
+        verify(svc1, times(1)).belongsOrIsMovingToNode(43);
         verify(svc2, times(2)).getAddress();
         verify(svc2, times(2)).getCollectorUpdates();
-        verify(svc2, times(3)).getNodeId();
+        verify(svc2, times(2)).getNodeId();
         verify(svc2, times(3)).getServiceName();
+        verify(svc2, times(1)).belongsOrIsMovingToNode(43);
     }
 }

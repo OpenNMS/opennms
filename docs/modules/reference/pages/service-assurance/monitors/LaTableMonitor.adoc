@@ -1,0 +1,89 @@
+
+= LaTableMonitor
+:description: Learn how to configure and use the LaTableMonitor in OpenNMS {page-component-title} to test the load average table (laTable) of a Net-SNMP agent.
+
+The LaTableMonitor tests the link:http://www.net-snmp.org/docs/mibs/ucdavis.html#laTable[laTable] of a Net-SNMP agent.
+The agent populates this table with the 1, 5, and 15 minute load averages and compares them against the thresholds set with the `load` directive in its `snmpd.conf` file.
+
+The monitor walks the `laErrorFlag` column (`.1.3.6.1.4.1.2021.10.1.100`) of the table.
+If any entry has the value `1`, the service is considered unavailable, and the monitor reports the matching `laErrMessage` values (`.1.3.6.1.4.1.2021.10.1.101`) as the reason.
+If the walk returns no entries, the service is also considered unavailable.
+
+.laErrorFlag definition
+[quote,,UCD-SNMP-MIB]
+____
+A Error flag to indicate the load-average has crossed its threshold value defined in the snmpd.conf file.
+It is set to 1 if the threshold is crossed, 0 otherwise.
+____
+
+The agent sets the flag when a load average reaches or crosses its threshold.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.LaTableMonitor`
+|===
+
+== Configuration and use
+
+The monitor uses the SNMP agent configuration from `snmp-config.xml` for the interface.
+The following parameters override individual values from that configuration.
+
+.Optional monitor-specific parameters for the LaTableMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| port
+| The SNMP port to query.
+| From `snmp-config.xml`
+
+| retry
+| Number of SNMP retries.
+| From `snmp-config.xml`
+
+| retries
+| *Deprecated*.
+Same as `retry`.
+The `retry` parameter takes precedence when both are set.
+| From `snmp-config.xml`
+
+| timeout
+| SNMP timeout in milliseconds.
+| From `snmp-config.xml`
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+The following example overrides the SNMP retry and timeout values for the load average check.
+Note that you must include the `monitor` section for each service in your definition.
+
+[source, xml]
+----
+<service name="Load-Average" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+</service>
+
+<monitor service="Load-Average" class-name="org.opennms.netmgt.poller.monitors.LaTableMonitor"/>
+----
+
+The `load` directive in `snmpd.conf` sets the thresholds that the agent compares the load averages against.
+A threshold of `0` disables error reporting for that load average.
+The following `snmpd.conf` line sets thresholds of 12 for the 1 minute, 10 for the 5 minute, and 5 for the 15 minute load average:
+
+[source, console]
+----
+load 12 10 5
+----
+
+== UCD-SNMP-MIB
+
+Find the UCD-SNMP-MIB link:http://www.net-snmp.org/docs/mibs/UCD-SNMP-MIB.txt[here].

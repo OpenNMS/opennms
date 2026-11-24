@@ -264,8 +264,6 @@
             originalUri="mvn:javax.servlet/javax.servlet-api/[3,${servletApiVersion})" mode="maven" />
     <bundle replacement="mvn:joda-time/joda-time/${jodaTimeVersion}"
             originalUri="mvn:joda-time/joda-time/[2,${jodaTimeVersion})" mode="maven" />
-    <bundle replacement="mvn:org.apache.qpid/proton-j/0.34.0"
-            originalUri="mvn:org.apache.qpid/proton-j/[0,1)" mode="maven" />
     <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/${jasyptVersion}_1"
             originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/[1,${jasyptVersion})" mode="maven" />
     <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt-spring31/${jasyptVersion}_1"
@@ -283,9 +281,9 @@
     <bundle replacement="mvn:org.codehaus.jettison/jettison/${jettisonVersion}"
             originalUri="mvn:org.codehaus.jettison/jettison/[1,${jettisonVersion})" mode="maven" />
     <bundle replacement="mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}"
-            originalUri="mvn:io.dropwizard.metrics/metrics-core/[3,${dropwizardMetricsVersion})" mode="maven" />
+            originalUri="mvn:io.dropwizard.metrics/metrics-core/[3,10)" mode="maven" />
     <bundle replacement="mvn:io.dropwizard.metrics/metrics-jvm/${dropwizardMetricsVersion}"
-            originalUri="mvn:io.dropwizard.metrics/metrics-jvm/[3,${dropwizardMetricsVersion})" mode="maven" />
+            originalUri="mvn:io.dropwizard.metrics/metrics-jvm/[3,10)" mode="maven" />
     <bundle replacement="wrap:mvn:org.dom4j/dom4j/${dom4jVersion}"
             originalUri="mvn:dom4j/dom4j/[0,${dom4jVersion})" mode="maven" />
     <bundle replacement="mvn:org.jolokia/jolokia-osgi/${jolokiaVersion}"

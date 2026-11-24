@@ -17,6 +17,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
+        <!-- Annotations only; swagger-annotations already ships in the webapp's WEB-INF/lib. -->
+        <dependency>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-annotations</artifactId>
+          <version>${swaggerVersion}</version>
+          <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>spring-dependencies</artifactId>
@@ -65,6 +72,13 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- Same reason: SurveillanceViewRestService's model classes. -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>org.opennms.features.surveillance-views</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.opennms.features</groupId>
             <artifactId>org.opennms.features.system-report</artifactId>
@@ -72,9 +86,26 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>org.opennms.features.wsman</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.mib-compiler</groupId>
+            <artifactId>org.opennms.features.mib-compiler.parser</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jsmiparser</groupId>
+            <artifactId>jsmiparser-api</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

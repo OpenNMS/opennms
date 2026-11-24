@@ -58,6 +58,14 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 /**
  * The Class EmailNorthbounderConfigurationResource.
@@ -123,6 +131,60 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Get the Email northbounder configuration",
+            description = """
+                    Returns the whole of email-northbounder-configuration.xml. `destination[].name` has to match
+                    a `sendmail-config` entry in javamail-configuration.xml, which is what supplies the SMTP
+                    host and credentials; the northbounder destination only carries the filters and the
+                    per-filter message overrides.
+
+                    A `filter` with no `from`, `to`, `subject` or `body` inherits the message from the
+                    sendmail-config. `filter[].enabled` comes back as null when the attribute is absent, which
+                    the northbounder treats as enabled.""",
+            operationId = "getEmailNorthbounderConfiguration")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The current Email northbounder configuration.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = EmailNorthbounderConfig.class),
+                                    examples = @ExampleObject(value = """
+                                            {
+                                              "enabled": false,
+                                              "nagles-delay": 1000,
+                                              "batch-size": 100,
+                                              "queue-size": 300000,
+                                              "destination": [
+                                                {
+                                                  "name": "google",
+                                                  "filter": [
+                                                    {
+                                                      "enabled": null,
+                                                      "name": "Only Servers",
+                                                      "rule": "foreignSource matches '^Servers.*'"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = EmailNorthbounderConfig.class),
+                                    examples = @ExampleObject(value = """
+                                            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                                        <email-northbounder-config>
+                                              <enabled>false</enabled>
+                                              <nagles-delay>1000</nagles-delay>
+                                              <batch-size>100</batch-size>
+                                              <queue-size>300000</queue-size>
+                                              <destination>
+                                                <name>google</name>
+                                                <filter name="Only Servers">
+                                                  <rule>foreignSource matches '^Servers.*'</rule>
+                                                </filter>
+                                              </destination>
+                                            </email-northbounder-config>"""))
+                    })
+    })
     public Response getConfiguration() {
         return Response.ok(m_emailNorthbounderConfigDao.getConfig()).build();
     }
@@ -134,6 +196,63 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
      * @return the response
      */
     @POST
+    @Operation(
+            summary = "Replace the Email northbounder configuration",
+            description = """
+                    Marshals the request body straight over email-northbounder-configuration.xml, then sends a
+                    `reloadDaemonConfig` event for `EmailNBI`. The whole file is replaced, so anything absent
+                    from the body is dropped, including comments.
+
+                    The handler declares no `@Consumes`, so the media type is whatever the JAXB and Jackson
+                    providers accept for the body type. A body that fails to parse surfaces as a 500 rather
+                    than a 400: the null check that would produce the 400 is unreachable through those
+                    providers.""",
+            operationId = "setEmailNorthbounderConfiguration")
+    @RequestBody(required = true, description = "The complete replacement configuration.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = EmailNorthbounderConfig.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                              "enabled": false,
+                                              "nagles-delay": 1000,
+                                              "batch-size": 100,
+                                              "queue-size": 300000,
+                                              "destination": [
+                                                {
+                                                  "name": "google",
+                                                  "filter": [
+                                                    {
+                                                      "enabled": null,
+                                                      "name": "Only Servers",
+                                                      "rule": "foreignSource matches '^Servers.*'"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }""")),
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = EmailNorthbounderConfig.class),
+                            examples = @ExampleObject(value = """
+                                    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                                        <email-northbounder-config>
+                                              <enabled>false</enabled>
+                                              <nagles-delay>1000</nagles-delay>
+                                              <batch-size>100</batch-size>
+                                              <queue-size>300000</queue-size>
+                                              <destination>
+                                                <name>google</name>
+                                                <filter name="Only Servers">
+                                                  <rule>foreignSource matches '^Servers.*'</rule>
+                                                </filter>
+                                              </destination>
+                                            </email-northbounder-config>"""))
+            })
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The file was written and the reload event sent."),
+            @ApiResponse(responseCode = "500", description = "The body could not be parsed, or the file could not be written.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
     public Response setConfiguration(final EmailNorthbounderConfig config) {
         writeLock();
         if (config == null) {
@@ -159,6 +278,21 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @GET
     @Path("status")
     @Produces(MediaType.TEXT_PLAIN)
+    @Operation(
+            summary = "Get whether the Email northbounder is enabled",
+            description = """
+                    Returns the `enabled` flag from email-northbounder-configuration.xml as the literal text
+                    `true` or `false`. An absent flag reads back as `false`.
+
+                    This operation produces text/plain only, so a request sent with
+                    `Accept: application/json` is rejected with a 406.""",
+            operationId = "getEmailNorthbounderStatus")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The current enabled flag.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "boolean"),
+                            examples = @ExampleObject(value = "false")))
+    })
     public Response getStatus() {
         return Response.ok(m_emailNorthbounderConfigDao.getConfig().isEnabled()).build();
     }
@@ -173,7 +307,22 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @PUT
     @Path("status")
     @Produces(MediaType.TEXT_PLAIN)
-    public Response getStatus(@QueryParam("enabled") final Boolean enabled) throws WebApplicationException {
+    @Operation(
+            summary = "Enable or disable the Email northbounder",
+            description = """
+                    Sets the `enabled` flag, rewrites email-northbounder-configuration.xml and sends a
+                    `reloadDaemonConfig` event for `EmailNBI`. Comments and formatting in the file are lost,
+                    because the whole file is re-marshalled from the in-memory model.
+
+                    Omitting `enabled` clears the flag rather than leaving it alone, which then reads back as
+                    `false`. Despite the text/plain declaration the success response has no body.""",
+            operationId = "setEmailNorthbounderStatus")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The flag was written and the reload event sent."),
+            @ApiResponse(responseCode = "500", description = "The configuration could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response getStatus(@Parameter(description = "New value for the enabled flag. Omitting it clears the flag, which reads back as false.", example = "true") @QueryParam("enabled") final Boolean enabled) throws WebApplicationException {
         writeLock();
         try {
             m_emailNorthbounderConfigDao.getConfig().setEnabled(enabled);
@@ -191,6 +340,35 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @GET
     @Path("destinations")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "List the Email northbounder destination names",
+            description = """
+                    Returns only the destination names, not the destinations themselves.
+
+                    `count` and `totalCount` are always equal here: the listing is not paged and `offset` is
+                    always 0.""",
+            operationId = "getEmailDestinations")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The configured destination names.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = EmailDestinationList.class),
+                                    examples = @ExampleObject(value = """
+                                            {
+                                              "totalCount": 1,
+                                              "count": 1,
+                                              "offset": 0,
+                                              "destination": ["google"]
+                                            }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = EmailDestinationList.class),
+                                    examples = @ExampleObject(value = """
+                                            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                                            <email-destinations count="1" offset="0" totalCount="1">
+                                              <destination>google</destination>
+                                            </email-destinations>"""))
+                    })
+    })
     public Response getEmailDestinations() {
         final EmailDestinationList destinations = new EmailDestinationList(m_emailNorthbounderConfigDao.getConfig().getEmailDestinations());
         return Response.ok(destinations).build();
@@ -205,7 +383,51 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @GET
     @Path("destinations/{destinationName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public EmailDestination getEmailDestination(@PathParam("destinationName") final String destinationName) {
+    @Operation(
+            summary = "Get one Email northbounder destination",
+            description = """
+                    Returns the destination and its filters. `filter[].enabled` is null when the attribute is
+                    absent from the file.""",
+            operationId = "getEmailDestination")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "The destination.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = EmailDestination.class),
+                                    examples = @ExampleObject(value = """
+                                            {
+                                              "name": "ApiDocDest",
+                                              "filter": [
+                                                {
+                                                  "name": "Only Routers",
+                                                  "rule": "foreignSource matches '^Routers.*'",
+                                                  "from": "donotreply@example.org",
+                                                  "to": "noc@example.org",
+                                                  "subject": "${nodeLabel} : Something is wrong!",
+                                                  "body": "${logMsg}"
+                                                }
+                                              ]
+                                            }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = EmailDestination.class),
+                                    examples = @ExampleObject(value = """
+                                            <email-destination>
+                                              <name>ApiDocDest</name>
+                                              <filter name="Only Routers">
+                                                <rule>foreignSource matches '^Routers.*'</rule>
+                                                <from>donotreply@example.org</from>
+                                                <to>noc@example.org</to>
+                                                <subject>${nodeLabel} : Something is wrong!</subject>
+                                                <body>${logMsg}</body>
+                                              </filter>
+                                            </email-destination>"""))
+                    }),
+            @ApiResponse(responseCode = "404", description = "No destination has that name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Email destination ApiDocDest was not found.")))
+    })
+    public EmailDestination getEmailDestination(@Parameter(description = "Name of the destination, matching a sendmail-config entry in javamail-configuration.xml.", required = true, example = "google") @PathParam("destinationName") final String destinationName) {
        final EmailDestination destination = m_emailNorthbounderConfigDao.getConfig().getEmailDestination(destinationName);
         if (destination == null) {
             throw getException(Status.NOT_FOUND, "Email destination {} was not found.", destinationName);
@@ -223,6 +445,57 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @POST
     @Path("destinations")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Operation(
+            summary = "Add or replace an Email northbounder destination",
+            description = """
+                    Adds the destination to email-northbounder-configuration.xml, rewriting the whole file and
+                    sending a `reloadDaemonConfig` event for `EmailNBI`. A destination with the same `name` is
+                    replaced outright, so this is the only way to change a destination's filters: the PUT can
+                    reach the name but not the filter list.
+
+                    `name` has to match a `sendmail-config` entry in javamail-configuration.xml. Nothing
+                    validates that at write time; a destination naming a config that does not exist is
+                    accepted and fails later in the northbounder.
+
+                    An empty or unparseable body surfaces as a 500 rather than the documented 400.""",
+            operationId = "setEmailDestination")
+    @RequestBody(required = true, description = "The destination to add or replace.",
+            content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = EmailDestination.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                              "name": "ApiDocDest",
+                                              "filter": [
+                                                {
+                                                  "name": "Only Routers",
+                                                  "rule": "foreignSource matches '^Routers.*'",
+                                                  "from": "donotreply@example.org",
+                                                  "to": "noc@example.org",
+                                                  "subject": "${nodeLabel} : Something is wrong!",
+                                                  "body": "${logMsg}"
+                                                }
+                                              ]
+                                            }""")),
+                    @Content(mediaType = MediaType.APPLICATION_XML,
+                            schema = @Schema(implementation = EmailDestination.class),
+                            examples = @ExampleObject(value = """
+                                    <email-destination>
+                                              <name>ApiDocDest</name>
+                                              <filter name="Only Routers">
+                                                <rule>foreignSource matches '^Routers.*'</rule>
+                                                <from>donotreply@example.org</from>
+                                                <to>noc@example.org</to>
+                                                <subject>${nodeLabel} : Something is wrong!</subject>
+                                                <body>${logMsg}</body>
+                                              </filter>
+                                            </email-destination>"""))
+            })
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The destination was stored and the reload event sent."),
+            @ApiResponse(responseCode = "500", description = "The body could not be parsed, or the configuration could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
     public Response setEmailDestination(final EmailDestination destination) {
         writeLock();
         try {
@@ -247,7 +520,32 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("destinations/{destinationName}")
-    public Response updateEmailDestination(@PathParam("destinationName") final String destinationName, final MultivaluedMapImpl params) {
+    @Operation(
+            summary = "Update fields on an Email northbounder destination",
+            description = """
+                    Takes a form-encoded body and applies each key to the matching writable bean property of
+                    the destination, then rewrites the file and sends a `reloadDaemonConfig` event for
+                    `EmailNBI`. Keys are bean property names, not XML element names, and unrecognised keys are
+                    ignored rather than rejected.
+
+                    `EmailDestination` exposes only `name` and `filters` as writable properties, and a form
+                    value cannot express a filter list, so this operation can only rename a destination.""",
+            operationId = "updateEmailDestination")
+    @RequestBody(required = true, description = "Form-encoded property assignments. `name` is the only property a form value can usefully set.",
+            content = @Content(mediaType = MediaType.APPLICATION_FORM_URLENCODED,
+                    schema = @Schema(type = "object"),
+                    examples = @ExampleObject(value = "name=ApiDocDestRenamed")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "At least one property was applied and the configuration was saved."),
+            @ApiResponse(responseCode = "304", description = "No key in the body matched a writable property, so nothing was changed."),
+            @ApiResponse(responseCode = "404", description = "No destination has that name.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                            schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Email destination ApiDocDest was not found."))),
+            @ApiResponse(responseCode = "500", description = "The configuration could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response updateEmailDestination(@Parameter(description = "Name of the destination, matching a sendmail-config entry in javamail-configuration.xml.", required = true, example = "google") @PathParam("destinationName") final String destinationName, final MultivaluedMapImpl params) {
         writeLock();
         try {
             boolean modified = false;
@@ -280,7 +578,20 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @DELETE
     @Path("destinations/{destinationName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response removeEmailDestination(@PathParam("destinationName") final String destinationName) {
+    @Operation(
+            summary = "Delete an Email northbounder destination",
+            description = """
+                    Removes the destination, rewrites email-northbounder-configuration.xml and sends a
+                    `reloadDaemonConfig` event for `EmailNBI`. The matching `sendmail-config` in
+                    javamail-configuration.xml is left alone.""",
+            operationId = "removeEmailDestination")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "The destination was removed and the reload event sent."),
+            @ApiResponse(responseCode = "404", description = "No destination has that name. Bodiless."),
+            @ApiResponse(responseCode = "500", description = "The configuration could not be saved.",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    })
+    public Response removeEmailDestination(@Parameter(description = "Name of the destination, matching a sendmail-config entry in javamail-configuration.xml.", required = true, example = "google") @PathParam("destinationName") final String destinationName) {
         if (m_emailNorthbounderConfigDao.getConfig().removeEmailDestination(destinationName)) {
             return saveConfiguration();
         }

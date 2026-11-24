@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.threshd;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.net.InetAddresses;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 /**
  * Wraps the XML created org.opennms.netmgt.config.threshd.Threshold class
@@ -58,6 +60,10 @@ import com.google.common.net.InetAddresses;
 public final class ThresholdEntity implements Cloneable {
     
     private static final Logger LOG = LoggerFactory.getLogger(ThresholdEntity.class);
+    private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
+            .withRateLimit(LOG)
+            .maxRate(5).every(Duration.ofSeconds(30))
+            .build();
     
     private static List<ThresholdEvaluator> s_thresholdEvaluators;
     
@@ -67,7 +73,7 @@ public final class ThresholdEntity implements Cloneable {
 
     private ThresholdingEventProxy m_thresholdingEventProxy;
 
-    // the commands for these need to be listed in ThresholdController as well
+    // the commands for these need to be listed in ThresholdConfigValidator and thresholdValidator.ts as well
     static {
         s_thresholdEvaluators = new LinkedList<ThresholdEvaluator>();
         s_thresholdEvaluators.add(new ThresholdEvaluatorHighLow());
@@ -316,7 +322,12 @@ public final class ThresholdEntity implements Cloneable {
             try {
                 result = evaluateFunction.evaluate(item);
             } catch (ThresholdExpressionException e) {
-                LOG.warn("Error evaluating: threshold: {} and evaluator: {}", this, item, e);
+                if (isArithmeticError(e)) {
+                    // Typically a ratio whose denominator is zero this interval (e.g. an idle interface)
+                    LOG.debug("Skipping threshold: {} and evaluator: {}: {}", this, item, e.getMessage());
+                } else {
+                    RATE_LIMITED_LOG.warn("Error evaluating: threshold: {} and evaluator: {}: {}", this, item, e.getMessage());
+                }
                 continue;
             }
             Status status = result.status;
@@ -328,6 +339,15 @@ public final class ThresholdEntity implements Cloneable {
         }
 
         return events;
+    }
+
+    private static boolean isArithmeticError(Throwable t) {
+        for (Throwable cause = t; cause != null; cause = cause.getCause()) {
+            if (cause instanceof ArithmeticException) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static Scope getScopeForResource(EntityScopeProvider entityScopeProvider, CollectionResourceWrapper resource) {

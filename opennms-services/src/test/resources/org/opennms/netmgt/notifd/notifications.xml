@@ -124,6 +124,22 @@
         <text-message>Notification '%noticeid%'</text-message>
         <subject>notification '%noticeid%'</subject>
     </notification>
+    <notification name="Path Without Users Test" status="on">
+        <uei>uei.opennms.org/test/pathWithoutUsers</uei>
+        <description>Matches first and resolves to no users</description>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>NoUsers</destinationPath>
+        <text-message>Notification '%noticeid%'</text-message>
+        <subject>notification '%noticeid%'</subject>
+    </notification>
+    <notification name="Path With Users Test" status="on">
+        <uei>uei.opennms.org/test/pathWithoutUsers</uei>
+        <description>Must still be sent after the previous match is skipped</description>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>NoEscalate</destinationPath>
+        <text-message>Notification '%noticeid%'</text-message>
+        <subject>notification '%noticeid%'</subject>
+    </notification>
     <notification name="Notice Without Node Test" status="on">
         <uei>uei.opennms.org/test/NoticeWithoutNode</uei>
         <description>Test for notice without node</description>

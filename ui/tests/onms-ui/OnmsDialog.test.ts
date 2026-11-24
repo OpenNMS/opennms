@@ -29,12 +29,14 @@ describe('OnmsDialog', () => {
     expect(wrapper.find('[data-test="foot"]').exists()).toBe(true)
   })
 
-  it('re-emits update:visible and hide', () => {
+  it('re-emits update:visible, show and hide', () => {
     const wrapper = mount(OnmsDialog, { props: { visible: true, appendTo: 'self' }, global: globalPlugins })
     const inner = wrapper.findComponent({ name: 'Dialog' })
     inner.vm.$emit('update:visible', false)
+    inner.vm.$emit('show')
     inner.vm.$emit('hide')
     expect(wrapper.emitted('update:visible')![0]).toEqual([false])
+    expect(wrapper.emitted('show')).toHaveLength(1)
     expect(wrapper.emitted('hide')).toHaveLength(1)
   })
 })

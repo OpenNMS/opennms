@@ -25,10 +25,10 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 import org.opennms.netmgt.provision.detector.client.rpc.DetectorResponseDTO;
 
-public class DetectorResponseDTOTest extends XmlTestNoCastor<DetectorResponseDTO> {
+public class DetectorResponseDTOTest extends XmlTest<DetectorResponseDTO> {
 
     public DetectorResponseDTOTest(DetectorResponseDTO sampleObject, String sampleXml) {
         super(sampleObject, sampleXml, null);

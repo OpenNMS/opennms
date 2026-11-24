@@ -26,13 +26,13 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.opennms.web.api.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.util.StringUtils;
@@ -53,46 +53,56 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         // changing JSESSIONID to prevent Session Fixation attacks, see NMS-15310
         request.changeSessionId();
 
+        // login.jsp posts the URL fragment, which the browser never sends to the server
+        final String fragment = request.getParameter(LoginRedirects.FRAGMENT_PARAMETER);
+
         // check for admin/admin
         boolean defaultAdminLogin = isDefaultAdminLogin(request.getParameter("j_username"), request.getParameter("j_password"));
 
         if (defaultAdminLogin) {
-            handleDefaultAdminLogin(request, response);
+            handleDefaultAdminLogin(request, response, fragment);
         } else {
-            final DefaultSavedRequest savedRequest = (DefaultSavedRequest) this.requestCache.getRequest(request, response);
-
-            if (savedRequest == null) {
-                super.clearAuthenticationAttributes(request);
-                this.getRedirectStrategy().sendRedirect(request, response, createTargetURL(request, response));
-            } else {
-                String targetUrlParameter = this.getTargetUrlParameter();
-
-                boolean useSavedRequest = !this.isAlwaysUseDefaultTargetUrl() &&
-                    (targetUrlParameter == null || !StringUtils.hasText(request.getParameter(targetUrlParameter)));
-
-                // make sure we are redirecting to an actual page, not e.g. a URL to an asset
-                // TODO: Determine why assets are getting saved in the requestCache
-                if (useSavedRequest && LoginModuleUtils.isInvalidSavedRequestUrl(savedRequest.getServletPath())) {
-                    useSavedRequest = false;
-                }
-
-                if (useSavedRequest) {
-                    this.clearAuthenticationAttributes(request);
-                    final String targetUrl = Util.calculateUrlBase(request, savedRequest.getServletPath() + (savedRequest.getQueryString() == null ? "" : "?" + savedRequest.getQueryString()));
-                    this.logger.debug("Redirecting to DefaultSavedRequest Url: " + targetUrl);
-                    this.getRedirectStrategy().sendRedirect(request, response, targetUrl);
-                } else {
-                    this.requestCache.removeRequest(request, response);
-                    this.getRedirectStrategy().sendRedirect(request, response, createTargetURL(request, response));
-                }
+            // a login after an admin/admin login in the same session must not inherit its password gate
+            final HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.removeAttribute(LoginRedirects.PASSWORD_GATE_PENDING_ATTRIBUTE);
+                session.removeAttribute(LoginRedirects.FRAGMENT_SESSION_ATTRIBUTE);
             }
+
+            // null if there is no saved request, or it is for an asset or REST call (not a page to go back to)
+            final String savedPath = LoginRedirects.savedRequestPath(this.requestCache.getRequest(request, response));
+            final String targetUrlParameter = this.getTargetUrlParameter();
+
+            final boolean useSavedRequest = savedPath != null && !this.isAlwaysUseDefaultTargetUrl() &&
+                (targetUrlParameter == null || !StringUtils.hasText(request.getParameter(targetUrlParameter)));
+
+            final String targetUrl = useSavedRequest
+                ? LoginRedirects.buildTargetUrl(request, savedPath, fragment)
+                : createTargetURL(request, response);
+
+            this.requestCache.removeRequest(request, response);
+            this.clearAuthenticationAttributes(request);
+            this.logger.debug("Redirecting to target URL after login: {}", targetUrl);
+            this.getRedirectStrategy().sendRedirect(request, response, targetUrl);
         }
     }
 
     /**
      * 'admin' user is logged in successfully, but with default "admin" password, redirect to password gate page.
+     * The saved request and the fragment stay in the session, so that PasswordGateActionServlet can send
+     * the user on to the page they asked for.
      */
-    private void handleDefaultAdminLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void handleDefaultAdminLogin(HttpServletRequest request, HttpServletResponse response, String fragment) throws IOException {
+        final HttpSession session = request.getSession();
+        session.setAttribute(LoginRedirects.PASSWORD_GATE_PENDING_ATTRIBUTE, Boolean.TRUE);
+
+        final String safeFragment = LoginRedirects.sanitizeFragment(fragment);
+        if (safeFragment != null) {
+            session.setAttribute(LoginRedirects.FRAGMENT_SESSION_ATTRIBUTE, safeFragment);
+        } else {
+            session.removeAttribute(LoginRedirects.FRAGMENT_SESSION_ATTRIBUTE);
+        }
+
         final String targetUrl = Util.calculateUrlBase(request, "/account/selfService/passwordGate.jsp");
         this.logger.debug("User used default admin password. Redirecting to Password Gate, url: " + targetUrl);
         super.clearAuthenticationAttributes(request);

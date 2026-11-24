@@ -15,7 +15,7 @@ ID:         node[NODES:node]
 Name:       NODES:node
 Label:      node
 Type:       Node
-Link:       element/node.jsp?node=NODES:node
+Link:       ui/index.html#/node/NODES:node
 Children:
   node[NODES:node].nodeSnmp[]
   node[NODES:node].interfaceSnmp[lo]

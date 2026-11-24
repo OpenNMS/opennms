@@ -22,8 +22,13 @@
 
 import axios from 'axios'
 import { v2 } from './axiosInstances'
+import { getNewsFeed } from './newsfeedService'
 import type { DashboardLayout, DashboardPanel } from '@/types/dashboard'
-import { createDefaultLayout } from '@/components/Dashboard/defaultLayout'
+import { createDefaultLayout, NEWSFEED_PANEL_TYPE } from '@/components/Dashboard/defaultLayout'
+
+// Panel types removed from the product on purpose. Unlike an unknown type, these
+// are dropped from stored layouts so the next save removes them for good.
+const REMOVED_PANEL_TYPES = new Set(['html-content'])
 
 // A stored document is arbitrary JSON (any admin/REST client can PUT it), so
 // coerce it into a complete, safe layout: fill missing top-level blocks from
@@ -40,6 +45,7 @@ export const normalizeLayout = (raw: unknown): DashboardLayout => {
       !!p && typeof p === 'object'
         && typeof (p as DashboardPanel).id === 'string'
         && typeof (p as DashboardPanel).type === 'string'
+        && !REMOVED_PANEL_TYPES.has((p as DashboardPanel).type)
         // keep panels whose type isn't in this instance's registry (e.g. a plugin
         // panel or an older/newer type) — they render as a "missing" placeholder
         // rather than being silently pruned and lost the next time the layout saves
@@ -87,8 +93,15 @@ export const getSystemDashboard = async (): Promise<DashboardLayout> => {
     return normalizeLayout(response.data)
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 404) {
-      // no layout saved yet — use the built-in default
-      return createDefaultLayout()
+      // no layout saved yet — use the built-in default; when the server has the
+      // news feed disabled (opennms.newsFeedPanel.show=false → 204), the legacy
+      // homepage omitted the box entirely, so the default omits the panel too
+      const layout = createDefaultLayout()
+      const feed = await getNewsFeed()
+      if (feed?.disabled) {
+        layout.panels = layout.panels.filter(p => p.type !== NEWSFEED_PANEL_TYPE)
+      }
+      return layout
     }
     // a real failure (500, network, timeout) must NOT masquerade as the default
     // layout: doing so lets a subsequent Save silently overwrite the stored one

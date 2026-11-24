@@ -25,9 +25,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.XmlTest;
 
-public class EventdConfigurationTest extends XmlTestNoCastor<EventdConfiguration> {
+public class EventdConfigurationTest extends XmlTest<EventdConfiguration> {
 
     public EventdConfigurationTest(final EventdConfiguration sampleObject, final Object sampleXml) {
         super(sampleObject, sampleXml, "src/main/resources/xsds/eventd-configuration.xsd");

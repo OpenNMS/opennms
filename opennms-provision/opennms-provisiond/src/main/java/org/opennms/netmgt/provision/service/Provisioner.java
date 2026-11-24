@@ -25,6 +25,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.netmgt.provision.service.lifecycle.Lifecycles.RESOURCE;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.Objects;
@@ -35,11 +36,13 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.spring.BeanUtils;
@@ -53,6 +56,7 @@ import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
+import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
@@ -100,7 +104,17 @@ public class Provisioner implements SpringServiceDaemon {
     /** Constant <code>NAME="Provisiond"</code> */
     public static final String NAME = "Provisiond";
 
+    /** Names of the executors registered with the {@link TaskCoordinator} in applicationContext-provisiond.xml. */
+    public static final String IMPORT_EXECUTOR = "import";
+    public static final String SCAN_EXECUTOR = "scan";
+    public static final String WRITE_EXECUTOR = "write";
+    /** Name used in log messages for the rescan pool, which is held directly rather than via the coordinator. */
+    public static final String RESCAN_POOL = "rescan";
+
+    private static final int MAX_REASON_LENGTH = 128;
+
     private TaskCoordinator m_taskCoordinator;
+    private ProvisiondConfigurationDao m_provisiondConfigDao;
     private CoreImportActivities m_importActivities;
     private LifeCycleRepository m_lifeCycleRepository;
     private ProvisionService m_provisionService;
@@ -194,10 +208,32 @@ public class Provisioner implements SpringServiceDaemon {
     public void setTaskCoordinator(TaskCoordinator taskCoordinator) {
         m_taskCoordinator = taskCoordinator;
     }
+
+    /**
+     * <p>setProvisiondConfigDao</p>
+     *
+     * @param provisiondConfigDao the DAO used to read the thread pool sizes on reload
+     */
+    public void setProvisiondConfigDao(ProvisiondConfigurationDao provisiondConfigDao) {
+        m_provisiondConfigDao = provisiondConfigDao;
+    }
+
+    public ProvisiondConfigurationDao getProvisiondConfigDao() {
+        return m_provisiondConfigDao;
+    }
     
 
     public ExecutorService getTaskCoordinatorExecutorService(final String name) {
-        return (ScheduledExecutorService)((DefaultTaskCoordinator)m_taskCoordinator).getExecutor(name);
+        return (ScheduledExecutorService) getDefaultTaskCoordinator().getExecutor(name);
+    }
+
+    /**
+     * The task coordinator as a {@link DefaultTaskCoordinator}, which is the only
+     * implementation that exposes its named executors, or {@code null} if the
+     * configured coordinator is of another type.
+     */
+    private DefaultTaskCoordinator getDefaultTaskCoordinator() {
+        return m_taskCoordinator instanceof DefaultTaskCoordinator ? (DefaultTaskCoordinator) m_taskCoordinator : null;
     }
 
     /**
@@ -762,7 +798,11 @@ public class Provisioner implements SpringServiceDaemon {
                 
                 m_importSchedule.rebuildImportSchedule();
                 
-                LOG.debug("handleRelodConfigEvent: reports rescheduled.");
+                LOG.debug("handleReloadConfigEvent: reports rescheduled, resizing thread pools...");
+
+                resizeThreadPools();
+
+                LOG.debug("handleReloadConfigEvent: thread pools resized.");
                 
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Provisiond");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond");
@@ -772,7 +812,7 @@ public class Provisioner implements SpringServiceDaemon {
                 LOG.error("handleReloadConfigurationEvent: Error reloading configuration", exception);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Provisiond");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond");
-                ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
+                ebldr.addParam(EventConstants.PARM_REASON, describeFailure(exception));
                 
             }
             
@@ -784,6 +824,72 @@ public class Provisioner implements SpringServiceDaemon {
         
     }
     
+    /**
+     * Applies the import, scan, write and rescan thread counts from the (already reloaded)
+     * provisiond configuration to the running executors. Every pool is a
+     * {@link java.util.concurrent.ScheduledThreadPoolExecutor}, for which the core pool size
+     * is the effective size, so adjusting it is enough: growing starts workers on demand and
+     * shrinking retires workers as they go idle without dropping queued tasks.
+     *
+     * @throws IOException if the configuration cannot be read
+     */
+    protected void resizeThreadPools() throws IOException {
+        if (m_provisiondConfigDao == null) {
+            LOG.warn("resizeThreadPools: no provisiond configuration DAO is set, thread pool sizes were not applied.");
+            return;
+        }
+        final DefaultTaskCoordinator coordinator = getDefaultTaskCoordinator();
+        if (coordinator != null) {
+            resizePool(IMPORT_EXECUTOR, coordinator.getRegisteredExecutor(IMPORT_EXECUTOR), m_provisiondConfigDao.getImportThreads());
+            resizePool(SCAN_EXECUTOR, coordinator.getRegisteredExecutor(SCAN_EXECUTOR), m_provisiondConfigDao.getScanThreads());
+            resizePool(WRITE_EXECUTOR, coordinator.getRegisteredExecutor(WRITE_EXECUTOR), m_provisiondConfigDao.getWriteThreads());
+        } else {
+            LOG.warn("resizeThreadPools: task coordinator is not a DefaultTaskCoordinator, the import, scan and write thread counts were not applied.");
+        }
+        resizePool(RESCAN_POOL, m_scheduledExecutor, m_provisiondConfigDao.getRescanThreads());
+    }
+
+    private static void resizePool(final String name, final Executor executor, final Integer configuredSize) {
+        if (executor == null) {
+            LOG.warn("resizeThreadPools: no {} executor is registered, the configured {} thread count was not applied.", name, name);
+            return;
+        }
+        if (!(executor instanceof ThreadPoolExecutor)) {
+            LOG.warn("resizeThreadPools: {} executor is a {} rather than a ThreadPoolExecutor, the configured {} thread count was not applied.",
+                    name, executor.getClass().getName(), name);
+            return;
+        }
+        if (configuredSize == null) {
+            LOG.debug("resizeThreadPools: no {} thread count configured, leaving pool unchanged.", name);
+            return;
+        }
+        int newSize = configuredSize;
+        if (newSize < 1) {
+            LOG.warn("resizeThreadPools: configured {} thread count {} is less than 1, using 1 instead.", name, configuredSize);
+            newSize = 1;
+        }
+        final ThreadPoolExecutor pool = (ThreadPoolExecutor) executor;
+        final int oldSize = pool.getCorePoolSize();
+        if (oldSize == newSize) {
+            LOG.debug("resizeThreadPools: {} pool size unchanged at {}.", name, oldSize);
+            return;
+        }
+        pool.setCorePoolSize(newSize);
+        LOG.info("resizeThreadPools: {} pool size changed from {} to {}.", name, oldSize, newSize);
+    }
+
+    /**
+     * Builds the reason parameter for a reload-failed event from a throwable, tolerating
+     * a missing message and keeping the result within {@link #MAX_REASON_LENGTH} characters.
+     */
+    static String describeFailure(final Throwable t) {
+        String reason = t.getLocalizedMessage();
+        if (reason == null || reason.isEmpty()) {
+            reason = t.getClass().getName();
+        }
+        return reason.length() > MAX_REASON_LENGTH ? reason.substring(0, MAX_REASON_LENGTH) : reason;
+    }
+
     private boolean isReloadConfigEventTarget(IEvent event) {
         boolean isTarget = false;
         

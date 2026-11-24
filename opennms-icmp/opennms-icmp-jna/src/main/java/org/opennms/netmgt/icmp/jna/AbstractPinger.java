@@ -22,10 +22,12 @@
 package org.opennms.netmgt.icmp.jna;
 
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.opennms.jicmp.jna.NativeDatagramPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
 import org.opennms.netmgt.icmp.EchoPacket;
 
@@ -48,6 +50,24 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
     protected AbstractPinger(int pingerId, NativeDatagramSocket pingSocket) {
         m_pingerId = pingerId;
         m_pingSocket = pingSocket;
+    }
+
+    /** Largest datagram the receive loop accepts. */
+    protected static final int MAX_DATAGRAM_SIZE = 65535;
+
+    /**
+     * Returns an exact-size copy of a datagram received into a reused buffer.
+     *
+     * The receive loop reuses one {@value #MAX_DATAGRAM_SIZE}-byte buffer per pinger
+     * instead of allocating a new one per reply, which dominated CPU and GC at high
+     * ping rates. Parsed replies keep a view of the packet bytes, so each reply gets
+     * its own copy.
+     */
+    protected static NativeDatagramPacket copyOf(final NativeDatagramPacket received) {
+        final ByteBuffer content = received.getContent();
+        final byte[] data = new byte[content.remaining()];
+        content.get(data);
+        return new NativeDatagramPacket(data, received.getAddress(), received.getPort());
     }
 
     /**

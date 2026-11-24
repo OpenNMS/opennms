@@ -26,7 +26,17 @@ The Trapd REST API base path is `/api/v2/trapd`.
 | `POST`
 | `/api/v2/trapd/upload`
 | `multipart/form-data`
+| Upload trapd configuration as a JSON file.
+
+| `POST`
+| `/api/v2/trapd/upload/xml`
+| `multipart/form-data`
 | Upload `trapd-configuration.xml` content as XML.
+
+| `GET`
+| `/api/v2/trapd/download`
+| `application/json` or `application/xml`
+| Download the current trapd configuration as a file.
 |===
 
 == Get configuration
@@ -55,16 +65,16 @@ curl -u admin:admin "http://localhost:8980/opennms/api/v2/trapd/config"
       "securityName": "opennms",
       "securityLevel": 3,
       "authProtocol": "SHA",
-      "authPassphrase": "my-auth-secret",
+      "authPassphrase": "******",
       "privacyProtocol": "AES",
-      "privacyPassphrase": "my-privacy-secret"
+      "privacyPassphrase": "******"
     }
   ]
 }
 ----
 
-WARNING: The current implementation returns SNMPv3 passphrases as stored values when they are present.
-They are not masked in `GET /api/v2/trapd/config` responses.
+SNMPv3 passphrases are masked as `+******+` in `GET /api/v2/trapd/config` responses.
+SCV metadata expressions (`${scv:<alias>:<attribute>}`) are returned as written.
 
 == Update configuration with JSON
 
@@ -96,9 +106,24 @@ curl -u admin:admin \
   }'
 ----
 
-== Upload trapd XML
+== Upload trapd configuration as a file
 
-The multipart form field name must be `upload`.
+The upload endpoints accept a `multipart/form-data` request.
+The form field name must be `upload`.
+The endpoint path selects the parser, not the file's content type: `/upload` expects JSON, `/upload/xml` expects XML.
+
+=== JSON upload
+
+The file uses the same JSON structure as `PUT /api/v2/trapd/config`.
+
+[source, bash]
+----
+curl -u admin:admin \
+  -X POST "http://localhost:8980/opennms/api/v2/trapd/upload" \
+  -F "upload=@/tmp/trapd-config.json;type=application/json"
+----
+
+=== XML upload
 
 .Sample `trapd-configuration.xml` for upload
 [source, xml]
@@ -126,9 +151,22 @@ You can use SCV metadata expressions for passphrases in uploaded XML (`${scv:<al
 [source, bash]
 ----
 curl -u admin:admin \
-  -X POST "http://localhost:8980/opennms/api/v2/trapd/upload" \
+  -X POST "http://localhost:8980/opennms/api/v2/trapd/upload/xml" \
   -F "upload=@/opt/opennms/etc/trapd-configuration.xml;type=application/xml"
 ----
+
+== Download configuration
+
+The `format` query parameter selects `json` (default) or `xml`.
+The response is served as an attachment named `trapd-config.json` or `trapd-config.xml`, which the matching upload endpoint accepts back.
+
+[source, bash]
+----
+curl -u admin:admin -O -J \
+  "http://localhost:8980/opennms/api/v2/trapd/download?format=xml"
+----
+
+WARNING: Downloaded files contain SNMPv3 passphrases in cleartext.
 
 == Validation rules
 
@@ -172,8 +210,16 @@ The API validates both top-level trapd fields and SNMPv3 user definitions.
 
 | `POST /api/v2/trapd/upload`
 | `200 OK`
-| `400 Bad Request` (missing `upload`, invalid XML, schema validation errors), `500 Internal Server Error` (`Failed to persist trapd configuration.`)
+| `400 Bad Request` (missing `upload`, invalid JSON, validation errors), `403 Forbidden`, `500 Internal Server Error` (`Failed to persist Trapd configuration.`)
+
+| `POST /api/v2/trapd/upload/xml`
+| `200 OK`
+| `400 Bad Request` (missing `upload`, invalid XML, validation errors), `403 Forbidden`, `500 Internal Server Error` (`Failed to persist Trapd configuration.`)
+
+| `GET /api/v2/trapd/download`
+| `200 OK`
+| `400 Bad Request` (`format` is neither `json` nor `xml`), `403 Forbidden`, `404 Not Found` (`Trapd configuration not found.`), `500 Internal Server Error` (`Error retrieving Trapd config.`)
 |===
 
-For XML-based upload, schema validation errors are returned as the response body text.
+Validation errors are returned as the response body text.
 

@@ -20,13 +20,14 @@
 /// License.
 ///
 
+import { OnmsNotification } from '@/types/notifications'
+
 export interface MenuItem {
   type?: string         // 'item', 'header', 'separator', 'plugins'. default is 'item'
   id: string | null
   name: string | null
   url: string | null
   isExternalLink?: boolean | null
-  locationMatch: string | null
   action?: string | null
   linkTarget?: string | null
   icon?: string | null
@@ -47,9 +48,13 @@ export interface MainMenu {
   formattedTime: string
   noticeStatus: string
   username: string
+  // Vue code links to Node Details through the router (nodeDetailsRoute); kept for plugins.
   baseNodeUrl: string
   copyrightDates: string
   version: string
+  // docs.opennms.com path segments, e.g. 'horizon' and '36'; null when unknown
+  product?: string | null
+  docsVersion?: string | null
   zenithConnectEnabled: boolean
   zenithConnectBaseUrl: string
   zenithConnectRelativeUrl: string
@@ -69,21 +74,6 @@ export interface NoticeStatusDisplay {
   iconComponent: object | null
   colorClass: string
   title: string
-}
-
-export interface OnmsServiceType {
-  id: number
-  name: string
-}
-
-export interface OnmsNotification {
-  id: number
-  ipAddress: string
-  nodeLabel: string
-  notificationName: string
-  pageTime: Date
-  serviceType: OnmsServiceType | null
-  severity: string
 }
 
 export interface NotificationItem {

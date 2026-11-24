@@ -29,7 +29,7 @@ Type checking (`vue-tsc --noEmit`) runs as part of every build script; there is 
 
 ### Deploying to a local OpenNMS instance
 
-There is no usable dev server (OpenNMS URLs point at port 8980). Build, then copy assets into the running instance (paths below are relative to the repo root; `XX.X.X` is the current snapshot version under `target/`):
+`pnpm dev` serves the main SPA with hot reload at `http://localhost:3001/opennms/ui/` and proxies the rest of `/opennms` to a running instance (`VITE_DEV_PROXY_TARGET`, default `http://localhost:8980`); log in at `http://localhost:3001/opennms/`. The menu app has no dev server. To change it, or to test a production build, build, then copy assets into the running instance (paths below are relative to the repo root; `XX.X.X` is the current snapshot version under `target/`):
 
 ```bash
 # Main SPA
@@ -51,6 +51,7 @@ Occasionally `rm assets/*.*` in the target directories to clear stale hashed fil
 
 - **Main SPA** (`src/main/`, `vite.config.ts`) — full application served at `/opennms/ui`, built to `src/main/dist/`
 - **Menu app** (`src/menu/`, `vite.config.menu.ts`) — embeds into legacy JSP/Vaadin pages at `/opennms/ui-components`, built to `src/menu/dist-menu/`
+  - Its files are for logged-in users only (a plain 401 otherwise). `vite.config.anonymous.ts` (run by `build:menu`) also builds `assets/anonymous-pages.css` from the menu's global stylesheets (`onms-base`, `onms-theme`, `opennms-styles`). It is the one anonymous file, which `bootstrap.jsp` links on pages seen without login. A new global element style in those stylesheets reaches both.
 
 Both share `src/components/`, `src/services/`, `src/stores/`, and `src/composables/` but have separate entry points and build configs. The Java `SpaRoutingFilter` serves `index.html` for non-asset URLs; routing uses `createWebHashHistory('/opennms/ui')`.
 
@@ -66,11 +67,12 @@ Owned `Onms-` components that wrap PrimeVue 4.x behind a stable, OpenNMS-control
 4. No PrimeVue types or values in any public signature; exported types are defined in OpenNMS vocabulary in `packages/onms-ui/src/types.ts`.
 5. Every new component ships with a contract test in `tests/onms-ui/` asserting prop mapping, emit forwarding, and slot forwarding.
 
-The package covers most of the PrimeVue surface in use: buttons, form inputs (text, number, password, textarea, checkbox, radio, select, multiselect, autocomplete, datepicker, toggle switch, search input, listbox), overlays (dialog, confirmation/message dialogs, drawer, popover, menu), data display (table + column, card, panel, chip, tag, tabs family), plus `OnmsSpinner`, `OnmsToastHost` + `useOnmsToast`, and the `v-onms-tooltip` directive. The authoritative list is `packages/onms-ui/src/components/` and the ESLint `no-restricted-imports` entries in `eslint.config.js` — check there before importing anything from `primevue/*`. Exception: `primevue/tieredmenu` has no wrapper yet and is sanctioned only in `SideMenu.vue` (inline-disabled).
+The package covers most of the PrimeVue surface in use: buttons, form inputs (text, number, password, textarea, checkbox, radio, select, select button, toggle button, slider, color picker, multiselect, autocomplete, datepicker, toggle switch, search input, listbox), overlays (dialog, confirmation/message dialogs, drawer, popover, menu, tiered menu, context menu), data display (table + column, virtual scroller, card, panel, chip, tag, tabs family), plus `OnmsSpinner`, `OnmsToastHost` + `useOnmsToast`, and the `v-onms-tooltip` directive. The authoritative list is `packages/onms-ui/src/components/` and the ESLint `no-restricted-imports` entries in `eslint.config.js` — check there before importing anything from `primevue/*`. Exception: `SideMenu.vue` keeps a direct `primevue/tieredmenu` import (inline-disabled) because it drives the component's internals rather than its props.
 
 ### UI, theming, layout
 
-- Icons: `OnmsIcon` wrapper + vendored SVG components, both in the seam package — `packages/onms-ui/src/icons/<category>/<Name>.vue`. Import via the subpath export, e.g. `import Delete from '@opennms/onms-ui/icons/action/Delete.vue'`. They are deliberately **not** exported from the package barrel (see `packages/onms-ui/README.md`, "Icons"): the barrel is assigned wholesale to `window.OnmsUI`, so a barrel export would force all 262 icons into every bundle.
+- Icons: `OnmsIcon` wrapper + vendored SVG components, both in the seam package — `packages/onms-ui/src/icons/<category>/<Name>.vue`. Import via the subpath export, e.g. `import Delete from '@opennms/onms-ui/icons/action/Delete.vue'`. They are deliberately **not** exported from the package barrel (see `packages/onms-ui/README.md`, "Icons"): the barrel is assigned wholesale to `window.OnmsUI`, so a barrel export would force every icon into every bundle.
+- Alarm severity: show it with `SeverityIcon` (`src/components/Common/SeverityIcon.vue`), an icon from `icons/severity/` on a colored circle. Its colors are the `--onms-severity-<key>-bg`/`-fg` tokens in `onms-theme.scss`; `src/lib/severity.ts` maps an OnmsSeverity name to its key (`none` for indeterminate, cleared and unknown).
 - Layout: `OnmsAppLayout` (`src/components/Layout/OnmsAppLayout.vue`)
 - Theming: owned `--onms-*` tokens (`src/styles/onms-theme.scss`, `_onms-tokens.scss`) layered over PrimeVue's `--p-*` tokens; light/dark via `.open-light`/`.open-dark` class on `<html>`/`<body>` (PrimeVue `darkModeSelector`)
 - Typography: owned mixins in `src/styles/_onms-typography.scss` (CSS classes `.headline3`, `.headline4`, `.subtitle1`)
@@ -105,6 +107,16 @@ Services in `src/services/` use pre-configured axios instances from `services/ax
 
 Each service exports individual functions; all are aggregated into the default export of `services/index.ts` — add new service methods there too.
 
+### UI feedback: components only, never services or stores
+
+Keep `useSpinner` / `useSnackbar` out of services and Pinia stores. Services make the API call and return a result, and stores pass results through. The component that started the user action decides what to show.
+
+- **Return results, not UI.** Reads return `ValidationResultWithPayload<T>` (`src/types/validation.ts`) so a failed load is distinguishable from an empty one. A mutation whose failure reason comes from the server returns a `ValidationResult` carrying that message. Other mutations can return a plain `boolean` and let the caller word the message. A store that refreshes a list after a successful mutation reports a failed refresh in the result's `errors`.
+- **Show feedback with `useActionFeedback`** (`src/composables/useActionFeedback.ts`). `withSpinner(action)` wraps a whole user action once: the spinner is a single on/off flag rather than a counter, so don't wrap each request inside the action. `report(result, successMsg?)` shows the failure message, or the success message followed by any follow-up `errors`, and returns `result.success`. Every error snackbar must set `error: true`; `report` and `showError` do that for you.
+- **Check `.success`, not truthiness.** Once a call returns a result object, `if (await store.save(...))` is always true, and the type-checker won't flag it.
+
+`notificationConfigService` / `notificationConfigStore`, `notificationService` / `notificationsStore`, `userAdminService` / `userAdminStore` and `groupAdminService` / `groupAdminStore` follow this pattern (their writes return an `AdminWriteResult`, a `ValidationResult` plus a `stale` flag for a 412, and the components report them with `useAdminWriteFeedback().reportWrite`); older services still show snackbars themselves and should be migrated when touched.
+
 ### Auto-imports
 
 Vue, Vue Router, and VueUse APIs are auto-imported via `unplugin-auto-import` (`ref`, `computed`, `watch`, `useRouter`, `whenever`, etc. need no imports). **Custom composables from `src/composables/` must be imported manually** (e.g. `import useSnackbar from '@/composables/useSnackbar'`). Composables share global state via module-level refs.
@@ -115,11 +127,19 @@ Routes and UI elements check roles via the `useRole` composable (`adminRole`, `f
 
 ### Testing
 
-Vitest + Happy-DOM + `@vue/test-utils` + `@pinia/testing`. Tests live in `tests/`, mirroring the `src/` structure. Mount components with `createTestingPinia({ stubActions: false })` and stub `router-link`; prefer `data-test` attributes for element selection.
+Vitest + Happy-DOM + `@vue/test-utils` + `@pinia/testing`. Tests live in `tests/`, mirroring the `src/` structure. Mount components with `createTestingPinia({ stubActions: false })` and stub `router-link` (`stubs: { RouterLink: RouterLinkStub }`); prefer `data-test` attributes for element selection.
+
+**Tests should run silently: a passing test should print nothing to stdout or stderr.** Only Vue warnings are enforced (below); keep other output to rare, deliberate cases.
+
+- `tests/setup.ts` (Vitest `setupFiles`) fails any test that triggers a `[Vue warn]` or `[Vue Router warn]`. Fix the cause, don't silence it: register or stub the component, pass a prop of the declared type (including `null` vs `undefined` in store mocks), emit declared event names (`optionSelect`, not `option-select`), and run composables that use `onScopeDispose` inside an `effectScope()`. A component calling `onBeforeRouteLeave`/`onBeforeRouteUpdate` mounted outside a `<router-view>` needs `provide: { [matchedRouteKey as symbol]: computed(() => router.currentRoute.value.matched[0]) }`.
+- `tests/setup.ts` also registers `v-onms-tooltip` for every mount, as the app does; don't register it per test. Override it only when the test asserts what the tooltip receives, with a stub that records `binding.value` (see `UsersTable.test.ts`).
+- When the code under test is expected to log (a failure path), spy on it in that test, not in a `beforeEach` that mutes the whole file, and assert it: `const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})` … `expect(consoleError).toHaveBeenCalled()`, with `afterEach(() => { vi.restoreAllMocks() })` in the file, so a failed assertion can't leave the console muted. For an expected `console.warn` from app code, use `muteAppWarnings()` from `tests/vueWarnings.ts`, not `mockImplementation`: a bare mock replaces the setup file's wrapper and turns the Vue-warning check off for that test.
+- Vitest 4.1+ detects when an AI agent runs it and hides console output from passing tests, so a plain `pnpm test` looks quiet even when it isn't. Check with `pnpm test --reporter=default --silent=false`.
 
 ### Key directories
 
 - `src/components/` — reusable components (organized by feature)
+  - `src/components/Nodes/` has one subfolder per page (`NodeDetails/`, `NodeList/`; later `Availability/`, `IpInterfaces/`, `SnmpInterfaces/`). A file goes in a page folder only when that page is its only user; files used by more than one page (or by `nodeStore`, which the Map also uses) stay in the `Nodes/` root. The root and each page folder have their own `hooks/`. Imports within a folder are relative; imports across folders use `@/components/Nodes/...`.
 - `src/containers/` — top-level page components (route targets)
 - `src/composables/` — shared reactive logic
 - `src/stores/` — Pinia stores

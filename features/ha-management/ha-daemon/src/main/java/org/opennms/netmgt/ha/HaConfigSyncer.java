@@ -55,7 +55,7 @@ import java.util.regex.Pattern;
  * <ul>
  *   <li>the manifest lists every in-scope file with its sha256 and size;</li>
  *   <li>only files whose hash differs locally are fetched, as raw bytes
- *       (keystores such as {@code scv.jce}, {@code users.xml}, and TLS
+ *       (keystores such as {@code scv.jce} and TLS
  *       material all transfer intact);</li>
  *   <li>fetched files are staged and moved into place atomically;</li>
  *   <li>local files that are in scope but absent from the manifest are

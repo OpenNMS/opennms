@@ -1,0 +1,26 @@
+diff --git a/datepicker/DatePicker.vue b/datepicker/DatePicker.vue
+index 65e3dd74879ee0f4e25e66c8cfddce2b1b3bb7b2..0cb853709edc98198037b8fb068a2d3006f88ced 100644
+--- a/datepicker/DatePicker.vue
++++ b/datepicker/DatePicker.vue
+@@ -1969,7 +1969,7 @@ export default {
+                 throw 'Invalid Time';
+             }
+ 
+-            this.pm = ampm.toLowerCase() === this.$primevue.config.locale.pm.toLowerCase() || ampm.toLowerCase() === 'pm';
++            this.pm = !!ampm && (ampm.toLowerCase() === this.$primevue.config.locale.pm.toLowerCase() || ampm.toLowerCase() === 'pm');
+             let time = this.parseTime(timeString);
+ 
+             value.setHours(time.hour);
+diff --git a/datepicker/index.mjs b/datepicker/index.mjs
+index 8e027029087d73b1ecf6b8c68b52dafebb20edcd..b95a2c035ebe87c3b83ccf4d567103f73f9d1a46 100644
+--- a/datepicker/index.mjs
++++ b/datepicker/index.mjs
+@@ -1593,7 +1593,7 @@ var script = {
+       if (this.hourFormat == '12' && !ampm) {
+         throw 'Invalid Time';
+       }
+-      this.pm = ampm.toLowerCase() === this.$primevue.config.locale.pm.toLowerCase() || ampm.toLowerCase() === 'pm';
++      this.pm = !!ampm && (ampm.toLowerCase() === this.$primevue.config.locale.pm.toLowerCase() || ampm.toLowerCase() === 'pm');
+       var time = this.parseTime(timeString);
+       value.setHours(time.hour);
+       value.setMinutes(time.minute);

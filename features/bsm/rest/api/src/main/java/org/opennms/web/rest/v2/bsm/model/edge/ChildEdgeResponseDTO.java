@@ -24,12 +24,15 @@ package org.opennms.web.rest.v2.bsm.model.edge;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="child-edge")
 @XmlAccessorType(XmlAccessType.NONE)
+@Schema(description = "An edge pointing at another business service.")
 public class ChildEdgeResponseDTO extends AbstractEdgeResponseDTO {
 
+    @Schema(description = "Id of the child business service.", example = "23641")
     @XmlElement(name="child-id")
     private Long childId;
 

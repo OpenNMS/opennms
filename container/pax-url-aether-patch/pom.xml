@@ -17,7 +17,10 @@
         org.codehaus.plexus.util.Expand.extractFile). There is no upstream release that
         fixes this: every pax-url-aether 2.6.x shades plexus-utils 3.3.1 and 3.0.x still
         shades 3.6.0. A vulnerable class shaded into an uber-jar can also not be dealt with
-        via blacklisting or etc/overrides.properties.
+        via blacklisting or etc/overrides.properties. pax-url-aether 2.7.1 (Karaf 4.4.11)
+        shades plexus-utils 3.6.1 itself, so while ${plexusUtilsVersion} is 3.6.1 the swap
+        below is like-for-like; the module is kept so a future plexus-utils fix can still be
+        applied without waiting for a pax-url release.
 
         So this module rebuilds the bundle with plexus-utils ${plexusUtilsVersion} shaded in
         and publishes it as its own artifact. The assembly modules (container/karaf for

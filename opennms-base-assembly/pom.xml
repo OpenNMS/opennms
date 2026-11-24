@@ -323,10 +323,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-alarm-northbounder-jms</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-correlator</artifactId>
     </dependency>
     <dependency>
@@ -378,10 +374,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>org.opennms.icmp.proxy.rpc-impl</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-reportd</artifactId>
     </dependency>
     <!-- just here to be able to unpack it into the assembly tarball -->
     <dependency>
@@ -482,10 +474,6 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jstl-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-rt</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -744,10 +732,6 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-web-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.charts</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.status</groupId>
@@ -1050,10 +1034,6 @@
       <version>${pyroscopeVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.request-tracker</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>jasper-extensions</artifactId>
       <version>${project.version}</version>
@@ -1103,6 +1083,16 @@
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.discovery</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <!-- the MIB compiler REST API in opennms-webapp-rest uses the parser on the flat classpath -->
+      <groupId>org.opennms.features.mib-compiler</groupId>
+      <artifactId>org.opennms.features.mib-compiler.parser</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jsmiparser</groupId>
+      <artifactId>jsmiparser-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.rest</groupId>
@@ -1234,6 +1224,13 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>org.opennms.features.topology-views</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Surveillance view definitions (kv-store persistence) + the
+         status/drill-down data services behind /api/v2/surveillance/views. -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.features.surveillance-views</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- Postgres BlobStore for topology-asset image bytes (only the no-op

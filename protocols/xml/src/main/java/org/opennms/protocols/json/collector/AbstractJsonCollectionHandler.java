@@ -66,6 +66,23 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
     private static final Logger LOG = LoggerFactory.getLogger(AbstractJsonCollectionHandler.class);
 
     /**
+     * Makes a configured XPath expression parsable by JXPath.
+     * <p>JSON object keys may start with a digit or contain characters that are not allowed in an
+     * XML name; JXPath cannot parse a location step like that. {@link JsonXpathRewriter} rewrites
+     * those steps, and leaves everything else alone.</p>
+     *
+     * @param configured the XPath expression as configured
+     * @return the expression to hand to JXPath
+     */
+    private static String jxpath(final String configured) {
+        final String rewritten = JsonXpathRewriter.rewrite(configured);
+        if (rewritten != configured) {
+            LOG.debug("jxpath: rewrote XPath {} as {} to address JSON keys that are not valid XML names", configured, rewritten);
+        }
+        return rewritten;
+    }
+
+    /**
      * Fill collection set.
      *
      * @param agent the agent
@@ -77,10 +94,15 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
     @SuppressWarnings("unchecked")
     protected void fillCollectionSet(CollectionAgent agent, CollectionSetBuilder builder, XmlSource source, JSONObject json) throws ParseException {
         JXPathContext context = JXPathContext.newContext(json);
+        // The rewritten expressions produced by JsonXpathRewriter use a wildcard step with a
+        // name() predicate, which raises JXPathNotFoundException instead of returning null when
+        // the key is absent. A lenient context restores the behavior of a plain location step;
+        // it changes nothing for the expressions that were already parsable.
+        context.setLenient(true);
         for (XmlGroup group : source.getXmlGroups()) {
             LOG.debug("fillCollectionSet: getting resources for XML group {} using XPATH {}", group.getName(), group.getResourceXpath());
             Date timestamp = getTimeStamp(context, group);
-            Iterator<Pointer> itr = context.iteratePointers(group.getResourceXpath());
+            Iterator<Pointer> itr = context.iteratePointers(jxpath(group.getResourceXpath()));
             while (itr.hasNext()) {
                 JXPathContext relativeContext = context.getRelativeContext(itr.next());
                 String resourceName = getResourceName(relativeContext, group);
@@ -89,7 +111,7 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
                 LOG.debug("fillCollectionSet: processing resource {}", collectionResource);
                 for (XmlObject object : group.getXmlObjects()) {
                     try {
-                        final Object obj = object.map((String) relativeContext.getValue(object.getXpath(), String.class));
+                        final Object obj = object.map((String) relativeContext.getValue(jxpath(object.getXpath()), String.class));
                         if (obj != null) {
                             builder.withAttribute(collectionResource, group.getName(), object.getName(), obj.toString(), object.getDataType());
                         }
@@ -115,7 +137,7 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
             List<String> keys = new ArrayList<>();
             for (String key : group.getXmlResourceKey().getKeyXpathList()) {
                 LOG.debug("getResourceName: getting key for resource's name using {}", key);
-                String keyName = (String)context.getValue(key);
+                String keyName = (String)context.getValue(jxpath(key));
                 keys.add(keyName);
             }
             return StringUtils.join(keys, "_");
@@ -126,7 +148,7 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
         }
         // Processing single-key resource name.
         LOG.debug("getResourceName: getting key for resource's name using {}", group.getKeyXpath());
-        return (String)context.getValue(group.getKeyXpath());
+        return (String)context.getValue(jxpath(group.getKeyXpath()));
     }
 
     /**
@@ -143,7 +165,7 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
         String pattern = group.getTimestampFormat() == null ? "yyyy-MM-dd HH:mm:ss" : group.getTimestampFormat();
         LOG.debug("getTimeStamp: retrieving custom timestamp to be used when updating RRDs using XPATH {} and pattern {}", group.getTimestampXpath(), pattern);
         Date date = null;
-        String value = (String)context.getValue(group.getTimestampXpath());
+        String value = (String)context.getValue(jxpath(group.getTimestampXpath()));
         try {
             DateTimeFormatter dtf = DateTimeFormat.forPattern(pattern);
             DateTime dateTime = dtf.parseDateTime(value);

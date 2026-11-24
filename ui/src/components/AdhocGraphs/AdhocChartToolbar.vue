@@ -2,27 +2,24 @@
   <div class="chart-toolbar">
     <div class="toolbar-row">
       <!--
-        A visible label: the range button shows only the current selection ("Last
-        day"), so without this there is nothing saying what it selects. Not wired up
-        with aria-labelledby, because TimeControls' fallthrough target is a plain
-        div and the attribute would be inert there — associating it properly means
-        changing the shared component, which Resource Graphs needs too.
+        The label is TimeControls' own `label` prop, not a span here: the range
+        button shows only the current selection ("Last day"), so something has to
+        say what it selects, and only the component itself can put aria-labelledby
+        on the button rather than on its plain root div.
       -->
-      <div class="time-range">
-        <span class="time-range-label">Time Range:</span>
-        <TimeControls
-          data-test="toolbar-time-range"
-          @updateTime="(value: StartEndTime) => emit('updateTime', value)"
-        />
-      </div>
+      <TimeControls
+        label="Time Range:"
+        data-test="toolbar-time-range"
+        @updateTime="(value: StartEndTime) => emit('updateTime', value)"
+      />
 
       <div class="toolbar-actions">
         <OnmsIconButton
           variant="outlined"
           :icon="RefreshIcon"
           title="Refresh"
-          tooltip="Redraw the graph with the latest data"
-          :disabled="!canQuery || loading"
+          tooltip="Reload the resources and redraw the graph with the latest data"
+          :disabled="!(canQuery || canRefresh) || loading"
           data-test="toolbar-refresh"
           @click="emit('refresh')"
         />
@@ -49,6 +46,15 @@
           :disabled="!canQuery"
           data-test="toolbar-share"
           @click="emit('share')"
+        />
+        <OnmsIconButton
+          v-if="!viewOnly && canAddToCollection"
+          variant="outlined"
+          :icon="DashboardIcon"
+          tooltip="Add this graph to a graph collection"
+          :disabled="!canQuery"
+          data-test="toolbar-add-to-collection"
+          @click="emit('addToCollection')"
         />
         <OnmsIconButton
           v-if="!viewOnly"
@@ -159,13 +165,14 @@ import CancelIcon from '@opennms/onms-ui/icons/action/Cancel.vue'
 import DownloadFile from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import RefreshIcon from '@opennms/onms-ui/icons/navigation/Refresh.vue'
 import CodeIcon from '@opennms/onms-ui/icons/action/Code.vue'
+import DashboardIcon from '@opennms/onms-ui/icons/action/Dashboard.vue'
 import PopOutIcon from '@opennms/onms-ui/icons/action/Expand.vue'
 import FullscreenIcon from '@opennms/onms-ui/icons/navigation/Fullscreen.vue'
 import FullscreenExitIcon from '@opennms/onms-ui/icons/navigation/FullscreenExit.vue'
 import LinkIcon from '@opennms/onms-ui/icons/action/Link.vue'
 import PdfIcon from '@opennms/onms-ui/icons/file/Pdf.vue'
 import FormField from '@/components/Common/FormField.vue'
-import TimeControls from '@/components/Resources/TimeControls.vue'
+import TimeControls from '@/components/Common/TimeControls.vue'
 import { StartEndTime } from '@/types'
 import { AdhocGraphConfig } from '@/types/adhocGraph'
 import { DEFAULT_RESOLUTION, MAX_RESOLUTION } from './utils/adhocQuery'
@@ -173,15 +180,21 @@ import { DEFAULT_RESOLUTION, MAX_RESOLUTION } from './utils/adhocQuery'
 withDefaults(defineProps<{
   config: AdhocGraphConfig
   canQuery: boolean
+  /** Refresh also reloads resources, so it is useful before there is anything to query. */
+  canRefresh?: boolean
   hasData: boolean
   loading: boolean
   /** True while the graph is filling the page with the selectors hidden. */
   expanded?: boolean
   /** Graph-only route: no editing controls, no expand/pop-out of its own. */
   viewOnly?: boolean
+  /** Whether this user may write graph collections; the button is hidden otherwise. */
+  canAddToCollection?: boolean
 }>(), {
+  canRefresh: false,
   expanded: false,
-  viewOnly: false
+  viewOnly: false,
+  canAddToCollection: false
 })
 
 const emit = defineEmits<{
@@ -193,6 +206,7 @@ const emit = defineEmits<{
   popOut: []
   showDefinition: []
   share: []
+  addToCollection: []
   exportCsv: []
   exportPdf: []
 }>()
@@ -216,19 +230,6 @@ const emit = defineEmits<{
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-}
-
-// Every control on this row is now the same height, so the label sits beside the
-// range button rather than above it.
-.time-range {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  .time-range-label {
-    font-weight: 700;
-    white-space: nowrap;
-  }
 }
 
 .toolbar-fields {

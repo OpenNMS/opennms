@@ -315,32 +315,42 @@ public class DefaultPollContext implements PollContext, EventListener, Initializ
 
     /** {@inheritDoc} */
     @Override
-    public void openOutage(final PollableService svc, final PollEvent svcLostEvent) {
-        // Open the outage immediately
-        final Integer outageId = getQueryManager().openOutagePendingLostEventId(svc.getNodeId(),
-                svc.getIpAddr(), svc.getSvcName(), svcLostEvent.getDate());
-
-        // Defer updating the outage with the event id until we receive back
-        // from the event bus
-        final Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                final long eventId = svcLostEvent.getEventId();
-                if (eventId > 0) {
-                    getQueryManager().updateOpenOutageWithEventId(outageId, eventId);
-                } else {
-                    LOG.warn("run: Failed to determine an eventId for service lost for: {} with event: {}", svc, svcLostEvent);
-                }
+    public boolean openOutage(final PollableService svc, final PollEvent svcLostEvent) {
+        try {
+            // Open the outage immediately
+            final Integer outageId = getQueryManager().openOutagePendingLostEventId(svc.getNodeId(),
+                    svc.getIpAddr(), svc.getSvcName(), svcLostEvent.getDate());
+            if (outageId == null) {
+                LOG.warn("openOutage: no outage was persisted for {} on {} with node id {}", svc.getSvcName(), svc.getIpAddr(), svc.getNodeId());
+                return false;
             }
-        };
-        if (svcLostEvent instanceof PendingPollEvent) {
-            ((PendingPollEvent)svcLostEvent).addPending(r);
+
+            // Defer updating the outage with the event id until we receive back
+            // from the event bus
+            final Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    final long eventId = svcLostEvent.getEventId();
+                    if (eventId > 0) {
+                        getQueryManager().updateOpenOutageWithEventId(outageId, eventId);
+                    } else {
+                        LOG.warn("run: Failed to determine an eventId for service lost for: {} with event: {}", svc, svcLostEvent);
+                    }
+                }
+            };
+            if (svcLostEvent instanceof PendingPollEvent) {
+                ((PendingPollEvent)svcLostEvent).addPending(r);
+            }
+            else {
+                r.run();
+            }
+            LOG.debug("openOutage: sending outageCreated event for: {} on {}", svc.getSvcName(), svc.getIpAddr());
+            sendEvent(createEvent(EventConstants.OUTAGE_CREATED_EVENT_UEI, svc.getNodeId(), svc.getAddress(), svc.getSvcName(), svcLostEvent.getDate(), null));
+            return true;
+        } catch (RuntimeException e) {
+            LOG.error("openOutage: failed to open the outage for {} on {} with node id {}", svc.getSvcName(), svc.getIpAddr(), svc.getNodeId(), e);
+            return false;
         }
-        else {
-            r.run();
-        }
-        LOG.debug("openOutage: sending outageCreated event for: {} on {}", svc.getSvcName(), svc.getIpAddr());
-        sendEvent(createEvent(EventConstants.OUTAGE_CREATED_EVENT_UEI, svc.getNodeId(), svc.getAddress(), svc.getSvcName(), svcLostEvent.getDate(), null));
     }
 
     /* (non-Javadoc)
@@ -348,39 +358,45 @@ public class DefaultPollContext implements PollContext, EventListener, Initializ
      */
     /** {@inheritDoc} */
     @Override
-    public void resolveOutage(final PollableService svc, final PollEvent svcRegainEvent) {
-        // Resolve the outage immediately
-        final Integer outageId = getQueryManager().resolveOutagePendingRegainEventId(svc.getNodeId(),
-                svc.getIpAddr(), svc.getSvcName(), svcRegainEvent.getDate());
+    public boolean resolveOutage(final PollableService svc, final PollEvent svcRegainEvent) {
+        try {
+            // Resolve the outage immediately
+            final Integer outageId = getQueryManager().resolveOutagePendingRegainEventId(svc.getNodeId(),
+                    svc.getIpAddr(), svc.getSvcName(), svcRegainEvent.getDate());
 
-        // There may be no outage for this particular service. This can happen when interfaces
-        // are reparented or when a node gains a new service while down.
-        if (outageId == null) {
-            LOG.info("resolveOutage: no outstanding outage for {} on {} with node id {}", svc.getSvcName(), svc.getIpAddr(), svc.getNodeId());
-            return;
-        }
-
-        // Defer updating the outage with the event id until we receive back
-        // from the event bus
-        final Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                final long eventId = svcRegainEvent.getEventId();
-                if (eventId > 0) {
-                    getQueryManager().updateResolvedOutageWithEventId(outageId, eventId);
-                } else {
-                    LOG.warn("run: Failed to determine an eventId for service regained for: {} with event: {}", svc, svcRegainEvent);
-                }
+            // There may be no outage for this particular service. This can happen when interfaces
+            // are reparented or when a node gains a new service while down.
+            if (outageId == null) {
+                LOG.info("resolveOutage: no outstanding outage for {} on {} with node id {}", svc.getSvcName(), svc.getIpAddr(), svc.getNodeId());
+                return true;
             }
-        };
-        if (svcRegainEvent instanceof PendingPollEvent) {
-            ((PendingPollEvent)svcRegainEvent).addPending(r);
+
+            // Defer updating the outage with the event id until we receive back
+            // from the event bus
+            final Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    final long eventId = svcRegainEvent.getEventId();
+                    if (eventId > 0) {
+                        getQueryManager().updateResolvedOutageWithEventId(outageId, eventId);
+                    } else {
+                        LOG.warn("run: Failed to determine an eventId for service regained for: {} with event: {}", svc, svcRegainEvent);
+                    }
+                }
+            };
+            if (svcRegainEvent instanceof PendingPollEvent) {
+                ((PendingPollEvent)svcRegainEvent).addPending(r);
+            }
+            else {
+                r.run();
+            }
+            LOG.debug("resolveOutage: sending outageResolved event for: {} on {}", svc.getSvcName(), svc.getIpAddr());
+            sendEvent(createEvent(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, svc.getNodeId(), svc.getAddress(), svc.getSvcName(), svcRegainEvent.getDate(), null));
+            return true;
+        } catch (RuntimeException e) {
+            LOG.error("resolveOutage: failed to resolve the outage for {} on {} with node id {}", svc.getSvcName(), svc.getIpAddr(), svc.getNodeId(), e);
+            return false;
         }
-        else {
-            r.run();
-        }
-        LOG.debug("resolveOutage: sending outageResolved event for: {} on {}", svc.getSvcName(), svc.getIpAddr());
-        sendEvent(createEvent(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, svc.getNodeId(), svc.getAddress(), svc.getSvcName(), svcRegainEvent.getDate(), null));
     }
 
     /* (non-Javadoc)

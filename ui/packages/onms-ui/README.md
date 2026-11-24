@@ -22,7 +22,8 @@ replaced without rewriting consumers.
    Every use should link a follow-up to promote the need into a real prop.
    Composite components that assemble more than one PrimeVue primitive
    internally (`OnmsSearchInput`, `OnmsConfirmationDialog`, `OnmsMessageDialog`,
-   `OnmsToastHost`) do **not** accept `unsafePt` — there is no single
+   `OnmsToastHost`, `OnmsColorPicker`) do **not** accept
+   `unsafePt` — there is no single
    underlying `pt` root to target, so the escape hatch is omitted rather than
    wired to one arbitrarily-chosen internal.
 4. **No PrimeVue types or values in any public signature.** Exported types are
@@ -46,7 +47,9 @@ OnmsDrawer, OnmsChip, OnmsToggleSwitch, OnmsRadioButton, OnmsInputNumber,
 OnmsSearchInput, OnmsPopover, OnmsPanel, OnmsCard, OnmsListbox,
 OnmsMultiSelect, OnmsDatePicker. This tranche also absorbed the
 pre-existing `OnmsConfirmationDialog` and `OnmsMessageDialog` (built on
-`OnmsDialog`) into the package.
+`OnmsDialog`) into the package. `OnmsMessage` (an inline callout with a
+`success` / `info` / `warn` / `error` severity, never closable) was added for
+the Manage Minions and Locations delete dialogs.
 
 Notable deviations from the underlying PrimeVue defaults — each is an
 intentional seam default, not an oversight, and matches what every existing
@@ -127,14 +130,81 @@ OnmsTable (+ the `OnmsTablePageEvent`, `OnmsTableSortEvent`,
 - **`expandedRows`** accepts either an array of row instances or an object
   keyed by `dataKey`, matching PrimeVue's own `DataTableExpandedRows` shape
   for tables that expand by key rather than by row identity.
-- Not exposed (never used anywhere in the app today): selection mode,
+- **`selectionMode`** and the **`row-click`** emit (+ `OnmsTableRowClickEvent`)
+  were added in tranche 4 for the topology browse panel, which is a
+  click-a-row-to-select list. `selection` itself is still not exposed: that
+  panel drives highlighting from its own store rather than from the table.
+- Not exposed (never used anywhere in the app today): the `selection` binding,
   filters, `loading`, removable sort, paginator templates, CSV export. Extend
   the seam (a new prop/emit on `OnmsTable`/`OnmsColumn`) before reaching for
   `unsafePt` if a real need for one of these appears.
 
+## Components (tranche 4)
+
+OnmsSelectButton, OnmsSlider, OnmsContextMenu, OnmsTieredMenu,
+OnmsVirtualScroller and OnmsColorPicker, added for the topology map. The same
+tranche widened six existing wrappers: `size` on OnmsButton, `selectionMode` +
+`row-click` on OnmsTable, `showToggleAll` + `maxSelectedLabels` on
+OnmsMultiSelect, `showButtons` + `buttonLayout` on OnmsInputNumber,
+and `completeOnFocus` on OnmsAutoComplete. Each keeps PrimeVue's own default
+when unset.
+
+Where these diverge from PrimeVue, deliberately:
+
+- **`OnmsSelectButton`** defaults `allowEmpty` to `false`, since a segmented
+  control that can deselect its last option leaves no mode chosen. `change`
+  emits the value directly, not `{ originalEvent, value }`, matching
+  `OnmsListbox`. The dark-mode fix for the checked label lives in
+  `ui/src/theme/opennms-preset.ts` (`components.togglebutton`), not the wrapper.
+- **`OnmsSlider`** is single-value: exposing `range` would widen `modelValue` to
+  `number | number[]` for every consumer. `ariaLabel` is a declared prop, since
+  `role="slider"` sits on the handle and a fall-through attr would miss it.
+- **`OnmsContextMenu`** positions at the pointer coordinates of the event it is
+  handed, where a popup `OnmsMenu` positions against the trigger element. Open
+  from `@contextmenu` via the exposed `show(event)`.
+- **`OnmsTieredMenu`** renders a nested `items` array as hover-opened submenus,
+  where `OnmsMenu` flattens it under a heading. Popup by default; open via the
+  exposed `toggle(event)`. Both reuse `OnmsMenuItem`, which already nests.
+- **`OnmsMenubar`** (added later, NMS-20303) is the inline, horizontal form:
+  top-level items in a row, each opening its nested `items` as a dropdown. It
+  takes the same `OnmsMenuItem` model, forwards `#item`, and adds `#start` and
+  `#end` for content around the items. An item with `target: '_blank'` gets
+  `rel="noopener noreferrer"`, which PrimeVue does not add. `collapsed` forces
+  the hamburger button (`true`) or the full row (`false`) for a bar whose room
+  depends on its row rather than on the viewport; left out, PrimeVue switches at
+  its 960px viewport breakpoint.
+- **`OnmsPaginator`** (added later, NMS-20303) is paging controls on their own,
+  for content that is not an `OnmsTable` (which has its own). `page` emits the
+  same `OnmsTablePageEvent` as `OnmsTable`, rather than PrimeVue's
+  `PageState`. `pageReport` adds text after the rows-per-page dropdown, with
+  PrimeVue's placeholders (`{first}`, `{last}`, `{totalRecords}`, ...), for a
+  page whose unit is not one row each, e.g.
+  `'Interfaces {first}–{last} of {totalRecords}'`.
+- **`OnmsColorPicker`** is a composite, not a thin wrapper: a swatch grid in an
+  `OnmsPopover` with PrimeVue's spectrum picker behind a "Custom" toggle, since
+  4.5.5 offers no swatch surface. `format` is baked to `'hex'` and the value
+  normalized to `#rrggbb` both ways -- PrimeVue accepts hex with or without the
+  `#` but always emits it without, which is not a valid CSS color. A value that
+  is not six hex digits passes through untouched. `swatches` defaults to 30
+  colors including the topology map's own shape and label defaults; a value
+  outside the palette shows as "custom" rather than unselected.
+- **`OnmsVirtualScroller`** is for long uniform-height lists that are not tables
+  (`OnmsTable`'s `virtualScrollItemSize` remains the table case). Its `#item`
+  slot exposes `{ item, index }` rather than forwarding PrimeVue's internal
+  `options` bookkeeping.
+- **`OnmsToggleButton`** (added later, NMS-20449) is one on/off button that
+  stays pressed, for a set of choices where more than one can be on (several
+  of them side by side) or none at all. `label` is the text for both states;
+  `onLabel` / `offLabel` override it per state. Without any of them the
+  button has no text, where PrimeVue would show "Yes" / "No". `onIcon` /
+  `offIcon` take an icon component rather than PrimeVue's CSS class string.
+  The icon gets `onms-toggle-button-icon` plus `--on` / `--off`, and the
+  wrapper leaves its color to the consumer. `change` emits the new value, not
+  the DOM event, matching `OnmsSelectButton`.
+
 ## Icons
 
-The icon set (262 template-only SVG SFCs, originally vendored from FeatherDS)
+The icon set (template-only SVG SFCs, originally vendored from FeatherDS)
 lives at `packages/onms-ui/src/icons/<category>/<Name>.vue`, alongside the
 `OnmsIcon` wrapper that renders it. It moved here from `ui/src/components/icons/`
 in NMS-20243: under the old `@/components/icons/...` path it was reachable only
@@ -147,9 +217,9 @@ import DeleteIcon from '@opennms/onms-ui/icons/action/Delete.vue'
 // then: <OnmsIcon :icon="DeleteIcon" />
 ```
 
-The 12 category directories (`account`, `action`, `communication`, `content`,
+The 13 category directories (`account`, `action`, `communication`, `content`,
 `datavis`, `file`, `hardware`, `medical`, `navigation`, `network`,
-`notification`, `status`) are part of the path. They matter: 22 basenames
+`notification`, `severity`, `status`) are part of the path. They matter: several basenames
 (`Server`, `Cloud`, `Security`, `Group`, `Build`, `Code`, `Cancel`, …) appear in
 more than one category, so the category is what disambiguates them.
 
@@ -158,7 +228,7 @@ more than one category, so the category is what disambiguates them.
 Deliberate, and load-bearing. `ui/src/main/main.ts` does
 `import * as OnmsUI` and assigns that namespace object to `window.OnmsUI`. A
 namespace object cannot be tree-shaken — so **anything reachable from
-`index.ts` ships to every user unconditionally**. Exporting 262 icons from the
+`index.ts` ships to every user unconditionally**. Exporting every icon from the
 barrel would force the entire set into the core bundle even though a typical
 screen uses a handful.
 
@@ -265,9 +335,65 @@ The prop mounts the directive on the button itself, with no remount when the
 text arrives late — the wrapper handles that (see above). When `tooltip` is set
 the native `title` attribute is dropped, so the browser's own tooltip doesn't
 duplicate the rich one; `title`, if given, still names the button for assistive
-tech, and a `tooltip`-only button is named from the tooltip text. Positioning
-modifiers (`v-onms-tooltip.top`) have no prop equivalent — a call site needing
-one keeps using the directive.
+tech, and a `tooltip`-only button is named from the tooltip text. Placement is
+the `tooltipPosition` prop (`top`, `bottom`, `left`, `right`; default `right`),
+which the wrapper hands to the directive as its modifier — a button at the
+viewport's edge otherwise gets its tooltip squeezed against that edge.
+
+## OnmsDatePicker: dates, times, and time-only (NMS-20280)
+
+`OnmsDatePicker` covers all three shapes, so there is no `OnmsTimePicker`:
+
+| prop | type | default | effect |
+| --- | --- | --- | --- |
+| `showTime` | `boolean` | `false` | adds hour/minute spinners below the calendar |
+| `showSeconds` | `boolean` | `false` | adds a second spinner (requires `showTime` or `timeOnly`) |
+| `timeOnly` | `boolean` | `false` | hides the calendar entirely — a pure time picker |
+| `hourFormat` | `OnmsHourFormat` (`'12' \| '24'`) | `'24'` | clock convention |
+| `stepHour` / `stepMinute` / `stepSecond` | `number` | `1` | spinner increments |
+
+`timeOnly` needs no companion `showTime`: PrimeVue gates the time panel on
+`showTime || timeOnly` and the date panel on `!timeOnly`.
+
+`hourFormat` is typed as the owned `OnmsHourFormat` rather than PrimeVue's
+`HintedString<'12' | '24'>`, per rule 4. Every default above matches installed
+primevue@4.5.5's own, so these are not "notable deviations" — declaring them
+changed no existing call site's rendering. `placeholder` / `minDate` / `maxDate`
+are declared for the same reason: passing them by attribute fallthrough happens
+to reach PrimeVue, but rule 2 classes that as unsupported.
+
+`inputId` lands on the rendered `<input>` rather than the wrapper element, so a
+`FormField` label's `for` can reach the real control — the same reason
+`OnmsSelect`, `OnmsInputNumber` and the other input wrappers declare one. A
+plain `id` would fall through to PrimeVue's wrapper, out of a label's reach.
+
+Beyond `update:modelValue`, the wrapper emits `show` / `hide` when the overlay
+panel opens and closes. `TimeControls` needs them: PrimeVue dismisses the panel
+from a document-level **mousedown** listener, so a consumer that wants to tell
+"this click dismissed a picker" from "this click chose something else" has to
+sample overlay visibility on mousedown. Without these emits its only route is
+reaching into PrimeVue internals.
+
+`minDate` / `maxDate` accept `Date | null` and collapse `null` to `undefined`
+before reaching PrimeVue, which types them `Date | undefined` and treats any
+non-undefined value as a live bound. That keeps a `?? undefined` out of every
+call site holding its bounds in a nullable ref. `TimeControls` relies on this:
+it cross-wires its two pickers (`:maxDate="endDateRef"` / `:minDate="startDateRef"`)
+so a range cannot invert, and both refs start out null.
+
+### Time-only values and daylight saving (NMS-20534)
+
+A time-only value is a `Date` whose date part means nothing, but PrimeVue builds
+a typed time, and a spinner step on an empty picker, on **today's** date. On the
+day the browser's clocks go forward, 02:30 does not exist and became 03:30. In
+time-only mode the wrapper (a subclass of PrimeVue's DatePicker, still named
+`DatePicker`) puts those values on a fixed day instead: 10 January 2000, on which
+no time zone changed its clocks.
+
+A spinner step on a picker that already has a value keeps that value's date, so
+a consumer should start its time-only values on the same day. The barrel exports
+the rule as `toTimeOnlyDate(hours, minutes, seconds = 0)`: use it rather than
+`new Date()` or a day of your own.
 
 ## Runtime exposure for plugins
 
@@ -300,10 +426,28 @@ component-library version the host is actually running.
 For the full plugin-developer walkthrough — the externals contract, the
 module contract (`window[extensionId]`, derived from the module URL's
 second-to-last path segment), the version handshake, and the dev harness
-(`VITE_EXAMPLE_PLUGIN=true pnpm dev`, then open `/example-plugin`) — see
+(`VITE_EXAMPLE_PLUGIN=true pnpm dev`, then open `/opennms/ui/#/example-plugin`) — see
 [`packages/onms-ui-example-plugin`](../onms-ui-example-plugin/README.md), a
 real externalized plugin built with the toolchain a third-party author would
 use.
+
+## Chromeless app shell
+
+`useOnmsChromeless()` lets a page or plugin hide the host's menu bar, side
+menu and footer, e.g. for a wall display. `enterChromeless()` turns it on until
+the next route change, `exitChromeless()` or Escape, so a page that wants it
+calls `enterChromeless()` when it mounts (in `onActivated` if it is kept
+alive). `isChromeless` is a readonly ref for a toggle's state. Escape is
+ignored while a dialog, drawer, popover or popup menu is open, and while focus
+is in a text field. The state is module-level, like `useOnmsToast`, so host
+and plugins share it through `window.OnmsUI`.
+
+`useOnmsChromelessHost()` is for the host only: `App.vue` calls it once to
+sync routes marked `meta.chromeless` and install the Escape handler. Its optional
+third argument, `{ isForced: () => boolean }`, is for embedding the app in an
+iframe: it is re-read on each route change, and while it returns true the app
+is always chromeless and both Escape and `exitChromeless()` are ignored.
+Without it, behavior is unchanged.
 
 ## Sanctioned direct-PrimeVue exceptions
 
@@ -320,9 +464,10 @@ over time, not grow:
 - `primevue/tieredmenu` in `ui/src/components/Menu/SideMenu.vue` — the side
   navigation drives `TieredMenu` internals directly (dirty-flag tracking, DOM
   queries against `.p-tieredmenu-*` classes) that don't fit a thin prop/slot
-  wrapper. The import carries an inline `eslint-disable-next-line
-  no-restricted-imports` with a comment pointing back to NMS-20081; revisit
-  when the side menu is redesigned.
+  wrapper, so it stays on the direct import even though `OnmsTieredMenu` now
+  exists for the ordinary case. The import carries an inline
+  `eslint-disable-next-line no-restricted-imports` with a comment pointing back
+  to NMS-20081; revisit when the side menu is redesigned.
 
 ## Planned next
 

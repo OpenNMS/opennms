@@ -106,7 +106,6 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
         projList.add(Projections.alias(Projections.property("description"), "description"));
         projList.add(Projections.alias(Projections.property("displayCategory"), "displayCategory"));
         projList.add(Projections.alias(Projections.property("division"), "division"));
-        projList.add(Projections.alias(Projections.property("enable"), "enable"));
         projList.add(Projections.alias(Projections.property("floor"), "floor"));
         projList.add(Projections.alias(Projections.property("hdd1"), "hdd1"));
         projList.add(Projections.alias(Projections.property("hdd2"), "hdd2"));
@@ -130,7 +129,6 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
         projList.add(Projections.alias(Projections.property("room"), "room"));
         projList.add(Projections.alias(Projections.property("serialNumber"), "serialNumber"));
         projList.add(Projections.alias(Projections.property("slot"), "slot"));
-        projList.add(Projections.alias(Projections.property("snmpcommunity"), "snmpcommunity"));
         projList.add(Projections.alias(Projections.property("geolocation.state"), "state"));
         projList.add(Projections.alias(Projections.property("storagectrl"), "storagectrl"));
         projList.add(Projections.alias(Projections.property("supportPhone"), "supportPhone"));

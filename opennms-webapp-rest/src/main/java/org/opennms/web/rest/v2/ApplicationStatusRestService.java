@@ -33,6 +33,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -40,6 +46,8 @@ import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.support.ApplicationStatusUtil;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.perspectivepolling.ApplicationServiceStatus;
+import org.opennms.netmgt.model.perspectivepolling.ApplicationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,11 +67,65 @@ public class ApplicationStatusRestService {
     @Autowired
     private MonitoredServiceDao monitoredServiceDao;
 
+    private static final String WINDOW_NOTE = """
+            `start` and `end` are epoch milliseconds. Omitting `end` uses now; omitting `start` uses
+            `end` minus 24 hours. The window is not validated, so a `start` after `end` is accepted and
+            simply matches nothing.""";
+
     @GET
     @Path("{applicationId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get a Status of a specified application", description = "Get a Status of a specified application", operationId = "ApplicationStatusRestServiceGetStatusByApplicationId")
-    public Response applicationStatus(@PathParam("applicationId") final Integer applicationId, @QueryParam("start") Long start, @QueryParam("end") Long end) {
+    @Operation(summary = "Get a Status of a specified application",
+            description = """
+        Perspective-poller availability for one application over a time window, aggregated overall and
+        per monitoring location. `overallStatus` and `aggregated-status` are percentages of the window
+        during which the application was up as seen from that perspective.
+
+        """ + WINDOW_NOTE + """
+
+
+        In XML, `applicationId`, `start` and `end` are attributes on `application-status`, and the
+        per-location value is the hyphenated element `aggregated-status`. The JSON keeps the hyphenated
+        spelling for `aggregated-status`.""",
+            operationId = "ApplicationStatusRestServiceGetStatusByApplicationId")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Availability for the application over the window.",
+                    content = {
+                            @Content(mediaType = MediaType.APPLICATION_JSON,
+                                    schema = @Schema(implementation = ApplicationStatus.class),
+                                    examples = @ExampleObject(value = """
+                    {
+                      "applicationId": 1,
+                      "start": 1787641143996,
+                      "end": 1787727543996,
+                      "overallStatus": 100.0,
+                      "location": [
+                        {"name": "Default", "aggregated-status": 100.0}
+                      ]
+                    }""")),
+                            @Content(mediaType = MediaType.APPLICATION_XML,
+                                    schema = @Schema(implementation = ApplicationStatus.class),
+                                    examples = @ExampleObject(value = """
+                    <application-status applicationId="1" end="1787727557946" start="1787641157946">
+                      <location name="Default">
+                        <aggregated-status>100.0</aggregated-status>
+                      </location>
+                      <overallStatus>100.0</overallStatus>
+                    </application-status>"""))
+                    }),
+            @ApiResponse(responseCode = "404", description = """
+                    No application with that id. A non-numeric `applicationId` also lands here, from the
+                    parameter conversion. The body is empty either way.""")
+    })
+    public Response applicationStatus(@Parameter(description = "Numeric id of the application, as returned by `/applications`.",
+                                              required = true, example = "1")
+                                      @PathParam("applicationId") final Integer applicationId,
+                                      @Parameter(description = "Window start, epoch milliseconds. Defaults to `end` minus 24 hours.",
+                                              example = "1787641143996")
+                                      @QueryParam("start") Long start,
+                                      @Parameter(description = "Window end, epoch milliseconds. Defaults to now.",
+                                              example = "1787727543996")
+                                      @QueryParam("end") Long end) {
         if (end == null) {
             end = new Date().getTime();
         }
@@ -84,8 +146,55 @@ public class ApplicationStatusRestService {
     @GET
     @Path("{applicationId}/{monitoredServiceId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Operation(summary = "Get a Status of a specified application by monitoringServiceId", description = "Get a Status of a specified application by monitoringServiceId", operationId = "ApplicationStatusRestServiceGetStatusByMonitoringServiceId")
-    public Response applicationServiceStatus(@PathParam("applicationId") final Integer applicationId, @PathParam("monitoredServiceId") final Integer monitoredServiceId, @QueryParam("start") Long start, @QueryParam("end") Long end) {
+    @Operation(summary = "Get a Status of a specified application by monitoringServiceId",
+            description = """
+        Perspective-poller availability for one monitored service inside an application, per monitoring
+        location. Each location also reports `response-resource-id`, the resource id under which that
+        perspective's response-time data is stored.
+
+        """ + WINDOW_NOTE + """
+
+
+        `monitoredServiceId` is an `ifServiceId`, and it has to be one the application actually
+        contains: an id that is not a member fails with a 500 rather than a 404.""",
+            operationId = "ApplicationStatusRestServiceGetStatusByMonitoringServiceId")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Availability for the service over the window, per location.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ApplicationServiceStatus.class),
+                            examples = @ExampleObject(value = """
+                    {
+                      "applicationId": 1,
+                      "monitoredServiceId": 1022,
+                      "start": 1787641157901,
+                      "end": 1787727557901,
+                      "location": [
+                        {
+                          "name": "Default",
+                          "response-resource-id": "127.0.0.4[HTTP-8080]@Default",
+                          "aggregated-status": 100.0
+                        }
+                      ]
+                    }"""))),
+            @ApiResponse(responseCode = "404", description = "No application with that id. The body is empty."),
+            @ApiResponse(responseCode = "500", description = """
+                    `monitoredServiceId` does not resolve to a service in this application, so building
+                    the per-location resource id dereferences null.""",
+                    content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string"),
+                            examples = @ExampleObject(value = "Cannot invoke \"org.opennms.netmgt.model.OnmsMonitoredService.getIpAddress()\" because \"onmsMonitoredService\" is null")))
+    })
+    public Response applicationServiceStatus(@Parameter(description = "Numeric id of the application, as returned by `/applications`.",
+                                                     required = true, example = "1")
+                                             @PathParam("applicationId") final Integer applicationId,
+                                             @Parameter(description = "`ifServiceId` of a monitored service that belongs to the application.",
+                                                     required = true, example = "1022")
+                                             @PathParam("monitoredServiceId") final Integer monitoredServiceId,
+                                             @Parameter(description = "Window start, epoch milliseconds. Defaults to `end` minus 24 hours.",
+                                                     example = "1787641157901")
+                                             @QueryParam("start") Long start,
+                                             @Parameter(description = "Window end, epoch milliseconds. Defaults to now.",
+                                                     example = "1787727557901")
+                                             @QueryParam("end") Long end) {
         if (end == null) {
             end = new Date().getTime();
         }

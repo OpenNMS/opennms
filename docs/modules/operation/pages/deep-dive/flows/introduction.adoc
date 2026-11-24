@@ -2,6 +2,7 @@
 [[ga-flow-support-introduction]]
 = Flows
 :description: Learn how flows data collection in {page-component-title} provides a picture of your network traffic.
+:page-aliases: deep-dive/elasticsearch/features/flows.adoc
 
 Flows are summaries of network traffic sent by network devices (switches, routers, and so on).
 This information includes, but is not limited to, source and destination addresses, source and destination ports, octet count, and duration of activity.
@@ -47,6 +48,44 @@ You can access collected flows data in the following locations:
 
 .Overview of flows integration
 image::flows/flow_integration_overview.png["Network graph displays how flows integrate with {page-component-title}", 700]
+
+[[ga-elasticsearch-integration-flow-support]]
+[[ga-flow-documents]]
+=== Flow documents in Elasticsearch
+
+When {page-component-title} persists flows to Elasticsearch, each flow is stored as a single document.
+The following table describes a subset of the fields in a flow document:
+
+[options="header", cols="1,3"]
+|===
+| Field
+| Description
+
+| @timestamp
+| Timestamp of the flow, in milliseconds.
+
+| location
+| Monitoring location at which the flow was received.
+This is `Default` unless you use Minions.
+
+| netflow.bytes
+| Number of bytes transferred in the flow.
+
+| netflow.direction
+| Direction of the flow: `ingress`, `egress`, or `unknown`.
+
+| netflow.first_switched
+| Timestamp, in milliseconds, at which the first packet of the flow was switched.
+
+| netflow.last_switched
+| Timestamp, in milliseconds, at which the last packet of the flow was switched.
+
+| netflow.input_snmp
+| SNMP interface index on which packets of this flow were received.
+
+| netflow.output_snmp
+| SNMP interface index on which packets of this flow were forwarded.
+|===
 
 === Technologies
 

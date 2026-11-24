@@ -47,6 +47,8 @@ import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.MetricRegistry;
+
 import io.netty.buffer.ByteBuf;
 
 /**
@@ -69,7 +71,11 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
     private BundleContext m_bundleContext;
 
     public SyslogReceiverCamelNettyImpl(final SyslogdConfig config) {
-        super(config);
+        this(config, new MetricRegistry());
+    }
+
+    public SyslogReceiverCamelNettyImpl(final SyslogdConfig config, final MetricRegistry metricRegistry) {
+        super(config, metricRegistry);
         m_config = config;
         setHostAndPort();
     }
@@ -168,6 +174,7 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
 
                         @Override
                         public void process(Exchange exchange) throws Exception {
+                            m_udpPacketsReceived.mark();
                             final ByteBuf buffer = exchange.getIn().getBody(ByteBuf.class);
 
                             // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
@@ -180,6 +187,7 @@ public class SyslogReceiverCamelNettyImpl extends SinkDispatchingSyslogReceiver 
 
                         @Override
                         public boolean process(Exchange exchange, AsyncCallback callback) {
+                            m_udpPacketsReceived.mark();
                             final ByteBuf buffer = exchange.getIn().getBody(ByteBuf.class);
 
                             // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 

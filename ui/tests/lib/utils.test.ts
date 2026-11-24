@@ -22,11 +22,13 @@
 
 import { describe, expect, test } from 'vitest'
 import {
+  htmlToText,
   ellipsify,
   hasNonEmptyProperty,
   isConvertibleToInteger,
   isNumber,
-  isString
+  isString,
+  plural
 } from '@/lib/utils'
 
 describe('lib/utils test', () => {
@@ -92,5 +94,31 @@ describe('lib/utils test', () => {
     for (const value of nonEmptyProperties) {
       expect(hasNonEmptyProperty(value)).toBe(true)
     }
+  })
+})
+
+describe('htmlToText', () => {
+  test('drops the markup and collapses whitespace', () => {
+    expect(htmlToText('<p>Interface <b>eth0</b>\n  down</p>')).toBe('Interface eth0 down')
+  })
+
+  test('decodes entities', () => {
+    expect(htmlToText('a &amp; b &lt;c&gt;')).toBe('a & b <c>')
+  })
+
+  test('answers empty for nothing', () => {
+    expect(htmlToText(undefined)).toBe('')
+    expect(htmlToText('')).toBe('')
+  })
+})
+
+describe('plural', () => {
+  test.each([
+    [0, 'service', undefined, '0 services'],
+    [1, 'service', undefined, '1 service'],
+    [2, 'unacknowledged alarm', undefined, '2 unacknowledged alarms'],
+    [3, 'child', 'children', '3 children']
+  ])('%i %s', (count, singular, pluralForm, expected) => {
+    expect(plural(count, singular, pluralForm)).toBe(expected)
   })
 })

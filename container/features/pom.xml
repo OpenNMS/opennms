@@ -524,8 +524,8 @@
                           <!-- base API features -->
                           <feature>opennms-activemq-pool</feature>
                           <feature>opennms-alarm-history-elastic</feature>
-                          <feature>opennms-camel-amqp</feature>
                           <feature>opennms-core-camel</feature>
+                          <feature>opennms-core-camel-hardening</feature>
                           <feature>opennms-core-daemon</feature>
                           <feature>opennms-core-ipc-jms</feature>
                           <feature>opennms-core-ipc-rpc-api</feature>
@@ -546,6 +546,7 @@
                           <feature>opennms-timeseries-api</feature>
                           <feature>opennms-timeseries-api</feature>
                           <feature>opennms-grpc-exporter</feature>
+                          <feature>opennms-kafka-producer</feature>
                           <feature>vaadin</feature>
 
                           <!-- minion features -->
@@ -693,13 +694,6 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>vaadin-jmxconfiggenerator</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>vaadin-snmp-events-and-metrics</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

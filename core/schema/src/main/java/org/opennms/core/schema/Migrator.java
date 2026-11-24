@@ -77,6 +77,13 @@ public class Migrator {
 
     private static final String IPLIKE_SQL_RESOURCE = "iplike.sql";
 
+    /**
+     * Revision tag of the PL/pgSQL iplike implementation shipped in
+     * {@link #IPLIKE_SQL_RESOURCE} (set there via COMMENT ON FUNCTION).
+     * {@link #updateIplike()} replaces older PL/pgSQL revisions in place.
+     */
+    public static final String IPLIKE_PLPGSQL_REVISION = "opennms-iplike-plpgsql-2";
+
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
     private Float m_databaseVersion;
@@ -461,6 +468,38 @@ public class Migrator {
     }
 
     /**
+     * <p>grantPgMonitorToUser</p>
+     *
+     * Grants the built-in pg_monitor role to the OpenNMS database user so the
+     * PostgreSQL data collection queries in the default JDBC collection can see
+     * sessions owned by other roles in pg_stat_activity. The grant is idempotent
+     * and runs on every install and upgrade. A failure is logged as a warning
+     * instead of aborting the migration, because the database may be managed
+     * externally with a restricted admin account; in that case the grant must be
+     * applied manually.
+     */
+    public void grantPgMonitorToUser() {
+        if (!m_createUser) {
+            return;
+        }
+
+        LOG.info("granting pg_monitor to the OpenNMS user");
+        Statement st = null;
+        Connection c = null;
+        try {
+            c = m_adminDataSource.getConnection();
+            st = c.createStatement();
+            st.execute("GRANT pg_monitor TO " + getUserForONMSDB());
+        } catch (final SQLException e) {
+            LOG.warn("Unable to grant pg_monitor to {}. PostgreSQL monitoring metrics based on pg_stat_activity"
+                    + " will be incomplete until \"GRANT pg_monitor TO {}\" is run manually.",
+                    getUserForONMSDB(), getUserForONMSDB(), e);
+        } finally {
+            cleanUpDatabase(c, null, st, null);
+        }
+    }
+
+    /**
      * <p>databaseExists</p>
      *
      * @return a boolean.
@@ -652,13 +691,16 @@ public class Migrator {
      */
     public void updateIplike() throws MigrationException {
 
-        boolean insert_iplike = !isIpLikeUsable();
-
-        if (insert_iplike) {
+        if (!isIpLikeUsable()) {
             dropExistingIpLike();
-
-            if (!installCIpLike("foo")) {
+            setupPlPgsqlIplike();
+        } else if (isStalePlPgsqlIplike()) {
+            // Replace an older PL/pgSQL revision in place; iplike.sql uses
+            // CREATE OR REPLACE. A working C-extension iplike is not changed.
+            try {
                 setupPlPgsqlIplike();
+            } catch (final MigrationException e) {
+                LOG.warn("Could not replace the PL/pgSQL iplike function. The installed revision stays in use.", e);
             }
         }
 
@@ -720,30 +762,32 @@ public class Migrator {
         return true;
     }
 
-    private boolean installCIpLike(String pgIplikeLocation) throws MigrationException {
-        if (pgIplikeLocation == null) {
-            LOG.info("Skipped inserting C iplike function (location of iplike function not set)");
-            return false;
-        }
-
-        LOG.info("inserting C iplike function");
-
-        Statement st = null;
+    /**
+     * True when the installed iplike is a PL/pgSQL implementation older than
+     * {@link #IPLIKE_PLPGSQL_REVISION}. A C-extension iplike never counts as
+     * stale here: installs that added the optional compiled extension keep it.
+     */
+    private boolean isStalePlPgsqlIplike() throws MigrationException {
         Connection c = null;
+        Statement st = null;
+        ResultSet rs = null;
 
         try {
-            c  = m_dataSource.getConnection();
+            c = m_dataSource.getConnection();
             st = c.createStatement();
-            try {
-                st.execute("CREATE FUNCTION iplike(text,text) RETURNS bool " + "AS '" + pgIplikeLocation + "' LANGUAGE 'c' WITH(isstrict)");
-                return true;
-            } catch (final SQLException e) {
+            rs = st.executeQuery("SELECT l.lanname, obj_description(p.oid, 'pg_proc')"
+                    + " FROM pg_proc p JOIN pg_language l ON p.prolang = l.oid"
+                    + " WHERE p.oid = 'iplike(text,text)'::regprocedure");
+            if (!rs.next()) {
                 return false;
             }
+            final String language = rs.getString(1);
+            final String revision = rs.getString(2);
+            return "plpgsql".equals(language) && !IPLIKE_PLPGSQL_REVISION.equals(revision);
         } catch (final SQLException e) {
-            throw new MigrationException("error installing C iplike function", e);
+            throw new MigrationException("error checking the installed iplike revision", e);
         } finally {
-            cleanUpDatabase(c, null, st, null);
+            cleanUpDatabase(c, null, st, rs);
         }
     }
 
@@ -900,6 +944,7 @@ public class Migrator {
     public void prepareDatabase() throws MigrationException {
         validateDatabaseVersion();
         createUser();
+        grantPgMonitorToUser();
         createSchema();
         createDatabase();
         createLangPlPgsql();

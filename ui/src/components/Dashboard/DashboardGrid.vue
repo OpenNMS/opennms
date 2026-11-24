@@ -74,6 +74,7 @@ License.
 </template>
 
 <script setup lang="ts">
+import { ROW_PX } from './defaultLayout'
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 // grid-layout-plus 1.x injects its own styles at runtime — no CSS import needed.
@@ -93,10 +94,11 @@ const COLLAPSED_H = 40 + GAP // header-only height when a panel is collapsed
 const MIN_AUTO_H = 40 + GAP
 const MIN_FIXED_H = 96
 
-// Old saved layouts (and the default) store h/y in ~44px ROW units; pixel h is
-// always > 40. Convert small values up so legacy layouts render at sane sizes;
-// values already in pixels pass through unchanged (idempotent).
-const toPx = (h: number) => (h <= 40 ? Math.round(h * 56) : h)
+// Old saved layouts store h in ROW units; pixel h is always > 40. Convert
+// small values up so legacy layouts render at sane sizes; values already in
+// pixels (everything the default layout and addPanel write now) pass through
+// unchanged (idempotent).
+const toPx = (h: number) => (h <= 40 ? Math.round(h * ROW_PX) : h)
 
 interface GridItemModel {
   i: string

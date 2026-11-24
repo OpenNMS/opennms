@@ -118,6 +118,26 @@ public class DefaultFilterWatcherTest {
         session.close();
     }
 
+    @Test
+    public void callbackFailureOnCachedResultsDoesNotEscapeWatch() throws IOException {
+        // Keep the first results cached so the second watch is served from them
+        filterWatcher.setRefreshRateLimitMs(TimeUnit.MINUTES.toMillis(1));
+        Closeable first = filterWatcher.watch("catincProduction", this::handleFilterResults);
+        assertThat(numCallbacks, equalTo(1));
+
+        final int[] failingCalls = {0};
+        Closeable second = filterWatcher.watch("catincProduction", results -> {
+            failingCalls[0]++;
+            throw new IllegalStateException("listener failure");
+        });
+
+        assertThat(failingCalls[0], equalTo(1));
+        assertThat(numCallbacks, equalTo(1));
+
+        second.close();
+        first.close();
+    }
+
     public Map<Integer, Map<InetAddress, Set<String>>> getNodeIPAddressServiceMap(int numNodes, int numInterfaces, String... services) {
         Map<Integer, Map<InetAddress, Set<String>>> nodeIpServiceMap = new LinkedHashMap<>();
         for (int i = 1; i <= numNodes; i++) {

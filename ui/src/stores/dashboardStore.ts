@@ -22,9 +22,10 @@
 
 import { defineStore } from 'pinia'
 import type { DashboardFilter, DashboardLayout, DashboardPanel, PanelHeightMode, Timeframe } from '@/types/dashboard'
-import { createDefaultLayout } from '@/components/Dashboard/defaultLayout'
+import { createDefaultLayout, ROW_PX } from '@/components/Dashboard/defaultLayout'
 import { getPanelDefinition } from '@/components/Dashboard/registry'
 import { getSystemDashboard, saveSystemDashboard } from '@/services/dashboardService'
+import { invalidateKpiSources } from '@/services/topnService'
 
 // Dependency-free RFC-4122 v4 UUID for panel ids. crypto.getRandomValues works
 // in every context, whereas crypto.randomUUID requires a secure context — which
@@ -201,7 +202,8 @@ export const useDashboardStore = defineStore('dashboardStore', {
         x: 0,
         y: nextY,
         w: def.defaultSize.w,
-        h: def.defaultSize.h,
+        // defaultSize.h is authored in rows; the layout stores pixels
+        h: def.defaultSize.h * ROW_PX,
         collapsed: false,
         titleOverride: null,
         filterOverride: null,
@@ -245,6 +247,7 @@ export const useDashboardStore = defineStore('dashboardStore', {
       }
     },
     tickRefresh() {
+      invalidateKpiSources()
       this.refreshTick++
     }
   }

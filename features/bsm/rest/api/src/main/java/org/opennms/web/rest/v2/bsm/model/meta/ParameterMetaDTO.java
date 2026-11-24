@@ -29,22 +29,31 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opennms.netmgt.bsm.service.model.functions.annotations.Parameter;
 
 @XmlRootElement(name="parameter")
 @XmlAccessorType(XmlAccessType.NONE)
+@Schema(description = "One parameter of a map or reduce function.")
 public class ParameterMetaDTO {
 
+    @Schema(description = "Key to use in the function's `properties` map.", example = "threshold", required = true)
     @XmlAttribute(name="key", required=true)
     private String key;
 
+    @Schema(description = "Value type. `status` means a severity name; the numeric types are parsed "
+            + "from the string.",
+            example = "float", required = true,
+            allowableValues = {"status", "float", "double", "long", "int", "String"})
     @XmlAttribute(name="type", required=true)
     private String type;
 
+    @Schema(description = "What the parameter controls.", example = "The Threshold to use", required = true)
     @XmlAttribute(name="description", required=true)
     private String description;
 
     // At the moment we do not have an optional parameter, but we may get it in the future
+    @Schema(description = "Whether the parameter has to be supplied.", example = "true", required = true)
     @XmlAttribute(name="required", required=true)
     private boolean required = true;
 

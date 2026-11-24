@@ -43,9 +43,4 @@
         <report id="DiskUsageForCTX" display-name="C: Disk Usage for CTX servers" online="true"
                 report-service="jasperReportService" description="C: Disk Usage for CTX servers" />
 -->
-<!--    The following report expects that storeByForeignSource is enabled -->
-<!--
-        <report id="Top20-IOWait" display-name="TOP 20 nodes by I/O Wait" online="true"
-                report-service="jasperReportService" description="TOP 20 nodes by I/O Wait" />
--->
 </database-reports>

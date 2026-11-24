@@ -23,6 +23,9 @@
     <!-- Custom topology views + the image assets they reference -->
     <module>topology-views</module>
 
+    <!-- Surveillance view definitions + status/drill-down data services -->
+    <module>surveillance-views</module>
+
     <!-- ActiveMQ broker -->
     <module>activemq</module>
 
@@ -30,9 +33,6 @@
 
     <!-- Alarms -->
     <module>alarms</module>
-
-    <!-- AMQP Event Gateway and Alarm Northbounder -->
-    <module>amqp</module>
 
     <!-- DHCP integration -->
     <module>dhcpd</module>
@@ -59,7 +59,6 @@
     <!-- OpenNMS Collection API and implementations -->
     <module>collection</module>
     <module>jdbc-collector</module>
-    <module>juniper-tca-collector</module>
     <module>prometheus-collector</module>
     <module>telemetry</module>
     <module>wsman</module>
@@ -72,7 +71,6 @@
 
     <!-- OpenNMS Ticketing API and implementations -->
     <module>ticketing</module>
-    <module>request-tracker</module>
 
     <!-- OpenNMS REST -->
     <module>rest</module>
@@ -91,9 +89,8 @@
     <module>jmx-config-generator</module>
     <module>vaadin-jmxconfiggenerator</module>
  
-    <!-- SNMP MIB Parser and Event/Collection Configuration -->
+    <!-- SNMP MIB Parser -->
     <module>mib-compiler</module>
-    <module>vaadin-snmp-events-and-metrics</module>
 
     <!-- Near Real Time Graphing -->
     <module>nrtg</module>
@@ -172,8 +169,6 @@
     <!-- IfTtt integration -->
     <module>ifttt</module>
 
-    <!-- JFreeChart charts -->
-    <module>charts</module>
 
     <module>jest</module>
     <module>dnsresolver</module>
