@@ -245,7 +245,7 @@ const onReorderEvents = async () => {
   }
 }
 
-// the list's Refresh button reloads the current order; a failed load needs saying
+// StagedReorderList calls this only after a save fails with 400/404, to reload the current order; a failed load needs saying
 const refetchOrderedEvents = async () => {
   const loaded = await store.fetchOrderedEvents()
   if (!loaded) {

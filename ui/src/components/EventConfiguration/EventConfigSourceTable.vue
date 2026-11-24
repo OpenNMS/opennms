@@ -225,7 +225,7 @@ const router = useRouter()
 const store = useEventConfigStore()
 const { showError } = useActionFeedback()
 
-// the list's Refresh button reloads the current order; a failed load needs saying
+// StagedReorderList calls this only after a save fails with 400/404, to reload the current order; a failed load needs saying
 const refetchOrderedSources = async () => {
   const loaded = await store.fetchOrderedSources()
   if (!loaded) {

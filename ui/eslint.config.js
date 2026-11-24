@@ -178,6 +178,9 @@ export default tseslint.config(
           { name: '@/composables/useActionFeedback', message: UI_FEEDBACK_MESSAGE },
           { name: '@/composables/useAdminWriteFeedback', message: UI_FEEDBACK_MESSAGE },
           { name: '@opennms/onms-ui', importNames: ['useOnmsToast'], message: UI_FEEDBACK_MESSAGE }
+        ],
+        patterns: [
+          { group: ['**/composables/useSpinner', '**/composables/useSnackbar', '**/composables/useActionFeedback', '**/composables/useAdminWriteFeedback'], message: UI_FEEDBACK_MESSAGE }
         ]
       }]
     }
