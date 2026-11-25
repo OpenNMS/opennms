@@ -224,6 +224,13 @@ public final class OpenNMSStack implements TestRule {
         return sentinelContainers.get(index);
     }
 
+    public OpenNMSCassandraContainer cassandra() {
+        if (cassandraContainer == null) {
+            throw new IllegalStateException("Cassandra container is not enabled in this stack.");
+        }
+        return cassandraContainer;
+    }
+
     public JaegerContainer jaeger() {
         if (jaegerContainer == null) {
             throw new IllegalStateException("Jaeger container is not enabled in this stack.");
