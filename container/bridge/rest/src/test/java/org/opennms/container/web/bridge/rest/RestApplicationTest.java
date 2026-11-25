@@ -42,6 +42,8 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Feature;
+import javax.ws.rs.core.FeatureContext;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -128,6 +130,42 @@ public class RestApplicationTest {
 
         assertThat(application.getEndpoints(), is(empty()));
         verify(httpService).unregister(APPLICATION_PATH);
+    }
+
+    @Test
+    public void keepsResourcesWhenProviderIsInvalid() throws Exception {
+        application.addResource(new FirstResource());
+        application.addResource(new SecondResource());
+        application.publish(List.of(new InvalidFeature()));
+
+        assertThat(application.getEndpoints(), is(empty()));
+        assertThat(application.isEmpty(), is(false));
+
+        application.publish(List.of());
+
+        assertThat(application.getEndpoints(), containsInAnyOrder("/rest/first", "/rest/second"));
+    }
+
+    @Test
+    public void keepsCurrentDeploymentWhenNewProviderIsInvalid() throws Exception {
+        application.addResource(new FirstResource());
+        application.publish(List.of());
+
+        application.addResource(new SecondResource());
+        application.publish(List.of(new InvalidFeature()));
+
+        assertThat(application.getEndpoints(), contains("/rest/first"));
+
+        application.publish(List.of());
+
+        assertThat(application.getEndpoints(), containsInAnyOrder("/rest/first", "/rest/second"));
+    }
+
+    public static class InvalidFeature implements Feature {
+        @Override
+        public boolean configure(final FeatureContext context) {
+            throw new IllegalStateException("invalid feature");
+        }
     }
 
     @Path("/first")

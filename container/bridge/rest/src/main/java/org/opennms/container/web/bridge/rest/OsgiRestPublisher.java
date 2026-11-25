@@ -81,6 +81,8 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
     private HttpService httpService;
     private ServiceTracker<Object, Published> tracker;
     private boolean publishSuspended;
+    // Request threads read this list without the lock.
+    private volatile List<String> endpoints = List.of();
 
     @Activate
     public void activate(final BundleContext bundleContext) {
@@ -110,6 +112,7 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
             synchronized (lock) {
                 publishSuspended = false;
                 republishAll();
+                updateEndpoints();
             }
         }
     }
@@ -125,18 +128,21 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
             providers.clear();
             httpService = null;
             publishSuspended = false;
+            updateEndpoints();
         }
     }
 
     @Override
     public List<String> getRestEndpoints() {
-        final List<String> endpoints = new ArrayList<>();
-        synchronized (lock) {
-            for (RestApplication application : applications.values()) {
-                endpoints.addAll(application.getEndpoints());
-            }
+        return endpoints;
+    }
+
+    private void updateEndpoints() {
+        final List<String> current = new ArrayList<>();
+        for (RestApplication application : applications.values()) {
+            current.addAll(application.getEndpoints());
         }
-        return Collections.unmodifiableList(endpoints);
+        endpoints = Collections.unmodifiableList(current);
     }
 
     @Override
@@ -144,6 +150,17 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
         if (bundleContext.getBundle().equals(reference.getBundle())) {
             return null;
         }
+        try {
+            return publish(reference);
+        } catch (Exception | LinkageError e) {
+            // An error from one service must not stop the publisher.
+            LOG.warn("The publisher ignores a service of bundle {} because of an error.",
+                    reference.getBundle().getSymbolicName(), e);
+            return null;
+        }
+    }
+
+    private Published publish(final ServiceReference<Object> reference) {
         final Object service = bundleContext.getService(reference);
         final Published published = toPublished(reference, service);
         if (published == null) {
@@ -186,6 +203,7 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
                     applications.remove(published.applicationPath);
                 }
             }
+            updateEndpoints();
         }
     }
 
@@ -198,12 +216,15 @@ public class OsgiRestPublisher implements RestEndpointRegistry, ServiceTrackerCu
                 final RestApplication application = applications.get(published.applicationPath);
                 if (application != null) {
                     application.removeResource(published.service);
-                    republish(application);
                     if (application.isEmpty()) {
+                        application.close();
                         applications.remove(published.applicationPath);
+                    } else {
+                        republish(application);
                     }
                 }
             }
+            updateEndpoints();
         }
     }
 

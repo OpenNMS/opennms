@@ -31,6 +31,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.apache.cxf.Bus;
@@ -103,6 +104,7 @@ final class RestApplication {
      * Stops the application when it has no resources.
      * <p>
      * When the deployment does not start, the application rejects each resource that prevents the start.
+     * When a provider prevents the start, the application rejects no resource and keeps the previous deployment.
      */
     void publish(final List<Object> providers) throws Exception {
         CxfClassLoader.call(() -> {
@@ -115,6 +117,10 @@ final class RestApplication {
             try {
                 next = new Deployment(resources, providers);
             } catch (Exception e) {
+                if (!canDeployProviders(providers)) {
+                    LOG.error("The ReST application with path {} did not start because a provider is not correct. The application keeps all resources.", path, e);
+                    return null;
+                }
                 LOG.warn("The ReST application with path {} did not start. The application now tests each new resource.", path, e);
                 next = deployWithoutBadResources(providers);
             }
@@ -129,6 +135,17 @@ final class RestApplication {
 
     void close() {
         CxfClassLoader.run(this::closeInternal);
+    }
+
+    /** Starts and stops a deployment that has the providers and one resource that is known to be correct. */
+    private boolean canDeployProviders(final List<Object> providers) {
+        try {
+            new Deployment(List.of(new ProbeResource()), providers).stop();
+            return true;
+        } catch (Exception e) {
+            LOG.debug("The providers of the ReST application with path {} do not start.", path, e);
+            return false;
+        }
     }
 
     /**
@@ -220,6 +237,15 @@ final class RestApplication {
             } else {
                 current.service(request, response);
             }
+        }
+    }
+
+    /** A resource that is known to be correct. It shows if the providers can start. */
+    @Path("/probe")
+    public static final class ProbeResource {
+        @GET
+        public String get() {
+            return "";
         }
     }
 
