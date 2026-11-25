@@ -117,17 +117,20 @@ describe('InventorySearch.vue', () => {
     })
   })
 
-  it('routes an asset-field search with an asset column the Node list accepts', async () => {
+  it('routes an asset-field search as a contains match on address1 by default', async () => {
     const wrapper = await mountPage()
-    await wrapper.find('[data-test="field-value"]').setValue('Dell')
+    await wrapper.find('[data-test="field-value"]').setValue('dell')
     await wrapper.find('[data-test="criterion-field"]').trigger('submit')
 
-    const call = push.mock.calls.at(-1)![0]
-    expect(call.path).toBe('/nodes')
-    expect(call.query.assetValue).toBe('Dell')
-    // the column must be a real assetRecord property key, not a made-up label value
-    expect(typeof call.query.assetColumn).toBe('string')
-    expect(call.query.assetColumn.length).toBeGreaterThan(0)
+    expect(push).toHaveBeenLastCalledWith({ path: '/nodes', query: { assetColumn: 'address1', assetValue: '*dell*' }})
+  })
+
+  it('keeps an asset-field value that already has a wildcard', async () => {
+    const wrapper = await mountPage()
+    await wrapper.find('[data-test="field-value"]').setValue('Dell*')
+    await wrapper.find('[data-test="criterion-field"]').trigger('submit')
+
+    expect(push).toHaveBeenLastCalledWith({ path: '/nodes', query: { assetColumn: 'address1', assetValue: 'Dell*' }})
   })
 
   it('routes foreign source, mac and flows to their tracked query keys', async () => {

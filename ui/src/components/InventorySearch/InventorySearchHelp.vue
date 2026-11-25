@@ -35,7 +35,8 @@
     <p>
       Searching for assets allows you to search for all assets which have been associated with a particular category, as well
       as to select a specific asset field (with all available fields listed in the drop-down list box) and search for its
-      value. The asset field and category searches match the value exactly, unlike the wildcard node-name search above.
+      value. The asset field search finds the text anywhere in the field and ignores letter case; include an asterisk
+      (<em>*</em>) to anchor the match instead (e.g. <em>Dell*</em>). The category search matches the category exactly.
     </p>
   </div>
 </template>

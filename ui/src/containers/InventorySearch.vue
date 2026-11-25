@@ -178,18 +178,19 @@
           label="Asset field"
           for="search-field-value"
           testId="field"
-          help="Search any asset inventory field by its exact value (no wildcards)."
+          help="Finds the text anywhere in the field, ignoring letter case. Include * to anchor the match instead (e.g. Dell* for values that start with Dell)."
           :error="errors.field"
-          @search="search('field', 'assetFieldValue', { assetColumn: form.assetField, assetValue: form.assetFieldValue })"
+          @search="search('field', 'assetFieldValue', { assetColumn: form.assetField, assetValue: assetPattern(form.assetFieldValue) })"
         >
-          <OnmsSelect v-model="form.assetField" :options="ASSET_FIELDS" optionLabel="label" optionValue="value" filter data-test="field-select" />
-          <OnmsInputText id="search-field-value" v-model="form.assetFieldValue" placeholder="Exact value" fluid :invalid="!!errors.field" data-test="field-value" />
+          <OnmsSelect v-model="form.assetField" :options="ALL_ASSET_COLUMN_OPTIONS" optionLabel="label" optionValue="value" filter data-test="field-select" />
+          <OnmsInputText id="search-field-value" v-model="form.assetFieldValue" fluid :invalid="!!errors.field" data-test="field-value" />
         </SearchField>
       </div>
 
       <div class="quick-links">
         <router-link :to="{ path: '/nodes' }" data-test="link-all-nodes">All nodes</router-link>
-        <router-link :to="{ path: '/nodes', query: { nodesWithAssets: 'true' } }" data-test="link-all-assets">All nodes with asset info</router-link>
+        <router-link :to="{ path: '/nodes', query: { nodesWithAssets: 'true' } }" data-test="link-all-assets">All nodes with asset info (Nodes page)</router-link>
+        <a :href="`${baseHref}asset/nodelist.jsp?column=_allNonEmpty`" data-test="link-assets-page">All nodes with asset info (Assets page)</a>
       </div>
     </div>
   </div>
@@ -205,9 +206,9 @@ import AboutDialogButton from '@/components/Common/AboutDialogButton.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import InventorySearchHelp from '@/components/InventorySearch/InventorySearchHelp.vue'
 import SearchField from '@/components/InventorySearch/SearchField.vue'
+import { ALL_ASSET_COLUMN_OPTIONS } from '@/components/Nodes/NodeList/hooks/queryStringParser'
 import {
   ASSET_CATEGORIES,
-  ASSET_FIELDS,
   FLOW_OPTIONS,
   INTERFACE_ATTRIBUTES,
   MATCH_TYPES,
@@ -222,6 +223,7 @@ const router = useRouter()
 const menuStore = useMenuStore()
 const { showToast } = useOnmsToast()
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
+const baseHref = computed<string>(() => menuStore.mainMenu?.baseHref ?? '/opennms/')
 
 const breadcrumbs = computed<BreadCrumb[]>(() => [
   { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
@@ -244,7 +246,7 @@ const form = reactive({
   flows: FLOW_OPTIONS[0].value,
   topology: '',
   assetCategory: ASSET_CATEGORIES[0].value,
-  assetField: ASSET_FIELDS[0].value,
+  assetField: 'address1',
   assetFieldValue: ''
 })
 
@@ -269,6 +271,9 @@ const goToNodes = (query: Record<string, string>) => {
   }
   router.push({ path: '/nodes', query: cleaned })
 }
+
+// Without a * the asset value matches anywhere in the field, as on the legacy search page
+const assetPattern = (value: string) => value.includes('*') ? value : `*${value.trim()}*`
 
 // Each criterion searches on its own; refuse a blank value inline rather than
 // silently listing every node.
