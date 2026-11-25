@@ -346,11 +346,19 @@ If the value of the first OID in this trap is 6, the the log message will be the
 <p>Cisco Event: HSRP State Change to active.</p>
 ----
 
-== Trap value representation
+== Non-English characters and UTF-8 in trap values
 
 When octet Strings are translated into event parameters, {page-component-title} first attempts to treat them as character encodings.
 If all bytes in the String are valid UTF-8 or ISO-8859-1 characters, the String is stored as these characters.
 If this is not possible, the value is encoded as a Base64 String.
+
+The bytes are converted using the default character set of the JVM, which on Java 17 and earlier follows the system locale.
+If non-ASCII characters appear as `�`, the default can be set to UTF-8 in `$\{OPENNMS_HOME}/etc/opennms.conf`, followed by a restart of {page-component-title}:
+
+[source, console]
+----
+ADDITIONAL_MANAGER_OPTIONS="-Dfile.encoding=UTF-8"
+----
 
 == Traps forwarded via proxy
 
