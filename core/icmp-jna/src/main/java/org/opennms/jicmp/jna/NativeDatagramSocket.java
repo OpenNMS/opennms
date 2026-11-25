@@ -101,7 +101,7 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
         }
     }
 
-    private static NativeDatagramSocket createFfm(final int family, final int protocol, final int listenPort) throws Exception {
+    public static NativeDatagramSocket createFfm(final int family, final int protocol, final int listenPort) throws Exception {
         final Class<? extends NativeDatagramSocket> implementationClass;
         try {
             implementationClass = Class.forName(FFM_IMPLEMENTATION, true, NativeDatagramSocket.class.getClassLoader()).asSubclass(NativeDatagramSocket.class);
@@ -111,7 +111,7 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
         return newInstance(implementationClass, family, protocol, listenPort);
     }
 
-    private static NativeDatagramSocket createJna(final int family, final int protocol, final int listenPort) throws Exception {
+    public static NativeDatagramSocket createJna(final int family, final int protocol, final int listenPort) throws Exception {
         final String implClassName = NativeDatagramSocket.getImplementationClassName(family);
         return newInstance(Class.forName(implClassName).asSubclass(NativeDatagramSocket.class), family, protocol, listenPort);
     }

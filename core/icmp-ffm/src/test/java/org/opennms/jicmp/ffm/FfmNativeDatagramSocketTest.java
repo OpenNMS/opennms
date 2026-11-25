@@ -279,6 +279,19 @@ public class FfmNativeDatagramSocketTest {
     }
 
     @Test
+    public void createFfmReturnsTheFfmSocket() throws Exception {
+        try {
+            m_socket = NativeDatagramSocket.createFfm(NativeDatagramSocket.AF_INET, NativeDatagramSocket.IPPROTO_ICMP, ID);
+        } catch (final Exception e) {
+            if (!notPermitted(e)) {
+                throw e;
+            }
+            Assume.assumeNoException("ICMP sockets not permitted here", e);
+        }
+        assertEquals(FfmNativeDatagramSocket.class, m_socket.getClass());
+    }
+
+    @Test
     public void createSelectsFfmImplementation() throws Exception {
         final String previous = System.getProperty(NativeDatagramSocket.IMPLEMENTATION_PROPERTY);
         try {
