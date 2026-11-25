@@ -24,6 +24,14 @@ package org.opennms.netmgt.icmp.jna;
 import org.opennms.netmgt.icmp.AbstractPingerFactory;
 import org.opennms.netmgt.icmp.Pinger;
 
+/**
+ * A pinger factory for the JNA socket.
+ *
+ * @deprecated The JNA socket adds latency, which makes ICMP response times less accurate.
+ * It will be removed in Horizon 38.
+ * Use {@link org.opennms.netmgt.icmp.ffm.FfmPingerFactory}.
+ */
+@Deprecated(since = "37", forRemoval = true)
 public class JnaPingerFactory extends AbstractPingerFactory {
 
     @Override

@@ -42,14 +42,16 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
 
     private int m_pingerId;
     private NativeDatagramSocket m_pingSocket;
+    private final String m_backendName;
     private Thread m_thread;
     protected final AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
     private volatile boolean m_stopped = false;
     private final List<PingReplyListener> m_listeners = new ArrayList<>();
 
-    protected AbstractPinger(int pingerId, NativeDatagramSocket pingSocket) {
+    protected AbstractPinger(int pingerId, NativeDatagramSocket pingSocket, String backendName) {
         m_pingerId = pingerId;
         m_pingSocket = pingSocket;
+        m_backendName = backendName;
     }
 
     /** Largest datagram the receive loop accepts. */
@@ -86,7 +88,7 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
     }
 
     public void start() {
-        m_thread = new Thread(this, "JNA-ICMP-"+getClass().getSimpleName()+"-"+m_pingerId+"-Socket-Reader");
+        m_thread = new Thread(this, m_backendName+"-ICMP-"+getClass().getSimpleName()+"-"+m_pingerId+"-Socket-Reader");
         m_thread.setDaemon(true);
         m_thread.start();
     }

@@ -31,10 +31,9 @@ import org.opennms.jicmp.ipv6.ICMPv6Packet;
 import org.opennms.jicmp.ipv6.ICMPv6Packet.Type;
 import org.opennms.jicmp.jna.NativeDatagramPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
+import org.opennms.jicmp.jna.NativeOs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.jna.Platform;
 
 /**
  * PingListener
@@ -46,13 +45,13 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(V6Pinger.class);
 
-    public V6Pinger(final int pingerId) throws Exception {
-        super(pingerId, NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6, pingerId));
+    public V6Pinger(final int pingerId, final SocketBackend backend) throws Exception {
+        super(pingerId, backend.open(NativeDatagramSocket.PF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6, pingerId), backend.name());
         
         // Windows requires at least one packet sent before a receive call can be made without error
         // so we send a packet here to make sure...  This one should not match the normal ping requests
         // since it does not contain the cookie so it won't interface.
-        if (Platform.isWindows()) {
+        if (NativeOs.isWindows()) {
             final ICMPv6EchoPacket packet = new ICMPv6EchoPacket(64);
             packet.setCode(0);
             packet.setType(Type.EchoRequest);

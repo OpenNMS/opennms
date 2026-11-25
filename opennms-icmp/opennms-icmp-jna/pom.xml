@@ -20,7 +20,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.netmgt.icmp.jna.*;version="${project.version}"</Export-Package>
+            <Export-Package>org.opennms.netmgt.icmp.jna.*;org.opennms.netmgt.icmp.ffm.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>

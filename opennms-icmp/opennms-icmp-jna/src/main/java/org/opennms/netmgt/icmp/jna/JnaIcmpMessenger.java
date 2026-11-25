@@ -45,10 +45,10 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
 	private V6Pinger m_v6;
     private ReplyHandler<JnaPingReply> m_callback = null;
 
-	public JnaIcmpMessenger(final int pingerId) throws Exception {
+	public JnaIcmpMessenger(final int pingerId, final SocketBackend backend) throws Exception {
 	    Throwable error = null;
 	    try {
-	        m_v4 = new V4Pinger(pingerId);
+	        m_v4 = new V4Pinger(pingerId, backend);
 	        m_v4.addPingReplyListener(this);
 	    } catch (final Throwable t) {
 	        LOG.debug("Unable to initialize IPv4 Pinger.", t);
@@ -57,7 +57,7 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
 	    }
 	    
 	    try {
-	        m_v6 = new V6Pinger(pingerId);
+	        m_v6 = new V6Pinger(pingerId, backend);
 	        m_v6.addPingReplyListener(this);
 	    } catch (final Throwable t) {
 	        LOG.debug("Unable to initialize IPv6 Pinger.", t);
@@ -67,7 +67,7 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
 	    
 	    if (m_v4 == null && m_v6 == null) {
 	        final IcmpMessengerIOException exception = new IcmpMessengerIOException("IPv4 and IPv6 are not available.", error);
-	        LOG.warn("Unable to initialize JNA ICMP messenger", exception);
+	        LOG.debug("Unable to initialize the {} ICMP messenger", backend.name(), exception);
 	        throw exception;
 	    }
 	}
