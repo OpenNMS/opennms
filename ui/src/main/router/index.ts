@@ -223,6 +223,11 @@ const router = createRouter({
       component: () => import('@/containers/Nodes.vue')
     },
     {
+      path: '/inventory-search',
+      name: 'Search Inventory',
+      component: () => import('@/containers/InventorySearch.vue')
+    },
+    {
       // :id is a node id or foreignSource:foreignId, as the legacy element/node.jsp?node= took.
       // NodeDetails parses it: a foreign id is resolved and replaced with the node id, and an
       // invalid or unknown one shows its own message instead of falling through to the catch-all.

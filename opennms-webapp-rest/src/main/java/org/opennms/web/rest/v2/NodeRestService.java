@@ -95,6 +95,7 @@ import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.RedirectHelper;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
+import org.opennms.web.rest.support.SearchProperty.SearchPropertyType;
 import org.opennms.web.rest.support.SearchPropertyCollection;
 import org.opennms.web.rest.support.StringCollection;
 import org.opennms.web.rest.v2.model.NodeAlarmStatusDto;
@@ -219,6 +220,35 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         return SearchProperties.NODE_SERVICE_PROPERTIES;
     }
 
+    private static CriteriaBehavior<?> caseInsensitiveWildcard(final String property) {
+        final CriteriaBehavior<?> behavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
+            switch (c) {
+            case EQUALS:
+                if (v == null) {
+                    b.isNull(property);
+                } else if (w) {
+                    b.ilike(property, v);
+                } else {
+                    b.eq(property, v);
+                }
+                break;
+            case NOT_EQUALS:
+                if (v == null) {
+                    b.isNotNull(property);
+                } else if (w) {
+                    b.not().ilike(property, v);
+                } else {
+                    b.or(Restrictions.ne(property, v), Restrictions.isNull(property));
+                }
+                break;
+            default:
+                break;
+            }
+        });
+        behavior.setSkipPropertyByDefault(true);
+        return behavior;
+    }
+
     @Override
     protected Map<String,CriteriaBehavior<?>> getCriteriaBehaviors() {
         Map<String,CriteriaBehavior<?>> map = new HashMap<>();
@@ -227,35 +257,16 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         map.putAll(CriteriaBehaviors.NODE_BEHAVIORS);
 
         // node.label: use ilike for case-insensitive wildcard matching (default like() is case-sensitive)
-        CriteriaBehavior<?> labelBehavior = new CriteriaBehavior<>((String)null, String::new, (b, v, c, w) -> {
-            switch (c) {
-            case EQUALS:
-                if (v == null) {
-                    b.isNull("label");
-                } else if (w) {
-                    b.ilike("label", v);
-                } else {
-                    b.eq("label", v);
-                }
-                break;
-            case NOT_EQUALS:
-                if (v == null) {
-                    b.isNotNull("label");
-                } else if (w) {
-                    b.not().ilike("label", v);
-                } else {
-                    b.or(Restrictions.ne("label", v), Restrictions.isNull("label"));
-                }
-                break;
-            default:
-                break;
-            }
-        });
-        labelBehavior.setSkipPropertyByDefault(true);
-        map.put("label", labelBehavior);
+        map.put("label", caseInsensitiveWildcard("label"));
 
         // 1st level JOINs
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.assetRecord, CriteriaBehaviors.ASSET_RECORD_BEHAVIORS));
+        // asset text fields match wildcards case-insensitively too, like the legacy asset search
+        for (SearchProperty prop : SearchProperties.NODE_SERVICE_PROPERTIES) {
+            if (prop.type == SearchPropertyType.STRING && prop.getId().startsWith(Aliases.assetRecord.prop(""))) {
+                map.put(prop.getId(), caseInsensitiveWildcard(prop.getId()));
+            }
+        }
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.category, CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS));
 
         // Use join conditions for one-to-many aliases

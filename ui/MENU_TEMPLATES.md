@@ -158,7 +158,7 @@ The `items` under each top level menu contain the individual menu items.
     <td>url</td>
     <td>The url that the menu item links to.
     If it is non-external, should be a relative link under the main <code>/opennms</code> path.
-    Example: <code>"url": "element/index.jsp"</code> to link to the Search Inventory page.
+    Example: <code>"url": "ui/index.html#/inventory-search"</code> to link to the Search Inventory page.
     If it is an external link, provide the entire absolute URL, e.g. <code>"url": "https://www.opennms.com"</code>.
     <code>$PRODUCT</code> and <code>$DOCS_VERSION</code> are replaced with this install's docs site product and version,
     e.g. <code>"url": "https://docs.opennms.com/$PRODUCT/$DOCS_VERSION/operation/overview/overview.html"</code>.</td>

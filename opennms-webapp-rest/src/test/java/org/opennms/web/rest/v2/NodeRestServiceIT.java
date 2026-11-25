@@ -49,6 +49,7 @@ import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsPathOutage;
@@ -384,6 +385,32 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // Negative: unknown MAC returns no results
         sendRequest(GET, "/nodes", parseParamData("_s=snmpInterface.physAddr==*000000000000*"), 204);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testAssetStringSearchIsCaseInsensitive() throws Exception {
+        m_databasePopulator.populateDatabase();
+        m_transactionTemplate.execute(status -> {
+            final OnmsNode node = m_nodeDao.get(m_databasePopulator.getNode1().getId());
+            node.getAssetRecord().setVendor("Dell Inc.");
+            final OnmsGeolocation geolocation = new OnmsGeolocation();
+            geolocation.setCity("Raleigh");
+            node.getAssetRecord().setGeolocation(geolocation);
+            m_nodeDao.saveOrUpdate(node);
+            m_nodeDao.flush();
+            return null;
+        });
+
+        // wildcard matches ignore letter case, including the geolocation columns
+        sendRequest(GET, "/nodes", parseParamData("_s=assetRecord.vendor==*dell*"), 200);
+        sendRequest(GET, "/nodes", parseParamData("_s=assetRecord.geolocation.city==*LEIGH"), 200);
+        sendRequest(GET, "/nodes", parseParamData("_s=assetRecord.vendor!=*dell*;node.label==node1"), 204);
+
+        // a value without a wildcard is still an exact match
+        sendRequest(GET, "/nodes", parseParamData("_s=assetRecord.vendor==Dell+Inc."), 200);
+        sendRequest(GET, "/nodes", parseParamData("_s=assetRecord.vendor==dell+inc."), 204);
+        sendRequest(GET, "/nodes", parseParamData("_s=assetRecord.vendor==*cisco*"), 204);
     }
 
     @Test
