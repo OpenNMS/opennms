@@ -9,3 +9,4 @@
           at: ~/
       - run-smoke-tests:
           suite: core
+          rerun-failtest-count: 1

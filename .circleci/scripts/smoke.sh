@@ -1,4 +1,8 @@
-#!/bin/sh -e
+#!/bin/bash
+set -e
+set -o pipefail
+
+. "$(dirname "$0")/rerun-lib.sh"
 
 SUITE="$1"; shift
 if [ -z "$SUITE" ]; then
@@ -67,17 +71,44 @@ fi
 
 sudo apt update && sudo apt -y install openjdk-11-jdk-headless
 
-# When we are ready to collect coverge on smoke tests, add "-Pcoverage" below
-ionice nice ../compile.pl \
-  -DskipTests=false \
-  -DskipITs=false \
-  -DfailIfNoTests=false \
-  -Dtest.fork.count=1 \
-  -Dit.test="$IT_TESTS" \
-  --fail-fast \
-  --batch-mode \
-  -Dfailsafe.skipAfterFailureCount=1 \
-  -N \
-  '-P!smoke.all' \
-  "-Psmoke.$SUITE" \
-  install
+RERUN_COUNT="${CCI_RERUN_FAILTEST:-0}"
+
+# Pass 0 runs the tests of this node. A later pass runs only the failed classes.
+run_tests()
+{
+  local pass="$1" units="$2" its="$3"
+  local args=()
+
+  if [ "$pass" -eq 0 ]; then
+    args+=("-DskipITs=false" "-Dit.test=${IT_TESTS}")
+  else
+    # Failsafe writes its reports to target/surefire-reports in this module, so the class name gives the plugin.
+    local all="${units}${units:+${its:+,}}${its}"
+    its="$(echo "$all" | tr ',' '\n' | grep -E '(^|\.)(IT[^.]*|[^.]*IT|[^.]*ITCase)$' | paste -s -d, - || true)"
+    units="$(echo "$all" | tr ',' '\n' | grep -v -E '(^|\.)(IT[^.]*|[^.]*IT|[^.]*ITCase)$' | paste -s -d, - || true)"
+
+    # An empty it.test value runs all the ITs, so skip the plugin that has no failed class.
+    if [ -n "$units" ]; then args+=("-Dtest=${units}"); else args+=("-Dskip.surefire.tests=true"); fi
+    if [ -n "$its" ]; then args+=("-DskipITs=false" "-Dit.test=${its}"); else args+=("-DskipITs=true"); fi
+  fi
+
+  if [ "$RERUN_COUNT" -gt 0 ]; then
+    args+=("${RERUN_MAVEN_ARGS[@]}")
+  else
+    args+=("--fail-fast" "-Dfailsafe.skipAfterFailureCount=1")
+  fi
+
+  # When we are ready to collect coverge on smoke tests, add "-Pcoverage" below
+  ionice nice ../compile.pl \
+    -DskipTests=false \
+    "${args[@]}" \
+    -DfailIfNoTests=false \
+    -Dtest.fork.count=1 \
+    --batch-mode \
+    -N \
+    '-P!smoke.all' \
+    "-Psmoke.$SUITE" \
+    install
+}
+
+run_tests_with_rerun "$RERUN_COUNT" "${CCI_RERUN_MAX_FAILED:-3}" run_tests
