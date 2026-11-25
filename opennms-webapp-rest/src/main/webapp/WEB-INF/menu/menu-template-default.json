@@ -465,6 +465,12 @@
           "name": "Secure Credentials Vault",
           "url": "ui/index.html#/scv",
           "roles": ["ROLE_ADMIN"]
+        },
+        {
+          "id": "daemonManagement",
+          "name": "Daemon Management",
+          "url": "ui/index.html#/daemon-management",
+          "roles": ["ROLE_ADMIN"]
         }
       ]
     },

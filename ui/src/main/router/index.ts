@@ -330,6 +330,12 @@ const router = createRouter({
       beforeEnter: requireRole('dcbRole', 'No role access to DCB.')
     },
     {
+      path: '/daemon-management',
+      name: 'Daemon Management',
+      component: () => import('@/containers/DaemonManagement.vue'),
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage daemons.')
+    },
+    {
       path: '/scv',
       name: 'SCV',
       component: () => import('@/containers/SecureCredentialsVault.vue'),

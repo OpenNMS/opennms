@@ -58,7 +58,8 @@ public class ShippedMenuTemplateTest {
             "ui/index.html#/system-report", "ui/index.html#/logs", "ui/index.html#/scv",
             "ui/index.html#/distributed-monitoring", "ui/index.html#/scheduled-outages",
             "ui/index.html#/notifications-config", "ui/index.html#/mib-compiler",
-            "ui/index.html#/admin/wsman-config", "ui/index.html#/configuration");
+            "ui/index.html#/admin/wsman-config", "ui/index.html#/configuration",
+            "ui/index.html#/daemon-management");
 
     private static MainMenu menuFor(String... roles) throws Exception {
         return new MenuProvider().getMainMenu(
