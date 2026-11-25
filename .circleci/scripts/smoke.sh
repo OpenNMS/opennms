@@ -2,6 +2,8 @@
 set -e
 set -o pipefail
 
+. "$(dirname "$0")/rerun-lib.sh"
+
 SUITE="$1"; shift
 if [ -z "$SUITE" ]; then
   SUITE="core"
@@ -101,146 +103,44 @@ retry timeout --foreground -k 30s 5m sudo apt-get -y update </dev/null \
        apt-get -y install openjdk-25-jdk-headless </dev/null \
   || exit 1
 
-# When retries are enabled, use --fail-at-end so all tests run before retrying
-FAILURE_MODE="--fail-fast"
-SKIP_AFTER_FAILURE=""
-if [ "${CCI_RERUN_FAILTEST:-0}" -gt 0 ]; then
-  FAILURE_MODE="--fail-at-end"
-else
-  SKIP_AFTER_FAILURE="-Dfailsafe.skipAfterFailureCount=1"
-fi
+RERUN_COUNT="${CCI_RERUN_FAILTEST:-0}"
 
-# When we are ready to collect coverge on smoke tests, add "-Pcoverage" below
-set +e
-ionice nice ../compile.pl \
-  -DskipTests=false \
-  -DskipITs=false \
-  -DfailIfNoTests=false \
-  -Dtest.fork.count=1 \
-  -Dit.test="$IT_TESTS" \
-  $FAILURE_MODE \
-  --batch-mode \
-  $SKIP_AFTER_FAILURE \
-  -N \
-  '-P!smoke.all' \
-  "-Psmoke.$SUITE" \
-  install
-TEST_EXIT=$?
-set -e
+# Pass 0 runs the tests of this node. A later pass runs only the failed classes.
+run_tests()
+{
+  local pass="$1" units="$2" its="$3"
+  local args=()
 
-# Retry failed tests if configured
-RETRIES_LEFT="${CCI_RERUN_FAILTEST:-0}"
-MAX_RETRIES="$RETRIES_LEFT"
-RETRIED_TESTS=""
-while [ "$TEST_EXIT" -ne 0 ] && [ "$RETRIES_LEFT" -gt 0 ]; do
-    ATTEMPT=$((MAX_RETRIES - RETRIES_LEFT + 1))
-    echo "#### Finding failed smoke tests for re-run (attempt $ATTEMPT of $MAX_RETRIES)"
+  if [ "$pass" -eq 0 ]; then
+    args+=("-DskipITs=false" "-Dit.test=${IT_TESTS}")
+  else
+    # Failsafe writes its reports to target/surefire-reports in this module, so the class name gives the plugin.
+    local all="${units}${units:+${its:+,}}${its}"
+    its="$(echo "$all" | tr ',' '\n' | grep -E '(^|\.)(IT[^.]*|[^.]*IT|[^.]*ITCase)$' | paste -s -d, - || true)"
+    units="$(echo "$all" | tr ',' '\n' | grep -v -E '(^|\.)(IT[^.]*|[^.]*IT|[^.]*ITCase)$' | paste -s -d, - || true)"
 
-    set +e +o pipefail
-    FAILED_TESTS=$(find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
-      -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
-      | sed 's|.*/TEST-||;s|\.xml||' \
-      | sort -u)
-    set -e -o pipefail
+    # An empty it.test value runs all the ITs, so skip the plugin that has no failed class.
+    if [ -n "$units" ]; then args+=("-Dtest=${units}"); else args+=("-Dskip.surefire.tests=true"); fi
+    if [ -n "$its" ]; then args+=("-DskipITs=false" "-Dit.test=${its}"); else args+=("-DskipITs=true"); fi
+  fi
 
-    if [ -z "$FAILED_TESTS" ]; then
-        echo "#### No failed tests found in reports, skipping retry"
-        break
-    fi
+  if [ "$RERUN_COUNT" -gt 0 ]; then
+    args+=("${RERUN_MAVEN_ARGS[@]}")
+  else
+    args+=("--fail-fast" "-Dfailsafe.skipAfterFailureCount=1")
+  fi
 
-    echo "#### Failed tests: $FAILED_TESTS"
-    RETRIED_TESTS="$FAILED_TESTS"
+  # When we are ready to collect coverge on smoke tests, add "-Pcoverage" below
+  ionice nice ../compile.pl \
+    -DskipTests=false \
+    "${args[@]}" \
+    -DfailIfNoTests=false \
+    -Dtest.fork.count=1 \
+    --batch-mode \
+    -N \
+    '-P!smoke.all' \
+    "-Psmoke.$SUITE" \
+    install
+}
 
-    # Preserve failing test evidence as flaky evidence before overwriting with retry results.
-    # The XML alone is often not enough to diagnose testcontainers-based IT failures (e.g. a
-    # ContainerLaunchException just shows up as errors="1"), so also grab the plain-text
-    # failsafe reports (captured stdout/stderr) and the per-container logs/thread dumps under
-    # target/logs/<test>/<container>/ that DevDebugUtils.clearLogs() will otherwise wipe as
-    # soon as the retry's teardown runs.
-    FLAKY_EVIDENCE_DIR="/tmp/flaky-evidence/attempt-${ATTEMPT}"
-    mkdir -p "${FLAKY_EVIDENCE_DIR}"
-    set +e +o pipefail
-
-    # Group all evidence for a given failing test class under its own directory, so
-    # the XML/text reports and the container logs for that test sit together instead
-    # of being split between a flat root and a path mirroring the Maven build tree.
-    echo "$FAILED_TESTS" | while IFS= read -r TEST_CLASS; do
-      [ -z "$TEST_CLASS" ] && continue
-
-      TEST_EVIDENCE_DIR="${FLAKY_EVIDENCE_DIR}/${TEST_CLASS}"
-      mkdir -p "$TEST_EVIDENCE_DIR"
-
-      find . \( -path "*/failsafe-reports/TEST-${TEST_CLASS}.xml" -o -path "*/surefire-reports/TEST-${TEST_CLASS}.xml" \) \
-        -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
-        | xargs -I{} cp {} "$TEST_EVIDENCE_DIR/"
-
-      find . \( -path "*/surefire-reports/${TEST_CLASS}.txt" -o -path "*/failsafe-reports/${TEST_CLASS}.txt" \) \
-        | xargs -I{} cp {} "$TEST_EVIDENCE_DIR/"
-
-      # A class can have more than one failing method, and each gets its own
-      # target/logs/<class>-<method>/ directory, so nest by that method-level name
-      # (rather than flattening containers directly under the class) to avoid two
-      # methods' same-named container folders (e.g. "opennms") overwriting each other.
-      find . -type d -path "*/target/logs/${TEST_CLASS}-*" | while IFS= read -r LOGDIR; do
-        [ "$(basename "$(dirname "$LOGDIR")")" = "logs" ] || continue
-        DEST="$TEST_EVIDENCE_DIR/$(basename "$LOGDIR")"
-        mkdir -p "$DEST"
-        cp -r "${LOGDIR}/." "$DEST/"
-      done
-
-      # Minion/Sentinel startup failures are captured under target/logs/startup-failures/<alias>-<id>/,
-      # which carries no test name. The capture logs that path, and the class's report files hold
-      # its stdout, so copy only the startup-failure dirs this class's own output refers to.
-      find "$TEST_EVIDENCE_DIR" -maxdepth 1 -type f \( -name '*.xml' -o -name '*.txt' \) \
-        -exec grep -ohE 'startup-failures/[A-Za-z0-9._-]+' {} + 2>/dev/null \
-        | sort -u | while IFS= read -r SFREL; do
-          find . -type d -path "*/target/logs/${SFREL}" | while IFS= read -r SFDIR; do
-            mkdir -p "$TEST_EVIDENCE_DIR/startup-failures"
-            cp -r "$SFDIR" "$TEST_EVIDENCE_DIR/startup-failures/"
-          done
-        done
-    done
-
-    # Now delete originals so fresh results are written by the retry
-    find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
-      -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
-      | xargs rm -f
-    set -e -o pipefail
-
-    FAILED_ITS=$(echo "$FAILED_TESTS" | paste -s -d, -)
-
-    echo "#### Re-running failed smoke tests: $FAILED_ITS"
-    set +e
-    ionice nice ../compile.pl \
-      -DskipTests=false \
-      -DskipITs=false \
-      -DfailIfNoTests=false \
-      -Dtest.fork.count=1 \
-      -Dit.test="$FAILED_ITS" \
-      --fail-at-end \
-      --batch-mode \
-      -N \
-      '-P!smoke.all' \
-      "-Psmoke.$SUITE" \
-      install
-    TEST_EXIT=$?
-    set -e
-
-    RETRIES_LEFT=$((RETRIES_LEFT - 1))
-done
-
-# Print retry summary
-if [ -n "$RETRIED_TESTS" ]; then
-    echo ""
-    echo "========================================"
-    echo "#### Retry Summary"
-    echo "#### Retried tests: $(echo "$RETRIED_TESTS" | paste -s -d, -)"
-    if [ "$TEST_EXIT" -eq 0 ]; then
-        echo "#### Result: PASSED on retry (attempt $ATTEMPT)"
-    else
-        echo "#### Result: FAILED after $MAX_RETRIES retry attempt(s)"
-    fi
-    echo "========================================"
-fi
-
-exit $TEST_EXIT
+run_tests_with_rerun "$RERUN_COUNT" "${CCI_RERUN_MAX_FAILED:-3}" run_tests
