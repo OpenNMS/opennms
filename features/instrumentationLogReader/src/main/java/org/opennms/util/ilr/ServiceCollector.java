@@ -33,6 +33,9 @@ public class ServiceCollector {
     private int m_betweenCount = 0;
     private int m_persistCount = 0;
     private long m_totalTime = 0;
+    private long m_minCollectionTime = Long.MAX_VALUE;
+    private long m_maxCollectionTime = 0;
+    private long m_lastCollectionTime = 0;
     private long m_errorTime = 0;
     private long m_totalBetweenTime = 0;
     private long m_totalPersistTime;
@@ -72,7 +75,11 @@ public class ServiceCollector {
             long end = msg.getDate().getTime();
             m_lastEnd = msg.getDate().getTime();
             if (m_lastBegin > 0) {
-                m_totalTime += end - m_lastBegin;
+                final long collectionTime = end - m_lastBegin;
+                m_totalTime += collectionTime;
+                m_minCollectionTime = Math.min(m_minCollectionTime, collectionTime);
+                m_maxCollectionTime = Math.max(m_maxCollectionTime, collectionTime);
+                m_lastCollectionTime = collectionTime;
                 m_collectionCount++;
             }
             m_lastBegin = 0;
@@ -122,6 +129,30 @@ public class ServiceCollector {
 
     public Duration getTotalCollectionDuration() {
         return new Duration(getTotalCollectionTime());
+    }
+
+    public long getMinCollectionTime() {
+        return getCollectionCount() == 0 ? 0 : m_minCollectionTime;
+    }
+
+    public Duration getMinCollectionDuration() {
+        return new Duration(getMinCollectionTime());
+    }
+
+    public long getMaxCollectionTime() {
+        return m_maxCollectionTime;
+    }
+
+    public Duration getMaxCollectionDuration() {
+        return new Duration(getMaxCollectionTime());
+    }
+
+    public long getLastCollectionTime() {
+        return m_lastCollectionTime;
+    }
+
+    public Duration getLastCollectionDuration() {
+        return new Duration(getLastCollectionTime());
     }
 
     public long getErrorCollectionTime() {
