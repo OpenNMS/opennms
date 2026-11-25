@@ -20,6 +20,7 @@
 /// License.
 ///
 
+import { isProblemSeverity, PROBLEM_SEVERITIES } from '@/lib/severity'
 import { v2 } from './axiosInstances'
 
 // The status summary endpoints return c3-style [label, count] column pairs,
@@ -60,8 +61,6 @@ export interface StatusListItem {
   severity: string
 }
 
-const PROBLEM_SEVERITIES = new Set(['WARNING', 'MINOR', 'MAJOR', 'CRITICAL'])
-
 const severityString = (s: unknown): string =>
   (typeof s === 'string' ? s : ((s as any)?.label ?? (s as any)?.name ?? '')).toUpperCase()
 
@@ -69,7 +68,7 @@ const severityString = (s: unknown): string =>
 // sort, and only then apply the limit (AbstractStatusService clears the DAO
 // limit for severity-related queries) — without them the server pages first
 // (default limit 10, unordered) and problems past the page silently vanish.
-const PROBLEM_QUERY = [...PROBLEM_SEVERITIES].map(s => `severityFilter=${s}`).join('&')
+const PROBLEM_QUERY = PROBLEM_SEVERITIES.map(s => `severityFilter=${s}`).join('&')
   + '&orderBy=severity&order=desc&limit=50'
 
 // `key` is the DTO list's JSON name (plural, @JsonProperty); the singular
@@ -85,7 +84,7 @@ const fetchStatusList = async (path: string, key: string): Promise<StatusListIte
     return arr
       .map((x: any) => ({ id: Number(x.id), name: x.name, severity: severityString(x.severity) }))
       // defensive re-check only; the server already filtered
-      .filter((x: StatusListItem) => PROBLEM_SEVERITIES.has(x.severity))
+      .filter((x: StatusListItem) => isProblemSeverity(x.severity))
   } catch (_err) {
     return null
   }

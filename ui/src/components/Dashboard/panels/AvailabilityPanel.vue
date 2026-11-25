@@ -60,8 +60,10 @@ License.
           <tr
             v-for="cat in section.categories"
             :key="section.name + '/' + cat.name"
-            :class="{ 'avail__total': isTotal(section) }"
-            :style="shade && !isTotal(section) ? { backgroundColor: severityTint(cat.availabilityClass) } : undefined"
+            :class="[
+              { 'avail__total': isTotal(section) },
+              shade && !isTotal(section) ? severityTintClass(parseAvailabilityClass(cat.availabilityClass)) : undefined
+            ]"
           >
             <td class="avail__cat">
               <a
@@ -72,10 +74,12 @@ License.
               <template v-else>{{ cat.name }}</template>
             </td>
             <td class="avail__num">{{ cat.outageText }}</td>
-            <td
-              class="avail__num"
-              :style="{ color: severityColor(cat.availabilityClass) }"
-            >{{ cat.availabilityText }}</td>
+            <td class="avail__num">
+              <AvailabilityBadge
+                :text="cat.availabilityText"
+                :level="parseAvailabilityClass(cat.availabilityClass)"
+              />
+            </td>
           </tr>
         </template>
       </tbody>
@@ -87,7 +91,9 @@ License.
 import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getAvailability, type AvailabilitySection } from '@/services/availabilityService'
-import { severityColor, severityTint } from '../severity'
+import AvailabilityBadge from '@/components/Common/AvailabilityBadge.vue'
+import { parseAvailabilityClass } from '@/lib/availability'
+import { severityTintClass } from '@/lib/severity'
 
 const props = defineProps<PanelComponentProps>()
 

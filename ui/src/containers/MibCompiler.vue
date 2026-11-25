@@ -131,6 +131,7 @@ import GenerateGraphsDialog from '@/components/MibCompiler/Dialog/GenerateGraphs
 import MibFilesTable from '@/components/MibCompiler/MibFilesTable.vue'
 import MibFileViewerDrawer from '@/components/MibCompiler/MibFileViewerDrawer.vue'
 import UploadMibFiles from '@/components/MibCompiler/UploadMibFiles.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import useSnackbar from '@/composables/useSnackbar'
 import { getGeneralErrorMessage } from '@/components/MibCompiler/mibFilesValidator'
 import {
@@ -148,6 +149,10 @@ const router = useRouter()
 const menuStore = useMenuStore()
 const store = useMibCompilerStore()
 const snackbar = useSnackbar()
+const { report } = useActionFeedback()
+
+// an empty table would read as "no MIB files", so a failed load is reported
+const loadMibFiles = async () => report(await store.fetchMibFiles())
 
 const activeTab = ref(0)
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
@@ -202,7 +207,7 @@ const deleteFile = async () => {
   try {
     await deleteMibFile(location, file.name)
     snackbar.showSnackBar({ msg: `'${file.name}' deleted successfully.` })
-    await store.fetchMibFiles()
+    await loadMibFiles()
   } catch (error: unknown) {
     snackbar.showSnackBar({ msg: getGeneralErrorMessage(error, `Failed to delete '${file.name}'.`), error: true })
   }
@@ -213,7 +218,7 @@ const doCompile = async (fileName: string, overwrite: boolean) => {
     const result = await compileMibFile(fileName, overwrite)
     if (result.success) {
       snackbar.showSnackBar({ msg: `'${fileName}' compiled successfully as '${result.targetFile}'.` })
-      await store.fetchMibFiles()
+      await loadMibFiles()
     } else {
       errorsDialog.fileName = fileName
       errorsDialog.result = result
@@ -254,7 +259,7 @@ const showGenerateFailure = (result: MibParseResult) => {
 }
 
 onMounted(async () => {
-  await store.fetchMibFiles()
+  await loadMibFiles()
 })
 </script>
 

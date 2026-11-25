@@ -57,6 +57,7 @@ import { OnmsButton, OnmsDialog, OnmsIconButton, OnmsInputText, OnmsSelect } fro
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import FormField from '@/components/Common/FormField.vue'
 import { ATTRIBUTE_TYPES, ROOT_FILE, fileInput, nameTaken, upsert } from './wsmanDataCollectionForm'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useWsmanAdminStore } from '@/stores/wsmanAdminStore'
 import { WsmanAttributeInput, WsmanDataCollection, WsmanGroupInfo } from '@/types/wsmanAdmin'
 
@@ -69,6 +70,7 @@ const props = defineProps<{
 const emit = defineEmits(['update:visible'])
 
 const store = useWsmanAdminStore()
+const { withSpinner } = useActionFeedback()
 
 const saving = ref(false)
 const errorText = ref('')
@@ -122,7 +124,7 @@ const save = async () => {
       filter: filter.value.trim() || null,
       attributes: attributes.value.map(a => ({ name: a.name.trim(), alias: a.alias.trim(), type: a.type, indexOf: a.indexOf?.trim() || null, filter: a.filter?.trim() || null }))
     })
-    const error = await store.saveDataCollectionFile(file, input)
+    const error = await withSpinner(() => store.saveDataCollectionFile(file, input))
     if (error === null) {
       emit('update:visible', false)
     } else {

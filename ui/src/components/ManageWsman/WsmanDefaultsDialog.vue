@@ -36,6 +36,7 @@ import { OnmsButton, OnmsDialog } from '@opennms/onms-ui'
 
 import WsmanSettingsFields from './WsmanSettingsFields.vue'
 import { definitionToInput, emptySettingsForm, formToInput, settingsToForm, validateSettingsForm } from './wsmanForm'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useWsmanAdminStore } from '@/stores/wsmanAdminStore'
 import { WsmanConfig } from '@/types/wsmanAdmin'
 
@@ -47,6 +48,7 @@ const props = defineProps<{
 const emit = defineEmits(['update:visible'])
 
 const store = useWsmanAdminStore()
+const { withSpinner } = useActionFeedback()
 
 const form = ref(emptySettingsForm())
 const saving = ref(false)
@@ -69,11 +71,11 @@ const save = async () => {
   saving.value = true
   try {
     // the definitions ride along unchanged; their index keeps their passwords
-    const error = await store.saveConfig({
+    const error = await withSpinner(() => store.saveConfig({
       version: props.config.version,
       defaults: formToInput(form.value),
       definitions: props.config.definitions.map((d, i) => definitionToInput(d, i))
-    })
+    }))
     if (error === null) {
       emit('update:visible', false)
     } else {

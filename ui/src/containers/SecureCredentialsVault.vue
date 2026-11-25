@@ -16,12 +16,14 @@ import { computed, onMounted } from 'vue'
 import SCVListVue from '@/components/SCV/SCVList.vue'
 import SCVFormVue from '@/components/SCV/SCVForm.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useMenuStore } from '@/stores/menuStore'
 import { useScvStore } from '@/stores/scvStore'
 import { BreadCrumb } from '@/types'
 
 const menuStore = useMenuStore()
 const scvStore = useScvStore()
+const { withSpinner, report } = useActionFeedback()
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
@@ -33,8 +35,10 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 })
 
 onMounted(async () => {
-  await scvStore.getAliases()
-  await scvStore.populate()
+  await withSpinner(async () => {
+    report(await scvStore.getAliases())
+    report(await scvStore.populate())
+  })
 })
 </script>
 

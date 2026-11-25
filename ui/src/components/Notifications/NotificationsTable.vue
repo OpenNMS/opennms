@@ -64,7 +64,7 @@
           <OnmsTag
             v-if="data.severity"
             :value="data.severity"
-            :severity="severityMap[String(data.severity).toLowerCase()] ?? 'secondary'"
+            :severity="severityTag(data.severity)"
           />
           <span v-else>-</span>
         </template>
@@ -144,7 +144,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { OnmsIconButton, OnmsButton, OnmsColumn, OnmsMenu, OnmsTable, OnmsTag, type OnmsMenuItem, type OnmsTablePageEvent, type OnmsTagSeverity } from '@opennms/onms-ui'
+import { OnmsIconButton, OnmsButton, OnmsColumn, OnmsMenu, OnmsTable, OnmsTag, type OnmsMenuItem, type OnmsTablePageEvent } from '@opennms/onms-ui'
 
 import EmptyList from '@/components/Common/EmptyList.vue'
 import TableCard from '@/components/Common/TableCard.vue'
@@ -155,6 +155,7 @@ import useRole from '@/composables/useRole'
 import { saveBlobAsFile } from '@/services/eventConfigService'
 import { useMenuStore } from '@/stores/menuStore'
 import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
+import { severityTag } from '@/lib/severity'
 import { MessageSeverity } from '@/types'
 import useActionFeedback from '@/composables/useActionFeedback'
 import { useNotificationsStore } from '@/stores/notificationsStore'
@@ -192,16 +193,6 @@ const emptyListContent = computed(() => ({
     ? 'Enter a user ID to see their outstanding notifications.'
     : emptyMessage.value
 }))
-
-const severityMap: Record<string, OnmsTagSeverity> = {
-  critical: 'danger',
-  major: 'danger',
-  minor: 'warn',
-  warning: 'warn',
-  normal: 'success',
-  cleared: 'success',
-  indeterminate: 'secondary'
-}
 
 const truncate = (text: string, max = 90) => {
   return text.length > max ? `${text.slice(0, max)}…` : text

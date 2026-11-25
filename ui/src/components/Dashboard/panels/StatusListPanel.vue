@@ -54,10 +54,10 @@ License.
         :key="item.id"
         class="status-list__row"
       >
-        <span
+        <SeverityIcon
           class="status-list__sev"
-          :style="{ backgroundColor: severityColor(item.severity) }"
-          :title="severityLabel(item.severity)"
+          :severity="item.severity"
+          size="small"
         />
         <span class="status-list__name">{{ item.name }}</span>
       </li>
@@ -68,7 +68,7 @@ License.
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { type StatusListItem } from '@/services/statusService'
-import { severityColor, severityLabel } from '../severity'
+import SeverityIcon from '@/components/Common/SeverityIcon.vue'
 
 const props = defineProps<{
   loader: () => Promise<StatusListItem[] | null>
@@ -117,9 +117,6 @@ watch(() => props.refreshTick, load)
 
   &__sev {
     flex: 0 0 auto;
-    width: 0.5rem;
-    height: 1.1rem;
-    border-radius: 2px;
   }
 
   &__name {

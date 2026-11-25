@@ -63,30 +63,17 @@ License.
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Chart from 'chart.js/auto'
 import type { PanelComponentProps } from '@/types/dashboard'
+import { readCssColor } from '@/lib/themeColors'
+import { severityColorVar } from '@/lib/severity'
+import useThemeVersion from '@/composables/useThemeVersion'
 import { getNodesByAlarms, getNodesByOutages, type StatusSummaryEntry } from '@/services/statusService'
 
 const props = defineProps<PanelComponentProps>()
 
-// Legacy status-box palette (title-case labels from the summary endpoints).
-const STATUS_COLORS: Record<string, string> = {
-  Normal: '#336600',
-  Warning: '#ffcc00',
-  Minor: '#ff9900',
-  Major: '#ff3300',
-  Critical: '#cc0000',
-  Indeterminate: '#808080',
-  Cleared: '#9e9e9e'
-}
-const colorFor = (label: string) => STATUS_COLORS[label] ?? '#999999'
-
 const CENTER_FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
 
-// Read a Feather theme color off the panel root (follows light/dark mode).
-const themeColor = (varName: string, fallback: string): string => {
-  const el = rootRef.value
-  const c = el ? getComputedStyle(el).getPropertyValue(varName).trim() : ''
-  return c || fallback
-}
+// A theme color read off the panel root (follows light/dark mode), or the fallback before mount.
+const themeColor = (varName: string, fallback: string): string => readCssColor(varName, rootRef.value ?? undefined) || fallback
 
 // Draws the total + caption at the doughnut's exact centre, sized proportionally
 // to the hole (innerRadius). Centre-on-the-donut (not the canvas) keeps it aligned
@@ -116,17 +103,8 @@ const drawCenterText = (caption: string) => ({
 })
 
 // Legend label text must follow the theme — Chart.js defaults to a dark gray that
-// is unreadable on the dark surface. Read the Feather text color off the panel.
-const legendColor = (): string => {
-  const el = rootRef.value
-  if (el) {
-    const c = getComputedStyle(el).getPropertyValue('--p-text-color').trim()
-    if (c) {
-      return c
-    }
-  }
-  return '#333333'
-}
+// is unreadable on the dark surface.
+const legendColor = (): string => themeColor('--p-text-color', '#333333')
 
 // Slice clicks deep-link to the legacy severity-filtered node list, matching
 // the original homepage donuts (status-box onclick).
@@ -161,7 +139,7 @@ const renderDonut = (
   const filtered = entries.filter(e => e.count > 0)
   const labels = filtered.map(e => e.label)
   const data = filtered.map(e => e.count)
-  const colors = filtered.map(e => colorFor(e.label))
+  const colors = filtered.map(e => readCssColor(severityColorVar(e.label)))
 
   if (existing) {
     existing.data.labels = labels
@@ -213,9 +191,7 @@ const load = async () => {
   outagesChart = renderDonut(outagesCanvas.value, outagesEntries.value, outagesChart, 'outages')
 }
 
-let themeObserver: MutationObserver | null = null
-
-const recolorLegends = () => {
+const recolor = () => {
   alarmsChart = renderDonut(alarmsCanvas.value, alarmsEntries.value, alarmsChart, 'alarms')
   outagesChart = renderDonut(outagesCanvas.value, outagesEntries.value, outagesChart, 'outages')
 }
@@ -230,18 +206,13 @@ onMounted(() => {
     })
     resizeObserver.observe(rootRef.value)
   }
-  // recolor the legend when the .open-dark theme is toggled (no refresh needed).
-  // The theme class is set on both <html> and <body>, so watching documentElement
-  // alone catches every toggle without firing on unrelated <body> class churn.
-  themeObserver = new MutationObserver(recolorLegends)
-  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 })
 watch(() => props.refreshTick, load)
+// slices and legends follow the light/dark theme without a refresh
+watch(useThemeVersion().themeVersion, recolor)
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()
   resizeObserver = null
-  themeObserver?.disconnect()
-  themeObserver = null
   alarmsChart?.destroy()
   outagesChart?.destroy()
   alarmsChart = null

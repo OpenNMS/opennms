@@ -57,11 +57,11 @@ import { OnmsButton, OnmsIcon, OnmsTag } from '@opennms/onms-ui'
 import CheckCircle from '@opennms/onms-ui/icons/action/CheckCircle.vue'
 import Remove from '@opennms/onms-ui/icons/action/Remove.vue'
 import { ConfigurationHelper } from '../Configuration/ConfigurationHelper'
-import useSnackbar from '@/composables/useSnackbar'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useUsageStatisticsStore } from '@/stores/usageStatisticsStore'
 import { UsageStatisticsData, UsageStatisticsStatus } from '@/types/usageStatistics'
 
-const { showSnackBar } = useSnackbar()
+const { showError, showSuccess } = useActionFeedback()
 const usageStatisticsStore = useUsageStatisticsStore()
 const status = computed<UsageStatisticsStatus>(() => usageStatisticsStore.status )
 const statistics = computed<UsageStatisticsData>(() => usageStatisticsStore.statistics )
@@ -72,22 +72,22 @@ const copyJson = async () => {
   try {
     await ConfigurationHelper.copyToClipboard(json)
 
-    showSnackBar({
-      msg: 'Copied Usage Statistics Json to clipboard'
-    })
+    showSuccess('Copied Usage Statistics Json to clipboard')
   } catch (err) {
-    showSnackBar({
-      msg: `Could not copy to clipboard. Your environment may be insecure. (${err})`,
-      error: true
-    })
+    showError(`Could not copy to clipboard. Your environment may be insecure. (${err})`)
   }
 }
 
-const updateStatus = () => {
-  if (status.value.enabled) {
-    usageStatisticsStore.disableSharing()
+const updateStatus = async () => {
+  const enable = !status.value.enabled
+  const success = enable ? await usageStatisticsStore.enableSharing() : await usageStatisticsStore.disableSharing()
+
+  if (!success) {
+    showError(`Error attempting to ${enable ? 'enable' : 'disable'} Usage Statistics Sharing.`)
+  } else if (enable) {
+    showSuccess('Usage Statistics Sharing is now enabled. Thank you for helping us improve OpenNMS.')
   } else {
-    usageStatisticsStore.enableSharing()
+    showSuccess('Usage Statistics Sharing is now disabled.')
   }
 }
 </script>

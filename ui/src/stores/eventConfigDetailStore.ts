@@ -1,5 +1,4 @@
 import { Severity } from '@/components/EventConfigEventCreate/constants'
-import useSnackbar from '@/composables/useSnackbar'
 import {
   changeEventConfigEventStatus,
   changeEventConfigSourceStatus,
@@ -15,6 +14,7 @@ import {
   EventConfigSource
 } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
+import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
 
 const defaultPagination = {
   page: 1,
@@ -168,37 +168,33 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       this.changeEventConfigEventStatusDialogState.eventConfigEvent = eventConfigEvent
       this.changeEventConfigEventStatusDialogState.visible = true
     },
-    async startEventsReorder() {
-      if (!this.selectedSource) {
-        console.error('No source selected')
-        return
-      }
+    async startEventsReorder(): Promise<ValidationResult> {
       // the mode turns on only once the current order has loaded, so the editor never
       // opens on a stale previous list that the arriving fetch would then replace
-      if (await this.fetchOrderedEvents()) {
+      const result = await this.fetchOrderedEvents()
+      if (result.success) {
         this.eventsReorderMode = true
       }
+      return result
     },
     stopEventsReorder() {
       this.eventsReorderMode = false
     },
-    async fetchOrderedEvents(): Promise<boolean> {
+    async fetchOrderedEvents(): Promise<ValidationResult> {
       if (!this.selectedSource) {
-        console.error('No source selected')
-        return false
+        return createFailureResult('The event source has not loaded, so its events cannot be reordered.')
       }
       this.isLoading = true
       try {
         this.orderedEvents = await getOrderedEventConfigEvents(this.selectedSource.id)
-        return true
+        return createSuccessResponse()
       } catch (error) {
         console.error('Error fetching ordered event configuration events:', error)
         this.orderedEvents = []
         // without the current order there is nothing to edit: leave the mode instead of
         // showing an inexplicable empty list
         this.stopEventsReorder()
-        useSnackbar().showSnackBar({ msg: 'Failed to load the event order. Try again.', error: true })
-        return false
+        return createFailureResult('Failed to load the event order. Try again.')
       } finally {
         this.isLoading = false
       }

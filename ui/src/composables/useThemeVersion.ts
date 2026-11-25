@@ -1,0 +1,42 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
+import { readonly, ref, watch } from 'vue'
+import { useAppStore } from '@/stores/appStore'
+
+// Canvas code cannot react to CSS variable changes. themeVersion increments
+// after a theme switch (post-flush, so the theme class is already applied);
+// watch it and re-read colors with readCssColor. Each call adds its own watcher
+// rather than sharing a module-level one: a module-level watcher would stay bound
+// to the first Pinia it saw, which breaks per-test Pinias and app re-mounts.
+const useThemeVersion = () => {
+  const appStore = useAppStore()
+  const themeVersion = ref(0)
+
+  watch(() => appStore.theme, () => {
+    themeVersion.value++
+  }, { flush: 'post' })
+
+  return { themeVersion: readonly(themeVersion) }
+}
+
+export default useThemeVersion

@@ -21,7 +21,7 @@
 ///
 import { rest } from './axiosInstances'
 import { type Timeframe } from '@/types/dashboard'
-import { timeframeRange } from '@/components/Dashboard/timeframe'
+import { timeframeRange } from '@/lib/dashboardTimeframe'
 
 // A KPI describes how to find the measurement source for each ranked entity and
 // how to present its value. Extensible — add interface traffic, CPU, etc. here.

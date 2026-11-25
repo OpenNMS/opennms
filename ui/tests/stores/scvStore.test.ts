@@ -77,7 +77,7 @@ describe('useScvStore', () => {
 
   describe('getAliases', () => {
     it('should fetch aliases successfully', async () => {
-      vi.mocked(API.getAliases).mockResolvedValue(mockAliases)
+      vi.mocked(API.getAliases).mockResolvedValue({ success: true, message: '', payload: mockAliases })
 
       await store.getAliases()
 
@@ -88,7 +88,7 @@ describe('useScvStore', () => {
 
   describe('getCredentialsByAlias', () => {
     it('should fetch credentials by alias successfully', async () => {
-      vi.mocked(API.getCredentialsByAlias).mockResolvedValue(mockCredentials)
+      vi.mocked(API.getCredentialsByAlias).mockResolvedValue({ success: true, message: '', payload: mockCredentials })
 
       await store.getCredentialsByAlias('testAlias')
 
@@ -99,13 +99,90 @@ describe('useScvStore', () => {
     })
 
     it('should not update state when credentials are not found', async () => {
-      vi.mocked(API.getCredentialsByAlias).mockResolvedValue(null)
+      vi.mocked(API.getCredentialsByAlias).mockResolvedValue({ success: false, message: 'Failed to retrieve credentials.' })
       const initialCredentials = { ...store.credentials }
 
       await store.getCredentialsByAlias('nonExistentAlias')
 
       expect(store.credentials).toEqual(initialCredentials)
       expect(store.isEditing).toBe(false)
+    })
+  })
+
+  describe('results', () => {
+    const fail = (message: string) => ({ success: false, message })
+
+    it('getAliases returns the service result and keeps aliases when it fails', async () => {
+      store.aliases = ['keep']
+      vi.mocked(API.getAliases).mockResolvedValue(fail('Failed to return aliases.'))
+
+      const result = await store.getAliases()
+
+      expect(result).toEqual(fail('Failed to return aliases.'))
+      expect(store.aliases).toEqual(['keep'])
+    })
+
+    it('getCredentialsByAlias returns a failed result and leaves state alone', async () => {
+      vi.mocked(API.getCredentialsByAlias).mockResolvedValue(fail('Failed to retrieve credentials.'))
+
+      const result = await store.getCredentialsByAlias('x')
+
+      expect(result.success).toBe(false)
+      expect(result.message).toBe('Failed to retrieve credentials.')
+      expect(store.isEditing).toBe(false)
+    })
+
+    it('populate stores the payload and returns success', async () => {
+      vi.mocked(API.getAllCredentials).mockResolvedValue({ success: true, message: '', payload: mockAllCredentials })
+
+      const result = await store.populate()
+
+      expect(result.success).toBe(true)
+      expect(store.getAllCredentials()).toEqual({ ...mockAllCredentials })
+    })
+
+    it('populate returns the failure and keeps existing credentials', async () => {
+      vi.mocked(API.getAllCredentials).mockResolvedValueOnce({ success: true, message: '', payload: mockAllCredentials })
+      await store.populate()
+      vi.mocked(API.getAllCredentials).mockResolvedValueOnce(fail('Failed to retrieve credentials.'))
+
+      const result = await store.populate()
+
+      expect(result).toEqual(fail('Failed to retrieve credentials.'))
+      expect(store.getAllCredentials()).toEqual({ ...mockAllCredentials })
+    })
+
+    it('addCredentials returns the failure, keeps the form and does not refresh aliases', async () => {
+      vi.mocked(API.addCredentials).mockResolvedValue(fail('Failed to add credentials.'))
+      store.credentials = { ...mockCredentials }
+
+      const result = await store.addCredentials()
+
+      expect(result).toEqual(fail('Failed to add credentials.'))
+      expect(store.credentials.alias).toBe('testAlias')
+      expect(API.getAliases).not.toHaveBeenCalled()
+    })
+
+    it('addCredentials reports a failed alias refresh in errors while still succeeding', async () => {
+      vi.mocked(API.addCredentials).mockResolvedValue({ success: true, message: '' })
+      vi.mocked(API.getAliases).mockResolvedValue(fail('Failed to return aliases.'))
+      store.credentials = { ...mockCredentials }
+
+      const result = await store.addCredentials()
+
+      expect(result.success).toBe(true)
+      expect(result.errors).toEqual(['Failed to return aliases.'])
+      expect(store.credentials.alias).toBe('')
+    })
+
+    it('updateCredentials returns the failure and keeps the form', async () => {
+      vi.mocked(API.updateCredentials).mockResolvedValue(fail('Failed to update credentials.'))
+      store.credentials = { ...mockCredentials }
+
+      const result = await store.updateCredentials()
+
+      expect(result).toEqual(fail('Failed to update credentials.'))
+      expect(store.credentials.alias).toBe('testAlias')
     })
   })
 
@@ -120,7 +197,7 @@ describe('useScvStore', () => {
 
   describe('populate', () => {
     it('should populate all credentials successfully', async () => {
-      vi.mocked(API.getAllCredentials).mockResolvedValue(mockAllCredentials)
+      vi.mocked(API.getAllCredentials).mockResolvedValue({ success: true, message: '', payload: mockAllCredentials })
 
       await store.populate()
 
@@ -128,7 +205,7 @@ describe('useScvStore', () => {
     })
 
     it('should not update state when populate fails', async () => {
-      vi.mocked(API.getAllCredentials).mockResolvedValue(null)
+      vi.mocked(API.getAllCredentials).mockResolvedValue({ success: false, message: 'Failed to retrieve credentials.' })
 
       await store.populate()
 
@@ -138,8 +215,8 @@ describe('useScvStore', () => {
 
   describe('addCredentials', () => {
     it('should add credentials successfully', async () => {
-      vi.mocked(API.addCredentials).mockResolvedValue(200)
-      vi.mocked(API.getAliases).mockResolvedValue(mockAliases)
+      vi.mocked(API.addCredentials).mockResolvedValue({ success: true, message: '' })
+      vi.mocked(API.getAliases).mockResolvedValue({ success: true, message: '', payload: mockAliases })
 
       store.credentials = { ...mockCredentials }
 
@@ -189,7 +266,7 @@ describe('useScvStore', () => {
     })
 
     it('should not clear credentials when add fails', async () => {
-      vi.mocked(API.addCredentials).mockResolvedValue(null)
+      vi.mocked(API.addCredentials).mockResolvedValue({ success: false, message: 'Failed to add credentials.' })
 
       store.credentials = { ...mockCredentials }
       const credsBefore = { ...store.credentials }
@@ -202,7 +279,7 @@ describe('useScvStore', () => {
 
   describe('updateCredentials', () => {
     it('should update credentials successfully', async () => {
-      vi.mocked(API.updateCredentials).mockResolvedValue(200)
+      vi.mocked(API.updateCredentials).mockResolvedValue({ success: true, message: '' })
 
       store.credentials = { ...mockCredentials }
 
@@ -238,7 +315,7 @@ describe('useScvStore', () => {
     })
 
     it('should not clear credentials when update fails', async () => {
-      vi.mocked(API.updateCredentials).mockResolvedValue(null)
+      vi.mocked(API.updateCredentials).mockResolvedValue({ success: false, message: 'Failed to update credentials.' })
 
       store.credentials = { ...mockCredentials }
       const credsBefore = { ...store.credentials }
@@ -251,7 +328,7 @@ describe('useScvStore', () => {
 
   describe('queryCredentials', () => {
     beforeEach(async () => {
-      vi.mocked(API.getAllCredentials).mockResolvedValue(mockAllCredentials)
+      vi.mocked(API.getAllCredentials).mockResolvedValue({ success: true, message: '', payload: mockAllCredentials })
       await store.populate()
     })
 

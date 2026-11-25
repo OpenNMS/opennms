@@ -306,6 +306,31 @@ const getNodeNotificationStatus = async (id: string): Promise<ValidationResultWi
   }
 }
 
+/**
+ * Ids of the nodes matched by a FIQL clause. Unlike getNodes this THROWS on failure, so callers
+ * can tell "no matches" from "could not look up" (a 204/empty body is no matches).
+ */
+const getNodeIdsByFiql = async (fiql: string): Promise<number[]> => {
+  const resp = await v2.get(`${endpoint}?_s=${encodeURIComponent(fiql)}&limit=0`)
+  const ids: number[] = []
+
+  for (const node of resp.data?.node ?? []) {
+    if (node?.id != null) {
+      ids.push(Number(node.id))
+    }
+  }
+
+  return ids
+}
+
+/** Ids of the nodes in a surveillance category. Throws on failure. */
+const getNodeIdsInCategory = (category: string): Promise<number[]> =>
+  getNodeIdsByFiql(`category.name==${category}`)
+
+/** Ids of the nodes with an interface matching the IP address (or wildcard pattern). Throws on failure. */
+const getNodeIdsByIpAddress = (ip: string): Promise<number[]> =>
+  getNodeIdsByFiql(`ipInterface.ipAddress==${ip}`)
+
 export {
   getNodes,
   getNodesByFilterRule,
@@ -317,5 +342,7 @@ export {
   resolveNodeId,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
-  getNodeAvailabilityPercentage
+  getNodeAvailabilityPercentage,
+  getNodeIdsInCategory,
+  getNodeIdsByIpAddress
 }

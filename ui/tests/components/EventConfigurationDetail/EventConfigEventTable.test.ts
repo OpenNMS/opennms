@@ -12,6 +12,11 @@ import { nextTick } from 'vue'
 
 const mockPush = vi.fn()
 const routeLeaveGuards: Array<(...args: unknown[]) => unknown> = []
+const showSnackBarMock = vi.hoisted(() => vi.fn())
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({ showSnackBar: showSnackBarMock })
+}))
+
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push: mockPush }),
   onBeforeRouteLeave: (guard: (...args: unknown[]) => unknown) => routeLeaveGuards.push(guard)
@@ -23,7 +28,7 @@ const stubs = {
   ChangeEventConfigEventStatusDialog: { name: 'ChangeEventConfigEventStatusDialog', template: '<div class="change-status-dialog-stub"></div>' },
   StagedReorderList: {
     name: 'StagedReorderList',
-    props: ['items', 'itemNoun', 'saving'],
+    props: ['items', 'itemNoun', 'saving', 'refetch'],
     template: '<div class="staged-reorder-stub"></div>',
     methods: { confirmLeave: (...args: unknown[]) => mockConfirmLeave(...args) }
   }
@@ -75,7 +80,7 @@ describe('EventConfigEventTable.vue', () => {
     store.onEventsSortChange = vi.fn().mockResolvedValue(undefined)
     store.showChangeEventConfigEventStatusDialog = vi.fn()
     store.showDeleteEventConfigEventDialog = vi.fn()
-    store.startEventsReorder = vi.fn()
+    store.startEventsReorder = vi.fn().mockResolvedValue({ success: true, message: '' })
     store.stopEventsReorder = vi.fn()
 
     modificationStore = useEventModificationStore()
@@ -114,6 +119,35 @@ describe('EventConfigEventTable.vue', () => {
     it('the header button enters the events reorder mode', async () => {
       await wrapper.find('[data-test="reorder-events-button"]').trigger('click')
       expect(store.startEventsReorder).toHaveBeenCalled()
+    })
+
+    it('disables the header button until the source has loaded', async () => {
+      store.selectedSource = null
+      await nextTick()
+      expect(wrapper.find('[data-test="reorder-events-button"]').attributes('disabled')).toBeDefined()
+    })
+
+    it('shows the failure when the event order cannot be loaded', async () => {
+      vi.mocked(store.startEventsReorder).mockResolvedValue({ success: false, message: 'Failed to load the event order. Try again.' })
+      await wrapper.find('[data-test="reorder-events-button"]').trigger('click')
+      await flushPromises()
+      expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Failed to load the event order. Try again.', error: true })
+    })
+
+    it('stays quiet when the event order loads', async () => {
+      await wrapper.find('[data-test="reorder-events-button"]').trigger('click')
+      await flushPromises()
+      expect(showSnackBarMock).not.toHaveBeenCalled()
+    })
+
+    it('the list refetch shows the failure when the order cannot be reloaded', async () => {
+      store.events = [mockEvent]
+      store.eventsReorderMode = true
+      store.fetchOrderedEvents = vi.fn().mockResolvedValue({ success: false, message: 'Failed to load the event order. Try again.' })
+      await nextTick()
+      await wrapper.findComponent({ name: 'StagedReorderList' }).props('refetch')()
+      expect(store.fetchOrderedEvents).toHaveBeenCalled()
+      expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Failed to load the event order. Try again.', error: true })
     })
 
     it('replaces the table with the staged reorder list and hides search/refresh', async () => {

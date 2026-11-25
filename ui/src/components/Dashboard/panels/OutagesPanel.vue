@@ -67,7 +67,7 @@ import type { PanelComponentProps } from '@/types/dashboard'
 import { getCurrentOutages, outageServiceName } from '@/services/outageService'
 import { Outage } from '@/types'
 import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
-import { buildFilterClauses } from '../filter'
+import { buildFilterClauses } from '@/services/dashboardFilterService'
 
 const props = defineProps<PanelComponentProps>()
 

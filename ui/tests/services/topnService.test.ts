@@ -21,6 +21,7 @@
 ///
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
 import { SOURCES_PER_REQUEST, clampTopnN, collectSources, invalidateKpiSources, listAvailableKpis, queryTopn, TOPN_KPIS } from '@/services/topnService'
 import { rest } from '@/services/axiosInstances'
 import { TimeframePreset } from '@/types/dashboard'
@@ -41,6 +42,7 @@ const resourceTree = { data: { resource: [node('node[1]', 'node-A', ['10.0.0.1']
 
 describe('queryTopn', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.clearAllMocks()
     invalidateKpiSources()
     vi.mocked(rest.get).mockResolvedValue(resourceTree)
@@ -128,6 +130,7 @@ describe('queryTopn', () => {
 
 describe('listAvailableKpis', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.clearAllMocks()
     invalidateKpiSources()
   })
@@ -166,6 +169,7 @@ describe('collectSources', () => {
 
 describe('resource tree cache', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.clearAllMocks()
     invalidateKpiSources()
   })

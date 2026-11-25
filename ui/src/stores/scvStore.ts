@@ -23,6 +23,7 @@
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import API from '@/services'
 import { SCVCredentials, ScvSearchItem } from '@/types/scv'
+import { ValidationResult } from '@/types/validation'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -41,19 +42,26 @@ export const useScvStore = defineStore('scvStore', () => {
   const dbCredentials = ref({} as SCVCredentials)
   const isEditing = ref(false)
 
-  const getAliases = async () => {
+  const getAliases = async (): Promise<ValidationResult> => {
     const resp = await API.getAliases()
-    aliases.value = resp
+
+    if (resp.success) {
+      aliases.value = resp.payload ?? []
+    }
+
+    return resp
   }
 
-  const getCredentialsByAlias = async (alias: string) => {
+  const getCredentialsByAlias = async (alias: string): Promise<ValidationResult> => {
     const resp = await API.getCredentialsByAlias(alias)
 
-    if (resp) {
-      credentials.value = resp
-      dbCredentials.value = resp
+    if (resp.success && resp.payload) {
+      credentials.value = resp.payload
+      dbCredentials.value = resp.payload
       isEditing.value = true
     }
+
+    return resp
   }
 
   const getAllCredentials = () => {
@@ -62,15 +70,17 @@ export const useScvStore = defineStore('scvStore', () => {
     }
   }
 
-  const populate = async () => {
+  const populate = async (): Promise<ValidationResult> => {
     const resp = await API.getAllCredentials()
 
-    if (resp) {
-      allCredentials.value = resp
+    if (resp.success && resp.payload) {
+      allCredentials.value = resp.payload
     }
+
+    return resp
   }
 
-  const addCredentials = async () => {
+  const addCredentials = async (): Promise<ValidationResult> => {
     if (!credentials.value.alias) {
       throw new Error('Alias is required to add new credentials.')
     }
@@ -79,15 +89,20 @@ export const useScvStore = defineStore('scvStore', () => {
       throw new Error(`The alias "${SCV_GET_ALL_ALIAS}" is reserved and cannot be used.`)
     }
 
-    const success = await API.addCredentials(credentials.value)
+    const result = await API.addCredentials(credentials.value)
 
-    if (success) {
-      clearCredentials()
-      getAliases()
+    if (!result.success) {
+      return result
     }
+
+    clearCredentials()
+    const refreshed = await getAliases()
+
+    // the add itself worked; a failed alias refresh is reported as a follow-up error
+    return refreshed.success ? result : { ...result, errors: [refreshed.message] }
   }
 
-  const updateCredentials = async () => {
+  const updateCredentials = async (): Promise<ValidationResult> => {
     if (!credentials.value.alias) {
       throw new Error('Alias is required to add new credentials.')
     }
@@ -96,11 +111,13 @@ export const useScvStore = defineStore('scvStore', () => {
       throw new Error(`The alias "${SCV_GET_ALL_ALIAS}" is reserved and cannot be used.`)
     }
 
-    const success = await API.updateCredentials(credentials.value)
+    const result = await API.updateCredentials(credentials.value)
 
-    if (success) {
+    if (result.success) {
       clearCredentials()
     }
+
+    return result
   }
 
   const createScvSearchItem = (cred: SCVCredentials, key: string, type: 'alias' | 'key'): ScvSearchItem => {

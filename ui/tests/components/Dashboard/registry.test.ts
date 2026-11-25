@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { getPanelDefinition, listPanelDefinitions, panelRegistry } from '@/components/Dashboard/registry'
-import { createDefaultLayout } from '@/components/Dashboard/defaultLayout'
+import { createDefaultLayout } from '@/lib/dashboardLayout'
 
 describe('panel registry', () => {
   it('every definition is complete and self-consistent', () => {

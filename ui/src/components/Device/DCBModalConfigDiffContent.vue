@@ -87,9 +87,11 @@ import Download from '@opennms/onms-ui/icons/action/DownloadFile.vue'
 import DCBDiff from './DCBDiff.vue'
 import Compare from '@/assets/Compare.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { DeviceConfigBackup } from '@/types/deviceConfig'
 
 const deviceStore = useDeviceStore()
+const { withSpinner } = useActionFeedback()
 
 const selectedConfigs = ref<Record<number, boolean>>({})
 const config1 = ref<DeviceConfigBackup | null>(null)
@@ -105,7 +107,7 @@ const onDownload = () => {
   const ids = [config1.value?.id || 0, config2.value?.id || 0].filter(x => x !== 0)
 
   if (ids.length > 0) {
-    deviceStore.downloadByConfig(ids)
+    withSpinner(() => deviceStore.downloadByConfig(ids))
   }
 }
 
@@ -199,7 +201,7 @@ const calculateChanges = () => {
   }
 }
 
-const getHistoryBackups = () => deviceStore.getHistoryByIpInterface()
+const getHistoryBackups = () => withSpinner(() => deviceStore.getHistoryByIpInterface())
 onMounted(() => getHistoryBackups())
 </script>
 

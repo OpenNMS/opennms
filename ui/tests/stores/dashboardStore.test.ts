@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useDashboardStore } from '@/stores/dashboardStore'
-import { createDefaultLayout } from '@/components/Dashboard/defaultLayout'
+import { createDefaultLayout } from '@/lib/dashboardLayout'
 import { getSystemDashboard, saveSystemDashboard } from '@/services/dashboardService'
 import { TimeframePreset } from '@/types/dashboard'
 

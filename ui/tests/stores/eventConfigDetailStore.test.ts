@@ -564,12 +564,23 @@ describe('useEventConfigDetailStore', () => {
       { id: 8, uei: 'uei.opennms.org/b', eventLabel: 'B', severity: 'Major', enabled: true, eventOrder: 2 }
     ]
 
+    it('startEventsReorder says so when no source has loaded', async () => {
+      store.selectedSource = null
+
+      const result = await store.startEventsReorder()
+
+      expect(result).toEqual({ success: false, message: 'The event source has not loaded, so its events cannot be reordered.' })
+      expect(getOrderedEventConfigEvents).not.toHaveBeenCalled()
+      expect(store.eventsReorderMode).toBe(false)
+    })
+
     it('startEventsReorder enters the mode and fetches the ordered list', async () => {
       store.selectedSource = mockSource
       vi.mocked(getOrderedEventConfigEvents).mockResolvedValue(orderedEvents)
 
-      await store.startEventsReorder()
+      const result = await store.startEventsReorder()
 
+      expect(result.success).toBe(true)
       expect(store.eventsReorderMode).toBe(true)
       expect(getOrderedEventConfigEvents).toHaveBeenCalledWith(mockSource.id)
       expect(store.orderedEvents).toEqual(orderedEvents)
@@ -578,17 +589,18 @@ describe('useEventConfigDetailStore', () => {
       expect(store.eventsReorderMode).toBe(false)
     })
 
-    it('fetchOrderedEvents failure leaves the reorder mode and says why', async () => {
+    it('fetchOrderedEvents failure leaves the reorder mode and returns the message', async () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       store.selectedSource = mockSource
       vi.mocked(getOrderedEventConfigEvents).mockRejectedValue(new Error('boom'))
 
-      await store.startEventsReorder()
+      const result = await store.startEventsReorder()
 
+      expect(result).toEqual({ success: false, message: 'Failed to load the event order. Try again.' })
       expect(store.orderedEvents).toEqual([])
       // an empty reorder view with no explanation is worse than no reorder view
       expect(store.eventsReorderMode).toBe(false)
-      expect(mockShowSnackBar).toHaveBeenCalledWith({ msg: 'Failed to load the event order. Try again.', error: true })
+      expect(mockShowSnackBar).not.toHaveBeenCalled()
       expect(consoleError).toHaveBeenCalled()
     })
 

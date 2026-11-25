@@ -40,9 +40,11 @@ import { computed, ref } from 'vue'
 import { OnmsButton, OnmsIcon, OnmsMenu } from '@opennms/onms-ui'
 import ArrowDown from '@opennms/onms-ui/icons/navigation/ArrowDropDown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { DeviceConfigQueryParams } from '@/types/deviceConfig'
 
 const deviceStore = useDeviceStore()
+const { withSpinner } = useActionFeedback()
 
 const vendorMenu = ref()
 const statusMenu = ref()
@@ -76,7 +78,7 @@ const onGroupByOptionClick = (groupBy: string, value: string) => {
   }
 
   deviceStore.updateDeviceConfigBackupQueryParams(newQueryParams)
-  deviceStore.getDeviceConfigBackups()
+  withSpinner(() => deviceStore.getDeviceConfigBackups())
 }
 </script>
 

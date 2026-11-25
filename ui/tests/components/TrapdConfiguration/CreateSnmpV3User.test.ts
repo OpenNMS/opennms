@@ -27,7 +27,7 @@ const createEmptySelectItem = (): ISelectItemType => (undefined as unknown as IS
 
 const { showSnackBarMock, populateScvMock } = vi.hoisted(() => ({
   showSnackBarMock: vi.fn(),
-  populateScvMock: vi.fn().mockResolvedValue(undefined)
+  populateScvMock: vi.fn().mockResolvedValue({ success: true, message: '' })
 }))
 
 vi.mock('@/composables/useSnackbar', () => ({

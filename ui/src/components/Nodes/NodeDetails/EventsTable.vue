@@ -64,7 +64,7 @@ import { sanitizeHtml } from '@/lib/sanitizeHtml'
 import { useEventStore } from '@/stores/eventStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { useRecordDownload } from './hooks/useRecordDownload'
-import { severityTag } from '@/components/Nodes/utils'
+import { severityTag } from '@/lib/severity'
 import useActiveNodeId from './hooks/useActiveNodeId'
 import useNodeTablePaging from './hooks/useNodeTablePaging'
 

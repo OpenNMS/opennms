@@ -1,7 +1,7 @@
 <!--
   An alarm severity as an icon on a colored circle: Critical a diamond, Major and Minor a circle,
   Warning a triangle (each with a "!"), Normal an "i", and any other severity a "?". The colors are
-  the --onms-severity-<key>-bg/-fg theme tokens.
+  the --onms-severity-<key>-bg/-fg theme tokens: Indeterminate's "?" is blue, any other "?" grey.
 
   The icon is an image with a name ("Major severity"), as it is often the only sign of the
   severity; `label` names it otherwise.
@@ -34,6 +34,7 @@ const ICONS: Record<SeverityKey, object> = {
   minor: Minor,
   warning: Warning,
   normal: Normal,
+  indeterminate: None,
   none: None
 }
 
@@ -85,7 +86,7 @@ const key = computed<SeverityKey>(() => severityKey(props.severity))
   --severity-icon-glyph: 28px;
 }
 
-@each $key in critical, major, minor, warning, normal, none {
+@each $key in critical, major, minor, warning, normal, indeterminate, none {
   .severity-icon--#{$key} {
     background: var(--onms-severity-#{$key}-bg);
     color: var(--onms-severity-#{$key}-fg);

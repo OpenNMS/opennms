@@ -109,6 +109,7 @@ import {
   validateSettingsForm
 } from './wsmanForm'
 import API from '@/services'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useWsmanAdminStore } from '@/stores/wsmanAdminStore'
 import { WsmanConfig, WsmanDefinitionInput, WsmanRange } from '@/types/wsmanAdmin'
 
@@ -122,6 +123,7 @@ const props = defineProps<{
 const emit = defineEmits(['update:visible'])
 
 const store = useWsmanAdminStore()
+const { withSpinner } = useActionFeedback()
 
 const existing = computed(() => (props.index === null ? null : props.config.definitions[props.index] ?? null))
 
@@ -212,11 +214,11 @@ const save = async () => {
     } else {
       definitions[props.index] = edited
     }
-    const error = await store.saveConfig({
+    const error = await withSpinner(() => store.saveConfig({
       version: props.config.version,
       defaults: settingsToInput(props.config.defaults),
       definitions
-    })
+    }))
     if (error === null) {
       emit('update:visible', false)
     } else {

@@ -20,14 +20,13 @@
 /// License.
 ///
 
-import { severityKey, SeverityKey } from '@/lib/severity'
+import { isProblemSeverity, PROBLEM_SEVERITIES, severityKey, SeverityKey } from '@/lib/severity'
 import { NodeAlarmStatus } from '@/types/index'
 
-// The tints NodeDetailsBanner offers: one per severity look. Indeterminate and cleared are never a
-// node's status here -- they are not problems -- so they have none of their own.
+// The tints NodeDetailsBanner offers: one per severity look, so a banner and its SeverityIcon agree.
 export type BannerSeverity = SeverityKey
 
-/** The banner tint for an OnmsSeverity name; `none` for one that has no tint. */
+/** The banner tint for an OnmsSeverity name; `none` (no tint) for cleared or an unknown one. */
 export const bannerSeverity = (severity: string | undefined): BannerSeverity => severityKey(severity)
 
 /** How many of the node's problem alarms are unacknowledged at one severity. */
@@ -54,7 +53,7 @@ export interface NodeStatus {
 
 // Above Normal, highest first. The server reports the worst unacknowledged one, and NORMAL when
 // there is none.
-const PROBLEM_SEVERITIES = ['CRITICAL', 'MAJOR', 'MINOR', 'WARNING']
+const HIGHEST_FIRST = [...PROBLEM_SEVERITIES].reverse()
 
 /**
  * The status box's headline and counts from the server's summary of the node's problem alarms
@@ -63,14 +62,14 @@ const PROBLEM_SEVERITIES = ['CRITICAL', 'MAJOR', 'MINOR', 'WARNING']
  */
 export const computeNodeStatus = (summary: NodeAlarmStatus): NodeStatus => {
   const severity = (summary.severity ?? 'NORMAL').toUpperCase()
-  const hasProblems = PROBLEM_SEVERITIES.includes(severity)
+  const hasProblems = isProblemSeverity(severity)
 
   // Keyed by severity name; matched in any case, and put in order here rather than trusting the
   // order of the server's keys.
   const counts = new Map(Object.entries(summary.unacknowledgedBySeverity ?? {})
     .map(([name, count]) => [name.toUpperCase(), count]))
 
-  const unackBySeverity = PROBLEM_SEVERITIES
+  const unackBySeverity = HIGHEST_FIRST
     .map(name => ({ severity: name, count: counts.get(name) ?? 0 }))
     .filter(item => item.count > 0)
 

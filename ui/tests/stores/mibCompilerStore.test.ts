@@ -50,8 +50,9 @@ describe('mibCompilerStore', () => {
     mockListMibFiles.mockResolvedValue({ pending, compiled })
 
     const store = useMibCompilerStore()
-    await store.fetchMibFiles()
+    const result = await store.fetchMibFiles()
 
+    expect(result.success).toBe(true)
     expect(store.pendingFiles).toEqual(pending)
     expect(store.compiledFiles).toEqual(compiled)
     expect(store.isLoading).toBe(false)
@@ -63,13 +64,14 @@ describe('mibCompilerStore', () => {
     mockListMibFiles.mockRejectedValue(new Error('boom'))
 
     const store = useMibCompilerStore()
-    await store.fetchMibFiles()
+    const result = await store.fetchMibFiles()
 
+    expect(result).toEqual({ success: false, message: 'Failed to load the MIB files. Try again.' })
     expect(store.pendingFiles).toEqual([])
     expect(store.compiledFiles).toEqual([])
     expect(store.isLoading).toBe(false)
-    // an empty page with no message would read as "no MIB files"
-    expect(mockShowSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+    // the store returns the message; the caller shows it
+    expect(mockShowSnackBar).not.toHaveBeenCalled()
     expect(consoleError).toHaveBeenCalled()
   })
 })

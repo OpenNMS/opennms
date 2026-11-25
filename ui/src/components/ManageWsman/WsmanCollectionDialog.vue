@@ -43,6 +43,7 @@ import { OnmsButton, OnmsCheckbox, OnmsDialog, OnmsInputNumber, OnmsInputText, O
 import FormField from '@/components/Common/FormField.vue'
 import StringListEditor from './StringListEditor.vue'
 import { ROOT_FILE, fileInput, isRra, nameTaken, upsert } from './wsmanDataCollectionForm'
+import useActionFeedback from '@/composables/useActionFeedback'
 import { useWsmanAdminStore } from '@/stores/wsmanAdminStore'
 import { WsmanCollectionInfo, WsmanDataCollection } from '@/types/wsmanAdmin'
 
@@ -56,6 +57,7 @@ const props = defineProps<{
 const emit = defineEmits(['update:visible'])
 
 const store = useWsmanAdminStore()
+const { withSpinner } = useActionFeedback()
 
 const saving = ref(false)
 const errorText = ref('')
@@ -106,7 +108,7 @@ const save = async () => {
       includeAllSystemDefinitions: includeAll.value,
       includedSystemDefinitions: includeAll.value ? [] : [...includedSystemDefinitions.value]
     })
-    const error = await store.saveDataCollectionFile(file, input)
+    const error = await withSpinner(() => store.saveDataCollectionFile(file, input))
     if (error === null) {
       emit('update:visible', false)
     } else {

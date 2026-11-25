@@ -92,12 +92,15 @@
   --onms-warning: #fbe947;
   --onms-major: #e35302;
   --onms-minor: #ffac26;
+  // Severity colors: Critical is the error red and Normal the success green, in both themes.
+  --onms-critical: var(--onms-error);
+  --onms-normal: var(--onms-success);
   --onms-cleared: #757575;
   --onms-indeterminate: #0092c7;
 
   // Severity icons (SeverityIcon): the circle (bg) and the glyph on it (fg). Each glyph is the one
   // of white and near-black with the higher contrast on its circle.
-  --onms-severity-critical-bg: var(--onms-error);
+  --onms-severity-critical-bg: var(--onms-critical);
   --onms-severity-critical-fg: #ffffff;
   --onms-severity-major-bg: var(--onms-major);
   --onms-severity-major-fg: #0a0c1b;
@@ -105,15 +108,16 @@
   --onms-severity-minor-fg: #0a0c1b;
   --onms-severity-warning-bg: var(--onms-warning);
   --onms-severity-warning-fg: #0a0c1b;
-  --onms-severity-normal-bg: var(--onms-indeterminate);
-  --onms-severity-normal-fg: #0a0c1b;
+  --onms-severity-normal-bg: var(--onms-normal);
+  --onms-severity-normal-fg: #ffffff;
+  --onms-severity-indeterminate-bg: var(--onms-indeterminate);
+  --onms-severity-indeterminate-fg: #ffffff;
   --onms-severity-none-bg: var(--onms-cleared);
   --onms-severity-none-fg: #ffffff;
 
-  // Availability badges (AvailabilityBadge) at the normal level: green is the success colour;
-  // severity-normal is blue, so not reused. Warning and critical take the severity tokens.
-  --onms-availability-normal-bg: var(--onms-success);
-  --onms-availability-normal-fg: #ffffff;
+  // Availability badges (AvailabilityBadge): the normal level shares the severity-normal colors.
+  --onms-availability-normal-bg: var(--onms-severity-normal-bg);
+  --onms-availability-normal-fg: var(--onms-severity-normal-fg);
 }
 
 .open-dark {
@@ -139,12 +143,14 @@
   --onms-warning: #fbe947;
   --onms-major: #e35302;
   --onms-minor: #ffac26;
+  // Critical is the red error icon, not the pink --onms-error. Normal is the success green.
+  --onms-critical: var(--onms-error-icon);
+  --onms-normal: var(--onms-success);
   --onms-cleared: #b7b7b7;
   --onms-indeterminate: #20b9f0;
 
-  // As in the light theme. Critical takes the error icon red: --onms-error is a pink here, which
-  // does not read as critical.
-  --onms-severity-critical-bg: var(--onms-error-icon);
+  // As in the light theme.
+  --onms-severity-critical-bg: var(--onms-critical);
   --onms-severity-critical-fg: #ffffff;
   --onms-severity-major-bg: var(--onms-major);
   --onms-severity-major-fg: #0a0c1b;
@@ -152,12 +158,14 @@
   --onms-severity-minor-fg: #0a0c1b;
   --onms-severity-warning-bg: var(--onms-warning);
   --onms-severity-warning-fg: #0a0c1b;
-  --onms-severity-normal-bg: var(--onms-indeterminate);
+  --onms-severity-normal-bg: var(--onms-normal);
   --onms-severity-normal-fg: #0a0c1b;
+  --onms-severity-indeterminate-bg: var(--onms-indeterminate);
+  --onms-severity-indeterminate-fg: #0a0c1b;
   --onms-severity-none-bg: var(--onms-cleared);
   --onms-severity-none-fg: #0a0c1b;
 
-  // Availability badges, as in the light theme. The success green is light here, so near-black text.
-  --onms-availability-normal-bg: var(--onms-success);
-  --onms-availability-normal-fg: #0a0c1b;
+  // Availability badges, as in the light theme.
+  --onms-availability-normal-bg: var(--onms-severity-normal-bg);
+  --onms-availability-normal-fg: var(--onms-severity-normal-fg);
 }

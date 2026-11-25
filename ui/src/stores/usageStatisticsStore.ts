@@ -28,10 +28,7 @@ import {
   UsageStatisticsMetadataItem,
   UsageStatisticsStatus
 } from '@/types/usageStatistics'
-import useSnackbar from '@/composables/useSnackbar'
 import { ref } from 'vue'
-
-const { showSnackBar } = useSnackbar()
 
 export const useUsageStatisticsStore = defineStore('usageStatisticsStore', () => {
   const status = ref({ enabled: false } as UsageStatisticsStatus)
@@ -62,41 +59,30 @@ export const useUsageStatisticsStore = defineStore('usageStatisticsStore', () =>
     }
   }
 
-  const enableSharing = async () => {
+  const enableSharing = async (): Promise<boolean> => {
     const success = await updateSharing(true)
 
     if (success) {
-      getStatus()
+      await getStatus()
     }
+
+    return success
   }
 
-  const disableSharing = async () => {
+  const disableSharing = async (): Promise<boolean> => {
     const success = await updateSharing(false)
 
     if (success) {
-      getStatus()
+      await getStatus()
     }
+
+    return success
   }
 
   const updateSharing = async (enable: boolean) => {
     const resp = await API.setUsageStatisticsStatus(enable)
 
-    const success = !!(resp && (resp.status === 200 || resp.status === 202))
-
-    if (success) {
-      if (enable) {
-        showSnackBar({ msg: 'Usage Statistics Sharing is now enabled. Thank you for helping us improve OpenNMS.' })
-      } else {
-        showSnackBar({ msg: 'Usage Statistics Sharing is now disabled.' })
-      }
-    } else {
-      showSnackBar({
-        msg: `Error attempting to ${enable ? 'enable' : 'disable'} Usage Statistics Sharing.`,
-        error: true
-      })
-    }
-
-    return success
+    return !!(resp && (resp.status === 200 || resp.status === 202))
   }
 
   return {

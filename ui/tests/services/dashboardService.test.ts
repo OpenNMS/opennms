@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AxiosError, AxiosHeaders } from 'axios'
 import { getSystemDashboard, saveSystemDashboard, getServiceTypes } from '@/services/dashboardService'
 import { v2 } from '@/services/axiosInstances'
-import { createDefaultLayout } from '@/components/Dashboard/defaultLayout'
+import { createDefaultLayout } from '@/lib/dashboardLayout'
 
 vi.mock('@/services/axiosInstances', () => ({
   v2: { get: vi.fn(), put: vi.fn() }

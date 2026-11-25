@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { AvailabilityClass } from '@/components/Nodes/availabilityTimelineModel'
+import { AvailabilityClass } from '@/types/availability'
 
 defineProps<{
   text: string

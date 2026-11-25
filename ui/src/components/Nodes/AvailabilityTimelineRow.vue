@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { outageDetailLink, serviceLink } from '@/lib/linkUtils'
-import AvailabilityBadge from './AvailabilityBadge.vue'
+import AvailabilityBadge from '@/components/Common/AvailabilityBadge.vue'
 import SeverityIcon from '@/components/Common/SeverityIcon.vue'
 import {
   AvailabilityThresholds,

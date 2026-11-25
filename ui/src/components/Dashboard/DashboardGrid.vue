@@ -74,7 +74,7 @@ License.
 </template>
 
 <script setup lang="ts">
-import { ROW_PX } from './defaultLayout'
+import { ROW_PX } from '@/lib/dashboardLayout'
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 // grid-layout-plus 1.x injects its own styles at runtime — no CSS import needed.

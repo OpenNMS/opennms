@@ -20,7 +20,18 @@
 /// License.
 ///
 
-import { severityId, severityKey, severityName } from '@/lib/severity'
+import {
+  highestSeverity,
+  isProblemSeverity,
+  PROBLEM_SEVERITIES,
+  severityColorVar,
+  severityId,
+  severityKey,
+  severityName,
+  severityRank,
+  severityTag,
+  severityTintClass
+} from '@/lib/severity'
 import { describe, expect, it } from 'vitest'
 
 describe('severity', () => {
@@ -30,12 +41,13 @@ describe('severity', () => {
       ['major', 'major'],
       ['Minor', 'minor'],
       ['WARNING', 'warning'],
-      ['NORMAL', 'normal']
+      ['NORMAL', 'normal'],
+      ['Indeterminate', 'indeterminate']
     ])('gives %s the look %s, in any case', (severity, key) => {
       expect(severityKey(severity)).toBe(key)
     })
 
-    it.each(['INDETERMINATE', 'CLEARED', 'BOGUS', '', null, undefined])('gives %s no look of its own', (severity) => {
+    it.each(['CLEARED', 'BOGUS', '', null, undefined])('gives %s no look of its own', (severity) => {
       expect(severityKey(severity)).toBe('none')
     })
   })
@@ -70,6 +82,76 @@ describe('severity', () => {
 
     it.each(['BOGUS', '', null, undefined])('gives %s no id', (severity) => {
       expect(severityId(severity)).toBeUndefined()
+    })
+  })
+
+  describe('severityRank', () => {
+    it.each([
+      ['indeterminate', 1],
+      ['CLEARED', 2],
+      ['Critical', 7],
+      [null, 0],
+      [undefined, 0],
+      ['FOO', 0]
+    ])('ranks %s as %i', (severity, rank) => {
+      expect(severityRank(severity)).toBe(rank)
+    })
+  })
+
+  describe('highestSeverity', () => {
+    it('picks the highest, upper-case', () => {
+      expect(highestSeverity(['normal', 'MAJOR', 'warning'])).toBe('MAJOR')
+      expect(highestSeverity(['INDETERMINATE', 'CLEARED'])).toBe('CLEARED')
+      expect(highestSeverity(['INDETERMINATE'])).toBe('INDETERMINATE')
+      expect(highestSeverity(new Set(['minor', 'critical']))).toBe('CRITICAL')
+    })
+
+    it('is undefined when nothing is recognized', () => {
+      expect(highestSeverity([])).toBeUndefined()
+      expect(highestSeverity([null, 'FOO'])).toBeUndefined()
+    })
+  })
+
+  describe('problem severities', () => {
+    it('lists WARNING up to CRITICAL', () => {
+      expect(PROBLEM_SEVERITIES).toEqual(['WARNING', 'MINOR', 'MAJOR', 'CRITICAL'])
+    })
+
+    it.each([['warning', true], ['NORMAL', false], ['INDETERMINATE', false], [undefined, false]])('%s -> %s', (severity, problem) => {
+      expect(isProblemSeverity(severity)).toBe(problem)
+    })
+  })
+
+  describe('severityTag', () => {
+    it.each([
+      ['CRITICAL', 'danger'],
+      ['Major', 'danger'],
+      ['minor', 'warn'],
+      ['WARNING', 'warn'],
+      ['NORMAL', 'success'],
+      ['CLEARED', 'success'],
+      ['INDETERMINATE', 'secondary'],
+      ['FOO', 'secondary'],
+      [undefined, 'secondary']
+    ])('%s -> %s', (severity, tag) => {
+      expect(severityTag(severity)).toBe(tag)
+    })
+  })
+
+  describe('severityColorVar', () => {
+    it('names the CSS custom property', () => {
+      expect(severityColorVar('Critical')).toBe('--onms-critical')
+      expect(severityColorVar('normal')).toBe('--onms-normal')
+      expect(severityColorVar('INDETERMINATE')).toBe('--onms-indeterminate')
+      expect(severityColorVar('FOO')).toBe('--onms-cleared')
+      expect(severityColorVar(null)).toBe('--onms-cleared')
+    })
+  })
+
+  describe('severityTintClass', () => {
+    it('names the tint class', () => {
+      expect(severityTintClass('MAJOR')).toBe('severity-tint--major')
+      expect(severityTintClass('FOO')).toBeUndefined()
     })
   })
 })

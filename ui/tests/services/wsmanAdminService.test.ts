@@ -28,11 +28,12 @@ vi.mock('@/services/axiosInstances', () => ({
   v2: { get: vi.fn(), put: vi.fn(), post: vi.fn() },
   rest: { get: vi.fn() }
 }))
+const { showSnackBar, startSpinner, stopSpinner } = vi.hoisted(() => ({ showSnackBar: vi.fn(), startSpinner: vi.fn(), stopSpinner: vi.fn() }))
 vi.mock('@/composables/useSnackbar', () => ({
-  default: () => ({ showSnackBar: vi.fn() })
+  default: () => ({ showSnackBar })
 }))
 vi.mock('@/composables/useSpinner', () => ({
-  default: () => ({ startSpinner: vi.fn(), stopSpinner: vi.fn() })
+  default: () => ({ startSpinner, stopSpinner })
 }))
 
 describe('wsmanAdminService', () => {
@@ -126,5 +127,27 @@ describe('wsmanAdminService', () => {
     // a payload without the version token cannot be saved back safely
     vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { defaults: {}}})
     expect(await getWsmanConfig()).toBeNull()
+  })
+
+  it('returns null on a failed load without a toast or the spinner', async () => {
+    vi.mocked(v2.get).mockRejectedValueOnce(new Error('500'))
+    expect(await getWsmanConfig()).toBeNull()
+    vi.mocked(v2.get).mockRejectedValueOnce(new Error('500'))
+    expect(await getWsmanDataCollection()).toBeNull()
+    expect(showSnackBar).not.toHaveBeenCalled()
+    expect(startSpinner).not.toHaveBeenCalled()
+    expect(stopSpinner).not.toHaveBeenCalled()
+  })
+
+  it('does not drive the spinner for writes and actions', async () => {
+    vi.mocked(v2.put).mockResolvedValue({ status: 200, data: {}})
+    vi.mocked(v2.post).mockResolvedValue({ status: 200, data: {}})
+    await updateWsmanConfig({ version: 'v', defaults: {}, definitions: [] } as any)
+    await updateWsmanDataCollectionFile('a.xml', {} as any)
+    await syncWsmanDefinition(0)
+    await runWsmanReadinessAction('rescan')
+    await resetWsmanDataCollection()
+    expect(startSpinner).not.toHaveBeenCalled()
+    expect(stopSpinner).not.toHaveBeenCalled()
   })
 })

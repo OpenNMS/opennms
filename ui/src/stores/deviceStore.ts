@@ -23,12 +23,10 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import useDownload from '@/composables/useDownload'
-import useSnackbar from '@/composables/useSnackbar'
 import { DeviceConfigBackup, DeviceConfigQueryParams, status } from '@/types/deviceConfig'
 import { ref } from 'vue'
 
 const { downloadFile } = useDownload()
-const { showSnackBar } = useSnackbar()
 
 export const useDeviceStore = defineStore('deviceStore', () => {
   const deviceConfigBackups = ref([] as DeviceConfigBackup[])
@@ -115,24 +113,13 @@ export const useDeviceStore = defineStore('deviceStore', () => {
     }
   }
 
-  const backupSelectedDevices = async () => {
+  const backupSelectedDevices = async (): Promise<boolean> => {
     const configsForBackup = allSelected.value
       ? await getAllMatchingDeviceConfigBackups()
       : getDeviceConfigBackupObjByIds(deviceConfigBackups.value, selectedIds.value)
 
     const resp = await API.backupDeviceConfig(configsForBackup)
-    const success = resp && (resp.status === 200 || resp.status === 202)
-
-    if (success) {
-      showSnackBar({
-        msg: 'Device backup triggered.'
-      })
-    } else {
-      showSnackBar({
-        msg: 'Device backup not triggered.',
-        error: true
-      })
-    }
+    return !!resp && (resp.status === 200 || resp.status === 202)
   }
 
   const updateDeviceConfigBackupQueryParams = async (newQueryParams: DeviceConfigQueryParams) => {
