@@ -86,8 +86,8 @@ public class GrpcIpcUtils {
      * Reads the client key pair with {@link PemKeys}, not Netty: Netty reads PKCS#1 and SEC1 keys
      * only through BouncyCastle, which it does not find in Karaf.
      */
-    private static void setKeyManager(final SslContextBuilder builder, final String certChainFilePath,
-                                      final String privateKeyFilePath) throws SSLException {
+    static void setKeyManager(final SslContextBuilder builder, final String certChainFilePath,
+                              final String privateKeyFilePath) throws SSLException {
         try {
             builder.keyManager(PemKeys.readPrivateKey(new File(privateKeyFilePath)),
                     PemKeys.readCertificates(new File(certChainFilePath)));

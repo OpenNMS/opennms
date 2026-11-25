@@ -101,8 +101,8 @@ public final class PemKeys {
             if (body.indexOf(':') >= 0) {
                 throw new InvalidKeySpecException(file + " contains a private key with PEM headers, which is not supported.");
             }
-            final byte[] der = decodeBase64(body, file);
             try {
+                final byte[] der = decodeBase64(body, file);
                 switch (label) {
                     case "PRIVATE KEY":
                         return fromPkcs8(der);
@@ -123,6 +123,8 @@ public final class PemKeys {
 
     /**
      * Reads all certificates in a PEM file, in file order. Other PEM blocks and text are ignored.
+     * As with Netty, {@code BEGIN X509 CERTIFICATE} and {@code BEGIN TRUSTED CERTIFICATE} blocks are
+     * read as well; the OpenSSL trust settings after the certificate in the latter are ignored.
      */
     public static X509Certificate[] readCertificates(final File file) throws IOException, CertificateException {
         final String pem = new String(Files.readAllBytes(file.toPath()), StandardCharsets.US_ASCII);
@@ -130,9 +132,14 @@ public final class PemKeys {
         final List<X509Certificate> certificates = new ArrayList<>();
         final Matcher m = PEM_BLOCK.matcher(pem);
         while (m.find()) {
-            if ("CERTIFICATE".equals(m.group(1))) {
-                final byte[] der = decodeBase64(m.group(2), file);
-                certificates.add((X509Certificate) factory.generateCertificate(new ByteArrayInputStream(der)));
+            final String label = m.group(1);
+            if (label.endsWith("CERTIFICATE")) {
+                try {
+                    final byte[] der = decodeBase64(m.group(2), file);
+                    certificates.add((X509Certificate) factory.generateCertificate(new ByteArrayInputStream(der)));
+                } catch (final CertificateException | IllegalArgumentException e) {
+                    throw new CertificateException("Could not read the '" + label + "' block in " + file + ": " + e.getMessage(), e);
+                }
             }
         }
         if (certificates.isEmpty()) {
@@ -287,7 +294,7 @@ public final class PemKeys {
                     length = (length << 8) | (data[pos++] & 0xFF);
                 }
             }
-            if (length < 0 || pos + length > end) {
+            if (length < 0 || length > end - pos) {
                 throw new IllegalArgumentException("DER length exceeds the data.");
             }
             final int[] range = {pos, pos + length};

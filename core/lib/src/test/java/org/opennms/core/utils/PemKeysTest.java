@@ -34,6 +34,7 @@ import java.security.Signature;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Base64;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,6 +53,7 @@ import org.junit.rules.TemporaryFolder;
  * openssl req -x509 -key rsa-pkcs8.key -days 36500 -subj /CN=localhost -out rsa.crt
  * openssl req -x509 -key ec-pkcs8.key -days 36500 -subj /CN=localhost -out ec.crt
  * cat rsa.crt ec.crt > chain.crt
+ * openssl x509 -in rsa.crt -trustout -addtrust serverAuth -out rsa-trusted.crt
  * </pre>
  */
 public class PemKeysTest {
@@ -122,6 +124,40 @@ public class PemKeysTest {
         assertEquals(2, chain.length);
         assertEquals(PemKeys.readCertificates(pem("rsa.crt"))[0], chain[0]);
         assertEquals(PemKeys.readCertificates(pem("ec.crt"))[0], chain[1]);
+    }
+
+    @Test
+    public void rejectsBadBase64InKeyBlock() throws Exception {
+        final File file = write("bad64.key", "-----BEGIN PRIVATE KEY-----\n!!not base64!!\n-----END PRIVATE KEY-----\n");
+        assertRejected(file, "not valid base64");
+    }
+
+    @Test
+    public void rejectsOversizedDerLength() throws Exception {
+        // SEQUENCE with a 4-byte length close to Integer.MAX_VALUE, which overflows pos + length.
+        final String body = Base64.getEncoder().encodeToString(new byte[] {0x30, (byte) 0x84, 0x7F, (byte) 0xFF, (byte) 0xFF, (byte) 0xF0, 0x02, 0x01, 0x00});
+        final File file = write("huge.key", "-----BEGIN RSA PRIVATE KEY-----\n" + body + "\n-----END RSA PRIVATE KEY-----\n");
+        assertRejected(file, "DER length exceeds the data");
+    }
+
+    @Test
+    public void readsTrustedAndX509CertificateLabels() throws Exception {
+        final X509Certificate expected = PemKeys.readCertificates(pem("rsa.crt"))[0];
+        assertEquals(expected, PemKeys.readCertificates(pem("rsa-trusted.crt"))[0]);
+        final File x509 = write("x509.crt", read("rsa.crt").replace("BEGIN CERTIFICATE", "BEGIN X509 CERTIFICATE")
+                .replace("END CERTIFICATE", "END X509 CERTIFICATE"));
+        assertEquals(expected, PemKeys.readCertificates(x509)[0]);
+    }
+
+    @Test
+    public void rejectsBadBase64InCertificateBlock() throws Exception {
+        final File file = write("bad64.crt", "-----BEGIN CERTIFICATE-----\n!!not base64!!\n-----END CERTIFICATE-----\n");
+        try {
+            PemKeys.readCertificates(file);
+            fail("expected " + file + " to be rejected");
+        } catch (final CertificateException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("not valid base64"));
+        }
     }
 
     @Test(expected = CertificateException.class)
