@@ -108,7 +108,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger"
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.ffm.FfmPinger"
 })
 public class PollablesIT {
     private static final Logger LOG = LoggerFactory.getLogger(PollablesIT.class);

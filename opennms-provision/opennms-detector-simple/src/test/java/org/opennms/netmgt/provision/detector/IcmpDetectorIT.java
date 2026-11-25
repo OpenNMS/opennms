@@ -34,7 +34,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.AbstractPingerFactory;
 import org.opennms.netmgt.icmp.PingerFactory;
-import org.opennms.netmgt.icmp.jna.JnaPinger;
+import org.opennms.netmgt.icmp.ffm.FfmPinger;
 import org.opennms.netmgt.icmp.jni.JniPinger;
 import org.opennms.netmgt.provision.detector.icmp.IcmpDetector;
 import org.opennms.netmgt.provision.detector.icmp.IcmpDetectorFactory;
@@ -92,7 +92,7 @@ public class IcmpDetectorIT {
     @Test(timeout=20000)
     @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorSuccess() throws Exception {
-        getPingerFactory().setInstance(0, true, new JnaPinger());
+        getPingerFactory().setInstance(0, true, new FfmPinger());
         m_icmpDetector = m_detectorFactory.createDetector(new HashMap<>());
         assertTrue("ICMP could not be detected on localhost", m_icmpDetector.isServiceDetected(InetAddress.getLocalHost()));
     }
@@ -100,7 +100,7 @@ public class IcmpDetectorIT {
     @Test(timeout=20000)
     @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorSuccessDscp() throws Exception {
-        getPingerFactory().setInstance(0x24, true, new JnaPinger());
+        getPingerFactory().setInstance(0x24, true, new FfmPinger());
         m_icmpDetector = m_detectorFactory.createDetector(new HashMap<>());
         assertTrue("ICMP could not be detected on localhost", m_icmpDetector.isServiceDetected(InetAddress.getLocalHost()));
     }
@@ -108,7 +108,7 @@ public class IcmpDetectorIT {
     @Test(timeout=20000)
     @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorFail() throws Exception {
-        getPingerFactory().setInstance(0, true, new JnaPinger());
+        getPingerFactory().setInstance(0, true, new FfmPinger());
         m_icmpDetector = m_detectorFactory.createDetector(new HashMap<>());
         assertFalse("ICMP was incorrectly identified on " + InetAddressUtils.UNPINGABLE_ADDRESS.getHostAddress(), m_icmpDetector.isServiceDetected(InetAddressUtils.UNPINGABLE_ADDRESS));
     }

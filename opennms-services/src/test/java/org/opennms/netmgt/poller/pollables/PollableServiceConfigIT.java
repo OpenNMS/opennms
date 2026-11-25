@@ -91,7 +91,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger"
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.ffm.FfmPinger"
 })
 public class PollableServiceConfigIT {
 
