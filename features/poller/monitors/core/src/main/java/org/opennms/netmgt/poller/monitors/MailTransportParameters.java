@@ -49,6 +49,8 @@ public class MailTransportParameters {
 	private String m_testSubjectSuffix;
     private boolean m_end2EndTestInProgress = false;
     private Properties m_javamailProperties = new Properties();
+    private String m_readTestHost;
+    private String m_sendTestHost;
 
     MailTransportParameters(Map<String,Object> parameterMap) {
         m_parameterMap = parameterMap;
@@ -65,6 +67,19 @@ public class MailTransportParameters {
         }
     }
     
+    private MailTransportParameters(final MailTransportParameters cached) {
+        m_parameterMap = cached.m_parameterMap;
+        m_transportTest = cached.m_transportTest;
+    }
+
+    /**
+     * Returns a copy for a single poll. The instance returned by {@link #get(Map)} is shared by every
+     * service polled with the same parameter map, so per-poll values must not be set on it.
+     */
+    MailTransportParameters forPoll() {
+        return new MailTransportParameters(this);
+    }
+
     static synchronized MailTransportParameters get(Map<String,Object> parameterMap) {
         MailTransportParameters parms = (MailTransportParameters)parameterMap.get(KEY);
         if (parms == null) {
@@ -244,6 +259,9 @@ public class MailTransportParameters {
         if (getSendTest() == null) {
             throw new IllegalStateException("Request for send mailparmaters invalid due to no sendmail specification in config");
         }
+        if (m_sendTestHost != null) {
+            return m_sendTestHost;
+        }
         return getSendTest().getSendmailHost().getHost();        }
 
     /**
@@ -395,6 +413,9 @@ public class MailTransportParameters {
      * @return a {@link java.lang.String} object.
      */
     public String getReadTestHost() {
+        if (m_readTestHost != null) {
+            return m_readTestHost;
+        }
         final ReadmailTest readTest = getReadTest();
         if (readTest != null) {
         	final ReadmailHost readmailHost = readTest.getReadmailHost();
@@ -521,7 +542,7 @@ public class MailTransportParameters {
      * @param host a {@link java.lang.String} object.
      */
     public void setReadTestHost(String host) {
-        getReadTest().getReadmailHost().setHost(host);
+        m_readTestHost = host;
     }
 
     /**
@@ -530,6 +551,6 @@ public class MailTransportParameters {
      * @param host a {@link java.lang.String} object.
      */
     public void setSendTestHost(String host) {
-        getSendTest().getSendmailHost().setHost(host);
+        m_sendTestHost = host;
     }
 }
