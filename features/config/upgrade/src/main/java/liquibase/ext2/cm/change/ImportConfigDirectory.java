@@ -27,9 +27,12 @@ import static liquibase.ext2.cm.change.ConfigFileUtil.validateAndGetArchiveDir;
 import static liquibase.ext2.cm.change.ImportConfigurationUtil.importConfig;
 
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
@@ -164,11 +167,50 @@ public class ImportConfigDirectory extends AbstractCmChange {
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         final Path target = archivePath.resolve(this.directory + "." + formatter.format(LocalDateTime.now()));
         try {
-            Files.move(etcDirectory, target);
-            LOG.info("Configuration directory {} moved to {}", etcDirectory, target);
+            moveDirectoryContents(etcDirectory, target);
         } catch (IOException e) {
             throw new ConfigRuntimeException(String.format("Can not move configuration directory %s to %s", etcDirectory, target), e);
         }
+        try {
+            Files.delete(etcDirectory);
+        } catch (IOException e) {
+            // all files are archived already, an empty directory left behind does no harm
+            LOG.warn("Can not delete emptied configuration directory {}", etcDirectory, e);
+        }
+        LOG.info("Configuration directory {} moved to {}", etcDirectory, target);
+    }
+
+    /**
+     * Moves every entry of {@code source} below {@code target}, leaving {@code source} itself empty. Unlike
+     * {@code Files.move(source, target)} this also works when both are on different file systems, e.g. in a
+     * container where etc is a mount: there a non-empty directory can not be renamed but single files can be moved.
+     */
+    private static void moveDirectoryContents(final Path source, final Path target) throws IOException {
+        Files.createDirectories(target);
+        Files.walkFileTree(source, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                Files.createDirectories(target.resolve(source.relativize(dir).toString()));
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Files.move(file, target.resolve(source.relativize(file).toString()));
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                if (exc != null) {
+                    throw exc;
+                }
+                if (!dir.equals(source)) {
+                    Files.delete(dir);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
 
     public String getSchemaId() {
