@@ -53,10 +53,13 @@ config:update<5>
 ----
 
 <1> Enable TLS for the gRPC server. 
-<2> Set the path to your CA certificate file.
+<2> Set the path to your server certificate file.
 <3> Set the path to the server certificate private key file.
-<4> Set the path to your server certificate file
+<4> Set the path to your CA certificate file, used to verify Minion client certificates.
 <5> Save and update the configuration.
+
+Certificates and keys are PEM encoded.
+The private key can be PKCS#8 (`BEGIN PRIVATE KEY`), PKCS#1 (`BEGIN RSA PRIVATE KEY`) or SEC1 (`BEGIN EC PRIVATE KEY`), and cannot be password protected.
 
 This is optional and you can set a maximum message size for gRPC.
      The maximum size must be the same on the Minion.

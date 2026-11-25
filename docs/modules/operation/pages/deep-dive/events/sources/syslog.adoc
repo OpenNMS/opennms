@@ -144,7 +144,10 @@ Leave it off unless a sender's messages have to be correlated in sequence, and i
 === TCP with TLS
 
 A nested `tls` element wraps the TCP listener in TLS, as described by RFC 5425.
-Certificates and keys are PEM encoded, and the private key cannot be password protected.
+Certificates and keys are PEM encoded.
+The certificate file can hold the full chain, server certificate first.
+The private key can be PKCS#8 (`BEGIN PRIVATE KEY`), PKCS#1 (`BEGIN RSA PRIVATE KEY`) or SEC1 (`BEGIN EC PRIVATE KEY`), which covers the default output of cert-manager, Vault PKI and the OpenShift service CA.
+The private key cannot be password protected; remove the password with `openssl pkcs8 -topk8 -nocrypt -in <key> -out <new key>`.
 
 [source, xml]
 ----
