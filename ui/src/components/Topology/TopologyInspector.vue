@@ -446,7 +446,7 @@ License.
 import { computed, ref, watch } from 'vue'
 import { OnmsButton, OnmsCard, OnmsColorPicker, OnmsInputNumber, OnmsInputText, OnmsToggleSwitch } from '@opennms/onms-ui'
 import { useTopologyStore } from '@/stores/topologyStore'
-import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
+import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 import { isLabelId, isShapeId, nodeIdFromPlacedId } from '@/components/Topology/nodeIds'
 import { severityColor } from '@/components/Topology/severity'
 import TopologyInfoTip from '@/components/Topology/TopologyInfoTip.vue'

@@ -29,7 +29,7 @@ import { getNodeIpInterfaceQuery } from '@/services/ipInterfaceService'
 import { getNodeSnmpInterfaceQuery } from '@/services/snmpInterfaceService'
 import { ref } from 'vue'
 
-export type NodeDetailsTab = 'main' | 'additional' | 'network'
+export type NodeDetailsTab = 'monitoring' | 'events' | 'neighbors'
 
 export const useNodeStore = defineStore('nodeStore', () => {
   const nodes = ref([] as Node[])
@@ -89,10 +89,18 @@ export const useNodeStore = defineStore('nodeStore', () => {
    * reason as availabilityRange: it is how the user chose to look at nodes, so it carries over
    * from one node to the next instead of resetting each time the page is rebuilt.
    */
-  const nodeDetailsTab = ref<NodeDetailsTab>('main')
+  const nodeDetailsTab = ref<NodeDetailsTab>('monitoring')
 
   const setNodeDetailsTab = (tab: NodeDetailsTab) => {
     nodeDetailsTab.value = tab
+  }
+
+  // Whether the details page's System Information panel is open. Kept here for the same reason
+  // as nodeDetailsTab: it stays open from one node to the next.
+  const nodeSystemInfoExpanded = ref(false)
+
+  const setNodeSystemInfoExpanded = (expanded: boolean) => {
+    nodeSystemInfoExpanded.value = expanded
   }
 
   // map of nodeId to IpInterfaces associated with that node
@@ -433,6 +441,8 @@ export const useNodeStore = defineStore('nodeStore', () => {
     setAvailabilityRange,
     nodeDetailsTab,
     setNodeDetailsTab,
+    nodeSystemInfoExpanded,
+    setNodeSystemInfoExpanded,
     nodeQueryParameters,
     getIpInterfacesForNodes,
     getSnmpInterfacesForNodes,

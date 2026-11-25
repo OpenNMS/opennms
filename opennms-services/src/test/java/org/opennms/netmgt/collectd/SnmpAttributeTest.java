@@ -22,18 +22,23 @@
 package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
@@ -55,10 +60,13 @@ import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
@@ -129,6 +137,60 @@ public class SnmpAttributeTest {
         String stringValue = "769";
         byte[] bytes = new byte[] { (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x03, (byte)0x01 };
         testPersisting(stringValue, new Snmp4JValueFactory().getOctetString(bytes));
+    }
+
+    /**
+     * With storeByIfAlias, the persister stores the interface attributes a second time
+     * under the aliased resource. That resource has no instance of its own, so the
+     * identifier must come from the interface attribute.
+     */
+    @Test
+    public void testPersistAliasedNumericAttribute() throws Exception {
+        final int ifIndex = 25;
+        final String ifInOctets = ".1.3.6.1.2.1.2.2.1.10";
+
+        when(m_rrdStrategy.getDefaultFileExtension()).thenReturn(".myLittleMockedStrategyAndMe");
+        when(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).thenReturn(new Object());
+        when(m_rrdStrategy.openFile(isA(String.class))).thenReturn(new Object());
+
+        OnmsNode node = new OnmsNode();
+        node.setId(3);
+        OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, ifIndex);
+        snmpInterface.setIfName("eth0");
+        snmpInterface.setCollectionEnabled(true);
+        SnmpIfData ifData = new SnmpIfData(snmpInterface);
+
+        SnmpCollectionAgent agent = mock(SnmpCollectionAgent.class);
+        when(agent.getNodeId()).thenReturn(3);
+        when(agent.getStorageResourcePath()).thenReturn(ResourcePath.get("3"));
+        when(agent.getSnmpInterfaceInfo(any(IfResourceType.class)))
+                .thenAnswer(invocation -> Set.of(new IfInfo(invocation.getArgument(0), agent, ifData)));
+
+        ServiceParameters params = new ServiceParameters(Collections.singletonMap("storeByIfAlias", "true"));
+        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, params, new MockDataCollectionConfig(), m_locationAwareSnmpClient);
+        SnmpCollectionSet collectionSet = new SnmpCollectionSet(agent, snmpCollection, m_locationAwareSnmpClient);
+        IfResourceType ifResourceType = snmpCollection.getIfResourceType(agent);
+
+        MibObject mibObject = new MibObject();
+        mibObject.setOid(ifInOctets);
+        mibObject.setInstance(MibObject.INSTANCE_IFINDEX);
+        mibObject.setAlias("ifInOctets");
+        mibObject.setType("counter");
+        new NumericAttributeType(ifResourceType, snmpCollection.getName(), mibObject, new AttributeGroupType("mib2-interfaces", AttributeGroupType.IF_TYPE_ALL))
+                .storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(ifIndex), new Snmp4JValueFactory().getCounter32(769)));
+        snmpCollection.getAliasAttributeTypes(agent).get(0).storeResult(collectionSet, null,
+                new SnmpResult(SnmpObjId.get(".1.3.6.1.2.1.31.1.1.1.18"), new SnmpInstId(ifIndex), new Snmp4JValueFactory().getOctetString("uplink".getBytes())));
+        AliasedResource aliasedResource = snmpCollection.getIfAliasResourceType(agent).getResources().iterator().next();
+
+        RrdRepository repository = createRrdRepository();
+        RrdPersisterFactory persisterFactory = new RrdPersisterFactory();
+        persisterFactory.setRrdStrategy(m_rrdStrategy);
+        persisterFactory.setResourceStorageDao(m_resourceStorageDao);
+        aliasedResource.visit(persisterFactory.createPersister(params, repository));
+
+        verify(m_rrdStrategy).updateFile(any(), any(), matches(".*:769"));
+        File metaFile = new File(getSnmpRrdDirectory(), "default/uplink/ifInOctets.meta");
+        assertTrue(Files.readAllLines(metaFile.toPath()).contains("SNMP_" + ifInOctets + "." + ifIndex + "=ifInOctets"));
     }
 
     @Ignore

@@ -34,6 +34,7 @@ import org.opennms.web.rest.v2.model.mibcompiler.MibEventSourceDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibEventsPreviewDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibFileDto;
 import org.opennms.web.rest.v2.model.mibcompiler.MibGraphTemplatesDto;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -382,7 +383,9 @@ public class MibFileServiceTest {
         final Events events = new Events();
         for (final String uei : ueis) {
             final org.opennms.netmgt.xml.eventconf.Event event = new org.opennms.netmgt.xml.eventconf.Event();
-            event.setUei(uei);
+            // set the field directly: setUei trims and rejects a blank UEI, and these documents must carry the
+            // UEIs exactly as given, as a hand-edited events file would
+            ReflectionTestUtils.setField(event, "m_uei", uei);
             event.setEventLabel("label");
             event.setDescr("descr");
             event.setSeverity("Indeterminate");

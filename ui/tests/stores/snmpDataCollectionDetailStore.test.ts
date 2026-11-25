@@ -310,7 +310,7 @@ describe('useSnmpDataCollectionDetailStore', () => {
     })
 
     it('should not retain previous source on error', async () => {
-      vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       store.selectedCollectionSource = mockCollectionSource
       vi.mocked(getSnmpDataCollectionSourceById).mockRejectedValue(new Error('Fetch failed'))
 
@@ -318,15 +318,17 @@ describe('useSnmpDataCollectionDetailStore', () => {
 
       // Previous source should still be there since we don't clear on error
       expect(store.selectedCollectionSource).toEqual(mockCollectionSource)
+      expect(consoleError).toHaveBeenCalled()
     })
 
     it('should reset loading state on error', async () => {
-      vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(getSnmpDataCollectionSourceById).mockRejectedValue(new Error('Error'))
 
       await store.fetchCollectionSourceById('1')
 
       expect(store.isLoading).toBe(false)
+      expect(consoleError).toHaveBeenCalled()
     })
 
     it('should also fetch resource types, mib groups, system definitions, and their names', async () => {
@@ -458,13 +460,14 @@ describe('useSnmpDataCollectionDetailStore', () => {
     })
 
     it('should preserve existing data on error', async () => {
-      vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       store.systemDefinitions = mockSystemDefinitions
       vi.mocked(getSnmpDataCollectionSystemDefinitions).mockRejectedValue(new Error('Error'))
 
       await store.fetchSystemDefinitions()
 
       expect(store.systemDefinitions).toEqual(mockSystemDefinitions)
+      expect(consoleError).toHaveBeenCalled()
     })
   })
 
@@ -675,13 +678,14 @@ describe('useSnmpDataCollectionDetailStore', () => {
     })
 
     it('should preserve existing data on error', async () => {
-      vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       store.mibGroups = mockMibGroups
       vi.mocked(getSnmpDataCollectionMibGroups).mockRejectedValue(new Error('Error'))
 
       await store.fetchMibGroups()
 
       expect(store.mibGroups).toEqual(mockMibGroups)
+      expect(consoleError).toHaveBeenCalled()
     })
   })
 
@@ -876,13 +880,14 @@ describe('useSnmpDataCollectionDetailStore', () => {
     })
 
     it('should preserve existing data on error', async () => {
-      vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       store.resourceTypes = mockResourceTypes
       vi.mocked(getSnmpDataCollectionResourceTypes).mockRejectedValue(new Error('Error'))
 
       await store.fetchResourceTypes()
 
       expect(store.resourceTypes).toEqual(mockResourceTypes)
+      expect(consoleError).toHaveBeenCalled()
     })
   })
 
@@ -1920,30 +1925,33 @@ describe('useSnmpDataCollectionDetailStore', () => {
     })
 
     it('should set loading to false even on error in fetchSystemDefinitions', async () => {
-      vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(getSnmpDataCollectionSystemDefinitions).mockRejectedValue(new Error('Error'))
 
       await store.fetchSystemDefinitions()
 
       expect(store.isLoading).toBe(false)
+      expect(consoleError).toHaveBeenCalled()
     })
 
     it('should set loading to false even on error in fetchMibGroups', async () => {
-      vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(getSnmpDataCollectionMibGroups).mockRejectedValue(new Error('Error'))
 
       await store.fetchMibGroups()
 
       expect(store.isLoading).toBe(false)
+      expect(consoleError).toHaveBeenCalled()
     })
 
     it('should set loading to false even on error in fetchResourceTypes', async () => {
-      vi.spyOn(console, 'error').mockImplementation(() => {})
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(getSnmpDataCollectionResourceTypes).mockRejectedValue(new Error('Error'))
 
       await store.fetchResourceTypes()
 
       expect(store.isLoading).toBe(false)
+      expect(consoleError).toHaveBeenCalled()
     })
   })
 

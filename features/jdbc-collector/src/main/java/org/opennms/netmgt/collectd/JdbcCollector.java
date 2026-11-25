@@ -57,6 +57,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JdbcCollector extends AbstractRemoteServiceCollector {
+
+    /** Agent protocol of this collector, published as {@code agent_protocol} on Kafka. */
+    public static final String AGENT_PROTOCOL = "JDBC";
+
+    @Override
+    public String getAgentProtocol() {
+        return AGENT_PROTOCOL;
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(JdbcCollector.class);
 
     private static final String JDBC_COLLECTION_KEY = "jdbcCollection";

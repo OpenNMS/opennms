@@ -57,6 +57,7 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -1748,6 +1749,182 @@ public class EventConfRestServiceIT {
         page = (Map<String, Object>) resp.getEntity();
         assertEquals(5, page.get("totalRecords"));
         assertEquals(3, ((List<?>) page.get("eventConfSourceList")).size());
+    }
+
+    /** An upload attachment whose content is {@code xml}, named {@code filename}. */
+    private Attachment inlineAttachment(final String filename, final String xml) {
+        final Attachment att = mock(Attachment.class);
+        final ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filename);
+        when(att.getContentDisposition()).thenReturn(cd);
+        when(att.getObject(InputStream.class)).thenReturn(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+        return att;
+    }
+
+    /** An eventconf file holding one {@code <event>} per entry of {@code ueiElementContents}, used verbatim. */
+    private static String eventsFile(final String... ueiElementContents) {
+        final StringBuilder xml = new StringBuilder("<events xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">");
+        int i = 0;
+        for (final String uei : ueiElementContents) {
+            xml.append("<event><uei>").append(uei).append("</uei><event-label>Label ").append(++i)
+                    .append("</event-label><descr>d</descr><severity>Normal</severity></event>");
+        }
+        return xml.append("</events>").toString();
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateEventConfEvent_BlankOrMissingUei_BadRequest() throws Exception {
+        final EventConfSource source = createSource("blank-edit.events", eventConfSourceDao.nextFileOrder());
+        flushAndClear();
+        final String uei = "uei.opennms.org/test/blankedit";
+        eventConfRestApi.addEventConfSourceEvent(source.getId(), eventDef(uei, "Original", "Normal", "d"), securityContext);
+        flushAndClear();
+        final Long eventId = eventConfEventDao.findByUei(uei).getId();
+
+        final EventConfEventEditRequest blank = new EventConfEventEditRequest();
+        blank.setEnabled(true);
+        blank.setEvent(eventDef("  ", "Blank", "Normal", "d"));
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
+                eventConfRestApi.updateEventConfEvent(source.getId(), eventId, blank, securityContext).getStatus());
+
+        final EventConfEventEditRequest missing = new EventConfEventEditRequest();
+        missing.setEnabled(true);
+        missing.setEvent(JaxbUtils.unmarshal(Event.class, """
+                <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+                   <event-label>Missing</event-label>
+                   <descr>d</descr>
+                   <severity>Normal</severity>
+                </event>
+                """));
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
+                eventConfRestApi.updateEventConfEvent(source.getId(), eventId, missing, securityContext).getStatus());
+
+        flushAndClear();
+        final EventConfEvent stored = eventConfEventDao.get(eventId);
+        assertEquals(uei, stored.getUei());
+        assertEquals("Original", stored.getEventLabel());
+    }
+
+    @Test
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public void testUpload_BlankUei_FileRejectedOthersSucceed() throws Exception {
+        final Response resp = eventConfRestApi.uploadEventConfFiles(List.of(
+                inlineAttachment("good.events.xml", eventsFile("uei.opennms.org/test/upload/good")),
+                inlineAttachment("blank.events.xml", eventsFile("uei.opennms.org/test/upload/fine", " \n "))),
+                securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+
+        final Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
+        final List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");
+        final List<Map<String, Object>> errors = (List<Map<String, Object>>) entity.get("errors");
+        assertEquals(List.of("good.events"), success.stream().map(m -> m.get("file")).toList());
+        assertEquals(List.of("blank.events"), errors.stream().map(m -> m.get("file")).toList());
+        // the error names the offending event, not just the file
+        final String error = errors.get(0).get("error").toString();
+        assertTrue(error, error.contains("'uei'") && error.contains("#2 (event-label 'Label 2')"));
+
+        // the rejected file stores nothing, not even the events that were fine
+        assertNull(eventConfSourceDao.findByName("blank.events"));
+        assertNull(eventConfEventDao.findByUei("uei.opennms.org/test/upload/fine"));
+        assertNotNull(eventConfEventDao.findByUei("uei.opennms.org/test/upload/good"));
+    }
+
+    /** Asserts the column and xml_content of the stored definition both hold {@code uei}, trimmed. */
+    private EventConfEvent assertStoredTrimmed(final String uei) {
+        final EventConfEvent stored = eventConfEventDao.findByUei(uei);
+        assertNotNull("no event stored under the trimmed UEI " + uei, stored);
+        assertEquals(uei, stored.getUei());
+        assertTrue(stored.getXmlContent(), stored.getXmlContent().contains("<uei>" + uei + "</uei>"));
+        return stored;
+    }
+
+    private static String padded(final String uei) {
+        return "\n   " + uei + "\n";
+    }
+
+    @Test
+    @Transactional
+    public void testUpload_PaddedUei_StoredTrimmed() throws Exception {
+        final String uei = "uei.opennms.org/test/padded/upload";
+        final Response resp = eventConfRestApi.uploadEventConfFiles(
+                List.of(inlineAttachment("padded-upload.events.xml", eventsFile(padded(uei)))), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        flushAndClear();
+        assertStoredTrimmed(uei);
+
+        // an event sent with the trimmed UEI finds the definition
+        EventConfServiceHelper.reloadEventsFromDB(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao);
+        assertNotNull(eventConfDao.findByUei(uei));
+    }
+
+    @Test
+    @Transactional
+    public void testAdd_PaddedUei_StoredTrimmed() throws Exception {
+        final EventConfSource source = createSource("padded-add.events", eventConfSourceDao.nextFileOrder());
+        flushAndClear();
+        final String uei = "uei.opennms.org/test/padded/add";
+        final Response resp = eventConfRestApi.addEventConfSourceEvent(source.getId(),
+                eventDef(padded(uei), "Padded add", "Normal", "d"), securityContext);
+        assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
+        flushAndClear();
+        assertStoredTrimmed(uei);
+    }
+
+    @Test
+    @Transactional
+    public void testUpsert_PaddedUeiMatchesExistingTrimmed() throws Exception {
+        final EventConfSource source = createSource("padded-upsert.events", eventConfSourceDao.nextFileOrder());
+        flushAndClear();
+        final String uei = "uei.opennms.org/test/padded/upsert";
+
+        Response resp = eventConfRestApi.upsertEventConfSourceEvent(source.getId(),
+                maskedEventDef(padded(uei), "1", "Padded upsert", "Warning", "d"), securityContext);
+        assertEquals("created", upsertBody(resp).get("outcome"));
+        final Long id = (Long) upsertBody(resp).get("id");
+        flushAndClear();
+        assertStoredTrimmed(uei);
+
+        // the same padded definition again is the stored one, not a new event
+        resp = eventConfRestApi.upsertEventConfSourceEvent(source.getId(),
+                maskedEventDef(padded(uei), "1", "Padded upsert", "Warning", "d"), securityContext);
+        assertEquals("unchanged", upsertBody(resp).get("outcome"));
+        assertEquals(id, upsertBody(resp).get("id"));
+    }
+
+    @Test
+    @Transactional
+    public void testEdit_PaddedUei_StoredTrimmed() throws Exception {
+        final EventConfSource source = createSource("padded-edit.events", eventConfSourceDao.nextFileOrder());
+        flushAndClear();
+        final String original = "uei.opennms.org/test/padded/edit-original";
+        eventConfRestApi.addEventConfSourceEvent(source.getId(), eventDef(original, "Original", "Normal", "d"), securityContext);
+        flushAndClear();
+        final Long eventId = eventConfEventDao.findByUei(original).getId();
+
+        final String uei = "uei.opennms.org/test/padded/edit";
+        final EventConfEventEditRequest payload = new EventConfEventEditRequest();
+        payload.setEnabled(true);
+        payload.setEvent(eventDef(padded(uei), "Edited", "Normal", "d"));
+        assertEquals(Response.Status.OK.getStatusCode(),
+                eventConfRestApi.updateEventConfEvent(source.getId(), eventId, payload, securityContext).getStatus());
+        flushAndClear();
+        assertEquals(eventId, assertStoredTrimmed(uei).getId());
+    }
+
+    @Test
+    @Transactional
+    public void testGetEventsByUei_PaddedQueryParam() throws Exception {
+        final EventConfSource source = createSource("padded-lookup.events", eventConfSourceDao.nextFileOrder());
+        flushAndClear();
+        final String uei = "uei.opennms.org/test/lookup";
+        eventConfRestApi.addEventConfSourceEvent(source.getId(), eventDef(uei, "Lookup", "Normal", "d"), securityContext);
+        flushAndClear();
+
+        final Response resp = eventConfRestApi.getEventConfSourceEventsByUei(source.getId(), "  " + uei + "\n", securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        assertEquals(1, ((List<?>) resp.getEntity()).size());
     }
 
     @Test

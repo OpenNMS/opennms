@@ -36,7 +36,7 @@ const users = [
 ]
 
 const mountTable = () => mount(UsersTable, {
-  global: { plugins: [PrimeVue], directives: { 'onms-tooltip': tooltipStub, tooltip: tooltipStub }}
+  global: { plugins: [PrimeVue], directives: { 'onms-tooltip': tooltipStub }}
 })
 
 const ids = (wrapper: ReturnType<typeof mountTable>) => wrapper.findAll('.user-id').map(e => e.text())

@@ -28,13 +28,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.dao.impl.util.JaxbXmlConverter;
 import org.opennms.features.config.dao.impl.util.XmlSchema;
 import org.opennms.features.config.service.config.FakeXsdForTest;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -46,8 +46,6 @@ public class JaxbXmlConverterTest {
     final static String FOREIGN_SOURCES = "/opt/opennms/etc/foreign-sources";
 
     @Test
-    //TODO: Failing test after bugfix in ProvisiondConfiguration.equals(). JIRA: https://issues.opennms.org/browse/NMS-14709
-    @Ignore
     public void testConverter() throws IOException {
         final JaxbXmlConverter converter = new JaxbXmlConverter("provisiond-configuration.xsd", "provisiond-configuration", null);
         final String sourceXml = Resources.toString(
@@ -59,15 +57,39 @@ public class JaxbXmlConverterTest {
         final String convertedJson = converter.xmlToJson(sourceXml);
         JSONAssert.assertEquals(expectedJson, convertedJson, true);
 
-        // Verify the rendered JSON
+        // Verify the object mapped from the rendered JSON
         final ProvisiondConfiguration objectFromMappedJson = ConfigConvertUtil.jsonToObject(convertedJson, ProvisiondConfiguration.class);
 
         Assert.assertEquals("json importThreads Value is not correct", 11L, (long) objectFromMappedJson.getImportThreads());
         Assert.assertEquals("json foreign-source-dir is not correct. " + objectFromMappedJson.getForeignSourceDir(), FOREIGN_SOURCES, objectFromMappedJson.getForeignSourceDir());
 
-        // compare Object from json to object from source xml
-        final ProvisiondConfiguration objectFromSourceXml = JaxbUtils.unmarshal(ProvisiondConfiguration.class, sourceXml);
-        assertThat(objectFromMappedJson, equalTo(objectFromSourceXml));
+        // ProvisiondConfiguration has no JAXB annotations (it is loaded through the config manager as JSON),
+        // so JaxbUtils.unmarshal() cannot be used as a reference. Compare against the values in the source XML instead.
+        final ProvisiondConfiguration expected = expectedProvisiondConfiguration();
+        // Compare the JSON forms first: the model classes have no toString(), so a failure here shows which field differs
+        JSONAssert.assertEquals(ConfigConvertUtil.objectToJson(expected), ConfigConvertUtil.objectToJson(objectFromMappedJson), true);
+        assertThat(objectFromMappedJson, equalTo(expected));
+    }
+
+    private static ProvisiondConfiguration expectedProvisiondConfiguration() {
+        final ProvisiondConfiguration config = new ProvisiondConfiguration();
+        config.setImportThreads(11L);
+        config.setScanThreads(10L);
+        config.setRescanThreads(10L);
+        config.setWriteThreads(8L);
+        config.setRequistionDir("/opt/opennms/etc/imports");
+        config.setForeignSourceDir(FOREIGN_SOURCES);
+        config.addRequisitionDef(requisitionDef("localhost", "dns://localhost/localhost"));
+        config.addRequisitionDef(requisitionDef("the-import-name-to-use", "vmware://ip-address-or-hostname/foreignSource-Name?parameters"));
+        return config;
+    }
+
+    private static RequisitionDef requisitionDef(final String importName, final String importUrlResource) {
+        final RequisitionDef def = new RequisitionDef();
+        def.setImportName(importName);
+        def.setImportUrlResource(importUrlResource);
+        def.setCronSchedule("0 0 0 * * ? *");
+        return def;
     }
 
     @Test

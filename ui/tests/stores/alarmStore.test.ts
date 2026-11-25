@@ -216,7 +216,7 @@ describe('alarmStore', () => {
   })
 
   describe('getNodeAlarmStatus', () => {
-    const status = { severity: 'MAJOR', nodeDown: false, interfacesDown: 0, servicesDown: 1, acknowledgedCount: 0, unacknowledgedCount: 1 }
+    const status = { severity: 'MAJOR', unacknowledgedCount: 1, unacknowledgedBySeverity: { CRITICAL: 0, MAJOR: 1, MINOR: 0, WARNING: 0 }}
     const ok = (payload = status) => ({ success: true, message: '', payload }) as never
     const failed = { success: false, message: 'nope' } as never
     const pending = () => new Promise(() => undefined) as never

@@ -83,7 +83,7 @@ const authLoaded = computed<boolean>(() => authStore.loaded)
 
 // Presets a URL can name: the top-bar bell (NMS-20124), Node Details and the dashboard link here.
 // userSearch is not one of them; it is typed on the page.
-const LINKABLE_PRESETS: readonly NotificationQueryPreset[] = ['yourOutstanding', 'yourAcknowledged', 'teamOutstanding', 'allOutstanding', 'allAcknowledged']
+const LINKABLE_PRESETS: readonly NotificationQueryPreset[] = ['yourOutstanding', 'yourAcknowledged', 'teamOutstanding', 'allOutstanding', 'allAcknowledged', 'all']
 
 const queryFor = (preset: NotificationQueryPreset, nodeId: string | null | undefined): Record<string, string> => ({
   ...(preset !== 'userSearch' ? { preset } : {}),

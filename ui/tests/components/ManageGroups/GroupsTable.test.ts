@@ -24,8 +24,6 @@ vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner: vi.
 
 enableAutoUnmount(afterEach)
 
-const noop = { mounted: () => undefined }
-
 const groups = [
   { name: 'ops/east', comments: 'East coast operators', users: ['alice'], version: 1 },
   { name: 'Admin', comments: 'Administrators', users: ['admin'], version: 2 },
@@ -33,7 +31,7 @@ const groups = [
 ]
 
 const mountTable = () => mount(GroupsTable, {
-  global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
+  global: { plugins: [PrimeVue] }
 })
 
 const names = (wrapper: ReturnType<typeof mountTable>) => wrapper.findAll('.group-name').map(e => e.text())

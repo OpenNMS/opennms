@@ -33,13 +33,12 @@ import { datePicker, pickDate } from '../../utils'
 
 enableAutoUnmount(afterEach)
 
-const noop = { mounted: () => undefined }
 const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 const mountCard = (card: ScheduleCard, members = ['bob', 'carol'], groupChanged = false) =>
   mount(OnCallScheduleCard, {
     props: { card, members, groupChanged, shortMonths: SHORT_MONTHS, highlighted: false },
-    global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
+    global: { plugins: [PrimeVue] }
   })
 
 const select = (w: ReturnType<typeof mountCard>, hook: string) =>

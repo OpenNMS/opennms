@@ -5,7 +5,6 @@ import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import type { TrapConfig } from '@/types/trapConfig'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
-import { cloneDeep } from 'lodash'
 import { setActivePinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import ToggleSwitch from 'primevue/toggleswitch'
@@ -75,7 +74,7 @@ describe('GeneralConfiguration.vue', () => {
     )
 
     store = useTrapdConfigStore()
-    store.trapdConfig = cloneDeep(baseTrapConfig)
+    store.trapdConfig = structuredClone(baseTrapConfig)
     store.fetchTrapConfig = vi.fn().mockResolvedValue(undefined)
 
     updateTrapdConfigurationMock.mockResolvedValue(undefined)
@@ -103,7 +102,7 @@ describe('GeneralConfiguration.vue', () => {
     const wrapper = mountComponent()
 
     store.trapdConfig = {
-      ...cloneDeep(baseTrapConfig),
+      ...structuredClone(baseTrapConfig),
       snmpTrapPort: 10162,
       snmpTrapAddress: '*',
       newSuspectOnTrap: false,

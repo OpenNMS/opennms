@@ -80,11 +80,14 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         LOG.debug("EventConfExtensionManager initialized.");
     }
 
+    /** An event definition together with the plugin extension that provides it, for error logging. */
+    private record PluginEventDefinition(EventConfExtension extension, EventDefinition definition) {}
+
     @Override
     protected Events getConfigForExtensions(Set<EventConfExtension> extensions) {
         final List<Event> orderedEvents = extensions.stream()
-                .flatMap(ext -> ext.getEventDefinitions().stream())
-                .sorted(Comparator.comparing(EventDefinition::getPriority))
+                .flatMap(ext -> ext.getEventDefinitions().stream().map(def -> new PluginEventDefinition(ext, def)))
+                .sorted(Comparator.comparing(p -> p.definition().getPriority()))
                 .map(EventConfExtensionManager::toEvent)
                 .toList();
         // Re-build the events
@@ -231,6 +234,22 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         return source;
     }
 
+
+    /**
+     * Converts one plugin event definition, and logs the plugin and the definition when it is invalid. The
+     * exception is still thrown, so an invalid definition still blocks all plugin event definitions; the log
+     * tells the user which plugin to fix or remove.
+     */
+    private static Event toEvent(final PluginEventDefinition p) {
+        try {
+            return toEvent(p.definition());
+        } catch (RuntimeException e) {
+            LOG.error("Plugin extension {} has an invalid event definition (uei '{}', event-label '{}'). Until this plugin"
+                    + " is fixed or removed, changes to plugin event definitions are not applied.",
+                    p.extension().getClass().getName(), p.definition().getUei(), p.definition().getLabel(), e);
+            throw e;
+        }
+    }
 
     private static Event toEvent(EventDefinition def) {
         final Event event = new Event();

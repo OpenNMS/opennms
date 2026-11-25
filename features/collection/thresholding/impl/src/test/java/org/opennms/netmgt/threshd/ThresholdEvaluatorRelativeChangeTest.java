@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 import java.util.Date;
 
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.config.threshd.ThresholdType;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -326,6 +327,24 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
        
     }
     
+    @Test
+    public void testWhitespaceOnlyCustomUeiFallsBackToDefault() {
+        // built from XML, as Threshd loads it: the UEI field is filled without calling the setter
+        Threshold threshold = JaxbUtils.unmarshal(Threshold.class,
+                "<threshold xmlns=\"http://xmlns.opennms.org/xsd/config/thresholding\" type=\"relativeChange\""
+                        + " ds-name=\"ds-name\" ds-type=\"node\" value=\"99.0\" rearm=\"95.0\" trigger=\"1\""
+                        + " triggeredUEI=\"   \"/>");
+        ThresholdEvaluatorState.ThresholdValues thresholdValues = mock(ThresholdEvaluatorState.ThresholdValues.class);
+        when(thresholdValues.getThresholdValue()).thenReturn(99.0);
+        when(thresholdValues.getRearm()).thenReturn(95.0);
+        when(thresholdValues.getTrigger()).thenReturn(1);
+
+        ThresholdEvaluatorStateRelativeChange item = new ThresholdEvaluatorStateRelativeChange(
+                new ThresholdConfigWrapper(threshold), MockSession.getSession());
+        Event event = item.getEventForState(Status.TRIGGERED, new Date(), 100.0, thresholdValues, null);
+        assertEquals(EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
+    }
+
     @Test
     public void testNegativeNumberTriggers() {
         Threshold threshold = new Threshold();

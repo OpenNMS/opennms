@@ -23,7 +23,7 @@
 import { defineStore } from 'pinia'
 import { SORT } from '@/types'
 import { latLng, LatLngBounds } from 'leaflet'
-import { orderBy } from 'lodash'
+import { compareBy } from '@/lib/sorting'
 import { numericSeverityLevel } from '@/components/Map/utils'
 import API from '@/services'
 import { ref } from 'vue'
@@ -71,7 +71,7 @@ export const useMapStore = defineStore('mapStore', () => {
     let nodes: Node[] = JSON.parse(JSON.stringify(nodesWithCoordinates.value))
 
     // sort the nodes
-    nodes = orderBy(nodes, nodeSortObject.value.property, nodeSortObject.value.value)
+    nodes.sort(compareBy<Node>(nodeSortObject.value.property, nodeSortObject.value.value))
 
     // filter for nodes within map view-port
     nodes = nodes.filter((node) => {
@@ -113,7 +113,7 @@ export const useMapStore = defineStore('mapStore', () => {
     const filteredAlarms = alarms.value.filter((alarm: Alarm) => nodeLabels.includes(alarm.nodeLabel))
 
     // sort and return the alarms
-    return orderBy(filteredAlarms, alarmSortObject.value.property, alarmSortObject.value.value)
+    return filteredAlarms.sort(compareBy<Alarm>(alarmSortObject.value.property, alarmSortObject.value.value))
   }
 
   // Make API call to get nodes

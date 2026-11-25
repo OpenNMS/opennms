@@ -29,7 +29,7 @@ import {
   InterfaceListMode,
   normalizeMacSearch
 } from '@/components/Nodes/hooks/useInterfaceListing'
-import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { useNodeQuery } from '@/components/Nodes/NodeList/hooks/useNodeQuery'
 import { IpInterface, MatchType, NodeQueryFilter, SnmpInterface } from '@/types'
 
 const { getDefaultNodeQueryFilter } = useNodeQuery()

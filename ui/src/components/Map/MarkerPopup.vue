@@ -46,7 +46,7 @@ import Location from '@opennms/onms-ui/icons/action/Location.vue'
 import { LPopup } from '@vue-leaflet/vue-leaflet'
 import { useRouter } from 'vue-router'
 import { Node } from '@/types'
-import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
+import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 import { mapPopupOptions } from './utils'
 
 const router = useRouter()

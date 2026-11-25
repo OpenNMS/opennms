@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class KafkaPersister implements Persister {
 
@@ -136,12 +137,15 @@ public class KafkaPersister implements Persister {
                 if(collectionSetResource.getNumericList().size() > 0) {
                     // Handle numeric attributes only.
                     CollectionSetProtos.CollectionSetResource.Builder numericResourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
-                    numericResourceBuilder.mergeFrom(collectionSetResource).clearString();
+                    numericResourceBuilder.mergeFrom(collectionSetResource).clearString().addAllString(contextStrings(collectionSetResource));
                     CollectionSetProtos.CollectionSet collectionSetWithNumeric = CollectionSetProtos.CollectionSet.newBuilder()
                             .addResource(numericResourceBuilder).setTimestamp(collectionSetProto.getTimestamp()).build();
                     bisectNumericAttributes(collectionSetWithNumeric, topic);
                 }
-                if(collectionSetResource.getStringList().size() > 0) {
+                // Context strings already travel with every numeric chunk, so a string message is only needed
+                // for other strings, or when there are no numeric attributes to carry the context.
+                if(!otherStrings(collectionSetResource).isEmpty()
+                        || (collectionSetResource.getNumericCount() == 0 && collectionSetResource.getStringCount() > 0)) {
                     // Handle string attributes only
                     CollectionSetProtos.CollectionSetResource.Builder stringResourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
                     stringResourceBuilder.mergeFrom(collectionSetResource).clearNumeric();
@@ -206,9 +210,10 @@ public class KafkaPersister implements Persister {
             return;
         }
         final boolean oversized = checkForMaxSize(payload.length);
-        if (oversized && collectionSetProto.getResource(0).getStringCount() > 1) {
-            Iterator<List<CollectionSetProtos.StringAttribute>> subList = Iterables.partition(collectionSetProto.getResource(0).getStringList(),
-                    (collectionSetProto.getResource(0).getStringCount() + 1) / 2).iterator();
+        final List<CollectionSetProtos.StringAttribute> others = otherStrings(collectionSetProto.getResource(0));
+        if (oversized && others.size() > 1) {
+            Iterator<List<CollectionSetProtos.StringAttribute>> subList = Iterables.partition(others,
+                    (others.size() + 1) / 2).iterator();
             bisectStringAttributes(buildCollectionSetWithStringAttributes(collectionSetProto, subList.next()), topic);
             bisectStringAttributes(buildCollectionSetWithStringAttributes(collectionSetProto, subList.next()), topic);
         } else {
@@ -226,9 +231,22 @@ public class KafkaPersister implements Persister {
         CollectionSetProtos.CollectionSet.Builder collectionSetBuilder = CollectionSetProtos.CollectionSet.newBuilder()
                 .setTimestamp(originalCollectionSet.getTimestamp());
         CollectionSetProtos.CollectionSetResource.Builder collectionSetResourceBuilder = CollectionSetProtos.CollectionSetResource.newBuilder();
-        collectionSetResourceBuilder.mergeFrom(originalCollectionSet.getResource(0)).clearString().addAllString(stringAttributes);
+        collectionSetResourceBuilder.mergeFrom(originalCollectionSet.getResource(0)).clearString()
+                .addAllString(contextStrings(originalCollectionSet.getResource(0))).addAllString(stringAttributes);
         collectionSetBuilder.addResource(collectionSetResourceBuilder);
         return collectionSetBuilder.build();
+    }
+
+    private static List<CollectionSetProtos.StringAttribute> contextStrings(CollectionSetProtos.CollectionSetResource resource) {
+        return resource.getStringList().stream()
+                .filter(s -> MetricIdentifier.RESOURCE_CONTEXT_ATTRIBUTES.contains(s.getName()))
+                .collect(Collectors.toList());
+    }
+
+    private static List<CollectionSetProtos.StringAttribute> otherStrings(CollectionSetProtos.CollectionSetResource resource) {
+        return resource.getStringList().stream()
+                .filter(s -> !MetricIdentifier.RESOURCE_CONTEXT_ATTRIBUTES.contains(s.getName()))
+                .collect(Collectors.toList());
     }
 
     boolean checkForMaxSize(int length) {

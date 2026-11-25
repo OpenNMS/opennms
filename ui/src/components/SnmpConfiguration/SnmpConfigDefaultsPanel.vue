@@ -155,10 +155,10 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
-import { isEqual } from 'lodash'
 import { OnmsButton, OnmsIcon, OnmsInputNumber, OnmsInputText, OnmsMessageDialog, OnmsSelect } from '@opennms/onms-ui'
 import InfoIcon from '@opennms/onms-ui/icons/action/Info.vue'
 import { ISelectItemType } from '@/types'
+import { shallowEqual } from '@/lib/utils'
 
 import FormField from '@/components/Common/FormField.vue'
 import ScvInputIcon from '@/components/SCV/ScvInputIcon.vue'
@@ -458,8 +458,8 @@ const onSave = async () => {
     return
   }
 
-  if (isEqual(formConfig.value, snmpConfigStore.config) ||
-    isEqual(normalizeSnmpConfiguration(formConfig.value), normalizeSnmpConfiguration(snmpConfigStore.config))) {
+  if (shallowEqual(formConfig.value, snmpConfigStore.config) ||
+    shallowEqual(normalizeSnmpConfiguration(formConfig.value), normalizeSnmpConfiguration(snmpConfigStore.config))) {
     snackbar.showSnackBar({
       msg: 'No changes to save.'
     })

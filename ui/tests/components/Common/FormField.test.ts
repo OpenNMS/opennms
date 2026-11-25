@@ -1,5 +1,5 @@
 import FormField from '@/components/Common/FormField.vue'
-import { OnmsMessageDialog, OnmsTooltip } from '@opennms/onms-ui'
+import { OnmsMessageDialog } from '@opennms/onms-ui'
 import { mount } from '@vue/test-utils'
 import PrimeVue from 'primevue/config'
 import { describe, expect, it } from 'vitest'
@@ -155,7 +155,7 @@ describe('FormField.vue', () => {
       mount(FormField, {
         props: { label: 'Value', for: 'value', info: 'The value to compare against.', ...props },
         slots: { default: '<input id="value" data-test="control" />' },
-        global: { plugins: [PrimeVue], directives: { 'onms-tooltip': OnmsTooltip }}
+        global: { plugins: [PrimeVue] }
       })
 
     it('shows no info icon without an info text', () => {

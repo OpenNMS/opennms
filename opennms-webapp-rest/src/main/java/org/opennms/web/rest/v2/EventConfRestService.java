@@ -30,6 +30,7 @@ import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
+import org.opennms.netmgt.dao.support.EventConfServiceHelper;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfEventDto;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
@@ -148,6 +149,8 @@ public class EventConfRestService implements EventConfRestApi {
             }
 
             try {
+                // checked here too, so a bad file never locks its source or opens a transaction
+                EventConfServiceHelper.requireUeis(fileEvents.getEvents());
                 // the source position is decided inside the persisting transaction: an existing source keeps
                 // its committed position, a new one is allocated there
                 eventConfPersistenceService.persistEventConfFile(
@@ -457,7 +460,7 @@ public class EventConfRestService implements EventConfRestApi {
         }
         try {
             final List<EventConfEventDto> events =
-                    EventConfEventDto.fromEntity(eventConfPersistenceService.findEventsBySourceIdAndUei(sourceId, uei));
+                    EventConfEventDto.fromEntity(eventConfPersistenceService.findEventsBySourceIdAndUei(sourceId, uei.trim()));
             return Response.ok(events).build();
         } catch (EntityNotFoundException ex) {
             return Response.status(Response.Status.NOT_FOUND).entity(ex.getMessage()).build();
@@ -505,6 +508,11 @@ public class EventConfRestService implements EventConfRestApi {
         if (payload.getEnabled() == null) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(Map.of("error", "The 'enabled' flag must be provided (true/false).")).build();
+        }
+        try {
+            validateEventDefinition(payload.getEvent());
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(Map.of("error", ex.getMessage())).build();
         }
         try {
             eventConfPersistenceService.updateEventConfEvent(sourceId, eventId, payload, getUsername(securityContext));
@@ -922,7 +930,20 @@ public class EventConfRestService implements EventConfRestApi {
         if (event == null) {
             throw new IllegalArgumentException("Event payload is missing");
         }
-        requireNonBlank(event.getUei(), "Event 'uei' is required");
+        validateEventDefinition(event);
+    }
+
+    /**
+     * The checks every event definition written through add, upsert or edit must pass. The UI's event form
+     * requires the same fields.
+     *
+     * @param event the event definition from the request, not null
+     * @throws IllegalArgumentException naming the first missing field: uei, then event-label, then severity
+     */
+    private void validateEventDefinition(final Event event) {
+        if (EventConfServiceHelper.isBlankUei(event.getUei())) {
+            throw new IllegalArgumentException("Event 'uei' is required");
+        }
         requireNonBlank(event.getEventLabel(), "Event 'event-label' is required");
         requireNonBlank(event.getSeverity(), "Event 'severity' is required");
     }
