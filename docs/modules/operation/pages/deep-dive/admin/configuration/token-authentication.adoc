@@ -178,7 +178,7 @@ The previously-loaded configuration remains in effect until the next successful 
 
 Both the XML and HTTP collectors accept `${token:<name>}` in any header value.
 
-* In `xml-datacollection-config.xml`: This collector supports the placeholder inside a `<request>/<header>` element of an `<xml-source>`.
+* In the XML collection configuration (*Admin -> Configure XML Data Collection*): This collector supports the placeholder in a request header of a source (`<request>/<header>` of an `<xml-source>` in the XML form).
 * In `http-datacollection-config.xml`: The `<url>` element supports a `<headers>` block for the same purpose.
 
 The header value is resolved at request build time, alongside any other metadata DSL placeholders.

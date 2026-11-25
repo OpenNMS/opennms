@@ -74,6 +74,7 @@ It leaves predicates, functions, axis specifiers (`self::`, `child::`), `.`, `..
 * A value that is a full XPath expression rather than a location path, such as a union like `/a | /b`, is left as-is.
 
 
+[[ref-collector-xml-configuration]]
 == XML collection configuration
 
 Understanding <<operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when editing collector-specific configuration files.
@@ -91,6 +92,17 @@ The former form `xml-datacollection/<id>.xml` is still accepted.
 
 The upgrade to {page-component-title} 37 imports these files into the database and moves them to `$\{OPENNMS_HOME}/etc_archive/`.
 After that, edits to the files no longer take effect; to bring in files from another installation, use *Import XML files* on the *Upload / download* tab of the configuration page.
+
+The configuration page has four tabs:
+
+Collections:: Create, edit, and delete collections.
+A collection's detail page edits its RRD settings and its sources: the URL, the optional request (method, headers, parameters, content), the imported group files, and the groups defined in the source itself.
+Group files:: Create, edit, and delete group files.
+The list shows which collections import each file; a group file that a source still imports cannot be deleted.
+Settings:: The `rrd-repository` shared by every collection.
+Upload / download:: Download the complete configuration as one JSON file, or replace it with such a file, for example to copy the configuration to another {page-component-title} instance.
+*Import XML files* accepts files of the former format: each `xml-datacollection/*.xml` file becomes a group file named after the file, and `xml-datacollection-config.xml` replaces the settings and all collections.
+Select the group files and the `xml-datacollection-config.xml` that imports them together, or import the group files first.
 
 The examples on this page show the configuration in its XML form, which is also what the import accepts.
 
@@ -113,7 +125,7 @@ The examples on this page show the configuration in its XML form, which is also 
 
 The `url` attribute of the `<xml-source>` supports <<ref-collector-xml-placeholders, placeholders>> for node and interface properties.
 
-NOTE: Metadata expressions can also be used in attributes of the `xml-datacollection-config.xml` configuration file.
+NOTE: Metadata expressions can also be used in attributes of the XML collection configuration.
 This lets the user also reference credentials stored in the secure credentials.
 
 .The referenced `opennms-nodes.xml` file

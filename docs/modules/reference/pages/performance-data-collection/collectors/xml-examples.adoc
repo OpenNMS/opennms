@@ -75,9 +75,12 @@ TIP: It's best to keep names short to avoid the 19 character limit of RRDs.
 
 === Configuration
 
-==== xml-datacollection-config.xml
+==== XML collection
 
-Add the following `xml-collection` to `$\{OPENNMS_HOME}/etc/xml-datacollection-config.xml`. The `xml-group` is inlined inside the `xml-source` rather than pulled in via `<import-groups>` because there is only one source.
+Create a collection named `github-repo-stats` on the *Admin -> Configure XML Data Collection* page with the settings below.
+The XML form shown here can also be imported as is: wrap it in an `<xml-datacollection-config>` element and add it with *Import XML files*, or send it to the xref:development:rest/xml-collection-rest-api.adoc[REST API].
+Importing an `xml-datacollection-config.xml` document replaces all existing collections, so include them, or create the collection on the page instead.
+The `xml-group` is defined in the source itself rather than imported from a group file because there is only one source.
 
 [source, xml]
 ----
@@ -263,7 +266,7 @@ Use the structure above for additional examples:
 
 * Endpoint and response
 * Metrics
-* Configuration (xml-datacollection-config.xml, collectd-configuration.xml,
+* Configuration (XML collection, collectd-configuration.xml,
   optional graph templates, requisition guidance)
 * Verification (karaf opennms:collect command)
 * Notes (auth, rate limits, response shape gotchas)
