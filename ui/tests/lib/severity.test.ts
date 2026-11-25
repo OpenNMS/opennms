@@ -41,12 +41,13 @@ describe('severity', () => {
       ['major', 'major'],
       ['Minor', 'minor'],
       ['WARNING', 'warning'],
-      ['NORMAL', 'normal']
+      ['NORMAL', 'normal'],
+      ['Indeterminate', 'indeterminate']
     ])('gives %s the look %s, in any case', (severity, key) => {
       expect(severityKey(severity)).toBe(key)
     })
 
-    it.each(['INDETERMINATE', 'CLEARED', 'BOGUS', '', null, undefined])('gives %s no look of its own', (severity) => {
+    it.each(['CLEARED', 'BOGUS', '', null, undefined])('gives %s no look of its own', (severity) => {
       expect(severityKey(severity)).toBe('none')
     })
   })

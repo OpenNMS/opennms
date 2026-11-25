@@ -50,7 +50,14 @@ describe('SeverityIcon.vue', () => {
     expect(wrapper.classes()).toContain(`severity-icon--${key}`)
   })
 
-  it.each(['INDETERMINATE', 'CLEARED', 'BOGUS', undefined])('shows %s with the "?" icon', (severity) => {
+  it('shows INDETERMINATE with the "?" icon in its own colors', () => {
+    const wrapper = mountIcon({ severity: 'INDETERMINATE' })
+
+    expect(iconOf(wrapper)).toBe(None)
+    expect(wrapper.classes()).toContain('severity-icon--indeterminate')
+  })
+
+  it.each(['CLEARED', 'BOGUS', undefined])('shows %s with the grey "?" icon', (severity) => {
     const wrapper = mountIcon({ severity })
 
     expect(iconOf(wrapper)).toBe(None)

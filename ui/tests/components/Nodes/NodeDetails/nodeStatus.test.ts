@@ -108,7 +108,7 @@ describe('bannerSeverity', () => {
     ['WARNING', 'warning'],
     ['NORMAL', 'normal'],
     ['CLEARED', 'none'],
-    ['INDETERMINATE', 'none'],
+    ['INDETERMINATE', 'indeterminate'],
     [undefined, 'none']
   ])('%s -> %s', (severity, expected) => {
     expect(bannerSeverity(severity)).toBe(expected)

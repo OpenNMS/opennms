@@ -29,7 +29,7 @@ export const ONMS_SEVERITIES: readonly OnmsSeverityName[] =
   ['INDETERMINATE', 'CLEARED', 'NORMAL', 'WARNING', 'MINOR', 'MAJOR', 'CRITICAL']
 
 /** The severities that need attention: Warning and above, lowest first. */
-export const PROBLEM_SEVERITIES: readonly OnmsSeverityName[] = ['WARNING', 'MINOR', 'MAJOR', 'CRITICAL']
+export const PROBLEM_SEVERITIES: readonly OnmsSeverityName[] = ONMS_SEVERITIES.slice(ONMS_SEVERITIES.indexOf('WARNING'))
 
 const nameOf = (severity: string | null | undefined): OnmsSeverityName | undefined => {
   const upper = (severity ?? '').toUpperCase()
@@ -38,12 +38,13 @@ const nameOf = (severity: string | null | undefined): OnmsSeverityName | undefin
 }
 
 /**
- * The severities with a look of their own: an icon, a color, a banner tint. Every other severity
- * (indeterminate, cleared, one that is unknown or missing) is `none`.
+ * The severities with a look of their own: an icon and its color (the --onms-severity-<key>-bg/-fg
+ * tokens). Every other severity (cleared, one that is unknown or missing) is `none`, which is grey,
+ * like the --onms-cleared color that severityColorVar gives it.
  */
-export type SeverityKey = 'none' | 'normal' | 'warning' | 'minor' | 'major' | 'critical'
+export type SeverityKey = 'none' | 'indeterminate' | 'normal' | 'warning' | 'minor' | 'major' | 'critical'
 
-const KEYS = ['normal', 'warning', 'minor', 'major', 'critical'] as const
+const KEYS = ['indeterminate', 'normal', 'warning', 'minor', 'major', 'critical'] as const
 
 /** The look for a severity name, in any case; `none` for one with no look of its own. */
 export const severityKey = (severity: string | null | undefined): SeverityKey => {
@@ -54,9 +55,9 @@ export const severityKey = (severity: string | null | undefined): SeverityKey =>
 
 /** A severity name for people to read, for example "Major"; "Unknown" for one OpenNMS does not have. */
 export const severityName = (severity: string | null | undefined): string => {
-  const upper = (severity ?? '').toUpperCase()
+  const name = nameOf(severity)
 
-  return ONMS_SEVERITIES.some(name => name === upper) ? upper.charAt(0) + upper.slice(1).toLowerCase() : 'Unknown'
+  return name === undefined ? 'Unknown' : name.charAt(0) + name.slice(1).toLowerCase()
 }
 
 /** The OnmsSeverity id for a severity name, in any case, for example 6 for MAJOR; undefined for an unknown one. */
@@ -85,7 +86,11 @@ export const highestSeverity = (severities: Iterable<string | null | undefined>)
 }
 
 /** Whether the severity is Warning or above. */
-export const isProblemSeverity = (severity: string | null | undefined): boolean => severityRank(severity) >= 4
+export const isProblemSeverity = (severity: string | null | undefined): boolean => {
+  const name = nameOf(severity)
+
+  return name !== undefined && PROBLEM_SEVERITIES.includes(name)
+}
 
 const SEVERITY_TAGS: Record<OnmsSeverityName, OnmsTagSeverity> = {
   CRITICAL: 'danger',

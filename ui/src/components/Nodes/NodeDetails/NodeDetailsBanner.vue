@@ -45,7 +45,7 @@ withDefaults(defineProps<{
 }
 
 // The severity icons' colors (SeverityIcon), so a banner and its icon always agree.
-@each $name in normal, warning, minor, major, critical {
+@each $name in indeterminate, normal, warning, minor, major, critical {
   .node-details-banner--#{$name} {
     border-left-color: var(--onms-severity-#{$name}-bg);
     background: utils.alpha(--onms-severity-#{$name}-bg, 0.2);

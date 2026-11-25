@@ -240,7 +240,7 @@ const userNotificationBadgeClass = computed<string>(() => {
     return 'badge-severity-none'
   }
 
-  const highest = highestSeverity(list.map(n => n.severity ?? 'INDETERMINATE'))
+  const highest = highestSeverity(list.map(n => n.severity))
 
   return `badge-severity-${severityKey(highest)}`
 })
@@ -483,6 +483,11 @@ div.user-notification-badge-wrapper {
 .badge-severity-normal {
   background-color: var(--onms-severity-normal-bg);
   color: var(--onms-severity-normal-fg);
+}
+
+.badge-severity-indeterminate {
+  background-color: var(--onms-severity-indeterminate-bg);
+  color: var(--onms-severity-indeterminate-fg);
 }
 
 .badge-severity-none {

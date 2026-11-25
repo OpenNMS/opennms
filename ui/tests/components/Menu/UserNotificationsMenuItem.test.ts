@@ -103,6 +103,20 @@ describe('UserNotificationsMenuItem.vue', () => {
     expect(badgeClasses().user).toContain('badge-severity-critical')
   })
 
+  it('shows Indeterminate in its own color', async () => {
+    await mountWith(summary(2, 1, ['INDETERMINATE', 'INDETERMINATE']))
+    expect(badgeClasses().user).toContain('badge-severity-indeterminate')
+  })
+
+  it('colors each notification in the list by its own severity', async () => {
+    await mountWith(summary(2, 1, ['INDETERMINATE', 'CLEARED']))
+    const pills = wrapper.findAll('i.notification-badge-pill').map(p => p.classes())
+    expect(pills).toEqual([
+      expect.arrayContaining(['badge-severity-indeterminate']),
+      expect.arrayContaining(['badge-severity-none'])
+    ])
+  })
+
   it('shows none when the severity is missing', async () => {
     await mountWith(summary(1, 1, [undefined]))
     expect(badgeClasses().user).toContain('badge-severity-none')
