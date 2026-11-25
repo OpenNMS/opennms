@@ -57,7 +57,7 @@ import { OnmsAutoComplete, OnmsButton, OnmsIconButton, OnmsInputText } from '@op
 import Delete from '@opennms/onms-ui/icons/action/Delete.vue'
 import TogglePanel from '@/components/Common/TogglePanel.vue'
 import FormField from '@/components/Common/FormField.vue'
-import { orderBy } from 'lodash'
+import { compareBy } from '@/lib/sorting'
 import { advancedKeys, dnsKeys, openDaylightKeys, aciKeys, zabbixKeys, prisKeys } from './copy/advancedKeys'
 import { RequisitionPluginSubTypes, RequisitionTypes, VMWareFields, LabelStrings } from './copy/requisitionTypes'
 import { AdvancedKey, AdvancedOption } from './configuration.types'
@@ -139,7 +139,7 @@ const getKeysBasedOnType = (type: string, subType: string) => {
   if (type === RequisitionTypes.DNS) {
     keys = dnsKeys
   } else if (type === RequisitionTypes.VMWare) {
-    keys = orderBy(advancedKeys, 'name', 'asc')
+    keys = [...advancedKeys].sort(compareBy<AdvancedKey>('name'))
   } else if (type === RequisitionTypes.RequisitionPlugin) {
     if (subType === RequisitionPluginSubTypes.OpenDaylight) {
       keys = openDaylightKeys

@@ -151,20 +151,57 @@ public class ThresholdingConfigExtensionManagerTest {
         assertThat(thresholdingConfig.getGroups(), hasSize(0));
     }
 
+    /**
+     * A plugin's custom UEIs reach the configuration trimmed, and one that is only whitespace means the threshold
+     * type's default UEI.
+     */
+    @Test
+    public void pluginThresholdUeisAreTrimmed() {
+        WriteableThresholdingDao thresholdingDao = mock(WriteableThresholdingDao.class);
+        ThresholdingService thresholdingService = mock(ThresholdingService.class);
+        when(thresholdingService.getThresholdingSetPersister()).thenReturn(mock(ThresholdingSetPersister.class));
+        ThresholdingConfigExtensionManager manager = new ThresholdingConfigExtensionManager(thresholdingDao,
+                thresholdingService);
+
+        Threshold threshold = mock(Threshold.class);
+        when(threshold.getDsName()).thenReturn("ds name");
+        mockBaseThresholddef(threshold, " uei.opennms.org/plugin/t ", "   ");
+
+        GroupDefinition groupDef = mock(GroupDefinition.class);
+        when(groupDef.getName()).thenReturn("group name");
+        when(groupDef.getRrdRepository()).thenReturn("rrd repository");
+        when(groupDef.getThresholds()).thenReturn(Collections.singletonList(threshold));
+        when(groupDef.getExpressions()).thenReturn(Collections.emptyList());
+        ThresholdingConfigExtension ext = mock(ThresholdingConfigExtension.class);
+        when(ext.getGroupDefinitions()).thenReturn(Collections.singletonList(groupDef));
+
+        manager.onBind(ext, Collections.emptyMap());
+
+        org.opennms.netmgt.config.threshd.Threshold extThreshold =
+                manager.getObject().getGroups().get(0).getThresholds().get(0);
+        assertThat(extThreshold.getTriggeredUEI(), equalTo(Optional.of("uei.opennms.org/plugin/t")));
+        assertThat(extThreshold.getRearmedUEI(), equalTo(Optional.empty()));
+    }
+
     private static void mockBaseThresholddef(Basethresholddef basethresholddef) {
+        mockBaseThresholddef(basethresholddef, triggeredUEI, rearmedUEI);
+    }
+
+    private static void mockBaseThresholddef(Basethresholddef basethresholddef, String triggeredUei,
+                                             String rearmedUei) {
         when(basethresholddef.getDescription()).thenReturn(Optional.of(description));
         when(basethresholddef.getDsLabel()).thenReturn(Optional.of(dsLabel));
         when(basethresholddef.getDsType()).thenReturn(dsType);
         when(basethresholddef.getFilterOperator()).thenReturn(filterOperator);
         when(basethresholddef.getRearm()).thenReturn(rearm);
-        when(basethresholddef.getRearmedUEI()).thenReturn(Optional.of(rearmedUEI));
+        when(basethresholddef.getRearmedUEI()).thenReturn(Optional.of(rearmedUei));
         when(basethresholddef.getRelaxed()).thenReturn(relaxed);
         ResourceFilter resourceFilter = mock(ResourceFilter.class);
         when(resourceFilter.getContent()).thenReturn(Optional.of(content));
         when(resourceFilter.getField()).thenReturn(field);
         when(basethresholddef.getResourceFilters()).thenReturn(Collections.singletonList(resourceFilter));
         when(basethresholddef.getTrigger()).thenReturn(trigger);
-        when(basethresholddef.getTriggeredUEI()).thenReturn(Optional.of(triggeredUEI));
+        when(basethresholddef.getTriggeredUEI()).thenReturn(Optional.of(triggeredUei));
         when(basethresholddef.getType()).thenReturn(type);
         when(basethresholddef.getValue()).thenReturn(value);
     }

@@ -42,14 +42,17 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { RouteLocationRaw, useRouter } from 'vue-router'
 import { OnmsButton, OnmsInputText, OnmsMessage } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
-import { nodeDetailsRoute } from './nodeDetailsRoute'
+import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 
 const props = defineProps<{
   state: 'invalid' | 'notFound' | 'error'
   value: string
+  // Where a look-up goes: the page the message is on, so a user on the Availability page stays on
+  // it. Node Details when not given.
+  routeFor?: (id: string) => RouteLocationRaw
 }>()
 
 const emit = defineEmits<{ retry: [] }>()
@@ -88,7 +91,7 @@ const lookUp = () => {
     emit('retry')
     return
   }
-  router.push(nodeDetailsRoute(value))
+  router.push((props.routeFor ?? nodeDetailsRoute)(value))
 }
 </script>
 

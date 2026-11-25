@@ -17,9 +17,9 @@
 import { computed, onMounted, ref, watch } from 'vue'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import { parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
-import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
-import NodesTable from '@/components/Nodes/NodesTable.vue'
+import { parseNodeIdQueryParam, useNodeQuery } from '@/components/Nodes/NodeList/hooks/useNodeQuery'
+import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
+import NodesTable from '@/components/Nodes/NodeList/NodesTable.vue'
 import { loadNodePreferences, saveNodeQueryFilter } from '@/services/localStorageService'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeListStore } from '@/stores/nodeListStore'

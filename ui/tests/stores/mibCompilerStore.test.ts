@@ -21,7 +21,7 @@
 ///
 
 import { createPinia, setActivePinia } from 'pinia'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useMibCompilerStore } from '@/stores/mibCompilerStore'
 
 const mockListMibFiles = vi.fn()
@@ -40,6 +40,10 @@ describe('mibCompilerStore', () => {
     vi.clearAllMocks()
   })
 
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('fetchMibFiles populates pending and compiled lists', async () => {
     const pending = [{ name: 'A-MIB.txt', size: 10, lastModified: 1 }]
     const compiled = [{ name: 'B-MIB.mib', size: 20, lastModified: 2 }]
@@ -55,6 +59,7 @@ describe('mibCompilerStore', () => {
   })
 
   it('fetchMibFiles reports the error and resets loading', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     mockListMibFiles.mockRejectedValue(new Error('boom'))
 
     const store = useMibCompilerStore()
@@ -65,5 +70,6 @@ describe('mibCompilerStore', () => {
     expect(store.isLoading).toBe(false)
     // an empty page with no message would read as "no MIB files"
     expect(mockShowSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
+    expect(consoleError).toHaveBeenCalled()
   })
 })

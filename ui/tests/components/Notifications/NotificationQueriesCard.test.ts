@@ -53,13 +53,24 @@ describe('NotificationQueriesCard', () => {
   it('starts with the store preset selected and nothing else', () => {
     mountCard()
 
-    expect(pressed(wrapper, 'query-presets')).toEqual(['Your outstanding notifications'])
+    expect(pressed(wrapper, 'query-presets')).toEqual(['Your outstanding'])
     expect(pressed(wrapper, 'query-user-search')).toEqual([])
   })
 
-  it('offers your acknowledged notifications as a preset', () => {
+  it('offers the six presets, in order', () => {
     mountCard()
-    expect(wrapper.find('[data-test="query-presets"]').text()).toContain('Your acknowledged notifications')
+    const labels = wrapper.find('[data-test="query-presets"]').findAll('button').map(b => b.text())
+
+    expect(labels).toEqual(['Your outstanding', 'Your acknowledged', 'Outstanding for anyone but you', 'All outstanding', 'All acknowledged', 'All'])
+  })
+
+  it('applies the all preset when All is chosen', async () => {
+    mountCard()
+
+    await clickOption(wrapper, 'query-presets', 'All')
+
+    expect(store.applyPreset).toHaveBeenCalledWith('all', undefined)
+    expect(pressed(wrapper, 'query-presets')).toEqual(['All'])
   })
 
   it('shows the node filter as a removable chip, and removing it clears the filter', async () => {
@@ -85,10 +96,10 @@ describe('NotificationQueriesCard', () => {
   it('applies a preset when one is chosen', async () => {
     mountCard()
 
-    await clickOption(wrapper, 'query-presets', 'All acknowledged notifications')
+    await clickOption(wrapper, 'query-presets', 'All acknowledged')
 
     expect(store.applyPreset).toHaveBeenCalledWith('allAcknowledged', undefined)
-    expect(pressed(wrapper, 'query-presets')).toEqual(['All acknowledged notifications'])
+    expect(pressed(wrapper, 'query-presets')).toEqual(['All acknowledged'])
   })
 
   it('choosing user search with nothing typed enters the awaiting-user state, like Clear', async () => {
@@ -165,7 +176,7 @@ describe('NotificationQueriesCard', () => {
 
     // focusing the id field changes neither the highlight nor the query
     await wrapper.find('#notification-id-search').trigger('focusin')
-    expect(pressed(wrapper, 'query-presets')).toEqual(['Your outstanding notifications'])
+    expect(pressed(wrapper, 'query-presets')).toEqual(['Your outstanding'])
     expect(store.applyPreset).not.toHaveBeenCalled()
   })
 
@@ -280,7 +291,7 @@ describe('NotificationQueriesCard', () => {
       expect(label.text()).toBe('Filter by node:')
 
       await wrapper.find('#notification-node-search').trigger('focusin')
-      expect(pressed(wrapper, 'query-presets')).toEqual(['Your outstanding notifications'])
+      expect(pressed(wrapper, 'query-presets')).toEqual(['Your outstanding'])
       expect(store.applyPreset).not.toHaveBeenCalled()
     })
 
@@ -398,7 +409,7 @@ describe('NotificationQueriesCard', () => {
     mountCard()
     vi.mocked(store.applyPreset).mockResolvedValue({ success: false, message: 'Failed to load notifications.' })
 
-    await clickOption(wrapper, 'query-presets', 'All outstanding notifications')
+    await clickOption(wrapper, 'query-presets', 'All outstanding')
 
     expect(showSnackBar).toHaveBeenCalledWith({ msg: 'Failed to load notifications.', error: true })
   })

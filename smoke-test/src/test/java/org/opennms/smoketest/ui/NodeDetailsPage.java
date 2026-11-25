@@ -24,6 +24,7 @@ package org.opennms.smoketest.ui;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
@@ -63,8 +64,14 @@ public class NodeDetailsPage {
         return this;
     }
 
+    /**
+     * Waits until the heading names the node, as "Node Details for &lt;label&gt; (ID: &lt;id&gt;)". The
+     * whole heading must match, so a label that is a prefix of another (my-node, my-node-2) does
+     * not match the other node's page.
+     */
     public NodeDetailsPage waitForLabel(final String label) {
-        testCase.wait.until(ExpectedConditions.textToBe(By.cssSelector(".onms-node-details .heading h2"), "Node Details for " + label));
+        final Pattern heading = Pattern.compile("^Node Details for " + Pattern.quote(label) + " \\(ID: \\d+\\)$");
+        testCase.wait.until(ExpectedConditions.textMatches(By.cssSelector(".onms-node-details .heading h2"), heading));
         return this;
     }
 

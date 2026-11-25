@@ -79,6 +79,15 @@ public class AliasedAttribute extends SnmpAttribute {
 		return m_attr.shouldPersist(params);
 	}
 
+	/**
+	 * The aliased resource has no instance of its own, so the identifier
+	 * is the one of the interface attribute.
+	 */
+        @Override
+	public String getMetricIdentifier() {
+		return m_attr.getMetricIdentifier();
+	}
+
     /**
      * <p>toString</p>
      *

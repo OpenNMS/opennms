@@ -40,11 +40,11 @@ const service = { id: 7, nodeId: 1, nodeLabel: 'web-01', ipInterfaceId: 3, ipAdd
 describe('applicationAdminService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.spyOn(console, 'error').mockImplementation(() => {})
   })
   afterEach(() => vi.restoreAllMocks())
 
   it('lists the summaries, and reports a failed load apart from an empty one', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(v2.get).mockResolvedValue({ data: [{ id: 1, name: 'Web', serviceCount: 2, perspectiveLocations: [] }] })
     expect(await listApplicationSummaries()).toEqual({
       success: true, message: '', payload: [{ id: 1, name: 'Web', serviceCount: 2, perspectiveLocations: [] }]
@@ -53,9 +53,11 @@ describe('applicationAdminService', () => {
 
     vi.mocked(v2.get).mockRejectedValue(http(500))
     expect(await listApplicationSummaries()).toEqual({ success: false, message: 'Failed to load applications.', payload: undefined })
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('creates by name and surfaces a short 4xx message', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(v2.post).mockResolvedValue({ headers: { location: 'http://host/opennms/api/v2/applications/42' }})
     expect(await createApplication('Web')).toEqual({ success: true, message: '', payload: 42 })
     expect(v2.post).toHaveBeenCalledWith('/applications', { name: 'Web' })
@@ -64,13 +66,16 @@ describe('applicationAdminService', () => {
 
     vi.mocked(v2.post).mockRejectedValue(http(400, 'An application named Web already exists.'))
     expect(await createApplication('Web')).toEqual({ success: false, message: 'An application named Web already exists.' })
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('hides a 500 body or markup behind the fallback message', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(v2.post).mockRejectedValue(http(500, 'could not execute statement; SQL [n/a]'))
     expect((await createApplication('Web')).message).toBe('Failed to create application \'Web\'.')
     vi.mocked(v2.delete).mockRejectedValue(http(404, '<html>nope</html>'))
     expect((await deleteApplication(3, 'Web')).message).toBe('Failed to delete application \'Web\'.')
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('deletes by id', async () => {
@@ -80,15 +85,18 @@ describe('applicationAdminService', () => {
   })
 
   it('reads the members with their revision, defaulting missing lists, and reports a failure', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(v2.get).mockResolvedValue({ data: { id: 3, name: 'Web', services: [service], revision: 'r1' }})
     expect((await getApplicationMembers(3)).payload).toEqual({ id: 3, name: 'Web', services: [service], perspectiveLocations: [], revision: 'r1' })
     expect(vi.mocked(v2.get).mock.calls[0][0]).toBe('/applications/3/members')
 
     vi.mocked(v2.get).mockRejectedValue(http(404))
     expect((await getApplicationMembers(3)).success).toBe(false)
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('puts the members and surfaces a rejection', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(v2.put).mockResolvedValue({})
     const update = { serviceIds: [7], perspectiveLocations: ['RDU'] }
     expect((await updateApplicationMembers(3, 'Web', update)).success).toBe(true)
@@ -96,20 +104,25 @@ describe('applicationAdminService', () => {
 
     vi.mocked(v2.put).mockRejectedValue(http(409, 'Application Web was changed by someone else after you opened it. Reopen it to see the current members.'))
     expect((await updateApplicationMembers(3, 'Web', update)).message).toBe('Application Web was changed by someone else after you opened it. Reopen it to see the current members.')
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('returns the services the server reports as gone, with its message', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     const message = 'A selected service no longer exists. Remove it and save again.'
     vi.mocked(v2.put).mockRejectedValue(http(400, { message, missingServiceIds: [7] }))
     expect(await updateApplicationMembers(3, 'Web', { serviceIds: [7] })).toEqual({ success: false, message, payload: [7] })
+    expect(consoleError).toHaveBeenCalled()
   })
 
   it('searches candidates with the text and limit as query parameters', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(v2.get).mockResolvedValue({ data: { totalCount: 120, services: [service] }})
     expect((await searchServiceCandidates('web', 50)).payload).toEqual({ totalCount: 120, services: [service] })
     expect(v2.get).toHaveBeenCalledWith('/applications/service-candidates', { params: { search: 'web', limit: 50 }})
 
     vi.mocked(v2.get).mockRejectedValue(http(500))
     expect((await searchServiceCandidates('web', 50)).success).toBe(false)
+    expect(consoleError).toHaveBeenCalled()
   })
 })

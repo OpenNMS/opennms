@@ -115,7 +115,7 @@ if (import.meta.env.DEV && import.meta.env.VITE_EXAMPLE_PLUGIN === 'true') {
     path: '/example-plugin',
     name: 'ExamplePluginDev',
     component: () => import('@/components/Plugin/Container.vue'),
-    props: { script: '/plugin-modules/exampleUiExtension/exampleUiExtension.es.js' }
+    props: { script: `${import.meta.env.BASE_URL}plugin-modules/exampleUiExtension/exampleUiExtension.es.js` }
   })
 }
 
@@ -127,14 +127,14 @@ if (import.meta.env.DEV && import.meta.env.VITE_EXAMPLE_PLUGIN === 'true') {
 // app mount — like production plugins above — so those routes exist before
 // first navigation. Enable by setting VITE_SERVICENOW_PLUGIN_DIST.
 if (import.meta.env.DEV && import.meta.env.VITE_SERVICENOW_PLUGIN_DIST) {
-  const script = '/plugin-modules/serviceNowUiExtension/serviceNowUiExtension.es.js'
+  const script = `${import.meta.env.BASE_URL}plugin-modules/serviceNowUiExtension/serviceNowUiExtension.es.js`
   router.addRoute({
     path: '/servicenow-plugin',
     name: 'Plugin-serviceNowUiExtension',
     component: () => import('@/components/Plugin/Container.vue'),
     props: { script }
   })
-  addStylesheet('/plugin-modules/serviceNowUiExtension/style.css')
+  addStylesheet(`${import.meta.env.BASE_URL}plugin-modules/serviceNowUiExtension/style.css`)
   try {
     await externalComponent(script)
   } catch (e) {

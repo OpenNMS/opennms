@@ -49,8 +49,6 @@ vi.mock('@/composables/useSpinner', () => ({ default: () => ({ startSpinner: vi.
 
 enableAutoUnmount(afterEach)
 
-const noop = { mounted: () => undefined }
-
 const roles = [
   { name: 'Ops', description: 'Operations rota', membershipGroup: 'Night', supervisor: 'alice', schedules: [], onCallNow: ['bob', 'Carol'], onCallNowIsSupervisor: false, version: 1 },
   { name: 'Network', description: 'Network <b>team</b>', membershipGroup: 'Day', supervisor: 'dave', schedules: [], onCallNow: ['dave'], onCallNowIsSupervisor: true, version: 2 },
@@ -59,7 +57,7 @@ const roles = [
 ]
 
 const mountTable = () => mount(OnCallRolesTable, {
-  global: { plugins: [PrimeVue], directives: { 'onms-tooltip': noop, tooltip: noop }}
+  global: { plugins: [PrimeVue] }
 })
 
 const names = (wrapper: ReturnType<typeof mountTable>) => wrapper.findAll('.role-name').map(e => e.text())

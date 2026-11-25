@@ -41,7 +41,7 @@
 
 <script setup lang ="ts">
 import { PropType, computed } from 'vue'
-import { orderBy } from 'lodash'
+import { compareBy } from '@/lib/sorting'
 import { Marker, MarkerCluster as Cluster } from 'leaflet'
 import { OnmsIcon } from '@opennms/onms-ui'
 import Location from '@opennms/onms-ui/icons/action/Location.vue'
@@ -50,7 +50,7 @@ import { useMenuStore } from '@/stores/menuStore'
 import { IpInterface, Node } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
 import { useRouter } from 'vue-router'
-import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
+import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 
 interface ClusterInfo {
   description: string
@@ -119,7 +119,7 @@ const getItems = () => {
     } as ClusterInfo
   })
 
-  return orderBy(items, 'name', 'asc')
+  return items.sort(compareBy<ClusterInfo>('name'))
 }
 </script>
 

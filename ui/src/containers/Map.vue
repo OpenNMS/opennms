@@ -28,7 +28,7 @@ export default { name: 'MapKeepAlive' }
 </script>
 
 <script setup lang="ts">
-import { debounce } from 'lodash'
+import { useDebounceFn } from '@vueuse/core'
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import LeafletMap from '../components/Map/LeafletMap.vue'
@@ -43,7 +43,7 @@ const nodesReady = ref(false)
 const leafletComponent = ref()
 
 // resizes the map / loads missing tiles
-const resize = debounce(() => leafletComponent.value.invalidateSizeFn(), 200)
+const resize = useDebounceFn(() => leafletComponent.value.invalidateSizeFn(), 200)
 
 const minimizeBottomPane = () => {
   // override splitpane event

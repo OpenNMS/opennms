@@ -17,7 +17,6 @@ const http = (status: number, data: any = '') => {
 describe('monitoringLocationAdminService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.spyOn(console, 'error').mockImplementation(() => {})
   })
   afterEach(() => vi.restoreAllMocks())
 
@@ -37,25 +36,31 @@ describe('monitoringLocationAdminService', () => {
     })
 
     it('returns null (not []) on failure so the store can flag a load error', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.get).mockRejectedValue(http(500))
       expect(await listMonitoringLocations()).toBeNull()
+      expect(consoleError).toHaveBeenCalled()
     })
   })
 
   describe('createMonitoringLocation', () => {
     it('returns a success result and keeps a short server message on failure', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.post).mockResolvedValueOnce({})
       expect(await createMonitoringLocation({ 'location-name': 'Default' } as any)).toEqual({ success: true, message: '' })
       vi.mocked(v2.post).mockRejectedValueOnce(http(400, 'A location named Default already exists'))
       expect(await createMonitoringLocation({ 'location-name': 'Default' } as any))
         .toEqual({ success: false, message: 'A location named Default already exists' })
+      expect(consoleError).toHaveBeenCalled()
     })
 
     it('falls back to a generic message when the server body is not a short plain string', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.post).mockRejectedValueOnce(http(500, '<html>Internal Server Error</html>'))
       const result = await createMonitoringLocation({ 'location-name': 'Raleigh' } as any)
       expect(result.success).toBe(false)
       expect(result.message).toBe('Failed to create monitoring location \'Raleigh\'.')
+      expect(consoleError).toHaveBeenCalled()
     })
   })
 
@@ -87,10 +92,12 @@ describe('monitoringLocationAdminService', () => {
     })
 
     it('returns the scrubbed server message on failure', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.get).mockResolvedValue({ data: { 'location-name': 'Raleigh' }})
       vi.mocked(v2.put).mockRejectedValue(http(400, 'The ID of the object doesn\'t match the ID of the path'))
       const result = await updateMonitoringLocation({ 'location-name': 'Raleigh' } as any)
       expect(result).toEqual({ success: false, message: 'The ID of the object doesn\'t match the ID of the path' })
+      expect(consoleError).toHaveBeenCalled()
     })
   })
 
@@ -102,24 +109,30 @@ describe('monitoringLocationAdminService', () => {
     })
 
     it('reports a missing location as a failure (the server answers 404)', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.delete).mockRejectedValue(http(404))
       expect((await deleteMonitoringLocation('gone')).success).toBe(false)
+      expect(consoleError).toHaveBeenCalled()
     })
 
     it('hides a raw persistence error from a 5xx behind the node-assignment hint', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.delete).mockRejectedValue(http(500, 'could not execute statement; constraint [fk_node_location]; nested exception is org.hibernate.exception.ConstraintViolationException'))
       const result = await deleteMonitoringLocation('Branch')
       expect(result.success).toBe(false)
       expect(result.message).not.toContain('hibernate')
       expect(result.message).toContain('no nodes are assigned')
+      expect(consoleError).toHaveBeenCalled()
     })
 
     it('hides an HTML error page and explains the nodes prerequisite instead', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.delete).mockRejectedValue(http(500, '<html><body>Internal Server Error</body></html>'))
       const result = await deleteMonitoringLocation('Raleigh')
       expect(result.success).toBe(false)
       expect(result.message).not.toContain('<html>')
       expect(result.message).toBe('Monitoring location \'Raleigh\' could not be deleted. Make sure no nodes are assigned to it.')
+      expect(consoleError).toHaveBeenCalled()
     })
   })
 
@@ -138,6 +151,7 @@ describe('monitoringLocationAdminService', () => {
     })
 
     it('is null on failure, a missing total, or a name that would alter the FIQL query', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.get).mockRejectedValueOnce(http(500))
       expect(await getNodeCountByLocation('Raleigh')).toBeNull()
       vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: {}})
@@ -147,6 +161,7 @@ describe('monitoringLocationAdminService', () => {
       // * is a LIKE wildcard server-side, so the count would be wrong rather than fail
       expect(await getNodeCountByLocation('dc-*')).toBeNull()
       expect(v2.get).toHaveBeenCalledTimes(2)
+      expect(consoleError).toHaveBeenCalled()
     })
   })
 
@@ -171,12 +186,14 @@ describe('monitoringLocationAdminService', () => {
     })
 
     it('is empty on a 204 or a single application that does not use it, and null on failure', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.get).mockResolvedValueOnce({ status: 204 })
       expect(await getApplicationsUsingPerspective('Raleigh')).toEqual([])
       vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: { application: app(2, 'Mail', 'Default') }})
       expect(await getApplicationsUsingPerspective('Raleigh')).toEqual([])
       vi.mocked(v2.get).mockRejectedValueOnce(http(500))
       expect(await getApplicationsUsingPerspective('Raleigh')).toBeNull()
+      expect(consoleError).toHaveBeenCalled()
     })
   })
 
@@ -196,6 +213,7 @@ describe('monitoringLocationAdminService', () => {
     })
 
     it('is null on failure, a missing total, or a name that would alter the FIQL query', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.get).mockRejectedValueOnce(http(500))
       expect(await getPerspectiveOutageCount('Raleigh')).toBeNull()
       vi.mocked(v2.get).mockResolvedValueOnce({ status: 200, data: {}})
@@ -203,6 +221,7 @@ describe('monitoringLocationAdminService', () => {
       expect(await getPerspectiveOutageCount('a;b')).toBeNull()
       expect(await getPerspectiveOutageCount('dc-*')).toBeNull()
       expect(v2.get).toHaveBeenCalledTimes(2)
+      expect(consoleError).toHaveBeenCalled()
     })
   })
 })

@@ -24,6 +24,7 @@ import NotificationsPanel from '@/components/Dashboard/panels/NotificationsPanel
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, RouterLinkStub } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
+import { TimeframePreset } from '@/types/dashboard'
 
 vi.mock('@/services/notificationService', async importOriginal => ({
   ...await importOriginal<object>(),
@@ -33,7 +34,7 @@ vi.mock('@/services/notificationService', async importOriginal => ({
 describe('Dashboard NotificationsPanel', () => {
   it('links your and everyone\'s outstanding notifications to the Notifications page', async () => {
     const wrapper = mount(NotificationsPanel, {
-      props: { panelId: 'p1', options: {}, filter: {}, timeframe: '24h', refreshTick: 0 } as never,
+      props: { panelId: 'p1', options: {}, filter: {}, timeframe: { preset: TimeframePreset.Last24h, from: null, to: null }, refreshTick: 0 } as never,
       global: { plugins: [createTestingPinia()], stubs: { RouterLink: RouterLinkStub }}
     })
     await flushPromises()

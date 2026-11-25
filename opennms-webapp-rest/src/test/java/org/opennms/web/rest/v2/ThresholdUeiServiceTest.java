@@ -41,6 +41,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.config.threshd.ThresholdType;
@@ -214,6 +215,25 @@ public class ThresholdUeiServiceTest {
         verify(eventConfPersistenceService, never()).saveProgrammaticEvents(any(), anyString());
     }
 
+    @Test
+    public void paddedCustomUeiIsSavedTrimmed() {
+        when(eventConfDao.getEvents(CUSTOM_TRIGGER_UEI)).thenReturn(List.of());
+
+        thresholdUeiService.ensureUeisInEventConf(List.of(parsedHighThreshold(" " + CUSTOM_TRIGGER_UEI + " ")));
+
+        assertEquals(CUSTOM_TRIGGER_UEI, captureSavedEvent().getUei());
+        verify(eventConfDao, never()).getEvents(" " + CUSTOM_TRIGGER_UEI + " ");
+    }
+
+    @Test
+    public void paddedCustomUeiAlreadyKnownCreatesNothing() {
+        when(eventConfDao.getEvents(CUSTOM_TRIGGER_UEI)).thenReturn(List.of(new Event()));
+
+        thresholdUeiService.ensureUeisInEventConf(List.of(parsedHighThreshold(" " + CUSTOM_TRIGGER_UEI + " ")));
+
+        verify(eventConfPersistenceService, never()).saveProgrammaticEvents(any(), anyString());
+    }
+
     // ------------------------------------------------------------------ helpers
 
     private Event captureSavedEvent() {
@@ -235,6 +255,14 @@ public class ThresholdUeiServiceTest {
         threshold.setTriggeredUEI(triggeredUei);
         threshold.setRearmedUEI(rearmedUei);
         return threshold;
+    }
+
+    /** Parses through JAXB, as thresholds.xml is read: the fields are filled without calling the setters. */
+    private static Threshold parsedHighThreshold(final String triggeredUei) {
+        return JaxbUtils.unmarshal(Threshold.class,
+                "<threshold xmlns=\"http://xmlns.opennms.org/xsd/config/thresholding\""
+                + " type=\"high\" ds-type=\"node\" value=\"1\" rearm=\"0\" trigger=\"1\" ds-name=\"x\""
+                + " triggeredUEI=\"" + triggeredUei + "\"/>");
     }
 
     private static Event sourceEvent(final String reductionKey) {

@@ -242,20 +242,41 @@ public abstract class Basethresholddef implements Serializable {
         m_exprLabel = ConfigUtils.normalizeString(exprLabel);
     }
 
+    /**
+     * @return the custom UEI to send when this threshold triggers, without surrounding whitespace; empty when
+     *         none is set, so the threshold type's default UEI applies
+     */
     public Optional<String> getTriggeredUEI() {
-        return Optional.ofNullable(m_triggeredUEI);
+        return Optional.ofNullable(normalizeUei(m_triggeredUEI));
     }
 
     public void setTriggeredUEI(final String triggeredUEI) {
-        m_triggeredUEI = ConfigUtils.normalizeString(triggeredUEI);
+        m_triggeredUEI = normalizeUei(triggeredUEI);
     }
 
+    /**
+     * @return the custom UEI to send when this threshold re-arms, without surrounding whitespace; empty when
+     *         none is set, so the threshold type's default UEI applies
+     */
     public Optional<String> getRearmedUEI() {
-        return Optional.ofNullable(m_rearmedUEI);
+        return Optional.ofNullable(normalizeUei(m_rearmedUEI));
     }
 
     public void setRearmedUEI(final String rearmedUEI) {
-        m_rearmedUEI = ConfigUtils.normalizeString(rearmedUEI);
+        m_rearmedUEI = normalizeUei(rearmedUEI);
+    }
+
+    /**
+     * Whitespace around a UEI is never part of it, and a UEI that is blank after the trim is no UEI at all. The
+     * getters apply this too, because JAXB and the JSON config store fill the fields without calling the setters.
+     * Same rule as EventConfServiceHelper.isBlankUei, which this module cannot reach.
+     */
+    private static String normalizeUei(final String uei) {
+        if (uei == null) {
+            return null;
+        }
+        final String trimmed = uei.trim();
+        return trimmed.isBlank() ? null : trimmed;
     }
 
     public FilterOperator getFilterOperator() {
@@ -302,8 +323,8 @@ public abstract class Basethresholddef implements Serializable {
                             m_trigger, 
                             m_dsLabel, 
                             m_exprLabel, 
-                            m_triggeredUEI, 
-                            m_rearmedUEI, 
+                            getTriggeredUEI().orElse(null),
+                            getRearmedUEI().orElse(null),
                             m_filterOperator, 
                             m_resourceFilters);
     }
@@ -331,8 +352,8 @@ public abstract class Basethresholddef implements Serializable {
                     && Objects.equals(this.m_trigger, that.m_trigger)
                     && Objects.equals(this.m_dsLabel, that.m_dsLabel)
                     && Objects.equals(this.m_exprLabel, that.m_exprLabel)
-                    && Objects.equals(this.m_triggeredUEI, that.m_triggeredUEI)
-                    && Objects.equals(this.m_rearmedUEI, that.m_rearmedUEI)
+                    && Objects.equals(this.getTriggeredUEI(), that.getTriggeredUEI())
+                    && Objects.equals(this.getRearmedUEI(), that.getRearmedUEI())
                     && Objects.equals(this.m_filterOperator, that.m_filterOperator)
                     && Objects.equals(this.m_resourceFilters, that.m_resourceFilters);
         }

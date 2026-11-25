@@ -30,7 +30,8 @@ import {
   IpInterfaceApiResponse,
   NodeAlarmStatus,
   NodeAvailability,
-  NodeCriticalPath
+  NodeCriticalPath,
+  NodeNotificationStatus
 } from '@/types'
 import { queryParametersHandler } from './serviceHelpers'
 import { createResultWithPayload, ValidationResultWithPayload } from '@/types/validation'
@@ -291,10 +292,25 @@ const getNodeAlarmStatus = async (id: string): Promise<ValidationResultWithPaylo
   }
 }
 
+/**
+ * How many notifications the node has -- the user's outstanding ones, all outstanding, and all --
+ * for the notifications box, counted on the server.
+ */
+const getNodeNotificationStatus = async (id: string): Promise<ValidationResultWithPayload<NodeNotificationStatus>> => {
+  try {
+    const resp = await v2.get(`/nodes/${id}/notificationStatus`)
+
+    return createResultWithPayload(true, '', resp.data as NodeNotificationStatus)
+  } catch (_err) {
+    return createResultWithPayload<NodeNotificationStatus>(false, `Unable to load the notification counts for node ${id}`)
+  }
+}
+
 export {
   getNodes,
   getNodesByFilterRule,
   getNodeAlarmStatus,
+  getNodeNotificationStatus,
   getNodeCriticalPath,
   getNodeById,
   lookupNodeById,

@@ -20,6 +20,8 @@
 /// License.
 ///
 
+import { toRaw } from 'vue'
+
 export const isNumber = (value: any) => {
   return value !== null && value !== undefined && typeof value === 'number'
 }
@@ -44,6 +46,9 @@ export const isString = (value?: any) => {
 export const isNonEmptyString = (value?: any) => {
   return isString(value) && (value as string)?.length > 0
 }
+
+/** '1 service', '3 services': the count and the noun, singular for exactly 1. */
+export const plural = (count: number, singular: string, pluralForm = `${singular}s`) => `${count} ${count === 1 ? singular : pluralForm}`
 
 export const ellipsify = (text: string, count: number) => {
   const ellipsis = '\u2026' // Unicode for "..."
@@ -84,3 +89,44 @@ export const VENDOR_OPENNMS = 'opennms'
 
 /** Pinned event-conf source that is always evaluated last and cannot be reordered. */
 export const EVENT_CONF_CATCH_ALL_SOURCE = 'opennms.catch-all.events'
+
+/**
+ * Whether two objects have the same own keys with equal values, compared with `===` (NaN equals
+ * NaN). Nested objects are compared by reference, so use it on flat objects of primitives, such as
+ * a form's values against the saved values.
+ */
+export const shallowEqual = (a: object, b: object): boolean => {
+  const aRecord = a as Record<string, unknown>
+  const bRecord = b as Record<string, unknown>
+  const aKeys = Object.keys(aRecord)
+
+  return aKeys.length === Object.keys(bRecord).length && aKeys.every((key) => {
+    const aValue = aRecord[key]
+    const bValue = bRecord[key]
+
+    return Object.prototype.hasOwnProperty.call(bRecord, key) &&
+      (aValue === bValue || (Number.isNaN(aValue) && Number.isNaN(bValue)))
+  })
+}
+
+// Copies arrays and plain objects all the way down, taking each value out of any Vue reactive proxy.
+const unwrapDeep = (value: unknown): unknown => {
+  const raw = toRaw(value)
+
+  if (Array.isArray(raw)) {
+    return raw.map(unwrapDeep)
+  }
+
+  if (raw !== null && typeof raw === 'object' && Object.getPrototypeOf(raw) === Object.prototype) {
+    return Object.fromEntries(Object.entries(raw).map(([key, item]) => [key, unwrapDeep(item)]))
+  }
+
+  return raw
+}
+
+/**
+ * A deep copy of plain data (objects, arrays, primitives, Dates), including data held in Pinia or
+ * other Vue reactive state. `structuredClone` alone throws on a reactive proxy, and `toRaw` only
+ * unwraps the top level: an array built by spreading a reactive array still holds proxies.
+ */
+export const cloneState = <T>(value: T): T => structuredClone(unwrapDeep(value)) as T

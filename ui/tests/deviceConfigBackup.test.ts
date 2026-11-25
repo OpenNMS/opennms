@@ -23,7 +23,6 @@
 import { mount, RouterLinkStub } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import PrimeVue from 'primevue/config'
-import { OnmsTooltip } from '@opennms/onms-ui'
 import { nextTick } from 'vue'
 import dateFormatDirective from '@/directives/v-date'
 import DCB from '@/containers/DeviceConfigBackup.vue'
@@ -90,8 +89,7 @@ const wrapper = mount(DCB, {
   global: {
     plugins: [createTestingPinia(), PrimeVue],
     directives: {
-      date: dateFormatDirective,
-      'onms-tooltip': OnmsTooltip
+      date: dateFormatDirective
     },
     stubs: {
       RouterLink: RouterLinkStub

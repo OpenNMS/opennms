@@ -200,7 +200,7 @@ import DCBModalConfigDiffContent from './DCBModalConfigDiffContent.vue'
 import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
 import DCBTableStatusDropdown from './DCBTableStatusDropdown.vue'
 import { useDeviceStore } from '@/stores/deviceStore'
-import { nodeDetailsRoute } from '@/components/Nodes/nodeDetailsRoute'
+import { nodeDetailsRoute } from '@/lib/nodeDetailsRoute'
 
 enum DCBModalContentComponentNames {
   DCBModalLastBackupContent = 'DCBModalLastBackupContent',

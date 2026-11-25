@@ -232,6 +232,13 @@ const router = createRouter({
       component: () => import('@/containers/NodeDetails.vue')
     },
     {
+      // The same id as Node Details: a foreign id is resolved and replaced with the node id here.
+      path: '/node/:id/availability',
+      name: 'Node Availability',
+      props: true,
+      component: () => import('@/containers/NodeAvailability.vue')
+    },
+    {
       path: '/adhoc-graphs',
       name: 'AdhocGraphs',
       component: () => import('@/containers/AdhocGraphs.vue')
