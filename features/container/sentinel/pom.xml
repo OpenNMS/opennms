@@ -604,10 +604,14 @@
                             <target>
                                 <property name="launcher.jars.file" location="${project.build.directory}/launcher-jars.txt"/>
                                 <concat destfile="${launcher.jars.file}" fixlastline="yes">
-                                    <fileset dir="${project.build.directory}/assembly/bin" includes="client,shell,instance"/>
+                                    <fileset dir="${project.build.directory}/assembly/bin"
+                                             includes="client,client.bat,shell,shell.bat,instance,instance.bat"/>
                                     <filterchain>
-                                        <linecontainsregexp><regexp pattern="system/[^:&quot;]+\.jar"/></linecontainsregexp>
-                                        <tokenfilter><replaceregex pattern="^.*(system/[^:&quot;]+\.jar).*$" replace="\1"/></tokenfilter>
+                                        <linecontainsregexp><regexp pattern="system[/\\][^:;&quot;%]+\.jar"/></linecontainsregexp>
+                                        <tokenfilter>
+                                            <replaceregex pattern="^.*(system[/\\][^:;&quot;%]+\.jar).*$" replace="\1"/>
+                                            <replaceregex pattern="\\" replace="/" flags="g"/>
+                                        </tokenfilter>
                                         <sortfilter/>
                                         <uniqfilter/>
                                     </filterchain>
@@ -615,11 +619,16 @@
                                 <resourcecount property="launcher.jars.listed">
                                     <tokens><file file="${launcher.jars.file}"/><linetokenizer/></tokens>
                                 </resourcecount>
+                                <fail message="Found no system/ jar paths in bin/client, bin/shell or bin/instance (or their .bat versions); Karaf may have changed how the launcher scripts build the class path">
+                                    <condition>
+                                        <equals arg1="${launcher.jars.listed}" arg2="0"/>
+                                    </condition>
+                                </fail>
                                 <resourcecount property="launcher.jars.found">
                                     <fileset dir="${project.build.directory}/assembly" includesfile="${launcher.jars.file}"/>
                                 </resourcecount>
                                 <loadfile property="launcher.jars.list" srcFile="${launcher.jars.file}"/>
-                                <fail message="Only ${launcher.jars.found} of the ${launcher.jars.listed} jars listed in bin/client, bin/shell and bin/instance exist under assembly/. Listed jars:${line.separator}${launcher.jars.list}">
+                                <fail message="Only ${launcher.jars.found} of the ${launcher.jars.listed} jars listed in bin/client, bin/shell and bin/instance (and their .bat versions) exist under assembly/. Listed jars:${line.separator}${launcher.jars.list}">
                                     <condition>
                                         <not><equals arg1="${launcher.jars.listed}" arg2="${launcher.jars.found}"/></not>
                                     </condition>
