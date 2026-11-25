@@ -21,6 +21,7 @@
 ///
 
 import { NodeAvailability } from '@/types'
+import { AvailabilityClass } from '@/types/availability'
 import { NodeOutageTimeline, NodeOutageTimelineEntry } from '@/types/nodeAvailabilityTimeline'
 import { formatInDisplayZone } from '@/lib/displayTimeZone'
 import { ipInterfaceStatus, monitoredServiceStatus } from './utils'
@@ -52,9 +53,6 @@ export interface TimelineSegment {
   /** Still down when the window ends, so its right edge is a cut rather than an end. */
   openAtWindowEnd: boolean
 }
-
-/** Which badge colour a figure earns, by the node's configured thresholds. */
-export type AvailabilityClass = 'normal' | 'warning' | 'critical'
 
 export interface AvailabilityThresholds {
   normal: number

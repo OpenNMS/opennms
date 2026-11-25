@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { OnmsSpinner } from '@opennms/onms-ui'
 import EmptyList from '@/components/Common/EmptyList.vue'
-import AvailabilityBadge from './AvailabilityBadge.vue'
+import AvailabilityBadge from '@/components/Common/AvailabilityBadge.vue'
 import AvailabilityTimeline from './AvailabilityTimeline.vue'
 import { nodeAvailabilityClass, nodeAvailabilityText, TimelineModel } from './availabilityTimelineModel'
 import { TimelineTick } from './availabilityTimelineAxis'

@@ -62,7 +62,7 @@ License.
             :key="section.name + '/' + cat.name"
             :class="[
               { 'avail__total': isTotal(section) },
-              shade && !isTotal(section) ? severityTintClass(availabilityLevel(cat.availabilityClass)) : undefined
+              shade && !isTotal(section) ? severityTintClass(parseAvailabilityClass(cat.availabilityClass)) : undefined
             ]"
           >
             <td class="avail__cat">
@@ -77,7 +77,7 @@ License.
             <td class="avail__num">
               <AvailabilityBadge
                 :text="cat.availabilityText"
-                :level="availabilityLevel(cat.availabilityClass)"
+                :level="parseAvailabilityClass(cat.availabilityClass)"
               />
             </td>
           </tr>
@@ -91,8 +91,8 @@ License.
 import { computed, onMounted, ref, watch } from 'vue'
 import type { PanelComponentProps } from '@/types/dashboard'
 import { getAvailability, type AvailabilitySection } from '@/services/availabilityService'
-import AvailabilityBadge from '@/components/Nodes/AvailabilityBadge.vue'
-import type { AvailabilityClass } from '@/components/Nodes/availabilityTimelineModel'
+import AvailabilityBadge from '@/components/Common/AvailabilityBadge.vue'
+import { parseAvailabilityClass } from '@/lib/availability'
 import { severityTintClass } from '@/lib/severity'
 
 const props = defineProps<PanelComponentProps>()
@@ -102,12 +102,6 @@ const shade = computed(() => !!props.options?.shade)
 const loading = ref(true)
 const disconnected = ref(false)
 const allSections = ref<AvailabilitySection[]>([])
-
-// RTC reports Normal/Warning/Critical; anything else (Unknown, empty) has no level.
-const availabilityLevel = (c: string | undefined): AvailabilityClass | undefined => {
-  const level = (c ?? '').toLowerCase()
-  return level === 'normal' || level === 'warning' || level === 'critical' ? level : undefined
-}
 
 // The REST response already includes a "Total" section holding the real
 // "Overall Service Availability" row — render it as the bold total (don't add

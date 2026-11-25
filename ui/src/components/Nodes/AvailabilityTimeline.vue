@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import AvailabilityBadge from './AvailabilityBadge.vue'
+import AvailabilityBadge from '@/components/Common/AvailabilityBadge.vue'
 import AvailabilityTimelineRow from './AvailabilityTimelineRow.vue'
 import { interfaceLink } from '@/lib/linkUtils'
 import { interfaceAvailabilityClass, interfaceAvailabilityText, TimelineModel } from '@/components/Nodes/availabilityTimelineModel'
