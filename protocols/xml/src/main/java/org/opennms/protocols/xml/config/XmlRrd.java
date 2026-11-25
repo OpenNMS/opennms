@@ -34,6 +34,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The Class XmlRrd.
  * 
@@ -48,10 +50,12 @@ public class XmlRrd implements Serializable, Comparable<XmlRrd>, Cloneable {
 
     /** The step. */
     @XmlAttribute(name="step")
+    @JsonProperty("step")
     private Integer m_step;
 
     /** The XML RRAs list. */
     @XmlElement(name="rra")
+    @JsonProperty("rra")
     private List<String> m_xmlRras = new ArrayList<>();
 
     /**

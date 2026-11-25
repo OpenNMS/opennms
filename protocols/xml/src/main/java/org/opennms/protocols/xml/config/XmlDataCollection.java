@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The Class XmlDataCollection.
  * 
@@ -77,14 +79,17 @@ public class XmlDataCollection implements Serializable, Comparable<XmlDataCollec
 
     /** The data collection name. */
     @XmlAttribute(name="name")
+    @JsonProperty("name")
     private String m_name;
 
     /** The RRD configuration object. */
     @XmlElement(name="rrd")
+    @JsonProperty("rrd")
     private XmlRrd m_xmlRrd;
 
     /** The XML Sources list. */
     @XmlElement(name="xml-source")
+    @JsonProperty("xml-source")
     private List<XmlSource> m_xmlSources = new ArrayList<>();
 
     /**

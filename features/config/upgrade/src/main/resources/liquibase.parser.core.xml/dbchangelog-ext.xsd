@@ -65,4 +65,12 @@
         </xsd:complexType>
     </xsd:element>
 
+    <xsd:element name="importConfigDirectory">
+        <!-- imports every xml file of etc/<directory>/ as one configuration, the file name (without .xml) is the configId -->
+        <xsd:complexType>
+            <xsd:attribute name="schemaId" type="xsd:string" use="required"/>
+            <xsd:attribute name="directory" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
 </xsd:schema>

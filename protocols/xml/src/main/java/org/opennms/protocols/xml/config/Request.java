@@ -30,6 +30,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The Class Request.
  * 
@@ -45,10 +47,12 @@ public class Request implements Cloneable {
 
     /** The parameters. */
     @XmlElement(name="parameter")
+    @JsonProperty("parameter")
     private List<Parameter> parameters = new ArrayList<>();
 
     /** The headers. */
     @XmlElement(name="header")
+    @JsonProperty("header")
     private List<Header> headers = new ArrayList<>();
 
     /** The content. */

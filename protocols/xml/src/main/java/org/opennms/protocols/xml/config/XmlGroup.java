@@ -37,6 +37,8 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The Class XmlGroup.
  * 
@@ -55,34 +57,42 @@ public class XmlGroup implements Serializable, Comparable<XmlGroup>, Cloneable {
 
     /** The group name. */
     @XmlAttribute(name="name", required=true)
+    @JsonProperty("name")
     private String m_name;
 
     /** The resource type. */
     @XmlAttribute(name="resource-type", required=true)
+    @JsonProperty("resource-type")
     private String m_resourceType;
 
     /** The resource XPath. */
     @XmlAttribute(name="resource-xpath", required=true)
+    @JsonProperty("resource-xpath")
     private String m_resourceXpath;
 
     /** The key XPath (for resource instance). */
     @XmlAttribute(name="key-xpath", required=false)
+    @JsonProperty("key-xpath")
     private String m_keyXpath;
 
     /** The Resource Time XPath (for RRD updates). */
     @XmlAttribute(name="timestamp-xpath", required=false)
+    @JsonProperty("timestamp-xpath")
     private String m_timestampXpath;
 
     /** The Resource Time Format (for RRD updates). */
     @XmlAttribute(name="timestamp-format", required=false)
+    @JsonProperty("timestamp-format")
     private String m_timestampFormat;
 
     /** The XML objects list. */
     @XmlElement(name="xml-object", required=true)
+    @JsonProperty("xml-object")
     private List<XmlObject> m_xmlObjects = new ArrayList<>();
     
     /** The m_xml resource key. */
     @XmlElement(name="resource-key", required=false)
+    @JsonProperty("resource-key")
     private XmlResourceKey m_xmlResourceKey;
 
     public XmlGroup() { }
