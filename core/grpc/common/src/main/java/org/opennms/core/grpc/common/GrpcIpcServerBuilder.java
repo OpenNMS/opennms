@@ -31,6 +31,7 @@ package org.opennms.core.grpc.common;
 import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import org.opennms.core.utils.PropertiesUtils;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -92,24 +93,49 @@ public class GrpcIpcServerBuilder implements GrpcIpcServer {
         serverStartScheduled = false;
     }
 
+    /**
+     * Creates the server builder once. With tls.enabled, the TLS settings are required: any problem
+     * with them is thrown and the server is not created. The builder is only kept once it is
+     * complete, so a later startServer() call fails the same way.
+     */
     private void initializeServerFromConfig() {
-        if (serverBuilder == null) {
-            int maxInboundMessageSize = PropertiesUtils.getProperty(properties, GrpcIpcUtils.GRPC_MAX_INBOUND_SIZE, GrpcIpcUtils.DEFAULT_MESSAGE_SIZE);
-            boolean tlsEnabled = PropertiesUtils.getProperty(properties, GrpcIpcUtils.TLS_ENABLED, false);
-            serverBuilder = NettyServerBuilder.forAddress(new InetSocketAddress(this.port))
-                    .maxInboundMessageSize(maxInboundMessageSize);
-            if (tlsEnabled) {
-                SslContextBuilder sslContextBuilder = GrpcIpcUtils.getSslContextBuilder(properties);
-                if (sslContextBuilder != null) {
-                    try {
-                        serverBuilder.sslContext(sslContextBuilder.build());
-                        LOG.info("TLS enabled for Grpc IPC Server");
-                    } catch (SSLException e) {
-                        LOG.error("Couldn't initialize ssl context from {}", properties, e);
-                    }
-                }
-            }
+        if (serverBuilder != null) {
+            return;
         }
+        int maxInboundMessageSize = PropertiesUtils.getProperty(properties, GrpcIpcUtils.GRPC_MAX_INBOUND_SIZE, GrpcIpcUtils.DEFAULT_MESSAGE_SIZE);
+        boolean tlsEnabled = PropertiesUtils.getProperty(properties, GrpcIpcUtils.TLS_ENABLED, false);
+        NettyServerBuilder builder = NettyServerBuilder.forAddress(new InetSocketAddress(this.port))
+                .maxInboundMessageSize(maxInboundMessageSize);
+        if (tlsEnabled) {
+            builder.sslContext(buildSslContext());
+            LOG.info("TLS enabled for Grpc IPC Server");
+        }
+        serverBuilder = builder;
+    }
+
+    private SslContext buildSslContext() {
+        final SslContextBuilder sslContextBuilder;
+        try {
+            sslContextBuilder = GrpcIpcUtils.getSslContextBuilder(properties);
+        } catch (RuntimeException e) {
+            throw tlsFailure("cannot read the certificate or key files: " + e.getMessage(), e);
+        }
+        if (sslContextBuilder == null) {
+            throw tlsFailure(GrpcIpcUtils.SERVER_CERTIFICATE_FILE_PATH + " and "
+                    + GrpcIpcUtils.PRIVATE_KEY_FILE_PATH + " must both be set", null);
+        }
+        try {
+            return sslContextBuilder.build();
+        } catch (SSLException | RuntimeException e) {
+            throw tlsFailure("cannot initialize the TLS context: " + e.getMessage(), e);
+        }
+    }
+
+    private static IllegalStateException tlsFailure(String reason, Throwable cause) {
+        String message = "Not starting the gRPC IPC server: " + GrpcIpcUtils.TLS_ENABLED
+                + " is true, but " + reason + ".";
+        LOG.error(message, cause);
+        return new IllegalStateException(message, cause);
     }
 
     @Override
