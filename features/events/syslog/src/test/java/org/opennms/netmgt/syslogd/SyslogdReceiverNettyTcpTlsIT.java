@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -253,6 +254,41 @@ public class SyslogdReceiverNettyTcpTlsIT {
             assertNull("plaintext must not be accepted on a TLS port",
                     m_received.poll(REJECTION_TIMEOUT_SECONDS, TimeUnit.SECONDS));
         }
+    }
+
+    @Test(timeout = 60 * 1000)
+    public void receivesMessagesOverTlsWithAPkcs1RsaKey() throws Exception {
+        // cert-manager, Vault PKI and the OpenShift service CA write "BEGIN RSA PRIVATE KEY" by default.
+        receivesMessagesWithKey("rsa-pkcs1.key", "rsa.crt");
+    }
+
+    @Test(timeout = 60 * 1000)
+    public void receivesMessagesOverTlsWithASec1EcKey() throws Exception {
+        receivesMessagesWithKey("ec-sec1.key", "ec.crt");
+    }
+
+    private void receivesMessagesWithKey(final String keyResource, final String certResource) throws Exception {
+        final File cert = tlsResource(certResource);
+        final SyslogTcpConfig config = tlsConfig();
+        tlsOf(config).setCertFilePath(cert.getAbsolutePath());
+        tlsOf(config).setPrivateKeyFilePath(tlsResource(keyResource).getAbsolutePath());
+        final int port = startReceiver(config);
+
+        final SslContext clientContext = SslContextBuilder.forClient()
+                .trustManager(cert)
+                .endpointIdentificationAlgorithm(null)
+                .build();
+        final Channel client = connect(port, clientContext);
+        try {
+            client.writeAndFlush(Unpooled.copiedBuffer(MESSAGE + "\n", StandardCharsets.UTF_8)).sync();
+            assertEquals(MESSAGE, nextMessage());
+        } finally {
+            client.close().awaitUninterruptibly();
+        }
+    }
+
+    private static File tlsResource(final String name) throws Exception {
+        return new File(SyslogdReceiverNettyTcpTlsIT.class.getResource("/tls/" + name).toURI());
     }
 
     @Test(timeout = 60 * 1000)

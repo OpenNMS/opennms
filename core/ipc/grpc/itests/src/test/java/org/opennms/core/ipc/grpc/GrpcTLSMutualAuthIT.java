@@ -30,13 +30,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.opennms.core.ipc.grpc.GrpcIpcRpcIT.getAvailablePort;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.opennms.core.grpc.common.GrpcIpcServer;
 import org.opennms.core.grpc.common.GrpcIpcServerBuilder;
 import org.opennms.core.ipc.grpc.client.GrpcClientConstants;
@@ -49,7 +54,30 @@ import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
+@RunWith(Parameterized.class)
 public class GrpcTLSMutualAuthIT {
+
+    /**
+     * cert-manager, Vault PKI and the OpenShift service CA write PKCS#1 keys by default.
+     * Both sets hold the same key pairs; the *-pkcs1.pem files were made with
+     * {@code openssl rsa -in server.pem -traditional -out server-pkcs1.pem}.
+     */
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<Object[]> keyFormats() {
+        return Arrays.asList(new Object[][] {
+                {"PKCS#8", "server.pem", "client.pem"},
+                {"PKCS#1", "server-pkcs1.pem", "client-pkcs1.pem"},
+        });
+    }
+
+    @Parameterized.Parameter(0)
+    public String keyFormat;
+
+    @Parameterized.Parameter(1)
+    public String serverKey;
+
+    @Parameterized.Parameter(2)
+    public String clientKey;
 
     private static final String REMOTE_LOCATION_NAME = "remote";
     private static final String MAX_BUFFER_SIZE_COUNTER = "1000000";
@@ -62,10 +90,10 @@ public class GrpcTLSMutualAuthIT {
     public void setup() throws Exception {
 
         String serverCertFilePath = this.getClass().getResource("/tls/server.crt").getPath();
-        String serverKeyFilePath = this.getClass().getResource("/tls/server.pem").getPath();
+        String serverKeyFilePath = this.getClass().getResource("/tls/" + serverKey).getPath();
         String trustCertFilePath = this.getClass().getResource("/tls/ca.crt").getPath();
         String clientCertFilePath = this.getClass().getResource("/tls/client.crt").getPath();
-        String clientPrivateKeyFilePath = this.getClass().getResource("/tls/client.pem").getPath();
+        String clientPrivateKeyFilePath = this.getClass().getResource("/tls/" + clientKey).getPath();
 
         Hashtable<String, Object> serverConfig = new Hashtable<>();
         int port = getAvailablePort(new AtomicInteger(GrpcServerConstants.DEFAULT_GRPC_PORT), 9090);
@@ -96,6 +124,17 @@ public class GrpcTLSMutualAuthIT {
         echoClient = new MockEchoClient(server);
         server.start();
         grpcClient.start();
+    }
+
+    @After
+    public void shutdown() throws Exception {
+        if (grpcClient != null) {
+            grpcClient.unbind(echoRpcModule);
+            grpcClient.shutdown();
+        }
+        if (server != null) {
+            server.shutdown();
+        }
     }
 
     @Test(timeout = 30000)
