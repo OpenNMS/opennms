@@ -213,7 +213,7 @@ import Lock from '@opennms/onms-ui/icons/action/Lock.vue'
 import ViewDetails from '@opennms/onms-ui/icons/action/ViewDetails.vue'
 import MenuIcon from '@opennms/onms-ui/icons/navigation/MoreHoriz.vue'
 import Refresh from '@opennms/onms-ui/icons/navigation/Refresh.vue'
-import { debounce } from 'lodash'
+import { useDebounceFn } from '@vueuse/core'
 import EmptyList from '../Common/EmptyList.vue'
 import FormField from '@/components/Common/FormField.vue'
 import StagedReorderList from '@/components/Common/StagedReorderList.vue'
@@ -306,7 +306,7 @@ const onPage = (event: OnmsTablePageEvent) => {
   }
 }
 
-const debouncedSearch = debounce((value: string) => {
+const debouncedSearch = useDebounceFn((value: string) => {
   store.onChangeSourcesSearchTerm(value)
 }, 500)
 

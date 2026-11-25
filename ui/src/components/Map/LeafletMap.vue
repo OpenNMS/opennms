@@ -76,7 +76,7 @@
 <script setup lang ="ts">
 import { computed, nextTick, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { debounce } from 'lodash'
+import { useDebounceFn } from '@vueuse/core'
 
 import 'leaflet/dist/leaflet.css'
 import { Map as LeafletMap, divIcon, LatLngTuple, MarkerCluster as Cluster, PopupOptions } from 'leaflet'
@@ -320,7 +320,7 @@ let popupOpen = false
 // map container reflows when the side menu is pinned (it sets padding-left on
 // .app-layout) or on any other layout change, but Leaflet won't repaint to the
 // new size on its own, so observe the container and revalidate on resize.
-const debouncedInvalidateSize = debounce(() => {
+const debouncedInvalidateSize = useDebounceFn(() => {
   if (typeof leafletObject.value?.invalidateSize === 'function') {
     leafletObject.value.invalidateSize()
   }

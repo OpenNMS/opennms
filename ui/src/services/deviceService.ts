@@ -24,7 +24,6 @@ import { queryParametersHandler } from './serviceHelpers'
 import { rest } from './axiosInstances'
 import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
 import { AxiosResponse } from 'axios'
-import { orderBy } from 'lodash'
 
 const endpoint = 'device-config'
 
@@ -82,7 +81,7 @@ const getHistoryByIpInterface = async (ipInterfaceId: number, configType: string
     }
 
     const devicesWithBackupDate = resp.data.filter(device => device.lastBackupDate)
-    return orderBy(devicesWithBackupDate, 'lastBackupDate', 'desc')
+    return devicesWithBackupDate.sort((a, b) => b.lastBackupDate - a.lastBackupDate)
   } catch (_err) {
     return []
   }

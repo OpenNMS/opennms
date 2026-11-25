@@ -71,7 +71,7 @@ import { ref, watch } from 'vue'
 
 import { OnmsButton, OnmsColumn, OnmsDrawer, OnmsSearchInput, OnmsTable } from '@opennms/onms-ui'
 import FormField from '@/components/Common/FormField.vue'
-import { debounce } from 'lodash'
+import { useDebounceFn } from '@vueuse/core'
 import { useScvStore } from '@/stores/scvStore'
 import { ScvSearchItem } from '@/types/scv'
 
@@ -98,7 +98,7 @@ const runQuery = (query: string) => {
   credentialsLoading.value = false
 }
 
-const onSearch = debounce((query: string) => {
+const onSearch = useDebounceFn((query: string) => {
   runQuery(query)
 }, DEBOUNCE_DELAY)
 

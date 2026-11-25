@@ -112,7 +112,7 @@ import { useThresholdGroupStore } from '@/stores/thresholdGroupStore'
 import type { ISelectItemType } from '@/types'
 import type { ThreshdService } from '@/types/thresholdConfig'
 import { isPreconditionFailed } from '@/types/validation'
-import { cloneDeep } from 'lodash'
+import { cloneState } from '@/lib/utils'
 import { OnmsInputNumber, OnmsInputText, OnmsSelect, OnmsToggleSwitch } from '@opennms/onms-ui'
 
 const route = useRoute()
@@ -161,7 +161,7 @@ onMounted(async () => {
   if (isCreate.value) {
     hasService.value = true
   } else if (index.value < services.length) {
-    draft.value = cloneDeep(services[index.value])
+    draft.value = cloneState(services[index.value])
     hasService.value = true
   }
 

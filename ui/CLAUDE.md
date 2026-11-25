@@ -117,9 +117,11 @@ Keep `useSpinner` / `useSnackbar` out of services and Pinia stores. Services mak
 
 `notificationConfigService` / `notificationConfigStore`, `notificationService` / `notificationsStore`, `userAdminService` / `userAdminStore` and `groupAdminService` / `groupAdminStore` follow this pattern (their writes return an `AdminWriteResult`, a `ValidationResult` plus a `stale` flag for a 412, and the components report them with `useAdminWriteFeedback().reportWrite`); no service or store shows spinners or snackbars, and an ESLint `no-restricted-imports` rule for `src/services/**` and `src/stores/**` in `eslint.config.js` enforces it.
 
-### Auto-imports
+### Imports
 
-Vue, Vue Router, and VueUse APIs are auto-imported via `unplugin-auto-import` (`ref`, `computed`, `watch`, `useRouter`, `whenever`, etc. need no imports). **Custom composables from `src/composables/` must be imported manually** (e.g. `import useSnackbar from '@/composables/useSnackbar'`). Composables share global state via module-level refs.
+There are no auto-imports: nothing configures `unplugin-auto-import` or `unplugin-vue-components`. Import everything explicitly, including Vue (`import { computed, ref } from 'vue'`), Vue Router (`useRouter`), VueUse (`import { useDebounceFn } from '@vueuse/core'`), and components. Custom composables from `src/composables/` are default exports (e.g. `import useSnackbar from '@/composables/useSnackbar'`). Composables share global state via module-level refs.
+
+For small utilities, use plain TypeScript, VueUse, or the helpers in `src/lib/` (e.g. `compareBy`/`compareValues` in `sorting.ts`, `cloneState`/`shallowEqual` in `utils.ts`). Don't add a general utility library such as lodash.
 
 ### Role-based access control
 

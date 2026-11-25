@@ -21,7 +21,7 @@
 ///
 
 import { onScopeDispose, ref } from 'vue'
-import { debounce } from 'lodash'
+import { useDebounceFn } from '@vueuse/core'
 
 // Long enough to coalesce a burst of typing, short enough that the table still feels live.
 export const SEARCH_DEBOUNCE_MS = 175
@@ -40,7 +40,7 @@ export const useDebouncedSearch = () => {
   const searchTerm = ref('')
   const appliedTerm = ref('')
 
-  const apply = debounce((value: string) => {
+  const apply = useDebounceFn((value: string) => {
     appliedTerm.value = value.trim().toLowerCase()
   }, SEARCH_DEBOUNCE_MS)
 
