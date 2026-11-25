@@ -28,6 +28,10 @@ import java.util.List;
 
 import com.sun.jna.Structure;
 
+/**
+ * @deprecated The JNA socket will be removed in Horizon 38. The FFM socket replaces it.
+ */
+@Deprecated(since = "37", forRemoval = true)
 public class sockaddr_in extends Structure {
     public short   sin_family;
     /* we  use an array of bytes rather than int16 to avoid jna byte reordering */

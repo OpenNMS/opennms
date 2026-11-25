@@ -41,8 +41,10 @@ import com.sun.jna.Platform;
  */
 public class V6Pinger extends AbstractPinger<Inet6Address> {
 
+    @SuppressWarnings("removal")
     public V6Pinger(int id) throws Exception {
-        super(NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6, id));
+        // This tool runs from this module's jar, which cannot see the FFM socket in core/icmp-ffm.
+        super(NativeDatagramSocket.createJna(NativeDatagramSocket.PF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6, id));
         
         // Windows requires at least one packet sent before a receive call can be made without error
         // so we send a packet here to make sure...  This one should not match the normal ping requests

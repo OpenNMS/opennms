@@ -32,7 +32,11 @@ import com.sun.jna.Native;
  * UnixNativeSocketFactory
  *
  * @author brozow
+ *
+ * @deprecated The JNA socket will be removed in Horizon 38. The FFM socket replaces it.
  */
+@Deprecated(since = "37", forRemoval = true)
+@SuppressWarnings("removal")
 public class Win32V4NativeSocket extends AbstractJnaNativeSocket {
     
     static {

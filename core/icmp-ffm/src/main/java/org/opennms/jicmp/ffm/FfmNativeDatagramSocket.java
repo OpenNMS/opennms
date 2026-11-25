@@ -52,8 +52,7 @@ import org.opennms.jicmp.jna.SocketUtils;
  *
  * <p>Supports IPv4 and IPv6 on Linux and on BSD-style systems (macOS,
  * FreeBSD, OpenBSD). On other platforms the constructor throws
- * {@link UnsupportedOperationException} so that
- * {@link NativeDatagramSocket#create} falls back to JNA.
+ * {@link UnsupportedOperationException}.
  *
  * <p>Bytes are sent and received exactly as the JNA implementations do, so
  * the pinger logic on top is unchanged. Assumes an LP64 platform.

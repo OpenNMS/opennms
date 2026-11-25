@@ -35,6 +35,7 @@ import org.opennms.netmgt.icmp.Pinger;
 public class JnaPingerFactory extends AbstractPingerFactory {
 
     @Override
+    @SuppressWarnings("removal")
     public Class<? extends Pinger> getPingerClass() {
         return JnaPinger.class;
     }

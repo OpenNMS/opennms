@@ -11,7 +11,7 @@
   <name>OpenNMS :: Core :: ICMP FFM</name>
   <description>
     NativeDatagramSocket implementation using the Java Foreign Function and Memory API.
-    Loaded reflectively by NativeDatagramSocket.create() in org.opennms.core.icmp-jna.
+    Loaded reflectively by NativeDatagramSocket.createFfm() in org.opennms.core.icmp-jna.
   </description>
   <packaging>bundle</packaging>
   <properties>

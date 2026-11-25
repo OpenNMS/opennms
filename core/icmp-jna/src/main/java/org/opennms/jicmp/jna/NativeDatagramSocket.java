@@ -25,19 +25,12 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.UnknownHostException;
-import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * NativeDatagramSocket
- *
- * <p>Sockets are created by {@link #create(int, int, int)}, which uses the
- * Java Foreign Function &amp; Memory implementation
- * ({@value #FFM_IMPLEMENTATION}) when it is available and falls back to the
- * JNA implementations otherwise. The {@value #IMPLEMENTATION_PROPERTY} system
- * property selects {@code auto} (default), {@code ffm} or {@code jna}.
  *
  * @author brozow
  */
@@ -72,8 +65,6 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
     // platform-specific  :/
     // public static final int IPV6_TCLASS = 36;
 
-    /** System property selecting the socket implementation: {@code auto}, {@code ffm} or {@code jna}. */
-    public static final String IMPLEMENTATION_PROPERTY = "org.opennms.netmgt.icmp.socket";
     public static final String FFM_IMPLEMENTATION = "org.opennms.jicmp.ffm.FfmNativeDatagramSocket";
 
     public NativeDatagramSocket() {
@@ -82,25 +73,11 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
         }
     }
 
-    public static NativeDatagramSocket create(final int family, final int protocol, final int listenPort) throws Exception {
-        final String mode = System.getProperty(IMPLEMENTATION_PROPERTY, "auto").trim().toLowerCase(Locale.ROOT);
-        switch (mode) {
-            case "jna":
-                return createJna(family, protocol, listenPort);
-            case "ffm":
-                return createFfm(family, protocol, listenPort);
-            case "auto":
-            default:
-                try {
-                    return createFfm(family, protocol, listenPort);
-                } catch (final Throwable t) {
-                    LOG.debug("FFM socket implementation unavailable ({}); using JNA.", t.toString());
-                    LOG.trace("FFM socket implementation unavailable.", t);
-                    return createJna(family, protocol, listenPort);
-                }
-        }
-    }
-
+    /**
+     * Opens a socket with the Java Foreign Function &amp; Memory implementation.
+     * Throws {@link UnsupportedOperationException} when that implementation is
+     * not available. It never falls back to JNA.
+     */
     public static NativeDatagramSocket createFfm(final int family, final int protocol, final int listenPort) throws Exception {
         final Class<? extends NativeDatagramSocket> implementationClass;
         try {
@@ -111,6 +88,10 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
         return newInstance(implementationClass, family, protocol, listenPort);
     }
 
+    /**
+     * @deprecated The JNA socket will be removed in Horizon 38. The FFM socket replaces it.
+     */
+    @Deprecated(since = "37", forRemoval = true)
     public static NativeDatagramSocket createJna(final int family, final int protocol, final int listenPort) throws Exception {
         final String implClassName = NativeDatagramSocket.getImplementationClassName(family);
         return newInstance(Class.forName(implClassName).asSubclass(NativeDatagramSocket.class), family, protocol, listenPort);

@@ -35,6 +35,7 @@ public enum SocketBackend {
     /**
      * FFM calls {@link NativeDatagramSocket#createFfm}, JNA calls {@link NativeDatagramSocket#createJna}.
      */
+    @SuppressWarnings("removal")
     public NativeDatagramSocket open(final int family, final int protocol, final int listenPort) throws Exception {
         switch (this) {
         case FFM:
