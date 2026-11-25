@@ -1,0 +1,13 @@
+version: 1
+groups:
+  - name: oc-if-counters
+    match: /interfaces/interface/state/counters
+    resource-type: interface
+    instance: "{interface.name}"
+    attributes:
+      in-octets: { type: counter }
+  - name: oc-node
+    match: /interfaces/interface/state/counters
+    resource-type: node
+    attributes:
+      in-octets: { type: gauge, name: anyInOctets }

@@ -1,0 +1,41 @@
+# Disclaimer: This configuration is a proof of concept. It evaluates how usable it is
+# to configure gNMI streaming telemetry metric processing. These files are not covered
+# by commercial service agreements.
+#
+# Read by etc/telemetryd-adapters/openconfig-gnmi-mapping.groovy together with every
+# other *.yaml, *.yml and *.json file in this directory. Files are split by YANG
+# model: openconfig-* files are vendor neutral, vendor files such as junos-* map
+# native models. A group only sees the paths the connector subscribes to.
+# Reference: OpenConfig telemetry docs, section "Declarative mapping".
+#
+# Model: openconfig-network-instance, openconfig-bgp.
+# Connector path: /network-instances/network-instance/protocols/protocol/bgp (origin openconfig).
+# Checked against a Juniper MX10004. Resource types ocBgpPeer and ocBgpPeerAfi are
+# defined in etc/resource-types.d/openconfig-gnmi-resource.xml.
+version: 1
+aliases:
+  # [identifier=*BGP] matches both BGP and openconfig-policy-types:BGP
+  bgp-neighbor: /network-instances/network-instance/protocols/protocol[identifier=*BGP]/bgp/neighbors/neighbor/state
+  bgp-prefixes: /network-instances/network-instance/protocols/protocol[identifier=*BGP]/bgp/neighbors/neighbor/afi-safis/afi-safi/state/prefixes
+groups:
+  # One resource per VRF and peer, e.g. DEFAULT_203.0.113.1
+  - name: oc-bgp-peer
+    match: bgp-neighbor
+    resource-type: ocBgpPeer
+    instance: "{network-instance.name}_{neighbor.neighbor-address}"
+    attributes:
+      session-state: { type: string, name: bgpSessionState }
+      peer-as: { type: string, name: bgpPeerAs }
+      peer-type: { type: string, name: bgpPeerType }
+      established-transitions: { type: counter, name: bgpEstTransitions }
+  # Three placeholders: VRF, peer and address family, e.g. DEFAULT_203.0.113.1_IPV4_UNICAST
+  - name: oc-bgp-prefixes
+    match: bgp-prefixes
+    resource-type: ocBgpPeerAfi
+    instance: "{network-instance.name}_{neighbor.neighbor-address}_{afi-safi.afi-safi-name}"
+    attributes:
+      received: { type: gauge, name: bgpPfxReceived }
+      accepted: { type: gauge, name: bgpPfxAccepted }
+      installed: { type: gauge, name: bgpPfxInstalled }
+      sent: { type: gauge, name: bgpPfxSent }
+      rejected: { type: gauge, name: bgpPfxRejected }

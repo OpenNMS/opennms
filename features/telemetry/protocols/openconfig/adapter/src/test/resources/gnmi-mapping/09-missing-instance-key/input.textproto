@@ -1,0 +1,18 @@
+update {
+  update {
+    path {
+      elem { name: "interfaces" }
+      elem { name: "interface" key { key: "id" value: "7" } }
+      elem { name: "state" } elem { name: "counters" } elem { name: "in-octets" }
+    }
+    val { uint_val: 1 }
+  }
+  update {
+    path {
+      elem { name: "interfaces" }
+      elem { name: "interface" key { key: "name" value: "Ethernet1" } }
+      elem { name: "state" } elem { name: "counters" } elem { name: "in-octets" }
+    }
+    val { uint_val: 2 }
+  }
+}
