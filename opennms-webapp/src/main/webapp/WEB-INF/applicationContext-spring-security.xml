@@ -440,6 +440,17 @@
     <intercept-url pattern="/api/v2/threshd/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/threshd.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
 
+    <!-- Resource types decide how collected data is stored; mutation is admin-only.
+         Reads are not secret-bearing, so GET/HEAD fall through to the generic read rule below. -->
+    <intercept-url pattern="/api/v2/resource-types/**" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/resource-types.*" method="DELETE" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/resource-types/**" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/resource-types.*" method="POST" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/resource-types/**" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/resource-types.*" method="PUT" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/resource-types/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/resource-types.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
+
     <!-- Discovery is a provisioning operation (its include/exclude URLs can read local files or fetch URLs);
          restrict it to provisioning/admin roles rather than the generic ROLE_REST catch-all below -->
     <intercept-url pattern="/api/v2/discovery" method="POST" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>

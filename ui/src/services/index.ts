@@ -121,6 +121,16 @@ import {
   uploadThresholdingConfiguration,
   uploadThreshdConfiguration
 } from './thresholdConfigurationService'
+import {
+  createResourceTypesConfig,
+  deleteResourceTypesConfig,
+  downloadResourceTypesConfig,
+  getResourceTypesConfig,
+  getResourceTypesConfigs,
+  getResourceTypesMetadata,
+  updateResourceTypesConfig,
+  uploadResourceTypesConfig
+} from './resourceTypesConfigService'
 import { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import { getAbout } from './aboutService'
@@ -210,6 +220,14 @@ export default {
   updateThreshdPackage,
   uploadThresholdingConfiguration,
   uploadThreshdConfiguration,
+  createResourceTypesConfig,
+  deleteResourceTypesConfig,
+  downloadResourceTypesConfig,
+  getResourceTypesConfig,
+  getResourceTypesConfigs,
+  getResourceTypesMetadata,
+  updateResourceTypesConfig,
+  uploadResourceTypesConfig,
   getMinionNodeIds,
   getCoreVersion,
   listMinions,

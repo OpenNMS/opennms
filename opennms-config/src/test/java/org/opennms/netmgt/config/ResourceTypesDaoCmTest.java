@@ -22,6 +22,7 @@
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -54,6 +55,7 @@ import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.EventType;
+import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
@@ -201,6 +203,51 @@ public class ResourceTypesDaoCmTest {
         dao.bind(cms, jsonStore);
 
         assertEquals("CM", dao.getResourceTypeByName("cmType").getLabel());
+    }
+
+    @Test
+    public void readsConfigurationsSortedByIdAndSkipsUnreadable() {
+        configs.put("b-file", json(type("onlyB", "B")));
+        configs.put("a-file", json(type("onlyA", "A")));
+        configs.put("c-bad", parse("{\"resourceType\":{\"name\":[1]}}"));
+        dao.bind(cms, jsonStore);
+
+        assertEquals(List.of("a-file", "b-file"), List.copyOf(dao.getConfigurations().keySet()));
+        assertEquals(List.of(type("onlyB", "B")), dao.getConfiguration("b-file").orElseThrow().getResourceTypes());
+        assertFalse(dao.getConfiguration("c-bad").isPresent());
+        assertFalse(dao.getConfiguration("missing").isPresent());
+    }
+
+    @Test
+    public void writesThroughTheConfigurationManager() {
+        dao.bind(cms, jsonStore);
+        final ResourceTypes types = new ResourceTypes();
+        types.setResourceTypes(List.of(type("t", "T")));
+
+        dao.createConfiguration("new", types);
+        final ArgumentCaptor<JsonAsString> created = ArgumentCaptor.forClass(JsonAsString.class);
+        verify(cms).registerConfiguration(eq(ResourceTypesDaoCm.CONFIG_NAME), eq("new"), created.capture());
+        assertEquals(types, ConfigConvertUtil.jsonToObject(created.getValue().toString(), ResourceTypes.class));
+
+        dao.updateConfiguration("new", new ResourceTypes());
+        // replaced as a whole, or removing the last type would be merged away
+        verify(cms).updateConfiguration(eq(ResourceTypesDaoCm.CONFIG_NAME), eq("new"), any(JsonAsString.class), eq(true));
+
+        dao.deleteConfiguration("new");
+        verify(cms).unregisterConfiguration(ResourceTypesDaoCm.CONFIG_NAME, "new");
+    }
+
+    @Test
+    public void writingUnboundFails() {
+        assertThrows(IllegalStateException.class, () -> dao.createConfiguration("x", new ResourceTypes()));
+        assertThrows(IllegalStateException.class, () -> dao.getConfigurations());
+    }
+
+    @Test
+    public void namesTheTypesOfOtherSources() {
+        dao.bind(cms, jsonStore);
+        assertEquals(List.of("fromDc", "overridden"), List.copyOf(dao.getDataCollectionResourceTypeNames()));
+        assertTrue(dao.getExtensionResourceTypeNames().isEmpty());
     }
 
     private static ResourceType type(final String name, final String label) {

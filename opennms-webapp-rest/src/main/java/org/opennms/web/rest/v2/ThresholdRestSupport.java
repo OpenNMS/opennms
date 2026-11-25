@@ -32,7 +32,7 @@ import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
 
 /**
- * Helpers shared by the two threshold configuration REST services.
+ * Helpers shared by the configuration REST services: the threshold ones and the resource types one.
  */
 abstract class ThresholdRestSupport {
 
@@ -64,7 +64,7 @@ abstract class ThresholdRestSupport {
         } catch (final NoSuchAlgorithmException e) {
             throw new IllegalStateException("SHA-256 is required by the platform but not available.", e);
         } catch (final Exception e) {
-            throw new IllegalStateException("Could not compute the entity tag of a threshold configuration.", e);
+            throw new IllegalStateException("Could not compute the entity tag of a configuration.", e);
         }
     }
 

@@ -34,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -45,6 +46,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JacksonUtils;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.impl.util.XsdHelper;
+import org.opennms.features.config.exception.ConfigAlreadyExistsException;
 import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.JsonAsString;
@@ -54,7 +56,10 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.ResourceTypesDaoCm;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
+import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.ResourceTypes;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -142,6 +147,47 @@ public class ResourceTypesDaoCmIT {
         final ResourceTypes read = JacksonUtils.createDefaultObjectMapper().readValue(published, ResourceTypes.class);
         assertTrue(read.getResourceTypes().stream().anyMatch(t -> "pgTableSpace".equals(t.getName())));
         assertTrue(read.getResourceTypes().stream().anyMatch(t -> "kafkaLag".equals(t.getName())));
+    }
+
+    @Test
+    public void writeMethodsRoundTrip() {
+        assertEquals(List.of("jmx-resource", "postgresql-resource"), List.copyOf(dao.getConfigurations().keySet()));
+
+        final ResourceTypes types = new ResourceTypes();
+        types.setResourceTypes(List.of(type("uiType", "From the UI")));
+        dao.createConfiguration("ui-config", types);
+        assertEquals("From the UI", dao.getResourceTypeByName("uiType").getLabel());
+        assertEquals(types, dao.getConfiguration("ui-config").get());
+        assertThrows(ConfigAlreadyExistsException.class, () -> dao.createConfiguration("ui-config", types));
+
+        // removing the last type is stored, too
+        dao.updateConfiguration("ui-config", new ResourceTypes());
+        assertNull(dao.getResourceTypeByName("uiType"));
+        assertTrue(dao.getConfiguration("ui-config").get().getResourceTypes().isEmpty());
+
+        dao.deleteConfiguration("ui-config");
+        assertTrue(dao.getConfiguration("ui-config").isEmpty());
+    }
+
+    @Test
+    public void writeRejectsInvalidConfiguration() {
+        // the schema check enforces required attributes; required child elements are left to the callers
+        final ResourceType noLabel = type("broken", "Broken");
+        noLabel.setLabel("");
+        final ResourceTypes types = new ResourceTypes();
+        types.setResourceTypes(List.of(noLabel));
+        assertThrows(ValidationException.class, () -> dao.createConfiguration("broken", types));
+        assertTrue(dao.getConfiguration("broken").isEmpty());
+    }
+
+    private static ResourceType type(final String name, final String label) {
+        final ResourceType type = new ResourceType();
+        type.setName(name);
+        type.setLabel(label);
+        type.setResourceLabel("${index}");
+        type.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy("org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"));
+        type.setStorageStrategy(new StorageStrategy("org.opennms.netmgt.collection.support.IndexStorageStrategy"));
+        return type;
     }
 
     private void importShipped(final String configId) throws IOException {

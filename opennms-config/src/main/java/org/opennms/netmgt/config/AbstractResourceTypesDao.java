@@ -21,10 +21,13 @@
  */
 package org.opennms.netmgt.config;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.core.config.api.ConfigReloadContainer;
 import org.opennms.netmgt.config.api.ResourceTypesDao;
@@ -71,6 +74,27 @@ public abstract class AbstractResourceTypesDao implements ResourceTypesDao {
             resourceTypesFromExtensions.getResourceTypes().forEach(r -> resourceTypesByName.put(r.getName(), r));
         }
         return resourceTypesByName;
+    }
+
+    /**
+     * @return the names of the resource types defined by the SNMP data collection configuration, which a stored
+     * resource type of the same name overrides
+     */
+    public Set<String> getDataCollectionResourceTypeNames() {
+        return Collections.unmodifiableSet(new TreeSet<>(DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().keySet()));
+    }
+
+    /**
+     * @return the names of the resource types provided by OIA extensions, which override a stored resource type of
+     * the same name
+     */
+    public Set<String> getExtensionResourceTypeNames() {
+        final Set<String> names = new TreeSet<>();
+        final ResourceTypes resourceTypesFromExtensions = extContainer.getObject();
+        if (resourceTypesFromExtensions != null) {
+            resourceTypesFromExtensions.getResourceTypes().forEach(r -> names.add(r.getName()));
+        }
+        return Collections.unmodifiableSet(names);
     }
 
     @Override

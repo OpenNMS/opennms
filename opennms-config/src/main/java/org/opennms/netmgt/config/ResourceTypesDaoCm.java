@@ -27,6 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -39,6 +41,7 @@ import org.opennms.features.config.exception.ValidationException;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.EventType;
+import org.opennms.features.config.service.api.JsonAsString;
 import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.config.dao.common.api.ConfigDaoConstants;
@@ -60,6 +63,11 @@ import org.slf4j.LoggerFactory;
  * the data collection configuration and of extensions are known.</p>
  *
  * <p>Every reload publishes the stored resource types to the {@link JsonStore}, where Sentinel picks them up.</p>
+ *
+ * <p>The write methods store a configuration in the configuration manager, which validates it and calls
+ * {@link #reload()} on the calling thread before it returns. They are not synchronized: the configuration manager
+ * calls the handlers with a lock of its own held. Callers that need read-modify-write consistency serialize their
+ * writes themselves.</p>
  */
 public class ResourceTypesDaoCm extends AbstractResourceTypesDao {
     private static final Logger LOG = LoggerFactory.getLogger(ResourceTypesDaoCm.class);
@@ -153,6 +161,77 @@ public class ResourceTypesDaoCm extends AbstractResourceTypesDao {
         lastUpdate.updateAndGet(previous -> Math.max(previous + 1, System.currentTimeMillis()));
         LOG.info("Loaded {} resource types from {} configurations of {}.", resourceTypes.size(), configs.size(), CONFIG_NAME);
         publish(resourceTypes);
+    }
+
+    /**
+     * @return all configurations of the schema by id, sorted by id. A configuration that can't be read is left out.
+     */
+    public SortedMap<String, ResourceTypes> getConfigurations() {
+        final Map<String, JSONObject> configs = requireCms().getConfigData(CONFIG_NAME)
+                .map(ConfigData::getConfigs)
+                .orElse(Collections.emptyMap());
+        final SortedMap<String, ResourceTypes> result = new TreeMap<>();
+        for (final Map.Entry<String, JSONObject> config : configs.entrySet()) {
+            try {
+                result.put(config.getKey(), ConfigConvertUtil.jsonToObject(config.getValue().toString(), ResourceTypes.class));
+            } catch (final ConfigConversionException e) {
+                LOG.error("Configuration {} of {} can not be read and is ignored: {}", config.getKey(), CONFIG_NAME, ConfigConvertUtil.rootCauseMessage(e));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return the configuration with the given id, empty if there is none or it can't be read
+     */
+    public Optional<ResourceTypes> getConfiguration(final String configId) {
+        Objects.requireNonNull(configId);
+        return Optional.ofNullable(getConfigurations().get(configId));
+    }
+
+    /**
+     * Stores a new configuration.
+     *
+     * @throws org.opennms.features.config.exception.ConfigAlreadyExistsException if the id is taken
+     * @throws ValidationException if the configuration is invalid
+     */
+    public void createConfiguration(final String configId, final ResourceTypes resourceTypes) {
+        Objects.requireNonNull(configId);
+        requireCms().registerConfiguration(CONFIG_NAME, configId, toJson(resourceTypes));
+    }
+
+    /**
+     * Replaces an existing configuration as a whole, so removing the last resource type is stored as well.
+     *
+     * @throws org.opennms.features.config.exception.ConfigNotFoundException if there is no such configuration
+     * @throws ValidationException if the configuration is invalid
+     */
+    public void updateConfiguration(final String configId, final ResourceTypes resourceTypes) {
+        Objects.requireNonNull(configId);
+        requireCms().updateConfiguration(CONFIG_NAME, configId, toJson(resourceTypes), true);
+    }
+
+    /**
+     * Removes a configuration.
+     *
+     * @throws org.opennms.features.config.exception.ConfigNotFoundException if there is no such configuration
+     */
+    public void deleteConfiguration(final String configId) {
+        Objects.requireNonNull(configId);
+        requireCms().unregisterConfiguration(CONFIG_NAME, configId);
+    }
+
+    private static JsonAsString toJson(final ResourceTypes resourceTypes) {
+        Objects.requireNonNull(resourceTypes);
+        return new JsonAsString(ConfigConvertUtil.objectToJson(resourceTypes));
+    }
+
+    private ConfigurationManagerService requireCms() {
+        final ConfigurationManagerService configurationManagerService = this.cms;
+        if (configurationManagerService == null) {
+            throw new IllegalStateException("Not bound to the configuration manager yet.");
+        }
+        return configurationManagerService;
     }
 
     private void publish(final List<ResourceType> types) {

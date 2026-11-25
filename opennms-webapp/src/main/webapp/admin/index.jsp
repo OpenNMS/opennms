@@ -218,6 +218,7 @@
             <li><a href="ui/index.html#/snmp-data-collection">Manage SNMP Data Collection Config</a></li>
             <li><a href="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
             <li><a href="ui/index.html#/threshold-config">Configure Thresholds</a></li>
+            <li><a href="ui/index.html#/resource-types">Configure Resource Types</a></li>
         </ul>
       </div> <!-- card-body -->
     </div> <!-- panel -->
@@ -355,6 +356,10 @@
 
         <p><b>Configure thresholds</b>: Allows you to add, remove, or modify threshold groups,
         thresholds, and the threshd packages that apply them.</p>
+
+        <p><b>Configure Resource Types</b>: Allows you to add, remove, or modify the resource types that
+        data collection and thresholds use for indexed resources, such as disks or database tables, and the
+        configurations that hold them (formerly the files in <code>etc/resource-types.d</code>).</p>
 
         <p><b>Manage Applications</b>: Configure and administer 
         the operation of perspective pollers that report back to this OpenNMS server to provide distributed

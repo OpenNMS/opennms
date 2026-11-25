@@ -71,6 +71,7 @@ const zenithConnectEnabled = () => useMenuStore().mainMenu?.zenithConnectEnabled
 
 const snmpRoleMsg = 'Must have the proper SNMP role(s) to access SNMP Config.'
 const thresholdRoleMsg = 'Must have the admin role to access Threshold Configuration.'
+const resourceTypesRoleMsg = 'Must have the admin role to access Resource Types Configuration.'
 
 // SNMP Config auto-lookup mode. This sets the store to ensure the lookup tab is active and in lookup mode.
 // Then SnmpConfigLookupTab will get the 'ipAddress' and 'location' query params and perform the lookup.
@@ -499,6 +500,43 @@ const router = createRouter({
       name: 'Threshold Service Edit',
       component: () => import('@/containers/ThresholdServiceEdit.vue'),
       beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    {
+      path: '/resource-types',
+      name: 'Resource Types Configuration',
+      component: () => import('@/containers/ResourceTypesConfiguration.vue'),
+      beforeEnter: requireRole('adminRole', resourceTypesRoleMsg)
+    },
+    {
+      // Not '/resource-types/config/create', so a configuration named 'create' stays reachable.
+      path: '/resource-types/create-config',
+      name: 'Resource Types Config Create',
+      component: () => import('@/containers/ResourceTypesConfigEdit.vue'),
+      beforeEnter: requireRole('adminRole', resourceTypesRoleMsg)
+    },
+    {
+      path: '/resource-types/config/:id',
+      name: 'Resource Types Config Detail',
+      component: () => import('@/containers/ResourceTypesConfigDetail.vue'),
+      beforeEnter: requireRole('adminRole', resourceTypesRoleMsg)
+    },
+    {
+      path: '/resource-types/config/:id/edit',
+      name: 'Resource Types Config Edit',
+      component: () => import('@/containers/ResourceTypesConfigEdit.vue'),
+      beforeEnter: requireRole('adminRole', resourceTypesRoleMsg)
+    },
+    {
+      path: '/resource-types/config/:id/create-type',
+      name: 'Resource Type Create',
+      component: () => import('@/containers/ResourceTypeEdit.vue'),
+      beforeEnter: requireRole('adminRole', resourceTypesRoleMsg)
+    },
+    {
+      path: '/resource-types/config/:id/type/:index(\\d+)',
+      name: 'Resource Type Edit',
+      component: () => import('@/containers/ResourceTypeEdit.vue'),
+      beforeEnter: requireRole('adminRole', resourceTypesRoleMsg)
     },
     {
       path: '/mib-compiler',
