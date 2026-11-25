@@ -27,9 +27,10 @@ import java.util.Map;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 
 /**
- * Used to retrieve the aggregated list of resource types stored in:
- *   * $OPENNMS_HOME/etc/resource-types/
- *   * $OPENNMS_HOME/etc/datacollection/
+ * Used to retrieve the aggregated list of resource types defined by:
+ *   * the configuration manager, schema 'resource-types' (formerly $OPENNMS_HOME/etc/resource-types.d/)
+ *   * the SNMP data collection configuration
+ *   * OIA extensions
  *
  * Previously, all of the generic resource type definition were
  * stored in 'etc/datacollection/', which holds SNMP collector
@@ -37,7 +38,8 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
  *
  * Since resource types are shared amongst collectors, we opted
  * to relocate these to their own folder, while continuing to
- * include resource types stored in original directory. 
+ * include resource types stored in original directory. They have
+ * since moved from that folder to the configuration manager.
  *
  * @author jwhite
  */

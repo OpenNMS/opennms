@@ -31,6 +31,14 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <!-- ResourceTypesDaoCm is only used on core. Minion and Sentinel don't have the configuration manager. -->
+            <Import-Package>
+              org.opennms.features.config.*;resolution:=optional,
+              org.opennms.features.distributed.kvstore.api;resolution:=optional,
+              org.codehaus.jackson.*;resolution:=optional,
+              org.json;resolution:=optional,
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -110,6 +118,16 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>org.opennms.config-dao.thresholding.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.config-dao.common-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

@@ -163,7 +163,6 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
         // Copy configuration from $OPENNMS_HOME/etc
         final Path opennmsSourceEtcDirectory = new TargetRoot(getClass()).getPath("system-test-resources", "etc");
         FileUtils.copyDirectory(opennmsSourceEtcDirectory.resolve("telemetryd-adapters").toFile(), etc.resolve("telemetryd-adapters").toFile());
-        FileUtils.copyDirectory(opennmsSourceEtcDirectory.resolve("resource-types.d").toFile(), etc.resolve("resource-types.d").toFile());
         FileUtils.copyDirectory(opennmsSourceEtcDirectory.resolve("datacollection").toFile(), etc.resolve("datacollection").toFile());
         FileUtils.copyFile(opennmsSourceEtcDirectory.resolve("datacollection-config.xml").toFile(), etc.resolve("datacollection-config.xml").toFile());
 

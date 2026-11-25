@@ -142,7 +142,14 @@
             org.opennms.netmgt.rrd.RrdStrategy
    -->
   <import resource="classpath*:/META-INF/opennms/applicationContext-timeseries-${org.opennms.timeseries.strategy:rrd}.xml"/>
-  <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
+  <!-- resourceTypesDao lives in the common context, the configuration manager and the JSON store live here.
+       Runs after upgradeConfigService imported etc/resource-types.d/, and before resourceDao reads the resource types. -->
+  <!-- byName: the jsonStore is optional, some test contexts don't have one -->
+  <bean id="resourceTypesDaoCmBinding" class="org.opennms.netmgt.config.ResourceTypesDaoCmBinding" autowire="byName" depends-on="upgradeConfigService">
+    <property name="resourceTypesDao" ref="resourceTypesDao" />
+    <property name="configurationManagerService" ref="configurationManagerService" />
+  </bean>
+  <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao" depends-on="resourceTypesDaoCmBinding">
     <property name="nodeDao" ref="nodeDao" />
     <property name="ipInterfaceDao" ref="ipInterfaceDao" />
     <property name="collectdConfig" ref="collectdConfig" />

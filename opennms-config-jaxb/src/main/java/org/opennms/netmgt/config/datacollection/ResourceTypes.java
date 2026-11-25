@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.ValidateUsing;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @XmlRootElement(name="resource-types", namespace="http://xmlns.opennms.org/xsd/config/datacollection")
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(propOrder={"m_resourceTypes"})
@@ -42,6 +44,7 @@ public class ResourceTypes {
      * Custom resource types
      */
     @XmlElement(name="resourceType")
+    @JsonProperty("resourceType")
     private List<ResourceType> m_resourceTypes = null;
 
     public List<ResourceType> getResourceTypes() {

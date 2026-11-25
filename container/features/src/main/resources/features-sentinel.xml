@@ -158,30 +158,44 @@
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification/org.opennms.features.flows.classification.shell/${project.version}</bundle>
+        <!-- distributed.collection reads the resource types published by OpenNMS from the JSON store -->
+        <feature>jackson1</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-telemetry-nxos" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: NXOS" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-nxos</feature>
+        <!-- distributed.collection reads the resource types published by OpenNMS from the JSON store -->
+        <feature>sentinel-kvstore-api</feature>
+        <feature>jackson1</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-telemetry-jti" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: JTI" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-jti</feature>
+        <!-- distributed.collection reads the resource types published by OpenNMS from the JSON store -->
+        <feature>sentinel-kvstore-api</feature>
+        <feature>jackson1</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-telemetry-graphite" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: Graphite" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-graphite</feature>
+        <!-- distributed.collection reads the resource types published by OpenNMS from the JSON store -->
+        <feature>sentinel-kvstore-api</feature>
+        <feature>jackson1</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-telemetry-bmp" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: BMP" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-bmp-adapter</feature>
+        <!-- distributed.collection reads the resource types published by OpenNMS from the JSON store -->
+        <feature>sentinel-kvstore-api</feature>
+        <feature>jackson1</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 

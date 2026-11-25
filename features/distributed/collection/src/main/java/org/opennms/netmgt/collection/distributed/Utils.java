@@ -21,8 +21,6 @@
  */
 package org.opennms.netmgt.collection.distributed;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 import org.opennms.netmgt.collection.api.ResourceTypeMapper;
@@ -31,10 +29,6 @@ import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.api.ResourceTypesDao;
 
 public class Utils {
-
-    public static Path getSentinelHome() {
-        return Paths.get(System.getProperty("karaf.home", "/opt/sentinel"));
-    }
 
     public static ResourceTypeMapper createReseourceTypeMapper(ResourceTypesDao resourceTypesDao) {
         Objects.requireNonNull(resourceTypesDao);

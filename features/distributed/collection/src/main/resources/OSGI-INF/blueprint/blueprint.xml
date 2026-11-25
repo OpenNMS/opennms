@@ -17,9 +17,6 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <!-- Wrapper for Paths.get("file:///opt/sentinel") -->
-    <bean id="sentinelHome" class="org.opennms.netmgt.collection.distributed.Utils" factory-method="getSentinelHome" />
-
     <!-- Initialize DataCollectionConfigDao -->
     <bean id="configResource" class="org.springframework.core.io.FileSystemResource">
         <argument value="$[karaf.home]/etc/datacollection-config.xml" />
@@ -35,9 +32,10 @@
         <argument ref="dataCollectionConfigDao" />
     </bean>
 
-    <!-- Initialize ResourceTypesDao -->
-    <bean id="resourceTypesDao" class="org.opennms.netmgt.config.DefaultResourceTypesDao">
-        <property name="opennmsHome" ref="sentinelHome" />
+    <!-- Initialize ResourceTypesDao: the resource types stored on OpenNMS are published to the JSON store -->
+    <reference id="jsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore" />
+    <bean id="resourceTypesDao" class="org.opennms.netmgt.collection.distributed.SentinelResourceTypesDao" depends-on="dataCollectionConfigFactory">
+        <argument ref="jsonStore" />
     </bean>
     <service ref="resourceTypesDao" interface="org.opennms.netmgt.config.api.ResourceTypesDao" />
 

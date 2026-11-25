@@ -49,6 +49,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -98,7 +99,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     private final static String SCHEMA_NAME_EVENTD = "eventd";
     private final static String SCHEMA_NAME_PROPERTIES = "propertiesTest";
     private final static String SCHEMA_NAME_GRAPHML = "org.opennms.netmgt.graph.provider.graphml";
+    private final static String SCHEMA_NAME_RESOURCE_TYPES = "resource-types";
+    private final static String RESOURCE_TYPES_CHANGELOG = "changelog-cm/37.0.0/changelog-cm.xml";
     private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
+    private final static String ASSEMBLY_ETC = "../../../opennms-base-assembly/src/main/filtered/etc/";
 
     private DataSource dataSource;
     private Connection connection;
@@ -155,6 +159,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
         if (cm.getRegisteredConfigDefinition(SCHEMA_NAME_GRAPHML).isPresent()) {
             this.cm.unregisterSchema(SCHEMA_NAME_GRAPHML);
+        }
+
+        if (cm.getRegisteredConfigDefinition(SCHEMA_NAME_RESOURCE_TYPES).isPresent()) {
+            this.cm.unregisterSchema(SCHEMA_NAME_RESOURCE_TYPES);
         }
 
         FileSystemUtils.deleteRecursively(this.opennmsHome.toFile());
@@ -275,6 +283,191 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         } finally {
             this.db.cleanUp();
         }
+    }
+
+    /**
+     * The 37.0.0 changelog imports every file of resource-types.d/ as a configuration named after the file. The files
+     * are archived below etc_archive/resource-types.d/ and imported from there again after a database reset.
+     */
+    @Test
+    public void shouldImportResourceTypesDirectory() throws Exception {
+        try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
+            final Path includeDir = Files.createDirectories(Path.of(this.opennmsHome + "/etc/resource-types.d"));
+            final Set<String> shipped;
+            try (Stream<Path> files = Files.list(Path.of(ASSEMBLY_ETC + "resource-types.d"))) {
+                shipped = files.filter(f -> f.toString().endsWith(".xml"))
+                        .map(f -> f.getFileName().toString())
+                        .collect(Collectors.toSet());
+            }
+            for (final String file : shipped) {
+                Files.copy(Path.of(ASSEMBLY_ETC + "resource-types.d/" + file), includeDir.resolve(file));
+            }
+            // not an xml file: ignored
+            FileUtils.writeStringToFile(includeDir.resolve("README.txt").toFile(), "ignored", StandardCharsets.UTF_8);
+
+            new LiquibaseUpgrader(cmSpy).runChangelog(RESOURCE_TYPES_CHANGELOG, dataSource.getConnection());
+
+            final Set<String> expectedIds = shipped.stream().map(f -> f.substring(0, f.length() - ".xml".length())).collect(Collectors.toSet());
+            assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_RESOURCE_TYPES).get().getAllowMultiple());
+            assertEquals(expectedIds, this.cm.getConfigIds(SCHEMA_NAME_RESOURCE_TYPES));
+            assertEquals("pgTableSpace", this.cm.getJSONConfiguration(SCHEMA_NAME_RESOURCE_TYPES, "postgresql-resource").get()
+                    .getJSONArray("resourceType").getJSONObject(0).getString("name"));
+            // the file with the stray parameter was fixed, so all Windows exporter types arrive
+            assertEquals(3, this.cm.getJSONConfiguration(SCHEMA_NAME_RESOURCE_TYPES, "prometheus-windows-exporter").get()
+                    .getJSONArray("resourceType").length());
+
+            // imported files are archived, keeping the directory
+            for (final String file : shipped) {
+                assertFalse(file, Files.exists(includeDir.resolve(file)));
+                assertTrue(file, checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive/resource-types.d", file));
+            }
+            assertTrue(Files.exists(includeDir.resolve("README.txt")));
+
+            // simulate dropdb: the archived files are imported again
+            resetDatabase();
+            this.cm.unregisterSchema(SCHEMA_NAME_RESOURCE_TYPES);
+            new LiquibaseUpgrader(cm).runChangelog(RESOURCE_TYPES_CHANGELOG, dataSource.getConnection());
+            assertEquals(expectedIds, this.cm.getConfigIds(SCHEMA_NAME_RESOURCE_TYPES));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    @Test
+    public void shouldImportNoResourceTypesWithoutDirectory() throws Exception {
+        try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
+
+            new LiquibaseUpgrader(cmSpy).runChangelog(RESOURCE_TYPES_CHANGELOG, dataSource.getConnection());
+
+            assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_RESOURCE_TYPES).isPresent());
+            assertEquals(Set.of(), this.cm.getConfigIds(SCHEMA_NAME_RESOURCE_TYPES));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    /** a resource type without label and strategies: the old DAO read it, the schema rejects it */
+    private static final String RESOURCE_TYPES_INVALID_XML = "<?xml version=\"1.0\"?>\n"
+            + "<resource-types>\n"
+            + "  <resourceType name=\"broken\"/>\n"
+            + "</resource-types>\n";
+
+    /**
+     * Files that don't obey the schema don't stop the upgrade: they are not imported and stay in etc/.
+     */
+    @Test
+    public void shouldSkipInvalidResourceTypesFiles() throws Exception {
+        try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
+            final Path includeDir = Files.createDirectories(Path.of(this.opennmsHome + "/etc/resource-types.d"));
+            FileUtils.writeStringToFile(includeDir.resolve("broken.xml").toFile(), RESOURCE_TYPES_INVALID_XML, StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(includeDir.resolve("garbage.xml").toFile(), "<not-xml", StandardCharsets.UTF_8);
+            Files.copy(Path.of(ASSEMBLY_ETC + "resource-types.d/jmx-resource.xml"), includeDir.resolve("jmx-resource.xml"));
+
+            new LiquibaseUpgrader(cmSpy).runChangelog(RESOURCE_TYPES_CHANGELOG, dataSource.getConnection());
+
+            assertEquals(Set.of("jmx-resource"), this.cm.getConfigIds(SCHEMA_NAME_RESOURCE_TYPES));
+            assertTrue(Files.exists(includeDir.resolve("broken.xml")));
+            assertTrue(Files.exists(includeDir.resolve("garbage.xml")));
+            assertFalse(Files.exists(includeDir.resolve("jmx-resource.xml")));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    /**
+     * Without failOnError="false", importConfigDir stops the upgrade at a file that can't be imported, like importConfig.
+     */
+    @Test
+    public void shouldFailOnInvalidFileInDirectoryByDefault() throws Exception {
+        try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
+            final Path includeDir = Files.createDirectories(Path.of(this.opennmsHome + "/etc/resource-types.d"));
+            FileUtils.writeStringToFile(includeDir.resolve("broken.xml").toFile(), RESOURCE_TYPES_INVALID_XML, StandardCharsets.UTF_8);
+
+            final LiquibaseUpgrader liqui = new LiquibaseUpgrader(cmSpy);
+            assertThrowsException(MigrationFailedException.class,
+                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog-resource-types-dir-fail.xml", dataSource.getConnection()));
+
+            assertTrue(Files.exists(includeDir.resolve("broken.xml")));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    /**
+     * Without failOnError="false", importConfig still stops the upgrade when the file is missing.
+     */
+    @Test
+    public void shouldFailOnMissingFileByDefault() throws Exception {
+        try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
+
+            final LiquibaseUpgrader liqui = new LiquibaseUpgrader(cmSpy);
+            assertThrowsException(ValidationFailedException.class,
+                    () -> liqui.runChangelog("org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog-resource-types-file-missing.xml", dataSource.getConnection()));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    /**
+     * A file that is imported but can't be archived doesn't stop the upgrade: the configuration is stored and
+     * the file stays in etc/.
+     */
+    @Test
+    public void shouldKeepImportedResourceTypesWhenArchivingFails() throws Exception {
+        try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
+            final Path includeDir = Files.createDirectories(Path.of(this.opennmsHome + "/etc/resource-types.d"));
+            Files.copy(Path.of(ASSEMBLY_ETC + "resource-types.d/jmx-resource.xml"), includeDir.resolve("jmx-resource.xml"));
+            // a file where the archive directory should be: the directory can't be created
+            final Path archiveDir = Files.createDirectories(Path.of(this.opennmsHome + "/etc_archive"));
+            FileUtils.writeStringToFile(archiveDir.resolve("resource-types.d").toFile(), "in the way", StandardCharsets.UTF_8);
+
+            new LiquibaseUpgrader(cmSpy).runChangelog(RESOURCE_TYPES_CHANGELOG, dataSource.getConnection());
+
+            assertEquals(Set.of("jmx-resource"), this.cm.getConfigIds(SCHEMA_NAME_RESOURCE_TYPES));
+            assertTrue(Files.exists(includeDir.resolve("jmx-resource.xml")));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    /**
+     * The id 'default' is reserved for the primary configuration of a schema, so resource-types.d/default.xml becomes 'default.d'.
+     */
+    @Test
+    public void shouldImportResourceTypesDefaultXmlUnderOtherId() throws Exception {
+        try {
+            // the changelog tables survive between tests, so the changeset would be skipped
+            resetDatabase();
+            final Path includeDir = Files.createDirectories(Path.of(this.opennmsHome + "/etc/resource-types.d"));
+            Files.copy(Path.of(ASSEMBLY_ETC + "resource-types.d/postgresql-resource.xml"), includeDir.resolve("default.xml"));
+
+            new LiquibaseUpgrader(cmSpy).runChangelog(RESOURCE_TYPES_CHANGELOG, dataSource.getConnection());
+
+            assertEquals(Set.of("default.d"), this.cm.getConfigIds(SCHEMA_NAME_RESOURCE_TYPES));
+            assertFalse(Files.exists(includeDir.resolve("default.xml")));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive/resource-types.d", "default.xml"));
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
+    private void resetDatabase() throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("DROP TABLE IF EXISTS " + TABLE_NAME_DATABASECHANGELOG);
+        statement.execute();
+        statement = connection.prepareStatement("DROP TABLE IF EXISTS " + LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOGLOCK);
+        statement.execute();
     }
 
     @Test

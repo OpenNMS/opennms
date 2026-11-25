@@ -3,7 +3,6 @@
     <resourceType name="winExporterCPU" label="Windows Exporter CPU" resourceLabel="CPU (${cpu})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
-       <parameter key="replace-all" value="s/,/_/" />
     </resourceType>
 
     <resourceType name="winExporterDisk" label="Windows Exporter Logical Disk" resourceLabel="Disk (${volume})">

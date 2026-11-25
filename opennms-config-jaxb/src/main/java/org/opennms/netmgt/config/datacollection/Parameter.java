@@ -28,6 +28,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Parameters to be used for configuration this strategy.
  */
@@ -41,12 +43,14 @@ public class Parameter implements org.opennms.netmgt.collection.api.Parameter, S
      * Field _key.
      */
     @XmlAttribute(name="key", required=true)
+    @JsonProperty("key")
     private String m_key;
 
     /**
      * Field _value.
      */
     @XmlAttribute(name="value", required=true)
+    @JsonProperty("value")
     private String m_value;
 
     public Parameter() {

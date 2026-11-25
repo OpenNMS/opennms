@@ -40,5 +40,11 @@
       <artifactId>org.opennms.features.config.service.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <!-- the resource types of etc/resource-types.d/ -->
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-jaxb</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>

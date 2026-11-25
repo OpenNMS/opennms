@@ -32,6 +32,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.collection.api.StrategyDefinition;
 import org.opennms.netmgt.collection.api.Parameter;
@@ -52,6 +55,7 @@ public class PersistenceSelectorStrategy implements StrategyDefinition, Serializ
      * PersistenceSelectorStrategy.
      */
     @XmlAttribute(name="class")
+    @JsonProperty("class")
     private String m_clazz;
 
     /**
@@ -59,6 +63,7 @@ public class PersistenceSelectorStrategy implements StrategyDefinition, Serializ
      * configuration information
      */
     @XmlElement(name="parameter", type=org.opennms.netmgt.config.datacollection.Parameter.class)
+    @JsonIgnore
     private List<Parameter> m_parameters = new ArrayList<>();
 
     public PersistenceSelectorStrategy() {
@@ -100,6 +105,29 @@ public class PersistenceSelectorStrategy implements StrategyDefinition, Serializ
 
     public boolean removeParameter(final Parameter parameter) {
         return m_parameters.remove(parameter);
+    }
+
+    /**
+     * The parameters for the configuration manager JSON. The list holds {@link org.opennms.netmgt.collection.api.Parameter}s,
+     * which Jackson can't instantiate, and may contain foreign implementations (e.g. from OIA extensions).
+     */
+    @JsonProperty("parameter")
+    private List<org.opennms.netmgt.config.datacollection.Parameter> getJsonParameters() {
+        if (m_parameters == null) {
+            return null;
+        }
+        final List<org.opennms.netmgt.config.datacollection.Parameter> parameters = new ArrayList<>(m_parameters.size());
+        for (final Parameter parameter : m_parameters) {
+            parameters.add(parameter instanceof org.opennms.netmgt.config.datacollection.Parameter
+                    ? (org.opennms.netmgt.config.datacollection.Parameter) parameter
+                    : new org.opennms.netmgt.config.datacollection.Parameter(parameter.getKey(), parameter.getValue()));
+        }
+        return parameters;
+    }
+
+    @JsonProperty("parameter")
+    private void setJsonParameters(final List<org.opennms.netmgt.config.datacollection.Parameter> parameters) {
+        m_parameters = parameters == null ? new ArrayList<>() : new ArrayList<>(parameters);
     }
 
     @Override

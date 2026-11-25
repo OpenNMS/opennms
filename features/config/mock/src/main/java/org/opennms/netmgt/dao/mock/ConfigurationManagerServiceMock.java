@@ -32,6 +32,9 @@ import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 import org.opennms.features.config.service.api.EventType;
 import org.opennms.features.config.service.api.JsonAsString;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.datacollection.ResourceTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -42,6 +45,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Stream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -61,6 +67,10 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     // It store override path for configs Map<configName, filePath>
     private Map<String, String> configFileMap;
+
+    /** Schema of the resource types that used to live in etc/resource-types.d/, see {@link #seedResourceTypes()} */
+    static final String RESOURCE_TYPES_CONFIG_NAME = "resource-types";
+    private boolean resourceTypesSeeded = false;
 
     public void setConfigFileMap(Map<String, String> configFileMap) {
         this.configFileMap = configFileMap;
@@ -277,7 +287,56 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Optional<ConfigData<JSONObject>> getConfigData(String configName) {
-        return Optional.empty();
+        seedIfNeeded(configName);
+        Map<String, String> configs = this.configStore.get(configName);
+        if (configs == null) {
+            return Optional.empty();
+        }
+        Map<String, JSONObject> jsonConfigs = new HashMap<>();
+        configs.forEach((configId, json) -> jsonConfigs.put(configId, new JSONObject(json)));
+        ConfigData<JSONObject> configData = new ConfigData<>();
+        configData.setConfigs(jsonConfigs);
+        return Optional.of(configData);
+    }
+
+    private void seedIfNeeded(String configName) {
+        if (RESOURCE_TYPES_CONFIG_NAME.equals(configName)) {
+            seedResourceTypes();
+        }
+    }
+
+    /**
+     * Tests run against etc/ of the assembly (or their own opennms.home) and never run the upgrade that imports
+     * etc/resource-types.d/ into the configuration manager. Like the upgrade, every file becomes a configuration named
+     * after the file, so tests see the resource types they used to see.
+     */
+    private synchronized void seedResourceTypes() {
+        if (resourceTypesSeeded) {
+            return;
+        }
+        resourceTypesSeeded = true;
+        final String home = System.getProperty("opennms.home");
+        if (home == null) {
+            return;
+        }
+        final Path dir = Path.of(home, "etc", "resource-types.d");
+        if (!Files.isDirectory(dir)) {
+            return;
+        }
+        try (Stream<Path> files = Files.list(dir)) {
+            files.filter(file -> file.getFileName().toString().endsWith(XML_EXTENSION)).sorted().forEach(file -> {
+                final String fileName = file.getFileName().toString();
+                final String configId = fileName.substring(0, fileName.length() - XML_EXTENSION.length());
+                try {
+                    final ResourceTypes resourceTypes = JaxbUtils.unmarshal(ResourceTypes.class, Files.readString(file, StandardCharsets.UTF_8));
+                    putConfig(RESOURCE_TYPES_CONFIG_NAME, configId, ConfigConvertUtil.objectToJson(resourceTypes));
+                } catch (Exception e) {
+                    LOG.warn("Skipping resource types file {}: {}", file, e.getMessage());
+                }
+            });
+        } catch (IOException e) {
+            LOG.warn("Failed to read resource types from {}: {}", dir, e.getMessage());
+        }
     }
 
     @Override
@@ -292,6 +351,7 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
 
     @Override
     public Set<String> getConfigIds(String configName) {
+        seedIfNeeded(configName);
         Map<String, String> configs = this.configStore.get(configName);
         if (configs != null) {
             return configs.keySet();

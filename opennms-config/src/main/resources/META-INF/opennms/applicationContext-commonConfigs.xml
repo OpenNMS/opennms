@@ -124,7 +124,8 @@
     <constructor-arg value="${org.opennms.snmp.dataCollectionConfig.reloadCheckInterval:30000}" />
   </bean>
 
-  <bean id="resourceTypesDao" class="org.opennms.netmgt.config.DefaultResourceTypesDao" />
+  <!-- Stored in the configuration manager, which lives in the DAO context: bound there by resourceTypesDaoCmBinding -->
+  <bean id="resourceTypesDao" class="org.opennms.netmgt.config.ResourceTypesDaoCm" />
 
   <onmsgi:service interface="org.opennms.netmgt.config.api.ResourceTypesDao" ref="resourceTypesDao" />
 </beans>

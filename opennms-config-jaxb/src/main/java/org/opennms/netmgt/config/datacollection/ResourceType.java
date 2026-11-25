@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlType;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * a custom resource type
  */
@@ -48,12 +50,14 @@ public class ResourceType implements Serializable, org.opennms.netmgt.collection
      * resource type name
      */
     @XmlAttribute(name="name", required=true)
+    @JsonProperty("name")
     private String m_name;
 
     /**
      * resource type label (this is what users see in the webUI)
      */
     @XmlAttribute(name="label", required=true)
+    @JsonProperty("label")
     private String m_label;
 
     /**
@@ -61,6 +65,7 @@ public class ResourceType implements Serializable, org.opennms.netmgt.collection
      * resource of this type)
      */
     @XmlAttribute(name="resourceLabel")
+    @JsonProperty("resourceLabel")
     private String m_resourceLabel;
 
     /**
@@ -68,12 +73,14 @@ public class ResourceType implements Serializable, org.opennms.netmgt.collection
      * persisted and which is not.
      */
     @XmlElement(name="persistenceSelectorStrategy")
+    @JsonProperty("persistenceSelectorStrategy")
     private PersistenceSelectorStrategy m_persistenceSelectorStrategy;
 
     /**
      * Selects a StorageStrategy that decides where data is stored.
      */
     @XmlElement(name="storageStrategy")
+    @JsonProperty("storageStrategy")
     private StorageStrategy m_storageStrategy;
 
     /**

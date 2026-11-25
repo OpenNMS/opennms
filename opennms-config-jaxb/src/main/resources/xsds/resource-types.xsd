@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/datacollection"
+  xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:this="http://xmlns.opennms.org/xsd/config/datacollection"
+  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the resource type definitions that used to live in etc/resource-types.d/
+      and are stored in the configuration manager (schema 'resource-types'). The elements are the same as the
+      resource type elements of datacollection-config.xsd. The schema is registered with its hash, so a change
+      needs a new version of this file.</documentation>
+  </annotation>
+
+  <element name="resource-types">
+    <annotation>
+      <documentation>a collection of custom resource types</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:resourceType">
+          <annotation>
+            <documentation>Custom resource types</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="resourceType">
+    <annotation>
+      <documentation>a custom resource type</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" ref="this:persistenceSelectorStrategy"/>
+        <element maxOccurs="1" minOccurs="1" ref="this:storageStrategy"/>
+      </sequence>
+
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>resource type name</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="label" type="string" use="required">
+        <annotation>
+          <documentation>resource type label (this is what users see in the webUI)</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="resourceLabel" type="string" use="optional">
+        <annotation>
+          <documentation>resource label expression (this is what users see in the webUI for each resource of
+            this type)</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="persistenceSelectorStrategy">
+    <annotation>
+      <documentation>Selects a PersistenceSelectorStrategy that decides which data is persisted and which is
+        not.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter">
+          <annotation>
+            <documentation>list of parameters to pass to the strategy for strategy-specific configuration
+              information</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="class" type="string" use="required">
+        <annotation>
+          <documentation>Java class name of the class that implements the
+            PersistenceSelectorStrategy.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="storageStrategy">
+    <annotation>
+      <documentation>Selects a StorageStrategy that decides where data is stored.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter">
+          <annotation>
+            <documentation>list of parameters to pass to the strategy for strategy-specific configuration
+              information</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="class" type="string" use="required">
+        <annotation>
+          <documentation>Java class name of the class that implements the StorageStrategy.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="parameter">
+    <annotation>
+      <documentation>Parameters to be used for configuration this strategy.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="key" type="string" use="required"/>
+      <attribute name="value" type="string" use="required"/>
+    </complexType>
+  </element>
+</schema>

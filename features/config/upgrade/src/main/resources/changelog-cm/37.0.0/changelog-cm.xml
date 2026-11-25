@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:cm="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- Every file of resource-types.d/ becomes a configuration named after the file, e.g. 'postgresql-resource'.
+         Files that can't be imported are logged and left in etc/, and a missing directory imports nothing; neither
+         stops the upgrade: the old DAO didn't validate them, so a file that used to be accepted must not break the upgrade. -->
+    <changeSet author="cpape" id="register-schema-resource-types">
+        <cm:registerSchema id="resource-types" allowMultiple="true"/>
+        <cm:importSchemaFromXsd id="resource-types" xsdFileName="resource-types.xsd" xsdFileHash="f47985f1606a509b040aea99fcb08020a4d806299d185e503343a2d63c7ced89" rootElement="resource-types"/>
+        <cm:importConfigDir schemaId="resource-types" dirPath="resource-types.d" failOnError="false"/>
+    </changeSet>
+
+</databaseChangeLog>
