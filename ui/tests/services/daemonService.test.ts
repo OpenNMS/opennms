@@ -57,7 +57,7 @@ describe('daemonService', () => {
     // preference; the set is the hand-maintained union of handler subscriptions
     const names = RELOADABLE_DAEMONS.map(d => d.name)
     expect(new Set(names).size).toBe(names.length)
-    expect([...names].sort()).toEqual(['Ackd', 'Alarmd', 'Bsmd', 'Collectd', 'Discovery', 'Enlinkd', 'Eventd',
+    expect([...names].sort()).toEqual(['Ackd', 'Alarmd', 'Bsmd', 'Collectd', 'Discovery', 'Enlinkd',
       'Notifd', 'PerspectivePoller', 'Pollerd', 'Provisiond', 'Scriptd', 'SnmpPoller', 'Syslogd', 'Telemetryd',
       'Threshd', 'Ticketd', 'Translator', 'Trapd', 'Vacuumd'])
     const labels = RELOADABLE_DAEMONS.map(d => d.label)

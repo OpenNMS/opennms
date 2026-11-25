@@ -16,7 +16,8 @@
     <p>
       Some components that are not daemons also accept targeted reloads and are not listed here: provisioning
       adapters (addressed as <em>Provisiond.&lt;AdapterName&gt;</em>), correlation engines, northbound
-      interfaces, and token authentication (<em>TokenAuth</em>). Starting and stopping daemons, and live daemon
+      interfaces, and token authentication (<em>TokenAuth</em>). Eventd also accepts the reload event, but event
+      definitions are stored in the database and take effect when saved, so there is nothing for it to re-read. Starting and stopping daemons, and live daemon
       status, are not yet available from this page.
     </p>
   </div>

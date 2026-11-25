@@ -57,8 +57,6 @@ export const RELOADABLE_DAEMONS: ReloadableDaemon[] = [
     description: 'Re-reads discovery-configuration.xml and restarts the discovery schedule.' },
   { name: 'Enlinkd', label: 'Enlinkd', outcome: 'none',
     description: 'Re-reads enlinkd-configuration.xml, resizes its thread pools, and reschedules link discovery.' },
-  { name: 'Eventd', label: 'Eventd', outcome: 'reported',
-    description: 'Nothing to re-read: event definitions are stored in the database and take effect when saved.' },
   { name: 'Notifd', label: 'Notifd', outcome: 'reported',
     description: 'Reloads users, groups, notifications, destination paths, and notification commands.' },
   { name: 'PerspectivePoller', label: 'Perspective Poller', outcome: 'successOnly',

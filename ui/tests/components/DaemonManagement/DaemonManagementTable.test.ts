@@ -148,13 +148,13 @@ describe('DaemonManagementTable.vue', () => {
     vi.mocked(reloadDaemon).mockRejectedValue(new Error('network'))
     const wrapper = await mountTable()
 
-    await wrapper.find('[data-test="reload-Eventd"]').trigger('click')
+    await wrapper.find('[data-test="reload-Ackd"]').trigger('click')
     await wrapper.find('.ok-btn').trigger('click')
     await flushPromises()
 
     expect(showToast).toHaveBeenCalledWith(expect.objectContaining({
       severity: 'error',
-      message: expect.stringContaining('Failed to request a reload for Eventd.')
+      message: expect.stringContaining('Failed to request a reload for Ackd.')
     }))
   })
 })

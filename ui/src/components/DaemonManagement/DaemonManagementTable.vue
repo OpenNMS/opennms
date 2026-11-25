@@ -48,8 +48,6 @@
     <template #content>
       <p data-test="reload-confirm-text">
         Reload the configuration of <strong>{{ daemonToReload?.label }}</strong>?
-        The daemon re-reads its configuration and rebuilds its schedules, which can
-        briefly delay its regular work on large installations.
       </p>
     </template>
   </OnmsConfirmationDialog>
