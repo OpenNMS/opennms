@@ -132,26 +132,54 @@ public final class FfmNativeDatagramSocket extends NativeDatagramSocket {
     @Override
     public void setTrafficClass(final int tc) throws IOException {
         if (m_family == AF_INET) {
-            setIntOption(IPPROTO_IP, m_bsd ? BSD_IP_TOS : LINUX_IP_TOS, tc);
+            setIntOption(IPPROTO_IP, ipv4TosOption(), tc);
         } else {
             setIntOption(IPPROTO_IPV6, ipv6TclassOption(), tc);
         }
     }
 
+    /** Reads the traffic class back from the socket, with the same option number {@link #setTrafficClass} sets. */
+    public int getTrafficClass() throws IOException {
+        if (m_family == AF_INET) {
+            return getIntOption(IPPROTO_IP, ipv4TosOption());
+        }
+        return getIntOption(IPPROTO_IPV6, ipv6TclassOption());
+    }
+
     @Override
     public void allowFragmentation(final boolean frag) throws IOException {
-        // Same values as the JNA implementations: 0 allows fragmentation, 1 does not.
+        // 0 allows fragmentation, 1 does not. On Linux and for IPv6 this matches the JNA sockets.
+        // On macOS and FreeBSD IPv4 this sets IP_DONTFRAG. The JNA socket sets option 10 there,
+        // which is IP_MULTICAST_TTL on those systems.
         final int value = frag ? 0 : 1;
         if (m_family == AF_INET6) {
             setIntOption(IPPROTO_IPV6, IPV6_DONTFRAG, value);
-        } else if (NativeOs.isLinux()) {
-            setIntOption(IPPROTO_IP, LINUX_IP_MTU_DISCOVER, value);
-        } else if (NativeOs.isMac()) {
-            setIntOption(IPPROTO_IP, MACOS_IP_DONTFRAG, value);
-        } else if (NativeOs.isFreeBSD()) {
-            setIntOption(IPPROTO_IP, FREEBSD_IP_DONTFRAG, value);
+        } else if (ipv4DontFragmentOption() >= 0) {
+            setIntOption(IPPROTO_IP, ipv4DontFragmentOption(), value);
         }
-        // OpenBSD has no per-socket DF option for IPv4, same as the JNA BSDV4NativeSocket.
+    }
+
+    /** Reads back what {@link #allowFragmentation} set. Always true for IPv4 on OpenBSD. */
+    public boolean isFragmentationAllowed() throws IOException {
+        if (m_family == AF_INET6) {
+            return getIntOption(IPPROTO_IPV6, IPV6_DONTFRAG) == 0;
+        }
+        return ipv4DontFragmentOption() < 0 || getIntOption(IPPROTO_IP, ipv4DontFragmentOption()) == 0;
+    }
+
+    /** The IPv4 option that controls fragmentation, or -1 on OpenBSD, which has no IPv4 IP_DONTFRAG. */
+    private static int ipv4DontFragmentOption() {
+        if (NativeOs.isLinux()) {
+            return LINUX_IP_MTU_DISCOVER;
+        }
+        if (NativeOs.isMac()) {
+            return MACOS_IP_DONTFRAG;
+        }
+        return NativeOs.isFreeBSD() ? FREEBSD_IP_DONTFRAG : -1;
+    }
+
+    private static int ipv4TosOption() {
+        return NativeOs.isLinux() ? LINUX_IP_TOS : BSD_IP_TOS;
     }
 
     private static int ipv6TclassOption() {
@@ -257,6 +285,28 @@ public final class FfmNativeDatagramSocket extends NativeDatagramSocket {
         }
     }
 
+    private int getIntOption(final int level, final int option) throws IOException {
+        final int socket = getSock();
+        if (socket < 0) {
+            throw new IOException("Invalid socket!");
+        }
+        final Libc libc = Libc.get();
+        try (Arena call = Arena.ofConfined()) {
+            final MemorySegment errno = call.allocate(Libc.CAPTURE_LAYOUT);
+            final MemorySegment val = call.allocate(JAVA_INT);
+            final MemorySegment len = call.allocateFrom(JAVA_INT, (int) JAVA_INT.byteSize());
+            final int rc = (int) libc.getsockopt.invokeExact(errno, socket, level, option, val, len);
+            if (rc < 0) {
+                throw libc.ioError("getsockopt", errno);
+            }
+            return val.get(JAVA_INT, 0);
+        } catch (final IOException e) {
+            throw e;
+        } catch (final Throwable t) {
+            throw new IOException("getsockopt failed: " + t, t);
+        }
+    }
+
     private int sockaddrSize() {
         return m_family == AF_INET ? SOCKADDR_IN_SIZE : SOCKADDR_IN6_SIZE;
     }
@@ -307,6 +357,7 @@ public final class FfmNativeDatagramSocket extends NativeDatagramSocket {
         final MethodHandle socket;
         final MethodHandle bind;
         final MethodHandle setsockopt;
+        final MethodHandle getsockopt;
         final MethodHandle sendto;
         final MethodHandle recvfrom;
         final MethodHandle close;
@@ -336,6 +387,8 @@ public final class FfmNativeDatagramSocket extends NativeDatagramSocket {
             bind = bind(linker, lookup, "bind", FunctionDescriptor.of(JAVA_INT, JAVA_INT, ADDRESS, JAVA_INT), errno);
             // int setsockopt(int fd, int level, int name, const void *value, socklen_t len)
             setsockopt = bind(linker, lookup, "setsockopt", FunctionDescriptor.of(JAVA_INT, JAVA_INT, JAVA_INT, JAVA_INT, ADDRESS, JAVA_INT), errno);
+            // int getsockopt(int fd, int level, int name, void *value, socklen_t *len)
+            getsockopt = bind(linker, lookup, "getsockopt", FunctionDescriptor.of(JAVA_INT, JAVA_INT, JAVA_INT, JAVA_INT, ADDRESS, ADDRESS), errno);
             // ssize_t sendto(int fd, const void *buf, size_t len, int flags, const struct sockaddr *dest, socklen_t len)
             sendto = bind(linker, lookup, "sendto", FunctionDescriptor.of(JAVA_LONG, JAVA_INT, ADDRESS, JAVA_LONG, JAVA_INT, ADDRESS, JAVA_INT), errno);
             // ssize_t recvfrom(int fd, void *buf, size_t len, int flags, struct sockaddr *src, socklen_t *len)

@@ -41,7 +41,7 @@ public class BSDV6NativeSocket extends AbstractJnaNativeSocket {
 		Native.register((String)null);
 	}
 
-	private static final int IPV6_TCLASS = 36;
+	private static final int IPV6_TCLASS = NativeOs.isMac() ? 36 : 61; // FreeBSD and OpenBSD use 61
 	private int m_sock;
 
 	public BSDV6NativeSocket(final int family, final int type, final int protocol, final int listenPort) throws Exception {

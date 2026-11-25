@@ -22,11 +22,17 @@
 package org.opennms.jicmp.ffm;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -44,6 +50,7 @@ import org.opennms.jicmp.ipv6.ICMPv6Packet;
 import org.opennms.jicmp.jna.InvalidSocketException;
 import org.opennms.jicmp.jna.NativeDatagramPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
+import org.opennms.jicmp.jna.NativeOs;
 
 /**
  * Sends ICMP echo requests to the loopback addresses through the FFM socket.
@@ -68,17 +75,33 @@ public class FfmNativeDatagramSocketTest {
         m_reader.shutdownNow();
     }
 
-    private NativeDatagramSocket open(final int family, final int protocol) {
+    private NativeDatagramSocket open(final int family, final int protocol) throws Exception {
         try {
             return new FfmNativeDatagramSocket(family, NativeDatagramSocket.SOCK_DGRAM, protocol, ID);
         } catch (final Exception e) {
             try {
                 return new FfmNativeDatagramSocket(family, NativeDatagramSocket.SOCK_RAW, protocol, ID);
             } catch (final Exception raw) {
+                // Skip only when the kernel refuses both socket types. Any other failure is a bug.
+                if (!(refusedBySocket(e) && notPermitted(raw))) {
+                    raw.addSuppressed(e);
+                    throw raw;
+                }
                 Assume.assumeNoException("ICMP sockets not permitted here: " + e.getMessage(), raw);
                 return null;
             }
         }
+    }
+
+    /** True when socket() itself failed, as opposed to bind(). */
+    private static boolean refusedBySocket(final Exception e) {
+        return String.valueOf(e.getMessage()).startsWith("socket: ");
+    }
+
+    /** True when socket() failed with EPERM (1) or EACCES (13). */
+    private static boolean notPermitted(final Exception e) {
+        final String message = String.valueOf(e.getMessage());
+        return refusedBySocket(e) && (message.endsWith("(errno 1)") || message.endsWith("(errno 13)"));
     }
 
     /** Receives until a datagram matches, or fails after a few seconds. */
@@ -151,6 +174,94 @@ public class FfmNativeDatagramSocketTest {
         m_socket.setTrafficClass(0x28);
         m_socket.allowFragmentation(false);
         m_socket.allowFragmentation(true);
+    }
+
+    @Test
+    public void trafficClassRoundTripsOnIpv4() throws Exception {
+        m_socket = open(NativeDatagramSocket.AF_INET, NativeDatagramSocket.IPPROTO_ICMP);
+        m_socket.setTrafficClass(0x28);
+        assertEquals(0x28, ((FfmNativeDatagramSocket) m_socket).getTrafficClass());
+    }
+
+    @Test
+    public void trafficClassRoundTripsOnIpv6() throws Exception {
+        m_socket = open(NativeDatagramSocket.AF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6);
+        m_socket.setTrafficClass(0x28);
+        assertEquals(0x28, ((FfmNativeDatagramSocket) m_socket).getTrafficClass());
+    }
+
+    @Test
+    public void fragmentationRoundTripsOnIpv4() throws Exception {
+        Assume.assumeFalse("OpenBSD has no IPv4 IP_DONTFRAG", NativeOs.isOpenBSD());
+        final FfmNativeDatagramSocket socket = (FfmNativeDatagramSocket) open(NativeDatagramSocket.AF_INET, NativeDatagramSocket.IPPROTO_ICMP);
+        m_socket = socket;
+        socket.allowFragmentation(false);
+        assertFalse(socket.isFragmentationAllowed());
+        socket.allowFragmentation(true);
+        assertTrue(socket.isFragmentationAllowed());
+    }
+
+    @Test
+    public void fragmentationRoundTripsOnIpv6() throws Exception {
+        final FfmNativeDatagramSocket socket = (FfmNativeDatagramSocket) open(NativeDatagramSocket.AF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6);
+        m_socket = socket;
+        socket.allowFragmentation(false);
+        assertFalse(socket.isFragmentationAllowed());
+        socket.allowFragmentation(true);
+        assertTrue(socket.isFragmentationAllowed());
+    }
+
+    @Test
+    public void invalidTrafficClassIsRejected() throws Exception {
+        m_socket = open(NativeDatagramSocket.AF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6);
+        final IOException e = assertThrows(IOException.class, () -> m_socket.setTrafficClass(0x100));
+        assertTrue(e.getMessage(), e.getMessage().startsWith("setsockopt: "));
+    }
+
+    @Test
+    public void sendFailureIsReported() throws Exception {
+        m_socket = open(NativeDatagramSocket.AF_INET, NativeDatagramSocket.IPPROTO_ICMP);
+        // larger than any IP datagram, so sendto fails with EMSGSIZE
+        final NativeDatagramPacket tooLarge = new NativeDatagramPacket(ByteBuffer.allocate(70000), InetAddress.getByName("127.0.0.1"), 0);
+        final NativeSocketException e = assertThrows(NativeSocketException.class, () -> m_socket.send(tooLarge));
+        assertTrue(e.getMessage(), e.getMessage().startsWith("sendto: "));
+    }
+
+    @Test
+    public void wrongAddressFamilyIsRejected() throws Exception {
+        m_socket = open(NativeDatagramSocket.AF_INET, NativeDatagramSocket.IPPROTO_ICMP);
+        final NativeDatagramPacket v6 = new NativeDatagramPacket(ByteBuffer.allocate(8), InetAddress.getByName("::1"), 0);
+        assertThrows(IllegalArgumentException.class, () -> m_socket.send(v6));
+    }
+
+    @Test
+    public void closeReleasesTheFileDescriptor() throws Exception {
+        Assume.assumeTrue("needs /proc/self/fd", NativeOs.isLinux());
+        m_socket = open(NativeDatagramSocket.AF_INET, NativeDatagramSocket.IPPROTO_ICMP);
+        final Path fd = Path.of("/proc/self/fd", String.valueOf(m_socket.getSock()));
+        final Path socket = Files.readSymbolicLink(fd);
+        m_socket.close();
+        m_socket = null;
+        // the number may be reused at once, but not for the same socket
+        assertNotEquals(socket, linkOrNull(fd));
+    }
+
+    private static Path linkOrNull(final Path link) {
+        try {
+            return Files.readSymbolicLink(link);
+        } catch (final IOException e) {
+            return null;
+        }
+    }
+
+    @Test
+    public void closedSocketRejectsOptions() throws Exception {
+        m_socket = open(NativeDatagramSocket.AF_INET, NativeDatagramSocket.IPPROTO_ICMP);
+        final NativeDatagramSocket closed = m_socket;
+        m_socket.close();
+        m_socket = null;
+        final IOException e = assertThrows(IOException.class, () -> closed.setTrafficClass(0x28));
+        assertEquals("Invalid socket!", e.getMessage());
     }
 
     @Test
