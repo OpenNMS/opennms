@@ -12,11 +12,6 @@ The SNMP MIB compiler parses MIB files and generates the following from them:
 * An SNMP data collection group from the `OBJECT-TYPE` symbols.
 * Graph templates for the numeric values that the data collection group collects.
 
-You can use the `mib2opennms` command line utility to help create event definitions from MIB definitions.
-The MIB compiler achieves similar results.
-
-NOTE: We do not recommend using `mib2opennms`, as it produces more bus errors than event definitions.
-
 [[mib-open]]
 == Open the MIB compiler
 
