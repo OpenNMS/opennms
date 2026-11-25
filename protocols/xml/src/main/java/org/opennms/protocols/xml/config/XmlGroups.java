@@ -31,6 +31,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The Class XmlGroups.
  * 
@@ -45,6 +47,7 @@ public class XmlGroups implements Serializable, Cloneable {
 
     /** The XML groups list. */
     @XmlElement(name="xml-group", required=true)
+    @JsonProperty("xml-group")
     private List<XmlGroup> m_xmlGroups = new ArrayList<>();
 
     /**

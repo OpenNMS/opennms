@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The Class XmlResourceKey.
  * 
@@ -48,6 +50,7 @@ public class XmlResourceKey implements Serializable, Comparable<XmlResourceKey>,
 
     /** The key-path list. */
     @XmlElement(name="key-xpath", required=true)
+    @JsonProperty("key-xpath")
     private List<String> m_keyXpathList = new ArrayList<>();
 
     /**
