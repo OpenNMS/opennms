@@ -390,7 +390,8 @@ Many of the properties here are documented with much greater detail in their rel
 | `org.opennms.netmgt.icmp.pingerClass`
 | "org.opennms.netmgt.icmp.best.BestMatchPinger"
 | The default ICMP implementation class.
-The JICMP and JICMP6 pingers (`org.opennms.netmgt.icmp.jni.JniPinger`, `org.opennms.netmgt.icmp.jni6.Jni6Pinger`) are deprecated and will be removed in the next release; use `org.opennms.netmgt.icmp.jna.JnaPinger` or leave the property unset.
+Leave it unset to use the FFM pinger with automatic fallback.
+The JICMP, JICMP6 and JNA pingers (`org.opennms.netmgt.icmp.jni.JniPinger`, `org.opennms.netmgt.icmp.jni6.Jni6Pinger`, `org.opennms.netmgt.icmp.jna.JnaPinger`) are deprecated and will be removed in Horizon 38.
 
 | `org.opennms.netmgt.icmp.requireV4`
 | "detect"
@@ -399,10 +400,6 @@ The JICMP and JICMP6 pingers (`org.opennms.netmgt.icmp.jni.JniPinger`, `org.open
 | `org.opennms.netmgt.icmp.requireV6`
 | "detect"
 | Used to force IPv6 ICMP support explicitly
-
-| `org.opennms.netmgt.icmp.socket`
-| "auto"
-| Socket implementation used by the ICMP pinger: `ffm` (Java Foreign Function & Memory API; Linux, macOS, BSD), `jna`, or `auto` to use FFM when available and fall back to JNA.
 
 | `org.opennms.netmgt.jetty.host`
 | "0.0.0.0"
