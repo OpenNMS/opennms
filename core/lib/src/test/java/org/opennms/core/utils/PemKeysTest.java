@@ -105,6 +105,20 @@ public class PemKeysTest {
     }
 
     @Test
+    public void rejectsUnsupportedKeyTypeNamingTheSupportedFormats() throws Exception {
+        final File file = write("id_ed25519", "-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAA\n-----END OPENSSH PRIVATE KEY-----\n");
+        assertRejected(file, "Unsupported key type 'OPENSSH PRIVATE KEY'");
+        assertRejected(file, "BEGIN RSA PRIVATE KEY");
+    }
+
+    @Test
+    public void rejectsBase64WithAnInvalidCharacterOfAValidLength() throws Exception {
+        // Without the '!' this is valid base64, which the MIME decoder would quietly accept.
+        final File file = write("bang.key", "-----BEGIN PRIVATE KEY-----\nMIIB!AAAA\n-----END PRIVATE KEY-----\n");
+        assertRejected(file, "not valid base64");
+    }
+
+    @Test
     public void rejectsGarbageInKeyBlock() throws Exception {
         final File file = write("bad.key", "-----BEGIN RSA PRIVATE KEY-----\nAAECAwQ=\n-----END RSA PRIVATE KEY-----\n");
         assertRejected(file, "Could not read");

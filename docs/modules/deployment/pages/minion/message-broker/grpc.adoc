@@ -107,7 +107,7 @@ config:property-set client.private.key.filepath /custom-path/client.pem<4>
 config:update<5>
 ----
 
-<1> Enable TLS for the gRPC server. 
+<1> Enable TLS for the gRPC client.
 <2> Set the path to your CA certificate file.
 <3> Set the path to your client certificate file.
 <4> Set the path to your client certificate key file.

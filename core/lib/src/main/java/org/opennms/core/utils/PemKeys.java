@@ -111,7 +111,10 @@ public final class PemKeys {
                     case "EC PRIVATE KEY":
                         return KeyFactory.getInstance("EC").generatePrivate(new PKCS8EncodedKeySpec(ecSec1ToPkcs8(der)));
                     default:
-                        throw new InvalidKeySpecException("Unsupported key type '" + label + "'.");
+                        throw new InvalidKeySpecException("Unsupported key type '" + label + "'. Use a PKCS#8"
+                                + " (BEGIN PRIVATE KEY), PKCS#1 (BEGIN RSA PRIVATE KEY) or SEC1 (BEGIN EC PRIVATE KEY) key."
+                                + " Convert it with: openssl pkcs8 -topk8 -nocrypt -in " + file.getName() + " -out <new file>"
+                                + ", or for an OpenSSH key: ssh-keygen -p -N '' -m PKCS8 -f <copy of the key>");
                 }
             } catch (final GeneralSecurityException | IllegalArgumentException e) {
                 throw new InvalidKeySpecException("Could not read the '" + label + "' block in " + file + ": " + e.getMessage(), e);
@@ -150,7 +153,9 @@ public final class PemKeys {
 
     private static byte[] decodeBase64(final String body, final File file) {
         try {
-            return Base64.getMimeDecoder().decode(body.trim());
+            // The strict decoder, after removing line breaks: the MIME decoder silently drops
+            // characters it does not know, which turns corruption into a confusing DER error.
+            return Base64.getDecoder().decode(body.replaceAll("\\s+", ""));
         } catch (final IllegalArgumentException e) {
             throw new IllegalArgumentException(file + " contains a PEM block that is not valid base64.", e);
         }
