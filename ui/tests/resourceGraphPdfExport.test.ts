@@ -78,6 +78,18 @@ describe('exportGraphsToPdf', () => {
     expect(downloadBlob).toHaveBeenCalledWith(expect.any(Blob), 'Resource_Graphs.pdf')
   })
 
+  it('prints the caption above its graph and keeps them on the same page', () => {
+    vi.mocked(Chart.getChart).mockImplementation((c: any) => ({ id: c.id }) as any)
+    const captions: Record<string, string> = { g1: 'First graph\nFrom a to b', g2: '' }
+
+    const count = exportGraphsToPdf(containerWith('g1', 'g2'), 'Collection', c => captions[c.id])
+
+    expect(count).toBe(2)
+    expect(pdf.text).toHaveBeenCalledWith(['First graph', 'From a to b'], 40, expect.any(Number))
+    // the empty caption adds no text: only the document title and g1's caption are printed
+    expect(pdf.text).toHaveBeenCalledTimes(2)
+  })
+
   it('skips canvases with no chart but still exports the ones that have one', () => {
     vi.mocked(Chart.getChart).mockImplementation(
       (c: any) => (c.id === 'live' ? ({ options: { plugins: { title: { text: 'Live' }}}}) : undefined) as any

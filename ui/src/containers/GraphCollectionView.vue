@@ -15,6 +15,15 @@
           </div>
         </div>
         <div class="header-actions">
+          <OnmsIconButton
+            v-if="collection?.graphs.length"
+            variant="outlined"
+            :icon="PdfIcon"
+            tooltip="Download the graphs of this collection as a PDF"
+            tooltipPosition="bottom"
+            data-test="gc-pdf-download"
+            @click="downloadPdf"
+          />
           <router-link v-if="isStored" to="/graph-collections">
             <OnmsButton variant="outlined" label="All collections" data-test="gc-back" />
           </router-link>
@@ -70,7 +79,9 @@
         </FormField>
       </div>
 
-      <GraphCollectionGrid v-if="collection?.graphs.length" :collection="collection" />
+      <div ref="graphsRef">
+        <GraphCollectionGrid v-if="collection?.graphs.length" :collection="collection" />
+      </div>
     </TableCard>
   </div>
 </template>
@@ -79,11 +90,13 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { OnmsButton, OnmsSelect } from '@opennms/onms-ui'
+import { OnmsButton, OnmsIconButton, OnmsSelect, useOnmsToast } from '@opennms/onms-ui'
+import PdfIcon from '@opennms/onms-ui/icons/file/Pdf.vue'
 
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import FormField from '@/components/Common/FormField.vue'
 import TableCard from '@/components/Common/TableCard.vue'
+import { exportGraphsToPdf } from '@/components/Resources/utils/graphExport'
 import GraphCollectionGrid from '@/components/GraphCollections/GraphCollectionGrid.vue'
 import useActionFeedback from '@/composables/useActionFeedback'
 import useRole from '@/composables/useRole'
@@ -130,6 +143,20 @@ const loadError = ref('')
 const refreshFailed = ref(false)
 
 const isStored = computed(() => !!props.id)
+
+const graphsRef = ref<HTMLElement | null>(null)
+const { showToast } = useOnmsToast()
+
+const downloadPdf = () => {
+  if (!graphsRef.value) {
+    return
+  }
+  const exported = exportGraphsToPdf(graphsRef.value, collection.value?.title || 'Graph Collection',
+    canvas => canvas.closest<HTMLElement>('[data-pdf-caption]')?.dataset.pdfCaption)
+  if (!exported) {
+    showToast({ message: 'No graphs are ready to export yet.', severity: 'info' })
+  }
+}
 
 // the legacy "customize" of a node report: start a new stored collection from these graphs
 const saveAsRoute = computed(() => {
@@ -251,6 +278,12 @@ watch(() => [props.id, props.kind, props.source, route.query.timespan, route.que
     justify-content: space-between;
     gap: 1rem;
     margin-bottom: 0.5rem;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .card-title {

@@ -6,8 +6,8 @@
           v-if="graphData"
           variant="outlined"
           :icon="DownloadFile"
+          tooltip="Download this graph's data as CSV"
           data-test="csv-download-btn"
-          title="Download this graph's data as CSV"
           @click="downloadCsv"
         />
         <router-link
@@ -15,7 +15,7 @@
           :to="`/resource-graphs/graphs/${label}/${definition}/${resourceId}`"
           target="_blank"
         >
-          <OnmsButton variant="outlined">Open</OnmsButton>
+          <OnmsButton variant="outlined" label="Open" />
         </router-link>
         <OnmsButton
           v-if="canAddToCollection && canEditCollections"
@@ -391,6 +391,7 @@ onBeforeUnmount(() => {
   right: 70px;
   z-index: 1;
   display: flex;
+  align-items: center;
   gap: 0.5rem;
 }
 .lc {

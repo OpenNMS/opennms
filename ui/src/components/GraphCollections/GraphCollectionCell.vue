@@ -28,7 +28,7 @@ License.
   to the builder instead and is drawn from its stored builder state.
 -->
 <template>
-  <div class="gc-cell" data-test="gc-cell">
+  <div class="gc-cell" data-test="gc-cell" :data-pdf-caption="pdfCaption">
     <div class="gc-cell__header">
       <div class="gc-cell__title-block">
         <div class="gc-cell__title" data-test="gc-title">{{ heading }}</div>
@@ -125,6 +125,20 @@ const heading = computed(() =>
   (isAdhoc.value ? adhocStateTitle(props.graph.adhocState) || 'Custom performance graph' : props.graph.graphtype))
 
 const time = computed(() => graphTimeFor(props.graph.start, props.graph.end))
+
+// the cell header as plain text, which the collection's PDF export prints above the graph
+const pdfCaption = computed(() => {
+  const resource = props.graph.resource
+  const resourceLine = [resource?.parent, resource]
+    .filter((r): r is GraphCollectionResource => !!r)
+    .map(r => `${r.typeLabel ?? 'Resource'}: ${r.label}`)
+    .join('    ')
+  return [
+    heading.value,
+    `From ${formatGraphInstant(props.graph.start)} to ${formatGraphInstant(props.graph.end)}`,
+    resourceLine
+  ].filter(Boolean).join('\n')
+})
 
 /** The stored builder state of a drawable ad-hoc entry, or null. */
 const adhoc = computed(() => (isAdhoc.value && props.graph.valid && props.graph.adhocState) || null)

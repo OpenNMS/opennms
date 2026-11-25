@@ -105,10 +105,15 @@ const canvasToPngOnWhite = (canvas: HTMLCanvasElement): string => {
 
 // Render each live chart inside `container` into a single landscape PDF. The chart
 // image already carries the graph title (Chart.js bakes it in), so only the legend
-// stats are added as text. Returns the number of graphs exported (0 = nothing
-// saved). Note: only DOM-mounted graphs are captured — with infinite scroll the
-// caller may not have loaded them all.
-export const exportGraphsToPdf = (container: HTMLElement, docTitle: string): number => {
+// stats are added as text. `captionFor` may supply text printed above a graph,
+// for headings the page shows outside the chart. Returns the number of graphs
+// exported (0 = nothing saved). Note: only DOM-mounted graphs are captured — with
+// infinite scroll the caller may not have loaded them all.
+export const exportGraphsToPdf = (
+  container: HTMLElement,
+  docTitle: string,
+  captionFor?: (canvas: HTMLCanvasElement) => string | undefined
+): number => {
   const canvases = (Array.from(container.querySelectorAll('canvas')) as HTMLCanvasElement[])
     .filter(c => Chart.getChart(c))
   if (!canvases.length) {
@@ -132,21 +137,30 @@ export const exportGraphsToPdf = (container: HTMLElement, docTitle: string): num
       const legend = (document.getElementById(`${canvas.id}-lc`)?.innerText ?? '').trim()
       const legendLines = legend ? (doc.splitTextToSize(legend, contentWidth) as string[]) : []
       const legendHeight = legendLines.length * 12
+      const caption = (captionFor?.(canvas) ?? '').trim()
+      const captionLines = caption ? (doc.splitTextToSize(caption, contentWidth) as string[]) : []
+      const captionHeight = captionLines.length * 14
 
       // preserve aspect ratio, but never let a single graph exceed one page
       const ratio = canvas.height / canvas.width || 0.4
       let imgWidth = contentWidth
       let imgHeight = imgWidth * ratio
-      const maxImgHeight = pageHeight - margin * 2 - legendHeight - 12
+      const maxImgHeight = pageHeight - margin * 2 - captionHeight - legendHeight - 12
       if (imgHeight > maxImgHeight) {
         imgHeight = Math.max(60, maxImgHeight)
         imgWidth = Math.min(contentWidth, imgHeight / ratio)
       }
 
       // new page if the block doesn't fit in what's left (unless already at the top)
-      if (y + imgHeight + legendHeight + 12 > pageHeight - margin && y > margin) {
+      if (y + captionHeight + imgHeight + legendHeight + 12 > pageHeight - margin && y > margin) {
         doc.addPage()
         y = margin
+      }
+
+      if (captionLines.length) {
+        doc.setFontSize(11)
+        doc.text(captionLines, margin, y + 10)
+        y += captionHeight
       }
 
       doc.addImage(canvasToPngOnWhite(canvas), 'PNG', margin, y, imgWidth, imgHeight)
