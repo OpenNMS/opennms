@@ -1091,4 +1091,51 @@ CREATE TRIGGER categories_lock_versions BEFORE DELETE ON categories FOR EACH STA
         </rollback>
     </changeSet>
 
+    <!-- OpenNMS started event (NMS-9486), added to the opennms.internal.events source. Built-in events
+         reach the database only through the 35.0.0 seed or a changeset like this one. -->
+
+    <changeSet author="joseanesONMS" id="37.0.0-eventconf-opennms-started-event">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_events"/>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM eventconf_sources WHERE name = 'opennms.internal.events'
+                </sqlCheck>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*) FROM eventconf_events WHERE uei = 'uei.opennms.org/internal/opennmsStarted'
+                </sqlCheck>
+            </and>
+        </preConditions>
+        <sql><![CDATA[
+            INSERT INTO eventconf_events
+                (id, source_id, uei, event_label, description, enabled, xml_content,
+                 created_time, last_modified, modified_by, severity, event_order)
+            SELECT nextval('eventconf_events_id_seq'), s.id,
+                   'uei.opennms.org/internal/opennmsStarted',
+                   'OpenNMS-defined internal event: OpenNMS started',
+                   '<p>OpenNMS %parm[version]% started all of its services in %parm[startupSeconds]% seconds.</p>',
+                   TRUE,
+                   '<event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <uei>uei.opennms.org/internal/opennmsStarted</uei>
+   <event-label>OpenNMS-defined internal event: OpenNMS started</event-label>
+   <descr>&lt;p>OpenNMS %parm[version]% started all of its services in %parm[startupSeconds]% seconds.&lt;/p></descr>
+   <logmsg dest="logndisplay">OpenNMS %parm[version]% started.</logmsg>
+   <severity>Normal</severity>
+</event>',
+                   CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system-migration', 'Normal',
+                   (SELECT COALESCE(MAX(e.event_order), 0) + 1 FROM eventconf_events e WHERE e.source_id = s.id)
+            FROM eventconf_sources s
+            WHERE s.name = 'opennms.internal.events';
+
+            UPDATE eventconf_sources SET event_count = event_count + 1, last_modified = CURRENT_TIMESTAMP
+            WHERE name = 'opennms.internal.events';
+        ]]></sql>
+        <rollback>
+            <sql>
+                DELETE FROM eventconf_events WHERE uei = 'uei.opennms.org/internal/opennmsStarted';
+                UPDATE eventconf_sources SET event_count = event_count - 1 WHERE name = 'opennms.internal.events';
+            </sql>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

@@ -246,6 +246,11 @@ Previously, provisioning detected LDAP but never polled it, so after upgrading, 
 If you customized `etc/poller-configuration.xml`, the upgrade keeps your copy and LDAP stays unpolled; to poll it, copy the `LDAP` `service` and `monitor` elements from `share/etc-pristine/poller-configuration.xml` into your file.
 To keep LDAP unpolled on an install that uses the shipped file, set the `LDAP` service's `status` to `off`.
 
+=== Startup event
+{page-component-title} now sends `uei.opennms.org/internal/opennmsStarted` when all of its services have started.
+The event carries the version and the startup time in seconds, measured from the start of the JVM.
+No notification is configured for this event by default; to be notified when {page-component-title} restarts, create a notification for `opennmsStarted`.
+
 == Breaking changes
 
 === Kafka SASL/OAUTHBEARER endpoint URLs are blocked by default

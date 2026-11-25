@@ -204,6 +204,7 @@ public class Starter {
         }
 
         LOG.info("Startup complete for {} version {}", packageDescription, displayVersion);
+        LifecycleEvents.sendStarted();
     }
 
     private static String valueOrDefault(final String value, final String defaultValue) {
