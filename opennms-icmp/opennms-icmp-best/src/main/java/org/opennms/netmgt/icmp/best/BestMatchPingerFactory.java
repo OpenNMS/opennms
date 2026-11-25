@@ -22,7 +22,12 @@
 package org.opennms.netmgt.icmp.best;
 
 import java.net.InetAddress;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -30,6 +35,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.AbstractPingerFactory;
 import org.opennms.netmgt.icmp.NullPinger;
 import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.ffm.FfmPinger;
 import org.opennms.netmgt.icmp.jna.JnaPinger;
 import org.opennms.netmgt.icmp.jni.JniPinger;
 import org.opennms.netmgt.icmp.jni6.Jni6Pinger;
@@ -48,9 +54,29 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
         return m_pingerClass;
     }
 
-    private static PingerMatch tryPinger(final Class<? extends Pinger> pingerClass) {
+    /** The message of t, plus the root cause (type and message) if that is another throwable. */
+    private static String describe(final Throwable t) {
+        Throwable root = t;
+        final Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+        while (root.getCause() != null && seen.add(root)) {
+            root = root.getCause();
+        }
+        final String message = message(t);
+        if (root == t) {
+            return message;
+        }
+        // drop a trailing period so the result does not read ".: "
+        return (message.endsWith(".") ? message.substring(0, message.length() - 1) : message) + ": " + root;
+    }
+
+    private static String message(final Throwable t) {
+        return t.getMessage() != null ? t.getMessage() : t.getClass().getName();
+    }
+
+    static Attempt tryPinger(final Class<? extends Pinger> pingerClass) {
         boolean v4 = false;
         boolean v6 = false;
+        String failure = null;
 
         final Pinger pinger;
         try {
@@ -58,7 +84,7 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
         } catch (final Throwable t) {
             LOG.info("Failed to get instance of {}: {}", pingerClass, t.getMessage());
             LOG.trace("Failed to get instance of {}.", pingerClass, t);
-            return PingerMatch.NONE;
+            return new Attempt(PingerMatch.NONE, describe(t));
         }
 
         try {
@@ -67,8 +93,9 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
                 v4 = true;
             }
         } catch (final Throwable t) {
-            LOG.info("Failed to initialize {} for IPv4: ", pingerClass, t.getMessage());
+            LOG.info("Failed to initialize {} for IPv4: {}", pingerClass, t.getMessage());
             LOG.trace("Failed to initialize {} for IPv4.", pingerClass, t);
+            failure = describe(t);
         }
 
         try {
@@ -77,8 +104,9 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
                 v6 = true;
             }
         } catch (final Throwable t) {
-            LOG.info("Failed to initialize {} for IPv4: {}", pingerClass, t.getMessage());
-            LOG.trace("Failed to initialize {} for IPv4.", pingerClass, t);
+            LOG.info("Failed to initialize {} for IPv6: {}", pingerClass, t.getMessage());
+            LOG.trace("Failed to initialize {} for IPv6.", pingerClass, t);
+            failure = describe(t);
         }
 
         final long timeout = Long.valueOf(System.getProperty("org.opennms.netmgt.icmp.best.timeout", "500"), 10);
@@ -93,41 +121,115 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
 
                 // as long as we have v4 and/or v6, return success if pinger.ping() passes
                 if (v4 && v6) {
-                    return PingerMatch.IPv46;
+                    return new Attempt(PingerMatch.IPv46, failure);
                 } else if (v6) {
-                    return PingerMatch.IPv6;
+                    return new Attempt(PingerMatch.IPv6, failure);
                 } else if (v4) {
-                    return PingerMatch.IPv4;
+                    return new Attempt(PingerMatch.IPv4, failure);
                 }
             } catch (final Throwable t) {
                 LOG.info("Found pinger {}, but it was unable to ping localhost: {}", pingerClass, t.getMessage());
                 LOG.trace("Pinger failure:", t);
+                failure = describe(t);
             }
         }
 
         // if none of the loopback addresses works, give up
-        return PingerMatch.NONE;
+        return new Attempt(PingerMatch.NONE, failure);
     }
 
     /**
      * Candidate pingers, in order of preference. A later candidate is chosen
-     * only if it supports more address families than an earlier one, so the
-     * JNA pinger wins whenever it works and the deprecated JNI pingers are
-     * used only as a fallback.
+     * only if its {@link PingerMatch} ranks higher than that of an earlier one.
+     * The ranks are NONE, IPv4, IPv6, IPv46, so an IPv6-only candidate beats an
+     * IPv4-only one. The FFM pinger comes first. The JICMP6, JICMP and JNA
+     * pingers are deprecated fallbacks. JNA is last because it adds latency.
      */
     @SuppressWarnings("removal")
-    private static final List<Class<? extends Pinger>> CANDIDATES = List.of(JnaPinger.class, Jni6Pinger.class, JniPinger.class);
+    static final List<Class<? extends Pinger>> CANDIDATES =
+            List.of(FfmPinger.class, Jni6Pinger.class, JniPinger.class, JnaPinger.class);
 
-    @SuppressWarnings("removal")
-    private static boolean isDeprecatedJniPinger(final Class<? extends Pinger> pingerClass) {
-        return JniPinger.class.isAssignableFrom(pingerClass) || Jni6Pinger.class.isAssignableFrom(pingerClass);
+    /** failure: message of the last Throwable seen while creating, initialising or pinging. Null if none. */
+    record Attempt(PingerMatch match, String failure) {}
+
+    /** preferred: the Attempt of the first candidate. */
+    record Selection(Class<? extends Pinger> pinger, Attempt preferred) {}
+
+    private static final Set<String> WARNED = ConcurrentHashMap.newKeySet();
+
+    static Selection scan(final List<Class<? extends Pinger>> candidates,
+                          final Function<Class<? extends Pinger>, Attempt> probe) {
+        Attempt preferred = null;
+        PingerMatch match = PingerMatch.NONE;
+        Class<? extends Pinger> pinger = NullPinger.class;
+
+        for (final Class<? extends Pinger> pingerClass : candidates) {
+            final Attempt tried = probe.apply(pingerClass);
+            if (preferred == null) {
+                preferred = tried;
+            }
+            if (tried.match().compareTo(match) > 0) {
+                match = tried.match();
+                pinger = pingerClass;
+            }
+            if (match == PingerMatch.IPv46) {
+                // nothing later in the list can do better
+                break;
+            }
+        }
+        return new Selection(pinger, preferred);
     }
 
-    private static void warnIfDeprecated(final Class<? extends Pinger> pingerClass) {
-        if (isDeprecatedJniPinger(pingerClass)) {
-            LOG.warn("The JICMP/JICMP6 pinger ({}) is deprecated and will be removed in the next release. "
-                    + "Remove the org.opennms.netmgt.icmp.pingerClass setting, or set it to {}, to use the JNA pinger.",
-                    pingerClass.getName(), JnaPinger.class.getName());
+    @SuppressWarnings("removal")
+    private static boolean isJna(final Class<? extends Pinger> pinger) {
+        return JnaPinger.class.isAssignableFrom(pinger);
+    }
+
+    /** True for the JICMP6, JICMP and JNA pingers. */
+    @SuppressWarnings("removal")
+    private static boolean isDeprecated(final Class<? extends Pinger> pinger) {
+        return Jni6Pinger.class.isAssignableFrom(pinger) || JniPinger.class.isAssignableFrom(pinger) || isJna(pinger);
+    }
+
+    /** Null when pinger is not a deprecated pinger. preferred is ignored when pinned is true. */
+    static String deprecationWarning(final Class<? extends Pinger> pinger, final Attempt preferred, final boolean pinned) {
+        if (!isDeprecated(pinger)) {
+            return null;
+        }
+        final String message;
+        if (pinned) {
+            message = "org.opennms.netmgt.icmp.pingerClass is set to the deprecated " + pinger.getName()
+                    + ". The JICMP, JICMP6 and JNA pingers will be removed in Horizon 38."
+                    + " Remove the setting to use the FFM pinger.";
+        } else {
+            final String reason = preferred.match() == PingerMatch.NONE
+                    ? preferred.failure()
+                    : "it supports " + preferred.match() + " only";
+            message = "The FFM pinger cannot be used here (" + reason + "). Using the deprecated "
+                    + pinger.getName() + " instead. The JICMP, JICMP6 and JNA pingers will be removed in Horizon 38.";
+        }
+        return isJna(pinger)
+                ? message + " The JNA pinger adds latency, so ICMP response times are less accurate."
+                : message;
+    }
+
+    /** Null unless no candidate works, so the scan chose the NullPinger. */
+    static String noPingerWarning(final Selection selection) {
+        if (selection.pinger() != NullPinger.class) {
+            return null;
+        }
+        return "No ICMP pinger works here, so ICMP is not available. The FFM pinger failed: " + selection.preferred().failure();
+    }
+
+    /** True the first time a message is seen in this JVM. */
+    static boolean warnOnce(final String message) {
+        return WARNED.add(message);
+    }
+
+    /** Logs a warning once per JVM. Null is ignored. */
+    private static void warn(final String warning) {
+        if (warning != null && warnOnce(warning)) {
+            LOG.warn(warning);
         }
     }
 
@@ -137,7 +239,7 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
             try {
                 final Class<? extends Pinger> pingerClass = Class.forName(pingerClassStr).asSubclass(Pinger.class);
                 LOG.warn("Not scanning for best pinger because explicit pinger class has been set: {}", pingerClassStr);
-                warnIfDeprecated(pingerClass);
+                warn(deprecationWarning(pingerClass, null, true));
                 return pingerClass;
             } catch (final Throwable t) {
                 LOG.error("org.opennms.netmgt.icmp.pingerClass is set ({}), but it failed to initialize! Erroring out.", pingerClassStr, t);
@@ -145,25 +247,12 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
             }
         }
 
-        PingerMatch match = PingerMatch.NONE;
-        Class<? extends Pinger> pinger = NullPinger.class;
-
         LOG.info("Searching for best available pinger...");
-        for (final Class<? extends Pinger> pingerClass : CANDIDATES) {
-            final PingerMatch tried = tryPinger(pingerClass);
-            if (tried.compareTo(match) > 0) {
-                match = tried;
-                pinger = pingerClass;
-            }
-            if (match == PingerMatch.IPv46) {
-                // nothing later in the list can do better
-                break;
-            }
-        }
-
-        LOG.info("Best available pinger is: {}", pinger);
-        warnIfDeprecated(pinger);
-        return pinger;
+        final Selection selection = scan(CANDIDATES, BestMatchPingerFactory::tryPinger);
+        LOG.info("Best available pinger is: {}", selection.pinger());
+        warn(deprecationWarning(selection.pinger(), selection.preferred(), false));
+        warn(noPingerWarning(selection));
+        return selection.pinger();
     }
 
     private void initialize() {

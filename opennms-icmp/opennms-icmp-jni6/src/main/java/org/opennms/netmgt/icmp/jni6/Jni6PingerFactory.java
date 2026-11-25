@@ -25,8 +25,8 @@ import org.opennms.netmgt.icmp.AbstractPingerFactory;
 import org.opennms.netmgt.icmp.Pinger;
 
 /**
- * @deprecated JICMP6 is deprecated and will be removed in the next release.
- *             Use {@code org.opennms.netmgt.icmp.jna.JnaPingerFactory} instead.
+ * @deprecated JICMP6 is deprecated and will be removed in Horizon 38.
+ *             Use {@code org.opennms.netmgt.icmp.ffm.FfmPingerFactory} instead.
  */
 @Deprecated(since = "37", forRemoval = true)
 @SuppressWarnings("removal")
