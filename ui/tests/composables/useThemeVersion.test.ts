@@ -23,17 +23,17 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { effectScope, nextTick } from 'vue'
 import { beforeEach, describe, expect, it } from 'vitest'
-import useThemeColors from '@/composables/useThemeColors'
+import useThemeVersion from '@/composables/useThemeVersion'
 import { useAppStore } from '@/stores/appStore'
 
-describe('useThemeColors', () => {
+describe('useThemeVersion', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
   })
 
   it('increments themeVersion after the theme changes', async () => {
     const scope = effectScope()
-    const { themeVersion } = scope.run(() => useThemeColors())!
+    const { themeVersion } = scope.run(() => useThemeVersion())!
     const store = useAppStore()
     const next = store.theme === 'open-dark' ? 'open-light' : 'open-dark'
 

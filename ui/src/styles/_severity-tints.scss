@@ -20,7 +20,9 @@
 /// License.
 ///
 
-// A translucent tint of the severity color, for panels and banners (see severityTintClass in lib/severity)
+// A translucent tint of the severity color for dashboard panel rows (see severityTintClass in lib/severity).
+// Loaded from themes.scss, so main SPA only: the menu bundle (src/menu/main.ts) loads onms-theme.scss
+// directly and does not get these classes. NodeDetailsBanner has its own tints.
 
 .severity-tint--critical {
   background-color: color-mix(in srgb, var(--onms-critical) 20%, transparent);

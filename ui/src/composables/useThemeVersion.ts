@@ -25,8 +25,10 @@ import { useAppStore } from '@/stores/appStore'
 
 // Canvas code cannot react to CSS variable changes. themeVersion increments
 // after a theme switch (post-flush, so the theme class is already applied);
-// watch it and re-read colors with readCssColor.
-const useThemeColors = () => {
+// watch it and re-read colors with readCssColor. Each call adds its own watcher
+// rather than sharing a module-level one: a module-level watcher would stay bound
+// to the first Pinia it saw, which breaks per-test Pinias and app re-mounts.
+const useThemeVersion = () => {
   const appStore = useAppStore()
   const themeVersion = ref(0)
 
@@ -37,4 +39,4 @@ const useThemeColors = () => {
   return { themeVersion: readonly(themeVersion) }
 }
 
-export default useThemeColors
+export default useThemeVersion

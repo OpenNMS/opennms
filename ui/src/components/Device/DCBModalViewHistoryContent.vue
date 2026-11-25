@@ -65,8 +65,10 @@ watch(historyModalBackups, (backups) => {
 })
 
 const onDownload = () => {
-  if (selectedConfig.value?.id) {
-    withSpinner(() => deviceStore.downloadByConfig([selectedConfig.value!.id]))
+  const id = selectedConfig.value?.id
+
+  if (id) {
+    withSpinner(() => deviceStore.downloadByConfig([id]))
   }
 }
 

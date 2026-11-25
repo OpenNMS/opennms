@@ -166,7 +166,9 @@ export default tseslint.config(
   // ── UI feedback seam ──────────────────────────────────────────────────────
   // Services and stores return results; the component that started the user
   // action decides what to show. A flat-config rule's options are replaced per
-  // matching file, so this block repeats the PrimeVue wrapper paths.
+  // matching file, so this block repeats the PrimeVue wrapper paths. For the same
+  // reason, a later block that sets no-restricted-imports for any of these files
+  // replaces these paths: it must spread them in again, or the guard silently drops.
   {
     files: ['src/services/**/*.ts', 'src/stores/**/*.ts'],
     rules: {
