@@ -222,6 +222,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         getWriteLock().lock();
 
         try {
+            correctReversedRanges(snmpConfig);
             getSnmpConfigDao().updateConfig(snmpConfig, true);
             // repopulate m_config from the DAO to make sure it is in sync with what is saved
             this.m_config = getSnmpConfigDao().getConfig();
@@ -477,7 +478,54 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     @Override
     public SnmpConfig getSnmpConfig() {
         m_config = getSnmpConfigDao().getConfig();
+        correctReversedRanges(m_config);
         return m_config;
+    }
+
+    /**
+     * Swaps ranges whose begin is after their end, logging each one once. The DAO returns the same
+     * cached object until the configuration is reloaded, so a corrected range is not reported again.
+     */
+    private static void correctReversedRanges(final SnmpConfig config) {
+        if (config == null) {
+            return;
+        }
+        final List<Definition> definitions = config.getDefinitions();
+        for (int i = 0; i < definitions.size(); i++) {
+            final Definition definition = definitions.get(i);
+            if (definition.getRanges().stream().noneMatch(SnmpPeerFactory::isReversed)) {
+                continue;
+            }
+            synchronized (SnmpPeerFactory.class) {
+                final List<Range> ranges = new ArrayList<>(definition.getRanges());
+                boolean corrected = false;
+                for (int j = 0; j < ranges.size(); j++) {
+                    final Range range = ranges.get(j);
+                    if (isReversed(range)) {
+                        LOG.warn("SNMP config definition {} (location {}) has a range whose begin {} is after its end {}; using it as {} to {}.",
+                                i + 1, LocationUtils.getEffectiveLocationName(definition.getLocation()),
+                                range.getBegin(), range.getEnd(), range.getEnd(), range.getBegin());
+                        ranges.set(j, new Range(range.getEnd(), range.getBegin()));
+                        corrected = true;
+                    }
+                }
+                if (corrected) {
+                    definition.setRanges(ranges);
+                }
+            }
+        }
+    }
+
+    private static boolean isReversed(final Range range) {
+        if (range == null || range.getBegin() == null || range.getEnd() == null) {
+            return false;
+        }
+        try {
+            return new ByteArrayComparator().compare(InetAddressUtils.toIpAddrBytes(range.getBegin()),
+                    InetAddressUtils.toIpAddrBytes(range.getEnd())) > 0;
+        } catch (final IllegalArgumentException e) {
+            return false;
+        }
     }
 
     /**

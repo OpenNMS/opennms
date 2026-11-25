@@ -488,6 +488,54 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertEquals("rangev2c", agentConfig.getReadCommunity());
     }
 
+    public void testReversedRangeIsCorrectedOnceWhenLoaded() throws Exception {
+        SnmpPeerFactory.setResource(new ByteArrayResource(getBadRangeSnmpConfig().getBytes()));
+        MockLogAppender.resetState();
+
+        for (int i = 0; i < 3; i++) {
+            assertEquals("rangev2c", SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("10.7.23.100")).getReadCommunity());
+            assertEquals("rangev2c", SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("10.0.3.1")).getReadCommunity());
+        }
+
+        assertEquals(2, MockLogAppender.getEventsGreaterOrEqual(Level.WARN).length);
+        MockLogAppender.assertLogMatched(Level.WARN, "begin 10.0.5.100 is after its end 10.0.1.100");
+        MockLogAppender.assertLogMatched(Level.WARN, "begin 10.7.25.100 is after its end 10.7.20.100");
+
+        final List<Range> ranges = SnmpPeerFactory.getInstance().getSnmpConfig().getDefinitions().get(0).getRanges();
+        assertEquals(new Range("10.0.1.100", "10.0.5.100"), ranges.get(0));
+        assertEquals(new Range("10.7.20.100", "10.7.25.100"), ranges.get(1));
+
+        // merging a definition must not fail on the corrected ranges, and saves them in the corrected order
+        final Definition def = new Definition();
+        def.setReadCommunity("other");
+        def.addSpecific("192.168.0.1");
+        SnmpPeerFactory.getInstance().saveDefinition(def, true);
+        assertThat(SnmpPeerFactory.getInstance().getSnmpConfigAsString(), Matchers.containsString("begin=\"10.7.20.100\" end=\"10.7.25.100\""));
+        assertEquals(2, MockLogAppender.getEventsGreaterOrEqual(Level.WARN).length);
+    }
+
+    public void testReversedRangeIsSavedCorrected() throws Exception {
+        final StringBuilder saved = new StringBuilder();
+        SnmpPeerFactory.snmpConfigDao = new SnmpConfigDao() {
+            private SnmpConfig config = new SnmpConfig();
+            @Override
+            public SnmpConfig getConfig() {
+                return config;
+            }
+            @Override
+            public void updateConfig(final SnmpConfig snmpConfig) {
+                saved.setLength(0);
+                saved.append(JaxbUtils.marshal(snmpConfig));
+                config = snmpConfig;
+            }
+        };
+
+        SnmpPeerFactory.getInstance().setAndSaveConfig(JaxbUtils.unmarshal(SnmpConfig.class, getBadRangeSnmpConfig()));
+
+        assertThat(saved.toString(), Matchers.containsString("begin=\"10.0.1.100\" end=\"10.0.5.100\""));
+        assertThat(saved.toString(), Matchers.containsString("begin=\"10.7.20.100\" end=\"10.7.25.100\""));
+    }
+
     public void testSnmpV3WithNoAuthNoPriv() throws Exception {
         SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("10.11.12.13"));
