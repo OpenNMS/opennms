@@ -143,6 +143,13 @@
             <role>ROLE_ADMIN</role>
         </roles>
     </action>
+    <action>
+        <label>Plugin Management</label>
+        <url>ui/index.html#/admin/plugin-management</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
 
     <!-- Flow Management Card -->
     <action>

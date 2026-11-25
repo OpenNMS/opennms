@@ -70,6 +70,8 @@
         <entry key="default.wae.mapper.least.specific" value="false"/>
         <!-- CXF defaults to 50 multipart attachments per request as of 3.6.12; raise it for bulk uploads like EventConfRestService.uploadEventConfFiles -->
         <entry key="attachment-max-count" value="300"/>
+        <!-- plugin KARs run to a few hundred MB; CXF caps attachments at 50 MB unless told otherwise -->
+        <entry key="attachment-max-size" value="536870912"/>
       </jaxrs:properties>
       <jaxrs:extensionMappings>
         <entry key="json" value="application/json" />

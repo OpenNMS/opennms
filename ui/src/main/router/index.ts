@@ -177,6 +177,12 @@ const router = createRouter({
       beforeEnter: requireRole('adminRole', 'Must be admin to manage WS-Man configuration.')
     },
     {
+      path: '/admin/plugin-management',
+      name: 'Plugin Management',
+      component: () => import('@/containers/PluginManagement.vue'),
+      beforeEnter: requireRole('adminRole', 'Must be admin to manage plugins.')
+    },
+    {
       path: '/scheduled-outages',
       name: 'Scheduled Outages',
       component: () => import('@/containers/ScheduledOutages.vue'),

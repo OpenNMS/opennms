@@ -125,6 +125,7 @@ import { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions 
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import { getAbout } from './aboutService'
 import { getRequisitionNames, getWsmanConfig, getWsmanDataCollection, getWsmanReadiness, getWsmanStatus, resetWsmanDataCollection, runWsmanReadinessAction, syncWsmanDefinition, updateWsmanConfig, updateWsmanDataCollectionFile } from './wsmanAdminService'
+import { checkPluginKar, downloadPluginManagementLog, fetchPluginFromRepository, getPluginCatalog, getPluginManagement, getPluginManagementLog, getPluginReleases, getPluginRestartInstructions, installPlugin, restartPlugin, unloadPlugin } from './pluginManagementService'
 import {
   createManagedUser,
   deleteManagedUser,
@@ -373,5 +374,16 @@ export default {
   getResolvedGraphCollection,
   getResolvedSyntheticGraphCollection,
   reloadGraphCollections,
-  updateGraphCollection
+  updateGraphCollection,
+  getPluginManagement,
+  checkPluginKar,
+  getPluginCatalog,
+  getPluginReleases,
+  fetchPluginFromRepository,
+  installPlugin,
+  unloadPlugin,
+  restartPlugin,
+  getPluginRestartInstructions,
+  getPluginManagementLog,
+  downloadPluginManagementLog
 }

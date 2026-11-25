@@ -160,6 +160,7 @@
             -->
             <li><a href="admin/notification/index.jsp">Configure Notifications</a></li>
             <li><a href="ui/index.html#/event-config">Manage Event Configurations</a></li>
+            <li><a href="ui/index.html#/admin/plugin-management">Plugin Management</a></li>
         </ul>
       </div> <!-- card-body -->
       <div class="card-footer text-right">
@@ -313,6 +314,8 @@
         </p>
 
         <p><b>Manage Event Configurations</b>: Add and edit configuration files for events definitions.</p>
+
+        <p><b>Plugin Management</b>: Load and unload KAR plugins built against the OpenNMS Integration API, with the checks run before a plugin is staged.</p>
 
         <p><b>Notification Status</b>: Notifications will be sent out only if this setting is switched to <em>On</em>.
             This is a system-wide setting. As long as this is <em>Off</em>, OpenNMS will not create notifications.
