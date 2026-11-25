@@ -11,8 +11,7 @@ The XmlCollector collects and extracts metrics from XML and JSON documents.
 | Class Name            | `org.opennms.protocols.xml.collector.XmlCollector`
 | Package               | core
 | Supported on Minion   | Yes (see limitations)
-| Configuration Files   | $\{OPENNMS_HOME}/etc/xml-datacollection-config.xml +
-                          $\{OPENNMS_HOME}/etc/xml-datacollection.d/*.xml
+| Configuration         | Stored in the database; managed via *Admin -> Configure XML Data Collection* or the xref:development:rest/xml-collection-rest-api.adoc[REST API]
 |===
 
 == Configuration and use
@@ -79,7 +78,21 @@ It leaves predicates, functions, axis specifiers (`self::`, `child::`), `.`, `..
 
 Understanding <<operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when editing collector-specific configuration files.
 
-XML collections are defined in `$\{OPENNMS_HOME}/etc/xml-datacollection-config.xml` and groups are defined in `$\{OPENNMS_HOME}/etc/xml-datacollection/`.
+The XML collection configuration is stored in the database.
+Manage it on the *Admin -> Configure XML Data Collection* page (under *Performance Measurement*) or through the xref:development:rest/xml-collection-rest-api.adoc[XML Collector Configuration REST API].
+Changes take effect with the next collection; no restart is needed.
+
+The configuration consists of two parts, which used to be files in `$\{OPENNMS_HOME}/etc`:
+
+* *Collections*, formerly `xml-datacollection-config.xml`: one entry per collection with its RRD settings and sources.
+* *Group files*, formerly `xml-datacollection/*.xml`: sets of groups that several sources share.
+A source refers to a group file by its id, the former file name without `.xml`.
+The former form `xml-datacollection/<id>.xml` is still accepted.
+
+The upgrade to {page-component-title} 37 imports these files into the database and moves them to `$\{OPENNMS_HOME}/etc_archive/`.
+After that, edits to the files no longer take effect; to bring in files from another installation, use *Import XML files* on the *Upload / download* tab of the configuration page.
+
+The examples on this page show the configuration in its XML form, which is also what the import accepts.
 
 .Sample collection definition named `xml-opennms-nodes`
 [source, xml]

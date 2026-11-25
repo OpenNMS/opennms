@@ -71,6 +71,7 @@ const zenithConnectEnabled = () => useMenuStore().mainMenu?.zenithConnectEnabled
 
 const snmpRoleMsg = 'Must have the proper SNMP role(s) to access SNMP Config.'
 const thresholdRoleMsg = 'Must have the admin role to access Threshold Configuration.'
+const xmlCollectionRoleMsg = 'Must have the admin role to access the XML Data Collection Configuration.'
 
 // SNMP Config auto-lookup mode. This sets the store to ensure the lookup tab is active and in lookup mode.
 // Then SnmpConfigLookupTab will get the 'ipAddress' and 'location' query params and perform the lookup.
@@ -499,6 +500,56 @@ const router = createRouter({
       name: 'Threshold Service Edit',
       component: () => import('@/containers/ThresholdServiceEdit.vue'),
       beforeEnter: requireRole('adminRole', thresholdRoleMsg)
+    },
+    // XML collector configuration; linked from the admin page only, not from the menu.
+    {
+      path: '/xml-collection-config',
+      name: 'XML Collection Configuration',
+      component: () => import('@/containers/XmlCollectionConfiguration.vue'),
+      beforeEnter: requireRole('adminRole', xmlCollectionRoleMsg)
+    },
+    {
+      // Not '/xml-collection-config/collection/create', so a collection named 'create' stays reachable.
+      path: '/xml-collection-config/create-collection',
+      name: 'XML Collection Create',
+      component: () => import('@/containers/XmlCollectionEdit.vue'),
+      beforeEnter: requireRole('adminRole', xmlCollectionRoleMsg)
+    },
+    {
+      path: '/xml-collection-config/collection/:name',
+      name: 'XML Collection Detail',
+      component: () => import('@/containers/XmlCollectionDetail.vue'),
+      beforeEnter: requireRole('adminRole', xmlCollectionRoleMsg)
+    },
+    {
+      path: '/xml-collection-config/collection/:name/edit',
+      name: 'XML Collection Edit',
+      component: () => import('@/containers/XmlCollectionEdit.vue'),
+      beforeEnter: requireRole('adminRole', xmlCollectionRoleMsg)
+    },
+    {
+      path: '/xml-collection-config/collection/:name/source/create',
+      name: 'XML Source Create',
+      component: () => import('@/containers/XmlSourceEdit.vue'),
+      beforeEnter: requireRole('adminRole', xmlCollectionRoleMsg)
+    },
+    {
+      path: '/xml-collection-config/collection/:name/source/:index(\\d+)/edit',
+      name: 'XML Source Edit',
+      component: () => import('@/containers/XmlSourceEdit.vue'),
+      beforeEnter: requireRole('adminRole', xmlCollectionRoleMsg)
+    },
+    {
+      path: '/xml-collection-config/create-group-file',
+      name: 'XML Group File Create',
+      component: () => import('@/containers/XmlGroupFileEdit.vue'),
+      beforeEnter: requireRole('adminRole', xmlCollectionRoleMsg)
+    },
+    {
+      path: '/xml-collection-config/group-file/:id',
+      name: 'XML Group File',
+      component: () => import('@/containers/XmlGroupFileEdit.vue'),
+      beforeEnter: requireRole('adminRole', xmlCollectionRoleMsg)
     },
     {
       path: '/mib-compiler',

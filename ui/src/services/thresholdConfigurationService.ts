@@ -20,9 +20,9 @@
 /// License.
 ///
 
-import axios from 'axios'
-import { createFailureResult, createResultWithPayload, createSuccessResponse } from '@/types/validation'
+import { createResultWithPayload, createSuccessResponse } from '@/types/validation'
 import type { ValidationResult, ValidationResultWithPayload } from '@/types/validation'
+import { failure, failureWithPayload, ifMatchHeaders } from './configServiceSupport'
 import type {
   ThreshdConfiguration,
   ThreshdPackage,
@@ -35,58 +35,6 @@ import { v2 } from './axiosInstances'
 
 const thresholdingEndpoint = '/thresholding'
 const threshdEndpoint = '/threshd'
-
-/**
- * Pulls the server's own message out of an axios error so validation failures reach the user verbatim
- * ("ds-name ... is longer than 19 characters") instead of a generic "request failed".
- */
-const getErrorMessage = (error: unknown, fallbackMessage: string): string => {
-  if (axios.isAxiosError(error)) {
-    const responseData = error.response?.data
-
-    if (typeof responseData === 'string' && responseData.trim().length > 0) {
-      return responseData
-    }
-
-    if (
-      responseData &&
-      typeof responseData === 'object' &&
-      'message' in responseData &&
-      typeof responseData.message === 'string' &&
-      responseData.message.trim().length > 0
-    ) {
-      return responseData.message
-    }
-
-    if (typeof error.message === 'string' && error.message.trim().length > 0) {
-      return error.message
-    }
-  }
-
-  if (error instanceof Error && error.message.trim().length > 0) {
-    return error.message
-  }
-
-  return fallbackMessage
-}
-
-const failure = (error: unknown, fallbackMessage: string): ValidationResult => {
-  console.error(fallbackMessage, error)
-  const result = createFailureResult(getErrorMessage(error, fallbackMessage))
-  // The stores tell a 412 apart: it means the copy they hold is stale, not that the change was invalid.
-  if (axios.isAxiosError(error) && error.response) {
-    result.status = error.response.status
-  }
-  return result
-}
-
-const failureWithPayload = <T>(error: unknown, fallbackMessage: string): ValidationResultWithPayload<T> => {
-  console.error(fallbackMessage, error)
-  return createResultWithPayload<T>(false, getErrorMessage(error, fallbackMessage))
-}
-
-/** The ETag a GET returned, ready to be sent back as If-Match. */
-const ifMatchHeaders = (version?: string) => (version ? { headers: { 'If-Match': `"${version}"` }} : undefined)
 
 const encodeName = (name: string) => encodeURIComponent(name)
 

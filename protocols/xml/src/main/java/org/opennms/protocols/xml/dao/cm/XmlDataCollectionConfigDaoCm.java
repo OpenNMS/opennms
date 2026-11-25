@@ -184,7 +184,7 @@ public class XmlDataCollectionConfigDaoCm implements XmlDataCollectionConfigDao 
      * request. Read as is, such a source would get a {@link org.opennms.protocols.xml.config.Request} where the XML
      * configuration had none.
      */
-    static JSONObject withoutEmptyContainers(final JSONObject json) {
+    public static JSONObject withoutEmptyContainers(final JSONObject json) {
         for (final String key : new ArrayList<>(json.keySet())) {
             final Object value = json.get(key);
             if (value instanceof JSONObject) {

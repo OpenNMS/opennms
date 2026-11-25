@@ -121,6 +121,24 @@ import {
   uploadThresholdingConfiguration,
   uploadThreshdConfiguration
 } from './thresholdConfigurationService'
+import {
+  createXmlCollection,
+  createXmlGroupFile,
+  deleteXmlCollection,
+  deleteXmlGroupFile,
+  downloadXmlCollectionConfiguration,
+  getXmlCollection,
+  getXmlCollectionMetadata,
+  getXmlCollections,
+  getXmlCollectionSettings,
+  getXmlGroupFile,
+  getXmlGroupFiles,
+  updateXmlCollection,
+  updateXmlCollectionSettings,
+  updateXmlGroupFile,
+  uploadXmlCollectionConfiguration,
+  uploadXmlCollectionXml
+} from './xmlCollectionConfigService'
 import { deleteMinion, getCoreVersion, getMinion, getMinionNodeIds, listMinions } from './minionAdminService'
 import { getSystemReportPlugins, getSystemReportFormatters, generateSystemReport } from './systemReportService'
 import { getAbout } from './aboutService'
@@ -193,6 +211,22 @@ import {
 } from './onCallRoleAdminService'
 
 export default {
+  createXmlCollection,
+  createXmlGroupFile,
+  deleteXmlCollection,
+  deleteXmlGroupFile,
+  downloadXmlCollectionConfiguration,
+  getXmlCollection,
+  getXmlCollectionMetadata,
+  getXmlCollections,
+  getXmlCollectionSettings,
+  getXmlGroupFile,
+  getXmlGroupFiles,
+  updateXmlCollection,
+  updateXmlCollectionSettings,
+  updateXmlGroupFile,
+  uploadXmlCollectionConfiguration,
+  uploadXmlCollectionXml,
   createThresholdGroup,
   createThreshdPackage,
   deleteThresholdGroup,

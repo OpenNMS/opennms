@@ -85,14 +85,16 @@ Attributes are extracted from the HTTP responses using a regular expression.
 | yes
 
 | xml-datacollection-config.xml
-| Defines data collections that can be extracted from XML or JSON documents.
+| Defines data collections that can be extracted from XML or JSON documents. +
+XML data collection is managed in the database via *Admin -> Configure XML Data Collection*; this file is read only at the upgrade that migrates it, if present.
 | no
-| yes
+| no
 
 | xml-datacollection/*.xml
-| Files in this folder must be specified as an include directive in `xml-datacollection-config.xml`.
+| Group files that sources of `xml-datacollection-config.xml` import. +
+Managed in the database as group files together with the collections; these files are read only at the upgrade that migrates them, if present.
 | no
-| yes
+| no
 |===
 
 .Collectd log file overview
