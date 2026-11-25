@@ -246,6 +246,11 @@ Previously, provisioning detected LDAP but never polled it, so after upgrading, 
 If you customized `etc/poller-configuration.xml`, the upgrade keeps your copy and LDAP stays unpolled; to poll it, copy the `LDAP` `service` and `monitor` elements from `share/etc-pristine/poller-configuration.xml` into your file.
 To keep LDAP unpolled on an install that uses the shipped file, set the `LDAP` service's `status` to `off`.
 
+=== Email asset field
+Node assets have a new `email` field for one or more contact email addresses, separated by semicolons.
+It is in the *Location* section of the asset editor next to *Admin*, which checks the address format, and it is available in requisitions, the REST API, asset import and export, global search, filter rules, and as the `${asset:email}` metadata value.
+Asset CSV files exported before this change still import as before; the email column is optional and comes last.
+
 == Breaking changes
 
 === Kafka SASL/OAUTHBEARER endpoint URLs are blocked by default

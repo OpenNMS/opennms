@@ -111,6 +111,7 @@
       <column name="room"/>
       <column name="vendorphone"/>
       <column name="vendorfax"/>
+      <column name="email"/>
       <column name="vendorassetnumber"/>
       <column name="lease"/>
       <column name="leaseexpires"/>

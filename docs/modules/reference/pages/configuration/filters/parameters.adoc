@@ -43,6 +43,8 @@ displayCategory
 
 division
 
+email
+
 floor
 
 | lease
