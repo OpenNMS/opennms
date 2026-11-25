@@ -223,16 +223,10 @@ import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialo
 
 const router = useRouter()
 const store = useEventConfigStore()
-const { showError } = useActionFeedback()
+const { report } = useActionFeedback()
 
 // StagedReorderList calls this only after a save fails with 400/404, to reload the current order; a failed load needs saying
-const refetchOrderedSources = async () => {
-  const loaded = await store.fetchOrderedSources()
-  if (!loaded) {
-    showError('Failed to load the source order. Try again.')
-  }
-  return loaded
-}
+const refetchOrderedSources = async () => report(await store.fetchOrderedSources())
 const searchId = useId()
 const emptyListContent = {
   msg: 'No results found.'

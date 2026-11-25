@@ -131,6 +131,7 @@ import GenerateGraphsDialog from '@/components/MibCompiler/Dialog/GenerateGraphs
 import MibFilesTable from '@/components/MibCompiler/MibFilesTable.vue'
 import MibFileViewerDrawer from '@/components/MibCompiler/MibFileViewerDrawer.vue'
 import UploadMibFiles from '@/components/MibCompiler/UploadMibFiles.vue'
+import useActionFeedback from '@/composables/useActionFeedback'
 import useSnackbar from '@/composables/useSnackbar'
 import { getGeneralErrorMessage } from '@/components/MibCompiler/mibFilesValidator'
 import {
@@ -148,13 +149,10 @@ const router = useRouter()
 const menuStore = useMenuStore()
 const store = useMibCompilerStore()
 const snackbar = useSnackbar()
+const { report } = useActionFeedback()
 
-// the store logs the failure; an empty table would read as "no MIB files"
-const loadMibFiles = async () => {
-  if (!(await store.fetchMibFiles())) {
-    snackbar.showSnackBar({ msg: 'Failed to load the MIB files. Try again.', error: true })
-  }
-}
+// an empty table would read as "no MIB files", so a failed load is reported
+const loadMibFiles = async () => report(await store.fetchMibFiles())
 
 const activeTab = ref(0)
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)

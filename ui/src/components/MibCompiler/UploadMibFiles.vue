@@ -121,7 +121,7 @@ import { getGeneralErrorMessage, isValidMibExtension, MAX_FILE_SIZE, mibFilesVal
 
 const isLoading = ref(false)
 const store = useMibCompilerStore()
-const { showError } = useActionFeedback()
+const { report } = useActionFeedback()
 const fileInput = ref<HTMLInputElement | null>(null)
 const mibFiles = ref<UploadMibFileType[]>([])
 const logsContainerRef = ref<HTMLElement | null>(null)
@@ -215,9 +215,7 @@ const handleUpload = async (e: Event) => {
           rejected.errors.push(errorItem.error ?? 'Rejected by the server')
         }
       }
-      if (!(await store.fetchMibFiles())) {
-        showError('Failed to load the MIB files. Try again.')
-      }
+      report(await store.fetchMibFiles())
     } catch (error: unknown) {
       addLog('error', `Upload failed: ${getGeneralErrorMessage(error, 'Unknown error occurred')}`)
     }

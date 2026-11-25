@@ -42,7 +42,7 @@ describe('EventConfiguration.vue (container)', () => {
     setActivePinia(createTestingPinia({ createSpy: vi.fn, stubActions: false }))
     store = useEventConfigStore()
     store.showCreateEventConfigSourceDialog = vi.fn()
-    store.startSourcesReorder = vi.fn().mockResolvedValue(true)
+    store.startSourcesReorder = vi.fn().mockResolvedValue({ success: true, message: '' })
     useMenuStore().mainMenu = { homeUrl: '/opennms' } as any
     modificationStore = useEventModificationStore()
     modificationStore.openCreateWithoutSource = vi.fn()
@@ -65,7 +65,7 @@ describe('EventConfiguration.vue (container)', () => {
   })
 
   it('shows the failure when the source order cannot be loaded', async () => {
-    vi.mocked(store.startSourcesReorder).mockResolvedValue(false)
+    vi.mocked(store.startSourcesReorder).mockResolvedValue({ success: false, message: 'Failed to load the source order. Try again.' })
     await wrapper.find('[data-test="reorder-sources-button"]').trigger('click')
     await flushPromises()
     expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Failed to load the source order. Try again.', error: true })

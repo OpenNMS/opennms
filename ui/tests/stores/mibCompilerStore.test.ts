@@ -50,9 +50,9 @@ describe('mibCompilerStore', () => {
     mockListMibFiles.mockResolvedValue({ pending, compiled })
 
     const store = useMibCompilerStore()
-    const ok = await store.fetchMibFiles()
+    const result = await store.fetchMibFiles()
 
-    expect(ok).toBe(true)
+    expect(result.success).toBe(true)
     expect(store.pendingFiles).toEqual(pending)
     expect(store.compiledFiles).toEqual(compiled)
     expect(store.isLoading).toBe(false)
@@ -64,13 +64,13 @@ describe('mibCompilerStore', () => {
     mockListMibFiles.mockRejectedValue(new Error('boom'))
 
     const store = useMibCompilerStore()
-    const ok = await store.fetchMibFiles()
+    const result = await store.fetchMibFiles()
 
-    expect(ok).toBe(false)
+    expect(result).toEqual({ success: false, message: 'Failed to load the MIB files. Try again.' })
     expect(store.pendingFiles).toEqual([])
     expect(store.compiledFiles).toEqual([])
     expect(store.isLoading).toBe(false)
-    // the caller words the message; the store stays out of the UI
+    // the store returns the message; the caller shows it
     expect(mockShowSnackBar).not.toHaveBeenCalled()
     expect(consoleError).toHaveBeenCalled()
   })

@@ -70,7 +70,7 @@ import ArrowDown from '@opennms/onms-ui/icons/navigation/ArrowDropDown.vue'
 
 const store = useEventConfigStore()
 const router = useRouter()
-const { showError } = useActionFeedback()
+const { report } = useActionFeedback()
 const menuStore = useMenuStore()
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
@@ -106,9 +106,7 @@ const goToCreateEventConfig = () => {
 // the reorder editor lives on the View tab: starting it from the Upload tab switches there first
 const onReorderSources = async () => {
   store.activeTab = 0
-  if (!(await store.startSourcesReorder())) {
-    showError('Failed to load the source order. Try again.')
-  }
+  report(await store.startSourcesReorder())
 }
 </script>
 

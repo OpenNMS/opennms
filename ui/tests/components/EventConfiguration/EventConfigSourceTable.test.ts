@@ -124,7 +124,7 @@ describe('EventConfigSourceTable.vue', () => {
     it('the list refetch shows the failure when the order cannot be reloaded', async () => {
       store.sources = [mockSource]
       store.sourcesReorderMode = true
-      store.fetchOrderedSources = vi.fn().mockResolvedValue(false)
+      store.fetchOrderedSources = vi.fn().mockResolvedValue({ success: false, message: 'Failed to load the source order. Try again.' })
       await nextTick()
       await wrapper.findComponent({ name: 'StagedReorderList' }).props('refetch')()
       expect(store.fetchOrderedSources).toHaveBeenCalled()
@@ -134,7 +134,7 @@ describe('EventConfigSourceTable.vue', () => {
     it('the list refetch stays quiet when the order reloads', async () => {
       store.sources = [mockSource]
       store.sourcesReorderMode = true
-      store.fetchOrderedSources = vi.fn().mockResolvedValue(true)
+      store.fetchOrderedSources = vi.fn().mockResolvedValue({ success: true, message: '' })
       await nextTick()
       await wrapper.findComponent({ name: 'StagedReorderList' }).props('refetch')()
       expect(showSnackBarMock).not.toHaveBeenCalled()

@@ -1,5 +1,6 @@
 import { listMibFiles } from '@/services/mibCompilerService'
 import { MibCompilerStoreState } from '@/types/mibCompiler'
+import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
 import { defineStore } from 'pinia'
 
 export const useMibCompilerStore = defineStore('useMibCompilerStore', {
@@ -9,17 +10,17 @@ export const useMibCompilerStore = defineStore('useMibCompilerStore', {
     isLoading: false
   }),
   actions: {
-    async fetchMibFiles(): Promise<boolean> {
+    async fetchMibFiles(): Promise<ValidationResult> {
       this.isLoading = true
       try {
         const response = await listMibFiles()
         this.pendingFiles = response.pending
         this.compiledFiles = response.compiled
-        return true
+        return createSuccessResponse()
       } catch (error) {
         console.error('Error fetching MIB files:', error)
-        // the caller says what happened: an empty table would read as "no MIB files"
-        return false
+        // the caller reports it: an empty table would read as "no MIB files"
+        return createFailureResult('Failed to load the MIB files. Try again.')
       } finally {
         this.isLoading = false
       }

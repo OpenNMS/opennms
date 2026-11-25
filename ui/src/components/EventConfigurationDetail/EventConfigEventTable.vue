@@ -10,6 +10,7 @@
           variant="outlined"
           class="reorder-button"
           data-test="reorder-events-button"
+          :disabled="!store.selectedSource"
           @click="onReorderEvents"
         >Reorder Events</OnmsButton>
         <div
@@ -235,24 +236,12 @@ import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventS
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
 
 const store = useEventConfigDetailStore()
-const { showError } = useActionFeedback()
+const { report } = useActionFeedback()
 
-const orderLoadError = 'Failed to load the event order. Try again.'
-
-const onReorderEvents = async () => {
-  if (!(await store.startEventsReorder())) {
-    showError(orderLoadError)
-  }
-}
+const onReorderEvents = async () => report(await store.startEventsReorder())
 
 // StagedReorderList calls this only after a save fails with 400/404, to reload the current order; a failed load needs saying
-const refetchOrderedEvents = async () => {
-  const loaded = await store.fetchOrderedEvents()
-  if (!loaded) {
-    showError(orderLoadError)
-  }
-  return loaded
-}
+const refetchOrderedEvents = async () => report(await store.fetchOrderedEvents())
 const router = useRouter()
 const searchId = useId()
 const emptyListContent = {

@@ -7,6 +7,7 @@ import {
   updateEventConfigSourcesOrder
 } from '@/services/eventConfigService'
 import { EventConfigMutationResult, EventConfigSource, EventConfigStoreState } from '@/types/eventConfig'
+import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -153,25 +154,25 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     hideCreateEventConfigSourceDialog() {
       this.createEventConfigSourceDialogState.visible = false
     },
-    async startSourcesReorder(): Promise<boolean> {
+    async startSourcesReorder(): Promise<ValidationResult> {
       // the mode turns on only once the current order has loaded, so the editor never
       // opens on a stale previous list that the arriving fetch would then replace
-      const loaded = await this.fetchOrderedSources()
-      if (loaded) {
+      const result = await this.fetchOrderedSources()
+      if (result.success) {
         this.sourcesReorderMode = true
       }
-      return loaded
+      return result
     },
     stopSourcesReorder() {
       this.sourcesReorderMode = false
     },
-    async fetchOrderedSources(): Promise<boolean> {
+    async fetchOrderedSources(): Promise<ValidationResult> {
       this.isLoading = true
       try {
         const sources = await getOrderedEventConfigSources()
         this.orderedSources = sources.filter(source => source.name !== EVENT_CONF_CATCH_ALL_SOURCE)
         this.catchAllSource = sources.find(source => source.name === EVENT_CONF_CATCH_ALL_SOURCE) ?? null
-        return true
+        return createSuccessResponse()
       } catch (error) {
         console.error('Error fetching ordered event configuration sources:', error)
         this.orderedSources = []
@@ -179,7 +180,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
         // without the current order there is nothing to edit: leave the mode instead of
         // showing an inexplicable empty list
         this.stopSourcesReorder()
-        return false
+        return createFailureResult('Failed to load the source order. Try again.')
       } finally {
         this.isLoading = false
       }
