@@ -74,7 +74,7 @@ import { computed, PropType, ref } from 'vue'
  * holds for the default locale only.
  *
  * Rendered in the browser's zone, like the graph's own axis labels
- * (`Resources/utils/LegendFormatter.ts`), so the Data tab and the Graph tab always
+ * (`Resources/utils/legendFormatter.ts`), so the Data tab and the Graph tab always
  * agree. Note this differs from the `v-date` directive used elsewhere in the app,
  * which honours the server's configured `datetimeformatConfig`.
  *
