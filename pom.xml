@@ -1872,6 +1872,7 @@
     <jakartaMailApiVersion>2.1.5</jakartaMailApiVersion>
     <angusMailVersion>2.0.5</angusMailVersion>
     <jakartaActivationApiVersion>2.1.4</jakartaActivationApiVersion>
+    <jakartaWsRsApiVersion>2.1.6</jakartaWsRsApiVersion>
     <angusActivationVersion>2.0.3</angusActivationVersion>
     <!-- javax.mail-namespace API only, kept solely for EclipseLink MOXy 2.5.1; see dependencies/jaxb -->
     <javaxMailApiShimVersion>1.6.7</javaxMailApiShimVersion>
@@ -1984,7 +1985,6 @@
     <osgiServiceJdbcVersion>1.0.1</osgiServiceJdbcVersion>
     <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20211018.2</owaspHtmlSanitizerVersion>
-    <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
@@ -4735,6 +4735,12 @@
         <groupId>jakarta.activation</groupId>
         <artifactId>jakarta.activation-api</artifactId>
         <version>${jakartaActivationApiVersion}</version>
+      </dependency>
+      <!-- The Karaf system bundle exports the javax.ws.rs packages of this artifact with this version -->
+      <dependency>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>${jakartaWsRsApiVersion}</version>
       </dependency>
       <!-- Using JPA 2.2 API for Hibernate 5.6.15 compatibility -->
       <dependency>

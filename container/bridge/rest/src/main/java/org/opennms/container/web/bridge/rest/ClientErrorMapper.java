@@ -21,27 +21,26 @@
  */
 package org.opennms.container.web.bridge.rest;
 
-import java.util.Collections;
-import java.util.List;
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
-import org.opennms.container.web.bridge.api.RestEndpointRegistry;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
-import com.eclipsesource.jaxrs.publisher.api.ApplicationRegistry;
-
-@Component(name="restEndpointRegistry")
-public class RestEndpointRegistryImpl implements RestEndpointRegistry {
-
-    private ApplicationRegistry applicationRegistry;
+/**
+ * Keeps the status code of a {@link ClientErrorException}, for example 400, 404, 405, 406 or 415.
+ * The response entity is the exception message as plain text.
+ * <p>
+ * Without this mapper, a mapper for {@link Exception} can change the status code.
+ */
+@Provider
+public class ClientErrorMapper implements ExceptionMapper<ClientErrorException> {
 
     @Override
-    public List<String> getRestEndpoints() {
-        return Collections.unmodifiableList(applicationRegistry.getEndpoints());
-    }
-
-    @Reference
-    public void setApplicationRegistry(ApplicationRegistry applicationRegistry) {
-        this.applicationRegistry = applicationRegistry;
+    public Response toResponse(final ClientErrorException exception) {
+        return Response.fromResponse(exception.getResponse())
+                .type(MediaType.TEXT_PLAIN)
+                .entity(exception.getMessage())
+                .build();
     }
 }
