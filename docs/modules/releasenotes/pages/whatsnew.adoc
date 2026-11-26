@@ -168,6 +168,22 @@ The page can download the configuration as JSON or in the former XML format, and
 See xref:reference:performance-data-collection/collectors/http.adoc[HttpCollector] and
 xref:development:rest/http-datacollection-rest-api.adoc[HTTP Data Collection REST API (v2)] for details.
 
+=== JDBC data collection config moved to DB with new UI
+The contents of `jdbc-datacollection-config.xml` and of the files in `jdbc-datacollection.d/` are migrated into the database
+during the upgrade process, and the original files are moved to `etc_archive/`.
+`jdbc-datacollection-config.xml` becomes the source `default`, and each `jdbc-datacollection.d/<name>.xml` becomes the source `<name>`.
+A file that fails validation is not imported and stays in `etc/`; the log names the file and the error.
+
+After upgrade, manage JDBC collections through the *Administration -> Configure JDBC Data Collection* page
+(or the REST v2 API under `/api/v2/jdbc-datacollection`). Direct edits to the archived XML files no longer take effect.
+Changes apply from the next collection on, without a reload.
+
+Reading and writing the configuration requires `ROLE_ADMIN`, because it holds the SQL statements the collector runs.
+The page can download a source as JSON or in the former XML format, and import such a file as a new source or to replace an existing one.
+
+See xref:reference:performance-data-collection/collectors/jdbc.adoc[JdbcCollector] and
+xref:development:rest/jdbc-datacollection-rest-api.adoc[JDBC Data Collection REST API (v2)] for details.
+
 === Environment variable support in service configuration
 Individual services in `service-configuration.xml` can now be enabled or disabled at runtime via environment variables,
 using the pattern `CORE_SERVICE_<NAME>_ENABLED`. For example, set `CORE_SERVICE_TELEMETRYD_ENABLED=false`
