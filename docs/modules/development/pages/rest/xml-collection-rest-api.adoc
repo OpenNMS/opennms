@@ -1,0 +1,164 @@
+[[ga-xml-collection-rest-api]]
+= XML Collector Configuration REST API (v2)
+:description: Manage the XmlCollector collections and shared group files through the OpenNMS REST v2 API.
+
+The xref:reference:performance-data-collection/collectors/xml.adoc[XmlCollector] configuration lives in the database and is managed over REST under `/api/v2/xml-collection`.
+It covers the two former configuration files:
+
+* *Collections* and *settings* -- formerly `xml-datacollection-config.xml`.
+* *Group files* -- formerly `xml-datacollection/*.xml`. A group file's id is the former file name without `.xml`.
+
+Every endpoint, reads included, requires `ROLE_ADMIN`: source URLs, request parameters and headers can carry credentials.
+
+Changes take effect with the next collection.
+Neither collectd nor {page-component-title} needs to be restarted.
+
+== Collections, sources and group files
+
+A collection is the unit of transfer: `GET`, `POST` and `PUT` carry the whole collection, including its sources and the groups defined in them.
+Sources and groups have no identity of their own, so a `PUT` body is not a patch: a source missing from it is deleted.
+Read the collection, change what you need, and send the whole thing back.
+
+A collectd service uses a collection through its `collection` parameter.
+Renaming a collection with `PUT` does not update collectd services that use the old name.
+
+A source collects its own groups plus the groups of every group file listed in its `importGroups`.
+Imports stored in the former form `xml-datacollection/foo.xml` are reported, and can be written, as the group file id `foo`.
+Every imported group file must exist, and a group file that a source still imports cannot be deleted.
+
+== Concurrent edits
+
+`GET` on a collection or a group file returns an `ETag`.
+Send it back as `If-Match` on a later write and the write fails with `412 Precondition Failed` if the stored configuration changed in the meantime.
+Omitting `If-Match` keeps the last writer.
+
+== Endpoint overview
+
+[options="header"]
+|===
+| Method | Path | Description
+
+| `GET`, `PUT`
+| `/api/v2/xml-collection/settings`
+| The settings shared by every collection: `rrdRepository`.
+
+| `GET`
+| `/api/v2/xml-collection/collections`
+| List the collections without their sources, with the group files they import.
+
+| `POST`
+| `/api/v2/xml-collection/collections`
+| Create a collection. `409` if the name is taken.
+
+| `GET`, `PUT`, `DELETE`
+| `/api/v2/xml-collection/collections/{name}`
+| Read (with `ETag`), replace or rename, and delete one collection.
+
+| `GET`
+| `/api/v2/xml-collection/groups`
+| List the group files with their number of groups and the collections importing them (`usedBy`).
+
+| `POST`
+| `/api/v2/xml-collection/groups`
+| Create a group file. `409` if the id is taken.
+
+| `GET`, `PUT`, `DELETE`
+| `/api/v2/xml-collection/groups/{id}`
+| Read (with `ETag`), replace, and delete one group file. The id cannot be changed. `DELETE` fails with `409` while a source imports the file.
+
+| `GET`
+| `/api/v2/xml-collection/metadata`
+| Attribute types, resource types and group file ids, the choices the editor offers.
+
+| `GET`
+| `/api/v2/xml-collection/download`
+| Settings, collections and group files as one JSON document (`xml-collection.json`).
+
+| `POST`
+| `/api/v2/xml-collection/upload`
+| Multipart, part `upload`: replace everything with a document produced by the download. Group files missing from it are deleted.
+
+| `POST`
+| `/api/v2/xml-collection/upload/xml`
+| Multipart, part `upload` and optional part `id`: import one file of the former format.
+An `<xml-groups>` document creates or replaces the group file named by `id`, or else by the file name without `.xml`.
+An `<xml-datacollection-config>` document replaces the settings and every collection; upload the group files it imports first.
+|===
+
+== Validation
+
+Besides the XML schema, writes are checked for:
+
+* a collection name, an RRD step greater than zero and at least one RRA of the form `RRA:<AVERAGE|MIN|MAX|LAST>:<xff>:<steps>:<rows>`,
+* a URL for every source, unique within the collection, and at least one group or imported group file,
+* a name, a resource type and a resource XPath for every group, and at least one object,
+* a name, an XPath and a type of `gauge`, `counter` or `string` for every object,
+* unique group names within a source or group file, and unique object names within a group,
+* group file ids made of letters, digits, `.`, `_` and `-`.
+
+== Examples
+
+Read a collection:
+
+[source, console]
+----
+curl -u admin:admin http://localhost:8980/opennms/api/v2/xml-collection/collections/xml-elasticsearch-cluster-stats
+----
+
+[source, json]
+----
+{
+  "name": "xml-elasticsearch-cluster-stats",
+  "rrd": {
+    "step": 300,
+    "rras": [ "RRA:AVERAGE:0.5:1:2016", "RRA:AVERAGE:0.5:12:1488", "RRA:MAX:0.5:288:366" ]
+  },
+  "sources": [
+    {
+      "url": "http://{ipaddr}:9200/_cluster/stats",
+      "request": null,
+      "importGroups": [ "elasticsearch-cluster-stats" ],
+      "groups": []
+    }
+  ],
+  "version": "3b0c..."
+}
+----
+
+Replace it, refusing to clobber a concurrent change:
+
+[source, console]
+----
+curl -u admin:admin -X PUT \
+  -H 'Content-Type: application/json' \
+  -H 'If-Match: "3b0c..."' \
+  -d @collection.json \
+  http://localhost:8980/opennms/api/v2/xml-collection/collections/xml-elasticsearch-cluster-stats
+----
+
+Import XML files of an older installation, group files first:
+
+[source, console]
+----
+curl -u admin:admin -X POST -F upload=@etc/xml-datacollection/my-groups.xml \
+  http://localhost:8980/opennms/api/v2/xml-collection/upload/xml
+
+curl -u admin:admin -X POST -F upload=@etc/xml-datacollection-config.xml \
+  http://localhost:8980/opennms/api/v2/xml-collection/upload/xml
+----
+
+== Response codes
+
+[options="header"]
+|===
+| Code | Meaning
+
+| `200` | Read succeeded, or an upload was applied.
+| `201` | Created. The `Location` header points at the new resource.
+| `204` | Write succeeded. No response body.
+| `400` | A failed validation rule, an unparseable upload, or a missing body. The response body carries the reason.
+| `403` | Admin role required.
+| `404` | No such collection or group file.
+| `409` | The name or id is taken, or a group file to delete is still imported.
+| `412` | `If-Match` no longer matches; the resource changed since it was read.
+|===

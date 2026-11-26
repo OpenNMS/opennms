@@ -36,7 +36,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 
 /**
- * The Class XmlDataCollectionConfigDaoJaxb.
+ * File based XML data collection configuration DAO, for tests only.
+ *
+ * <p>OpenNMS reads the configuration from the configuration manager, see
+ * {@link org.opennms.protocols.xml.dao.cm.XmlDataCollectionConfigDaoCm}. The collector tests keep their configurations
+ * as files, this DAO reads them the way OpenNMS did before: {@code import-groups} are resolved relative to
+ * {@code ${opennms.home}/etc}.</p>
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */

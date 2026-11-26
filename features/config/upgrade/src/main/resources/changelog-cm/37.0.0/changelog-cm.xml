@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:cm="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!-- XmlCollector: the group files formerly in etc/xml-datacollection/*.xml, one configuration per file (configId = file name without .xml) -->
+    <changeSet author="cpape" id="register-schema-xml-datacollection-groups">
+        <cm:registerSchema id="xml-datacollection-groups" allowMultiple="true"/>
+        <cm:importSchemaFromXsd id="xml-datacollection-groups" xsdFileName="xml-datacollection-config.xsd" xsdFileHash="a459cd2623e1d36dcb52fe176d738310c39d1c76c874b25dafeae5506e747f77" rootElement="xml-groups"/>
+        <cm:importConfigDirectory schemaId="xml-datacollection-groups" directory="xml-datacollection"/>
+    </changeSet>
+
+    <!-- XmlCollector: etc/xml-datacollection-config.xml, import-groups references resolve against xml-datacollection-groups -->
+    <changeSet author="cpape" id="register-schema-xml-datacollection-config">
+        <cm:registerSchema id="xml-datacollection-config"/>
+        <cm:importSchemaFromXsd id="xml-datacollection-config" xsdFileName="xml-datacollection-config.xsd" xsdFileHash="a459cd2623e1d36dcb52fe176d738310c39d1c76c874b25dafeae5506e747f77" rootElement="xml-datacollection-config"/>
+        <cm:importConfig schemaId="xml-datacollection-config" filePath="xml-datacollection-config.xml"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -28,14 +28,19 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @XmlRootElement(name="xml-mapping")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class XmlMapping {
 
-    @XmlAttribute(name="from", required=true)
+    /** Values without from are the default mapping, applied to every value no other mapping matches. */
+    @XmlAttribute(name="from", required=false)
+    @JsonProperty("from")
     private String from;
 
     @XmlAttribute(name="to", required=true)
+    @JsonProperty("to")
     private String to;
 
     public XmlMapping() {

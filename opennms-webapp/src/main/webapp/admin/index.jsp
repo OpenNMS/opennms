@@ -218,6 +218,7 @@
             <li><a href="ui/index.html#/snmp-data-collection">Manage SNMP Data Collection Config</a></li>
             <li><a href="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
             <li><a href="ui/index.html#/threshold-config">Configure Thresholds</a></li>
+            <li><a href="ui/index.html#/xml-collection-config">Configure XML Data Collection</a></li>
         </ul>
       </div> <!-- card-body -->
     </div> <!-- panel -->
@@ -355,6 +356,9 @@
 
         <p><b>Configure thresholds</b>: Allows you to add, remove, or modify threshold groups,
         thresholds, and the threshd packages that apply them.</p>
+
+        <p><b>Configure XML Data Collection</b>: Allows you to add, remove, or modify the collections of the XML
+        collector, the documents they fetch and the values they collect, and the group files their sources share.</p>
 
         <p><b>Manage Applications</b>: Configure and administer 
         the operation of perspective pollers that report back to this OpenNMS server to provide distributed

@@ -191,6 +191,15 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <!-- XmlCollectionConfigRestService: the swagger scan reflects over the resource's
+         methods, whose signatures use the XML collector config classes.
+         webapp-rest declares it as provided (non-transitive). -->
+    <dependency>
+      <groupId>org.opennms.protocols</groupId>
+      <artifactId>org.opennms.protocols.xml</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.wsman</artifactId>

@@ -154,6 +154,18 @@ external links to `ui/index.html#/threshold-config`.
 
 See xref:development:rest/thresholds-rest-api.adoc[Thresholds REST API (v2)] for details.
 
+=== XML collector configuration moved to DB with new UI
+The contents of `xml-datacollection-config.xml` and the group files in `xml-datacollection/` are migrated into
+the database during the upgrade process, and the original files are moved to `etc_archive/`.
+
+After upgrade, manage the XML collector through the *Administration -> Configure XML Data Collection* page (or the
+REST v2 API under `/api/v2/xml-collection`). Direct edits to the archived XML files no longer take effect. Collections,
+their sources and requests, and the shared group files can be created, edited and deleted there, and XML files of
+the former format can be imported. Changes take effect with the next collection, including changes to group
+files, which previously were only picked up after a restart.
+
+See xref:development:rest/xml-collection-rest-api.adoc[XML Collector Configuration REST API (v2)] for details.
+
 === Environment variable support in service configuration
 Individual services in `service-configuration.xml` can now be enabled or disabled at runtime via environment variables,
 using the pattern `CORE_SERVICE_<NAME>_ENABLED`. For example, set `CORE_SERVICE_TELEMETRYD_ENABLED=false`

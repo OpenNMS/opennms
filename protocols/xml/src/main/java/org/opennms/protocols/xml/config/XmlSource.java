@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The Class XmlSource.
  * 
@@ -53,14 +55,17 @@ public class XmlSource extends XmlGroups implements Serializable, Comparable<Xml
 
     /** Import Groups List. */
     @XmlElement(name="import-groups", required=false)
+    @JsonProperty("import-groups")
     private List<String> m_importGroupsList = new ArrayList<>();
 
     /** The request object. */
     @XmlElement(name="request", required=false)
+    @JsonProperty("request")
     private Request m_request;
 
     /** The source URL. */
     @XmlAttribute(name="url", required=true)
+    @JsonProperty("url")
     private String m_url;
 
     /**

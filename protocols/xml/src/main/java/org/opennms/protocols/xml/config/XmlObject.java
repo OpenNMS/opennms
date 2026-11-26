@@ -36,6 +36,9 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.opennms.netmgt.collection.api.AttributeType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The Class XmlObject.
  * 
@@ -50,17 +53,21 @@ public class XmlObject implements Serializable, Comparable<XmlObject>, Cloneable
 
     /** The object name (or alias). */
     @XmlAttribute(name="name", required=true)
+    @JsonProperty("name")
     private String m_name;
 
     /** The data type. */
     @XmlAttribute(name="type", required=true)
+    @JsonIgnore
     private AttributeType m_dataType;
 
     /** The XPath. */
     @XmlAttribute(name="xpath", required=true)
+    @JsonProperty("xpath")
     private String m_xpath;
 
     @XmlElement(name="xml-mapping")
+    @JsonProperty("xml-mapping")
     private List<XmlMapping> xmlMappings = new ArrayList<>();
 
     @XmlTransient
@@ -123,6 +130,20 @@ public class XmlObject implements Serializable, Comparable<XmlObject>, Cloneable
      */
     public void setDataType(AttributeType dataType) {
         m_dataType = dataType;
+    }
+
+    /**
+     * The data type as stored in the configuration manager: the same lower case name the XML uses,
+     * so configurations imported from XML and written by Jackson look alike.
+     */
+    @JsonProperty("type")
+    private String getJsonDataType() {
+        return m_dataType == null ? null : m_dataType.getName();
+    }
+
+    @JsonProperty("type")
+    private void setJsonDataType(final String type) {
+        m_dataType = AttributeType.parse(type);
     }
 
     /**
