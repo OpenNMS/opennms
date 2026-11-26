@@ -482,6 +482,11 @@ parameters.some-key = some-value
 
 IMPORTANT: If you need a more sophisticated JMX configuration with custom rules, inject your own `config.yaml` file rather than relying on the default.
 
+=== Health check
+
+The `/health.sh` script in the image queries the health REST endpoint at `http://localhost:8181/sentinel/rest/health/probe` and exits with `0` when all health checks pass.
+You can use it as a Docker `HEALTHCHECK` or a Kubernetes `exec` probe.
+
 [[sentinel-etc-overlay]]
 === Directory conventions
 

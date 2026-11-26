@@ -470,6 +470,10 @@ function applyFeatureBootTemplates() {
         echo "[Features] Enabled: ${template}"
     }
 
+    # health.sh needs the health REST service. The image ships health.boot, but an etc
+    # volume reused from an older image does not have it, so write it on every start.
+    apply_template "health.boot"
+
     # Exclusions apply across all boot files, so writing the JMS default next to an
     # overlay that selects Kafka would exclude both transports. Like the confd-based
     # images, leave the IPC choice to the overlay unless the environment sets one.

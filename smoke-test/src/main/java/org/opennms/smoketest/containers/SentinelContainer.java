@@ -207,7 +207,8 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
         final List<String> featuresOnBoot = new ArrayList<>();
         featuresOnBoot.add("sentinel-persistence");
         featuresOnBoot.add("sentinel-core");
-        featuresOnBoot.add("opennms-health-rest-service");
+        // opennms-health-rest-service is not added here: the image boots it by default and
+        // WaitForSentinel relies on that (NMS-20617)
         if (TimeSeriesStrategy.NEWTS.equals(model.getTimeSeriesStrategy())) {
             featuresOnBoot.add("sentinel-newts");
         }
