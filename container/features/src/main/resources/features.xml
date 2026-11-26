@@ -26,7 +26,7 @@
         <bundle start-level="60">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <bundle start-level="60">mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
         <bundle start-level="60">mvn:io.netty/netty-transport-native-kqueue/${netty4Version}</bundle>
-        <bundle start-level="${earlyStartLevel}">mvn:org.apache.qpid/proton-j/0.34.0</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:org.apache.qpid/proton-j/0.35.0</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-resolver/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-common/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-buffer/${netty4Version}</bundle>

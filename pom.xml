@@ -1825,10 +1825,9 @@
     <!-- Codegen plugin only. 1.75.0 ships an x86_64-only macOS binary; 1.76.0+ is a universal binary (NMS-20384). -->
     <grpcCodegenVersion>1.76.0</grpcCodegenVersion>
     <gsonVersion>2.9.1</gsonVersion>
-    <guavaVersion>33.3.1-jre</guavaVersion>
-    <guava32Version>32.1.3-jre</guava32Version>
-    <guavaFailureaccessVersion>1.0.1</guavaFailureaccessVersion>
-    <guavaOsgiVersion>33.3.1</guavaOsgiVersion>
+    <guavaVersion>33.7.2-jre</guavaVersion>
+    <guavaFailureaccessVersion>1.0.3</guavaFailureaccessVersion>
+    <guavaOsgiVersion>33.7.2</guavaOsgiVersion>
     <guavagRPCVersion>33.3.1-jre</guavagRPCVersion>
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
@@ -1997,7 +1996,7 @@
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
-    <snappyJavaVersion>1.1.10.5</snappyJavaVersion>
+    <snappyJavaVersion>1.1.10.12</snappyJavaVersion>
     <snmp4jVersion>2.8.15</snmp4jVersion>
     <snmp4jagentVersion>2.7.9</snmp4jagentVersion>
     <sonarVersion>3.9.1.2184</sonarVersion>
