@@ -17,7 +17,7 @@ vi.mock('@/services', () => ({
   }
 }))
 
-const ok = (payload?: unknown) => ({ success: true, message: '', payload })
+const ok = <T = undefined>(payload?: T) => ({ success: true, message: '', payload })
 const fail = (message: string, status?: number) => ({ success: false, message, status })
 
 const type = (name: string): ResourceTypeDefinition => ({ ...getDefaultResourceType(), name, label: name })
