@@ -51,7 +51,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 /**
- * Loads the Minion/Sentinel etc/org.ops4j.pax.logging.cfg the way pax-logging does and checks that
+ * Loads the Minion etc/org.ops4j.pax.logging.cfg the way pax-logging does and checks that
  * log4j accepts it. pax-logging rejects the whole file on any error, which leaves the container
  * without logging (NMS-20637), so a mistake here only shows up at runtime otherwise.
  */
