@@ -556,6 +556,54 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>3.1.0</version>
                 <executions>
+                    <!-- NMS-20061: Karaf's own feature repo pins jline 3.21.0 (CVE-2026-56740);
+                         force jlineVersion (see root pom.xml) instead of reverting this.
+                         These two executions are copied from container/shared/pom.xml (NMS-20638);
+                         keep both copies in sync. -->
+                    <execution>
+                        <id>remove-superseded-jline</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <delete includeemptydirs="true">
+                                    <fileset dir="${project.build.directory}/assembly/system/org/jline/jline"
+                                             excludes="${jlineVersion}/**"/>
+                                </delete>
+                                <replaceregexp match="jline[/\\]jline[/\\][^/\\]+([/\\])jline-[^/\\]+\.jar"
+                                               replace="jline\1jline\1${jlineVersion}\1jline-${jlineVersion}.jar"
+                                               flags="g">
+                                    <fileset dir="${project.build.directory}/assembly/bin"
+                                             includes="client,client.bat,shell,shell.bat,instance,instance.bat"/>
+                                </replaceregexp>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>remove-superseded-pax-logging</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <delete includeemptydirs="true">
+                                    <fileset dir="${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-api"
+                                             excludes="${paxLoggingVersion}/**"/>
+                                    <fileset dir="${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-log4j2"
+                                             excludes="${paxLoggingVersion}/**"/>
+                                    <fileset dir="${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-logback"
+                                             excludes="${paxLoggingVersion}/**"/>
+                                </delete>
+                                <replaceregexp match="pax-logging-api[/\\][^/\\]+([/\\])pax-logging-api-[^/\\]+\.jar"
+                                               replace="pax-logging-api\1${paxLoggingVersion}\1pax-logging-api-${paxLoggingVersion}.jar"
+                                               flags="g">
+                                    <fileset dir="${project.build.directory}/assembly/bin"
+                                             includes="client,client.bat,shell,shell.bat,instance,instance.bat"/>
+                                </replaceregexp>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <!-- NMS-20638: the next three executions are duplicated in
+                         container/shared/pom.xml; keep both copies in sync. -->
                     <!-- NMS-20638: Karaf's bin/client hard-codes the MINA SSHD version Karaf was
                          built with, but system/ only ships minaSshdVersion (see root pom.xml). -->
                     <execution>
@@ -595,7 +643,9 @@
                     </execution>
                     <!-- NMS-20638: fail the build if a launcher script references a jar that is not in
                          system/ (e.g. after a dependency bump), or if the security manager option is
-                         still there (e.g. Karaf changed the block and the regex above stopped matching). -->
+                         still there (e.g. Karaf changed the block and the regex above stopped matching).
+                         Only one jar path per line is read (the last one), which matches how Karaf
+                         4.4.x writes these scripts. -->
                     <execution>
                         <id>verify-launcher-scripts</id>
                         <phase>prepare-package</phase>

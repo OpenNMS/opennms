@@ -181,7 +181,9 @@
                 <version>3.1.0</version>
                 <executions>
                     <!-- NMS-20061: Karaf's own feature repo pins jline 3.21.0 (CVE-2026-56740);
-                         force jlineVersion (see root pom.xml) instead of reverting this. -->
+                         force jlineVersion (see root pom.xml) instead of reverting this.
+                         This and the next execution are copied to features/container/sentinel/pom.xml
+                         (NMS-20638); keep both copies in sync. -->
                     <execution>
                         <id>remove-superseded-jline</id>
                         <phase>prepare-package</phase>
@@ -224,6 +226,8 @@
                             </target>
                         </configuration>
                     </execution>
+                    <!-- NMS-20638: the next three executions are duplicated in
+                         features/container/sentinel/pom.xml; keep both copies in sync. -->
                     <!-- NMS-20638: Karaf's bin/client hard-codes the MINA SSHD version Karaf was
                          built with, but system/ only ships minaSshdVersion (see root pom.xml). -->
                     <execution>
@@ -263,7 +267,9 @@
                     </execution>
                     <!-- NMS-20638: fail the build if a launcher script references a jar that is not in
                          system/ (e.g. after a dependency bump), or if the security manager option is
-                         still there (e.g. Karaf changed the block and the regex above stopped matching). -->
+                         still there (e.g. Karaf changed the block and the regex above stopped matching).
+                         Only one jar path per line is read (the last one), which matches how Karaf
+                         4.4.x writes these scripts. -->
                     <execution>
                         <id>verify-launcher-scripts</id>
                         <phase>prepare-package</phase>
