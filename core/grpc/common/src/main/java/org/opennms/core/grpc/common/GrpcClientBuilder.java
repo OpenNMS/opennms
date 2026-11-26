@@ -99,7 +99,7 @@ public class GrpcClientBuilder {
             builder.trustManager(new File(trustCertCollectionFilePath));
         }
         if (!Strings.isNullOrEmpty(clientCertChainFilePath) && !Strings.isNullOrEmpty(clientPrivateKeyFilePath)) {
-            builder.keyManager(new File(clientCertChainFilePath), new File(clientPrivateKeyFilePath));
+            GrpcIpcUtils.setKeyManager(builder, clientCertChainFilePath, clientPrivateKeyFilePath);
         } else if (!Strings.isNullOrEmpty(clientCertChainFilePath) || !Strings.isNullOrEmpty(clientPrivateKeyFilePath)) {
             LOG.error("Only one of the required file paths were provided, need both client cert and client private key");
         }

@@ -42,6 +42,7 @@ import static org.opennms.core.tracing.api.TracerConstants.TAG_SYSTEM_ID;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -74,6 +75,7 @@ import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.tracing.util.TracingInfoCarrier;
+import org.opennms.core.utils.PemKeys;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.framework.BundleContext;
@@ -190,9 +192,24 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
             builder.trustManager(new File(trustCertCollectionFilePath));
         }
         if (clientCertChainFilePath != null && clientPrivateKeyFilePath != null) {
-            builder.keyManager(new File(clientCertChainFilePath), new File(clientPrivateKeyFilePath));
+            setKeyManager(builder, clientCertChainFilePath, clientPrivateKeyFilePath);
         }
         return builder;
+    }
+
+    /**
+     * Reads the client key pair with {@link PemKeys}, not Netty: Netty reads PKCS#1 and SEC1 keys
+     * only through BouncyCastle, which it does not find in Karaf.
+     */
+    private static void setKeyManager(final SslContextBuilder builder, final String certChainFilePath,
+                                      final String privateKeyFilePath) throws SSLException {
+        try {
+            builder.keyManager(PemKeys.readPrivateKey(new File(privateKeyFilePath)),
+                    PemKeys.readCertificates(new File(certChainFilePath)));
+        } catch (final IOException | GeneralSecurityException e) {
+            throw new SSLException("Cannot read the gRPC client certificate " + certChainFilePath
+                    + " or private key " + privateKeyFilePath + ": " + e.getMessage(), e);
+        }
     }
 
     private void initializeRpcStub() {

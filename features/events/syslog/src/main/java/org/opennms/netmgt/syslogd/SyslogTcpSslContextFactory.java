@@ -23,6 +23,7 @@ package org.opennms.netmgt.syslogd;
 
 import java.io.File;
 
+import org.opennms.core.utils.PemKeys;
 import org.opennms.netmgt.config.syslogd.SyslogTcpClientAuth;
 import org.opennms.netmgt.config.syslogd.SyslogTcpConfig;
 import org.opennms.netmgt.config.syslogd.SyslogTcpTlsConfig;
@@ -53,7 +54,10 @@ public final class SyslogTcpSslContextFactory {
         final File privateKey = requireFile(tls.getPrivateKeyFilePath(), "private-key-filepath",
                 "the private key matching the listener certificate");
 
-        final SslContextBuilder builder = SslContextBuilder.forServer(certificate, privateKey);
+        // Parse the key here rather than giving Netty the file: Netty reads PKCS#1 and SEC1 keys only
+        // through BouncyCastle, which Core does not ship and which Netty does not find in Karaf.
+        final SslContextBuilder builder = SslContextBuilder.forServer(PemKeys.readPrivateKey(privateKey),
+                PemKeys.readCertificates(certificate));
 
         final SyslogTcpClientAuth clientAuth = tls.resolveClientAuth();
         if (clientAuth != SyslogTcpClientAuth.NONE) {

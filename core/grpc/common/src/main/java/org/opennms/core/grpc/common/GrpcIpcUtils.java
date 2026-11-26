@@ -29,6 +29,7 @@ import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslProvider;
+import org.opennms.core.utils.PemKeys;
 import org.opennms.core.utils.PropertiesUtils;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLException;
 import java.io.File;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Map;
@@ -73,11 +75,26 @@ public class GrpcIpcUtils {
             builder.trustManager(new File(trustCertCollectionFilePath));
         }
         if (!Strings.isNullOrEmpty(clientCertChainFilePath) && !Strings.isNullOrEmpty(clientPrivateKeyFilePath)) {
-            builder.keyManager(new File(clientCertChainFilePath), new File(clientPrivateKeyFilePath));
+            setKeyManager(builder, clientCertChainFilePath, clientPrivateKeyFilePath);
         } else if (!Strings.isNullOrEmpty(clientCertChainFilePath) || !Strings.isNullOrEmpty(clientPrivateKeyFilePath)) {
             LOG.error("Only one of the required file paths were provided, need both client cert and client private key");
         }
         return builder;
+    }
+
+    /**
+     * Reads the client key pair with {@link PemKeys}, not Netty: Netty reads PKCS#1 and SEC1 keys
+     * only through BouncyCastle, which it does not find in Karaf.
+     */
+    static void setKeyManager(final SslContextBuilder builder, final String certChainFilePath,
+                              final String privateKeyFilePath) throws SSLException {
+        try {
+            builder.keyManager(PemKeys.readPrivateKey(new File(privateKeyFilePath)),
+                    PemKeys.readCertificates(new File(certChainFilePath)));
+        } catch (final IOException | GeneralSecurityException e) {
+            throw new SSLException("Cannot read the gRPC client certificate " + certChainFilePath
+                    + " or private key " + privateKeyFilePath + ": " + e.getMessage(), e);
+        }
     }
 
     public static ManagedChannel getChannel(Properties properties, int port) throws IOException {
@@ -104,8 +121,16 @@ public class GrpcIpcUtils {
         if (Strings.isNullOrEmpty(certChainFilePath) || Strings.isNullOrEmpty(privateKeyFilePath)) {
             return null;
         }
-        SslContextBuilder sslClientContextBuilder = SslContextBuilder.forServer(new File(certChainFilePath),
-                new File(privateKeyFilePath));
+        final SslContextBuilder sslClientContextBuilder;
+        try {
+            // Read the key pair with PemKeys, not Netty: Netty reads PKCS#1 and SEC1 keys only
+            // through BouncyCastle, which is not on the Core class path and not found in Karaf.
+            sslClientContextBuilder = SslContextBuilder.forServer(PemKeys.readPrivateKey(new File(privateKeyFilePath)),
+                    PemKeys.readCertificates(new File(certChainFilePath)));
+        } catch (final IOException | GeneralSecurityException e) {
+            throw new IllegalArgumentException("Cannot read the gRPC server certificate " + certChainFilePath
+                    + " or private key " + privateKeyFilePath + ": " + e.getMessage(), e);
+        }
         if (!Strings.isNullOrEmpty(trustCertCollectionFilePath)) {
             sslClientContextBuilder.trustManager(new File(trustCertCollectionFilePath));
             sslClientContextBuilder.clientAuth(ClientAuth.REQUIRE);

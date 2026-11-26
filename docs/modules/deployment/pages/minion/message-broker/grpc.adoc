@@ -107,11 +107,14 @@ config:property-set client.private.key.filepath /custom-path/client.pem<4>
 config:update<5>
 ----
 
-<1> Enable TLS for the gRPC server. 
+<1> Enable TLS for the gRPC client.
 <2> Set the path to your CA certificate file.
 <3> Set the path to your client certificate file.
 <4> Set the path to your client certificate key file.
 <5> Save and update the configuration.
+
+Certificates and keys are PEM encoded.
+The private key must be an RSA or EC key, in PKCS#8 (`BEGIN PRIVATE KEY`), PKCS#1 (`BEGIN RSA PRIVATE KEY`) or SEC1 (`BEGIN EC PRIVATE KEY`), and cannot be password protected.
 
 This is optional, and you can set a maximum message size for gRPC.
 The maximum size must be the same on the {page-component-title} Core instance.
