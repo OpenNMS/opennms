@@ -75,6 +75,8 @@ import liquibase.exception.LiquibaseException;
 public class HttpDatacollectionConfigUpgradeIT implements TemporaryDatabaseAware<TemporaryDatabase> {
     private static final String CHANGELOG = "changelog-cm/37.0.0/changelog-cm.xml";
     private static final String CONFIG_NAME = HttpDatacollectionConfig.CM_CONFIG_NAME;
+    // registered by the same changelog, so it must be cleaned up as well before the changelog runs again
+    private static final String JDBC_CONFIG_NAME = "jdbc-datacollection-config";
     private static final String FILE_NAME = "http-datacollection-config.xml";
     private static final String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
 
@@ -97,6 +99,7 @@ public class HttpDatacollectionConfigUpgradeIT implements TemporaryDatabaseAware
         System.setProperty(SYSTEM_PROP_OPENNMS_HOME, opennmsHome.toString());
         Files.createDirectories(opennmsHome.resolve("etc"));
         assertTrue(cm.getRegisteredConfigDefinition(CONFIG_NAME).isEmpty());
+        assertTrue(cm.getRegisteredConfigDefinition(JDBC_CONFIG_NAME).isEmpty());
     }
 
     @After
@@ -106,8 +109,10 @@ public class HttpDatacollectionConfigUpgradeIT implements TemporaryDatabaseAware
             statement.execute("DROP TABLE IF EXISTS " + LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG);
             statement.execute("DROP TABLE IF EXISTS " + LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOGLOCK);
         }
-        if (cm.getRegisteredConfigDefinition(CONFIG_NAME).isPresent()) {
-            cm.unregisterSchema(CONFIG_NAME);
+        for (final String configName : List.of(CONFIG_NAME, JDBC_CONFIG_NAME)) {
+            if (cm.getRegisteredConfigDefinition(configName).isPresent()) {
+                cm.unregisterSchema(configName);
+            }
         }
         FileSystemUtils.deleteRecursively(opennmsHome.toFile());
         if (opennmsHomeOrg != null) {

@@ -100,6 +100,8 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
     private final static String SCHEMA_NAME_PROPERTIES = "propertiesTest";
     private final static String SCHEMA_NAME_GRAPHML = "org.opennms.netmgt.graph.provider.graphml";
     private final static String SCHEMA_NAME_JDBC = "jdbc-datacollection-config";
+    // registered by the same 37.0.0 changelog as jdbc-datacollection-config, so its file must be present and its schema cleaned up
+    private final static String SCHEMA_NAME_HTTP = "http-datacollection-config";
     private final static String JDBC_CHANGELOG = "changelog-cm/37.0.0/changelog-cm.xml";
     private final static String SYSTEM_PROP_OPENNMS_HOME = "opennms.home";
     private final static String ASSEMBLY_ETC = "../../../opennms-base-assembly/src/main/filtered/etc/";
@@ -128,6 +130,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
                 Path.of(etcDir + "/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml"));
         Files.copy(Path.of("../../../opennms-base-assembly/src/main/filtered/etc/" + SCHEMA_NAME_EVENTD + "-configuration.xml"),
                 Path.of(etcDir + "/" + SCHEMA_NAME_EVENTD + "-configuration.xml"));
+        Files.copy(Path.of(ASSEMBLY_ETC + SCHEMA_NAME_HTTP + ".xml"), Path.of(etcDir + "/" + SCHEMA_NAME_HTTP + ".xml"));
         Files.copy(Path.of("../../../opennms-config-model/src/main/resources/defaults/org.opennms.features.datachoices.cfg"),
                 Path.of(etcDir + "/org.opennms.features.datachoices.cfg"));
         FileUtils.writeStringToFile(new File(etcDir + "/"+SCHEMA_NAME_GRAPHML+"-a.cfg"), "graphLocation=a", StandardCharsets.UTF_8);
@@ -163,6 +166,10 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
 
         if (cm.getRegisteredConfigDefinition(SCHEMA_NAME_JDBC).isPresent()) {
             this.cm.unregisterSchema(SCHEMA_NAME_JDBC);
+        }
+
+        if (cm.getRegisteredConfigDefinition(SCHEMA_NAME_HTTP).isPresent()) {
+            this.cm.unregisterSchema(SCHEMA_NAME_HTTP);
         }
 
         FileSystemUtils.deleteRecursively(this.opennmsHome.toFile());
@@ -322,6 +329,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             // simulate dropdb: the archived files are imported again
             resetDatabase();
             this.cm.unregisterSchema(SCHEMA_NAME_JDBC);
+            this.cm.unregisterSchema(SCHEMA_NAME_HTTP);
             new LiquibaseUpgrader(cm).runChangelog(JDBC_CHANGELOG, dataSource.getConnection());
             assertEquals(Set.of(DEFAULT_CONFIG_ID, "mysql", "postgresql"), this.cm.getConfigIds(SCHEMA_NAME_JDBC));
         } finally {

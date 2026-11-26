@@ -32,6 +32,7 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Set;
 
 import javax.sql.DataSource;
@@ -72,6 +73,8 @@ import org.springframework.util.FileSystemUtils;
 @JUnitTemporaryDatabase
 public class JdbcDataCollectionUpgradeIT implements TemporaryDatabaseAware<TemporaryDatabase> {
     private static final String CONFIG_NAME = JdbcDataCollectionConfigDaoCm.CONFIG_NAME;
+    // registered by the same 37.0.0 changelog, so its file must be present and its schema cleaned up
+    private static final String HTTP_CONFIG_NAME = "http-datacollection-config";
     private static final String CHANGELOG = "changelog-cm/37.0.0/changelog-cm.xml";
     private static final String ASSEMBLY_ETC = "../../../opennms-base-assembly/src/main/filtered/etc/";
     private static final String OPENNMS_HOME = "opennms.home";
@@ -98,6 +101,7 @@ public class JdbcDataCollectionUpgradeIT implements TemporaryDatabaseAware<Tempo
         System.setProperty(OPENNMS_HOME, opennmsHome.toString());
         etcDir = Files.createDirectories(opennmsHome.resolve("etc"));
         includeDir = Files.createDirectories(etcDir.resolve("jdbc-datacollection.d"));
+        Files.copy(Path.of(ASSEMBLY_ETC + HTTP_CONFIG_NAME + ".xml"), etcDir.resolve(HTTP_CONFIG_NAME + ".xml"));
         // the changelog tables survive between tests, so the changeset would be skipped
         try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS " + LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOG);
@@ -107,8 +111,10 @@ public class JdbcDataCollectionUpgradeIT implements TemporaryDatabaseAware<Tempo
 
     @After
     public void tearDown() throws IOException {
-        if (cm.getRegisteredConfigDefinition(CONFIG_NAME).isPresent()) {
-            cm.unregisterSchema(CONFIG_NAME);
+        for (final String configName : List.of(CONFIG_NAME, HTTP_CONFIG_NAME)) {
+            if (cm.getRegisteredConfigDefinition(configName).isPresent()) {
+                cm.unregisterSchema(configName);
+            }
         }
         if (opennmsHomeOrg == null) {
             System.clearProperty(OPENNMS_HOME);
