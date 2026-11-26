@@ -34,6 +34,8 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>org.opennms.jicmp.ip.*;org.opennms.jicmp.ipv6.*;org.opennms.jicmp.jna.*;org.opennms.jicmp.standalone.*;version="${project.version}"</Export-Package>
+            <!-- NativeDatagramSocket.create() loads org.opennms.jicmp.ffm.FfmNativeDatagramSocket reflectively -->
+            <DynamicImport-Package>org.opennms.jicmp.ffm</DynamicImport-Package>
           </instructions>
         </configuration>
       </plugin>

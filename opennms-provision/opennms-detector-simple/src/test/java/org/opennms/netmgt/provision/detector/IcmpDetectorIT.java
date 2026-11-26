@@ -48,6 +48,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
         "classpath:/META-INF/opennms/test/detectors.xml",
         "classpath:/META-INF/opennms/detectors.xml"
 })
+@SuppressWarnings("removal") // JniPinger is deprecated; remove its tests along with it
 public class IcmpDetectorIT {
 
     @Autowired
