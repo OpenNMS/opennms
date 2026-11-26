@@ -12,7 +12,7 @@ Attributes are extracted from the HTTP responses using a regular expression.
 | Class Name          | `org.opennms.netmgt.collectd.HttpCollector`
 | Package             | core
 | Supported on Minion | Yes
-| Configuration Files | $OPENNMS_HOME/etc/http-datacollection-config.xml
+| Configuration       | Stored in the database; see <<ref-collector-http-collections, HTTP collection configuration>>
 |===
 
 == Configuration and use
@@ -105,12 +105,52 @@ To avoid storing passwords in plain text, store them in the xref:operation:deep-
 
 When `key-store` is set, HTTP redirects are followed only when the target keeps the same scheme, host, and port as the original URI, so that the client certificate is not presented to other services.
 
+[[ref-collector-http-collections]]
 == HTTP collection configuration
 
-Understanding <<operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when editing collector-specific configuration files.
+Understanding <<operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when defining HTTP collections.
 
-Define HTTP Collections in `etc/http-datacollection-config.xml`.
+HTTP collections are stored in the database and are created and edited through the web UI or the xref:development:rest/http-datacollection-rest-api.adoc[HTTP Data Collection REST API].
+Editing `$\{OPENNMS_HOME}/etc/http-datacollection-config.xml` has no effect: the file's contents are migrated into the database during the upgrade, the file is moved to `$\{OPENNMS_HOME}/etc_archive/`, and it is no longer read.
 
+An HTTP collection lists the URIs that the collector requests and, for each URI, the attributes it extracts from the response body with the groups of a regular expression.
+A collectd service selects a collection through its `collection` parameter.
+
+The collector reads the configuration on every collection, so a saved change applies from the next collection on; no reload or restart is needed.
+
+=== Manage HTTP collections in the web UI
+
+You need the `ROLE_ADMIN` role, because a URL can carry credentials.
+
+. Log in to the web UI.
+. Click menu:Administration[Configure HTTP Data Collection] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then click menu:Performance Measurement[Configure HTTP Data Collection].
+
+The page has three tabs:
+
+Collections::
+Lists the HTTP collections.
+Create a collection, or open one to edit its name, its RRD step and round robin archives, and its URIs.
+For each URI you set the URL to request (method, HTTP version, scheme, host, port, path, query, fragment, user info, virtual host and user agent), the request headers and the form parameters sent with a `POST` request, the regular expression the response must match together with its flags, the accepted response code range, and the attributes.
+Each attribute maps a match group of the regular expression to an alias and a type (for example `gauge` or `counter`).
+
+Settings::
+Settings that apply to every HTTP collection: the RRD repository directory the collector writes to.
+
+Upload / download::
+Download the whole configuration, as JSON or in the XML format of the former `http-datacollection-config.xml`.
+Upload a JSON or XML file to replace the stored configuration; you have to confirm the replacement.
+
+These rules apply to collections:
+
+* Collection names are compared ignoring case, so two names that differ only in case are refused.
+* A collection name must not contain `/`.
+* A collection that a collectd package still uses cannot be deleted or renamed, and an upload that drops it is refused.
+Point the collectd services at another collection first.
+
+=== XML format
+
+The upload and the XML download use the format of the former `http-datacollection-config.xml`.
 This snippet provides a collection definition named `opennms-copyright`:
 
 [source, xml]
@@ -135,10 +175,10 @@ This snippet provides a collection definition named `opennms-copyright`:
 </http-collection>
 ----
 
-NOTE: Metadata expressions can also be used in attributes of the `http-datacollection-config.xml` configuration file.
-This lets the user also reference credentials stored in the secure credentials.
+NOTE: Metadata expressions can also be used in the URL fields of an HTTP collection.
+This lets the user also reference credentials stored in the secure credentials vault.
 
-Once added to `etc/http-datacollection-config.xml`, you can use the `collect` command available in the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] to test it:
+Once the collection is saved, you can use the `collect` command available in the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] to test it:
 
 [source]
 ----
@@ -168,4 +208,4 @@ This example collects the `opennms-copyright` collection from port 8980:
 <collector service="OpenNMS-Web" class-name="org.opennms.netmgt.collectd.HttpCollector"/>
 ----
 
-The `port` parameter applies only to URLs that do not set a port other than 80 in `http-datacollection-config.xml`.
+The `port` parameter applies only to URLs whose port in the HTTP collection is unset or 80.

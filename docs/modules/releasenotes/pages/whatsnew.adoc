@@ -154,6 +154,20 @@ external links to `ui/index.html#/threshold-config`.
 
 See xref:development:rest/thresholds-rest-api.adoc[Thresholds REST API (v2)] for details.
 
+=== HTTP data collection config moved to DB with new UI
+The contents of `http-datacollection-config.xml` are migrated into the database during the upgrade process,
+and the original file is moved to `etc_archive/`.
+
+After upgrade, manage HTTP collections through the *Administration -> Configure HTTP Data Collection* page
+(or the REST v2 API under `/api/v2/httpcollection`). Direct edits to the archived XML file no longer take effect.
+Changes apply from the next collection on, without a reload.
+
+Reading and writing the configuration requires `ROLE_ADMIN`, because a URL can carry credentials.
+The page can download the configuration as JSON or in the former XML format, and an upload of either replaces the stored configuration.
+
+See xref:reference:performance-data-collection/collectors/http.adoc[HttpCollector] and
+xref:development:rest/http-datacollection-rest-api.adoc[HTTP Data Collection REST API (v2)] for details.
+
 === Environment variable support in service configuration
 Individual services in `service-configuration.xml` can now be enabled or disabled at runtime via environment variables,
 using the pattern `CORE_SERVICE_<NAME>_ENABLED`. For example, set `CORE_SERVICE_TELEMETRYD_ENABLED=false`

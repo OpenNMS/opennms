@@ -283,7 +283,7 @@ Furthermore, some {page-component-title} configuration files allow the use of Me
 
 * xref:reference:configuration/core-docker.adoc[Database configuration]: opennms-datasources.xml
 * xref:reference:configuration/tuning-elasticsearch.adoc#ga-elasticsearch-credentials[Elasticsearch credentials]: elastic-credentials.xml
-* xref:reference:performance-data-collection/collectors/http.adoc[HTTP/HTTPS collector]: http-datacollection-config.xml
+* xref:reference:performance-data-collection/collectors/http.adoc[HTTP/HTTPS collector]: HTTP data collection configuration (stored in the database, formerly http-datacollection-config.xml)
 * xref:operation:deep-dive/alarms/ifttt-integration.adoc[IFTTT integration]: ifttt-config.xml
 * xref:reference:service-assurance/monitors/JmxMonitor.adoc[JMX monitor], xref:reference:performance-data-collection/collectors/jmx.adoc[JMX collector]: jmx-config.xml, jmx-datacollection-config.xml, jmx-datacollection-config/*.xml
 * xref:operation:deep-dive/notifications/introduction.adoc[Notification configuration]: javamail-configuration.xml, javamail-configuration.properties
