@@ -28,36 +28,40 @@
 
 package org.opennms.core.ipc.grpc;
 
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.opennms.core.ipc.grpc.GrpcIpcRpcIT.getAvailablePort;
 
-import java.net.ConnectException;
-import java.net.Socket;
+import java.io.File;
+import java.net.ServerSocket;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Hashtable;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.opennms.core.grpc.common.GrpcIpcServer;
 import org.opennms.core.grpc.common.GrpcIpcServerBuilder;
+import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.grpc.common.OpenNMSIpcGrpc;
-import org.opennms.core.ipc.grpc.server.GrpcServerConstants;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
- * With tls.enabled=true, the gRPC IPC server must not start at all when its TLS settings are
- * incomplete or unusable. Both the RPC/Sink service and the Twin service call startServer(),
- * so each case also checks that the second call fails and does not start the server either.
+ * With tls.enabled=true, the gRPC IPC server must not start when its TLS settings are incomplete
+ * or unusable. The RPC/Sink and Twin services both call startServer(), so each case checks that
+ * both calls fail. A valid TLS configuration is covered by GrpcTLSMutualAuthIT.
  */
 public class GrpcIpcServerTlsConfigIT {
 
+    @Rule
+    public TemporaryFolder tmp = new TemporaryFolder();
+
     private GrpcIpcServer grpcIpcServer;
-    private int port;
 
     @After
     public void tearDown() {
@@ -66,66 +70,86 @@ public class GrpcIpcServerTlsConfigIT {
         }
     }
 
-    @Test(timeout = 30000)
+    @Test
     public void doesNotStartWhenPrivateKeyPathIsNotSet() throws Exception {
         final Hashtable<String, Object> config = tlsConfig();
-        config.remove(GrpcServerConstants.PRIVATE_KEY_FILE_PATH);
+        config.remove(GrpcIpcUtils.PRIVATE_KEY_FILE_PATH);
         assertServerDoesNotStart(config, "must both be set");
     }
 
-    @Test(timeout = 30000)
+    @Test
     public void doesNotStartWhenCertificatePathIsNotSet() throws Exception {
         final Hashtable<String, Object> config = tlsConfig();
-        config.remove(GrpcServerConstants.SERVER_CERTIFICATE_FILE_PATH);
+        config.remove(GrpcIpcUtils.SERVER_CERTIFICATE_FILE_PATH);
         assertServerDoesNotStart(config, "must both be set");
     }
 
-    @Test(timeout = 30000)
+    @Test
     public void doesNotStartWhenPrivateKeyFileDoesNotExist() throws Exception {
         final Hashtable<String, Object> config = tlsConfig();
-        config.put(GrpcServerConstants.PRIVATE_KEY_FILE_PATH, "/definitely/not/here/server.pem");
-        assertServerDoesNotStart(config, "cannot read the certificate or key files");
+        config.put(GrpcIpcUtils.PRIVATE_KEY_FILE_PATH, new File(tmp.getRoot(), "missing.pem").getAbsolutePath());
+        assertServerDoesNotStart(config, "cannot set up TLS");
     }
 
-    private Hashtable<String, Object> tlsConfig() {
-        port = getAvailablePort(new AtomicInteger(GrpcServerConstants.DEFAULT_GRPC_PORT + 100), 9290);
+    @Test
+    public void doesNotStartWhenPrivateKeyFileIsNotAKey() throws Exception {
+        final Hashtable<String, Object> config = tlsConfig();
+        config.put(GrpcIpcUtils.PRIVATE_KEY_FILE_PATH, garbageFile("server.pem", "PRIVATE KEY"));
+        assertServerDoesNotStart(config, "cannot set up TLS");
+    }
+
+    @Test
+    public void doesNotStartWhenCertificateFileIsNotACertificate() throws Exception {
+        final Hashtable<String, Object> config = tlsConfig();
+        config.put(GrpcIpcUtils.SERVER_CERTIFICATE_FILE_PATH, garbageFile("server.crt", "CERTIFICATE"));
+        assertServerDoesNotStart(config, "cannot set up TLS");
+    }
+
+    private static Hashtable<String, Object> tlsConfig() throws Exception {
         final Hashtable<String, Object> config = new Hashtable<>();
-        config.put(GrpcServerConstants.GRPC_SERVER_PORT, String.valueOf(port));
-        config.put(GrpcServerConstants.TLS_ENABLED, "true");
-        config.put(GrpcServerConstants.SERVER_CERTIFICATE_FILE_PATH, resource("server.crt"));
-        config.put(GrpcServerConstants.PRIVATE_KEY_FILE_PATH, resource("server.pem"));
-        config.put(GrpcServerConstants.TRUST_CERTIFICATE_FILE_PATH, resource("ca.crt"));
+        config.put(GrpcIpcUtils.TLS_ENABLED, "true");
+        config.put(GrpcIpcUtils.SERVER_CERTIFICATE_FILE_PATH, resource("server.crt"));
+        config.put(GrpcIpcUtils.PRIVATE_KEY_FILE_PATH, resource("server.pem"));
+        config.put(GrpcIpcUtils.TRUST_CERTIFICATE_FILE_PATH, resource("ca.crt"));
         return config;
     }
 
     private void assertServerDoesNotStart(final Hashtable<String, Object> config, final String reason) throws Exception {
         final ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
-        when(configAdmin.getConfiguration(GrpcServerConstants.GRPC_SERVER_PID).getProperties()).thenReturn(config);
-        grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, port, "PT0S");
+        when(configAdmin.getConfiguration(GrpcIpcUtils.GRPC_SERVER_PID).getProperties()).thenReturn(config);
+        grpcIpcServer = new GrpcIpcServerBuilder(configAdmin, freePort(), "PT0S");
 
-        // First the RPC/Sink service, then the Twin service, as in a running Core.
-        assertStartServerFails(reason);
-        assertStartServerFails(reason);
-
-        // The server start is scheduled with no delay, so give it time to bind if it was scheduled.
-        TimeUnit.SECONDS.sleep(2);
-        try (Socket socket = new Socket("localhost", port)) {
-            fail("the gRPC server must not listen on port " + port + " when its TLS configuration is broken");
-        } catch (ConnectException expected) {
-            // Nothing is listening.
-        }
+        // First the RPC/Sink service, then the Twin service, as in a running Core. The second call
+        // must fail too, with the same exception, rather than start the server without TLS.
+        final IllegalStateException first = startServerFails(reason);
+        final IllegalStateException second = startServerFails(reason);
+        assertSame(first, second);
     }
 
-    private void assertStartServerFails(final String reason) throws Exception {
+    private IllegalStateException startServerFails(final String reason) throws Exception {
         try {
             grpcIpcServer.startServer(new OpenNMSIpcGrpc.OpenNMSIpcImplBase() { });
-            fail("startServer must fail when tls.enabled is true and " + reason);
         } catch (IllegalStateException e) {
             assertTrue(e.getMessage(), e.getMessage().contains(reason));
+            return e;
+        }
+        throw new AssertionError("startServer must fail when tls.enabled is true and the TLS settings are not usable");
+    }
+
+    private String garbageFile(final String name, final String label) throws Exception {
+        final File file = tmp.newFile(name);
+        Files.write(file.toPath(), ("-----BEGIN " + label + "-----\nbm90IGEgcmVhbCBrZXk=\n-----END " + label + "-----\n")
+                .getBytes(StandardCharsets.US_ASCII));
+        return file.getAbsolutePath();
+    }
+
+    private static int freePort() throws Exception {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
         }
     }
 
-    private static String resource(final String name) {
-        return GrpcIpcServerTlsConfigIT.class.getResource("/tls/" + name).getPath();
+    private static String resource(final String name) throws Exception {
+        return Paths.get(GrpcIpcServerTlsConfigIT.class.getResource("/tls/" + name).toURI()).toString();
     }
 }

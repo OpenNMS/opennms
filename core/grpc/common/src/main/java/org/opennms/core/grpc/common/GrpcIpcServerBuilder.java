@@ -56,6 +56,7 @@ public class GrpcIpcServerBuilder implements GrpcIpcServer {
     private final ConfigurationAdmin configAdmin;
     private Properties properties;
     private NettyServerBuilder serverBuilder;
+    private IllegalStateException tlsSetupFailure;
     private Server server;
     private final int port;
     private final Duration delay;
@@ -96,18 +97,28 @@ public class GrpcIpcServerBuilder implements GrpcIpcServer {
     /**
      * Creates the server builder once. With tls.enabled, the TLS settings are required: any problem
      * with them is thrown and the server is not created. The builder is only kept once it is
-     * complete, so a later startServer() call fails the same way.
+     * complete. The failure is logged once and kept, so a later startServer() call (RPC/Sink and
+     * Twin both start this server) throws the same exception without logging it again.
      */
     private void initializeServerFromConfig() {
         if (serverBuilder != null) {
             return;
+        }
+        if (tlsSetupFailure != null) {
+            throw tlsSetupFailure;
         }
         int maxInboundMessageSize = PropertiesUtils.getProperty(properties, GrpcIpcUtils.GRPC_MAX_INBOUND_SIZE, GrpcIpcUtils.DEFAULT_MESSAGE_SIZE);
         boolean tlsEnabled = PropertiesUtils.getProperty(properties, GrpcIpcUtils.TLS_ENABLED, false);
         NettyServerBuilder builder = NettyServerBuilder.forAddress(new InetSocketAddress(this.port))
                 .maxInboundMessageSize(maxInboundMessageSize);
         if (tlsEnabled) {
-            builder.sslContext(buildSslContext());
+            try {
+                builder.sslContext(buildSslContext());
+            } catch (IllegalStateException e) {
+                tlsSetupFailure = e;
+                LOG.error(e.getMessage());
+                throw e;
+            }
             LOG.info("TLS enabled for Grpc IPC Server");
         }
         serverBuilder = builder;
@@ -118,7 +129,7 @@ public class GrpcIpcServerBuilder implements GrpcIpcServer {
         try {
             sslContextBuilder = GrpcIpcUtils.getSslContextBuilder(properties);
         } catch (RuntimeException e) {
-            throw tlsFailure("cannot read the certificate or key files: " + e.getMessage(), e);
+            throw tlsFailure("cannot set up TLS: " + e.getMessage(), e);
         }
         if (sslContextBuilder == null) {
             throw tlsFailure(GrpcIpcUtils.SERVER_CERTIFICATE_FILE_PATH + " and "
@@ -127,15 +138,13 @@ public class GrpcIpcServerBuilder implements GrpcIpcServer {
         try {
             return sslContextBuilder.build();
         } catch (SSLException | RuntimeException e) {
-            throw tlsFailure("cannot initialize the TLS context: " + e.getMessage(), e);
+            throw tlsFailure("cannot set up TLS: " + e.getMessage(), e);
         }
     }
 
     private static IllegalStateException tlsFailure(String reason, Throwable cause) {
-        String message = "Not starting the gRPC IPC server: " + GrpcIpcUtils.TLS_ENABLED
-                + " is true, but " + reason + ".";
-        LOG.error(message, cause);
-        return new IllegalStateException(message, cause);
+        return new IllegalStateException("Not starting the gRPC IPC server: " + GrpcIpcUtils.TLS_ENABLED
+                + " is true, but " + reason + ".", cause);
     }
 
     @Override
