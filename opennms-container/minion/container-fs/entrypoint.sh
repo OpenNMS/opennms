@@ -51,6 +51,7 @@ export JAVA_OPTS="$JAVA_OPTS -Djdk.util.zip.disableZip64ExtraFieldValidation=tru
 
 # Error codes
 E_ILLEGAL_ARGS=126
+E_INIT_CONFIG=127
 
 # Help function used in error messages and -h option
 usage() {
@@ -247,16 +248,34 @@ configure() {
   fi
   export JAVA_OPTS="-XX:-UseBASE64Intrinsics $JAVA_OPTS"
   if [[ -f "$MINION_SERVER_CERTS_CFG" ]]; then
-    # cacerts is a symlink to a file, so *do not* put /. on the target
-    rsync --out-format="%n %C" "$JAVA_HOME/lib/security/cacerts" "$CACERTS"
+    # cacerts is a symlink to a file, so *do not* put /. on the target, and
+    # use -L to copy the file it points to; without it rsync skips the
+    # symlink and keytool creates a new truststore with no default CAs.
+    # The system file is read-only, so make the copy writable for keytool.
+    rsync -L --out-format="%n %C" "$JAVA_HOME/lib/security/cacerts" "$CACERTS" || exit ${E_INIT_CONFIG}
+    chmod u+w "$CACERTS" || exit ${E_INIT_CONFIG}
     export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=$CACERTS -Djavax.net.ssl.trustStorePassword=changeit"
-    while read certid; do
+    # A last line without a trailing newline is still read.
+    while read -r certid || [[ -n $certid ]]; do
+      # Accept a file with Windows (CRLF) line endings.
+      certid=${certid%$'\r'}
       [[ $certid =~ ^#.* ]] && continue
-      # check if CA cert already exists and remove so re-adding doesn't error
-      if keytool -list -alias "$certid" -keystore "$CACERTS" -storepass changeit; then
-        keytool -delete -alias "$certid" -keystore "$CACERTS" -storepass changeit
+      [[ -z $certid ]] && continue
+      certfile="/opt/minion/server-certs/$certid"
+      if [[ ! -f "$certfile" || ! -r "$certfile" ]]; then
+        echo "Server certificate $certfile listed in $MINION_SERVER_CERTS_CFG is missing or not readable" >&2
+        exit ${E_INIT_CONFIG}
       fi
-      keytool -importcert -file "/opt/minion/server-certs/$certid" -alias "$certid" -keystore "$CACERTS" -storepass changeit -noprompt
+      # Replace an existing entry: an alias listed twice, or one that has the
+      # same name as a JDK CA, was tolerated before and must not stop startup.
+      if keytool -list -alias "$certid" -keystore "$CACERTS" -storepass changeit >/dev/null 2>&1; then
+        echo "Alias \"$certid\" is already in $CACERTS; replacing it" >&2
+        keytool -delete -alias "$certid" -keystore "$CACERTS" -storepass changeit || exit ${E_INIT_CONFIG}
+      fi
+      if ! keytool -importcert -file "$certfile" -alias "$certid" -keystore "$CACERTS" -storepass changeit -noprompt; then
+        echo "Failed to import $certfile into $CACERTS as alias \"$certid\"; check that it is a valid certificate" >&2
+        exit ${E_INIT_CONFIG}
+      fi
     done < "$MINION_SERVER_CERTS_CFG"
   fi
 }
