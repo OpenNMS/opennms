@@ -102,8 +102,9 @@ COPY ./container-fs/confd/ /opt/minion/confd/
 RUN chmod +x /opt/minion/confd/scripts/*
 COPY ./minion-config-schema.yml /opt/minion/confd/
 
-# Create the directory for server certificates
-RUN install -d -m 750 /opt/minion/server-certs
+# Create the directory for server certificates. Owned by the runtime user (group 0 for
+# arbitrary UIDs) so certificates mounted as single files under it stay readable.
+RUN install -d -m 750 -o 10001 -g 0 /opt/minion/server-certs
 
 # Create prom-jmx-exporter folder
 RUN install -d -m 770 /opt/prom-jmx-exporter && chown 10001:0 /opt/prom-jmx-exporter
