@@ -23,7 +23,6 @@ package org.opennms.features.config.dao.impl.util;
 
 import com.google.common.io.Resources;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
-import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
@@ -114,7 +113,9 @@ public class JaxbXmlConverter implements ConfigConverter {
             final SAXSource source = new SAXSource(filter, inputSource);
 
             final Unmarshaller u = jaxbContext.createUnmarshaller();
-            DynamicEntity entity = (DynamicEntity) u.unmarshal(source);
+            // A DynamicEntity for a root element with an anonymous type, a JAXBElement wrapping it for a root
+            // element declared with a named type (type="tns:..."); the marshaller handles both.
+            final Object entity = u.unmarshal(source);
 
             final Marshaller m = jaxbContext.createMarshaller();
             m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);

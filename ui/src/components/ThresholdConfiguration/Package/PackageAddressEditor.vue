@@ -66,7 +66,7 @@
 <script setup lang="ts">
 import TableCard from '@/components/Common/TableCard.vue'
 import AddressRangeListEditor from '@/components/ThresholdConfiguration/Common/AddressRangeListEditor.vue'
-import StringListEditor from '@/components/ThresholdConfiguration/Common/StringListEditor.vue'
+import StringListEditor from '@/components/Common/StringListEditor.vue'
 import type { ThreshdPackage } from '@/types/thresholdConfig'
 
 const props = defineProps<{

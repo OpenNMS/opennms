@@ -24,6 +24,9 @@
          with it by type. -->
     <onmsgi:reference id="thresholdingDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao" />
     <onmsgi:reference id="threshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao" />
+    <!-- Exported by applicationContext-config-service.xml; XmlCollectionConfigRestService edits the XML collector
+         configuration through it. The id matches the exporting bean for the same reason as above. -->
+    <onmsgi:reference id="configurationManagerService" interface="org.opennms.features.config.service.api.ConfigurationManagerService" />
 
     <!-- Backs SystemReportRestService. serviceRegistry is a root-context bean from
          applicationContext-soa.xml (the CXF servlet context has the root as parent),

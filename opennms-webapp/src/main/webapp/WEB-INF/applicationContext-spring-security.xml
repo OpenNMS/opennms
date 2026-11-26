@@ -440,6 +440,11 @@
     <intercept-url pattern="/api/v2/threshd/**" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/api/v2/threshd.*" method="PATCH" access="hasAnyRole('ROLE_ADMIN')" />
 
+    <!-- XML collector configuration decides which URLs are fetched, and its request parameters and headers can
+         carry credentials (user, password, Authorization); admin-only, reads included. -->
+    <intercept-url pattern="/api/v2/xml-collection/**" access="hasAnyRole('ROLE_ADMIN')" />
+    <intercept-url pattern="/api/v2/xml-collection.*" access="hasAnyRole('ROLE_ADMIN')" />
+
     <!-- Discovery is a provisioning operation (its include/exclude URLs can read local files or fetch URLs);
          restrict it to provisioning/admin roles rather than the generic ROLE_REST catch-all below -->
     <intercept-url pattern="/api/v2/discovery" method="POST" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')"/>

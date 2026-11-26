@@ -38,6 +38,8 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.opennms.netmgt.rrd.RrdRepository;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The Class XmlDataCollectionConfig.
  * 
@@ -59,10 +61,12 @@ public class XmlDataCollectionConfig implements Serializable, Comparable<XmlData
 
     /** The XML data collections list. */
     @XmlElement(name="xml-collection")
+    @JsonProperty("xml-collection")
     private List<XmlDataCollection> m_xmlDataCollections = new ArrayList<>();
 
     /** The RRD Repository. */
     @XmlAttribute(name="rrdRepository")
+    @JsonProperty("rrdRepository")
     private String m_rrdRepository;
 
     /**

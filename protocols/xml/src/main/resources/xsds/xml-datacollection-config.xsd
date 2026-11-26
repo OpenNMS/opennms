@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://xmlns.opennms.org/xsd/config/xml-datacollection" xmlns:tns="http://xmlns.opennms.org/xsd/config/xml-datacollection" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema elementFormDefault="qualified" version="1.1" targetNamespace="http://xmlns.opennms.org/xsd/config/xml-datacollection" xmlns:tns="http://xmlns.opennms.org/xsd/config/xml-datacollection" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ejaxb="http://xmlns.opennms.org/xsd/config/extended-schema-for-jaxb">
 
-  <xs:element name="content" type="tns:content"/>
+  <xs:element name="content" type="tns:content" ejaxb:body-name="data"/>
 
   <xs:element name="header" type="tns:header"/>
 
@@ -20,6 +20,8 @@
   <xs:element name="xml-group" type="tns:xmlGroup"/>
 
   <xs:element name="xml-groups" type="tns:xmlGroups"/>
+
+  <xs:element name="xml-mapping" type="tns:xmlMapping"/>
 
   <xs:element name="xml-object" type="tns:xmlObject"/>
 
@@ -83,7 +85,7 @@
 
   <xs:complexType name="xmlGroups">
     <xs:sequence>
-      <xs:element ref="tns:xml-group" maxOccurs="unbounded"/>
+      <xs:element ref="tns:xml-group" maxOccurs="unbounded" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -101,10 +103,18 @@
   </xs:complexType>
 
   <xs:complexType name="xmlObject">
-    <xs:sequence/>
+    <xs:sequence>
+      <xs:element ref="tns:xml-mapping" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required"/>
     <xs:attribute name="type" type="xs:string" use="required"/>
     <xs:attribute name="xpath" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="xmlMapping">
+    <xs:sequence/>
+    <xs:attribute name="from" type="xs:string"/>
+    <xs:attribute name="to" type="xs:string" use="required"/>
   </xs:complexType>
 
   <xs:complexType name="xmlResourceKey">
