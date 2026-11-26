@@ -34,6 +34,8 @@ The gRPC server listens on port `8990/tcp` by default.
 
 Optional: to enable TLS for gRPC, you must provide certificate files and enable it.
      See below for TLS commands.
+     With `tls.enabled` set to `true`, `server.cert.filepath` and `server.private.key.filepath` are required.
+     If either is missing or cannot be read, the gRPC server does not start and logs an error.
 
 .Connect to the Karaf shell
 [source, karaf]
