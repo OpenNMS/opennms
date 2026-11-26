@@ -552,6 +552,153 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <!-- NMS-20061: Karaf's own feature repo pins jline 3.21.0 (CVE-2026-56740);
+                         force jlineVersion (see root pom.xml) instead of reverting this.
+                         These two executions are copied from container/shared/pom.xml (NMS-20638);
+                         keep both copies in sync. -->
+                    <execution>
+                        <id>remove-superseded-jline</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <delete includeemptydirs="true">
+                                    <fileset dir="${project.build.directory}/assembly/system/org/jline/jline"
+                                             excludes="${jlineVersion}/**"/>
+                                </delete>
+                                <replaceregexp match="jline[/\\]jline[/\\][^/\\]+([/\\])jline-[^/\\]+\.jar"
+                                               replace="jline\1jline\1${jlineVersion}\1jline-${jlineVersion}.jar"
+                                               flags="g">
+                                    <fileset dir="${project.build.directory}/assembly/bin"
+                                             includes="client,client.bat,shell,shell.bat,instance,instance.bat"/>
+                                </replaceregexp>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>remove-superseded-pax-logging</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <delete includeemptydirs="true">
+                                    <fileset dir="${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-api"
+                                             excludes="${paxLoggingVersion}/**"/>
+                                    <fileset dir="${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-log4j2"
+                                             excludes="${paxLoggingVersion}/**"/>
+                                    <fileset dir="${project.build.directory}/assembly/system/org/ops4j/pax/logging/pax-logging-logback"
+                                             excludes="${paxLoggingVersion}/**"/>
+                                </delete>
+                                <replaceregexp match="pax-logging-api[/\\][^/\\]+([/\\])pax-logging-api-[^/\\]+\.jar"
+                                               replace="pax-logging-api\1${paxLoggingVersion}\1pax-logging-api-${paxLoggingVersion}.jar"
+                                               flags="g">
+                                    <fileset dir="${project.build.directory}/assembly/bin"
+                                             includes="client,client.bat,shell,shell.bat,instance,instance.bat"/>
+                                </replaceregexp>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <!-- NMS-20638: the next three executions are duplicated in
+                         container/shared/pom.xml; keep both copies in sync. -->
+                    <!-- NMS-20638: Karaf's bin/client hard-codes the MINA SSHD version Karaf was
+                         built with, but system/ only ships minaSshdVersion (see root pom.xml). -->
+                    <execution>
+                        <id>align-launcher-sshd</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <replaceregexp match="sshd[/\\](sshd-[a-z]+)([/\\])[^/\\]+[/\\]sshd-[a-z]+-[^/\\]+\.jar"
+                                               replace="sshd\2\1\2${minaSshdVersion}\2\1-${minaSshdVersion}.jar"
+                                               flags="g">
+                                    <fileset dir="${project.build.directory}/assembly/bin"
+                                             includes="client,client.bat,shell,shell.bat,instance,instance.bat"/>
+                                </replaceregexp>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <!-- NMS-20638: JDK 24+ refuses to start with -Djava.security.manager=allow, which
+                         Karaf adds to DEFAULT_JAVA_OPTS (used whenever JAVA_OPTS is unset, e.g. by
+                         bin/client). We only run on JDK 25, so drop the whole block. -->
+                    <execution>
+                        <id>remove-security-manager-allow</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <replaceregexp match="[ \t]*if \[ [^\r\n]*VERSION[^\r\n]* -gt [^\r\n]*11[^\r\n]*\]; then\r?\n(?:[ \t]*#[^\r\n]*\r?\n)*[ \t]*DEFAULT_JAVA_OPTS=[^\r\n]*-Djava\.security\.manager=allow[^\r\n]*\r?\n[ \t]*fi[ \t]*\r?\n(?:[ \t]*\r?\n)?"
+                                               replace="">
+                                    <fileset dir="${project.build.directory}/assembly/bin" includes="inc"/>
+                                </replaceregexp>
+                                <replaceregexp match="[ \t]*if [^\r\n]*JAVA_VERSION[^\r\n]* GTR 11 \(\r?\n[ \t]*set DEFAULT_JAVA_OPTS=[^\r\n]*-Djava\.security\.manager=allow[^\r\n]*\r?\n[ \t]*\)[ \t]*\r?\n(?:[ \t]*\r?\n)?"
+                                               replace="">
+                                    <fileset dir="${project.build.directory}/assembly/bin" includes="karaf.bat"/>
+                                </replaceregexp>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <!-- NMS-20638: fail the build if a launcher script references a jar that is not in
+                         system/ (e.g. after a dependency bump), or if the security manager option is
+                         still there (e.g. Karaf changed the block and the regex above stopped matching).
+                         Only one jar path per line is read (the last one), which matches how Karaf
+                         4.4.x writes these scripts. -->
+                    <execution>
+                        <id>verify-launcher-scripts</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <property name="launcher.jars.file" location="${project.build.directory}/launcher-jars.txt"/>
+                                <concat destfile="${launcher.jars.file}" fixlastline="yes">
+                                    <fileset dir="${project.build.directory}/assembly/bin"
+                                             includes="client,client.bat,shell,shell.bat,instance,instance.bat"/>
+                                    <filterchain>
+                                        <linecontainsregexp><regexp pattern="system[/\\][^:;&quot;%]+\.jar"/></linecontainsregexp>
+                                        <tokenfilter>
+                                            <replaceregex pattern="^.*(system[/\\][^:;&quot;%]+\.jar).*$" replace="\1"/>
+                                            <replaceregex pattern="\\" replace="/" flags="g"/>
+                                        </tokenfilter>
+                                        <sortfilter/>
+                                        <uniqfilter/>
+                                    </filterchain>
+                                </concat>
+                                <resourcecount property="launcher.jars.listed">
+                                    <tokens><file file="${launcher.jars.file}"/><linetokenizer/></tokens>
+                                </resourcecount>
+                                <fail message="Found no system/ jar paths in bin/client, bin/shell or bin/instance (or their .bat versions); Karaf may have changed how the launcher scripts build the class path">
+                                    <condition>
+                                        <equals arg1="${launcher.jars.listed}" arg2="0"/>
+                                    </condition>
+                                </fail>
+                                <resourcecount property="launcher.jars.found">
+                                    <fileset dir="${project.build.directory}/assembly" includesfile="${launcher.jars.file}"/>
+                                </resourcecount>
+                                <loadfile property="launcher.jars.list" srcFile="${launcher.jars.file}"/>
+                                <fail message="Only ${launcher.jars.found} of the ${launcher.jars.listed} jars listed in bin/client, bin/shell and bin/instance (and their .bat versions) exist under assembly/. Listed jars:${line.separator}${launcher.jars.list}">
+                                    <condition>
+                                        <not><equals arg1="${launcher.jars.listed}" arg2="${launcher.jars.found}"/></not>
+                                    </condition>
+                                </fail>
+                                <fail message="bin/inc or bin/karaf.bat still sets -Djava.security.manager=allow, which JDK 24+ refuses">
+                                    <condition>
+                                        <resourcecount when="greater" count="0">
+                                            <fileset dir="${project.build.directory}/assembly/bin" includes="inc,karaf.bat">
+                                                <contains text="java.security.manager=allow"/>
+                                            </fileset>
+                                        </resourcecount>
+                                    </condition>
+                                </fail>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>net.nicoulaj.maven.plugins</groupId>
                 <artifactId>checksum-maven-plugin</artifactId>
                 <executions>

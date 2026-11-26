@@ -44,6 +44,10 @@
 
   <bundleReplacements>
     <!-- Karaf internals -->
+    <!-- NMS-20061: Karaf's standard jline feature pins an older jline; force jlineVersion
+         (same as container/shared/src/main/internal/features-processing.xml). -->
+    <bundle replacement="mvn:org.jline/jline/${jlineVersion}"
+            originalUri="mvn:org.jline/jline/[3,4)" mode="maven" />
     <bundle replacement="mvn:org.ops4j.pax.logging/pax-logging-api/${paxLoggingVersion}"
             originalUri="mvn:org.ops4j.pax.logging/pax-logging-api/[2,${paxLoggingVersion})" mode="maven" />
     <bundle replacement="mvn:org.ops4j.pax.logging/pax-logging-log4j2/${paxLoggingVersion}"
