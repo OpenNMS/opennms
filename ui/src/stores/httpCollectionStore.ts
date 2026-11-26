@@ -22,7 +22,7 @@
 
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { cloneDeep } from 'lodash'
+import { cloneState } from '@/lib/utils'
 import API from '@/services'
 import type { ValidationResult } from '@/types/validation'
 import { createFailureResult } from '@/types/validation'
@@ -49,7 +49,7 @@ export const DEFAULT_RRD: HttpRrd = {
 
 export const getDefaultCollection = (rrd: HttpRrd = DEFAULT_RRD): HttpCollection => ({
   name: '',
-  rrd: cloneDeep(rrd),
+  rrd: cloneState(rrd),
   uris: []
 })
 
@@ -198,7 +198,7 @@ export const useHttpCollectionStore = defineStore('httpCollectionStore', () => {
       return createFailureResult('No HTTP collection is loaded.')
     }
 
-    const collection = cloneDeep(currentCollection.value)
+    const collection = cloneState(currentCollection.value)
 
     if (index === null || index < 0 || index >= collection.uris.length) {
       collection.uris.push(uri)
@@ -214,7 +214,7 @@ export const useHttpCollectionStore = defineStore('httpCollectionStore', () => {
       return createFailureResult('No such URI.')
     }
 
-    const collection = cloneDeep(currentCollection.value)
+    const collection = cloneState(currentCollection.value)
     collection.uris.splice(index, 1)
     return saveCollection(collection.name, collection)
   }
@@ -239,7 +239,7 @@ export const useHttpCollectionStore = defineStore('httpCollectionStore', () => {
 
     const uris = currentCollection.value?.uris
 
-    return uris && index >= 0 && index < uris.length ? cloneDeep(uris[index]) : null
+    return uris && index >= 0 && index < uris.length ? cloneState(uris[index]) : null
   }
 
   const resetState = (): void => {

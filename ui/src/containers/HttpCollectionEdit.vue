@@ -68,7 +68,7 @@ import { hasErrors, sameCollectionName, validateCollection } from '@/lib/httpCol
 import { getDefaultCollection, useHttpCollectionStore } from '@/stores/httpCollectionStore'
 import type { HttpCollection } from '@/types/httpCollectionConfig'
 import { OnmsInputNumber, OnmsInputText } from '@opennms/onms-ui'
-import { cloneDeep } from 'lodash'
+import { cloneState } from '@/lib/utils'
 
 const route = useRoute()
 const router = useRouter()
@@ -102,7 +102,7 @@ onMounted(async () => {
     await Promise.all([store.fetchCollection(collectionName.value), store.fetchCollections()])
 
     if (store.currentCollection) {
-      draft.value = cloneDeep(store.currentCollection)
+      draft.value = cloneState(store.currentCollection)
     }
   }
 

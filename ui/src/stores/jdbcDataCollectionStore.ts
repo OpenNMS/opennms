@@ -22,10 +22,10 @@
 
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { cloneDeep } from 'lodash'
 import API from '@/services'
 import type { ValidationResult, ValidationResultWithPayload } from '@/types/validation'
 import { createFailureResult } from '@/types/validation'
+import { cloneState } from '@/lib/utils'
 import type {
   JdbcCollection,
   JdbcColumn,
@@ -181,7 +181,7 @@ export const useJdbcDataCollectionStore = defineStore('jdbcDataCollectionStore',
     }
 
     const id = currentSource.value.id
-    const result = await API.updateJdbcSource({ ...cloneDeep(currentSource.value), rrdRepository })
+    const result = await API.updateJdbcSource({ ...cloneState(currentSource.value), rrdRepository })
     return result.success ? refreshAfterWrite(id, result) : reloadAfterConflict(id, result)
   }
 
@@ -235,7 +235,7 @@ export const useJdbcDataCollectionStore = defineStore('jdbcDataCollectionStore',
   /** A deep clone of a collection of the loaded source, so Cancel really discards; null when there is none. */
   const collectionAt = (name: string): JdbcCollection | null => {
     const collection = findCollection(name)
-    return collection ? cloneDeep(collection) : null
+    return collection ? cloneState(collection) : null
   }
 
   /** A deep clone of a query; a new default query for index -1; null when there is no such query. */
@@ -248,7 +248,7 @@ export const useJdbcDataCollectionStore = defineStore('jdbcDataCollectionStore',
     if (index < 0) {
       return getDefaultQuery()
     }
-    return index < collection.queries.length ? cloneDeep(collection.queries[index]) : null
+    return index < collection.queries.length ? cloneState(collection.queries[index]) : null
   }
 
   /** Adds (index -1) or replaces a query and saves its collection. */
