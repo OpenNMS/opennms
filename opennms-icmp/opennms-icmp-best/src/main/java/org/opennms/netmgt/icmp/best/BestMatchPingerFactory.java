@@ -199,14 +199,14 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
         final String message;
         if (pinned) {
             message = "org.opennms.netmgt.icmp.pingerClass is set to the deprecated " + pinger.getName()
-                    + ". The JICMP, JICMP6 and JNA pingers will be removed in Horizon 38."
+                    + ". The JICMP, JICMP6 and JNA pingers will be removed in a future release."
                     + " Remove the setting to use the FFM pinger.";
         } else {
             final String reason = preferred.match() == PingerMatch.NONE
                     ? preferred.failure()
                     : "it supports " + preferred.match() + " only";
             message = "The FFM pinger cannot be used here (" + reason + "). Using the deprecated "
-                    + pinger.getName() + " instead. The JICMP, JICMP6 and JNA pingers will be removed in Horizon 38.";
+                    + pinger.getName() + " instead. The JICMP, JICMP6 and JNA pingers will be removed in a future release.";
         }
         return isJna(pinger)
                 ? message + " The JNA pinger adds latency, so ICMP response times are less accurate."

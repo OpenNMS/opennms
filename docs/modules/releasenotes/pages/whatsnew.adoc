@@ -505,15 +505,15 @@ Groovy support remains available everywhere BeanShell was implemented.
 {page-component-title} now sends ICMP through the Java Foreign Function & Memory API by default.
 The new pinger `org.opennms.netmgt.icmp.ffm.FfmPinger` supports IPv4 and IPv6 on Linux, macOS and the BSDs and needs no separately installed native library.
 
-The JICMP, JICMP6 and JNA pingers are deprecated and will be removed in Horizon 38.
+The JICMP, JICMP6 and JNA pingers are deprecated and will be removed in a future release.
 When `org.opennms.netmgt.icmp.pingerClass` is not set, {page-component-title} tries the FFM pinger first.
 If it does not work, it falls back to JICMP6, then JICMP, then JNA, and logs a warning with the reason.
 The JNA pinger is the last choice because it adds latency, which makes ICMP response times less accurate.
 
 If you set `org.opennms.netmgt.icmp.pingerClass` to `org.opennms.netmgt.icmp.jni.JniPinger`, `org.opennms.netmgt.icmp.jni6.Jni6Pinger` or `org.opennms.netmgt.icmp.jna.JnaPinger`, a deprecation warning is logged at startup.
-Remove the setting before you upgrade to Horizon 38.
+Remove the setting before you upgrade to that release.
 
-ICMP on Windows and Solaris only works through the JNA pinger and ends with Horizon 38.
+ICMP on Windows and Solaris only works through the JNA pinger and ends with that removal.
 
 On macOS and FreeBSD, the FFM pinger sets `IP_DONTFRAG` when fragmentation is not allowed for IPv4.
 The JNA pinger sets socket option 10 there, which is `IP_MULTICAST_TTL` on those systems, so it does not set the don't-fragment bit.

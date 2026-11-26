@@ -25,7 +25,7 @@ package org.opennms.netmgt.icmp.jna;
  * A pinger that opens JNA sockets only.
  *
  * @deprecated The JNA socket adds latency, which makes ICMP response times less accurate.
- * It will be removed in Horizon 38.
+ * It will be removed in a future release.
  * Use {@link org.opennms.netmgt.icmp.ffm.FfmPinger}.
  */
 @Deprecated(since = "37", forRemoval = true)

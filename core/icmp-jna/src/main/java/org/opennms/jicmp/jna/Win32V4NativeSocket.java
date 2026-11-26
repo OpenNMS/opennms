@@ -33,7 +33,7 @@ import com.sun.jna.Native;
  *
  * @author brozow
  *
- * @deprecated The JNA socket will be removed in Horizon 38. The FFM socket replaces it.
+ * @deprecated The JNA socket will be removed in a future release. The FFM socket replaces it.
  */
 @Deprecated(since = "37", forRemoval = true)
 @SuppressWarnings("removal")

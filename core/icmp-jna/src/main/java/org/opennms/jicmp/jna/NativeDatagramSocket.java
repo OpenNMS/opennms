@@ -89,7 +89,7 @@ public abstract class NativeDatagramSocket implements AutoCloseable {
     }
 
     /**
-     * @deprecated The JNA socket will be removed in Horizon 38. The FFM socket replaces it.
+     * @deprecated The JNA socket will be removed in a future release. The FFM socket replaces it.
      */
     @Deprecated(since = "37", forRemoval = true)
     public static NativeDatagramSocket createJna(final int family, final int protocol, final int listenPort) throws Exception {

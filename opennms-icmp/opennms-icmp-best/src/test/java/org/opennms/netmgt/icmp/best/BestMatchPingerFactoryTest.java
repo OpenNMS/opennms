@@ -126,7 +126,7 @@ public class BestMatchPingerFactoryTest {
         final String warning = BestMatchPingerFactory.deprecationWarning(Jni6Pinger.class, NONE, false);
         assertTrue(warning, warning.contains("socket: Operation not permitted"));
         assertTrue(warning, warning.contains(Jni6Pinger.class.getName()));
-        assertTrue(warning, warning.contains("Horizon 38"));
+        assertTrue(warning, warning.contains("a future release"));
         assertFalse(warning, warning.contains("latency"));
     }
 
@@ -147,7 +147,7 @@ public class BestMatchPingerFactoryTest {
     public void pinnedWarningTellsToRemoveTheSetting() {
         final String warning = BestMatchPingerFactory.deprecationWarning(JniPinger.class, null, true);
         assertTrue(warning, warning.contains(PROPERTY));
-        assertTrue(warning, warning.contains("Horizon 38"));
+        assertTrue(warning, warning.contains("a future release"));
         assertTrue(warning, warning.contains("Remove the setting"));
     }
 
