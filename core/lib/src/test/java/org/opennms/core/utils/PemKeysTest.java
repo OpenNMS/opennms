@@ -84,9 +84,8 @@ public class PemKeysTest {
     }
 
     @Test
-    public void readsEd25519Pkcs8() throws Exception {
-        final PrivateKey key = PemKeys.readPrivateKey(pem("ed25519-pkcs8.key"));
-        assertTrue(key.getAlgorithm(), key.getAlgorithm().startsWith("Ed"));
+    public void rejectsEd25519Pkcs8() throws Exception {
+        assertRejected(pem("ed25519-pkcs8.key"), "Unsupported key algorithm (OID 1.3.101.112)");
     }
 
     @Test

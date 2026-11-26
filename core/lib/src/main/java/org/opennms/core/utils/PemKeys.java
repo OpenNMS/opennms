@@ -64,17 +64,10 @@ public final class PemKeys {
 
     // 1.2.840.113549.1.1.1
     private static final byte[] OID_RSA_ENCRYPTION = {0x2A, (byte) 0x86, 0x48, (byte) 0x86, (byte) 0xF7, 0x0D, 0x01, 0x01, 0x01};
-    // 1.2.840.113549.1.1.10
-    private static final byte[] OID_RSASSA_PSS = {0x2A, (byte) 0x86, 0x48, (byte) 0x86, (byte) 0xF7, 0x0D, 0x01, 0x01, 0x0A};
     // 1.2.840.10045.2.1
     private static final byte[] OID_EC_PUBLIC_KEY = {0x2A, (byte) 0x86, 0x48, (byte) 0xCE, 0x3D, 0x02, 0x01};
     // 1.2.840.10040.4.1
     private static final byte[] OID_DSA = {0x2A, (byte) 0x86, 0x48, (byte) 0xCE, 0x38, 0x04, 0x01};
-    // 1.3.101.110 - 1.3.101.113
-    private static final byte[] OID_X25519 = {0x2B, 0x65, 0x6E};
-    private static final byte[] OID_X448 = {0x2B, 0x65, 0x6F};
-    private static final byte[] OID_ED25519 = {0x2B, 0x65, 0x70};
-    private static final byte[] OID_ED448 = {0x2B, 0x65, 0x71};
 
     private PemKeys() {
     }
@@ -82,7 +75,7 @@ public final class PemKeys {
     /**
      * Reads the first private key in a PEM file. PKCS#8 ({@code BEGIN PRIVATE KEY}),
      * PKCS#1 ({@code BEGIN RSA PRIVATE KEY}) and SEC1 ({@code BEGIN EC PRIVATE KEY}) keys are accepted.
-     * Encrypted keys are rejected.
+     * Only RSA, EC and DSA keys are accepted, as with Netty. Encrypted keys are rejected.
      */
     public static PrivateKey readPrivateKey(final File file) throws IOException, GeneralSecurityException {
         final String pem = new String(Files.readAllBytes(file.toPath()), StandardCharsets.US_ASCII);
@@ -168,19 +161,40 @@ public final class PemKeys {
         final byte[] oid = info.enter(TAG_SEQUENCE).read(TAG_OID);
         final String algorithm = algorithmOf(oid);
         if (algorithm == null) {
-            throw new InvalidKeySpecException("Unsupported key algorithm OID " + Arrays.toString(oid) + ".");
+            throw new InvalidKeySpecException("Unsupported key algorithm (OID " + oidToString(oid) + "). Use an RSA or EC key.");
         }
         return KeyFactory.getInstance(algorithm).generatePrivate(new PKCS8EncodedKeySpec(der));
     }
 
+    /**
+     * The key algorithms Netty reads itself (RSA, DSA, EC). Others, such as Ed25519, X25519 or
+     * RSASSA-PSS, are rejected: X25519 and X448 cannot sign, and the rest are untested with
+     * the TLS providers we use.
+     */
     private static String algorithmOf(final byte[] oid) {
         if (Arrays.equals(oid, OID_RSA_ENCRYPTION)) return "RSA";
-        if (Arrays.equals(oid, OID_RSASSA_PSS)) return "RSASSA-PSS";
         if (Arrays.equals(oid, OID_EC_PUBLIC_KEY)) return "EC";
         if (Arrays.equals(oid, OID_DSA)) return "DSA";
-        if (Arrays.equals(oid, OID_ED25519) || Arrays.equals(oid, OID_ED448)) return "EdDSA";
-        if (Arrays.equals(oid, OID_X25519) || Arrays.equals(oid, OID_X448)) return "XDH";
         return null;
+    }
+
+    /** Formats a DER-encoded OID in dotted form, for example 1.3.101.112. */
+    private static String oidToString(final byte[] oid) {
+        if (oid.length == 0) {
+            return "";
+        }
+        final StringBuilder sb = new StringBuilder();
+        final int first = oid[0] & 0xFF;
+        sb.append(Math.min(first / 40, 2)).append('.').append(first - 40 * Math.min(first / 40, 2));
+        long value = 0;
+        for (int i = 1; i < oid.length; i++) {
+            value = (value << 7) | (oid[i] & 0x7F);
+            if ((oid[i] & 0x80) == 0) {
+                sb.append('.').append(value);
+                value = 0;
+            }
+        }
+        return sb.toString();
     }
 
     /** Wraps an RSAPrivateKey (PKCS#1) in a PrivateKeyInfo (PKCS#8). */
