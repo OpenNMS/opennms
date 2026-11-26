@@ -66,7 +66,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { isEqual } from 'lodash'
 import FormField from '@/components/Common/FormField.vue'
 import JdbcQueriesTable from '@/components/JdbcDataCollection/JdbcQueriesTable.vue'
 import StringListEditor from '@/components/ThresholdConfiguration/Common/StringListEditor.vue'
@@ -112,7 +111,8 @@ const errors = computed(() =>
 const isDirty = computed(() => isCreate.value || !stored.value ||
   draft.value.name.trim() !== stored.value.name ||
   draft.value.rrdStep !== stored.value.rrdStep ||
-  !isEqual(draft.value.rras.map(rra => rra.trim()), stored.value.rras))
+  draft.value.rras.length !== stored.value.rras.length ||
+  draft.value.rras.some((rra, i) => rra.trim() !== stored.value?.rras[i]))
 
 const renameHint = computed(() =>
   !isCreate.value && stored.value?.usedBy?.length && draft.value.name.trim() !== stored.value.name
