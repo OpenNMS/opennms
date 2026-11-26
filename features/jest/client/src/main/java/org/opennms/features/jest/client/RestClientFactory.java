@@ -52,7 +52,6 @@ import org.apache.http.nio.conn.SchemeIOSessionStrategy;
 import org.apache.http.nio.conn.ssl.SSLIOSessionStrategy;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
-import org.checkerframework.checker.units.qual.K;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.features.jest.client.credentials.CredentialsParser;
 import org.opennms.features.jest.client.credentials.CredentialsProvider;

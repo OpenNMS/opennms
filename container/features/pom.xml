@@ -294,6 +294,10 @@
                   <value>com.google.guava/guava/${guavaVersion}</value>
                 </replacement>
                 <replacement>
+                  <token>com\.google\.guava/failureaccess/[0-9][0-9.]*</token>
+                  <value>com.google.guava/failureaccess/${guavaFailureaccessVersion}</value>
+                </replacement>
+                <replacement>
                   <token>com\.datastax\.oss/(java-driver-core|java-driver-query-builder)/[0-9][0-9.]*</token>
                   <value>com.datastax.oss/$1/${cassandraVersion}</value>
                 </replacement>
@@ -480,7 +484,6 @@
                           <feature>fst</feature>
                           <feature>guava</feature>
                           <feature>guava-dependencies</feature>
-                          <feature>guava18</feature>
                           <feature>jackson-core</feature>
                           <feature>jackson-dataformat-xml</feature>
                           <feature>jackson-dataformat-yaml</feature>
