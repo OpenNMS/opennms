@@ -26,17 +26,20 @@ import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 import org.opennms.integration.api.v1.runtime.RuntimeInfo;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.plugin.grpc.proto.spog.Alarm;
 import org.opennms.plugin.grpc.proto.spog.Severity;
 import org.opennms.plugin.grpc.proto.spog.AlarmUpdateList;
 import org.opennms.plugin.grpc.proto.spog.Alarm.Type;
 import org.opennms.plugin.grpc.proto.spog.NodeCriteria;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.List;
@@ -51,10 +54,10 @@ public interface AlarmMapper {
     @Mapping(target = "firstEventTime", expression = "java(mapDate(onmsAlarm.getFirstEventTime()))")
     @Mapping(target = "lastUpdateTime", expression = "java(mapDate(onmsAlarm.getLastUpdateTime()))")
     @Mapping(source = "counter", target = "count")
-    @Mapping(target = "type", expression = "java(mapType(onmsAlarm.getType().getId()))")
+    @Mapping(target = "type", expression = "java(mapType(onmsAlarm.getAlarmType()))")
     @Mapping(target = "nodeCriteria", expression = "java(mapNodeCriteria(onmsAlarm))")
     @Mapping(target = "logMessage", source = "logMsg")
-    @Mapping(target = "severity", expression = "java(mapSeverity(onmsAlarm.getSeverity().toString()))")
+    @Mapping(target = "severity", expression = "java(mapSeverity(onmsAlarm.getSeverity()))")
     @Mapping(target = "operatorInstructions", source = "operInstruct")
     @Mapping(target = "managedObjectInstance", source = "managedObjectInstance")
     @Mapping(target = "managedObjectType", source = "managedObjectType")
@@ -79,16 +82,21 @@ public interface AlarmMapper {
     @Mapping(target = "id", source = "nodeId", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
     NodeCriteria mapNodeCriteria(OnmsAlarm alarm);
 
+    @Named("mapType")
     default int mapType(Integer value) {
+        if (value == null) {
+            return Type.PROBLEM_WITHOUT_CLEAR.getNumber();
+        }
         switch (value) {
-            case 0:
+            case OnmsAlarm.PROBLEM_TYPE:
                 return Type.PROBLEM_WITH_CLEAR.getNumber();
-            case 1:
+            case OnmsAlarm.RESOLUTION_TYPE:
                 return Type.CLEAR.getNumber();
-            case 2:
+            case OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE:
                 return Type.PROBLEM_WITHOUT_CLEAR.getNumber();
             default:
-                throw new IllegalArgumentException("Unknown value for Type: " + value);
+                LoggerFactory.getLogger(AlarmMapper.class).debug("Unknown alarm type {}, mapping to {}", value, Type.PROBLEM_WITHOUT_CLEAR);
+                return Type.PROBLEM_WITHOUT_CLEAR.getNumber();
         }
     }
 
@@ -97,25 +105,12 @@ public interface AlarmMapper {
         return date != null ? date.getTime() : 0;
     }
 
-    default int mapSeverity(String severity) {
-
-        switch (severity) {
-            case "NORMAL":
-                return Severity.NORMAL.getNumber();
-            case "CLEARED":
-                return Severity.CLEARED.getNumber();
-            case "MINOR":
-                return Severity.MINOR.getNumber();
-            case "WARNING":
-                return Severity.WARNING.getNumber();
-            case "INDETERMINATE":
-                return Severity.INDETERMINATE.getNumber();
-            case "MAJOR":
-                return Severity.MAJOR.getNumber();
-            case "CRITICAL":
-                return Severity.CRITICAL.getNumber();
-            default:
-                return Severity.UNRECOGNIZED.getNumber();
+    @Named("mapSeverity")
+    default int mapSeverity(OnmsSeverity severity) {
+        if (severity == null) {
+            LoggerFactory.getLogger(AlarmMapper.class).warn("Alarm has no severity, mapping to {}", Severity.INDETERMINATE);
+            return Severity.INDETERMINATE.getNumber();
         }
+        return Severity.valueOf(severity.name()).getNumber();
     }
 }
