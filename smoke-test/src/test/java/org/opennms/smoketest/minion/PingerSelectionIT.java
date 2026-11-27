@@ -21,12 +21,11 @@
  */
 package org.opennms.smoketest.minion;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
 import org.junit.ClassRule;
@@ -36,11 +35,11 @@ import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.KarafShell;
-import org.opennms.smoketest.utils.TestContainerUtils;
 import org.testcontainers.containers.Container;
+import org.testcontainers.containers.GenericContainer;
 
 /**
- * Verifies that the assembled Core and Minion select the FFM pinger.
+ * Verifies that the assembled Core and Minion use the FFM pinger.
  *
  * The scan falls back to a deprecated pinger when the FFM pinger does not work,
  * so a working ping alone does not show which pinger answered.
@@ -51,8 +50,6 @@ public class PingerSelectionIT {
     @ClassRule
     public static final OpenNMSStack stack = OpenNMSStack.MINION;
 
-    private static final Path MINION_KARAF_LOG = Paths.get("/opt", "minion", "data", "log", "karaf.log");
-
     /** What opennms:ping prints for a reply. A failure prints an exception class name instead of the time. */
     private static final Pattern PING_REPLY = Pattern.compile("PING: /127\\.0\\.0\\.1 \\S+ ms");
 
@@ -62,10 +59,21 @@ public class PingerSelectionIT {
         m_karafShell.runCommand(command, output -> PING_REPLY.matcher(output).find(), false);
     }
 
+    /**
+     * A pinger starts its FFM-ICMP reader threads only after the FFM sockets opened.
+     * The JVM prints a thread dump to the console on SIGQUIT.
+     */
+    private static void awaitFfmReaderThread(final GenericContainer<?> container) throws Exception {
+        container.execInContainer("kill", "-3", "1");
+        await("FFM reader thread in the thread dump of " + container.getDockerImageName()).atMost(30, SECONDS)
+                .until(container::getLogs, containsString("\"FFM-ICMP-"));
+    }
+
     @Test
     public void coreSelectsTheFfmPinger() throws Exception {
         // A reply shows that the scan ran and found a working pinger.
         awaitPingReply("opennms:ping 127.0.0.1");
+        awaitFfmReaderThread(stack.opennms());
 
         // Core filters most logs at WARN, so look for the two warnings the scan logs when it
         // does not select the FFM pinger. grep exits with 1 when no line matches.
@@ -77,11 +85,11 @@ public class PingerSelectionIT {
     }
 
     @Test
-    public void minionSelectsTheFfmPinger() {
+    public void minionOpensFfmSockets() throws Exception {
         awaitPingReply("opennms:ping -l " + stack.minion().getLocation() + " 127.0.0.1");
 
-        // Minion logs org.opennms at INFO, so the result of the scan is in karaf.log.
-        assertThat(TestContainerUtils.getFileFromContainerAsString(stack.minion(), MINION_KARAF_LOG),
-                containsString("Best available pinger is: class org.opennms.netmgt.icmp.ffm.FfmPinger"));
+        // The Minion container does not write the result of the scan to karaf.log,
+        // so the reader threads are the only evidence here.
+        awaitFfmReaderThread(stack.minion());
     }
 }
