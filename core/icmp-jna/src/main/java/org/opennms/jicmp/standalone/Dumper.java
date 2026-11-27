@@ -37,8 +37,10 @@ import com.sun.jna.Platform;
  */
 public class Dumper {
     
+    @SuppressWarnings("removal")
     public void dump() throws Exception {
-        NativeDatagramSocket m_pingSocket =  NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6, 1234);
+        // This tool runs from this module's jar, which cannot see the FFM socket in core/icmp-ffm.
+        NativeDatagramSocket m_pingSocket =  NativeDatagramSocket.createJna(NativeDatagramSocket.PF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6, 1234);
         
         if (Platform.isWindows()) {
             ICMPv6EchoPacket packet = new ICMPv6EchoPacket(64);

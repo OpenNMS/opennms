@@ -1314,8 +1314,9 @@ public class Installer {
         } catch (UnsatisfiedLinkError e) {
             System.out.println("UnsatisfiedLinkError while creating an ICMP Pinger.  Most likely failed to load "
                     + "libjicmp.so.  Try setting the property 'opennms.library.jicmp' to point at the "
-                    + "full path name of the libjicmp.so shared library or switch to using the JnaPinger "
-                    + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')\n"
+                    + "full path name of the libjicmp.so shared library "
+                    + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...') "
+                    + "or remove the org.opennms.netmgt.icmp.pingerClass setting to use the FFM pinger.\n"
                     + "You can also set the 'opennms.library.jicmp6' property in the same manner to specify "
                     + "the location of the JICMP6 library.");
             throw e;

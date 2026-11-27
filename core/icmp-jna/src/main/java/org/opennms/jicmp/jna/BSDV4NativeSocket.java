@@ -34,8 +34,12 @@ import com.sun.jna.ptr.IntByReference;
  * UnixNativeSocketFactory
  *
  * @author brozow
+ *
+ * @deprecated The JNA socket will be removed in a future release. The FFM socket replaces it.
  */
-public class BSDV4NativeSocket extends NativeDatagramSocket {
+@Deprecated(since = "37", forRemoval = true)
+@SuppressWarnings("removal")
+public class BSDV4NativeSocket extends AbstractJnaNativeSocket {
 
 	static {
 		Native.register((String)null);

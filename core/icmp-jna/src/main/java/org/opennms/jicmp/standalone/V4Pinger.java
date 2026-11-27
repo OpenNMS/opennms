@@ -42,8 +42,10 @@ import com.sun.jna.Platform;
  */
 public class V4Pinger extends AbstractPinger<Inet4Address> {
 
+    @SuppressWarnings("removal")
     public V4Pinger(final int id) throws Exception {
-        super(NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, NativeDatagramSocket.IPPROTO_ICMP, id));
+        // This tool runs from this module's jar, which cannot see the FFM socket in core/icmp-ffm.
+        super(NativeDatagramSocket.createJna(NativeDatagramSocket.PF_INET, NativeDatagramSocket.IPPROTO_ICMP, id));
         
         // Windows requires at least one packet sent before a receive call can be made without error
         // so we send a packet here to make sure...  This one should not match the normal ping requests

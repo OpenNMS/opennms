@@ -32,8 +32,12 @@ import com.sun.jna.Native;
  * UnixNativeSocketFactory
  *
  * @author brozow
+ *
+ * @deprecated The JNA socket will be removed in a future release. The FFM socket replaces it.
  */
-public class Win32V4NativeSocket extends NativeDatagramSocket {
+@Deprecated(since = "37", forRemoval = true)
+@SuppressWarnings("removal")
+public class Win32V4NativeSocket extends AbstractJnaNativeSocket {
     
     static {
         Native.register((String)null);

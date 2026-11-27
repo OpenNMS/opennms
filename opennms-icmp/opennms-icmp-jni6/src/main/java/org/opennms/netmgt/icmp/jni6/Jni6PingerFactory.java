@@ -24,6 +24,12 @@ package org.opennms.netmgt.icmp.jni6;
 import org.opennms.netmgt.icmp.AbstractPingerFactory;
 import org.opennms.netmgt.icmp.Pinger;
 
+/**
+ * @deprecated JICMP6 is deprecated and will be removed in a future release.
+ *             Use {@code org.opennms.netmgt.icmp.ffm.FfmPingerFactory} instead.
+ */
+@Deprecated(since = "37", forRemoval = true)
+@SuppressWarnings("removal")
 public class Jni6PingerFactory extends AbstractPingerFactory {
 
     @Override

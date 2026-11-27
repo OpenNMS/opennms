@@ -1,0 +1,304 @@
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
+package org.opennms.netmgt.icmp.jna;
+
+import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_PACKET_SIZE;
+import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_RETRIES;
+import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_TIMEOUT;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.security.SecureRandom;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
+
+import org.opennms.core.logging.Logging;
+import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
+import org.opennms.netmgt.icmp.PingResponseCallback;
+import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.SinglePingResponseCallback;
+import org.opennms.core.tracker.IDBasedRequestLocator;
+import org.opennms.core.tracker.RequestTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
+/**
+ * A pinger on native ICMP sockets. The subclass picks the {@link SocketBackend} that opens them.
+ *
+ * @author brozow
+ */
+public abstract class NativeSocketPinger implements Pinger {
+    private static final Logger LOG = LoggerFactory.getLogger(NativeSocketPinger.class);
+
+    /**
+     * EPERM (1) or EACCES (13). The FFM socket reports "socket: ... (errno 1)", the JNA socket "[1] ...".
+     * The text between is the C library's and follows the locale.
+     */
+    private static final Pattern PERMISSION_ERRNO = Pattern.compile("^\\[(?:1|13)\\]|\\(errno (?:1|13)\\)$");
+    private static final AtomicBoolean PERMISSION_HINT_LOGGED = new AtomicBoolean();
+
+    private final int m_pingerId = new SecureRandom().nextInt(Short.MAX_VALUE);
+    private final SocketBackend m_backend;
+
+    private RequestTracker<JnaPingRequest, JnaPingReply> m_pingTracker;
+    private JnaIcmpMessenger m_messenger;
+
+    protected NativeSocketPinger(final SocketBackend backend) {
+        m_backend = backend;
+    }
+
+    /**
+     * Initializes this singleton
+     * @throws Exception 
+     */
+    private synchronized void initialize() throws Exception {
+        if (m_pingTracker != null) return;
+        try {
+            m_messenger = openMessenger();
+            m_pingTracker = Logging.withPrefix("icmp", new Callable<RequestTracker<JnaPingRequest,JnaPingReply>>() {
+                @Override public RequestTracker<JnaPingRequest, JnaPingReply> call() throws Exception {
+                    return new RequestTracker<JnaPingRequest, JnaPingReply>(m_backend.name()+"-ICMP-"+m_pingerId, m_messenger, new IDBasedRequestLocator<JnaPingRequestId, JnaPingRequest, JnaPingReply>());
+                }
+            });
+            m_pingTracker.start();
+        } catch (final IOException e) {
+            logPermissionHint(e);
+            throw e;
+        }
+    }
+
+    /** Opens the sockets. A test overrides this to fail the way a refused socket does. */
+    JnaIcmpMessenger openMessenger() throws Exception {
+        return new JnaIcmpMessenger(m_pingerId, m_backend);
+    }
+
+    /**
+     * The first throwable in the cause chain of t that says the kernel refused the socket, or null.
+     * The messenger wraps the socket error, so the message of t itself does not name it.
+     */
+    static Throwable permissionError(final Throwable t) {
+        for (Throwable cause = t; cause != null; cause = cause.getCause()) {
+            final String message = String.valueOf(cause.getMessage()).toLowerCase();
+            if (message.contains("permission denied") || message.contains("operation not permitted")
+                    || PERMISSION_ERRNO.matcher(message).find()) {
+                return cause;
+            }
+        }
+        return null;
+    }
+
+    /** Logs once per JVM how to fix a refused ICMP socket. Does nothing for any other error. */
+    private static void logPermissionHint(final Throwable t) {
+        final Throwable refused = permissionError(t);
+        if (refused != null && PERMISSION_HINT_LOGGED.compareAndSet(false, true)) {
+            LOG.warn("Permission error received while attempting to open ICMP socket ({}). See https://docs.opennms.com/ for information on configuring ICMP for non-root.", refused.getMessage());
+        }
+    }
+
+    @Override
+    public void initialize4() throws Exception {
+        initialize();
+    }
+
+    @Override
+    public void initialize6() throws Exception {
+        initialize();
+    }
+
+    @Override
+    public boolean isV4Available() {
+        try {
+            initialize();
+        } catch (final Throwable t) {
+            LOG.trace("Failed to initialize IPv4", t);
+        }
+        if (m_messenger == null) return false;
+        return m_messenger.isV4Available();
+    }
+
+    @Override
+    public boolean isV6Available() {
+        try {
+            initialize();
+        } catch (final Throwable t) {
+            LOG.trace("Failed to initialize IPv6", t);
+        }
+        if (m_messenger == null) return false;
+        return m_messenger.isV6Available();
+    }
+
+    /**
+     * <p>ping</p>
+     *
+     * @param host a {@link java.net.InetAddress} object.
+     * @param timeout a long.
+     * @param retries a int.
+     * @param packetsize The size in byte of the ICMP packet.
+     * @param sequenceId a short.
+     * @param cb a {@link org.opennms.netmgt.ping.PingResponseCallback} object.
+     * @throws java.lang.Exception if any.
+     */
+    @Override
+    public void ping(final InetAddress host, final long timeout, final int retries, final int packetsize, final int sequenceId, final PingResponseCallback cb) throws Exception {
+        initialize();
+        m_pingTracker.sendRequest(new JnaPingRequest(host, m_pingerId, sequenceId, timeout, retries, packetsize, cb));
+    }
+
+    /**
+     * <p>ping</p>
+     *
+     * @param host a {@link java.net.InetAddress} object.
+     * @param timeout a long.
+     * @param retries a int.
+     * @param sequenceId a short.
+     * @param cb a {@link org.opennms.netmgt.ping.PingResponseCallback} object.
+     * @throws java.lang.Exception if any.
+     */
+    @Override
+    public void ping(final InetAddress host, final long timeout, final int retries, final int sequenceId, final PingResponseCallback cb) throws Exception {
+        initialize();
+        m_pingTracker.sendRequest(new JnaPingRequest(host, m_pingerId, sequenceId, timeout, retries, DEFAULT_PACKET_SIZE, cb));
+    }
+
+
+    /**
+     * This method is used to ping a remote host to test for ICMP support. If
+     * the remote host responds within the specified period, defined by retries
+     * and timeouts, then the response time is returned.
+     *
+     * @param host
+     *            The address to poll.
+     * @param timeout
+     *            The time to wait between each retry.
+     * @param retries
+     *            The number of times to retry
+     * @return The response time in microseconds if the host is reachable and has responded with an echo reply, otherwise a null value.
+     * @throws InterruptedException if any.
+     * @throws IOException if any.
+     * @throws java.lang.Exception if any.
+     */
+    @Override
+    public Number ping(final InetAddress host, final long timeout, final int retries, final int packetsize) throws Exception {
+        final SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
+        ping(host, timeout, retries, packetsize, 1, cb);
+        cb.waitFor();
+        cb.rethrowError();
+        return cb.getResponseTime();
+    }
+
+    /**
+     * This method is used to ping a remote host to test for ICMP support. If
+     * the remote host responds within the specified period, defined by retries
+     * and timeouts, then the response time is returned.
+     *
+     * @param host
+     *            The address to poll.
+     * @param timeout
+     *            The time to wait between each retry.
+     * @param retries
+     *            The number of times to retry
+     * @return The response time in microseconds if the host is reachable and has responded with an echo reply, otherwise a null value.
+     * @throws InterruptedException if any.
+     * @throws IOException if any.
+     * @throws java.lang.Exception if any.
+     */
+    @Override
+    public Number ping(final InetAddress host, final long timeout, final int retries) throws Exception {
+        return ping(host, timeout, retries, DEFAULT_PACKET_SIZE);
+    }
+
+    /**
+     * Ping a remote host, using the default number of retries and timeouts.
+     *
+     * @param host the host to ping
+     * @return the round-trip time of the packet
+     * @throws IOException if any.
+     * @throws InterruptedException if any.
+     * @throws java.lang.Exception if any.
+     */
+    @Override
+    public Number ping(final InetAddress host) throws Exception {
+        return ping(host, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
+    }
+
+    /**
+     * Ping a remote host, sending 1 or more packets at the given interval, and then
+     * return the response times as a list.
+     *
+     * @param host The {@link java.net.InetAddress} address to poll.
+     * @param count The number of packets to send.
+     * @param timeout The time to wait between each retry.
+     * @param pingInterval The interval at which packets will be sent.
+     * @param size The size of the packet to send.
+     * @return a {@link java.util.List} of response times in microseconds.
+     *     If, for a given ping request, the host is reachable and has responded with an
+     *     echo reply, it will contain a number, otherwise a null value.
+     */
+    @Override
+    public List<Number> parallelPing(final InetAddress host, final int count, final long timeout, final long pingInterval, final int size) throws Exception {
+        initialize();
+        final ParallelPingResponseCallback cb = new ParallelPingResponseCallback(count);
+
+        final long threadId = JnaPingRequest.getNextTID();
+        for (int seqNum = 0; seqNum < count; seqNum++) {
+            final JnaPingRequest request = new JnaPingRequest(host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout, 0, size, cb);
+            m_pingTracker.sendRequest(request);
+            Thread.sleep(pingInterval);
+        }
+
+        cb.waitFor();
+        return cb.getResponseTimes();
+    }
+
+    /**
+     * Ping a remote host, sending 1 or more packets at the given interval, and then
+     * return the response times as a list.
+     *
+     * @param host The {@link java.net.InetAddress} address to poll.
+     * @param count The number of packets to send.
+     * @param timeout The time to wait between each retry.
+     * @param pingInterval The interval at which packets will be sent.
+     * @return a {@link java.util.List} of response times in microseconds.
+     *     If, for a given ping request, the host is reachable and has responded with an
+     *     echo reply, it will contain a number, otherwise a null value.
+     */
+    @Override
+    public List<Number> parallelPing(final InetAddress host, final int count, final long timeout, final long pingInterval) throws Exception {
+        return parallelPing(host, count, timeout, pingInterval, DEFAULT_PACKET_SIZE);
+    }
+
+    @Override
+    public void setAllowFragmentation(boolean allow) throws Exception {
+        initialize();
+        m_messenger.setAllowFragmentation(allow);
+    }
+
+    @Override
+    public void setTrafficClass(int tc) throws Exception {
+        initialize();
+        m_messenger.setTrafficClass(tc);
+    }
+
+}

@@ -113,7 +113,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @deprecated JICMP is deprecated and will be removed in a future release.
+ *             Use {@code org.opennms.netmgt.icmp.ffm.FfmPinger} instead.
  */
+@Deprecated(since = "37", forRemoval = true)
 public class JniPinger implements Pinger {
     private static final Logger LOG = LoggerFactory.getLogger(JniPinger.class);
 

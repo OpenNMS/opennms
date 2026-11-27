@@ -20,7 +20,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.netmgt.icmp.jna.*;version="${project.version}"</Export-Package>
+            <Export-Package>org.opennms.netmgt.icmp.jna.*;org.opennms.netmgt.icmp.ffm.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -44,8 +44,19 @@
       <artifactId>org.opennms.core.icmp-jna</artifactId>
     </dependency>
     <dependency>
+      <!-- FFM socket implementation, loaded reflectively by NativeDatagramSocket.createFfm() -->
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.icmp-ffm</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.lib</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

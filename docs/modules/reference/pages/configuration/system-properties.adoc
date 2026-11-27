@@ -390,6 +390,8 @@ Many of the properties here are documented with much greater detail in their rel
 | `org.opennms.netmgt.icmp.pingerClass`
 | "org.opennms.netmgt.icmp.best.BestMatchPinger"
 | The default ICMP implementation class.
+Leave it unset to use the FFM pinger with automatic fallback.
+The JICMP, JICMP6 and JNA pingers (`org.opennms.netmgt.icmp.jni.JniPinger`, `org.opennms.netmgt.icmp.jni6.Jni6Pinger`, `org.opennms.netmgt.icmp.jna.JnaPinger`) are deprecated and will be removed in a future release.
 
 | `org.opennms.netmgt.icmp.requireV4`
 | "detect"

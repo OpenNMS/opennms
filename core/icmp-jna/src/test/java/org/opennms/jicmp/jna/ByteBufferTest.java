@@ -48,6 +48,7 @@ import com.sun.jna.ptr.IntByReference;
  *
  * @author brozow
  */
+@SuppressWarnings("removal")
 public class ByteBufferTest {
     
     static {

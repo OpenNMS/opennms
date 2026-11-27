@@ -93,7 +93,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-test-deviceConfig.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.jna.JnaPinger",
+        "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.ffm.FfmPinger",
         // Add immediate timeouts
         "org.opennms.jms.timeout=1",
         // Store the ActiveMQ kahadb in the target directory

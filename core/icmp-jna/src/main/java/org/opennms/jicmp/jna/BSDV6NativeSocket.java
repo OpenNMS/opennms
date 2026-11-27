@@ -34,14 +34,18 @@ import com.sun.jna.ptr.IntByReference;
  * UnixNativeSocketFactory
  *
  * @author brozow
+ *
+ * @deprecated The JNA socket will be removed in a future release. The FFM socket replaces it.
  */
-public class BSDV6NativeSocket extends NativeDatagramSocket {
+@Deprecated(since = "37", forRemoval = true)
+@SuppressWarnings("removal")
+public class BSDV6NativeSocket extends AbstractJnaNativeSocket {
 
 	static {
 		Native.register((String)null);
 	}
 
-	private static final int IPV6_TCLASS = 36;
+	private static final int IPV6_TCLASS = NativeOs.isMac() ? 36 : 61; // FreeBSD and OpenBSD use 61
 	private int m_sock;
 
 	public BSDV6NativeSocket(final int family, final int type, final int protocol, final int listenPort) throws Exception {
