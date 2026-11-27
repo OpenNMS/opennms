@@ -42,7 +42,19 @@ RUN chmod -R g-w /opt/usr-share/sentinel && \
         /opt/usr-share/sentinel/repositories \
         -type d -print0 | xargs -0 chmod 2775
 
+# Split the assembly into layers by how often their content changes and
+# hardlink duplicate files.
+# See common/split-layers.sh, provided as the "container-common" build context.
+ARG VERSION
+COPY --from=container-common split-layers.sh /usr/local/bin/split-layers.sh
+RUN bash /usr/local/bin/split-layers.sh /opt/usr-share/sentinel /layers sentinel "${VERSION}"
+
 FROM ${BASE_IMAGE} AS sentinel-base
+
+# Most stable content first. --link makes each layer independent of the ones
+# below it, so an unchanged layer keeps the same digest from release to release.
+# The source directories are already owned by 10001:0 with the right modes.
+COPY --link --from=sentinel-tarball /layers/deps/ /opt/
 
 ARG REQUIRED_RPMS="hostname uuid"
 
@@ -62,7 +74,9 @@ FROM sentinel-base
 
 # If you copy from /opt/sentinel to /opt/sentinel the permissions are not preserved
 # We would have 755 for sentinel:root instead of 775 and prevents writing lock files in /opt/sentinel
-COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /opt/
+COPY --link --from=sentinel-tarball /layers/onms/ /opt/
+COPY --link --from=sentinel-tarball /layers/app/ /opt/
+COPY --link --from=sentinel-tarball /layers/src/ /opt/
 
 SHELL ["/bin/bash", "-c"]
 

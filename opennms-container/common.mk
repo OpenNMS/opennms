@@ -162,6 +162,7 @@ endif
 	  --build-arg BUILD_NUMBER=$(BUILD_NUMBER) \
 	  --build-arg BUILD_URL=$(BUILD_URL) \
 	  --build-arg BUILD_BRANCH=$(BUILD_BRANCH) \
+	  --build-context container-common=../common \
 	  --tag=$(DOCKER_TAG) \
 	  --output=$(DOCKER_OUTPUT) \
 	  $(DOCKER_FLAGS) \

@@ -52,10 +52,25 @@ RUN chmod -R g-w /opt/minion && \
         /opt/minion/repositories \
         -type d -print0 | xargs -0 chmod 2775
 
+# Split /opt/minion into layers by how often their content changes and
+# hardlink duplicate files (repositories/ and system/ carry the same jars).
+# /opt/minion is moved out entirely, so the "COPY --from=minion-base /opt"
+# below only carries what the base image has in /opt.
+# See common/split-layers.sh, provided as the "container-common" build context.
+ARG VERSION
+COPY --from=container-common split-layers.sh /usr/local/bin/split-layers.sh
+RUN bash /usr/local/bin/split-layers.sh /opt/minion /layers minion "${VERSION}" && \
+    rm -rf /opt/minion
+
 ##
 # Prod image with minimal image size
 ##
 FROM ${BASE_IMAGE}
+
+# Most stable content first. --link makes each layer independent of the ones
+# below it, so an unchanged layer keeps the same digest from release to release.
+# The source directories are already owned by 10001:0 with the right modes.
+COPY --link --from=minion-base /layers/deps/ /opt/
 
 ARG REQUIRED_RPMS="hostname uuid gettext"
 
@@ -93,6 +108,9 @@ COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yam
 # If you copy from /opt/minion to /opt/minion the permissions are not preserved
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
 COPY --chown=10001:0 --from=minion-base /opt /opt
+COPY --link --from=minion-base /layers/onms/ /opt/
+COPY --link --from=minion-base /layers/app/ /opt/
+COPY --link --from=minion-base /layers/src/ /opt/
 
 # featuresBoot and telemetry listener templates. Kept outside /opt/minion/etc so a mounted or
 # persisted etc directory cannot hide them; the entrypoint applies them from here.
