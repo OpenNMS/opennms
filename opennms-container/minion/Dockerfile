@@ -28,7 +28,11 @@
 ##
 ARG BASE_IMAGE="opennms/deploy-base:ubi10-3.7.0.b380-jre-25"
 
-FROM ${BASE_IMAGE} AS minion-base
+# This stage only rearranges files from an architecture-independent tarball,
+# so it runs natively on the build host instead of under QEMU emulation.
+# Only /layers is taken from it: anything else in this stage belongs to the
+# build host's architecture.
+FROM --platform=$BUILDPLATFORM ${BASE_IMAGE} AS minion-base
 
 ADD --chown=10001:0 ./tarball-root/ /opt/minion/
 RUN rm /opt/minion/etc/org.opennms.features.telemetry.listeners-single-port-flows.cfg
@@ -54,13 +58,10 @@ RUN chmod -R g-w /opt/minion && \
 
 # Split /opt/minion into layers by how often their content changes and
 # hardlink duplicate files (repositories/ and system/ carry the same jars).
-# /opt/minion is moved out entirely, so the "COPY --from=minion-base /opt"
-# below only carries what the base image has in /opt.
 # See common/split-layers.sh, provided as the "container-common" build context.
 ARG VERSION
 COPY --from=container-common split-layers.sh /usr/local/bin/split-layers.sh
-RUN bash /usr/local/bin/split-layers.sh /opt/minion /layers minion "${VERSION}" && \
-    rm -rf /opt/minion
+RUN bash /usr/local/bin/split-layers.sh /opt/minion /layers minion "${VERSION}"
 
 ##
 # Prod image with minimal image size
@@ -105,9 +106,8 @@ COPY container-fs/health.sh /
 # Install a default JMX Prometheus configuration
 COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yaml
 
-# If you copy from /opt/minion to /opt/minion the permissions are not preserved
-# We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
-COPY --chown=10001:0 --from=minion-base /opt /opt
+# The layer directories carry /opt/minion with its final owner (10001:0) and
+# modes (775, so lock files can be written in /opt/minion).
 COPY --link --from=minion-base /layers/onms/ /opt/
 COPY --link --from=minion-base /layers/app/ /opt/
 COPY --link --from=minion-base /layers/src/ /opt/

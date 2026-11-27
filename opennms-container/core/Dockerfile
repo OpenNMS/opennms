@@ -25,7 +25,9 @@
 ##
 ARG BASE_IMAGE="opennms/deploy-base:ubi10-3.7.0.b380-jre-25"
 
-FROM ${BASE_IMAGE} AS core-tarball
+# This stage only rearranges files from an architecture-independent tarball,
+# so it runs natively on the build host instead of under QEMU emulation.
+FROM --platform=$BUILDPLATFORM ${BASE_IMAGE} AS core-tarball
 
 ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/opennms/
 RUN chmod -R g-w /opt/usr-share/opennms && \
