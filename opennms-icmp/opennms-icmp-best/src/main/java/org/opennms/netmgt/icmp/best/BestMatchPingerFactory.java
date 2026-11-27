@@ -248,7 +248,13 @@ public class BestMatchPingerFactory extends AbstractPingerFactory {
         }
 
         LOG.info("Searching for best available pinger...");
-        final Selection selection = scan(CANDIDATES, BestMatchPingerFactory::tryPinger);
+        return select(CANDIDATES, BestMatchPingerFactory::tryPinger);
+    }
+
+    /** Scans the candidates and logs the result. Warns once per JVM about a fallback and about no working pinger. */
+    static Class<? extends Pinger> select(final List<Class<? extends Pinger>> candidates,
+                                          final Function<Class<? extends Pinger>, Attempt> probe) {
+        final Selection selection = scan(candidates, probe);
         LOG.info("Best available pinger is: {}", selection.pinger());
         warn(deprecationWarning(selection.pinger(), selection.preferred(), false));
         warn(noPingerWarning(selection));

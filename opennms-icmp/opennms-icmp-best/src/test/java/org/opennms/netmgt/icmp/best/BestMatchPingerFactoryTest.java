@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 import org.junit.Test;
 import org.opennms.core.test.Level;
@@ -58,13 +59,23 @@ public class BestMatchPingerFactoryTest {
 
     private final List<Class<? extends Pinger>> m_probed = new ArrayList<>();
 
-    private Selection scan(final Attempt ffm, final Attempt jni6, final Attempt jni, final Attempt jna) {
+    private Function<Class<? extends Pinger>, Attempt> probe(final Attempt ffm, final Attempt jni6, final Attempt jni, final Attempt jna) {
         final Map<Class<? extends Pinger>, Attempt> results =
                 Map.of(FfmPinger.class, ffm, Jni6Pinger.class, jni6, JniPinger.class, jni, JnaPinger.class, jna);
-        return BestMatchPingerFactory.scan(BestMatchPingerFactory.CANDIDATES, c -> {
+        return c -> {
             m_probed.add(c);
             return results.get(c);
-        });
+        };
+    }
+
+    private Selection scan(final Attempt ffm, final Attempt jni6, final Attempt jni, final Attempt jna) {
+        return BestMatchPingerFactory.scan(BestMatchPingerFactory.CANDIDATES, probe(ffm, jni6, jni, jna));
+    }
+
+    private static long warnCount(final String warning) {
+        return Arrays.stream(MockLogAppender.getEvents())
+                .filter(e -> e.getLevel() == Level.WARN && warning.equals(e.getMessage()))
+                .count();
     }
 
     @Test
@@ -195,13 +206,31 @@ public class BestMatchPingerFactoryTest {
             System.setProperty(PROPERTY, JniPinger.class.getName());
             assertSame(JniPinger.class, BestMatchPingerFactory.findPinger());
             assertSame(JniPinger.class, BestMatchPingerFactory.findPinger());
-            final String warning = BestMatchPingerFactory.deprecationWarning(JniPinger.class, null, true);
-            assertEquals(1, Arrays.stream(MockLogAppender.getEvents())
-                    .filter(e -> e.getLevel() == Level.WARN && warning.equals(e.getMessage()))
-                    .count());
+            assertEquals(1, warnCount(BestMatchPingerFactory.deprecationWarning(JniPinger.class, null, true)));
         } finally {
             restore(saved);
         }
+    }
+
+    @Test
+    public void fallbackWarnsOncePerJvm() {
+        MockLogAppender.setupLogging();
+        // a failure no other test uses, because the warning is logged once per JVM
+        final Attempt ffm = new Attempt(PingerMatch.NONE, "fallback-" + UUID.randomUUID());
+        final Function<Class<? extends Pinger>, Attempt> probe = probe(ffm, V46, V4, V46);
+        assertSame(Jni6Pinger.class, BestMatchPingerFactory.select(BestMatchPingerFactory.CANDIDATES, probe));
+        assertSame(Jni6Pinger.class, BestMatchPingerFactory.select(BestMatchPingerFactory.CANDIDATES, probe));
+        assertEquals(1, warnCount(BestMatchPingerFactory.deprecationWarning(Jni6Pinger.class, ffm, false)));
+    }
+
+    @Test
+    public void noWorkingPingerWarnsOncePerJvm() {
+        MockLogAppender.setupLogging();
+        final Attempt ffm = new Attempt(PingerMatch.NONE, "no-pinger-" + UUID.randomUUID());
+        final Function<Class<? extends Pinger>, Attempt> probe = probe(ffm, NONE, NONE, NONE);
+        assertSame(NullPinger.class, BestMatchPingerFactory.select(BestMatchPingerFactory.CANDIDATES, probe));
+        assertSame(NullPinger.class, BestMatchPingerFactory.select(BestMatchPingerFactory.CANDIDATES, probe));
+        assertEquals(1, warnCount(BestMatchPingerFactory.noPingerWarning(new Selection(NullPinger.class, ffm))));
     }
 
     @Test
