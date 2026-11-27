@@ -30,6 +30,8 @@ import java.net.InetAddress;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
@@ -50,6 +52,13 @@ import org.slf4j.LoggerFactory;
 public abstract class NativeSocketPinger implements Pinger {
     private static final Logger LOG = LoggerFactory.getLogger(NativeSocketPinger.class);
 
+    /**
+     * EPERM (1) or EACCES (13). The FFM socket reports "socket: ... (errno 1)", the JNA socket "[1] ...".
+     * The text between is the C library's and follows the locale.
+     */
+    private static final Pattern PERMISSION_ERRNO = Pattern.compile("^\\[(?:1|13)\\]|\\(errno (?:1|13)\\)$");
+    private static final AtomicBoolean PERMISSION_HINT_LOGGED = new AtomicBoolean();
+
     private final int m_pingerId = new SecureRandom().nextInt(Short.MAX_VALUE);
     private final SocketBackend m_backend;
 
@@ -67,7 +76,7 @@ public abstract class NativeSocketPinger implements Pinger {
     private synchronized void initialize() throws Exception {
         if (m_pingTracker != null) return;
         try {
-            m_messenger = new JnaIcmpMessenger(m_pingerId, m_backend);
+            m_messenger = openMessenger();
             m_pingTracker = Logging.withPrefix("icmp", new Callable<RequestTracker<JnaPingRequest,JnaPingReply>>() {
                 @Override public RequestTracker<JnaPingRequest, JnaPingReply> call() throws Exception {
                     return new RequestTracker<JnaPingRequest, JnaPingReply>(m_backend.name()+"-ICMP-"+m_pingerId, m_messenger, new IDBasedRequestLocator<JnaPingRequestId, JnaPingRequest, JnaPingReply>());
@@ -75,11 +84,36 @@ public abstract class NativeSocketPinger implements Pinger {
             });
             m_pingTracker.start();
         } catch (final IOException e) {
-            final String errorMessage = e.getMessage().toLowerCase();
-            if (errorMessage.contains("permission denied") || errorMessage.contains("operation not permitted")) {
-                LOG.error("Permission error received while attempting to open ICMP socket. See https://docs.opennms.com/ for information on configuring ICMP for non-root.");
-            }
+            logPermissionHint(e);
             throw e;
+        }
+    }
+
+    /** Opens the sockets. A test overrides this to fail the way a refused socket does. */
+    JnaIcmpMessenger openMessenger() throws Exception {
+        return new JnaIcmpMessenger(m_pingerId, m_backend);
+    }
+
+    /**
+     * The first throwable in the cause chain of t that says the kernel refused the socket, or null.
+     * The messenger wraps the socket error, so the message of t itself does not name it.
+     */
+    static Throwable permissionError(final Throwable t) {
+        for (Throwable cause = t; cause != null; cause = cause.getCause()) {
+            final String message = String.valueOf(cause.getMessage()).toLowerCase();
+            if (message.contains("permission denied") || message.contains("operation not permitted")
+                    || PERMISSION_ERRNO.matcher(message).find()) {
+                return cause;
+            }
+        }
+        return null;
+    }
+
+    /** Logs once per JVM how to fix a refused ICMP socket. Does nothing for any other error. */
+    private static void logPermissionHint(final Throwable t) {
+        final Throwable refused = permissionError(t);
+        if (refused != null && PERMISSION_HINT_LOGGED.compareAndSet(false, true)) {
+            LOG.warn("Permission error received while attempting to open ICMP socket ({}). See https://docs.opennms.com/ for information on configuring ICMP for non-root.", refused.getMessage());
         }
     }
 
