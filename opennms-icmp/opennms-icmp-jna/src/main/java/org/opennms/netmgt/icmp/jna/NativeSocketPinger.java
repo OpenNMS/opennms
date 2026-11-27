@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Main
+ * A pinger on native ICMP sockets. The subclass picks the {@link SocketBackend} that opens them.
  *
  * @author brozow
  */
